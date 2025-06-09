@@ -10,7 +10,6 @@ export async function POST(
     const { name, email, password, role } = body;
 
     try {
-      // Use the centralized registration function from NextAuth
       await registerUser({ name, email, password, role });
       
       return NextResponse.json(

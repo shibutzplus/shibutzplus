@@ -5,26 +5,21 @@ import { UserRole } from "@/models/types/auth"
 import connectToDatabase from "@/lib/mongodb"
 import User from "@/models/schemas/User"
 
-// Create a registration function that can be used by the API route
 export const registerUser = async (userData: {
   name: string;
   email: string;
   password: string;
   role: UserRole;
 }) => {
-  // Connect to the database
   await connectToDatabase();
   
-  // Check if user already exists
   const existingUser = await User.findOne({ email: userData.email });
   if (existingUser) {
     throw new Error('User already exists');
   }
 
-  // Hash the password
   const hashedPassword = await bcrypt.hash(userData.password, 10);
 
-  // Create new user
   const newUser = await User.create({
     name: userData.name,
     email: userData.email,

@@ -8,14 +8,16 @@ import AuthInputPassword from "@/components/ui/AuthInputPassword/AuthInputPasswo
 import AuthSelect from "@/components/ui/AuthSelect/AuthSelect";
 import { RegisterRequest, UserRole } from "@/models/types/auth";
 
+const initRegisterRequest: RegisterRequest = {
+    name: "",
+    email: "",
+    password: "",
+    role: "teacher" as UserRole,
+}
+
 export default function RegisterPage() {
     const router = useRouter();
-    const [formData, setFormData] = useState<RegisterRequest>({
-        name: "",
-        email: "",
-        password: "",
-        role: "teacher" as UserRole,
-    });
+    const [formData, setFormData] = useState<RegisterRequest>(initRegisterRequest);
     const [error, setError] = useState<string>("");
     const [success, setSuccess] = useState<string>("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -55,19 +57,12 @@ export default function RegisterPage() {
             }
 
             setSuccess(data?.message || "Registration successful!");
-
-            // Reset form
-            setFormData({
-                name: "",
-                email: "",
-                password: "",
-                role: "teacher" as UserRole,
-            });
+            setFormData(initRegisterRequest);
 
             // Redirect to login after successful registration
             setTimeout(() => {
                 router.push("/login");
-            }, 2000);
+            }, 1500);
         } catch (err: any) {
             setError(err.message || "Something went wrong");
         } finally {
