@@ -1,32 +1,24 @@
-import { NextRequest, NextResponse } from "next/server";
-import { RegisterRequest, RegisterResponse } from "../../../models/types/auth";
-import { registerUser } from "../auth/[...nextauth]/route";
+import { NextResponse } from "next/server";
+import connectToDatabase from "@/lib/mongodb";
+import User from "@/models/schemas/User";
+import bcrypt from "bcryptjs";
 
-export async function POST(
-  request: NextRequest
-): Promise<NextResponse<RegisterResponse>> {
-  try {
-    const body: RegisterRequest = await request.json();
-    const { name, email, password, role } = body;
-
+export async function POST(req: Request) {
     try {
-      await registerUser({ name, email, password, role });
-      
-      return NextResponse.json(
-        { success: true, message: "User registered successfully" },
-        { status: 201 }
-      );
+        const { name, email, password, role } = await req.json();
+        if (!name || !email || !password || !role) {
+            return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+        }
+
+        await connectToDatabase();
+        if (await User.findOne({ email })) {
+            return NextResponse.json({ error: "Email already in use" }, { status: 400 });
+        }
+
+        const hash = await bcrypt.hash(password, 10);
+        await User.create({ name, email, password: hash, role });
+        return NextResponse.json({ message: "Registered" }, { status: 201 });
     } catch (err: any) {
-      return NextResponse.json(
-        { success: false, message: err.message || "Registration failed" },
-        { status: 400 }
-      );
+        return NextResponse.json({ error: err.message }, { status: 500 });
     }
-  } catch (error) {
-    console.error("Registration error:", error);
-    return NextResponse.json(
-      { success: false, message: "Registration failed" },
-      { status: 500 }
-    );
-  }
 }

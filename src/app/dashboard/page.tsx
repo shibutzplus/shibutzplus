@@ -1,58 +1,52 @@
 "use client";
 
-import { useSession, signOut } from "next-auth/react";
+import React from "react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import styles from "./dashboard.module.css";
+import { useSession, signOut } from "next-auth/react";
 import { UserRole } from "@/models/types/auth";
+import routePath from "@/models/routes";
 
-// Extend the session user type to include role
-interface ExtendedUser {
-  name?: string | null;
-  email?: string | null;
-  role?: UserRole;
-}
 
-export default function DashboardPage() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
+const DashboardPage: React.FC = () => {
+    const router = useRouter();
 
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
+    // useSession yo access the user data
+    const { data: session, status } = useSession({
+        required: true,
+        onUnauthenticated() {
+            router.push(routePath.login);
+        },
+    });
+
+    if (status === "loading") {
+        return (
+            <div className={styles.container}>
+                <div className={styles.content}>
+                    <h1>Loading...</h1>
+                </div>
+            </div>
+        );
     }
-  }, [status, router]);
 
-  if (status === "loading") {
     return (
-      <div className={styles.container}>
-        <div className={styles.content}>
-          <h1>Loading...</h1>
+        <div className={styles.container}>
+            <div className={styles.content}>
+                <h1 className={styles.title}>Dashboard</h1>
+                <div className={styles.userInfo}>
+                    <h2>Welcome, {session?.user?.name}!</h2>
+                    <p>Email: {session?.user?.email}</p>
+                    <p>Role: {session?.user?.role as UserRole}</p>
+                </div>
+                <button
+                    className={styles.logoutButton}
+                    onClick={() => signOut({ redirect: true, callbackUrl: routePath.login })}
+                >
+                    Logout
+                </button>
+            </div>
         </div>
-      </div>
     );
-  }
+};
 
-  if (!session) {
-    return null; // This will be handled by the useEffect redirect
-  }
-
-  return (
-    <div className={styles.container}>
-      <div className={styles.content}>
-        <h1 className={styles.title}>Dashboard</h1>
-        <div className={styles.userInfo}>
-          <h2>Welcome, {session?.user?.name}!</h2>
-          <p>Email: {session?.user?.email}</p>
-          <p>Role: {(session?.user as ExtendedUser)?.role}</p>
-        </div>
-        <button 
-          className={styles.logoutButton} 
-          onClick={() => signOut({ redirect: true, callbackUrl: "/login" })}
-        >
-          Logout
-        </button>
-      </div>
-    </div>
-  );
-}
+export default DashboardPage;

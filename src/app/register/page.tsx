@@ -2,72 +2,56 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import styles from "./register.module.css";
 import AuthInputText from "@/components/ui/AuthInputText/AuthInputText";
 import AuthInputPassword from "@/components/ui/AuthInputPassword/AuthInputPassword";
 import AuthSelect from "@/components/ui/AuthSelect/AuthSelect";
-import { RegisterRequest, UserRole } from "@/models/types/auth";
+import AuthBtn from "@/components/ui/AuthBtn/AuthBtn";
+import styles from "./register.module.css";
+import routePath from "@/models/routes";
 
-const initRegisterRequest: RegisterRequest = {
-    name: "",
-    email: "",
-    password: "",
-    role: "teacher" as UserRole,
-}
-
-export default function RegisterPage() {
+const RegisterPage: React.FC = () => {
     const router = useRouter();
-    const [formData, setFormData] = useState<RegisterRequest>(initRegisterRequest);
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        password: "",
+        role: "teacher",
+    });
     const [error, setError] = useState<string>("");
-    const [success, setSuccess] = useState<string>("");
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
+        setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setIsLoading(true);
         setError("");
-        setSuccess("");
+        setIsLoading(true);
+
+        const res = await fetch("/api/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData),
+        });
+
+        const text = await res.text();
+        let data: { message?: string; error?: string };
 
         try {
-            const response = await fetch("/api/register", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(formData),
-            });
-
-            let data;
-            if (response.ok && response.headers.get("content-type")?.includes("application/json")) {
-                data = await response.json();
-            } else {
-                console.error("Invalid response:", response.status, response.statusText);
-            }
-
-            if (!response.ok) {
-                throw new Error(data?.message || "Registration failed");
-            }
-
-            setSuccess(data?.message || "Registration successful!");
-            setFormData(initRegisterRequest);
-
-            // Redirect to login after successful registration
-            setTimeout(() => {
-                router.push("/login");
-            }, 1500);
-        } catch (err: any) {
-            setError(err.message || "Something went wrong");
-        } finally {
-            setIsLoading(false);
+            data = JSON.parse(text);
+        } catch {
+            console.error("Non-JSON /api/register response:", text);
+            setError("Server error; check console.");
+            return;
         }
+
+        if (!res.ok) {
+            setError(data.error || "Registration failed");
+            return;
+        }
+        setIsLoading(false);
+        router.push(routePath.login);
     };
 
     return (
@@ -118,14 +102,17 @@ export default function RegisterPage() {
                         ]}
                     />
 
-                    <button type="submit" className={styles.button} disabled={isLoading}>
-                        {isLoading ? "Registering..." : "Register"}
-                    </button>
-
-                    {error && <p className={styles.error}>{error}</p>}
-                    {success && <p className={styles.success}>{success}</p>}
+                    <AuthBtn
+                        type="submit"
+                        isLoading={isLoading}
+                        loadingText="Registering..."
+                        buttonText="Register"
+                        error={error}
+                    />
                 </form>
             </div>
         </div>
     );
-}
+};
+
+export default RegisterPage;

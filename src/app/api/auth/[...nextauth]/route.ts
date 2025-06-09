@@ -1,102 +1,75 @@
-import NextAuth from "next-auth"
-import CredentialsProvider from "next-auth/providers/credentials"
-import bcrypt from "bcryptjs"
-import { UserRole } from "@/models/types/auth"
-import connectToDatabase from "@/lib/mongodb"
-import User from "@/models/schemas/User"
+import NextAuth, { NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
+import connectToDatabase from "@/lib/mongodb";
+import User from "@/models/schemas/User";
+import { UserRole } from "@/models/types/auth";
 
-export const registerUser = async (userData: {
-  name: string;
-  email: string;
-  password: string;
-  role: UserRole;
-}) => {
-  await connectToDatabase();
-  
-  const existingUser = await User.findOne({ email: userData.email });
-  if (existingUser) {
-    throw new Error('User already exists');
-  }
-
-  const hashedPassword = await bcrypt.hash(userData.password, 10);
-
-  const newUser = await User.create({
-    name: userData.name,
-    email: userData.email,
-    password: hashedPassword,
-    role: userData.role
-  });
-  
-  return {
-    id: newUser._id.toString(),
-    name: newUser.name,
-    email: newUser.email,
-    role: newUser.role
-  };
+export const authOptions: NextAuthOptions = {
+    providers: [
+        CredentialsProvider({
+            name: "Credentials",
+            credentials: {
+                email: { label: "Email", type: "email", placeholder: "jsmith@example.com" },
+                password: { label: "Password", type: "password" },
+                remember: { label: "Remember me", type: "boolean" },
+            },
+            async authorize(credentials) {
+                if (!credentials?.email || !credentials?.password) {
+                    throw new Error("Email and password required");
+                }
+                await connectToDatabase();
+                const user = await User.findOne({ email: credentials.email }).select("+password");
+                if (!user) {
+                    throw new Error("No user found with this email");
+                }
+                const isValid = await bcrypt.compare(credentials.password, user.password!);
+                if (!isValid) {
+                    throw new Error("Invalid password");
+                }
+                return {
+                    id: user._id.toString(),
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                    remember: credentials.remember,
+                };
+            },
+        }),
+    ],
+    session: {
+        strategy: "jwt",
+        maxAge: 30 * 24 * 60 * 60, // 30 days
+        updateAge: 24 * 60 * 60, // 24 hours
+    },
+    callbacks: {
+        async jwt({ token, user }) {
+            if (user) {
+                token.id = user.id;
+                token.role = user.role;
+                const remember = (user as any).remember;
+                const maxAge = remember ? 30 * 24 * 60 * 60 : 60 * 60; // 30d vs 1h
+                token.exp = Math.floor(Date.now() / 1000) + maxAge;
+            }
+            return token;
+        },
+        async session({ session, token }) {
+            if (token) {
+                session.user = session.user || {};
+                session.user.id = token.id as string;
+                session.user.role = token.role as UserRole;
+                session.expires = new Date((token.exp as number) * 1000).toISOString();
+            }
+            return session;
+        },
+    },
+    pages: {
+        signIn: "/login",
+        error: "/login",
+        newUser: "/register",
+    },
+    secret: process.env.NEXTAUTH_SECRET,
 };
 
-// NextAuth configuration
-const handler = NextAuth({
-  secret: process.env.NEXTAUTH_SECRET || "a-development-secret-for-testing-only",
-  providers: [
-    CredentialsProvider({
-      name: "Credentials",
-      credentials: {
-        email: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" }
-      },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          return null
-        }
-
-        await connectToDatabase();
-        
-        // Find user by email and explicitly select the password field
-        const user = await User.findOne({ email: credentials.email }).select('+password');
-        if (!user) return null;
-        
-        // Verify password
-        const isValid = await bcrypt.compare(
-          credentials.password as string,
-          user.password as string
-        );
-
-        if (!isValid) return null;
-        
-        // Return user without password
-        return {
-          id: user._id.toString(),
-          name: user.name,
-          email: user.email,
-          role: user.role
-        };
-      }
-    })
-  ],
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.role = user.role;
-        token.id = user.id;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.role = token.role as UserRole;
-        session.user.id = token.id as string;
-      }
-      return session;
-    }
-  },
-  pages: {
-    signIn: "/login"
-  },
-  session: {
-    strategy: "jwt"
-  },
-  debug: process.env.NODE_ENV === 'development'
-});
-
+const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
