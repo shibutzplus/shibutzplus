@@ -2,62 +2,45 @@ import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
 import { UserRole } from "@/models/types/auth"
-
-// This would typically connect to your database
-// For now, we'll use a simple in-memory store
-interface User {
-  id: string
-  name: string
-  email: string
-  password: string
-  role: UserRole
-}
-
-// Global users array to simulate a database
-const users: User[] = [
-  {
-    id: '1',
-    name: 'Test User',
-    email: 'test@example.com',
-    password: bcrypt.hashSync('password123', 10),
-    role: 'teacher'
-  }
-]
+import connectToDatabase from "@/lib/mongodb"
+import User from "@/models/schemas/User"
 
 // Create a registration function that can be used by the API route
-export const registerUser = (userData: {
+export const registerUser = async (userData: {
   name: string;
   email: string;
   password: string;
   role: UserRole;
 }) => {
+  // Connect to the database
+  await connectToDatabase();
+  
   // Check if user already exists
-  const existingUser = users.find(user => user.email === userData.email);
+  const existingUser = await User.findOne({ email: userData.email });
   if (existingUser) {
     throw new Error('User already exists');
   }
 
+  // Hash the password
+  const hashedPassword = await bcrypt.hash(userData.password, 10);
+
   // Create new user
-  const newUser: User = {
-    id: (users.length + 1).toString(),
+  const newUser = await User.create({
     name: userData.name,
     email: userData.email,
-    password: bcrypt.hashSync(userData.password, 10),
+    password: hashedPassword,
     role: userData.role
-  };
-
-  // Add to our "database"
-  users.push(newUser);
+  });
   
   return {
-    id: newUser.id,
+    id: newUser._id.toString(),
     name: newUser.name,
     email: newUser.email,
     role: newUser.role
   };
 };
 
-// NextAuth configuration with explicit secret
+// NextAuth configuration
 const handler = NextAuth({
   secret: process.env.NEXTAUTH_SECRET || "a-development-secret-for-testing-only",
   providers: [
@@ -72,37 +55,44 @@ const handler = NextAuth({
           return null
         }
 
-        const user = users.find(u => u.email === credentials.email)
-        if (!user) return null
+        await connectToDatabase();
         
+        // Find user by email and explicitly select the password field
+        const user = await User.findOne({ email: credentials.email }).select('+password');
+        if (!user) return null;
+        
+        // Verify password
         const isValid = await bcrypt.compare(
           credentials.password as string,
-          user.password
-        )
+          user.password as string
+        );
 
-        if (!isValid) return null
+        if (!isValid) return null;
         
+        // Return user without password
         return {
-          id: user.id,
+          id: user._id.toString(),
           name: user.name,
           email: user.email,
           role: user.role
-        }
+        };
       }
     })
   ],
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = user.role
+        token.role = user.role;
+        token.id = user.id;
       }
-      return token
+      return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.role = token.role as UserRole
+        session.user.role = token.role as UserRole;
+        session.user.id = token.id as string;
       }
-      return session
+      return session;
     }
   },
   pages: {
@@ -112,6 +102,6 @@ const handler = NextAuth({
     strategy: "jwt"
   },
   debug: process.env.NODE_ENV === 'development'
-})
+});
 
-export { handler as GET, handler as POST }
+export { handler as GET, handler as POST };

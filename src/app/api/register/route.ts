@@ -11,7 +11,7 @@ export async function POST(
 
     try {
       // Use the centralized registration function from NextAuth
-      registerUser({ name, email, password, role });
+      await registerUser({ name, email, password, role });
       
       return NextResponse.json(
         { success: true, message: "User registered successfully" },
