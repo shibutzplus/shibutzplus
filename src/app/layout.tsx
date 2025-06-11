@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ShibutzPlus - Registration",
-  description: "ShibutzPlus registration and authentication system",
+  title: "שיבוץ+",
+  description: "מערכת ניהול בתי ספר לסגנית",
 };
 
 export default function RootLayout({
@@ -24,7 +24,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="he" dir="rtl">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <Providers>{children}</Providers>
       </body>

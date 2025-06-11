@@ -1,18 +1,18 @@
-export type UserRole = "principal" | "deputy principal" | "teacher" | "substitute teacher";
+export type UserRole = "principal" | "deputy principal" | "teacher";
 
-export interface RegisterRequest {
+export type RegisterRequest = {
   name: string;
   email: string;
   password: string;
   role: UserRole;
 }
 
-export interface RegisterResponse {
+export type RegisterResponse = {
   success: boolean;
   message: string;
 }
 
-export interface User {
+export type User = {
   id: string;
   name: string;
   email: string;

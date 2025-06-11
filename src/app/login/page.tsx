@@ -8,6 +8,7 @@ import AuthBtn from "@/components/ui/AuthBtn/AuthBtn";
 import styles from "./login.module.css";
 import Link from "next/link";
 import routePath from "../../routes";
+import errMsg from "@/resources/errorsMsg";
 
 const LoginPage: React.FC = () => {
     const router = useRouter();
@@ -30,7 +31,7 @@ const LoginPage: React.FC = () => {
         });
 
         if (res?.error) {
-            setError(res.error);
+            setError(errMsg.auth.login.failed);
         } else {
             router.push(routePath.dashboard.p);
         }
@@ -41,10 +42,10 @@ const LoginPage: React.FC = () => {
     return (
         <div className={styles.container}>
             <div className={styles.formContainer}>
-                <h1 className={styles.title}>Login</h1>
+                <h1 className={styles.title}>כניסה</h1>
                 <form className={styles.form} onSubmit={handleSubmit}>
                     <AuthInputText
-                        label="Email"
+                        label="כתובת אימייל"
                         id="email"
                         type="email"
                         value={email}
@@ -53,7 +54,7 @@ const LoginPage: React.FC = () => {
                     />
 
                     <AuthInputPassword
-                        label="Password"
+                        label="סיסמה"
                         id="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
@@ -63,8 +64,8 @@ const LoginPage: React.FC = () => {
                     <AuthBtn
                         type="submit"
                         isLoading={isLoading}
-                        loadingText="Logging in..."
-                        buttonText="Login"
+                        loadingText="כניסה..."
+                        buttonText="כניסה"
                         error={error}
                     />
                 </form>
@@ -74,12 +75,12 @@ const LoginPage: React.FC = () => {
                         checked={remember}
                         onChange={(e) => setRemember(e.target.checked)}
                     />{" "}
-                    Remember me
+                    תזכור אותי
                 </label>
 
                 <div className={styles.registerLink}>
                     <p>
-                        Don&apos;t have an account? <Link href={routePath.register.p}>Register here</Link>
+                        אין לך חשבון? <Link href={routePath.register.p}>הירשם כאן</Link>
                     </p>
                 </div>
             </div>

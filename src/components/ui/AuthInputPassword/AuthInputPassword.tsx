@@ -33,9 +33,9 @@ const AuthInputPassword: React.FC<AuthInputPasswordProps> = ({
           type="button" 
           className={styles.toggleButton}
           onClick={togglePasswordVisibility}
-          aria-label={showPassword ? "Hide password" : "Show password"}
+          aria-label={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
         >
-          {showPassword ? "Hide" : "Show"}
+          {showPassword ? "הסתר" : "הצג"}
         </button>
       </div>
       {error && <p className={styles.errorText}>{error}</p>}

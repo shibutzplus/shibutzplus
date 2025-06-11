@@ -8,6 +8,7 @@ import AuthSelect from "@/components/ui/AuthSelect/AuthSelect";
 import AuthBtn from "@/components/ui/AuthBtn/AuthBtn";
 import styles from "./register.module.css";
 import routePath from "../../routes";
+import errMsg from "@/resources/errorsMsg";
 
 const RegisterPage: React.FC = () => {
     const router = useRouter();
@@ -42,12 +43,12 @@ const RegisterPage: React.FC = () => {
             data = JSON.parse(text);
         } catch {
             console.error("Non-JSON /api/register response:", text);
-            setError("Server error; check console.");
+            setError(errMsg.auth.serverError);
             return;
         }
 
         if (!res.ok) {
-            setError(data.error || "Registration failed");
+            setError(errMsg.auth.register.failed);
             return;
         }
         setIsLoading(false);
@@ -57,10 +58,10 @@ const RegisterPage: React.FC = () => {
     return (
         <div className={styles.container}>
             <div className={styles.formContainer}>
-                <h1 className={styles.title}>Register</h1>
+                <h1 className={styles.title}>הרשמה</h1>
                 <form className={styles.form} onSubmit={handleSubmit}>
                     <AuthInputText
-                        label="Name"
+                        label="שם מלא"
                         id="name"
                         name="name"
                         value={formData.name}
@@ -69,7 +70,7 @@ const RegisterPage: React.FC = () => {
                     />
 
                     <AuthInputText
-                        label="Email"
+                        label="כתובת אימייל"
                         id="email"
                         name="email"
                         type="email"
@@ -79,7 +80,7 @@ const RegisterPage: React.FC = () => {
                     />
 
                     <AuthInputPassword
-                        label="Password"
+                        label="סיסמה"
                         id="password"
                         name="password"
                         value={formData.password}
@@ -88,25 +89,24 @@ const RegisterPage: React.FC = () => {
                     />
 
                     <AuthSelect
-                        label="Role"
+                        label="תפקיד"
                         id="role"
                         name="role"
                         value={formData.role}
                         onChange={handleChange}
                         required
                         options={[
-                            { value: "principal", label: "Principal" },
-                            { value: "deputy principal", label: "Deputy Principal" },
-                            { value: "teacher", label: "Teacher" },
-                            { value: "substitute teacher", label: "Substitute Teacher" },
+                            { value: "principal", label: "מנהל/ת" },
+                            { value: "deputy principal", label: "סגן/ית" },
+                            { value: "teacher", label: "מורה" },
                         ]}
                     />
 
                     <AuthBtn
                         type="submit"
                         isLoading={isLoading}
-                        loadingText="Registering..."
-                        buttonText="Register"
+                        loadingText="הירשם..."
+                        buttonText="הירשם"
                         error={error}
                     />
                 </form>

@@ -6,6 +6,7 @@ import styles from "./connect.module.css";
 import routePath from "../../routes";
 import { sendWhatsApp } from "@/lib/contact/whatsapp";
 import { sendEmail } from "@/lib/contact/email";
+import errMsg from "@/resources/errorsMsg";
 
 const ConnectPage: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -22,7 +23,7 @@ const ConnectPage: React.FC = () => {
         setIsLoading(false);
 
         if (!result) {
-            alert("Failed to send email");
+            alert(errMsg.connect.error);
         }
     };
 
@@ -38,7 +39,7 @@ const ConnectPage: React.FC = () => {
         setIsLoading(false);
 
         if (!result) {
-            alert("Failed to send email");
+            alert(errMsg.connect.error);
         }
 
         sendWhatsApp("+972523454596", "new message");
@@ -47,7 +48,7 @@ const ConnectPage: React.FC = () => {
     return (
         <div className={styles.container}>
             <div className={styles.content}>
-                <h1 className={styles.title}>Connect</h1>
+                <h1 className={styles.title}>שליחת הודעה</h1>
                 <div className={styles.buttonsContainer}>
                     <button
                         className={styles.connectButton}
