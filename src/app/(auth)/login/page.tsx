@@ -1,3 +1,5 @@
+"use client";
+
 import AuthHero from "@/components/AuthHero/AuthHero";
 import LoginForm from "@/components/LoginForm/LoginForm";
 import styles from "./login.module.css";

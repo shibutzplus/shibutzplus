@@ -7,7 +7,7 @@ import AuthInputPassword from "@/components/ui/AuthInputPassword/AuthInputPasswo
 import AuthSelect from "@/components/ui/AuthSelect/AuthSelect";
 import AuthBtn from "@/components/ui/AuthBtn/AuthBtn";
 import styles from "./register.module.css";
-import routePath from "../../routes";
+import routePath from "../../../routes";
 import errMsg from "@/resources/errorsMsg";
 
 const RegisterPage: React.FC = () => {

@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import styles from "./connect.module.css";
-import routePath from "../../routes";
+import routePath from "../../../routes";
 import { sendWhatsApp } from "@/lib/contact/whatsapp";
 import { sendEmail } from "@/lib/contact/email";
 import errMsg from "@/resources/errorsMsg";
