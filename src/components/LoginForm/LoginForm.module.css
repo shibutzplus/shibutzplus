@@ -1,0 +1,116 @@
+.formContainer {
+  flex: 1;
+  padding: 3rem 5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: var(--background);
+  height: 100%;
+  overflow-y: auto;
+}
+
+.title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  text-align: right;
+}
+
+.subtitle {
+  color: var(--subtitle-color);
+  margin-bottom: 2rem;
+  text-align: right;
+  font-size: 0.9rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.inputLabel {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #333;
+  text-align: right;
+}
+
+.rememberContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0.5rem 0;
+}
+
+.rememberLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.rememberCheckbox {
+  width: 16px;
+  height: 16px;
+}
+
+.forgotPassword a {
+  font-size: 0.9rem;
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+.forgotPassword a:hover {
+  text-decoration: underline;
+}
+
+.registerLink {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.problemLink{
+  color: var(--input-color);
+  text-decoration: none;
+  font-weight: 500;
+  text-decoration: underline !important;
+}
+
+.problemLink:hover{
+  color: var(--input-hover-color) !important;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .formContainer {
+    padding: 3rem 3rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .formContainer {
+    padding: 3rem 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .formContainer {
+    padding: 3rem 2rem;
+    min-height: 50vh;
+  }
+}
+
+@media (max-width: 576px) {
+  .formContainer {
+    padding: 2rem 1.5rem;
+  }
+}

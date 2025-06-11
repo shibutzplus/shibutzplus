@@ -1,0 +1,105 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
+import AuthInputText from "@/components/ui/AuthInputText/AuthInputText";
+import AuthInputPassword from "@/components/ui/AuthInputPassword/AuthInputPassword";
+import AuthBtn from "@/components/ui/AuthBtn/AuthBtn";
+import styles from "./LoginForm.module.css";
+import Link from "next/link";
+import routePath from "../../routes";
+import errMsg from "@/resources/errorsMsg";
+
+const LoginForm: React.FC = () => {
+    const router = useRouter();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [remember, setRemember] = useState(false);
+    const [error, setError] = useState<string>("");
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError("");
+        setIsLoading(true);
+
+        const res = await signIn("credentials", {
+            redirect: false,
+            email,
+            password,
+            remember,
+        });
+
+        if (res?.error) {
+            setError(errMsg.auth.login.failed);
+        } else {
+            router.push(routePath.dashboard.p);
+        }
+
+        setIsLoading(false);
+    };
+
+    return (
+        <div className={styles.formContainer}>
+            <h1 className={styles.title}>כניסה למנהלים</h1>
+            <p className={styles.subtitle}>הזינו את פרטי ההתחברות בשביל להכנס למערכת</p>
+
+            <form className={styles.form} onSubmit={handleSubmit}>
+                <div className={styles.inputGroup}>
+                    <label className={styles.inputLabel}>כתובת אימייל</label>
+                    <AuthInputText
+                        id="email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="your.email@gmail.com"
+                        required
+                    />
+                </div>
+
+                <div className={styles.inputGroup}>
+                    <label className={styles.inputLabel}>סיסמה</label>
+                    <AuthInputPassword
+                        id="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="הזינו את הסיסמה"
+                        required
+                    />
+                </div>
+
+                <div className={styles.rememberContainer}>
+                    <label className={styles.rememberLabel}>
+                        <input
+                            type="checkbox"
+                            className={styles.rememberCheckbox}
+                            checked={remember}
+                            onChange={(e) => setRemember(e.target.checked)}
+                        />
+                        <span>זכור אותי לפעם הבאה</span>
+                    </label>
+                    <div className={styles.forgotPassword}>
+                        <Link href="#">שכחת סיסמה?</Link>
+                    </div>
+                </div>
+
+                <AuthBtn
+                    type="submit"
+                    isLoading={isLoading}
+                    loadingText="כניסה למערכת"
+                    buttonText="כניסה"
+                    error={error}
+                />
+            </form>
+
+            <div className={styles.registerLink}>
+                <p>
+                    בעיה בהתחברות? <Link href={routePath.about.p} className={styles.problemLink}>צרו קשר עם שיבוץ+</Link>
+                </p>
+            </div>
+        </div>
+    );
+};
+
+export default LoginForm;

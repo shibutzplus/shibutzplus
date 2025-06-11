@@ -1,6 +1,42 @@
 :root {
+  /* Base colors */
   --background: #ffffff;
   --foreground: #171717;
+  
+  /* Login page colors */
+  --school-section-bg: #f9f9f9;
+  --icon-placeholder-bg: #000;
+  --title-color: #333;
+  --subtitle-color: #666;
+  --feature-icon-bg: #f0f0f0;
+  --description-text: #666;
+  
+  /* Form elements */
+  --input-color: #171717;
+  --input-hover-color: #3c3c3c;
+  --input-border: #e0e0e0;
+  --input-focus-border: #000;
+  --input-shadow: #0000000d;
+  --input-focus-shadow: #0000001a;
+  --placeholder-color: #aaa;
+  
+  /* Button colors */
+  --button-bg: #000;
+  --button-hover-bg: #333;
+  --button-disabled-bg: #666;
+  
+  /* Link colors */
+  --link-color: #4a90e2;
+  
+  /* Error colors */
+  --error-color: #e53935;
+  --error-shadow: #e5393533;
+  
+  /* Box shadows */
+  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  --input-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --input-focus-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --error-box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.2);
 }
 
 html,
