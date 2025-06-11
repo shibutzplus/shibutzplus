@@ -8,6 +8,7 @@ const router: Record<string, IRoute> = {
     login: { p: "/login", private: false },
     register: { p: "/register", private: false },
     dashboard: { p: "/dashboard", private: true },
+    connect: { p: "/connect", private: true },
     about: { p: "/about", private: false },
 }
 

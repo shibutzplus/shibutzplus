@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import styles from "./dashboard.module.css";
 import { useSession, signOut } from "next-auth/react";
 import { UserRole } from "../../models/types/auth";
@@ -11,12 +12,9 @@ import routePath from "../../routes";
 const DashboardPage: React.FC = () => {
     const router = useRouter();
 
-    // useSession yo access the user data
+    // useSession to access the user data
     const { data: session, status } = useSession({
         required: true,
-        onUnauthenticated() {
-            router.push(routePath.login.p);
-        },
     });
 
     if (status === "loading") {
@@ -37,6 +35,11 @@ const DashboardPage: React.FC = () => {
                     <h2>Welcome, {session?.user?.name}!</h2>
                     <p>Email: {session?.user?.email}</p>
                     <p>Role: {session?.user?.role as UserRole}</p>
+                </div>
+                <div className={styles.navigation}>
+                    <Link href={routePath.connect.p} className={styles.navLink}>
+                        Go to Connect Page
+                    </Link>
                 </div>
                 <button
                     className={styles.logoutButton}
