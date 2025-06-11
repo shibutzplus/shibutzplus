@@ -7,7 +7,7 @@ import AuthInputPassword from "@/components/ui/AuthInputPassword/AuthInputPasswo
 import AuthBtn from "@/components/ui/AuthBtn/AuthBtn";
 import styles from "./login.module.css";
 import Link from "next/link";
-import routePath from "@/models/routes";
+import routePath from "../../routes";
 
 const LoginPage: React.FC = () => {
     const router = useRouter();

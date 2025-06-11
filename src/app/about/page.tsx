@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import styles from "./about.module.css";
-import routePath from "@/models/routes";
+import routePath from "../../routes";
 
 const AboutPage: React.FC = () => {
     return (

@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
-import router from "@/models/routes";
-import { protectedPaths, publicPaths, configMatcher } from "@/models/routes/protectedAuth";
+import router from "@/routes";
+import { protectedPaths, publicPaths, configMatcher } from "@/routes/protectedAuth";
 
 export async function middleware(req: NextRequest) {
     const { nextUrl: url } = req;

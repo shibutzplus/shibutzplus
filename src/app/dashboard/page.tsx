@@ -4,8 +4,8 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import styles from "./dashboard.module.css";
 import { useSession, signOut } from "next-auth/react";
-import { UserRole } from "@/models/types/auth";
-import routePath from "@/models/routes";
+import { UserRole } from "../../models/types/auth";
+import routePath from "../../routes";
 
 
 const DashboardPage: React.FC = () => {
