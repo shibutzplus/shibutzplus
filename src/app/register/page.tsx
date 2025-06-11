@@ -51,7 +51,7 @@ const RegisterPage: React.FC = () => {
             return;
         }
         setIsLoading(false);
-        router.push(routePath.login);
+        router.push(routePath.login.p);
     };
 
     return (

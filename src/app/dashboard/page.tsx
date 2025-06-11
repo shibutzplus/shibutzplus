@@ -15,7 +15,7 @@ const DashboardPage: React.FC = () => {
     const { data: session, status } = useSession({
         required: true,
         onUnauthenticated() {
-            router.push(routePath.login);
+            router.push(routePath.login.p);
         },
     });
 
@@ -40,7 +40,7 @@ const DashboardPage: React.FC = () => {
                 </div>
                 <button
                     className={styles.logoutButton}
-                    onClick={() => signOut({ redirect: true, callbackUrl: routePath.login })}
+                    onClick={() => signOut({ redirect: true, callbackUrl: routePath.login.p })}
                 >
                     Logout
                 </button>

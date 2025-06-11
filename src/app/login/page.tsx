@@ -32,7 +32,7 @@ const LoginPage: React.FC = () => {
         if (res?.error) {
             setError(res.error);
         } else {
-            router.push(routePath.dashboard);
+            router.push(routePath.dashboard.p);
         }
 
         setIsLoading(false);
@@ -79,7 +79,7 @@ const LoginPage: React.FC = () => {
 
                 <div className={styles.registerLink}>
                     <p>
-                        Don&apos;t have an account? <Link href={routePath.register}>Register here</Link>
+                        Don&apos;t have an account? <Link href={routePath.register.p}>Register here</Link>
                     </p>
                 </div>
             </div>
