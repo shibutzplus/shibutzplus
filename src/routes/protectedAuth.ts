@@ -50,11 +50,13 @@ export const getConfigMatcher = (): string[] => {
     // Get login and register paths (typically need exact matches)
     const authPaths = [router.login.p, router.register.p];
     
-    // Combine both arrays for the complete matcher configuration
-    return [...protectedPathsWithWildcard, ...authPaths];
+    // Add root path to the matcher
+    const rootPath = router.home.p;
+    
+    // Combine all arrays for the complete matcher configuration
+    return [...protectedPathsWithWildcard, ...authPaths, rootPath];
 };
 
-// For backward compatibility
 export const protectedPaths = getProtectedPaths();
 export const publicPaths = getPublicPaths();
 export const configMatcher = getConfigMatcher();

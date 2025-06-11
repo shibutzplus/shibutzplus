@@ -1,12 +1,7 @@
-import styles from "./page.module.css";
-import Link from "next/link";
+import { redirect } from "next/navigation";
 import routePath from "../routes";
 
 export default function Home() {
-  return (
-    <div className={styles.page}>
-      <Link href={routePath.login.p}>Login</Link>
-      <Link href={routePath.register.p}>Register</Link>
-    </div>
-  );
+  // Server-side redirect to login page
+  redirect(routePath.login.p);
 }
