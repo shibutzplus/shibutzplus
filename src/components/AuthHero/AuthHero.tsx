@@ -1,20 +1,13 @@
 import React from "react";
 import Image from 'next/image';
 import styles from "./AuthHero.module.css";
+import Logo from "../core/Logo/Logo";
 
 const AuthHero: React.FC = () => {
     return (
         <div className={styles.heroSection}>
             <div className={styles.schoolIcon}>
-                <div className={styles.iconPlaceholder}>
-                    <Image 
-                        src="/logo.png" 
-                        alt="ShibutzPlus Logo" 
-                        width={40} 
-                        height={40} 
-                        className={styles.logo}
-                    />
-                </div>
+                <Logo/>
             </div>
             <h2 className={styles.schoolTitle}>שיבוץ +</h2>
 

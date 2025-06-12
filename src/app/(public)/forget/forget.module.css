@@ -1,0 +1,113 @@
+.container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  padding: 0;
+}
+
+.contentWrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--school-section-bg);
+  position: relative;
+}
+
+.backLinkContainer {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  z-index: 10;
+}
+
+.backLink {
+  display: flex;
+  align-items: center;
+  color: var(--primary-color);
+  font-size: 1rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.backLink:hover {
+  color: var(--primary-dark);
+}
+
+.backIcon {
+  margin-left: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.forgetContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 500px;
+  padding: 2rem;
+}
+
+.logoContainer {
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: var(--title-color);
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  color: var(--description-text);
+}
+
+.emailLink {
+  font-size: 1.1rem;
+  color: var(--primary-color);
+  text-decoration: underline;
+}
+
+.illustrationContainer {
+  margin-top: 3rem;
+  max-width: 300px;
+}
+
+.illustration {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .forgetContainer {
+    padding: 2rem 1.5rem;
+  }
+  
+  .title {
+    font-size: 1.5rem;
+  }
+  
+  .subtitle {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .forgetContainer {
+    padding: 1.5rem 1rem;
+  }
+  
+  .illustrationContainer {
+    max-width: 200px;
+  }
+}

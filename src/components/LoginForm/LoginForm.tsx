@@ -80,7 +80,7 @@ const LoginForm: React.FC = () => {
                         <span>זכור אותי לפעם הבאה</span>
                     </label>
                     <div className={styles.forgotPassword}>
-                        <Link href="#">שכחת סיסמה?</Link>
+                        <Link href={routePath.forget.p}>שכחת סיסמה?</Link>
                     </div>
                 </div>
 

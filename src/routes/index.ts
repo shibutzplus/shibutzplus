@@ -10,6 +10,7 @@ const router: Record<string, IRoute> = {
     dashboard: { p: "/dashboard", private: true },
     connect: { p: "/connect", private: true },
     about: { p: "/about", private: false },
+    forget: {p: "/forget", private: false}
 }
 
 export default router
