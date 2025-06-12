@@ -6,7 +6,7 @@ import Link from "next/link";
 import styles from "./forget.module.css";
 import Logo from "@/components/core/Logo/Logo";
 import { IoArrowForward } from "react-icons/io5";
-import { OurEmail } from "@/models/constant";
+import { EmailLink, OurEmail } from "@/models/constant";
 
 const ForgetPasswordPage: React.FC = () => {
     return (
@@ -26,7 +26,7 @@ const ForgetPasswordPage: React.FC = () => {
                     <h1 className={styles.title}>מה עושים במקרה ושכחתי את הסיסמה?</h1>
                     <h2 className={styles.subtitle}>צרו קשר עם שירות הלקוחות של שיבוץ+</h2>
 
-                    <Link href={`mailto:${OurEmail}`} className={styles.emailLink}>
+                    <Link href={EmailLink} className={styles.emailLink}>
                         {OurEmail}
                     </Link>
 
@@ -51,3 +51,6 @@ export default ForgetPasswordPage;
 //#dfdfe0
 // #6c63ff
 // #36344e
+
+// #090814
+// #ffb6b6

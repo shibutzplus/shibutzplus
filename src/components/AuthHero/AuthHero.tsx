@@ -20,8 +20,8 @@ const AuthHero: React.FC = () => {
                 <Image 
                     src="/undraw_workspace_s6wf.svg" 
                     alt="Workspace Illustration" 
-                    width={150} 
-                    height={50} 
+                    width={140} 
+                    height={40} 
                     className={styles.illustration}
                 />
             </div>

@@ -10,6 +10,7 @@ import styles from "./LoginForm.module.css";
 import Link from "next/link";
 import routePath from "../../routes";
 import errMsg from "@/resources/errorsMsg";
+import { EmailLink } from "@/models/constant";
 
 const LoginForm: React.FC = () => {
     const router = useRouter();
@@ -95,7 +96,7 @@ const LoginForm: React.FC = () => {
 
             <div className={styles.registerLink}>
                 <p>
-                    בעיה בהתחברות? <Link href={routePath.about.p} className={styles.problemLink}>צרו קשר עם שיבוץ+</Link>
+                    בעיה בהתחברות? <Link href={EmailLink} className={styles.problemLink}>צרו קשר עם שיבוץ+</Link>
                 </p>
             </div>
         </div>
