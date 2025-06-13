@@ -1,0 +1,39 @@
+.container {
+    flex: 1;
+    overflow: auto;
+}
+
+.tableWrapper {
+    width: 100%;
+    height: calc(100vh - 88px);
+    overflow: auto;
+}
+
+.table {
+    border-collapse: collapse;
+    table-layout: fixed;
+    min-width: 800px;
+}
+
+.headerCell {
+    position: sticky;
+    top: 0;
+    background: #fafafa;
+    border-bottom: 2px solid #ddd;
+    padding: 12px;
+    min-width: 200px;
+    text-align: center;
+    font-weight: 500;
+}
+
+.hourCell {
+    background: #f5f5f5;
+    border-right: 2px solid #ddd;
+}
+
+.cell {
+    border-bottom: 1px solid #eee;
+    padding: 16px;
+    min-width: 200px;
+    vertical-align: top;
+}

@@ -1,4 +1,15 @@
-.container {
+.pageContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.content {
+  display: flex;
+  flex: 1;
+}
+
+/* .container {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -17,7 +28,6 @@
   height: 100%;
 }
 
-/* Responsive Design */
 @media (max-width: 1200px) {
 
   .tableContainer {
@@ -48,4 +58,4 @@
   .tableContainer {
     padding: 2rem 1.5rem;
   }
-}
+} */

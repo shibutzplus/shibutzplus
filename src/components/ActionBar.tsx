@@ -1,56 +1,51 @@
 "use client";
 import React from "react";
 import { ActionColumnType } from "@/models/types/table";
+import styles from "./ActionBar.module.css";
 interface ActionBarProps {
     onSelect: (type: ActionColumnType) => void;
     onDelete: () => void;
 }
-
-const allActions: {
+const actions: {
     key?: ActionColumnType;
     isDelete?: boolean;
     label: string;
+    dotClass: string;
     disabled: boolean;
 }[] = [
-    { label: "פרסום", disabled: true },
-    { label: "היסטוריה", disabled: true },
-    { key: "missingTeacher", label: "מורה חסר", disabled: false },
-    { key: "existingTeacher", label: "מורה קיים", disabled: false },
-    { key: "info", label: "מידע", disabled: false },
-    { isDelete: true, label: "מחיקה", disabled: false },
-    { label: "עדכון", disabled: true },
-    { label: "הזזה", disabled: true },
+    { label: "פרסום", dotClass: styles.publish, disabled: true },
+    { label: "היסטוריה", dotClass: styles.history, disabled: true },
+    { key: "missingTeacher", label: "מורה חסר", dotClass: styles.missingTeacher, disabled: false },
+    {
+        key: "existingTeacher",
+        label: "מורה קיים",
+        dotClass: styles.existingTeacher,
+        disabled: false,
+    },
+    { key: "info", label: "מידע", dotClass: styles.info, disabled: false },
+    { isDelete: true, label: "מחיקה", dotClass: styles.delete, disabled: false },
+    { label: "עדכון", dotClass: styles.update, disabled: true },
+    { label: "הזזה", dotClass: styles.move, disabled: true },
 ];
 
 export const ActionBar: React.FC<ActionBarProps> = ({ onSelect, onDelete }) => (
-    <div
-        style={{
-            width: 100,
-            background: "#f9f9f9",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            padding: 8,
-        }}
-    >
-        {allActions.map((act, idx) => (
-            <button
-                key={idx}
-                disabled={act.disabled}
-                onClick={() => {
-                    if (act.isDelete) onDelete();
-                    else if (act.key) onSelect(act.key);
-                }}
-                style={{
-                    margin: "4px 0",
-                    width: "90%",
-                    padding: "6px",
-                    cursor: act.disabled ? "not-allowed" : "pointer",
-                    opacity: act.disabled ? 0.5 : 1,
-                }}
-            >
-                {act.label}
-            </button>
-        ))}
-    </div>
+    <aside className={styles.container}>
+        <h2>פעולות</h2>
+        <ul className={styles.list}>
+            {actions.map((act, i) => (
+                <li
+                    key={i}
+                    className={`${styles.item} ${act.disabled ? styles.disabled : ""}`}
+                    onClick={() => {
+                        if (act.disabled) return;
+                        if (act.isDelete) onDelete();
+                        else if (act.key) onSelect(act.key);
+                    }}
+                >
+                    <span className={`${styles.dot} ${act.dotClass}`} />
+                    {act.label}
+                </li>
+            ))}
+        </ul>
+    </aside>
 );
