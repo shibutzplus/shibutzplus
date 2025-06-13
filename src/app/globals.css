@@ -37,6 +37,10 @@
   --input-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   --input-focus-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   --error-box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.2);
+
+  /* Size */
+  --header-height: 80px;
+  --nav-width: 240px;
 }
 
 html,

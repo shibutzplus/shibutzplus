@@ -1,0 +1,20 @@
+.th {
+    padding: 1rem;
+    border: 1px solid #000;
+    font-weight: 600;
+}
+
+.red {
+    background-color: #cf5656;
+    color: white;
+}
+
+.yellow {
+    background-color: #d5d550;
+    color: black;
+}
+
+.green {
+    background-color: #50d550;
+    color: white;
+}
