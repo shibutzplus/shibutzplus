@@ -1,0 +1,19 @@
+.dataTable {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: right;
+    direction: rtl;
+}
+
+.tdDay {
+    padding: 1rem;
+    border: 1px solid #000;
+    text-align: center;
+    background-color: #64748b;
+}
+
+.thDays {
+    width: 50px;
+    background-color: #64748b;
+    text-align: center;
+}

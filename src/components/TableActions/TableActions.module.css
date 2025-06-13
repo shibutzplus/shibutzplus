@@ -1,0 +1,14 @@
+.tableActions {
+    width: 100px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.tableActionsBtn {
+    width: 100%;
+    height: 50px;
+    border: 1px solid #000;
+}

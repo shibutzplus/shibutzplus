@@ -1,70 +1,21 @@
 .container {
   display: flex;
+  align-items: center;
+  justify-content: center;
   min-height: 100vh;
   width: 100%;
-  padding: 0;
-}
-
-.contentWrapper {
-  display: flex;
-  flex-direction: row-reverse;
-  /* Reverse the order for RTL layout */
-  width: 100%;
-  height: 100vh;
-  overflow: hidden;
-}
-
-.tableContainer {
-  flex: 15%;
-  padding: 3rem 5rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  background-color: var(--background, #ffffff);
-  height: 100%;
-  overflow-y: auto;
+  padding: 0 5vw;
   box-sizing: border-box;
-  padding: 0 7vw;
-}
-
-.title {
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  text-align: right;
-}
-
-.subtitle {
-  color: var(--subtitle-color, #64748b);
-  margin-bottom: 2rem;
-  text-align: right;
-  font-size: 0.9rem;
 }
 
 .tableWrapper {
-  margin: 2rem 0;
-  overflow-x: auto;
-  border: 1px solid #000;
-}
-
-.dataTable {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: right;
-  direction: rtl;
-}
-
-.tdDay {
-  padding: 1rem;
-  border: 1px solid #000;
-  text-align: center;
-  background-color: #64748b;
-}
-
-.thDays {
-  width: 50px;
-  background-color: #64748b;
-  text-align: center;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80vw;
+  height: 100%;
+  overflow-x: scroll;
 }
 
 /* Responsive Design */
