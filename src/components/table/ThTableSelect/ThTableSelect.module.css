@@ -1,10 +1,11 @@
 .th {
     position: relative;
-    width: fit-content;
     height: 60px;
     border: 1px solid #000;
     align-content: flex-start;
     justify-content: flex-start;
+    width: var(--cell-width);
+    min-width: var(--cell-width);
 }
 
 .select {

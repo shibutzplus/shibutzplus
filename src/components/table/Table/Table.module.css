@@ -1,8 +1,8 @@
 .dataTable {
-    width: 100%;
+    width: 80vw;
+    overflow-x: scroll;
     border-collapse: collapse;
     text-align: right;
-    direction: rtl;
 }
 
 .tdDay {
@@ -10,10 +10,11 @@
     border: 1px solid #000;
     text-align: center;
     background-color: #64748b;
+    width: 50px;
 }
 
 .thDays {
-    width: 50px;
     background-color: #64748b;
     text-align: center;
+    width: 50px;
 }

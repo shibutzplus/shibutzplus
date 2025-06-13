@@ -41,6 +41,7 @@
   /* Size */
   --header-height: 80px;
   --nav-width: 240px;
+  --cell-width: 300px;
 }
 
 html,
