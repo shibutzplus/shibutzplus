@@ -7,8 +7,9 @@ import routePath from "../../../routes";
 import { sendWhatsApp } from "@/lib/contact/whatsapp";
 import { sendEmail } from "@/lib/contact/email";
 import errMsg from "@/resources/errorsMsg";
+import { NextPage } from "next";
 
-const ConnectPage: React.FC = () => {
+const ConnectPage: NextPage = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSendEmail = async () => {

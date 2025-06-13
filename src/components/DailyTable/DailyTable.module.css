@@ -21,7 +21,7 @@
     background: #fafafa;
     border-bottom: 2px solid #ddd;
     padding: 12px;
-    min-width: 200px;
+    min-width: var(--cell-width);
     text-align: center;
     font-weight: 500;
 }
@@ -33,7 +33,7 @@
 
 .cell {
     border-bottom: 1px solid #eee;
-    padding: 16px;
-    min-width: 200px;
-    vertical-align: top;
+    min-width: var(--cell-width);
+    text-align: center;
+    vertical-align: center;
 }

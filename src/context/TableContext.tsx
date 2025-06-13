@@ -1,180 +1,81 @@
 "use client";
 
-import { TableRows } from "@/models/constant/table";
-import { Cell, Col } from "@/models/types/table";
-import { editTableActions } from "@/resources/editTableActions";
-import React, { createContext, useContext, useState, ReactNode, useMemo } from "react";
-import {
-  useReactTable,
-  getCoreRowModel,
-  ColumnDef,
-  VisibilityState,
-  flexRender,
-} from "@tanstack/react-table";
+import React, { createContext, useReducer, useContext, ReactNode } from "react";
+import { TeacherRow, ActionColumnType } from "@/models/types/table";
+import { ColumnDef } from "@tanstack/react-table";
+import TableCell from "@/components/TableCell/TableCell";
+import TableHeader from "@/components/TableHeader/TableHeader";
 
-// Define the data structure for our table rows
-export type TableRow = {
-  day: number;
-  [key: string]: any; // Dynamic columns will be added here
-};
-
-interface TableContextType {
-  cols: Col[];
-  data: TableRow[];
-  columns: ColumnDef<TableRow>[];
-  columnVisibility: VisibilityState;
-  addNewCol: (action: any) => void;
-  removeCol: (id: number) => void;
-  getTable: () => ReturnType<typeof useReactTable<TableRow>>;
-  scale: number;
-  setScale: (scale: number) => void;
+interface State {
+    data: TeacherRow[];
+    actionCols: ColumnDef<TeacherRow>[];
+    nextId: number;
 }
 
-const TableContext = createContext<TableContextType | undefined>(undefined);
+type Action = { type: "ADD_COL"; colType: ActionColumnType } | { type: "REMOVE_COL" };
 
-export const useTableContext = () => {
-  const context = useContext(TableContext);
-  if (context === undefined) {
-    throw new Error("useTableContext must be used within a TableContextProvider");
-  }
-  return context;
+const initialState: State = {
+    data: Array.from({ length: 8 }, (_, i) => ({ hour: i + 1 })),
+    actionCols: [],
+    nextId: 1,
 };
 
-interface TableContextProviderProps {
-  children: ReactNode;
-}
+const TableContext = createContext<{
+    state: State;
+    dispatch: React.Dispatch<Action>;
+} | null>(null);
 
-export const TableContextProvider: React.FC<TableContextProviderProps> = ({ children }) => {
-  // Store the original columns structure for compatibility with TableActions
-  const [cols, setCols] = useState<Col[]>([]);
-  
-  // Column visibility state for TanStack Table
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  
-  // Scale factor for the table
-  const [scale, setScale] = useState<number>(1);
-  
-  // Generate initial data with day numbers
-  const [data, setData] = useState<TableRow[]>(
-    Array.from({ length: TableRows }, (_, i) => ({
-      day: i + 1,
-    }))
-  );
-
-  // Convert our cols structure to TanStack columns
-  const columns = useMemo<ColumnDef<TableRow>[]>(() => {
-    // Always include the day column
-    const baseColumns: ColumnDef<TableRow>[] = [
-      {
-        accessorKey: "day",
-        header: "יום",
-        cell: (info) => info.getValue(),
-      },
-    ];
-
-    // Add dynamic columns based on cols state
-    const dynamicColumns = cols.map((col) => ({
-      id: `col-${col.id}`,
-      accessorKey: `col-${col.id}`,
-      header: () => {
-        switch (col.action) {
-          case "missingTeacher":
-            return { type: "select", color: "red", action: col.action, id: col.id };
-          case "existingTeacher":
-            return { type: "select", color: "yellow", action: col.action, id: col.id };
-          case "info":
-            return { type: "text", color: "green", title: "מידע מפוצל", action: col.action, id: col.id };
-          default:
-            return { type: "empty", action: col.action, id: col.id };
-        }
-      },
-      cell: (info: any) => {
-        const rowIndex = info.row.index;
-        const cellData = col.cells[rowIndex];
+function buildColumn(colType: ActionColumnType, id: string): ColumnDef<TeacherRow> {
+    if (colType === "missingTeacher") {
         return {
-          type: col.action,
-          content: cellData?.content || "",
-          rowIndex,
-          colId: col.id,
+            id,
+            header: () => <TableHeader type="select" />,
+            cell: () => <TableCell type="select" />,
+            meta: { bgColor: "#f3e5f5" },
         };
-      },
-    }));
+    }
+    if (colType === "existingTeacher") {
+        return {
+            id,
+            header: () => <TableHeader type="select" />,
+            cell: () => <TableCell type="select" />,
+            meta: { bgColor: "#fff3e0" },
+        };
+    }
+    return {
+        id,
+        header: () => <TableHeader type="text" />,
+        cell: () => <TableCell type="text" />,
+        meta: { bgColor: "#e8f5e9" },
+    };
+}
 
-    return [...baseColumns, ...dynamicColumns];
-  }, [cols]);
+function reducer(state: State, action: Action): State {
+    switch (action.type) {
+        case "ADD_COL": {
+            const id = `${action.colType}-${state.nextId}`;
+            const newCol = buildColumn(action.colType, id);
+            return {
+                ...state,
+                actionCols: [...state.actionCols, newCol],
+                nextId: state.nextId + 1,
+            };
+        }
+        case "REMOVE_COL": {
+            return { ...state, actionCols: state.actionCols.slice(1) };
+        }
+        default:
+            return state;
+    }
+}
 
-  // Add a new column
-  const addNewCol = (action: any) => {
-    // const { thType, tdType } = editTableActions[action];
-    const newColId = cols.length + 1;
+export const TableProvider = ({ children }: { children: ReactNode }) => {
+    const [state, dispatch] = useReducer(reducer, initialState);
+    return <TableContext.Provider value={{ state, dispatch }}>{children}</TableContext.Provider>;
+};
 
-    // Update the original cols structure for compatibility
-    // setCols((prev) => [
-    //   ...prev,
-    //   {
-    //     id: newColId,
-    //     type: thType,
-    //     action,
-    //     cells: Array.from(
-    //       { length: TableRows },
-    //       () =>
-    //         ({
-    //           id: newColId,
-    //           type: tdType,
-    //           content: "test",
-    //         }) as Cell,
-    //     ),
-    //   },
-    // ]);
-
-    // Update the data with the new column
-    setData(prev => 
-      prev.map((row, index) => ({
-        ...row,
-        [`col-${newColId}`]: "test"
-      }))
-    );
-  };
-
-  // Remove a column
-  const removeCol = (id: number) => {
-    setCols((prev) => prev.filter((col) => col.id !== id));
-    
-    // Update data to remove the column
-    setData(prev => 
-      prev.map(row => {
-        const newRow = {...row};
-        delete newRow[`col-${id}`];
-        return newRow;
-      })
-    );
-  };
-
-  // Create the table instance
-  const table = useReactTable({
-    data,
-    columns,
-    state: {
-      columnVisibility,
-    },
-    onColumnVisibilityChange: setColumnVisibility,
-    getCoreRowModel: getCoreRowModel(),
-  });
-
-  // Provide the table instance
-  const getTable = () => table;
-
-  const value: TableContextType = {
-    cols,
-    data,
-    columns,
-    columnVisibility,
-    addNewCol,
-    removeCol,
-    getTable,
-    scale,
-    setScale,
-  };
-
-  return <TableContext.Provider value={value}>{children}</TableContext.Provider>;
+export const useTable = () => {
+    const ctx = useContext(TableContext);
+    if (!ctx) throw new Error("useTable must be used within TableProvider");
+    return ctx;
 };

@@ -4,8 +4,9 @@ import React from "react";
 import styles from "./dashboard.module.css";
 import { useSession } from "next-auth/react";
 import { UserRole } from "../../../models/types/auth";
+import { NextPage } from "next";
 
-const DashboardPage: React.FC = () => {
+const DashboardPage: NextPage = () => {
     // useSession to access the user data
     const { data: session, status } = useSession({
         required: true,

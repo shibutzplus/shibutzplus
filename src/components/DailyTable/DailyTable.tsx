@@ -1,19 +1,27 @@
 "use client";
-import React from "react";
-import { useReactTable, getCoreRowModel, flexRender, ColumnDef } from "@tanstack/react-table";
-import { TeacherRow } from "@/models/types/table";
-import styles from "./TeacherTable.module.css";
-interface TeacherTableProps {
-    data: TeacherRow[];
-    baseColumns: ColumnDef<TeacherRow>[];
-    actionColumns: ColumnDef<TeacherRow>[];
-}
 
-export const TeacherTable: React.FC<TeacherTableProps> = ({ data, baseColumns, actionColumns }) => {
-    const columns = React.useMemo(
-        () => [...baseColumns, ...actionColumns],
-        [baseColumns, actionColumns],
+import React from "react";
+import { useReactTable, getCoreRowModel, flexRender } from "@tanstack/react-table";
+import styles from "./DailyTable.module.css";
+import { useTable } from "@/context/TableContext";
+
+const DailyTable: React.FC = () => {
+    const { state } = useTable();
+    const { data, actionCols } = state;
+
+    const baseCols = React.useMemo(
+        () => [
+            {
+                accessorKey: "hour",
+                header: "שעה",
+                cell: (info: any) => <span>{info.getValue()}</span>,
+                meta: { bgColor: "#f5f5f5" },
+            },
+        ],
+        [],
     );
+
+    const columns = React.useMemo(() => [...baseCols, ...actionCols], [actionCols]);
     const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() });
 
     return (
@@ -28,7 +36,8 @@ export const TeacherTable: React.FC<TeacherTableProps> = ({ data, baseColumns, a
                                         key={header.id}
                                         className={`${styles.headerCell} ${header.column.id === "hour" ? styles.hourCell : ""}`}
                                         style={{
-                                            background: (header.column.columnDef.meta as any)?.bgColor,
+                                            background: (header.column.columnDef.meta as any)
+                                                ?.bgColor,
                                         }}
                                     >
                                         {flexRender(
@@ -56,3 +65,5 @@ export const TeacherTable: React.FC<TeacherTableProps> = ({ data, baseColumns, a
         </div>
     );
 };
+
+export default DailyTable;

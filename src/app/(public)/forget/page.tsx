@@ -7,8 +7,9 @@ import styles from "./forget.module.css";
 import Logo from "@/components/core/Logo/Logo";
 import { IoArrowForward } from "react-icons/io5";
 import { EmailLink, OurEmail } from "@/models/constant";
+import { NextPage } from "next";
 
-const ForgetPasswordPage: React.FC = () => {
+const ForgetPasswordPage: NextPage = () => {
     return (
         <main className={styles.container}>
             <div className={styles.contentWrapper}>

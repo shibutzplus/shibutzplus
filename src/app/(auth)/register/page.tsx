@@ -9,8 +9,9 @@ import AuthBtn from "@/components/ui/AuthBtn/AuthBtn";
 import styles from "./register.module.css";
 import routePath from "../../../routes";
 import errMsg from "@/resources/errorsMsg";
+import { NextPage } from "next";
 
-const RegisterPage: React.FC = () => {
+const RegisterPage: NextPage = () => {
     const router = useRouter();
     const [formData, setFormData] = useState({
         name: "",
