@@ -2,11 +2,17 @@ export type Colors = "red" | "yellow" | "green" | "blue";
 
 export type CellType = "text" | "select" | "split";
 
-export type TableAction = "missingTeacher" | "existingTeacher" | "info";
+//--
+export interface TeacherRow {
+    hour: number;
+}
+
+export type ActionColumnType = "missingTeacher" | "existingTeacher" | "info";
+//--
 
 export type Col = {
     id: number;
-    action: TableAction;
+    action: ActionColumnType;
     cells: Cell[];
     type: CellType;
 };
@@ -17,8 +23,6 @@ export type Cell = {
     content: string;
 };
 
-
 // export type Row = {
 //     cells: Cell;
 // };
-

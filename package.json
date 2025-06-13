@@ -16,6 +16,7 @@
     "@auth/mongodb-adapter": "^3.9.1",
     "@react-email/components": "^0.0.42",
     "@react-email/render": "^1.1.2",
+    "@tanstack/react-table": "^8.21.3",
     "@types/bcryptjs": "^2.4.6",
     "bcryptjs": "^3.0.2",
     "mongodb": "^6.17.0",
