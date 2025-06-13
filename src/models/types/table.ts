@@ -6,8 +6,8 @@ export type TableAction = "missingTeacher" | "existingTeacher" | "info";
 
 export type Col = {
     id: number;
+    action: TableAction;
     cells: Cell[];
-    color: Colors;
     type: CellType;
 };
 

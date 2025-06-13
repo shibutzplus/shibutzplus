@@ -1,12 +1,13 @@
 "use client";
 
+import { TableRows } from "@/models/constant/table";
 import { Cell, Col, TableAction } from "@/models/types/table";
 import { editTableActions } from "@/resources/editTableActions";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 interface TableContextType {
     cols: Col[];
-    addNewCol: (action: TableAction, rowsNum: number) => void;
+    addNewCol: (action: TableAction) => void;
     removeCol: (id: number) => void;
 }
 
@@ -27,24 +28,24 @@ interface TableContextProviderProps {
 export const TableContextProvider: React.FC<TableContextProviderProps> = ({ children }) => {
     const [cols, setCols] = useState<Col[]>([]);
 
-    const addNewCol = (action: TableAction, rowsNum: number = 7) => {
-        const { thType, tdType, color } = editTableActions[action];
+    const addNewCol = (action: TableAction) => {
+        const { thType, tdType } = editTableActions[action];
 
         setCols((prev) => [
             ...prev,
             {
                 id: prev.length + 1,
+                type: thType,
+                action,
                 cells: Array.from(
-                    { length: rowsNum },
+                    { length: TableRows },
                     () =>
                         ({
                             id: prev.length + 1,
                             type: tdType,
-                            content: "",
+                            content: "test",
                         }) as Cell,
                 ),
-                color,
-                type: thType,
             },
         ]);
     };

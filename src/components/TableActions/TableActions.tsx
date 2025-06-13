@@ -49,7 +49,7 @@ const TableActions: React.FC<TableActionsProps> = ({
             ) : null}
             {hasMissingTeacher ? (
                 <button
-                    onClick={() => addNewCol("missingTeacher", 7)}
+                    onClick={() => addNewCol("missingTeacher")}
                     style={{ backgroundColor: "#FFC107" }}
                     className={styles.tableActionsBtn}
                 >
@@ -58,7 +58,7 @@ const TableActions: React.FC<TableActionsProps> = ({
             ) : null}
             {hasExistingTeacher ? (
                 <button
-                    onClick={() => addNewCol("existingTeacher", 7)}
+                    onClick={() => addNewCol("existingTeacher")}
                     style={{ backgroundColor: "#FFC107" }}
                     className={styles.tableActionsBtn}
                 >
@@ -67,7 +67,7 @@ const TableActions: React.FC<TableActionsProps> = ({
             ) : null}
             {hasInfo ? (
                 <button
-                    onClick={() => addNewCol("info", 7)}
+                    onClick={() => addNewCol("info")}
                     style={{ backgroundColor: "#FFC107" }}
                     className={styles.tableActionsBtn}
                 >
