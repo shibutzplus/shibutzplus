@@ -1,12 +1,22 @@
+"use client";
+
 import React from "react";
 import styles from "./TeachersList.module.css";
 import { Teacher } from "@/models/types/teachers";
+import { usePopup } from "@/context/PopupContext";
+import DeleteTeacherPopup from "../popups/DeleteTeacherPopup/DeleteTeacherPopup";
 
 type TeachersListProps = {
     teachers: Teacher[];
 };
 
 const TeachersList: React.FC<TeachersListProps> = ({ teachers }) => {
+    const { openPopup } = usePopup();
+
+    const handleOpenPopup = () => {
+        openPopup("deleteTeacher", "S", <DeleteTeacherPopup />);
+    };
+
     const displayRole = (role: string): React.ReactNode => {
         switch (role) {
             case "מורה קיים":
@@ -47,7 +57,11 @@ const TeachersList: React.FC<TeachersListProps> = ({ teachers }) => {
                                         <button className={styles.editButton} aria-label="ערוך">
                                             <span className={styles.editIcon}>✏️</span>
                                         </button>
-                                        <button className={styles.deleteButton} aria-label="מחק">
+                                        <button
+                                            className={styles.deleteButton}
+                                            aria-label="מחק"
+                                            onClick={handleOpenPopup}
+                                        >
                                             <span className={styles.deleteIcon}>🗑️</span>
                                         </button>
                                     </div>

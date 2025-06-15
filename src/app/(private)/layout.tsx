@@ -2,13 +2,15 @@
 
 import React from "react";
 import TopNav from "@/components/navigation/TopNav/TopNav";
+import { PopupProvider } from "@/context/PopupContext";
 
 export default function ContentLayout({ children }: { children: React.ReactNode }) {
     return (
-        <div className="content-layout" dir="rtl">
-            <TopNav />
+        <PopupProvider>
+            <div className="content-layout" dir="rtl">
+                <TopNav />
 
-            <main className="content-main">{children}</main>
+                <main className="content-main">{children}</main>
 
             <style jsx>{`
                 .content-layout {
@@ -26,6 +28,7 @@ export default function ContentLayout({ children }: { children: React.ReactNode 
                     width: 100%;
                 }
             `}</style>
-        </div>
+            </div>
+        </PopupProvider>
     );
 }
