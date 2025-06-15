@@ -6,6 +6,8 @@ import { Teacher, TeacherFormData, TeacherRole } from "@/models/types/teachers";
 import AuthInputText from "../ui/AuthInputText/AuthInputText";
 import AuthSelect from "../ui/AuthSelect/AuthSelect";
 import AuthBtn from "../ui/AuthBtn/AuthBtn";
+import AuthTextArea from "../ui/AuthTextArea/AuthTextArea";
+import AuthRadioGroup from "../ui/AuthRadioGroup/AuthRadioGroup";
 
 type TeachersFormProps = {
     setTeachers: React.Dispatch<React.SetStateAction<Teacher[]>>;
@@ -13,10 +15,11 @@ type TeachersFormProps = {
 
 const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers }) => {
     const [formData, setFormData] = useState<TeacherFormData>({
-        firstName: "",
-        lastName: "",
+        name: "",
         role: "מורה קיים",
+        subject: "",
         classes: "",
+        notes: "",
     });
 
     const [isLoading, setIsLoading] = useState(false);
@@ -30,20 +33,22 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers }) => {
         try {
             const newTeacher: Teacher = {
                 id: Date.now().toString(),
-                firstName: formData.firstName,
-                lastName: formData.lastName,
+                name: formData.name,
                 role: formData.role as TeacherRole,
+                subject: formData.subject,
                 classes: formData.classes.split(",").map((cls) => cls.trim()),
+                notes: formData.notes,
             };
 
             setTeachers((prev) => [...prev, newTeacher]);
 
             // Reset form
             setFormData({
-                firstName: "",
-                lastName: "",
+                name: "",
                 role: "מורה קיים",
+                subject: "",
                 classes: "",
+                notes: "",
             });
         } catch (err) {
             setError("אירעה שגיאה בהוספת המורה. אנא נסה שוב.");
@@ -53,7 +58,9 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers }) => {
         }
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const handleChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
+    ) => {
         const { name, value } = e.target;
         setFormData((prev) => ({
             ...prev,
@@ -64,32 +71,34 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers }) => {
     return (
         <section className={styles.formSection}>
             <h2 className={styles.formTitle}>הוספת מורה חדש</h2>
-            <p className={styles.formSubtitle}>הזינו פרטי המורה החדש</p>
 
             <form onSubmit={handleSubmit} className={styles.addTeacherForm}>
                 <AuthInputText
-                    label="שם פרטי"
-                    id="firstName"
-                    name="firstName"
-                    value={formData.firstName}
+                    label="שם"
+                    id="name"
+                    name="name"
+                    value={formData.name}
                     onChange={handleChange}
-                    placeholder="הזינו שם פרטי"
-                    required
-                />
-
-                <AuthInputText
-                    label="שם משפחה"
-                    id="lastName"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    placeholder="הזינו שם משפחה"
+                    placeholder="הזינו שם"
                     required
                 />
 
                 <AuthSelect
+                    label="מקצוע"
+                    id="subject"
+                    name="subject"
+                    value={formData.subject}
+                    onChange={handleChange}
+                    options={[
+                        { value: "math", label: "חשבון" },
+                        { value: "hebrew", label: "עברית" },
+                        { value: "english", label: "אנגלית" },
+                        { value: "sports", label: "ספורט" },
+                    ]}
+                />
+
+                <AuthRadioGroup
                     label="תפקיד"
-                    id="role"
                     name="role"
                     value={formData.role}
                     onChange={handleChange}
@@ -97,7 +106,6 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers }) => {
                         { value: "מורה קיים", label: "מורה קיים" },
                         { value: "מורה מחליף", label: "מורה מחליף" },
                     ]}
-                    required
                 />
 
                 <AuthInputText
@@ -108,6 +116,15 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers }) => {
                     onChange={handleChange}
                     placeholder="לדוגמה: א1, ב2, ג3"
                     required
+                />
+
+                <AuthTextArea
+                    label="מידע כללי"
+                    id="notes"
+                    name="notes"
+                    value={formData.notes}
+                    onChange={handleChange}
+                    placeholder="הערות או מידע נוסף על המורה"
                 />
 
                 <div className={styles.formActions}>

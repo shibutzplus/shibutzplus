@@ -1,16 +1,18 @@
 export interface Teacher {
   id: string;
-  firstName: string;
-  lastName: string;
+  name: string;
   role: string;
+  subject?: string;
   classes: string[];
+  notes?: string;
 }
 
 export interface TeacherFormData {
-  firstName: string;
-  lastName: string;
+  name: string;
   role: string;
+  subject: string;
   classes: string;
+  notes: string;
 }
 
 export interface TeacherFormProps {
@@ -21,8 +23,7 @@ export interface TeacherFormProps {
 export type TeacherRole = "מורה קיים" | "מורה מחליף";
 
 export interface TeacherAddFormData {
-  firstName: string;
-  lastName: string;
+  name: string;
   role: TeacherRole;
   classes: string[];
 }

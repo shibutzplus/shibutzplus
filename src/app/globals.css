@@ -43,6 +43,8 @@
   --header-height: 80px;
   --nav-width: 240px;
   --cell-width: 300px;
+
+  --box-border-radius: 10px;
 }
 
 html,

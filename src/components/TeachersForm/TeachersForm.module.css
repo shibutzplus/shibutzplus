@@ -4,7 +4,7 @@
     padding: 2rem;
     background-color: var(--background-inner);
     height: 80vh;
-    border-radius: 10px;
+    border-radius: var(--box-border-radius);
 }
 
 .formTitle {
@@ -14,19 +14,31 @@
     text-align: right;
 }
 
-.formSubtitle {
-    color: #666;
-    margin-bottom: 2rem;
-    font-size: 0.9rem;
-    text-align: right;
-}
-
 .addTeacherForm {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1.1rem;
 }
 
 .formActions {
-    margin-top: 1rem;
+    margin-top: -1.1rem;
+}
+
+
+/* Responsive styles */
+@media (max-width: 992px) {
+    .formSection {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #eee;
+        padding: 1.5rem;
+        max-height: none;
+    }
+}
+
+@media (max-width: 576px) {
+
+    .formSection {
+        padding: 1rem;
+    }
 }
