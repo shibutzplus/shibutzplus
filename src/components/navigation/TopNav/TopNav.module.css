@@ -12,7 +12,7 @@
     left: 0;
     right: 0;
     z-index: 100;
-    width: calc(100vw - var(--nav-width));
+    width: 100%;
 }
 
 .contentNav {
@@ -45,5 +45,31 @@
 }
 
 .navLinks a:hover {
+    color: var(--title-color);
+}
+
+.navLink {
+    color: var(--description-text);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.navLink:hover {
+    color: var(--title-color);
+}
+
+.logoutButton {
+    background: none;
+    border: none;
+    color: var(--description-text);
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0;
+    font-size: 1rem;
+    transition: color 0.2s ease;
+}
+
+.logoutButton:hover {
     color: var(--title-color);
 }

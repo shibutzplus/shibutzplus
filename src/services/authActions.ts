@@ -1,4 +1,4 @@
-"use server";
+"use client";
 
 import { RegisterRequest, SignInRequest } from "@/models/types/auth";
 import connectToDatabase from "@/lib/mongodb";
@@ -10,7 +10,6 @@ import msg from "@/resources/messages";
 const signInWithCredentials = async (params: SignInRequest) => {
     try {
         const { email, password, remember } = params;
-
         if (!email || !password) {
             return { success: false, message: msg.auth.login.valid };
         }

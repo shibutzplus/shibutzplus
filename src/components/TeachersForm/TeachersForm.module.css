@@ -1,0 +1,32 @@
+.formSection {
+    width: 50%;
+    max-width: 25vw;
+    padding: 2rem;
+    background-color: var(--background-inner);
+    height: 80vh;
+    border-radius: 10px;
+}
+
+.formTitle {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    text-align: right;
+}
+
+.formSubtitle {
+    color: #666;
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+    text-align: right;
+}
+
+.addTeacherForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.formActions {
+    margin-top: 1rem;
+}

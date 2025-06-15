@@ -1,47 +1,34 @@
 .container {
+  margin-top: var(--header-height);
   display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 2rem;
-  background-color: white;
-  color: black;
+  align-items: flex-start;
+  gap: 2em;
 }
 
-.content {
+.teachersListSection {
   width: 100%;
-  max-width: 1000px;
   padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  background-color: white;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
+  background-color: var(--background-inner);
+  height: 80vh;
 }
 
 .title {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 600;
+  margin-bottom: 0.5rem;
+  text-align: right;
 }
 
-.addButton {
-  padding: 0.75rem 1.5rem;
-  background-color: black;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
+.teachersCount {
+  color: #666;
+  margin-bottom: 2rem;
+  font-size: 0.9rem;
 }
 
-.addButton:hover {
-  background-color: #333;
+.teachersTableSection{
+  width: 100%;
+  height: 60vh;
+  overflow-y: auto;
 }
 
 .teachersList {
@@ -50,111 +37,57 @@
 }
 
 .teachersList th {
-  text-align: left;
+  text-align: right;
   padding: 1rem;
-  border-bottom: 2px solid black;
+  border-bottom: 2px solid #eee;
   font-weight: 600;
+  color: #666;
 }
 
 .teachersList td {
   padding: 1rem;
   border-bottom: 1px solid #eee;
+  text-align: right;
 }
 
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+.actionButtons {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+  gap: 0.5rem;
+  justify-content: flex-start;
 }
 
-.modalContent {
-  background-color: white;
-  padding: 2rem;
-  border-radius: 8px;
-  width: 100%;
-  max-width: 500px;
-}
-
-.modalHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-
-.modalTitle {
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-
-.closeButton {
+.editButton,
+.deleteButton {
   background: none;
   border: none;
-  font-size: 1.5rem;
   cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.formGroup {
-  margin-bottom: 1.5rem;
-}
-
-.formGroup label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-}
-
-.formGroup input,
-.formGroup select {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+.editIcon,
+.deleteIcon {
   font-size: 1rem;
-}
-
-.submitButton {
-  padding: 0.75rem 1.5rem;
-  background-color: black;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  width: 100%;
-}
-
-.submitButton:hover {
-  background-color: #333;
 }
 
 /* Responsive styles */
-@media (max-width: 768px) {
+@media (max-width: 992px) {
   .container {
-    padding: 1rem;
+    flex-direction: column-reverse;
   }
   
-  .content {
+  .formSection {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .teachersListSection,
+  .formSection {
     padding: 1.5rem;
-  }
-  
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-  
-  .teachersList th,
-  .teachersList td {
-    padding: 0.75rem 0.5rem;
+    max-height: none;
   }
 }
 
@@ -163,8 +96,13 @@
     font-size: 0.9rem;
   }
   
-  .modalContent {
-    padding: 1.5rem;
-    margin: 0 1rem;
+  .teachersList th,
+  .teachersList td {
+    padding: 0.75rem 0.5rem;
+  }
+  
+  .teachersListSection,
+  .formSection {
+    padding: 1rem;
   }
 }
