@@ -9,8 +9,8 @@ import styles from "./LoginForm.module.css";
 import Link from "next/link";
 import routePath from "../../routes";
 import { EmailLink } from "@/models/constant";
-import { signInWithCredentials } from "@/services/authActions";
 import { SignInRequest } from "@/models/types/auth";
+import signInWithCredentials from "@/lib/actions/singInAction";
 
 const LoginForm: React.FC = () => {
     const router = useRouter();
@@ -44,11 +44,11 @@ const LoginForm: React.FC = () => {
 
             <form className={styles.form} onSubmit={handleSubmit}>
                 <div className={styles.inputGroup}>
-                    <label className={styles.inputLabel}>כתובת אימייל</label>
                     <AuthInputText
                         id="email"
                         type="email"
                         value={email}
+                        label="כתובת אימייל"
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="your.email@gmail.com"
                         required
@@ -56,10 +56,10 @@ const LoginForm: React.FC = () => {
                 </div>
 
                 <div className={styles.inputGroup}>
-                    <label className={styles.inputLabel}>סיסמה</label>
                     <AuthInputPassword
                         id="password"
                         value={password}
+                        label="סיסמה"
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="הזינו את הסיסמה"
                         required

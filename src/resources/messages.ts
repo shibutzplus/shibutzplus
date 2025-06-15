@@ -3,18 +3,24 @@ const messages = {
         serverError: "שגיאה",
         login: {
             failed: "כניסה נכשלה",
-            valid: "חסרים פרמטרים",
+            invalid: "חסרים פרמטרים",
             success: "Signed in successfully"
         },
         register: {
             failed: "הרשמה נכשלה",
             emailInUse: "האימייל כבר בשימוש",
-            valid: "חסרים פרמטרים",
+            invalid: "חסרים פרמטרים",
             success: "Registered successfully"
         }
     },
     connect: {
         error: "שגיאה"
+    },
+    addTeacher: {
+        error: "שגיאה",
+        success: "Teacher added successfully",
+        invalid: "חסרים פרמטרים",
+        exist: "המורה כבר קיים",
     }
 }
 

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import styles from "./TeachersForm.module.css";
-import { Teacher, TeacherFormData, TeacherRole } from "@/models/types/teachers";
+import { Teacher, TeacherRequest, TeacherRole } from "@/models/types/teachers";
 import AuthInputText from "../ui/AuthInputText/AuthInputText";
 import AuthSelect from "../ui/AuthSelect/AuthSelect";
 import AuthBtn from "../ui/AuthBtn/AuthBtn";
@@ -14,7 +14,7 @@ type TeachersFormProps = {
 };
 
 const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers }) => {
-    const [formData, setFormData] = useState<TeacherFormData>({
+    const [formData, setFormData] = useState<TeacherRequest>({
         name: "",
         role: "מורה קיים",
         subject: "",

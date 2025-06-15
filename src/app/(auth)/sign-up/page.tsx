@@ -9,8 +9,8 @@ import AuthBtn from "@/components/ui/AuthBtn/AuthBtn";
 import styles from "./signUp.module.css";
 import routePath from "../../../routes";
 import { NextPage } from "next";
-import { signUp } from "@/services/authActions";
 import { RegisterRequest } from "@/models/types/auth";
+import signUp from "@/lib/actions/singUpAction";
 
 const SignUpPage: NextPage = () => {
     const router = useRouter();
