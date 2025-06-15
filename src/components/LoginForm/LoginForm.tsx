@@ -2,15 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
 import AuthInputText from "@/components/ui/AuthInputText/AuthInputText";
 import AuthInputPassword from "@/components/ui/AuthInputPassword/AuthInputPassword";
 import AuthBtn from "@/components/ui/AuthBtn/AuthBtn";
 import styles from "./LoginForm.module.css";
 import Link from "next/link";
 import routePath from "../../routes";
-import errMsg from "@/resources/errorsMsg";
 import { EmailLink } from "@/models/constant";
+import { signInWithCredentials } from "@/services/authActions";
+import { SignInRequest } from "@/models/types/auth";
 
 const LoginForm: React.FC = () => {
     const router = useRouter();
@@ -25,19 +25,15 @@ const LoginForm: React.FC = () => {
         setError("");
         setIsLoading(true);
 
-        const res = await signIn("credentials", {
-            redirect: false,
-            email,
-            password,
-            remember,
-        });
+        const res = await signInWithCredentials({ email, password, remember } as SignInRequest);
 
-        if (res?.error) {
-            setError(errMsg.auth.login.failed);
-        } else {
-            router.push(routePath.dashboard.p);
+        if (!res.success) {
+            setError(res.message);
+            setIsLoading(false);
+            return;
         }
 
+        router.push(routePath.dashboard.p);
         setIsLoading(false);
     };
 
@@ -96,7 +92,10 @@ const LoginForm: React.FC = () => {
 
             <div className={styles.registerLink}>
                 <p>
-                    בעיה בהתחברות? <Link href={EmailLink} className={styles.problemLink}>צרו קשר עם שיבוץ+</Link>
+                    בעיה בהתחברות?{" "}
+                    <Link href={EmailLink} className={styles.problemLink}>
+                        צרו קשר עם שיבוץ+
+                    </Link>
                 </p>
             </div>
         </div>

@@ -6,14 +6,15 @@ import AuthInputText from "@/components/ui/AuthInputText/AuthInputText";
 import AuthInputPassword from "@/components/ui/AuthInputPassword/AuthInputPassword";
 import AuthSelect from "@/components/ui/AuthSelect/AuthSelect";
 import AuthBtn from "@/components/ui/AuthBtn/AuthBtn";
-import styles from "./register.module.css";
+import styles from "./signUp.module.css";
 import routePath from "../../../routes";
-import errMsg from "@/resources/errorsMsg";
 import { NextPage } from "next";
+import { signUp } from "@/services/authActions";
+import { RegisterRequest } from "@/models/types/auth";
 
-const RegisterPage: NextPage = () => {
+const SignUpPage: NextPage = () => {
     const router = useRouter();
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<RegisterRequest>({
         name: "",
         email: "",
         password: "",
@@ -31,29 +32,14 @@ const RegisterPage: NextPage = () => {
         setError("");
         setIsLoading(true);
 
-        const res = await fetch("/api/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData),
-        });
+        const res = await signUp(formData);
 
-        const text = await res.text();
-        let data: { message?: string; error?: string };
-
-        try {
-            data = JSON.parse(text);
-        } catch {
-            console.error("Non-JSON /api/register response:", text);
-            setError(errMsg.auth.serverError);
+        if (!res.success) {
+            setError(res.message);
             return;
         }
-
-        if (!res.ok) {
-            setError(errMsg.auth.register.failed);
-            return;
-        }
-        setIsLoading(false);
         router.push(routePath.login.p);
+        setIsLoading(false);
     };
 
     return (
@@ -116,4 +102,4 @@ const RegisterPage: NextPage = () => {
     );
 };
 
-export default RegisterPage;
+export default SignUpPage;

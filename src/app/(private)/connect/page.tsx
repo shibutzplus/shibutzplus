@@ -6,7 +6,7 @@ import styles from "./connect.module.css";
 import routePath from "../../../routes";
 import { sendWhatsApp } from "@/lib/contact/whatsapp";
 import { sendEmail } from "@/lib/contact/email";
-import errMsg from "@/resources/errorsMsg";
+import msg from "@/resources/messages";
 import { NextPage } from "next";
 
 const ConnectPage: NextPage = () => {
@@ -24,7 +24,7 @@ const ConnectPage: NextPage = () => {
         setIsLoading(false);
 
         if (!result) {
-            alert(errMsg.connect.error);
+            alert(msg.connect.error);
         }
     };
 
@@ -40,7 +40,7 @@ const ConnectPage: NextPage = () => {
         setIsLoading(false);
 
         if (!result) {
-            alert(errMsg.connect.error);
+            alert(msg.connect.error);
         }
 
         sendWhatsApp("+972523454596", "new message");

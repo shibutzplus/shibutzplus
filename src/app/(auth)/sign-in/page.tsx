@@ -2,10 +2,10 @@
 
 import AuthHero from "@/components/AuthHero/AuthHero";
 import LoginForm from "@/components/LoginForm/LoginForm";
-import styles from "./login.module.css";
+import styles from "./signIn.module.css";
 import { NextPage } from "next";
 
-const LoginPage: NextPage = () => {
+const SignInPage: NextPage = () => {
     return (
         <main className={styles.container}>
             <div className={styles.contentWrapper}>
@@ -16,4 +16,4 @@ const LoginPage: NextPage = () => {
     );
 };
 
-export default LoginPage;
+export default SignInPage;

@@ -12,6 +12,17 @@ export type RegisterResponse = {
   message: string;
 }
 
+export type SignInRequest = {
+  email: string;
+  password: string;
+  remember: boolean;
+}
+
+export type SignInResponse = {
+  success: boolean;
+  message: string;
+}
+
 export type User = {
   id: string;
   name: string;
