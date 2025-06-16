@@ -18,7 +18,7 @@
   border-radius: 4px;
   font-size: 16px;
   transition: all 0.2s ease;
-  background-color: var(--background);
+  background-color: var(--background-inner);
   color: var(--foreground);
   box-shadow: var(--input-box-shadow);
   text-align: right;

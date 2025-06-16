@@ -23,11 +23,20 @@
     width: 100%;
     height: 60vh;
     overflow-y: auto;
+    position: relative;
 }
 
 .teachersList {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.teachersList thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: var(--background-inner);
 }
 
 .teachersList th {
@@ -44,19 +53,19 @@
     text-align: right;
 }
 
-.roleCell,
-.roleCellBlue,
-.roleCellGreen {
+.roleCell span,
+.roleCellBlue span,
+.roleCellGreen span {
     padding: 5px 15px !important;
     border-radius: 5px;
 }
 
-.roleCellGreen {
+.roleCellGreen span {
     background-color: #15bf78;
     color: #fff;
 }
 
-.roleCellBlue {
+.roleCellBlue span {
     background-color: #436dce;
     color: #fff;
 }

@@ -20,11 +20,11 @@ const TeachersList: React.FC<TeachersListProps> = ({ teachers }) => {
     const displayRole = (role: string): React.ReactNode => {
         switch (role) {
             case "מורה קיים":
-                return <td className={styles.roleCellGreen}>קבוע</td>;
+                return <td className={styles.roleCellGreen}><span>קבוע</span></td>;
             case "מורה מחליף":
-                return <td className={styles.roleCellBlue}>מחליף</td>;
+                return <td className={styles.roleCellBlue}><span>מחליף</span></td>;
             default:
-                return <td className={styles.roleCell}>-</td>;
+                return <td className={styles.roleCell}><span>-</span></td>;
         }
     };
 
@@ -49,7 +49,7 @@ const TeachersList: React.FC<TeachersListProps> = ({ teachers }) => {
                         {teachers.map((teacher) => (
                             <tr key={teacher.id}>
                                 <td>{teacher.name}</td>
-                                <td>{displayRole(teacher.role)}</td>
+                                {displayRole(teacher.role)}
                                 <td>{teacher.subject || "-"}</td>
                                 <td>{teacher.classes.join(", ")}</td>
                                 <td>
