@@ -22,7 +22,7 @@ const TopNav: React.FC = () => {
                     </Link>
                     {status === "authenticated" && (
                         <button 
-                            onClick={() => signOut({ callbackUrl: routePath.login.p })}
+                            onClick={() => signOut({ callbackUrl: routePath.signIn.p })}
                             className={styles.logoutButton}
                         >
                             התנתקות

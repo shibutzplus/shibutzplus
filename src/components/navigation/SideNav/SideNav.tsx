@@ -75,7 +75,7 @@ const SideNav: React.FC = () => {
             {status === "authenticated" && (
                 <section className={styles.logoutSection}>
                     <button
-                        onClick={() => signOut({ callbackUrl: routePath.login.p })}
+                        onClick={() => signOut({ callbackUrl: routePath.signIn.p })}
                         className={styles.navLink}
                     >
                         <IoLogOutOutline className={styles.icon} />

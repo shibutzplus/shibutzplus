@@ -5,8 +5,8 @@ interface IRoute {
 
 const router: Record<string, IRoute> = {
     home: { p: "/", private: false },
-    login: { p: "/sign-in", private: false },
-    register: { p: "/sign-up", private: false },
+    signIn: { p: "/sign-in", private: false },
+    signUp: { p: "/sign-up", private: false },
     dashboard: { p: "/dashboard", private: true },
     connect: { p: "/connect", private: true },
     about: { p: "/about", private: false },

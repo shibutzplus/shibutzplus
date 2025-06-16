@@ -38,7 +38,7 @@ const SignUpPage: NextPage = () => {
             setError(res.message);
             return;
         }
-        router.push(routePath.login.p);
+        router.push(routePath.signIn.p);
         setIsLoading(false);
     };
 
@@ -78,10 +78,9 @@ const SignUpPage: NextPage = () => {
                     <AuthSelect
                         label="תפקיד"
                         id="role"
-                        name="role"
                         value={formData.role}
                         onChange={handleChange}
-                        required
+                        placeholder="בחר תפקיד"
                         options={[
                             { value: "principal", label: "מנהל/ת" },
                             { value: "deputy principal", label: "סגן/ית" },
