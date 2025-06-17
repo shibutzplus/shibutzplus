@@ -6,7 +6,6 @@ import { Teacher, TeacherRequest, TeacherRole } from "@/models/types/teachers";
 import InputText from "../ui/InputText/InputText";
 import InputSelect from "../ui/InputSelect/InputSelect";
 import SubmitBtn from "../ui/SubmitBtn/SubmitBtn";
-import InputTextArea from "../ui/InputTextArea/InputTextArea";
 import RadioGroup from "../ui/RadioGroup/RadioGroup";
 
 type TeachersFormProps = {
@@ -58,16 +57,6 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers }) => {
         }
     };
 
-    const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
-    ) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
-    };
-
     return (
         <section className={styles.formSection}>
             <h2 className={styles.formTitle}>הוספת מורה חדש</h2>
@@ -78,7 +67,12 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers }) => {
                     id="name"
                     name="name"
                     value={formData.name}
-                    onChange={handleChange}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setFormData((prev) => ({
+                            ...prev,
+                            [e.target.name]: e.target.value,
+                        }));
+                    }}
                     placeholder="הזינו שם"
                     required
                 />
@@ -87,7 +81,12 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers }) => {
                     label="מקצוע"
                     id="subject"
                     value={formData.subject}
-                    onChange={handleChange}
+                    onChange={(value: string) => {
+                        setFormData((prev) => ({
+                            ...prev,
+                            subject: value,
+                        }));
+                    }}
                     options={[
                         { value: "math", label: "חשבון" },
                         { value: "hebrew", label: "עברית" },
@@ -96,35 +95,45 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers }) => {
                     ]}
                 />
 
+                <InputText
+                    label="כיתות"
+                    id="classes"
+                    name="classes"
+                    value={formData.classes}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setFormData((prev) => ({
+                            ...prev,
+                            classes: e.target.value,
+                        }));
+                    }}
+                    placeholder="לדוגמה: א1, ב2, ג3"
+                    required
+                />
+
                 <RadioGroup
                     label="תפקיד"
                     name="role"
                     value={formData.role}
-                    onChange={handleChange}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setFormData((prev) => ({
+                            ...prev,
+                            role: e.target.value as TeacherRole,
+                        }));
+                    }}
                     options={[
                         { value: "מורה קיים", label: "מורה קיים" },
                         { value: "מורה מחליף", label: "מורה מחליף" },
                     ]}
                 />
 
-                <InputText
-                    label="כיתות"
-                    id="classes"
-                    name="classes"
-                    value={formData.classes}
-                    onChange={handleChange}
-                    placeholder="לדוגמה: א1, ב2, ג3"
-                    required
-                />
-
-                <InputTextArea
+                {/* <InputTextArea
                     label="מידע כללי"
                     id="notes"
                     name="notes"
                     value={formData.notes}
                     onChange={handleChange}
                     placeholder="הערות או מידע נוסף על המורה"
-                />
+                /> */}
 
                 <div className={styles.formActions}>
                     <SubmitBtn

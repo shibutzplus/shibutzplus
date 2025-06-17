@@ -13,18 +13,34 @@ type TeachersListProps = {
 const TeachersList: React.FC<TeachersListProps> = ({ teachers }) => {
     const { openPopup } = usePopup();
 
-    const handleOpenPopup = () => {
-        openPopup("deleteTeacher", "S", <DeleteTeacherPopup />);
+    const handleOpenPopup = (teacher: Teacher) => {
+        openPopup(
+            "deleteTeacher",
+            "S",
+            <DeleteTeacherPopup teacher={teacher} onDelete={() => {}} onCancel={() => {}} />,
+        );
     };
 
     const displayRole = (role: string): React.ReactNode => {
         switch (role) {
             case "מורה קיים":
-                return <td className={styles.roleCellGreen}><span>קבוע</span></td>;
+                return (
+                    <td className={styles.roleCellGreen}>
+                        <span>קבוע</span>
+                    </td>
+                );
             case "מורה מחליף":
-                return <td className={styles.roleCellBlue}><span>מחליף</span></td>;
+                return (
+                    <td className={styles.roleCellBlue}>
+                        <span>מחליף</span>
+                    </td>
+                );
             default:
-                return <td className={styles.roleCell}><span>-</span></td>;
+                return (
+                    <td className={styles.roleCell}>
+                        <span>-</span>
+                    </td>
+                );
         }
     };
 
@@ -60,7 +76,7 @@ const TeachersList: React.FC<TeachersListProps> = ({ teachers }) => {
                                         <button
                                             className={styles.deleteButton}
                                             aria-label="מחק"
-                                            onClick={handleOpenPopup}
+                                            onClick={() => handleOpenPopup(teacher)}
                                         >
                                             <span className={styles.deleteIcon}>🗑️</span>
                                         </button>
