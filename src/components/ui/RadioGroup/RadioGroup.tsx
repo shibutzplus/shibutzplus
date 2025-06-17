@@ -1,21 +1,17 @@
 import React from "react";
-import styles from "./AuthRadioGroup.module.css";
+import styles from "./RadioGroup.module.css";
+import { SelectOption } from "@/models/types";
 
-interface Option {
-  value: string;
-  label: string;
-}
-
-interface AuthRadioGroupProps {
+interface RadioGroupProps {
   label?: string;
   name: string;
-  options: Option[];
+  options: SelectOption[];
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   error?: string;
 }
 
-const AuthRadioGroup: React.FC<AuthRadioGroupProps> = ({
+const RadioGroup: React.FC<RadioGroupProps> = ({
   label,
   name,
   options,
@@ -49,4 +45,4 @@ const AuthRadioGroup: React.FC<AuthRadioGroupProps> = ({
   );
 };
 
-export default AuthRadioGroup;
+export default RadioGroup;

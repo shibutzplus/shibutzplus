@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import AuthInputText from "@/components/ui/AuthInputText/AuthInputText";
-import AuthInputPassword from "@/components/ui/AuthInputPassword/AuthInputPassword";
-import AuthBtn from "@/components/ui/AuthBtn/AuthBtn";
+import InputText from "@/components/ui/InputText/InputText";
+import InputPassword from "@/components/ui/InputPassword/InputPassword";
+import SubmitBtn from "@/components/ui/SubmitBtn/SubmitBtn";
 import styles from "./LoginForm.module.css";
 import Link from "next/link";
 import routePath from "../../routes";
@@ -44,7 +44,7 @@ const LoginForm: React.FC = () => {
 
             <form className={styles.form} onSubmit={handleSubmit}>
                 <div className={styles.inputGroup}>
-                    <AuthInputText
+                    <InputText
                         id="email"
                         type="email"
                         value={email}
@@ -56,7 +56,7 @@ const LoginForm: React.FC = () => {
                 </div>
 
                 <div className={styles.inputGroup}>
-                    <AuthInputPassword
+                    <InputPassword
                         id="password"
                         value={password}
                         label="סיסמה"
@@ -81,7 +81,7 @@ const LoginForm: React.FC = () => {
                     </div>
                 </div>
 
-                <AuthBtn
+                <SubmitBtn
                     type="submit"
                     isLoading={isLoading}
                     loadingText="כניסה למערכת"

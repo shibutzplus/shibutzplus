@@ -1,12 +1,12 @@
 import React, { InputHTMLAttributes } from "react";
-import styles from "./AuthInputText.module.css";
+import styles from "./InputText.module.css";
 
-interface AuthInputTextProps extends InputHTMLAttributes<HTMLInputElement> {
+interface InputTextProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
 }
 
-const AuthInputText: React.FC<AuthInputTextProps> = ({ 
+const InputText: React.FC<InputTextProps> = ({ 
   label, 
   error, 
   className, 
@@ -26,4 +26,4 @@ const AuthInputText: React.FC<AuthInputTextProps> = ({
   );
 };
 
-export default AuthInputText;
+export default InputText;

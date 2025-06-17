@@ -1,7 +1,7 @@
 import React from 'react';
-import styles from './AuthBtn.module.css';
+import styles from './SubmitBtn.module.css';
 
-interface AuthBtnProps {
+interface SubmitBtnProps {
   type: 'submit' | 'button' | 'reset';
   onClick?: () => void;
   isLoading: boolean;
@@ -11,7 +11,7 @@ interface AuthBtnProps {
   disabled?: boolean;
 }
 
-const AuthBtn: React.FC<AuthBtnProps> = ({
+const SubmitBtn: React.FC<SubmitBtnProps> = ({
   type = 'submit',
   onClick,
   isLoading,
@@ -36,4 +36,4 @@ const AuthBtn: React.FC<AuthBtnProps> = ({
   );
 };
 
-export default AuthBtn;
+export default SubmitBtn;

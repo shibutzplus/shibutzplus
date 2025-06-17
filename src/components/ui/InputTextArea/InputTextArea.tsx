@@ -1,12 +1,12 @@
 import React, { TextareaHTMLAttributes } from "react";
-import styles from "./AuthTextArea.module.css";
+import styles from "./InputTextArea.module.css";
 
-interface AuthTextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+interface InputTextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
   error?: string;
 }
 
-const AuthTextArea: React.FC<AuthTextAreaProps> = ({ 
+const InputTextArea: React.FC<InputTextAreaProps> = ({ 
   label, 
   error, 
   className, 
@@ -26,4 +26,4 @@ const AuthTextArea: React.FC<AuthTextAreaProps> = ({
   );
 };
 
-export default AuthTextArea;
+export default InputTextArea;

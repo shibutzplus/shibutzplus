@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import AuthInputText from "@/components/ui/AuthInputText/AuthInputText";
-import AuthInputPassword from "@/components/ui/AuthInputPassword/AuthInputPassword";
-import AuthSelect from "@/components/ui/AuthSelect/AuthSelect";
-import AuthBtn from "@/components/ui/AuthBtn/AuthBtn";
+import InputText from "@/components/ui/InputText/InputText";
+import InputPassword from "@/components/ui/InputPassword/InputPassword";
+import InputSelect from "@/components/ui/InputSelect/InputSelect";
+import SubmitBtn from "@/components/ui/SubmitBtn/SubmitBtn";
 import styles from "./signUp.module.css";
 import routePath from "../../../routes";
 import { NextPage } from "next";
@@ -47,7 +47,7 @@ const SignUpPage: NextPage = () => {
             <div className={styles.formContainer}>
                 <h1 className={styles.title}>הרשמה</h1>
                 <form className={styles.form} onSubmit={handleSubmit}>
-                    <AuthInputText
+                    <InputText
                         label="שם מלא"
                         id="name"
                         name="name"
@@ -56,7 +56,7 @@ const SignUpPage: NextPage = () => {
                         required
                     />
 
-                    <AuthInputText
+                    <InputText
                         label="כתובת אימייל"
                         id="email"
                         name="email"
@@ -66,7 +66,7 @@ const SignUpPage: NextPage = () => {
                         required
                     />
 
-                    <AuthInputPassword
+                    <InputPassword
                         label="סיסמה"
                         id="password"
                         name="password"
@@ -75,7 +75,7 @@ const SignUpPage: NextPage = () => {
                         required
                     />
 
-                    <AuthSelect
+                    <InputSelect
                         label="תפקיד"
                         id="role"
                         value={formData.role}
@@ -88,7 +88,7 @@ const SignUpPage: NextPage = () => {
                         ]}
                     />
 
-                    <AuthBtn
+                    <SubmitBtn
                         type="submit"
                         isLoading={isLoading}
                         loadingText="הירשם..."

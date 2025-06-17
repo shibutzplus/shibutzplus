@@ -1,12 +1,12 @@
 import React, { InputHTMLAttributes, useState } from "react";
-import styles from "./AuthInputPassword.module.css";
+import styles from "./InputPassword.module.css";
 
-interface AuthInputPasswordProps extends InputHTMLAttributes<HTMLInputElement> {
+interface InputPasswordProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
 }
 
-const AuthInputPassword: React.FC<AuthInputPasswordProps> = ({ 
+const InputPassword: React.FC<InputPasswordProps> = ({ 
   label, 
   error, 
   className, 
@@ -43,4 +43,4 @@ const AuthInputPassword: React.FC<AuthInputPasswordProps> = ({
   );
 };
 
-export default AuthInputPassword;
+export default InputPassword;

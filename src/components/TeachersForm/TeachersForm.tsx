@@ -3,11 +3,11 @@
 import React, { useState } from "react";
 import styles from "./TeachersForm.module.css";
 import { Teacher, TeacherRequest, TeacherRole } from "@/models/types/teachers";
-import AuthInputText from "../ui/AuthInputText/AuthInputText";
-import AuthSelect from "../ui/AuthSelect/AuthSelect";
-import AuthBtn from "../ui/AuthBtn/AuthBtn";
-import AuthTextArea from "../ui/AuthTextArea/AuthTextArea";
-import AuthRadioGroup from "../ui/AuthRadioGroup/AuthRadioGroup";
+import InputText from "../ui/InputText/InputText";
+import InputSelect from "../ui/InputSelect/InputSelect";
+import SubmitBtn from "../ui/SubmitBtn/SubmitBtn";
+import InputTextArea from "../ui/InputTextArea/InputTextArea";
+import RadioGroup from "../ui/RadioGroup/RadioGroup";
 
 type TeachersFormProps = {
     setTeachers: React.Dispatch<React.SetStateAction<Teacher[]>>;
@@ -73,7 +73,7 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers }) => {
             <h2 className={styles.formTitle}>הוספת מורה חדש</h2>
 
             <form onSubmit={handleSubmit} className={styles.addTeacherForm}>
-                <AuthInputText
+                <InputText
                     label="שם"
                     id="name"
                     name="name"
@@ -83,10 +83,9 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers }) => {
                     required
                 />
 
-                <AuthSelect
+                <InputSelect
                     label="מקצוע"
                     id="subject"
-                    name="subject"
                     value={formData.subject}
                     onChange={handleChange}
                     options={[
@@ -97,7 +96,7 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers }) => {
                     ]}
                 />
 
-                <AuthRadioGroup
+                <RadioGroup
                     label="תפקיד"
                     name="role"
                     value={formData.role}
@@ -108,7 +107,7 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers }) => {
                     ]}
                 />
 
-                <AuthInputText
+                <InputText
                     label="כיתות"
                     id="classes"
                     name="classes"
@@ -118,7 +117,7 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers }) => {
                     required
                 />
 
-                <AuthTextArea
+                <InputTextArea
                     label="מידע כללי"
                     id="notes"
                     name="notes"
@@ -128,7 +127,7 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers }) => {
                 />
 
                 <div className={styles.formActions}>
-                    <AuthBtn
+                    <SubmitBtn
                         type="submit"
                         isLoading={isLoading}
                         loadingText="מוסיף מורה..."

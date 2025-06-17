@@ -2,11 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
-import styles from "./AuthSelect.module.css";
+import styles from "./InputSelect.module.css";
 import { SelectOption } from "@/models/types";
 import { customStyles } from "@/style/selectStyle";
 
-interface AuthSelectProps {
+interface InputSelectProps {
     label?: string;
     options: SelectOption[];
     error?: string;
@@ -21,7 +21,7 @@ interface AuthSelectProps {
     isClearable?: boolean;
 }
 
-const AuthSelect: React.FC<AuthSelectProps> = ({
+const InputSelect: React.FC<InputSelectProps> = ({
     label,
     options: initialOptions,
     error,
@@ -124,4 +124,4 @@ const AuthSelect: React.FC<AuthSelectProps> = ({
     );
 };
 
-export default AuthSelect;
+export default InputSelect;
