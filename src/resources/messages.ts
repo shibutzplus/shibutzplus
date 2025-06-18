@@ -10,7 +10,9 @@ const messages = {
             failed: "הרשמה נכשלה",
             emailInUse: "האימייל כבר בשימוש",
             invalid: "חסרים פרמטרים",
-            success: "Registered successfully"
+            success: "Registered successfully",
+            schoolExist: "בית הספר כבר קיים",
+            schoolNotFound: "בית ספר לא נמצא"
         }
     },
     connect: {

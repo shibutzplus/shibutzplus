@@ -1,5 +1,8 @@
 import mongoose, { Schema, Document, Model, Types } from "mongoose";
 import { UserRole } from "../types/auth";
+import { ISchool } from "./School";
+
+type UserStatus = "annual" | "daily";
 
 export interface IUser extends Document {
     _id: Types.ObjectId;
@@ -7,6 +10,8 @@ export interface IUser extends Document {
     email: string;
     password?: string;
     role: UserRole;
+    status: UserStatus;
+    school: Types.ObjectId | ISchool;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -39,6 +44,16 @@ const UserSchema = new Schema<IUser>(
             type: String,
             enum: ["principal", "deputy principal", "teacher"],
             default: "teacher",
+        },
+        status: {
+            type: String,
+            enum: ["annual", "daily"],
+            default: "annual",
+        },
+        school: {
+            type: Schema.Types.ObjectId,
+            ref: "School",
+            required: [true, "Please provide a school"],
         },
     },
     {

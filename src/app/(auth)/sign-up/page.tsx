@@ -19,6 +19,7 @@ const SignUpPage: NextPage = () => {
         email: "",
         password: "",
         role: "teacher",
+        school: "",
     });
     const [error, setError] = useState<string>("");
     const [isLoading, setIsLoading] = useState(false);
@@ -86,6 +87,15 @@ const SignUpPage: NextPage = () => {
                             { value: "deputy principal", label: "סגן/ית" },
                             { value: "teacher", label: "מורה" },
                         ]}
+                    />
+
+                    <InputText
+                        label="שם בית ספר"
+                        id="school"
+                        name="school"
+                        value={formData.school}
+                        onChange={handleChange}
+                        required
                     />
 
                     <SubmitBtn
