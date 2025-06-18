@@ -23,6 +23,7 @@ const AuthHero: React.FC = () => {
                     width={140} 
                     height={40} 
                     className={styles.illustration}
+                    priority
                 />
             </div>
         </div>

@@ -1,36 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./TopNav.module.css";
-import Link from "next/link";
+import { useSession } from "next-auth/react";
+import HamburgerNav, { HamburgerButton } from "../HamburgerNav/HamburgerNav";
+import Logo from "../../core/Logo/Logo";
 import routePath from "../../../routes";
-import { signOut, useSession } from "next-auth/react";
 
 const TopNav: React.FC = () => {
-    const { status } = useSession();
-    
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    const toggleMenu = () => {
+        setIsMenuOpen((prev) => !prev);
+    };
+
+    const closeMenu = () => {
+        setIsMenuOpen(false);
+    };
+
     return (
-        <header className={styles.contentHeader}>
-            <nav className={styles.contentNav}>
-                <div className={styles.navLogo}>
-                    <Link href={routePath.dashboard.p}>שיבוץ +</Link>
+        <>
+            <header className={styles.contentHeader}>
+                <HamburgerButton onClick={toggleMenu} isOpen={isMenuOpen} />
+                <div>
+                    <Logo size="S" />
                 </div>
-                <div className={styles.navLinks}>
-                    <Link href={routePath.dashboard.p} className={styles.navLink}>
-                        ראשי
-                    </Link>
-                    <Link href={routePath.teachers.p} className={styles.navLink}>
-                        מורים
-                    </Link>
-                    {status === "authenticated" && (
-                        <button 
-                            onClick={() => signOut({ callbackUrl: routePath.signIn.p })}
-                            className={styles.logoutButton}
-                        >
-                            התנתקות
-                        </button>
-                    )}
-                </div>
-            </nav>
-        </header>
+            </header>
+            <HamburgerNav isOpen={isMenuOpen} onClose={closeMenu} />
+        </>
     );
 };
 

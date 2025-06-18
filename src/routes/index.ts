@@ -1,20 +1,22 @@
 interface IRoute {
     p: string;
     private: boolean;
+    title: string;
 }
 
 const router: Record<string, IRoute> = {
-    home: { p: "/", private: false },
-    signIn: { p: "/sign-in", private: false },
-    signUp: { p: "/sign-up", private: false },
-    dashboard: { p: "/dashboard", private: true },
-    connect: { p: "/connect", private: true },
-    about: { p: "/about", private: false },
-    forget: {p: "/forget", private: false},
-    schedule: {p: "/schedule", private: true},
-    classes: {p: "/classes", private: true},
-    settings: {p: "/settings", private: true},
-    teachers: {p: "/teachers", private: true}
-}
+    home: { p: "/", private: false, title: "" },
+    signIn: { p: "/sign-in", private: false, title: "כניסה" },
+    signUp: { p: "/sign-up", private: false, title: "הרשמה" },
+    forget: { p: "/forget", private: false, title: "שכחתי סיסמה" },
+    about: { p: "/about", private: false, title: "אודות" },
+    dashboard: { p: "/dashboard", private: true, title: "מסך ראשי" },
+    classes: { p: "/classes", private: true, title: "ניהול כיתות" },
+    teachers: { p: "/teachers", private: true, title: "ניהול מורים" },
+    professions: { p: "/professions", private: true, title: "ניהול מקצועות" },
+    annualSystem: { p: "/annual-system", private: true, title: "מערכת שנתית" },
+    connect: { p: "/connect", private: true, title: "צור קשר" },
+    profile: { p: "/profile", private: true, title: "הפרופיל שלי" },
+};
 
-export default router
+export default router;
