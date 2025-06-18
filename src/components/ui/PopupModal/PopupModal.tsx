@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import styles from "./PopupModal.module.css";
 import { PopupSize } from "@/models/types/ui";
+import { useAccessibility } from "@/hooks/useAccessibility";
 
 interface PopupModalProps {
   isOpen: boolean;
@@ -13,32 +14,7 @@ interface PopupModalProps {
 
 const PopupModal: React.FC<PopupModalProps> = ({ isOpen, onClose, children, size }) => {
   const modalRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onClose();
-      }
-    };
-
-    const handleClickOutside = (e: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-        onClose();
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener("keydown", handleEscape);
-      document.addEventListener("mousedown", handleClickOutside);
-      document.body.style.overflow = "hidden"; // Prevent scrolling when modal is open
-    }
-
-    return () => {
-      document.removeEventListener("keydown", handleEscape);
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.body.style.overflow = ""; // Re-enable scrolling when modal is closed
-    };
-  }, [isOpen, onClose]);
+  useAccessibility({ isOpen, navRef: modalRef, onClose });
 
   if (!isOpen) return null;
 

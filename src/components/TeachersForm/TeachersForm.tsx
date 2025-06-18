@@ -5,8 +5,8 @@ import styles from "./TeachersForm.module.css";
 import { Teacher, TeacherRequest, TeacherRole } from "@/models/types/teachers";
 import InputText from "../ui/InputText/InputText";
 import InputSelect from "../ui/InputSelect/InputSelect";
-import SubmitBtn from "../ui/SubmitBtn/SubmitBtn";
 import RadioGroup from "../ui/RadioGroup/RadioGroup";
+import Form from "../core/Form/Form";
 
 type TeachersFormProps = {
     setTeachers: React.Dispatch<React.SetStateAction<Teacher[]>>;
@@ -41,6 +41,8 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers }) => {
 
             setTeachers((prev) => [...prev, newTeacher]);
 
+            // add teacher to the DB
+
             // Reset form
             setFormData({
                 name: "",
@@ -61,7 +63,13 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers }) => {
         <section className={styles.formSection}>
             <h2 className={styles.formTitle}>הוספת מורה חדש</h2>
 
-            <form onSubmit={handleSubmit} className={styles.addTeacherForm}>
+            <Form
+                handleSubmit={handleSubmit}
+                isLoading={isLoading}
+                error={error}
+                loadingText="מוסיף מורה..."
+                btnText="הוסף מורה"
+            >
                 <InputText
                     label="שם"
                     id="name"
@@ -134,17 +142,7 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers }) => {
                     onChange={handleChange}
                     placeholder="הערות או מידע נוסף על המורה"
                 /> */}
-
-                <div className={styles.formActions}>
-                    <SubmitBtn
-                        type="submit"
-                        isLoading={isLoading}
-                        loadingText="מוסיף מורה..."
-                        buttonText="הוסף מורה"
-                        error={error}
-                    />
-                </div>
-            </form>
+            </Form>
         </section>
     );
 };

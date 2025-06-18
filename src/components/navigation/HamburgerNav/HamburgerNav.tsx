@@ -14,6 +14,7 @@ import {
     IoPeopleOutline,
     IoMenuOutline,
     IoCloseOutline,
+    IoMailOutline,
 } from "react-icons/io5";
 
 type HamburgerNavProps = {
@@ -52,6 +53,11 @@ const links: ILink[] = [
         name: routePath.classes.title,
         p: routePath.classes.p,
         Icon: <PiChairLight size={24} />,
+    },
+    {
+        name: routePath.connect.title,
+        p: routePath.connect.p,
+        Icon: <IoMailOutline size={24} />,
     },
 ];
 

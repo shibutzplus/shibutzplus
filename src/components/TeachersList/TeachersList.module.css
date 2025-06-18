@@ -19,39 +19,6 @@
     font-size: 0.9rem;
 }
 
-.teachersTableSection {
-    width: 100%;
-    height: 60vh;
-    overflow-y: auto;
-    position: relative;
-}
-
-.teachersList {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-}
-
-.teachersList thead {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    background-color: var(--background-inner);
-}
-
-.teachersList th {
-    text-align: right;
-    padding: 1rem;
-    border-bottom: 2px solid #eee;
-    font-weight: 600;
-    color: #666;
-}
-
-.teachersList td {
-    padding: 1rem;
-    border-bottom: 1px solid #eee;
-    text-align: right;
-}
 
 .roleCell span,
 .roleCellBlue span,
@@ -90,28 +57,4 @@
 .editIcon,
 .deleteIcon {
     font-size: 1rem;
-}
-
-
-/* Responsive styles */
-@media (max-width: 992px) {
-    .teachersListSection {
-        padding: 1.5rem;
-        max-height: none;
-    }
-}
-
-@media (max-width: 576px) {
-    .teachersList {
-        font-size: 0.9rem;
-    }
-
-    .teachersList th,
-    .teachersList td {
-        padding: 0.75rem 0.5rem;
-    }
-
-    .teachersListSection {
-        padding: 1rem;
-    }
 }

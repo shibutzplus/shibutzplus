@@ -1,0 +1,9 @@
+.addTeacherForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+}
+
+.formActions {
+    margin-top: -1.1rem;
+}

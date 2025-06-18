@@ -5,6 +5,7 @@ import styles from "./TeachersList.module.css";
 import { Teacher } from "@/models/types/teachers";
 import { usePopup } from "@/context/PopupContext";
 import DeleteTeacherPopup from "../popups/DeleteTeacherPopup/DeleteTeacherPopup";
+import TableList from "../core/TableList/TableList";
 
 type TeachersListProps = {
     teachers: Teacher[];
@@ -50,43 +51,32 @@ const TeachersList: React.FC<TeachersListProps> = ({ teachers }) => {
             <div className={styles.teachersCount}>
                 {teachers.length} מורים | 5 קבועים, 3 מחליפים
             </div>
-            <section className={styles.teachersTableSection}>
-                <table className={styles.teachersList}>
-                    <thead>
-                        <tr>
-                            <th>שם מלא</th>
-                            <th>תפקיד</th>
-                            <th>מקצוע</th>
-                            <th>כיתות</th>
-                            <th>פעולות</th>
+            <TableList headThs={["שם מלא", "תפקיד", "מקצוע", "כיתות", "פעולות"]}>
+                <tbody>
+                    {teachers.map((teacher) => (
+                        <tr key={teacher.id}>
+                            <td>{teacher.name}</td>
+                            {displayRole(teacher.role)}
+                            <td>{teacher.subject || "-"}</td>
+                            <td>{teacher.classes.join(", ")}</td>
+                            <td>
+                                <div className={styles.actionButtons}>
+                                    <button className={styles.editButton} aria-label="ערוך">
+                                        <span className={styles.editIcon}>✏️</span>
+                                    </button>
+                                    <button
+                                        className={styles.deleteButton}
+                                        aria-label="מחק"
+                                        onClick={() => handleOpenPopup(teacher)}
+                                    >
+                                        <span className={styles.deleteIcon}>🗑️</span>
+                                    </button>
+                                </div>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        {teachers.map((teacher) => (
-                            <tr key={teacher.id}>
-                                <td>{teacher.name}</td>
-                                {displayRole(teacher.role)}
-                                <td>{teacher.subject || "-"}</td>
-                                <td>{teacher.classes.join(", ")}</td>
-                                <td>
-                                    <div className={styles.actionButtons}>
-                                        <button className={styles.editButton} aria-label="ערוך">
-                                            <span className={styles.editIcon}>✏️</span>
-                                        </button>
-                                        <button
-                                            className={styles.deleteButton}
-                                            aria-label="מחק"
-                                            onClick={() => handleOpenPopup(teacher)}
-                                        >
-                                            <span className={styles.deleteIcon}>🗑️</span>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </section>
+                    ))}
+                </tbody>
+            </TableList>
         </section>
     );
 };
