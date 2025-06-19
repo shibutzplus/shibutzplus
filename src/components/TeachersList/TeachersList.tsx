@@ -51,7 +51,7 @@ const TeachersList: React.FC<TeachersListProps> = ({ teachers }) => {
             <div className={styles.teachersCount}>
                 {teachers.length} מורים | 5 קבועים, 3 מחליפים
             </div>
-            <TableList headThs={["שם מלא", "תפקיד", "מקצוע", "כיתות", "פעולות"]}>
+            <TableList headThs={["שם מלא", "תפקיד", "מקצוע", "כיתות", "מחיקה"]}>
                 <tbody>
                     {teachers.map((teacher) => (
                         <tr key={teacher.id}>
@@ -61,9 +61,6 @@ const TeachersList: React.FC<TeachersListProps> = ({ teachers }) => {
                             <td>{teacher.classes.join(", ")}</td>
                             <td>
                                 <div className={styles.actionButtons}>
-                                    <button className={styles.editButton} aria-label="ערוך">
-                                        <span className={styles.editIcon}>✏️</span>
-                                    </button>
                                     <button
                                         className={styles.deleteButton}
                                         aria-label="מחק"

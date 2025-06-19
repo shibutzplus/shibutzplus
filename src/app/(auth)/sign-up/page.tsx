@@ -18,7 +18,7 @@ const SignUpPage: NextPage = () => {
         name: "",
         email: "",
         password: "",
-        role: "teacher",
+        role: "principal",
         school: "",
     });
     const [error, setError] = useState<string>("");
@@ -84,8 +84,8 @@ const SignUpPage: NextPage = () => {
                         placeholder="בחר תפקיד"
                         options={[
                             { value: "principal", label: "מנהל/ת" },
-                            { value: "deputy principal", label: "סגן/ית" },
-                            { value: "teacher", label: "מורה" },
+                            { value: "deputy", label: "סגן/ית" },
+                            { value: "other", label: "אחר" },
                         ]}
                     />
 

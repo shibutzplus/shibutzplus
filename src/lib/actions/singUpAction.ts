@@ -31,6 +31,9 @@ const signUp = async (params: RegisterRequest) => {
             const newSchool = await School.create({
                 name: schoolName,
                 teachers: [],
+                classes: [],
+                professions: [],
+                status: "onboarding",
             });
             schoolId = newSchool._id;
         } else {

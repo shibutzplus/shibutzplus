@@ -87,8 +87,8 @@ const TeachersPage: NextPage = () => {
 
     return (
         <main className={styles.container}>
-            <TeachersForm setTeachers={setTeachers} />
             <TeachersList teachers={teachers} />
+            <TeachersForm setTeachers={setTeachers} />
         </main>
     );
 };

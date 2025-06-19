@@ -2,15 +2,12 @@ import mongoose, { Schema, Document, Model, Types } from "mongoose";
 import { UserRole } from "../types/auth";
 import { ISchool } from "./School";
 
-type UserStatus = "annual" | "daily";
-
 export interface IUser extends Document {
     _id: Types.ObjectId;
     name: string;
     email: string;
     password?: string;
     role: UserRole;
-    status: UserStatus;
     school: Types.ObjectId | ISchool;
     createdAt: Date;
     updatedAt: Date;
@@ -42,13 +39,8 @@ const UserSchema = new Schema<IUser>(
         },
         role: {
             type: String,
-            enum: ["principal", "deputy principal", "teacher"],
-            default: "teacher",
-        },
-        status: {
-            type: String,
-            enum: ["annual", "daily"],
-            default: "annual",
+            enum: ["principal", "deputy", "other"],
+            default: "principal",
         },
         school: {
             type: Schema.Types.ObjectId,

@@ -1,10 +1,17 @@
 import mongoose, { Schema, Document, Model, Types } from "mongoose";
 import { ITeacher } from "./Teacher";
+import { IClass } from "./Class";
+import { IProfession } from "./Professions";
+
+type SchoolStatus = "onboarding" | "annual" | "daily";
 
 export interface ISchool extends Document {
     _id: Types.ObjectId;
     name: string;
     teachers: Types.ObjectId[] | ITeacher[];
+    classes: Types.ObjectId[] | IClass[];
+    professions: Types.ObjectId[] | IProfession[];
+    status: SchoolStatus;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -21,6 +28,19 @@ const SchoolSchema = new Schema<ISchool>(
             type: Schema.Types.ObjectId,
             ref: "Teacher"
         }],
+        classes: [{
+            type: Schema.Types.ObjectId,
+            ref: "Class"
+        }],
+        professions: [{
+            type: Schema.Types.ObjectId,
+            ref: "Profession"
+        }],
+        status: {
+            type: String,
+            enum: ["onboarding", "annual", "daily"],
+            default: "onboarding",
+        },
     },
     {
         timestamps: true,
