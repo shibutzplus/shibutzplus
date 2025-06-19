@@ -1,4 +1,4 @@
-export type PopupType = "addTeacher" | "editTeacher" | "deleteTeacher" | "settings" | "help";
+export type PopupType = "deleteTeacher" | "deleteClass" | "deleteProfession";
 
 export type PopupSize = "S" | "M" | "L";
 

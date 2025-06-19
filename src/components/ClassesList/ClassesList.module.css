@@ -1,0 +1,21 @@
+.classRow {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.classRow:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.deleteBtn{
+    background-color: var(--button-bg);
+    color: var(--button-color);
+    border-radius: 5px;
+    padding: 5px 15px;
+    border: none;
+}
+
+.deleteBtn:hover{
+    cursor: pointer;
+    background-color: var(--button-hover-bg);
+}
