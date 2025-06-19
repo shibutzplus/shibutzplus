@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
-import styles from "./teachers.module.css";
-import { useSession } from "next-auth/react";
+import React, { useState, useMemo } from "react";
 import { NextPage } from "next";
 import { Teacher } from "@/models/types/teachers";
 import TeachersForm from "@/components/TeachersForm/TeachersForm";
 import TeachersList from "@/components/TeachersList/TeachersList";
+import ManagementLayout from "@/components/layout/ManagementLayout/ManagementLayout";
 
 // Sample data
 const initialTeachers: Teacher[] = [
@@ -14,82 +13,76 @@ const initialTeachers: Teacher[] = [
         id: "1",
         name: "רחל",
         role: "מורה קיים",
-        subject: "חשבון",
-        classes: ["א1", "ב2", "ג1"],
+        primaryClass: "א1",
     },
     {
         id: "2",
         name: "דוד",
         role: "מורה מחליף",
-        subject: "עברית",
-        classes: ["א2", "ב1"],
+        primaryClass: "א2",
     },
     {
         id: "3",
         name: "יוסי",
         role: "מורה קיים",
-        subject: "אנגלית",
-        classes: ["ג1", "ג2", "ב3"],
+        primaryClass: "ג1",
     },
     {
         id: "4",
         name: "יוסי",
         role: "מורה קיים",
-        subject: "אנגלית",
-        classes: ["ג1", "ג2", "ב3"],
+        primaryClass: "ג1",
     },
     {
         id: "5",
         name: "יוסי",
         role: "מורה קיים",
-        subject: "עברית",
-        classes: ["ג1", "ג2", "ב3"],
+        primaryClass: "ג1",
     },
     {
         id: "6",
         name: "יוסי",
         role: "מורה קיים",
-        subject: "ספורט",
-        classes: ["ג1", "ג2", "ב3"],
+        primaryClass: "ג1",
     },
     {
         id: "7",
         name: "יוסי",
         role: "מורה קיים",
-        subject: "אנגלית",
-        classes: ["ג1", "ג2", "ב3"],
+        primaryClass: "ג1",
     },
     {
         id: "8",
         name: "יוסי",
         role: "מורה קיים",
-        subject: "אנגלית",
-        classes: ["ג1", "ג2", "ב3"],
+        primaryClass: "ג1",
     },
 ];
 
 const TeachersPage: NextPage = () => {
     const [teachers, setTeachers] = useState<Teacher[]>(initialTeachers);
+    const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
 
-    const { data: session, status } = useSession({
-        required: true,
-    });
+    const handleSelectTeacher = (teacher: Teacher) => {
+        setSelectedTeacher(teacher);
+    };
 
-    if (status === "loading") {
-        return (
-            <main className={styles.container}>
-                <section className={styles.content}>
-                    <h1>טוען...</h1>
-                </section>
-            </main>
-        );
-    }
+    const listInfo = useMemo(() => {
+        const fixedTeachersCount = teachers.filter((teacher) => teacher.role === "מורה קיים").length;
+        const substituteTeachersCount = teachers.filter((teacher) => teacher.role === "מורה מחליף").length;
+        return `${fixedTeachersCount} קבועים, ${substituteTeachersCount} מחליפים`;
+    }, [teachers])
 
     return (
-        <main className={styles.container}>
-            <TeachersList teachers={teachers} />
-            <TeachersForm setTeachers={setTeachers} />
-        </main>
+        <ManagementLayout
+            formTitle="הוספת מורה"
+            listTitle="רשימת מורים"
+            listInfo={listInfo}
+            children={[
+                <TeachersList teachers={teachers} handleSelectTeacher={handleSelectTeacher} />,
+                <TeachersForm setTeachers={setTeachers} selectedTeacher={selectedTeacher} />,
+            ]}
+        />
     );
 };
 

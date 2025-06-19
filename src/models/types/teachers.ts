@@ -2,17 +2,13 @@ export type Teacher = {
   id: string;
   name: string;
   role: TeacherRole;
-  subject?: string;
-  classes: string[];
-  notes?: string;
+  primaryClass: string;
 }
 
 export type TeacherRequest = {
   name: string;
   role: TeacherRole;
-  subject: string;
-  classes: string;
-  notes: string;
+  primaryClass: string;
 }
 
 export const TeacherRoleValues = {

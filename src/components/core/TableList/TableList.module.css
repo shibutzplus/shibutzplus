@@ -19,7 +19,7 @@
 }
 
 .tableList th {
-    text-align: right;
+    text-align: center;
     padding: 1rem;
     border-bottom: 2px solid #eee;
     font-weight: 600;
@@ -29,7 +29,7 @@
 .tableList td {
     padding: 1rem;
     border-bottom: 1px solid #eee;
-    text-align: right;
+    text-align: center;
 }
 
 

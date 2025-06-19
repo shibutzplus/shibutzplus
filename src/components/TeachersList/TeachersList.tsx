@@ -6,12 +6,14 @@ import { Teacher } from "@/models/types/teachers";
 import { usePopup } from "@/context/PopupContext";
 import DeleteTeacherPopup from "../popups/DeleteTeacherPopup/DeleteTeacherPopup";
 import TableList from "../core/TableList/TableList";
+import { IoTrashBin } from "react-icons/io5";
 
 type TeachersListProps = {
     teachers: Teacher[];
+    handleSelectTeacher: (teacher: Teacher) => void;
 };
 
-const TeachersList: React.FC<TeachersListProps> = ({ teachers }) => {
+const TeachersList: React.FC<TeachersListProps> = ({ teachers, handleSelectTeacher }) => {
     const { openPopup } = usePopup();
 
     const handleOpenPopup = (teacher: Teacher) => {
@@ -20,6 +22,11 @@ const TeachersList: React.FC<TeachersListProps> = ({ teachers }) => {
             "S",
             <DeleteTeacherPopup teacher={teacher} onDelete={() => {}} onCancel={() => {}} />,
         );
+    };
+
+    const handleDeleteTeacher = (e: React.MouseEvent, teacher: Teacher) => {
+        e.stopPropagation(); // Prevent row click when clicking delete
+        handleOpenPopup(teacher);
     };
 
     const displayRole = (role: string): React.ReactNode => {
@@ -46,36 +53,43 @@ const TeachersList: React.FC<TeachersListProps> = ({ teachers }) => {
     };
 
     return (
-        <section className={styles.teachersListSection}>
-            <h1 className={styles.title}>רשימת מורים</h1>
-            <div className={styles.teachersCount}>
-                {teachers.length} מורים | 5 קבועים, 3 מחליפים
-            </div>
-            <TableList headThs={["שם מלא", "תפקיד", "מקצוע", "כיתות", "מחיקה"]}>
-                <tbody>
-                    {teachers.map((teacher) => (
-                        <tr key={teacher.id}>
-                            <td>{teacher.name}</td>
-                            {displayRole(teacher.role)}
-                            <td>{teacher.subject || "-"}</td>
-                            <td>{teacher.classes.join(", ")}</td>
-                            <td>
-                                <div className={styles.actionButtons}>
-                                    <button
-                                        className={styles.deleteButton}
-                                        aria-label="מחק"
-                                        onClick={() => handleOpenPopup(teacher)}
-                                    >
-                                        <span className={styles.deleteIcon}>🗑️</span>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </TableList>
-        </section>
+        <TableList headThs={["שם מלא", "תפקיד", "כיתה ראשית", ""]}>
+            <tbody>
+                {teachers.map((teacher) => (
+                    <tr
+                        key={teacher.id}
+                        className={styles.teacherRow}
+                        onClick={() => handleSelectTeacher(teacher)}
+                    >
+                        <td>{teacher.name}</td>
+                        {displayRole(teacher.role)}
+                        <td>{teacher.primaryClass || ""}</td>
+                        <td>
+                            <button
+                                className={styles.deleteBtn}
+                                aria-label="מחק"
+                                onClick={(e) => handleDeleteTeacher(e, teacher)}
+                            >
+                                מחיקה
+                            </button>
+                        </td>
+                    </tr>
+                ))}
+            </tbody>
+        </TableList>
     );
 };
 
 export default TeachersList;
+
+{
+    /* <div className={styles.actionButtons}>
+                                    <button
+                                        className={styles.deleteButton}
+                                        aria-label="מחק"
+                                        onClick={(e) => handleDeleteTeacher(e, teacher)}
+                                    >
+                                        <IoTrashBin className={styles.deleteIcon} size={20} />
+                                    </button>
+                                </div> */
+}

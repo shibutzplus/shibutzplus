@@ -1,24 +1,3 @@
-.teachersListSection {
-    width: 100%;
-    padding: 2rem;
-    background-color: var(--background-inner);
-    border-radius: var(--box-border-radius);
-    height: 80vh;
-}
-
-.title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    text-align: right;
-}
-
-.teachersCount {
-    color: #666;
-    margin-bottom: 2rem;
-    font-size: 0.9rem;
-}
-
 
 .roleCell span,
 .roleCellBlue span,
@@ -39,22 +18,39 @@
 
 .actionButtons {
     display: flex;
-    gap: 0.5rem;
-    justify-content: flex-start;
+    align-content: center;
+    justify-content: center;
+    width: 100%;
 }
 
-.editButton,
-.deleteButton {
+/* .deleteButton {
     background: none;
     border: none;
-    cursor: pointer;
-    padding: 0.25rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    color: var(--placeholder-color);
 }
 
-.editIcon,
-.deleteIcon {
-    font-size: 1rem;
+.deleteButton:hover {
+    cursor: pointer;
+    color: var(--button-disabled-bg);
+} */
+
+.deleteBtn{
+    background-color: var(--button-bg);
+    color: var(--button-color);
+    border-radius: 5px;
+    padding: 5px 15px;
+}
+
+.deleteBtn:hover{
+    cursor: pointer;
+    background-color: var(--button-hover-bg);
+}
+
+.teacherRow {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.teacherRow:hover {
+    background-color: rgba(0, 0, 0, 0.05);
 }
