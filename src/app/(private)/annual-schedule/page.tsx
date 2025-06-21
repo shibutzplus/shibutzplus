@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import styles from "./annualSystem.module.css";
+import styles from "./annualSchedule.module.css";
 import { NextPage } from "next";
 import InputSelect from "@/components/ui/InputSelect/InputSelect";
 import { SelectOption } from "@/models/types";
@@ -58,7 +58,7 @@ interface WeeklySchedule {
     };
 }
 
-const AnnualSystemPage: NextPage = () => {
+const AnnualSchedulePage: NextPage = () => {
     const [selectedClass, setSelectedClass] = useState<string>("א1");
     const [showTable, setShowTable] = useState<boolean>(true);
     const [schedule, setSchedule] = useState<WeeklySchedule>({});
@@ -196,4 +196,4 @@ const AnnualSystemPage: NextPage = () => {
     );
 };
 
-export default AnnualSystemPage;
+export default AnnualSchedulePage;

@@ -2,21 +2,20 @@
 
 import React from "react";
 import styles from "./TeachersList.module.css";
-import { Teacher } from "@/models/types/teachers";
+import { TeacherType } from "@/models/types/teachers";
 import { usePopup } from "@/context/PopupContext";
 import DeleteTeacherPopup from "../popups/DeleteTeacherPopup/DeleteTeacherPopup";
 import TableList from "../core/TableList/TableList";
-import { IoTrashBin } from "react-icons/io5";
 
 type TeachersListProps = {
-    teachers: Teacher[];
-    handleSelectTeacher: (teacher: Teacher) => void;
+    teachers: TeacherType[];
+    handleSelectTeacher: (teacher: TeacherType) => void;
 };
 
 const TeachersList: React.FC<TeachersListProps> = ({ teachers, handleSelectTeacher }) => {
     const { openPopup } = usePopup();
 
-    const handleOpenPopup = (teacher: Teacher) => {
+    const handleOpenPopup = (teacher: TeacherType) => {
         openPopup(
             "deleteTeacher",
             "S",
@@ -24,23 +23,23 @@ const TeachersList: React.FC<TeachersListProps> = ({ teachers, handleSelectTeach
         );
     };
 
-    const handleDeleteTeacher = (e: React.MouseEvent, teacher: Teacher) => {
+    const handleDeleteTeacher = (e: React.MouseEvent, teacher: TeacherType) => {
         e.stopPropagation(); // Prevent row click when clicking delete
         handleOpenPopup(teacher);
     };
 
     const displayRole = (role: string): React.ReactNode => {
         switch (role) {
-            case "מורה קיים":
+            case "homeroom":
                 return (
                     <td className={styles.roleCellGreen}>
-                        <span>קבוע</span>
+                        <span>מחנך/ת</span>
                     </td>
                 );
-            case "מורה מחליף":
+            case "substitute":
                 return (
                     <td className={styles.roleCellBlue}>
-                        <span>מחליף</span>
+                        <span>מחליף/ה</span>
                     </td>
                 );
             default:
@@ -53,7 +52,7 @@ const TeachersList: React.FC<TeachersListProps> = ({ teachers, handleSelectTeach
     };
 
     return (
-        <TableList headThs={["שם מלא", "תפקיד", "כיתה ראשית", ""]}>
+        <TableList headThs={["שם", "תפקיד", ""]}>
             <tbody>
                 {teachers.map((teacher) => (
                     <tr
@@ -63,7 +62,6 @@ const TeachersList: React.FC<TeachersListProps> = ({ teachers, handleSelectTeach
                     >
                         <td>{teacher.name}</td>
                         {displayRole(teacher.role)}
-                        <td>{teacher.primaryClass || ""}</td>
                         <td>
                             <button
                                 className={styles.deleteBtn}

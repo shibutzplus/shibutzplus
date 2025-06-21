@@ -2,18 +2,21 @@
 
 import React, { useEffect, useState } from "react";
 import styles from "./ClassesForm.module.css";
-import { Class, ClassRequest } from "@/models/types/classes";
+import { ClassType, ClassRequest } from "@/models/types/classes";
 import InputText from "../ui/InputText/InputText";
 import Form from "../core/Form/Form";
+import { useSession } from "next-auth/react";
 
 type ClassesFormProps = {
-    setClasses: React.Dispatch<React.SetStateAction<Class[]>>;
-    selectedClass: Class | null;
+    setClasses: React.Dispatch<React.SetStateAction<ClassType[]>>;
+    selectedClass: ClassType | null;
 };
 
 const ClassesForm: React.FC<ClassesFormProps> = ({ setClasses, selectedClass }) => {
+    const { data: session } = useSession();
     const [formData, setFormData] = useState<ClassRequest>({
         name: selectedClass ? selectedClass.name : "",
+        schoolId: selectedClass ? selectedClass.schoolId : session?.user?.id || "school1",
     });
 
     const [isLoading, setIsLoading] = useState(false);
@@ -23,9 +26,15 @@ const ClassesForm: React.FC<ClassesFormProps> = ({ setClasses, selectedClass }) 
         if (selectedClass) {
             setFormData({
                 name: selectedClass.name,
+                schoolId: selectedClass.schoolId,
+            });
+        } else {
+            setFormData({
+                name: "",
+                schoolId: session?.user?.id || "school1",
             });
         }
-    }, [selectedClass]);
+    }, [selectedClass, session]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -33,9 +42,10 @@ const ClassesForm: React.FC<ClassesFormProps> = ({ setClasses, selectedClass }) 
         setError("");
 
         try {
-            const newClass: Class = {
+            const newClass: ClassType = {
                 id: Date.now().toString(),
                 name: formData.name,
+                schoolId: formData.schoolId,
             };
 
             setClasses((prev) => [...prev, newClass]);
@@ -45,6 +55,7 @@ const ClassesForm: React.FC<ClassesFormProps> = ({ setClasses, selectedClass }) 
             // Reset form
             setFormData({
                 name: "",
+                schoolId: session?.user?.id || "school1",
             });
         } catch (err) {
             setError("אירעה שגיאה בהוספת הכיתה. אנא נסה שוב.");

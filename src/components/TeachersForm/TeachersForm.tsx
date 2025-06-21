@@ -2,21 +2,29 @@
 
 import React, { useEffect, useState } from "react";
 import styles from "./TeachersForm.module.css";
-import { Teacher, TeacherRequest, TeacherRole } from "@/models/types/teachers";
-import InputText from "../ui/InputText/InputText";
+import {
+    TeacherType,
+    TeacherRequest,
+    TeacherRole,
+    TeacherRoleValues,
+} from "@/models/types/teachers";
 import RadioGroup from "../ui/RadioGroup/RadioGroup";
 import Form from "../core/Form/Form";
+import { useSession } from "next-auth/react";
+import InputText from "../ui/InputText/InputText";
 
 type TeachersFormProps = {
-    setTeachers: React.Dispatch<React.SetStateAction<Teacher[]>>;
-    selectedTeacher: Teacher | null;
+    setTeachers: React.Dispatch<React.SetStateAction<TeacherType[]>>;
+    selectedTeacher: TeacherType | null;
 };
 
 const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers, selectedTeacher }) => {
+    const { data: session } = useSession();
     const [formData, setFormData] = useState<TeacherRequest>({
         name: selectedTeacher ? selectedTeacher.name : "",
-        role: selectedTeacher ? selectedTeacher.role : "מורה קיים",
-        primaryClass: selectedTeacher ? selectedTeacher.primaryClass : "",
+        role: selectedTeacher ? selectedTeacher.role : TeacherRoleValues.HOMEROOM,
+        schoolId: selectedTeacher ? selectedTeacher.schoolId : session?.user?.id || "school1",
+        userId: selectedTeacher ? selectedTeacher.userId : null,
     });
 
     const [isLoading, setIsLoading] = useState(false);
@@ -27,10 +35,20 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers, selectedTeache
             setFormData({
                 name: selectedTeacher.name,
                 role: selectedTeacher.role,
-                primaryClass: selectedTeacher.primaryClass,
+                schoolId: selectedTeacher.schoolId,
+                userId: selectedTeacher.userId,
+            });
+        } else {
+            // Default to current school from session
+            const schoolId = session?.user?.id || "school1"; // Default for demo
+            setFormData({
+                name: "",
+                role: TeacherRoleValues.HOMEROOM,
+                schoolId: schoolId,
+                userId: null,
             });
         }
-    }, [selectedTeacher]);
+    }, [selectedTeacher, session]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -38,11 +56,12 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers, selectedTeache
         setError("");
 
         try {
-            const newTeacher: Teacher = {
+            const newTeacher: TeacherType = {
                 id: Date.now().toString(),
                 name: formData.name,
-                role: formData.role as TeacherRole,
-                primaryClass: formData.primaryClass,
+                role: formData.role,
+                schoolId: formData.schoolId,
+                userId: formData.userId,
             };
 
             setTeachers((prev) => [...prev, newTeacher]);
@@ -52,8 +71,9 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers, selectedTeache
             // Reset form
             setFormData({
                 name: "",
-                role: "מורה קיים",
-                primaryClass: "",
+                role: TeacherRoleValues.HOMEROOM,
+                schoolId: session?.user?.id || "school1",
+                userId: null,
             });
         } catch (err) {
             setError("אירעה שגיאה בהוספת המורה. אנא נסה שוב.");
@@ -73,31 +93,14 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers, selectedTeache
         >
             <InputText
                 label="שם"
-                id="name"
                 name="name"
                 value={formData.name}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     setFormData((prev) => ({
                         ...prev,
-                        [e.target.name]: e.target.value,
+                        name: e.target.value,
                     }));
                 }}
-                placeholder="הזינו שם"
-                required
-            />
-
-            <InputText
-                label="כיתה ראשית"
-                id="primaryClass"
-                name="primaryClass"
-                value={formData.primaryClass}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    setFormData((prev) => ({
-                        ...prev,
-                        primaryClass: e.target.value,
-                    }));
-                }}
-                placeholder="לדוגמה: א1"
                 required
             />
 
@@ -112,8 +115,8 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers, selectedTeache
                     }));
                 }}
                 options={[
-                    { value: "מורה קיים", label: "מורה קיים" },
-                    { value: "מורה מחליף", label: "מורה מחליף" },
+                    { value: TeacherRoleValues.HOMEROOM, label: "מחנך/ת כיתה" },
+                    { value: TeacherRoleValues.SUBSTITUTE, label: "מורה מחליף/ה" },
                 ]}
             />
         </Form>

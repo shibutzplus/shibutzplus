@@ -1,6 +1,6 @@
-import { SchoolType } from "@/models/types/school";
-
-const initClasses = (type: SchoolType) => {
+import { SchoolAgeGroup } from "@/models/types/school";
+// not in use
+const initClasses = (type: SchoolAgeGroup) => {
     switch (type) {
         case "Elementary":
             return [
@@ -29,7 +29,7 @@ const initClasses = (type: SchoolType) => {
     }
 };
 
-const initProfessions = (type: SchoolType) => {
+const initProfessions = (type: SchoolAgeGroup) => {
     switch (type) {
         case "Elementary":
             return [

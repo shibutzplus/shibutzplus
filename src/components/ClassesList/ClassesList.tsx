@@ -2,20 +2,20 @@
 
 import React from "react";
 import styles from "./ClassesList.module.css";
-import { Class } from "@/models/types/classes";
+import { ClassType } from "@/models/types/classes";
 import { usePopup } from "@/context/PopupContext";
 import TableList from "../core/TableList/TableList";
 import DeleteClassPopup from "../popups/DeleteClassPopup/DeleteClassPopup";
 
 type ClassesListProps = {
-    classes: Class[];
-    handleSelectClass: (classItem: Class) => void;
+    classes: ClassType[];
+    handleSelectClass: (classItem: ClassType) => void;
 };
 
 const ClassesList: React.FC<ClassesListProps> = ({ classes, handleSelectClass }) => {
     const { openPopup } = usePopup();
 
-    const handleOpenPopup = (classItem: Class) => {
+    const handleOpenPopup = (classItem: ClassType) => {
         openPopup(
             "deleteClass",
             "S",
@@ -23,7 +23,7 @@ const ClassesList: React.FC<ClassesListProps> = ({ classes, handleSelectClass })
         );
     };
 
-    const handleDeleteClass = (e: React.MouseEvent, classItem: Class) => {
+    const handleDeleteClass = (e: React.MouseEvent, classItem: ClassType) => {
         e.stopPropagation(); // Prevent row click when clicking delete
         handleOpenPopup(classItem);
     };

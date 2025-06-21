@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import styles from "./DeleteProfessionPopup.module.css";
+import styles from "./DeleteSubjectPopup.module.css";
 import { usePopup } from "@/context/PopupContext";
-import { Profession } from "@/models/types/professions";
+import { SubjectType } from "@/models/types/subjects";
 
 const DeleteSvg = () => {
     return (
@@ -25,13 +25,13 @@ const DeleteSvg = () => {
     );
 };
 
-interface DeleteProfessionPopupProps {
-    profession: Profession;
+interface DeleteSubjectPopupProps {
+    subject: SubjectType;
     onDelete: () => void;
     onCancel: () => void;
 }
 
-const DeleteProfessionPopup: React.FC<DeleteProfessionPopupProps> = ({ profession, onDelete, onCancel }) => {
+const DeleteSubjectPopup: React.FC<DeleteSubjectPopupProps> = ({ subject, onDelete, onCancel }) => {
     const { closePopup } = usePopup();
 
     const handleDelete = () => {
@@ -52,7 +52,7 @@ const DeleteProfessionPopup: React.FC<DeleteProfessionPopupProps> = ({ professio
                 </div>
             </div>
 
-            <h2 className={styles.title}>האם אתה בטוח שברצונך למחוק את המקצוע {profession.name}?</h2>
+            <h2 className={styles.title}>האם אתה בטוח שברצונך למחוק את המקצוע {subject.name}?</h2>
 
             <div className={styles.buttonContainer}>
                 <button className={styles.deleteButton} onClick={handleDelete}>
@@ -66,4 +66,4 @@ const DeleteProfessionPopup: React.FC<DeleteProfessionPopupProps> = ({ professio
     );
 };
 
-export default DeleteProfessionPopup;
+export default DeleteSubjectPopup;

@@ -1,31 +1,33 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import styles from "./ProfessionsForm.module.css";
-import { Profession, ProfessionRequest } from "@/models/types/professions";
+import styles from "./SubjectsForm.module.css";
 import InputText from "../ui/InputText/InputText";
 import Form from "../core/Form/Form";
+import { SubjectRequest, SubjectType } from "@/models/types/subjects";
 
-type ProfessionsFormProps = {
-    setProfessions: React.Dispatch<React.SetStateAction<Profession[]>>;
-    selectedProfession: Profession | null;
+type SubjectsFormProps = {
+    setSubjects: React.Dispatch<React.SetStateAction<SubjectType[]>>;
+    selectedSubject: SubjectType | null;
 };
 
-const ProfessionsForm: React.FC<ProfessionsFormProps> = ({ setProfessions, selectedProfession }) => {
-    const [formData, setFormData] = useState<ProfessionRequest>({
-        name: selectedProfession ? selectedProfession.name : "",
+const SubjectsForm: React.FC<SubjectsFormProps> = ({ setSubjects, selectedSubject }) => {
+    const [formData, setFormData] = useState<SubjectRequest>({
+        name: selectedSubject ? selectedSubject.name : "",
+        schoolId: selectedSubject ? selectedSubject.schoolId : "",
     });
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
 
     useEffect(() => {
-        if (selectedProfession) {
+        if (selectedSubject) {
             setFormData({
-                name: selectedProfession.name,
+                name: selectedSubject.name,
+                schoolId: selectedSubject.schoolId,
             });
         }
-    }, [selectedProfession]);
+    }, [selectedSubject]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -33,18 +35,20 @@ const ProfessionsForm: React.FC<ProfessionsFormProps> = ({ setProfessions, selec
         setError("");
 
         try {
-            const newProfession: Profession = {
+            const newSubject: SubjectType = {
                 id: Date.now().toString(),
                 name: formData.name,
+                schoolId: formData.schoolId,
             };
 
-            setProfessions((prev) => [...prev, newProfession]);
+            setSubjects((prev) => [...prev, newSubject]);
 
             // add profession to the DB
 
             // Reset form
             setFormData({
                 name: "",
+                schoolId: "",
             });
         } catch (err) {
             setError("אירעה שגיאה בהוספת המקצוע. אנא נסה שוב.");
@@ -77,10 +81,10 @@ const ProfessionsForm: React.FC<ProfessionsFormProps> = ({ setProfessions, selec
                     }}
                     placeholder="לדוגמה: מתמטיקה"
                     required
-                />
+                />,
             ]}
         </Form>
     );
 };
 
-export default ProfessionsForm;
+export default SubjectsForm;

@@ -3,7 +3,7 @@ import styles from "./Form.module.css";
 import SubmitBtn from "@/components/ui/SubmitBtn/SubmitBtn";
 
 type FormProps = {
-    children: React.ReactNode[];
+    children: React.ReactNode[] | React.ReactNode;
     handleSubmit: (e: React.FormEvent) => void;
     isLoading: boolean;
     error: string;

@@ -1,10 +1,10 @@
-export type ClassType = {
+export type SubjectType = {
   id: string;
   name: string;
   schoolId: string;
 }
 
-export type ClassRequest = {
+export type SubjectRequest = {
   name: string;
   schoolId: string;
 }

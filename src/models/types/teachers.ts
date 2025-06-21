@@ -1,18 +1,20 @@
-export type Teacher = {
+export type TeacherType = {
   id: string;
   name: string;
   role: TeacherRole;
-  primaryClass: string;
+  schoolId: string;
+  userId?: string | null;
 }
 
 export type TeacherRequest = {
   name: string;
   role: TeacherRole;
-  primaryClass: string;
+  schoolId: string;
+  userId?: string | null;
 }
 
 export const TeacherRoleValues = {
-  EXISTING: "מורה קיים" as const,
-  SUBSTITUTE: "מורה מחליף" as const,
+  HOMEROOM: "homeroom" as const,
+  SUBSTITUTE: "substitute" as const,
 };
 export type TeacherRole = typeof TeacherRoleValues[keyof typeof TeacherRoleValues];

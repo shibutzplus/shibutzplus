@@ -3,7 +3,7 @@
 import React from "react";
 import styles from "./DeleteClassPopup.module.css";
 import { usePopup } from "@/context/PopupContext";
-import { Class } from "@/models/types/classes";
+import { ClassType } from "@/models/types/classes";
 
 const DeleteSvg = () => {
     return (
@@ -26,7 +26,7 @@ const DeleteSvg = () => {
 };
 
 interface DeleteClassPopupProps {
-    classItem: Class;
+    classItem: ClassType;
     onDelete: () => void;
     onCancel: () => void;
 }
