@@ -42,7 +42,7 @@ export const teachersRelations = relations(teachers, ({ one, many }) => ({
     fields: [teachers.userId],
     references: [users.id],
   }),
-  taughtAnnualSchedules: many(annualSchedule, { relationName: 'teacher' }),
+  taughtAnnualSchedules: many(annualSchedule),
   absentSchedules: many(dailySchedule, { relationName: 'absentTeacher' }),
   presentSchedules: many(dailySchedule, { relationName: 'presentTeacher' }),
   subSchedules: many(dailySchedule, { relationName: 'subTeacher' }),

@@ -3,7 +3,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { schema } from "@/db";
 import { getUserByEmail } from "@/db/utils";
-import { UserRole } from "@/db/schema";
 
 export const authOptions: NextAuthOptions = {
     providers: [

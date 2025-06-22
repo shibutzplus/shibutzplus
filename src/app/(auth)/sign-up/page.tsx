@@ -82,7 +82,6 @@ const SignUpPage: NextPage = () => {
                         label="תפקיד"
                         id="role"
                         value={formData.role}
-                        onChange={handleChange}
                         placeholder="בחר תפקיד"
                         options={[
                             { value: "admin", label: "מנהל/ת" },

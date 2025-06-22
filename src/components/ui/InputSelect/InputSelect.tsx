@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useId } from "react";
 import Select from "react-select";
 import styles from "./InputSelect.module.css";
 import { SelectOption } from "@/models/types";
@@ -37,6 +37,9 @@ const InputSelect: React.FC<InputSelectProps> = ({
 }) => {
     const [options, setOptions] = useState<SelectOption[]>(initialOptions);
     const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
+
+    // Generate a unique instanceId for SSR consistency
+    const selectInstanceId = useId();
 
     useEffect(() => {
         if (value) {
@@ -100,6 +103,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
             )}
 
             <Select
+                instanceId={selectInstanceId}
                 id={id}
                 value={selectedOption}
                 onChange={handleChange}

@@ -1,17 +1,19 @@
 import type { Config } from 'drizzle-kit';
+import * as dotenv from 'dotenv';
+
+// Load environment variables from .env.local
+dotenv.config({ path: '.env.local' });
+
+// Get the DATABASE_URL from environment variables
+const connectionString = process.env.DATABASE_URL || 'postgresql://user:password@localhost:5432/shibutzplus';
 
 export default {
   schema: './src/db/schema/*',
   out: './drizzle',
   dialect: 'postgresql',
   dbCredentials: {
-    // Using standard PostgreSQL connection parameters
-    host: process.env.DB_HOST || 'localhost',
-    port: Number(process.env.DB_PORT) || 5432,
-    user: process.env.DB_USER || 'user',
-    password: process.env.DB_PASSWORD || 'password',
-    database: process.env.DB_NAME || 'shibutzplus',
-    ssl: process.env.DB_SSL === 'true',
+    // For Neon database, we need to use the standard PostgreSQL connection format
+    url: connectionString,
   },
   verbose: true,
   strict: true,
