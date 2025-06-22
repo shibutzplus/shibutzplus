@@ -2,9 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 import styles from "./SubjectsForm.module.css";
-import InputText from "../ui/InputText/InputText";
+import { SubjectType, SubjectRequest } from "@/models/types/subjects";
 import Form from "../core/Form/Form";
-import { SubjectRequest, SubjectType } from "@/models/types/subjects";
+import { useSession } from "next-auth/react";
+import InputText from "../ui/InputText/InputText";
+import { useMainContext } from "@/context/MainContext";
+import { addSubjectAction } from "@/app/actions/addSubjectAction";
+import messages from "@/resources/messages";
 
 type SubjectsFormProps = {
     setSubjects: React.Dispatch<React.SetStateAction<SubjectType[]>>;
@@ -12,13 +16,16 @@ type SubjectsFormProps = {
 };
 
 const SubjectsForm: React.FC<SubjectsFormProps> = ({ setSubjects, selectedSubject }) => {
+    const { data: session } = useSession();
+    const { school, updateSubjects } = useMainContext();
     const [formData, setFormData] = useState<SubjectRequest>({
         name: selectedSubject ? selectedSubject.name : "",
-        schoolId: selectedSubject ? selectedSubject.schoolId : "",
+        schoolId: selectedSubject ? selectedSubject.schoolId : school?.id || "",
     });
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
 
     useEffect(() => {
         if (selectedSubject) {
@@ -26,32 +33,45 @@ const SubjectsForm: React.FC<SubjectsFormProps> = ({ setSubjects, selectedSubjec
                 name: selectedSubject.name,
                 schoolId: selectedSubject.schoolId,
             });
+        } else if (school) {
+            // Default to current school from context
+            setFormData({
+                name: "",
+                schoolId: school.id,
+            });
         }
-    }, [selectedSubject]);
+    }, [selectedSubject, school]);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setError("");
+        setSuccessMessage("");
 
         try {
-            const newSubject: SubjectType = {
-                id: Date.now().toString(),
-                name: formData.name,
-                schoolId: formData.schoolId,
-            };
+            // Call the server action to add the subject
+            const result = await addSubjectAction(formData);
 
-            setSubjects((prev) => [...prev, newSubject]);
-
-            // add profession to the DB
-
-            // Reset form
-            setFormData({
-                name: "",
-                schoolId: "",
-            });
+            if (result.success && result.data) {
+                // Update local component state
+                setSubjects((prev) => [...prev, result.data!]);
+                
+                // Update global context and localStorage cache
+                updateSubjects(result.data);
+                
+                // Show success message
+                setSuccessMessage(result.message);
+                
+                // Reset form
+                setFormData({
+                    name: "",
+                    schoolId: school?.id || "",
+                });
+            } else {
+                setError(result.message);
+            }
         } catch (err) {
-            setError("אירעה שגיאה בהוספת המקצוע. אנא נסה שוב.");
+            setError(messages.subjects.createError);
             console.error(err);
         } finally {
             setIsLoading(false);
@@ -63,6 +83,7 @@ const SubjectsForm: React.FC<SubjectsFormProps> = ({ setSubjects, selectedSubjec
             handleSubmit={handleSubmit}
             isLoading={isLoading}
             error={error}
+            success={successMessage}
             loadingText="מוסיף מקצוע..."
             btnText="הוסף מקצוע"
         >

@@ -7,6 +7,7 @@ type FormProps = {
     handleSubmit: (e: React.FormEvent) => void;
     isLoading: boolean;
     error: string;
+    success?: string;
     loadingText: string;
     btnText: string;
 };
@@ -16,6 +17,7 @@ const Form: React.FC<FormProps> = ({
     handleSubmit,
     isLoading,
     error,
+    success,
     loadingText,
     btnText,
 }) => {
@@ -24,6 +26,7 @@ const Form: React.FC<FormProps> = ({
             {children}
 
             <div className={styles.formActions}>
+                {success && <div className={styles.successMessage}>{success}</div>}
                 <SubmitBtn
                     type="submit"
                     isLoading={isLoading}

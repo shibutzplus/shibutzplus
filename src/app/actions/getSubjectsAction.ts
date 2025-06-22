@@ -5,6 +5,7 @@ import { unstable_cache } from "next/cache";
 import { GetSubjectsResponse } from "@/models/types/subjects";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import { CACHE_DURATION_1_HOUR } from "@/utils/time";
+import messages from "@/resources/messages";
 
 // Cache subjects data with a 1-hour revalidation period
 const getCachedSubjects = unstable_cache(
@@ -25,14 +26,14 @@ export async function getSubjectsAction(schoolId: string): Promise<GetSubjectsRe
         const subjects = await getCachedSubjects(schoolId);
         return {
             success: true,
-            message: "Subjects retrieved successfully",
+            message: messages.subjects.retrieveSuccess,
             data: subjects,
         };
     } catch (error) {
         console.error("Error fetching subjects:", error);
         return {
             success: false,
-            message: "Failed to retrieve subjects. Please try again later.",
+            message: messages.subjects.retrieveError,
         };
     }
 }

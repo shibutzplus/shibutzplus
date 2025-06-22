@@ -20,6 +20,9 @@ interface MainContextType {
     isLoading: boolean;
     error: string | null;
     setSchoolIdInStorage: (id: string) => void;
+    updateClasses: (newClass: ClassType) => void;
+    updateTeachers: (newTeacher: TeacherType) => void;
+    updateSubjects: (newSubject: SubjectType) => void;
 }
 
 const MainContext = createContext<MainContextType | undefined>(undefined);
@@ -58,6 +61,36 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
             localStorage.setItem(STORAGE_KEYS.SCHOOL_ID, id);
         }
     };
+    
+    const updateClasses = (newClass: ClassType) => {
+        setClasses(prev => {
+            const updatedClasses = prev ? [...prev, newClass] : [newClass];
+            if (typeof window !== "undefined") {
+                localStorage.setItem(STORAGE_KEYS.CLASSES_DATA, JSON.stringify(updatedClasses));
+            }
+            return updatedClasses;
+        });
+    };
+    
+    const updateTeachers = (newTeacher: TeacherType) => {
+        setTeachers(prev => {
+            const updatedTeachers = prev ? [...prev, newTeacher] : [newTeacher];
+            if (typeof window !== "undefined") {
+                localStorage.setItem(STORAGE_KEYS.TEACHERS_DATA, JSON.stringify(updatedTeachers));
+            }
+            return updatedTeachers;
+        });
+    };
+    
+    const updateSubjects = (newSubject: SubjectType) => {
+        setSubjects(prev => {
+            const updatedSubjects = prev ? [...prev, newSubject] : [newSubject];
+            if (typeof window !== "undefined") {
+                localStorage.setItem(STORAGE_KEYS.SUBJECTS_DATA, JSON.stringify(updatedSubjects));
+            }
+            return updatedSubjects;
+        });
+    };
 
     useEffect(() => {
         // Initialize school ID from user session if available
@@ -78,6 +111,9 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         isLoading,
         error,
         setSchoolIdInStorage,
+        updateClasses,
+        updateTeachers,
+        updateSubjects,
     };
 
     return <MainContext.Provider value={value}>{children}</MainContext.Provider>;

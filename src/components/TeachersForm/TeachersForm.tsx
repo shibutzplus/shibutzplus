@@ -12,6 +12,9 @@ import RadioGroup from "../ui/RadioGroup/RadioGroup";
 import Form from "../core/Form/Form";
 import { useSession } from "next-auth/react";
 import InputText from "../ui/InputText/InputText";
+import { useMainContext } from "@/context/MainContext";
+import { addTeacherAction } from "@/app/actions/addTeacherAction";
+import messages from "@/resources/messages";
 
 type TeachersFormProps = {
     setTeachers: React.Dispatch<React.SetStateAction<TeacherType[]>>;
@@ -20,15 +23,17 @@ type TeachersFormProps = {
 
 const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers, selectedTeacher }) => {
     const { data: session } = useSession();
+    const { school, updateTeachers } = useMainContext();
     const [formData, setFormData] = useState<TeacherRequest>({
         name: selectedTeacher ? selectedTeacher.name : "",
         role: selectedTeacher ? selectedTeacher.role : TeacherRoleValues.HOMEROOM,
-        schoolId: selectedTeacher ? selectedTeacher.schoolId : session?.user?.id || "school1",
+        schoolId: selectedTeacher ? selectedTeacher.schoolId : school?.id || "",
         userId: selectedTeacher ? selectedTeacher.userId : null,
     });
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
 
     useEffect(() => {
         if (selectedTeacher) {
@@ -38,45 +43,48 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers, selectedTeache
                 schoolId: selectedTeacher.schoolId,
                 userId: selectedTeacher.userId,
             });
-        } else {
-            // Default to current school from session
-            const schoolId = session?.user?.id || "school1"; // Default for demo
+        } else if (school) {
+            // Default to current school from context
             setFormData({
                 name: "",
                 role: TeacherRoleValues.HOMEROOM,
-                schoolId: schoolId,
+                schoolId: school.id,
                 userId: null,
             });
         }
-    }, [selectedTeacher, session]);
+    }, [selectedTeacher, school]);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setError("");
+        setSuccessMessage("");
 
         try {
-            const newTeacher: TeacherType = {
-                id: Date.now().toString(),
-                name: formData.name,
-                role: formData.role,
-                schoolId: formData.schoolId,
-                userId: formData.userId,
-            };
+            const result = await addTeacherAction(formData);
 
-            setTeachers((prev) => [...prev, newTeacher]);
+            if (result.success && result.data) {
 
-            // add teacher to the DB
-
-            // Reset form
-            setFormData({
-                name: "",
-                role: TeacherRoleValues.HOMEROOM,
-                schoolId: session?.user?.id || "school1",
-                userId: null,
-            });
+                setTeachers((prev) => [...prev, result.data!]);
+                
+                // Update global context and localStorage cache
+                updateTeachers(result.data);
+                
+                // Show success message
+                setSuccessMessage(result.message);
+                
+                // Reset form
+                setFormData({
+                    name: "",
+                    role: TeacherRoleValues.HOMEROOM,
+                    schoolId: school?.id || "",
+                    userId: null,
+                });
+            } else {
+                setError(result.message);
+            }
         } catch (err) {
-            setError("אירעה שגיאה בהוספת המורה. אנא נסה שוב.");
+            setError(messages.teachers.createError);
             console.error(err);
         } finally {
             setIsLoading(false);
@@ -88,6 +96,7 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers, selectedTeache
             handleSubmit={handleSubmit}
             isLoading={isLoading}
             error={error}
+            success={successMessage}
             loadingText="מוסיף מורה..."
             btnText="הוסף מורה"
         >

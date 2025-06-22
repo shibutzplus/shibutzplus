@@ -5,6 +5,7 @@ import { unstable_cache } from "next/cache";
 import { GetSchoolResponse } from "@/models/types/school";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import { CACHE_DURATION_1_HOUR } from "@/utils/time";
+import messages from "@/resources/messages";
 
 // Cache school data with a 1-hour revalidation period
 const getCachedSchool = unstable_cache(
@@ -26,20 +27,20 @@ export async function getSchoolAction(schoolId: string): Promise<GetSchoolRespon
         if (!school) {
             return {
                 success: false,
-                message: "School not found",
+                message: messages.school.notFound,
             };
         }
 
         return {
             success: true,
-            message: "School retrieved successfully",
+            message: messages.school.retrieveSuccess,
             data: school,
         };
     } catch (error) {
         console.error("Error fetching school:", error);
         return {
             success: false,
-            message: "Failed to retrieve school. Please try again later.",
+            message: messages.school.retrieveError,
         };
     }
 }

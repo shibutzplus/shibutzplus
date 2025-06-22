@@ -5,6 +5,7 @@ import { unstable_cache } from "next/cache";
 import { GetTeachersResponse } from "@/models/types/teachers";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import { CACHE_DURATION_1_HOUR } from "@/utils/time";
+import messages from "@/resources/messages";
 
 // Cache teachers data with a 1-hour revalidation period
 const getCachedTeachers = unstable_cache(
@@ -25,14 +26,14 @@ export async function getTeachersAction(schoolId: string): Promise<GetTeachersRe
         const teachers = await getCachedTeachers(schoolId);
         return {
             success: true,
-            message: "Teachers retrieved successfully",
+            message: messages.teachers.retrieveSuccess,
             data: teachers,
         };
     } catch (error) {
         console.error("Error fetching teachers:", error);
         return {
             success: false,
-            message: "Failed to retrieve teachers. Please try again later.",
+            message: messages.teachers.retrieveError,
         };
     }
 }

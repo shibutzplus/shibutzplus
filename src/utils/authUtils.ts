@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { ActionResponse } from "@/models/types/actions";
+import messages from "@/resources/messages";
 
 /**
  * Checks if the user is authenticated and validates required parameters
@@ -15,7 +16,7 @@ export async function checkAuthAndParams(
   if (!session) {
     return {
       success: false,
-      message: "Unauthorized. Please log in to access this data.",
+      message: messages.auth.unauthorized,
     };
   }
 
@@ -24,7 +25,7 @@ export async function checkAuthAndParams(
     if (!paramValue) {
       return {
         success: false,
-        message: `${paramName} is required`,
+        message: `${paramName} ${messages.auth.paramRequired}`,
       };
     }
   }

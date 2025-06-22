@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import styles from "./ClassesForm.module.css";
 import { ClassType, ClassRequest } from "@/models/types/classes";
 import InputText from "../ui/InputText/InputText";
 import Form from "../core/Form/Form";
-import { useSession } from "next-auth/react";
+import { useMainContext } from "@/context/MainContext";
+import { addClassAction } from "@/app/actions/addClassAction";
+import messages from "@/resources/messages";
 
 type ClassesFormProps = {
     setClasses: React.Dispatch<React.SetStateAction<ClassType[]>>;
@@ -13,10 +14,11 @@ type ClassesFormProps = {
 };
 
 const ClassesForm: React.FC<ClassesFormProps> = ({ setClasses, selectedClass }) => {
-    const { data: session } = useSession();
+    const { school, updateClasses } = useMainContext();
+    
     const [formData, setFormData] = useState<ClassRequest>({
         name: selectedClass ? selectedClass.name : "",
-        schoolId: selectedClass ? selectedClass.schoolId : session?.user?.id || "school1",
+        schoolId: selectedClass ? selectedClass.schoolId : school?.id || "",
     });
 
     const [isLoading, setIsLoading] = useState(false);
@@ -31,34 +33,41 @@ const ClassesForm: React.FC<ClassesFormProps> = ({ setClasses, selectedClass }) 
         } else {
             setFormData({
                 name: "",
-                schoolId: session?.user?.id || "school1",
+                schoolId: school?.id || "",
             });
         }
-    }, [selectedClass, session]);
+    }, [selectedClass, school]);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setError("");
 
         try {
-            const newClass: ClassType = {
-                id: Date.now().toString(),
-                name: formData.name,
-                schoolId: formData.schoolId,
-            };
+            if (!formData.schoolId) {
+                setError(messages.school.idRequired);
+                setIsLoading(false);
+                return;
+            }
 
-            setClasses((prev) => [...prev, newClass]);
-
-            // add class to the DB
-
-            // Reset form
-            setFormData({
-                name: "",
-                schoolId: session?.user?.id || "school1",
-            });
+            const response = await addClassAction(formData);
+            
+            if (response.success && response.data) {
+                setClasses((prev) => [...prev, response.data as ClassType]);
+                
+                // Update MainContext state and localStorage cache
+                updateClasses(response.data as ClassType);
+                
+                // Reset form
+                setFormData({
+                    name: "",
+                    schoolId: school?.id || "",
+                });
+            } else {
+                setError(response.message || messages.classes.createError);
+            }
         } catch (err) {
-            setError("אירעה שגיאה בהוספת הכיתה. אנא נסה שוב.");
+            setError(messages.classes.createError);
             console.error(err);
         } finally {
             setIsLoading(false);
