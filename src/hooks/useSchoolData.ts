@@ -31,7 +31,6 @@ export function useSchoolData({
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        // Only fetch data when session is authenticated
         if (status === "authenticated" && session?.user) {
             const fetchData = async () => {
                 try {
@@ -50,6 +49,11 @@ export function useSchoolData({
                         return;
                     }
 
+                    // Check if cache is fresh (less than 1 hour old)
+                    const cacheTimestamp = localStorage.getItem(STORAGE_KEYS.CACHE_TIMESTAMP);
+                    const isCacheFresh =
+                        cacheTimestamp && Date.now() - parseInt(cacheTimestamp) < 3600000; // 1 hour
+
                     // Try to load data from localStorage first (for immediate UI rendering)
                     const cachedSchool = safeParseJSON<SchoolType>(
                         localStorage.getItem(STORAGE_KEYS.SCHOOL_DATA),
@@ -64,30 +68,49 @@ export function useSchoolData({
                         localStorage.getItem(STORAGE_KEYS.CLASSES_DATA),
                     );
 
-                    // Set cached data if available
+                    // Set cached data if available for immediate UI rendering
                     if (cachedSchool) setSchool(cachedSchool);
                     if (cachedTeachers) setTeachers(cachedTeachers);
                     if (cachedSubjects) setSubjects(cachedSubjects);
                     if (cachedClasses) setClasses(cachedClasses);
 
-                    // TODO: if cache available, why Im still fetching data from DB?
+                    // Determine which data needs to be fetched based on cache availability and freshness
+                    const needFetchSchool = !cachedSchool || !isCacheFresh;
+                    const needFetchTeachers = !cachedTeachers || !isCacheFresh;
+                    const needFetchSubjects = !cachedSubjects || !isCacheFresh;
+                    const needFetchClasses = !cachedClasses || !isCacheFresh;
 
-                    // Fetch fresh data using server actions
+                    // Prepare fetch promises only for data that needs to be fetched
+                    const schoolPromise = needFetchSchool
+                        ? getSchoolAction(schoolId)
+                        : Promise.resolve({ success: true, message: "", data: cachedSchool });
+                    
+                    const teachersPromise = needFetchTeachers
+                        ? getTeachersAction(schoolId)
+                        : Promise.resolve({ success: true, message: "", data: cachedTeachers });
+                    
+                    const subjectsPromise = needFetchSubjects
+                        ? getSubjectsAction(schoolId)
+                        : Promise.resolve({ success: true, message: "", data: cachedSubjects });
+                    
+                    const classesPromise = needFetchClasses
+                        ? getClassesAction(schoolId)
+                        : Promise.resolve({ success: true, message: "", data: cachedClasses });
+
+
+                    // Execute fetch promises
                     const [schoolResponse, teachersResponse, subjectsResponse, classesResponse] =
-                        await Promise.all([
-                            getSchoolAction(schoolId),
-                            getTeachersAction(schoolId),
-                            getSubjectsAction(schoolId),
-                            getClassesAction(schoolId),
-                        ]);
+                        await Promise.all([schoolPromise, teachersPromise, subjectsPromise, classesPromise]);
 
                     // Process school data
                     if (schoolResponse.success && schoolResponse.data) {
                         setSchool(schoolResponse.data);
-                        localStorage.setItem(
-                            STORAGE_KEYS.SCHOOL_DATA,
-                            JSON.stringify(schoolResponse.data),
-                        );
+                        if (needFetchSchool) {
+                            localStorage.setItem(
+                                STORAGE_KEYS.SCHOOL_DATA,
+                                JSON.stringify(schoolResponse.data),
+                            );
+                        }
                     } else if (!cachedSchool) {
                         console.error("Failed to fetch school data:", schoolResponse.message);
                     }
@@ -95,10 +118,12 @@ export function useSchoolData({
                     // Process teachers data
                     if (teachersResponse.success && teachersResponse.data) {
                         setTeachers(teachersResponse.data);
-                        localStorage.setItem(
-                            STORAGE_KEYS.TEACHERS_DATA,
-                            JSON.stringify(teachersResponse.data),
-                        );
+                        if (needFetchTeachers) {
+                            localStorage.setItem(
+                                STORAGE_KEYS.TEACHERS_DATA,
+                                JSON.stringify(teachersResponse.data),
+                            );
+                        }
                     } else if (!cachedTeachers) {
                         console.error("Failed to fetch teachers data:", teachersResponse.message);
                     }
@@ -106,10 +131,12 @@ export function useSchoolData({
                     // Process subjects data
                     if (subjectsResponse.success && subjectsResponse.data) {
                         setSubjects(subjectsResponse.data);
-                        localStorage.setItem(
-                            STORAGE_KEYS.SUBJECTS_DATA,
-                            JSON.stringify(subjectsResponse.data),
-                        );
+                        if (needFetchSubjects) {
+                            localStorage.setItem(
+                                STORAGE_KEYS.SUBJECTS_DATA,
+                                JSON.stringify(subjectsResponse.data),
+                            );
+                        }
                     } else if (!cachedSubjects) {
                         console.error("Failed to fetch subjects data:", subjectsResponse.message);
                     }
@@ -117,12 +144,19 @@ export function useSchoolData({
                     // Process classes data
                     if (classesResponse.success && classesResponse.data) {
                         setClasses(classesResponse.data);
-                        localStorage.setItem(
-                            STORAGE_KEYS.CLASSES_DATA,
-                            JSON.stringify(classesResponse.data),
-                        );
+                        if (needFetchClasses) {
+                            localStorage.setItem(
+                                STORAGE_KEYS.CLASSES_DATA,
+                                JSON.stringify(classesResponse.data),
+                            );
+                        }
                     } else if (!cachedClasses) {
                         console.error("Failed to fetch classes data:", classesResponse.message);
+                    }
+
+                    // Update cache timestamp if any data was fetched
+                    if (needFetchSchool || needFetchTeachers || needFetchSubjects || needFetchClasses) {
+                        localStorage.setItem(STORAGE_KEYS.CACHE_TIMESTAMP, Date.now().toString());
                     }
                 } catch (err) {
                     console.error("Error fetching school data:", err);

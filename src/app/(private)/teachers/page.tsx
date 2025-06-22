@@ -6,9 +6,10 @@ import { TeacherType } from "@/models/types/teachers";
 import TeachersForm from "@/components/TeachersForm/TeachersForm";
 import TeachersList from "@/components/TeachersList/TeachersList";
 import ManagementLayout from "@/components/layout/ManagementLayout/ManagementLayout";
+import { useMainContext } from "@/context/MainContext";
 
 const TeachersPage: NextPage = () => {
-    const [teachers, setTeachers] = useState<TeacherType[]>([]);
+    const { teachers } = useMainContext();
     const [selectedTeacher, setSelectedTeacher] = useState<TeacherType | null>(null);
 
     const handleSelectTeacher = (teacher: TeacherType) => {
@@ -16,8 +17,8 @@ const TeachersPage: NextPage = () => {
     };
 
     const listInfo = useMemo(() => {
-        const homeroomTeachersCount = teachers.filter((teacher) => teacher.role === "homeroom").length;
-        const substituteTeachersCount = teachers.filter((teacher) => teacher.role === "substitute").length;
+        const homeroomTeachersCount = teachers?.filter((teacher) => teacher.role === "homeroom").length || 0;
+        const substituteTeachersCount = teachers?.filter((teacher) => teacher.role === "substitute").length || 0;
         return `${homeroomTeachersCount} מחנכים, ${substituteTeachersCount} מחליפים`;
     }, [teachers])
 
@@ -27,8 +28,8 @@ const TeachersPage: NextPage = () => {
             listTitle="רשימת מורים"
             listInfo={listInfo}
             children={[
-                <TeachersList teachers={teachers} handleSelectTeacher={handleSelectTeacher} />,
-                <TeachersForm setTeachers={setTeachers} selectedTeacher={selectedTeacher} />,
+                <TeachersList key="teachers-list" teachers={teachers || []} handleSelectTeacher={handleSelectTeacher} />,
+                <TeachersForm key="teachers-form" selectedTeacher={selectedTeacher} />,
             ]}
         />
     );

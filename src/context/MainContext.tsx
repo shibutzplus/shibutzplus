@@ -10,7 +10,6 @@ import { useSchoolData } from "@/hooks/useSchoolData";
 import { useSession } from "next-auth/react";
 import { STORAGE_KEYS } from "@/resources/storage";
 
-
 interface MainContextType {
     school: SchoolType | undefined;
     teachers: TeacherType[] | undefined;
@@ -21,6 +20,7 @@ interface MainContextType {
     error: string | null;
     setSchoolIdInStorage: (id: string) => void;
     updateClasses: (newClass: ClassType) => void;
+    deleteClass: (classId: string) => void;
     updateTeachers: (newTeacher: TeacherType) => void;
     updateSubjects: (newSubject: SubjectType) => void;
 }
@@ -57,13 +57,11 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
     });
 
     const setSchoolIdInStorage = (id: string) => {
-        if (typeof window !== "undefined") {
-            localStorage.setItem(STORAGE_KEYS.SCHOOL_ID, id);
-        }
+        localStorage.setItem(STORAGE_KEYS.SCHOOL_ID, id);
     };
-    
+
     const updateClasses = (newClass: ClassType) => {
-        setClasses(prev => {
+        setClasses((prev) => {
             const updatedClasses = prev ? [...prev, newClass] : [newClass];
             if (typeof window !== "undefined") {
                 localStorage.setItem(STORAGE_KEYS.CLASSES_DATA, JSON.stringify(updatedClasses));
@@ -72,8 +70,19 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         });
     };
     
+    const deleteClass = (classId: string) => {
+        setClasses((prev) => {
+            if (!prev) return prev;
+            const updatedClasses = prev.filter(c => c.id !== classId);
+            if (typeof window !== "undefined") {
+                localStorage.setItem(STORAGE_KEYS.CLASSES_DATA, JSON.stringify(updatedClasses));
+            }
+            return updatedClasses;
+        });
+    };
+
     const updateTeachers = (newTeacher: TeacherType) => {
-        setTeachers(prev => {
+        setTeachers((prev) => {
             const updatedTeachers = prev ? [...prev, newTeacher] : [newTeacher];
             if (typeof window !== "undefined") {
                 localStorage.setItem(STORAGE_KEYS.TEACHERS_DATA, JSON.stringify(updatedTeachers));
@@ -81,9 +90,9 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
             return updatedTeachers;
         });
     };
-    
+
     const updateSubjects = (newSubject: SubjectType) => {
-        setSubjects(prev => {
+        setSubjects((prev) => {
             const updatedSubjects = prev ? [...prev, newSubject] : [newSubject];
             if (typeof window !== "undefined") {
                 localStorage.setItem(STORAGE_KEYS.SUBJECTS_DATA, JSON.stringify(updatedSubjects));
@@ -112,6 +121,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         error,
         setSchoolIdInStorage,
         updateClasses,
+        deleteClass,
         updateTeachers,
         updateSubjects,
     };

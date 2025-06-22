@@ -6,9 +6,10 @@ import { SubjectType } from "@/models/types/subjects";
 import SubjectsForm from "@/components/SubjectsForm/SubjectsForm";
 import SubjectsList from "@/components/SubjectsList/SubjectsList";
 import ManagementLayout from "@/components/layout/ManagementLayout/ManagementLayout";
+import { useMainContext } from "@/context/MainContext";
 
 const SubjectsPage: NextPage = () => {
-    const [subjects, setSubjects] = useState<SubjectType[]>([]);
+    const { subjects } = useMainContext();
     const [selectedSubject, setSelectedSubject] = useState<SubjectType | null>(null);
 
     const handleSelectSubject = (subject: SubjectType) => {
@@ -16,7 +17,7 @@ const SubjectsPage: NextPage = () => {
     };
 
     const listInfo = useMemo(() => {
-        return `${subjects.length} מקצועות`;
+        return `${subjects?.length || 0} מקצועות`;
     }, [subjects]);
 
     return (
@@ -25,8 +26,12 @@ const SubjectsPage: NextPage = () => {
             listTitle="רשימת מקצועות"
             listInfo={listInfo}
             children={[
-                <SubjectsList subjects={subjects} handleSelectSubject={handleSelectSubject} />,
-                <SubjectsForm setSubjects={setSubjects} selectedSubject={selectedSubject} />,
+                <SubjectsList
+                    key="subjects-list"
+                    subjects={subjects || []}
+                    handleSelectSubject={handleSelectSubject}
+                />,
+                <SubjectsForm key="subjects-form" selectedSubject={selectedSubject} />,
             ]}
         />
     );

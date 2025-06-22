@@ -9,13 +9,12 @@ import { addClassAction } from "@/app/actions/addClassAction";
 import messages from "@/resources/messages";
 
 type ClassesFormProps = {
-    setClasses: React.Dispatch<React.SetStateAction<ClassType[]>>;
     selectedClass: ClassType | null;
 };
 
-const ClassesForm: React.FC<ClassesFormProps> = ({ setClasses, selectedClass }) => {
+const ClassesForm: React.FC<ClassesFormProps> = ({ selectedClass }) => {
     const { school, updateClasses } = useMainContext();
-    
+
     const [formData, setFormData] = useState<ClassRequest>({
         name: selectedClass ? selectedClass.name : "",
         schoolId: selectedClass ? selectedClass.schoolId : school?.id || "",
@@ -23,6 +22,7 @@ const ClassesForm: React.FC<ClassesFormProps> = ({ setClasses, selectedClass }) 
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
 
     useEffect(() => {
         if (selectedClass) {
@@ -30,7 +30,7 @@ const ClassesForm: React.FC<ClassesFormProps> = ({ setClasses, selectedClass }) 
                 name: selectedClass.name,
                 schoolId: selectedClass.schoolId,
             });
-        } else {
+        } else if (school) {
             setFormData({
                 name: "",
                 schoolId: school?.id || "",
@@ -42,6 +42,7 @@ const ClassesForm: React.FC<ClassesFormProps> = ({ setClasses, selectedClass }) 
         e.preventDefault();
         setIsLoading(true);
         setError("");
+        setSuccessMessage("");
 
         try {
             if (!formData.schoolId) {
@@ -51,14 +52,12 @@ const ClassesForm: React.FC<ClassesFormProps> = ({ setClasses, selectedClass }) 
             }
 
             const response = await addClassAction(formData);
-            
+
             if (response.success && response.data) {
-                setClasses((prev) => [...prev, response.data as ClassType]);
-                
-                // Update MainContext state and localStorage cache
                 updateClasses(response.data as ClassType);
-                
-                // Reset form
+
+                setSuccessMessage(response.message);
+
                 setFormData({
                     name: "",
                     schoolId: school?.id || "",
@@ -79,6 +78,7 @@ const ClassesForm: React.FC<ClassesFormProps> = ({ setClasses, selectedClass }) 
             handleSubmit={handleSubmit}
             isLoading={isLoading}
             error={error}
+            success={successMessage}
             loadingText="מוסיף כיתה..."
             btnText="הוסף כיתה"
         >
@@ -97,7 +97,7 @@ const ClassesForm: React.FC<ClassesFormProps> = ({ setClasses, selectedClass }) 
                     }}
                     placeholder="לדוגמה: א1"
                     required
-                />
+                />,
             ]}
         </Form>
     );

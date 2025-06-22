@@ -6,6 +6,7 @@ import { ClassType } from "@/models/types/classes";
 import { usePopup } from "@/context/PopupContext";
 import TableList from "../core/TableList/TableList";
 import DeleteClassPopup from "../popups/DeleteClassPopup/DeleteClassPopup";
+import { useMainContext } from "@/context/MainContext";
 
 type ClassesListProps = {
     classes: ClassType[];
@@ -13,13 +14,26 @@ type ClassesListProps = {
 };
 
 const ClassesList: React.FC<ClassesListProps> = ({ classes, handleSelectClass }) => {
-    const { openPopup } = usePopup();
+    const { openPopup, closePopup } = usePopup();
+    const { deleteClass } = useMainContext();
+
+    const handleDeleteClassFromState = (classId: string) => {
+        // Use the MainContext's deleteClass function
+        deleteClass(classId);
+        
+        // Close the popup after deletion
+        closePopup();
+    };
 
     const handleOpenPopup = (classItem: ClassType) => {
         openPopup(
             "deleteClass",
             "S",
-            <DeleteClassPopup classItem={classItem} onDelete={() => {}} onCancel={() => {}} />,
+            <DeleteClassPopup 
+                classItem={classItem} 
+                onDelete={() => handleDeleteClassFromState(classItem.id)} 
+                onCancel={() => closePopup()} 
+            />,
         );
     };
 

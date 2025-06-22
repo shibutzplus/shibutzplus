@@ -6,9 +6,10 @@ import { ClassType } from "@/models/types/classes";
 import ClassesForm from "@/components/ClassesForm/ClassesForm";
 import ClassesList from "@/components/ClassesList/ClassesList";
 import ManagementLayout from "@/components/layout/ManagementLayout/ManagementLayout";
+import { useMainContext } from "@/context/MainContext";
 
 const ClassesPage: NextPage = () => {
-    const [classes, setClasses] = useState<ClassType[]>([]);
+    const { classes } = useMainContext();
     const [selectedClass, setSelectedClass] = useState<ClassType | null>(null);
 
     const handleSelectClass = (classItem: ClassType) => {
@@ -16,7 +17,7 @@ const ClassesPage: NextPage = () => {
     };
 
     const listInfo = useMemo(() => {
-        return `${classes.length} כיתות`;
+        return `${classes?.length || 0} כיתות`;
     }, [classes]);
 
     return (
@@ -25,8 +26,15 @@ const ClassesPage: NextPage = () => {
             listTitle="רשימת כיתות"
             listInfo={listInfo}
             children={[
-                <ClassesList classes={classes} handleSelectClass={handleSelectClass} />,
-                <ClassesForm setClasses={setClasses} selectedClass={selectedClass} />,
+                <ClassesList 
+                    key="classes-list"
+                    classes={classes || []} 
+                    handleSelectClass={handleSelectClass} 
+                />,
+                <ClassesForm 
+                    key="classes-form"
+                    selectedClass={selectedClass} 
+                />,
             ]}
         />
     );

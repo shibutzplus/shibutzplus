@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import styles from "./TeachersForm.module.css";
 import {
     TeacherType,
     TeacherRequest,
@@ -10,20 +9,18 @@ import {
 } from "@/models/types/teachers";
 import RadioGroup from "../ui/RadioGroup/RadioGroup";
 import Form from "../core/Form/Form";
-import { useSession } from "next-auth/react";
 import InputText from "../ui/InputText/InputText";
 import { useMainContext } from "@/context/MainContext";
 import { addTeacherAction } from "@/app/actions/addTeacherAction";
 import messages from "@/resources/messages";
 
 type TeachersFormProps = {
-    setTeachers: React.Dispatch<React.SetStateAction<TeacherType[]>>;
     selectedTeacher: TeacherType | null;
 };
 
-const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers, selectedTeacher }) => {
-    const { data: session } = useSession();
+const TeachersForm: React.FC<TeachersFormProps> = ({ selectedTeacher }) => {
     const { school, updateTeachers } = useMainContext();
+
     const [formData, setFormData] = useState<TeacherRequest>({
         name: selectedTeacher ? selectedTeacher.name : "",
         role: selectedTeacher ? selectedTeacher.role : TeacherRoleValues.HOMEROOM,
@@ -44,7 +41,6 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers, selectedTeache
                 userId: selectedTeacher.userId,
             });
         } else if (school) {
-            // Default to current school from context
             setFormData({
                 name: "",
                 role: TeacherRoleValues.HOMEROOM,
@@ -61,17 +57,19 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers, selectedTeache
         setSuccessMessage("");
 
         try {
-            const result = await addTeacherAction(formData);
+            if (!formData.schoolId) {
+                setError(messages.school.idRequired);
+                setIsLoading(false);
+                return;
+            }
 
-            if (result.success && result.data) {
+            const response = await addTeacherAction(formData);
 
-                setTeachers((prev) => [...prev, result.data!]);
-                
-                // Update global context and localStorage cache
-                updateTeachers(result.data);
+            if (response.success && response.data) {
+                updateTeachers(response.data as TeacherType);
                 
                 // Show success message
-                setSuccessMessage(result.message);
+                setSuccessMessage(response.message);
                 
                 // Reset form
                 setFormData({
@@ -81,7 +79,7 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers, selectedTeache
                     userId: null,
                 });
             } else {
-                setError(result.message);
+                setError(response.message);
             }
         } catch (err) {
             setError(messages.teachers.createError);

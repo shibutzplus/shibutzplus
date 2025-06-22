@@ -1,23 +1,20 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import styles from "./SubjectsForm.module.css";
 import { SubjectType, SubjectRequest } from "@/models/types/subjects";
 import Form from "../core/Form/Form";
-import { useSession } from "next-auth/react";
 import InputText from "../ui/InputText/InputText";
 import { useMainContext } from "@/context/MainContext";
 import { addSubjectAction } from "@/app/actions/addSubjectAction";
 import messages from "@/resources/messages";
 
 type SubjectsFormProps = {
-    setSubjects: React.Dispatch<React.SetStateAction<SubjectType[]>>;
     selectedSubject: SubjectType | null;
 };
 
-const SubjectsForm: React.FC<SubjectsFormProps> = ({ setSubjects, selectedSubject }) => {
-    const { data: session } = useSession();
+const SubjectsForm: React.FC<SubjectsFormProps> = ({ selectedSubject }) => {
     const { school, updateSubjects } = useMainContext();
+    
     const [formData, setFormData] = useState<SubjectRequest>({
         name: selectedSubject ? selectedSubject.name : "",
         schoolId: selectedSubject ? selectedSubject.schoolId : school?.id || "",
@@ -49,26 +46,25 @@ const SubjectsForm: React.FC<SubjectsFormProps> = ({ setSubjects, selectedSubjec
         setSuccessMessage("");
 
         try {
-            // Call the server action to add the subject
-            const result = await addSubjectAction(formData);
+            if (!formData.schoolId) {
+                setError(messages.school.idRequired);
+                setIsLoading(false);
+                return;
+            }
 
-            if (result.success && result.data) {
-                // Update local component state
-                setSubjects((prev) => [...prev, result.data!]);
+            const response = await addSubjectAction(formData);
+
+            if (response.success && response.data) {
+                updateSubjects(response.data as SubjectType);
                 
-                // Update global context and localStorage cache
-                updateSubjects(result.data);
+                setSuccessMessage(response.message);
                 
-                // Show success message
-                setSuccessMessage(result.message);
-                
-                // Reset form
                 setFormData({
                     name: "",
                     schoolId: school?.id || "",
                 });
             } else {
-                setError(result.message);
+                setError(response.message);
             }
         } catch (err) {
             setError(messages.subjects.createError);
