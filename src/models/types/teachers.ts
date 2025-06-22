@@ -1,20 +1,26 @@
+import { ActionResponse } from "./actions";
+
 export type TeacherType = {
-  id: string;
-  name: string;
-  role: TeacherRole;
-  schoolId: string;
-  userId?: string | null;
-}
+    id: string;
+    name: string;
+    role: TeacherRole;
+    schoolId: string;
+    userId?: string | null;
+};
 
 export type TeacherRequest = {
-  name: string;
-  role: TeacherRole;
-  schoolId: string;
-  userId?: string | null;
-}
+    name: string;
+    role: TeacherRole;
+    schoolId: string;
+    userId?: string | null;
+};
+
+export type GetTeachersResponse = ActionResponse & {
+    data?: TeacherType[];
+};
 
 export const TeacherRoleValues = {
-  HOMEROOM: "homeroom" as const,
-  SUBSTITUTE: "substitute" as const,
+    HOMEROOM: "homeroom" as const,
+    SUBSTITUTE: "substitute" as const,
 };
-export type TeacherRole = typeof TeacherRoleValues[keyof typeof TeacherRoleValues];
+export type TeacherRole = (typeof TeacherRoleValues)[keyof typeof TeacherRoleValues];

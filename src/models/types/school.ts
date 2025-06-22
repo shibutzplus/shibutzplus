@@ -1,3 +1,9 @@
+import { ActionResponse } from "./actions";
+
+export type SchoolStatus = "onboarding" | "active" | "archived";
+
+export type SchoolAgeGroup = "Elementary" | "Middle" | "High";
+
 export type SchoolType = {
     id: string;
     name: string;
@@ -5,8 +11,8 @@ export type SchoolType = {
     status: SchoolStatus;
     createdAt: Date;
     updatedAt: Date;
-}
+};
 
-export type SchoolStatus = "onboarding" | "active" | "archived";
-
-export type SchoolAgeGroup = "Elementary" | "Middle" | "High";
+export type GetSchoolResponse = ActionResponse & {
+    data?: SchoolType;
+};

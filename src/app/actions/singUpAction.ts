@@ -1,12 +1,12 @@
 "use server";
 
-import { RegisterRequest } from "@/models/types/auth";
+import { RegisterRequest, RegisterResponse } from "@/models/types/auth";
 import { db, schema } from "@/db";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import msg from "@/resources/messages";
 
-const signUp = async (params: RegisterRequest) => {
+const signUp = async (params: RegisterRequest): Promise<RegisterResponse> => {
     try {
         const { name, email, password, role, gender, school: schoolName } = params;
 

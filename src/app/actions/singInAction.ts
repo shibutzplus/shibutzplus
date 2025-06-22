@@ -1,10 +1,10 @@
 "use client";
 
-import { SignInRequest } from "@/models/types/auth";
+import { SignInRequest, SignInResponse } from "@/models/types/auth";
 import { signIn } from "next-auth/react";
 import msg from "@/resources/messages";
 
-const signInWithCredentials = async (params: SignInRequest) => {
+const signInWithCredentials = async (params: SignInRequest): Promise<SignInResponse> => {
     try {
         const { email, password, remember } = params;
         if (!email || !password) {

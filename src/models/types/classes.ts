@@ -1,3 +1,5 @@
+import { ActionResponse } from "./actions";
+
 export type ClassType = {
   id: string;
   name: string;
@@ -7,4 +9,8 @@ export type ClassType = {
 export type ClassRequest = {
   name: string;
   schoolId: string;
+}
+
+export type GetClassesResponse = ActionResponse & {
+  data?: ClassType[];
 }

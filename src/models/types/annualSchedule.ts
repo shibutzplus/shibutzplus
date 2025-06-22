@@ -1,4 +1,4 @@
-export type AnnualSchedule = {
+export type AnnualScheduleType = {
   id: string;
   day: number; // 1-7 representing days of the week
   hour: number; // period within the day

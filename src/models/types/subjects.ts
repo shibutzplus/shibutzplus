@@ -1,3 +1,5 @@
+import { ActionResponse } from "./actions";
+
 export type SubjectType = {
   id: string;
   name: string;
@@ -7,4 +9,8 @@ export type SubjectType = {
 export type SubjectRequest = {
   name: string;
   schoolId: string;
+}
+
+export type GetSubjectsResponse = ActionResponse & {
+  data?: SubjectType[];
 }

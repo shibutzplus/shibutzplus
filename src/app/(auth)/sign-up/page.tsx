@@ -10,7 +10,7 @@ import styles from "./signUp.module.css";
 import routePath from "../../../routes";
 import { NextPage } from "next";
 import { RegisterRequest, UserGender, UserRole } from "@/models/types/auth";
-import signUp from "@/lib/actions/singUpAction";
+import signUp from "@/app/actions/singUpAction";
 import RadioGroup from "@/components/ui/RadioGroup/RadioGroup";
 
 const SignUpPage: NextPage = () => {

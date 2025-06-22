@@ -1,3 +1,7 @@
+// Extend the next-auth types
+import "next-auth";
+import { ActionResponse } from "./actions";
+
 export type UserRole = "admin" | "teacher";
 
 export type UserGender = "male" | "female";
@@ -21,10 +25,7 @@ export type RegisterRequest = {
     school: string;
 };
 
-export type RegisterResponse = {
-    success: boolean;
-    message: string;
-};
+export type RegisterResponse = ActionResponse;
 
 export type SignInRequest = {
     email: string;
@@ -32,13 +33,7 @@ export type SignInRequest = {
     remember: boolean;
 };
 
-export type SignInResponse = {
-    success: boolean;
-    message: string;
-};
-
-// Extend the next-auth types
-import "next-auth";
+export type SignInResponse = ActionResponse;
 
 declare module "next-auth" {
     interface Session {
@@ -48,6 +43,7 @@ declare module "next-auth" {
             email?: string | null;
             gender?: UserGender;
             role?: UserRole;
+            schoolId?: string;
         };
     }
 
@@ -55,5 +51,6 @@ declare module "next-auth" {
     interface JWT {
         name?: string;
         role?: UserRole;
+        schoolId?: string;
     }
 }
