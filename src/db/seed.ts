@@ -183,9 +183,9 @@ async function seedTeachers(db: any, userIds: string[], schoolIds: string[]) {
   console.log('Seeding teachers...');
   
   // Get user information to use for teacher names
-  const users = await db.select().from(schema.users).where({
-    id: { in: userIds }
-  });
+  const users = await db.select().from(schema.users).where(
+    sql`id IN (${sql.join(userIds, sql`, `)})`
+  );
   
   const userMap = users.reduce((map: any, user: any) => {
     map[user.id] = user;

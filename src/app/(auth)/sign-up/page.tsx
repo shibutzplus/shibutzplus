@@ -78,7 +78,7 @@ const SignUpPage: NextPage = () => {
                         required
                     />
 
-                    <InputSelect
+                    {/* <InputSelect
                         label="תפקיד"
                         id="role"
                         value={formData.role}
@@ -87,7 +87,7 @@ const SignUpPage: NextPage = () => {
                             { value: "admin", label: "מנהל/ת" },
                             { value: "teacher", label: "מורה" },
                         ]}
-                    />
+                    /> */}
 
                     <InputText
                         label="שם בית ספר"

@@ -21,7 +21,7 @@ async function executeMigration() {
     const sql = neon(DATABASE_URL);
     
     // Read the migration SQL file
-    const migrationPath = path.resolve(__dirname, '../../drizzle/0000_flat_mentor.sql');
+    const migrationPath = path.resolve(__dirname, '../../drizzle/0000_concerned_living_lightning.sql');
     console.log(`Reading migration file: ${migrationPath}`);
     
     if (!fs.existsSync(migrationPath)) {
