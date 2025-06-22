@@ -2,7 +2,6 @@ import { pgTable, text, varchar, timestamp } from 'drizzle-orm/pg-core';
 import { createId } from '@paralleldrive/cuid2';
 import { SchoolStatus, SchoolAgeGroup } from '@/models/types/school';
 
-// Define the schools table
 export const schools = pgTable('schools', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
   name: varchar('name', { length: 100 }).notNull().unique(),
@@ -12,6 +11,5 @@ export const schools = pgTable('schools', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
-// Export the schools table type
 export type SchoolSchema = typeof schools.$inferSelect;
 export type NewSchoolSchema = typeof schools.$inferInsert;

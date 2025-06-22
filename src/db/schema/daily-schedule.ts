@@ -1,7 +1,6 @@
 import { pgTable, text, varchar, timestamp, integer, uniqueIndex, date } from 'drizzle-orm/pg-core';
 import { createId } from '@paralleldrive/cuid2';
 
-// Define the daily schedule table
 export const dailySchedule = pgTable('daily_schedule', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
   date: date('date').notNull(),
@@ -23,6 +22,5 @@ export const dailySchedule = pgTable('daily_schedule', {
   };
 });
 
-// Export the daily schedule table type
 export type DailyScheduleSchema = typeof dailySchedule.$inferSelect;
 export type NewDailyScheduleSchema = typeof dailySchedule.$inferInsert;

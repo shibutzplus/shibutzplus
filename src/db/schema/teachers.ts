@@ -12,6 +12,5 @@ export const teachers = pgTable('teachers', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
-// Export the teachers table type
 export type TeacherSchema = typeof teachers.$inferSelect;
 export type NewTeacherSchema = typeof teachers.$inferInsert;

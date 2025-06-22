@@ -1,7 +1,6 @@
 import { pgTable, text, varchar, timestamp, integer, uniqueIndex } from 'drizzle-orm/pg-core';
 import { createId } from '@paralleldrive/cuid2';
 
-// Define the annual schedule table
 export const annualSchedule = pgTable('annual_schedule', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
   day: integer('day').notNull(), // 1-7 representing days of the week
@@ -19,6 +18,5 @@ export const annualSchedule = pgTable('annual_schedule', {
   };
 });
 
-// Export the annual schedule table type
 export type AnnualScheduleSchema = typeof annualSchedule.$inferSelect;
 export type NewAnnualScheduleSchema = typeof annualSchedule.$inferInsert;

@@ -8,7 +8,8 @@ ALTER TABLE "schools"
 -- Update users table
 ALTER TABLE "users" 
   DROP COLUMN "name",
-  ADD COLUMN "gender" varchar(10),
+  ADD COLUMN "name" varchar(255) NOT NULL,
+  ADD COLUMN "gender" varchar(20) NOT NULL DEFAULT 'female',
   ALTER COLUMN "role" TYPE varchar(20),
   ALTER COLUMN "role" SET DEFAULT 'admin';
 
@@ -54,7 +55,7 @@ CREATE TABLE "annual_schedule" (
   "id" text PRIMARY KEY NOT NULL,
   "day" integer NOT NULL,
   "hour" integer NOT NULL,
-  "position" integer NOT NULL,
+  "position" varchar(20) NOT NULL,
   "school_id" text NOT NULL,
   "class_id" text NOT NULL,
   "teacher_id" text NOT NULL,
@@ -73,11 +74,12 @@ CREATE TABLE "daily_schedule" (
   "id" text PRIMARY KEY NOT NULL,
   "date" date NOT NULL,
   "hour" integer NOT NULL,
-  "position" integer NOT NULL,
+  "position" varchar(30) NOT NULL,
+  "event_title" varchar(255),
   "event" text,
   "school_id" text NOT NULL,
   "class_id" text NOT NULL,
-  "subject_id" text NOT NULL,
+  "subject_id" text,
   "absent_teacher_id" text,
   "present_teacher_id" text,
   "sub_teacher_id" text,
@@ -85,7 +87,7 @@ CREATE TABLE "daily_schedule" (
   "updated_at" timestamp DEFAULT now() NOT NULL,
   CONSTRAINT "daily_schedule_school_id_fk" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT "daily_schedule_class_id_fk" FOREIGN KEY ("class_id") REFERENCES "classes"("id") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT "daily_schedule_subject_id_fk" FOREIGN KEY ("subject_id") REFERENCES "subjects"("id") ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT "daily_schedule_subject_id_fk" FOREIGN KEY ("subject_id") REFERENCES "subjects"("id") ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT "daily_schedule_absent_teacher_id_fk" FOREIGN KEY ("absent_teacher_id") REFERENCES "teachers"("id") ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT "daily_schedule_present_teacher_id_fk" FOREIGN KEY ("present_teacher_id") REFERENCES "teachers"("id") ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT "daily_schedule_sub_teacher_id_fk" FOREIGN KEY ("sub_teacher_id") REFERENCES "teachers"("id") ON DELETE SET NULL ON UPDATE CASCADE,

@@ -194,22 +194,22 @@ async function seedTeachers(db: any, userIds: string[], schoolIds: string[]) {
   
   const teachers = [
     {
-      name: userMap[userIds[1]]?.name || 'John Smith',
       role: 'homeroom' as TeacherRole,
       userId: userIds[1], // John Smith
       schoolId: schoolIds[0],
+      name: userMap[userIds[1]]?.name || 'John Smith',
     },
     {
-      name: userMap[userIds[2]]?.name || 'Sarah Johnson',
       role: 'homeroom' as TeacherRole,
       userId: userIds[2], // Sarah Johnson
       schoolId: schoolIds[1],
+      name: userMap[userIds[2]]?.name || 'Sarah Johnson',
     },
     {
-      name: userMap[userIds[3]]?.name || 'Michael Brown',
       role: 'substitute' as TeacherRole,
       userId: userIds[3], // Michael Brown
       schoolId: schoolIds[2],
+      name: userMap[userIds[3]]?.name || 'Michael Brown',
     },
   ];
   
@@ -285,30 +285,34 @@ async function seedSubjects(db: any, schoolIds: string[]) {
 async function seedAnnualSchedule(db: any, schoolIds: string[], classIds: string[], teacherIds: string[], subjectIds: string[]) {
   console.log('Seeding annual schedule...');
   
+  // Create schedules with proper day values (1-7 for days of week) and position field
   const schedules = [
     {
       schoolId: schoolIds[0],
       classId: classIds[0],
       teacherId: teacherIds[0],
       subjectId: subjectIds[0],
-      day: 'sunday',
+      day: 1, // Sunday
       hour: 1,
+      position: '1-1', // day-hour format
     },
     {
       schoolId: schoolIds[0],
       classId: classIds[0],
       teacherId: teacherIds[0],
       subjectId: subjectIds[1],
-      day: 'sunday',
+      day: 1, // Sunday
       hour: 2,
+      position: '1-2', // day-hour format
     },
     {
       schoolId: schoolIds[1],
       classId: classIds[2],
       teacherId: teacherIds[1],
       subjectId: subjectIds[3],
-      day: 'monday',
+      day: 2, // Monday
       hour: 3,
+      position: '2-3', // day-hour format
     },
   ];
   
