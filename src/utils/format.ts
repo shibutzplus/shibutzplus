@@ -1,3 +1,5 @@
+import { SelectOption } from "@/models/types";
+
 export function safeParseJSON<T>(jsonString: string | null): T | null {
     if (!jsonString) return null;
     try {
@@ -7,3 +9,14 @@ export function safeParseJSON<T>(jsonString: string | null): T | null {
         return null;
     }
 }
+
+export const createSelectOptions = <T extends { id: string; name: string }>(
+    data: T[] | undefined,
+) => {
+    if (!data) return [];
+    const options: SelectOption[] = data.map((item) => ({
+        value: item.id,
+        label: item.name,
+    }));
+    return options;
+};

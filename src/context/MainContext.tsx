@@ -23,6 +23,8 @@ interface MainContextType {
     deleteClass: (classId: string) => void;
     updateTeachers: (newTeacher: TeacherType) => void;
     updateSubjects: (newSubject: SubjectType) => void;
+    updateAnnualSchedule: (newScheduleItem: AnnualScheduleType) => void;
+    updateExistingAnnualSchedule: (updatedScheduleItem: AnnualScheduleType) => void;
 }
 
 const MainContext = createContext<MainContextType | undefined>(undefined);
@@ -54,6 +56,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         setTeachers,
         setSubjects,
         setClasses,
+        setAnnualScheduleTable,
     });
 
     const setSchoolIdInStorage = (id: string) => {
@@ -101,6 +104,31 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         });
     };
 
+    const updateAnnualSchedule = (newScheduleItem: AnnualScheduleType) => {
+        setAnnualScheduleTable((prev) => {
+            const updatedSchedule = prev ? [...prev, newScheduleItem] : [newScheduleItem];
+            if (typeof window !== "undefined") {
+                localStorage.setItem(STORAGE_KEYS.ANNUAL_SCHEDULE_DATA, JSON.stringify(updatedSchedule));
+            }
+            return updatedSchedule;
+        });
+    };
+    
+    const updateExistingAnnualSchedule = (updatedScheduleItem: AnnualScheduleType) => {
+        setAnnualScheduleTable((prev) => {
+            if (!prev) return [updatedScheduleItem];
+            
+            const updatedSchedule = prev.map(item => 
+                item.id === updatedScheduleItem.id ? updatedScheduleItem : item
+            );
+            
+            if (typeof window !== "undefined") {
+                localStorage.setItem(STORAGE_KEYS.ANNUAL_SCHEDULE_DATA, JSON.stringify(updatedSchedule));
+            }
+            return updatedSchedule;
+        });
+    };
+
     useEffect(() => {
         // Initialize school ID from user session if available
         if (session?.user?.schoolId && typeof window !== "undefined") {
@@ -124,6 +152,8 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         deleteClass,
         updateTeachers,
         updateSubjects,
+        updateAnnualSchedule,
+        updateExistingAnnualSchedule,
     };
 
     return <MainContext.Provider value={value}>{children}</MainContext.Provider>;

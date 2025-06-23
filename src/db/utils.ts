@@ -10,6 +10,9 @@ import {
     NewDailyScheduleSchema,
     TeacherRole,
 } from "./schema";
+import { AnnualScheduleType } from "@/models/types/annualSchedule";
+
+//TODO: move to the actions
 
 // User operations
 export async function getUserById(id: string) {
@@ -233,10 +236,28 @@ export async function getAnnualScheduleById(id: string) {
 }
 
 export async function getAnnualSchedulesBySchool(schoolId: string) {
-    return await db
-        .select()
-        .from(schema.annualSchedule)
-        .where(eq(schema.annualSchedule.schoolId, schoolId));
+    const schedules = await db.query.annualSchedule.findMany({
+        where: eq(schema.annualSchedule.schoolId, schoolId),
+        with: {
+            school: true,
+            class: true,
+            teacher: true,
+            subject: true,
+        },
+    });
+
+    return schedules.map(schedule => ({
+        id: schedule.id,
+        day: schedule.day,
+        hour: schedule.hour,
+        position: schedule.position,
+        school: schedule.school,
+        class: schedule.class,
+        teacher: schedule.teacher,
+        subject: schedule.subject,
+        createdAt: schedule.createdAt,
+        updatedAt: schedule.updatedAt
+    } as AnnualScheduleType));
 }
 
 export async function getAnnualSchedulesByClass(classId: string) {

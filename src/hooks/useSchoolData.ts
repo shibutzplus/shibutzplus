@@ -6,10 +6,12 @@ import { SchoolType } from "@/models/types/school";
 import { TeacherType } from "@/models/types/teachers";
 import { ClassType } from "@/models/types/classes";
 import { SubjectType } from "@/models/types/subjects";
+import { AnnualScheduleType } from "@/models/types/annualSchedule";
 import { getSchoolAction } from "@/app/actions/getSchoolAction";
 import { getTeachersAction } from "@/app/actions/getTeachersAction";
 import { getSubjectsAction } from "@/app/actions/getSubjectsAction";
 import { getClassesAction } from "@/app/actions/getClassesAction";
+import { getAnnualScheduleAction } from "@/app/actions/getAnnualScheduleAction";
 import { safeParseJSON } from "@/utils/format";
 import { STORAGE_KEYS } from "@/resources/storage";
 
@@ -18,6 +20,7 @@ interface UseSchoolDataProps {
     setTeachers: (teachers: TeacherType[] | undefined) => void;
     setSubjects: (subjects: SubjectType[] | undefined) => void;
     setClasses: (classes: ClassType[] | undefined) => void;
+    setAnnualScheduleTable?: (annualSchedule: AnnualScheduleType[] | undefined) => void;
 }
 
 export function useSchoolData({
@@ -25,6 +28,7 @@ export function useSchoolData({
     setTeachers,
     setSubjects,
     setClasses,
+    setAnnualScheduleTable,
 }: UseSchoolDataProps) {
     const { data: session, status } = useSession();
     const [isLoading, setIsLoading] = useState(true);
@@ -67,18 +71,23 @@ export function useSchoolData({
                     const cachedClasses = safeParseJSON<ClassType[]>(
                         localStorage.getItem(STORAGE_KEYS.CLASSES_DATA),
                     );
+                    const cachedAnnualSchedule = safeParseJSON<AnnualScheduleType[]>(
+                        localStorage.getItem(STORAGE_KEYS.ANNUAL_SCHEDULE_DATA),
+                    );
 
                     // Set cached data if available for immediate UI rendering
                     if (cachedSchool) setSchool(cachedSchool);
                     if (cachedTeachers) setTeachers(cachedTeachers);
                     if (cachedSubjects) setSubjects(cachedSubjects);
                     if (cachedClasses) setClasses(cachedClasses);
+                    if (cachedAnnualSchedule && setAnnualScheduleTable) setAnnualScheduleTable(cachedAnnualSchedule);
 
                     // Determine which data needs to be fetched based on cache availability and freshness
                     const needFetchSchool = !cachedSchool || !isCacheFresh;
                     const needFetchTeachers = !cachedTeachers || !isCacheFresh;
                     const needFetchSubjects = !cachedSubjects || !isCacheFresh;
                     const needFetchClasses = !cachedClasses || !isCacheFresh;
+                    const needFetchAnnualSchedule = !cachedAnnualSchedule || !isCacheFresh;
 
                     // Prepare fetch promises only for data that needs to be fetched
                     const schoolPromise = needFetchSchool
@@ -96,11 +105,15 @@ export function useSchoolData({
                     const classesPromise = needFetchClasses
                         ? getClassesAction(schoolId)
                         : Promise.resolve({ success: true, message: "", data: cachedClasses });
+                    
+                    const annualSchedulePromise = setAnnualScheduleTable && needFetchAnnualSchedule
+                        ? getAnnualScheduleAction(schoolId)
+                        : Promise.resolve({ success: true, message: "", data: cachedAnnualSchedule });
 
 
                     // Execute fetch promises
-                    const [schoolResponse, teachersResponse, subjectsResponse, classesResponse] =
-                        await Promise.all([schoolPromise, teachersPromise, subjectsPromise, classesPromise]);
+                    const [schoolResponse, teachersResponse, subjectsResponse, classesResponse, annualScheduleResponse] =
+                        await Promise.all([schoolPromise, teachersPromise, subjectsPromise, classesPromise, annualSchedulePromise]);
 
                     // Process school data
                     if (schoolResponse.success && schoolResponse.data) {
@@ -154,8 +167,21 @@ export function useSchoolData({
                         console.error("Failed to fetch classes data:", classesResponse.message);
                     }
 
+                    // Process annual schedule data
+                    if (setAnnualScheduleTable && annualScheduleResponse.success && annualScheduleResponse.data) {
+                        setAnnualScheduleTable(annualScheduleResponse.data);
+                        if (needFetchAnnualSchedule) {
+                            localStorage.setItem(
+                                STORAGE_KEYS.ANNUAL_SCHEDULE_DATA,
+                                JSON.stringify(annualScheduleResponse.data),
+                            );
+                        }
+                    } else if (setAnnualScheduleTable && !cachedAnnualSchedule) {
+                        console.error("Failed to fetch annual schedule data:", annualScheduleResponse.message);
+                    }
+
                     // Update cache timestamp if any data was fetched
-                    if (needFetchSchool || needFetchTeachers || needFetchSubjects || needFetchClasses) {
+                    if (needFetchSchool || needFetchTeachers || needFetchSubjects || needFetchClasses || needFetchAnnualSchedule) {
                         localStorage.setItem(STORAGE_KEYS.CACHE_TIMESTAMP, Date.now().toString());
                     }
                 } catch (err) {
@@ -168,7 +194,7 @@ export function useSchoolData({
 
             fetchData();
         }
-    }, [session, status, setSchool, setTeachers, setSubjects, setClasses]);
+    }, [session, status, setSchool, setTeachers, setSubjects, setClasses, setAnnualScheduleTable]);
 
     return { isLoading, error };
 }
