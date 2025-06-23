@@ -83,8 +83,8 @@ const SignUpPage: NextPage = () => {
                         onChange={handleChange}
                         placeholder="בחר תפקיד"
                         options={[
-                            { value: "principal", label: "מנהל/ת" },
-                            { value: "deputy", label: "סגן/ית" },
+                            { value: "principal", label: "מנהל" },
+                            { value: "teacher", label: "מורה" },
                             { value: "other", label: "אחר" },
                         ]}
                     />

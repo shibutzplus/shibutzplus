@@ -22,7 +22,6 @@ export default function ContentLayout({ children }: { children: React.ReactNode 
 
                 .content-main {
                     flex: 1;
-                    padding: 2rem;
                     margin: 0 auto;
                     width: 100%;
                 }

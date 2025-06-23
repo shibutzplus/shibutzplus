@@ -8,7 +8,7 @@ import ProfessionsList from "@/components/ProfessionsList/ProfessionsList";
 import ManagementLayout from "@/components/layout/ManagementLayout/ManagementLayout";
 
 // Sample data
-const initialProfessions: Profession[] = [
+const initialSubjects: Profession[] = [
     {
         id: "1",
         name: "מתמטיקה",
@@ -35,8 +35,8 @@ const initialProfessions: Profession[] = [
     },
 ];
 
-const ProfessionsPage: NextPage = () => {
-    const [professions, setProfessions] = useState<Profession[]>(initialProfessions);
+const SubjectsPage: NextPage = () => {
+    const [professions, setProfessions] = useState<Profession[]>(initialSubjects);
     const [selectedProfession, setSelectedProfession] = useState<Profession | null>(null);
 
     const handleSelectProfession = (profession: Profession) => {
@@ -60,4 +60,4 @@ const ProfessionsPage: NextPage = () => {
     );
 };
 
-export default ProfessionsPage;
+export default SubjectsPage;

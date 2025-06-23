@@ -1,10 +1,10 @@
 .container {
     margin-top: var(--header-height);
-    padding: 2rem;
+    padding: 1rem;
     width: 100%;
 }
 
-.classSelectorSection{
+.classSelectorSection {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -12,7 +12,7 @@
     padding: 0 0 2em 0;
 }
 
-.classSelectorRight{
+.classSelectorRight {
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -21,12 +21,12 @@
 }
 
 .classSelector {
-    max-width: 300px;
+    max-width: 80px;
     width: 100%;
 }
 
 .publishButtonContainer {
-    max-width: 200px;   
+    max-width: 200px;
     width: 100%;
 }
 
@@ -39,6 +39,19 @@
     min-height: 80vh;
 }
 
+.fab {
+    position: fixed;
+    top: 1rem;
+    left: 10rem;
+    z-index: 1000;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 26px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    padding: 0.5rem;
+    width: 95px;
+}
+
 .tableContainer {
     width: 100%;
     overflow-x: auto;
@@ -47,6 +60,7 @@
 .scheduleTable {
     width: 100%;
     border-collapse: collapse;
+    height: 600px;
 }
 
 .scheduleTable th,
@@ -76,11 +90,12 @@
     padding: 0.25rem;
     vertical-align: top;
     min-width: 200px;
+    vertical-align: middle;
 }
 
 .cellContent {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 0.5rem;
 }
 
@@ -89,7 +104,7 @@
     .container {
         padding: 1rem;
     }
-    
+
     .scheduleCell {
         min-width: 180px;
     }
@@ -100,12 +115,12 @@
         font-size: 1.5rem;
         margin-bottom: 1.5rem;
     }
-    
+
     .scheduleTable th,
     .scheduleTable td {
         padding: 0.25rem;
     }
-    
+
     .scheduleCell {
         min-width: 160px;
     }

@@ -1,4 +1,4 @@
-export type UserRole = "principal" | "deputy" | "other";
+export type UserRole = "principal" | "teacher" | "other";
 
 export type RegisterRequest = {
   name: string;

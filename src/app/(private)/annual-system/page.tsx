@@ -27,9 +27,9 @@ const teacherOptions: SelectOption[] = [
     { value: "שרה", label: "שרה" },
 ];
 
-// Mock data for professions
-const professionOptions: SelectOption[] = [
-    { value: "מתמטיקה", label: "מתמטיקה" },
+// Mock data for subjects
+const subjectOptions: SelectOption[] = [
+    { value: "חשבון", label: "חשבון" },
     { value: "אנגלית", label: "אנגלית" },
     { value: "עברית", label: "עברית" },
     { value: "מדעים", label: "מדעים" },
@@ -47,7 +47,7 @@ const hoursInDay = 7;
 
 interface ScheduleCell {
     teacher: string;
-    profession: string;
+    subject: string;
 }
 
 interface WeeklySchedule {
@@ -75,7 +75,7 @@ const AnnualSystemPage: NextPage = () => {
                 for (let hour = 1; hour <= hoursInDay; hour++) {
                     newSchedule[selectedClass][day][hour] = {
                         teacher: "",
-                        profession: "",
+                        subject: "",
                     };
                 }
             });
@@ -92,47 +92,25 @@ const AnnualSystemPage: NextPage = () => {
     const handleTeacherChange = (day: string, hour: number, value: string) => {
         const newSchedule = { ...schedule };
         if (!newSchedule[selectedClass][day][hour]) {
-            newSchedule[selectedClass][day][hour] = { teacher: "", profession: "" };
+            newSchedule[selectedClass][day][hour] = { teacher: "", subject: "" };
         }
         newSchedule[selectedClass][day][hour].teacher = value;
         setSchedule(newSchedule);
     };
 
-    const handleProfessionChange = (day: string, hour: number, value: string) => {
+    const handleSubjectsChange = (day: string, hour: number, value: string) => {
         const newSchedule = { ...schedule };
         if (!newSchedule[selectedClass][day][hour]) {
-            newSchedule[selectedClass][day][hour] = { teacher: "", profession: "" };
+            newSchedule[selectedClass][day][hour] = { teacher: "", subject: "" };
         }
-        newSchedule[selectedClass][day][hour].profession = value;
+        newSchedule[selectedClass][day][hour].subject = value;
         setSchedule(newSchedule);
     };
 
     return (
         <div className={styles.container}>
+
             <div className={styles.whiteBox}>
-                <section className={styles.classSelectorSection}>
-                    <div className={styles.classSelectorRight}>
-                        <h3>בחרו כיתה: </h3>
-
-                        <div className={styles.classSelector}>
-                            <InputSelect
-                                options={classOptions}
-                                value={selectedClass}
-                                onChange={handleClassChange}
-                                placeholder="בחר כיתה..."
-                            />
-                        </div>
-                    </div>
-                    <div className={styles.publishButtonContainer}>
-                        <SubmitBtn
-                            type={"button"}
-                            isLoading={false}
-                            loadingText={""}
-                            buttonText={"פרסם גרסה סופית"}
-                        />
-                    </div>
-                </section>
-
                 {showTable && (
                     <div className={styles.tableContainer}>
                         <table className={styles.scheduleTable}>
@@ -157,6 +135,19 @@ const AnnualSystemPage: NextPage = () => {
                                             >
                                                 <div className={styles.cellContent}>
                                                     <InputSelect
+                                                        options={subjectOptions}
+                                                        placeholder="מקצוע"
+                                                        value={
+                                                            schedule[selectedClass]?.[day]?.[hour]
+                                                                ?.subject || ""
+                                                        }
+                                                        onChange={(value: string) =>
+                                                            handleSubjectsChange(day, hour, value)
+                                                        }
+                                                        isSearchable={true}
+                                                        allowAddNew={true}
+                                                    />
+                                                    <InputSelect
                                                         options={teacherOptions}
                                                         placeholder="מורה"
                                                         value={
@@ -165,19 +156,6 @@ const AnnualSystemPage: NextPage = () => {
                                                         }
                                                         onChange={(value: string) =>
                                                             handleTeacherChange(day, hour, value)
-                                                        }
-                                                        isSearchable={true}
-                                                        allowAddNew={true}
-                                                    />
-                                                    <InputSelect
-                                                        options={professionOptions}
-                                                        placeholder="מקצוע"
-                                                        value={
-                                                            schedule[selectedClass]?.[day]?.[hour]
-                                                                ?.profession || ""
-                                                        }
-                                                        onChange={(value: string) =>
-                                                            handleProfessionChange(day, hour, value)
                                                         }
                                                         isSearchable={true}
                                                         allowAddNew={true}
@@ -192,6 +170,16 @@ const AnnualSystemPage: NextPage = () => {
                     </div>
                 )}
             </div>
+
+            <div className={styles.fab}>
+                <InputSelect
+                    options={classOptions}
+                    value={selectedClass}
+                    onChange={handleClassChange}
+                    placeholder="בחרו כיתה..."
+                />
+            </div>
+
         </div>
     );
 };
