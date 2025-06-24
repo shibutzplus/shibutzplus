@@ -1,45 +1,53 @@
 "use server";
 
-import { createSubject } from "@/db/utils";
 import { SubjectType, SubjectRequest } from "@/models/types/subjects";
 import { ActionResponse } from "@/models/types/actions";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { revalidateTag } from "next/cache";
+import { db, schema } from "@/db";
+import { NewSubjectSchema } from "@/db/schema";
 
-export async function addSubjectAction(subjectData: SubjectRequest): Promise<ActionResponse & { data?: SubjectType }> {
-  try {
-    const authError = await checkAuthAndParams({ 
-      name: subjectData.name, 
-      schoolId: subjectData.schoolId 
-    });
-    
-    if (authError) {
-      return authError as ActionResponse;
+export async function addSubjectAction(
+    subjectData: SubjectRequest,
+): Promise<ActionResponse & { data?: SubjectType }> {
+    try {
+        const authError = await checkAuthAndParams({
+            name: subjectData.name,
+            schoolId: subjectData.schoolId,
+        });
+
+        if (authError) {
+            return authError as ActionResponse;
+        }
+
+        const newSubject = (
+            await db
+                .insert(schema.subjects)
+                .values(subjectData as NewSubjectSchema)
+                .returning()
+        )[0];
+
+        if (!newSubject) {
+            return {
+                success: false,
+                message: messages.subjects.createError,
+            };
+        }
+
+        // Revalidate the server-side cache to ensure fresh data is fetched
+        revalidateTag("subjects-data");
+
+        return {
+            success: true,
+            message: messages.subjects.createSuccess,
+            data: newSubject,
+        };
+    } catch (error) {
+        console.error("Error creating subject:", error);
+        return {
+            success: false,
+            message: messages.subjects.createError,
+        };
     }
-
-    const newSubject = await createSubject(subjectData);
-
-    if (!newSubject) {
-      return {
-        success: false,
-        message: messages.subjects.createError,
-      };
-    }
-    
-    // Revalidate the server-side cache to ensure fresh data is fetched
-    revalidateTag("subjects-data");
-
-    return {
-      success: true,
-      message: messages.subjects.createSuccess,
-      data: newSubject,
-    };
-  } catch (error) {
-    console.error("Error creating subject:", error);
-    return {
-      success: false,
-      message: messages.subjects.createError,
-    };
-  }
 }
