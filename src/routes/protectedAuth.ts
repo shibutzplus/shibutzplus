@@ -48,7 +48,7 @@ export const getConfigMatcher = (): string[] => {
     const protectedPathsWithWildcard = getProtectedPaths().map(path => `${path}/:path*`);
     
     // Get login and register paths (typically need exact matches)
-    const authPaths = [router.login.p, router.register.p];
+    const authPaths = [router.signIn.p, router.signUp.p];
     
     // Add root path to the matcher
     const rootPath = router.home.p;

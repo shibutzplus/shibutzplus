@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./DeleteTeacherPopup.module.css";
 import { usePopup } from "@/context/PopupContext";
-import { Teacher } from "@/models/types/teachers";
+import { TeacherType } from "@/models/types/teachers";
 
 const DeleteSvg = () => {
     return (
@@ -24,7 +24,7 @@ const DeleteSvg = () => {
 };
 
 interface DeleteTeacherPopupProps {
-    teacher: Teacher;
+    teacher: TeacherType;
     onDelete: () => void;
     onCancel: () => void;
 }

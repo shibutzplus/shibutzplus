@@ -26,6 +26,8 @@ const DashboardPage: NextPage = () => {
         <div className={styles.container}>
             <div className={styles.content}>
                 <h1 className={styles.title}>Dashboard</h1>
+                <h3>מסך שיעלם בהמשך</h3>
+                <br />
                 <div className={styles.userInfo}>
                     <h2>Welcome, {session?.user?.name}!</h2>
                     <p>Email: {session?.user?.email}</p>

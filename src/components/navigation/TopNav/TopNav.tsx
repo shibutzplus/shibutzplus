@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import styles from "./TopNav.module.css";
 import HamburgerNav, { HamburgerButton } from "../HamburgerNav/HamburgerNav";
@@ -12,11 +14,12 @@ const TopNav: React.FC = () => {
     const getCurrentRouteTitle = () => {
         const currentPath = pathname.split("/").filter(Boolean)[0] || "";
         const routeKey = Object.keys(routePath).find(
-            (key) => routePath[key].p === `/${currentPath}` || 
-                   (currentPath === "" && routePath[key].p === "/")
+            (key) =>
+                routePath[key].p === `/${currentPath}` ||
+                (currentPath === "" && routePath[key].p === "/"),
         );
-        
-        return routeKey ? `עמוד ${routePath[routeKey].title}` : "";
+
+        return routeKey ? routePath[routeKey].title : "";
     };
 
     const toggleMenu = () => {

@@ -1,3 +1,18 @@
-export type SchoolStatus = "onboarding" | "annual" | "daily";
+import { ActionResponse } from "./actions";
 
-export type SchoolType = "Elementary" | "Middle" | "High";
+export type SchoolStatus = "onboarding" | "active" | "archived";
+
+export type SchoolAgeGroup = "Elementary" | "Middle" | "High";
+
+export type SchoolType = {
+    id: string;
+    name: string;
+    type: SchoolAgeGroup;
+    status: SchoolStatus;
+    createdAt: Date;
+    updatedAt: Date;
+};
+
+export type GetSchoolResponse = ActionResponse & {
+    data?: SchoolType;
+};

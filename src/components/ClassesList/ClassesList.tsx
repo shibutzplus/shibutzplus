@@ -2,28 +2,42 @@
 
 import React from "react";
 import styles from "./ClassesList.module.css";
-import { Class } from "@/models/types/classes";
+import { ClassType } from "@/models/types/classes";
 import { usePopup } from "@/context/PopupContext";
 import TableList from "../core/TableList/TableList";
 import DeleteClassPopup from "../popups/DeleteClassPopup/DeleteClassPopup";
+import { useMainContext } from "@/context/MainContext";
 
 type ClassesListProps = {
-    classes: Class[];
-    handleSelectClass: (classItem: Class) => void;
+    classes: ClassType[];
+    handleSelectClass: (classItem: ClassType) => void;
 };
 
 const ClassesList: React.FC<ClassesListProps> = ({ classes, handleSelectClass }) => {
-    const { openPopup } = usePopup();
+    const { openPopup, closePopup } = usePopup();
+    const { deleteClass } = useMainContext();
 
-    const handleOpenPopup = (classItem: Class) => {
+    const handleDeleteClassFromState = (classId: string) => {
+        // Use the MainContext's deleteClass function
+        deleteClass(classId);
+        
+        // Close the popup after deletion
+        closePopup();
+    };
+
+    const handleOpenPopup = (classItem: ClassType) => {
         openPopup(
             "deleteClass",
             "S",
-            <DeleteClassPopup classItem={classItem} onDelete={() => {}} onCancel={() => {}} />,
+            <DeleteClassPopup 
+                classItem={classItem} 
+                onDelete={() => handleDeleteClassFromState(classItem.id)} 
+                onCancel={() => closePopup()} 
+            />,
         );
     };
 
-    const handleDeleteClass = (e: React.MouseEvent, classItem: Class) => {
+    const handleDeleteClass = (e: React.MouseEvent, classItem: ClassType) => {
         e.stopPropagation(); // Prevent row click when clicking delete
         handleOpenPopup(classItem);
     };

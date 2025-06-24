@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useRef } from "react";
 import styles from "./HamburgerNav.module.css";
 import Link from "next/link";
@@ -35,8 +37,13 @@ const links: ILink[] = [
         Icon: <IoHomeOutline size={24} />,
     },
     {
-        name: routePath.annualSystem.title,
-        p: routePath.annualSystem.p,
+        name: routePath.annualSchedule.title,
+        p: routePath.annualSchedule.p,
+        Icon: <IoCalendarOutline size={24} />,
+    },
+    {
+        name: routePath.dailySchedule.title,
+        p: routePath.dailySchedule.p,
         Icon: <IoCalendarOutline size={24} />,
     },
     {
@@ -45,8 +52,8 @@ const links: ILink[] = [
         Icon: <IoSchoolOutline size={24} />,
     },
     {
-        name: routePath.professions.title,
-        p: routePath.professions.p,
+        name: routePath.subjects.title,
+        p: routePath.subjects.p,
         Icon: <IoPeopleOutline size={24} />,
     },
     {

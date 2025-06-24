@@ -2,49 +2,22 @@
 
 import React, { useState, useMemo } from "react";
 import { NextPage } from "next";
-import { Class } from "@/models/types/classes";
+import { ClassType } from "@/models/types/classes";
 import ClassesForm from "@/components/ClassesForm/ClassesForm";
 import ClassesList from "@/components/ClassesList/ClassesList";
 import ManagementLayout from "@/components/layout/ManagementLayout/ManagementLayout";
-
-// Sample data
-const initialClasses: Class[] = [
-    {
-        id: "1",
-        name: "א1",
-    },
-    {
-        id: "2",
-        name: "א2",
-    },
-    {
-        id: "3",
-        name: "ב1",
-    },
-    {
-        id: "4",
-        name: "ב2",
-    },
-    {
-        id: "5",
-        name: "ג1",
-    },
-    {
-        id: "6",
-        name: "ג2",
-    },
-];
+import { useMainContext } from "@/context/MainContext";
 
 const ClassesPage: NextPage = () => {
-    const [classes, setClasses] = useState<Class[]>(initialClasses);
-    const [selectedClass, setSelectedClass] = useState<Class | null>(null);
+    const { classes } = useMainContext();
+    const [selectedClass, setSelectedClass] = useState<ClassType | null>(null);
 
-    const handleSelectClass = (classItem: Class) => {
+    const handleSelectClass = (classItem: ClassType) => {
         setSelectedClass(classItem);
     };
 
     const listInfo = useMemo(() => {
-        return `${classes.length} כיתות`;
+        return `${classes?.length || 0} כיתות`;
     }, [classes]);
 
     return (
@@ -53,8 +26,15 @@ const ClassesPage: NextPage = () => {
             listTitle="רשימת כיתות"
             listInfo={listInfo}
             children={[
-                <ClassesList classes={classes} handleSelectClass={handleSelectClass} />,
-                <ClassesForm setClasses={setClasses} selectedClass={selectedClass} />,
+                <ClassesList 
+                    key="classes-list"
+                    classes={classes || []} 
+                    handleSelectClass={handleSelectClass} 
+                />,
+                <ClassesForm 
+                    key="classes-form"
+                    selectedClass={selectedClass} 
+                />,
             ]}
         />
     );

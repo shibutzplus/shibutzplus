@@ -1,14 +1,9 @@
 "use client";
-
-import { MainContextProvider } from "@/context/MainContext";
+import React from "react";
 import { SessionProvider } from "next-auth/react";
-import { ReactNode } from "react";
+import { MainContextProvider } from "@/context/MainContext";
 
-interface ProvidersProps {
-    children: ReactNode;
-}
-
-export default function Providers({ children }: ProvidersProps) {
+export default function Providers({ children }: { children: React.ReactNode }) {
     return (
         <SessionProvider>
             <MainContextProvider>{children}</MainContextProvider>

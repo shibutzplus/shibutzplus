@@ -9,8 +9,9 @@ import SubmitBtn from "@/components/ui/SubmitBtn/SubmitBtn";
 import styles from "./signUp.module.css";
 import routePath from "../../../routes";
 import { NextPage } from "next";
-import { RegisterRequest } from "@/models/types/auth";
-import signUp from "@/lib/actions/singUpAction";
+import { RegisterRequest, UserGender, UserRole } from "@/models/types/auth";
+import signUp from "@/app/actions/singUpAction";
+import RadioGroup from "@/components/ui/RadioGroup/RadioGroup";
 
 const SignUpPage: NextPage = () => {
     const router = useRouter();
@@ -18,7 +19,8 @@ const SignUpPage: NextPage = () => {
         name: "",
         email: "",
         password: "",
-        role: "principal",
+        role: "admin" as UserRole,
+        gender: "female" as UserGender,
         school: "",
     });
     const [error, setError] = useState<string>("");
@@ -76,18 +78,16 @@ const SignUpPage: NextPage = () => {
                         required
                     />
 
-                    <InputSelect
+                    {/* <InputSelect
                         label="תפקיד"
                         id="role"
                         value={formData.role}
-                        onChange={handleChange}
                         placeholder="בחר תפקיד"
                         options={[
-                            { value: "principal", label: "מנהל/ת" },
-                            { value: "deputy", label: "סגן/ית" },
-                            { value: "other", label: "אחר" },
+                            { value: "admin", label: "מנהל/ת" },
+                            { value: "teacher", label: "מורה" },
                         ]}
-                    />
+                    /> */}
 
                     <InputText
                         label="שם בית ספר"
@@ -96,6 +96,22 @@ const SignUpPage: NextPage = () => {
                         value={formData.school}
                         onChange={handleChange}
                         required
+                    />
+
+                    <RadioGroup
+                        label="מין"
+                        name="gender"
+                        value={formData.gender}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                            setFormData((prev) => ({
+                                ...prev,
+                                gender: e.target.value as UserGender,
+                            }));
+                        }}
+                        options={[
+                            { value: "male", label: "זכר" },
+                            { value: "female", label: "נקבה" },
+                        ]}
                     />
 
                     <SubmitBtn

@@ -10,7 +10,7 @@ import Link from "next/link";
 import routePath from "../../routes";
 import { EmailLink } from "@/models/constant";
 import { SignInRequest } from "@/models/types/auth";
-import signInWithCredentials from "@/lib/actions/singInAction";
+import signInWithCredentials from "@/app/actions/singInAction";
 
 const LoginForm: React.FC = () => {
     const router = useRouter();
@@ -39,8 +39,8 @@ const LoginForm: React.FC = () => {
 
     return (
         <div className={styles.formContainer}>
-            <h1 className={styles.title}>כניסה למנהלים</h1>
-            <p className={styles.subtitle}>הזינו את פרטי ההתחברות בשביל להכנס למערכת</p>
+            <h1 className={styles.title}>כניסה</h1>
+            <p className={styles.subtitle}>התחברו למערכת בעזרת שם המשתמש והסיסמה שלכם</p>
 
             <form className={styles.form} onSubmit={handleSubmit}>
                 <div className={styles.inputGroup}>

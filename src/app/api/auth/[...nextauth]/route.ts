@@ -1,9 +1,8 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import connectToDatabase from "@/lib/mongodb";
-import User from "@/models/schemas/User";
-import { UserRole } from "@/models/types/auth";
+import { schema } from "@/db";
+import { getUserByEmail } from "@/db/utils";
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -18,20 +17,22 @@ export const authOptions: NextAuthOptions = {
                 if (!credentials?.email || !credentials?.password) {
                     throw new Error("Email and password required");
                 }
-                await connectToDatabase();
-                const user = await User.findOne({ email: credentials.email }).select("+password");
+                
+                const user = await getUserByEmail(credentials.email);
+                
                 if (!user) {
                     throw new Error("No user found with this email");
                 }
-                const isValid = await bcrypt.compare(credentials.password, user.password!);
+                const isValid = await bcrypt.compare(credentials.password, user.password);
                 if (!isValid) {
                     throw new Error("Invalid password");
                 }
                 return {
-                    id: user._id.toString(),
+                    id: user.id,
                     name: user.name,
                     email: user.email,
                     role: user.role,
+                    schoolId: user.schoolId,
                     remember: credentials.remember,
                 };
             },
@@ -46,7 +47,8 @@ export const authOptions: NextAuthOptions = {
         async jwt({ token, user }) {
             if (user) {
                 token.id = user.id;
-                token.role = user.role;
+                token.role = (user as any).role;
+                token.schoolId = (user as any).schoolId;
                 const remember = (user as any).remember;
                 const maxAge = remember ? 30 * 24 * 60 * 60 : 60 * 60; // 30d vs 1h
                 token.exp = Math.floor(Date.now() / 1000) + maxAge;
@@ -57,16 +59,18 @@ export const authOptions: NextAuthOptions = {
             if (token) {
                 session.user = session.user || {};
                 session.user.id = token.id as string;
-                session.user.role = token.role as UserRole;
+                session.user.role = token.role as schema.UserRole;
+                session.user.gender = token.gender as schema.UserGender;
+                session.user.schoolId = token.schoolId as string;
                 session.expires = new Date((token.exp as number) * 1000).toISOString();
             }
             return session;
         },
     },
     pages: {
-        signIn: "/login",
-        error: "/login",
-        newUser: "/register",
+        signIn: "/sing-in",
+        error: "/sing-in",
+        newUser: "/sing-up",
     },
     secret: process.env.NEXTAUTH_SECRET,
 };

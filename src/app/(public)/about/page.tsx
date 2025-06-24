@@ -4,7 +4,6 @@ import React from "react";
 import { NextPage } from "next";
 import { ActionBar } from "@/components/ActionBar/ActionBar";
 import styles from "./about.module.css";
-import { Header } from "@/components/Header";
 import { TableProvider } from "@/context/TableContext";
 import DailyTable from "@/components/DailyTable/DailyTable";
 

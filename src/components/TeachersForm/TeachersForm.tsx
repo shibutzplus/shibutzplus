@@ -1,62 +1,88 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import styles from "./TeachersForm.module.css";
-import { Teacher, TeacherRequest, TeacherRole } from "@/models/types/teachers";
-import InputText from "../ui/InputText/InputText";
+import {
+    TeacherType,
+    TeacherRequest,
+    TeacherRole,
+    TeacherRoleValues,
+} from "@/models/types/teachers";
 import RadioGroup from "../ui/RadioGroup/RadioGroup";
 import Form from "../core/Form/Form";
+import InputText from "../ui/InputText/InputText";
+import { useMainContext } from "@/context/MainContext";
+import { addTeacherAction } from "@/app/actions/addTeacherAction";
+import messages from "@/resources/messages";
 
 type TeachersFormProps = {
-    setTeachers: React.Dispatch<React.SetStateAction<Teacher[]>>;
-    selectedTeacher: Teacher | null;
+    selectedTeacher: TeacherType | null;
 };
 
-const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers, selectedTeacher }) => {
+const TeachersForm: React.FC<TeachersFormProps> = ({ selectedTeacher }) => {
+    const { school, updateTeachers } = useMainContext();
+
     const [formData, setFormData] = useState<TeacherRequest>({
         name: selectedTeacher ? selectedTeacher.name : "",
-        role: selectedTeacher ? selectedTeacher.role : "מורה קיים",
-        primaryClass: selectedTeacher ? selectedTeacher.primaryClass : "",
+        role: selectedTeacher ? selectedTeacher.role : TeacherRoleValues.HOMEROOM,
+        schoolId: selectedTeacher ? selectedTeacher.schoolId : school?.id || "",
+        userId: selectedTeacher ? selectedTeacher.userId : null,
     });
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
 
     useEffect(() => {
         if (selectedTeacher) {
             setFormData({
                 name: selectedTeacher.name,
                 role: selectedTeacher.role,
-                primaryClass: selectedTeacher.primaryClass,
+                schoolId: selectedTeacher.schoolId,
+                userId: selectedTeacher.userId,
+            });
+        } else if (school) {
+            setFormData({
+                name: "",
+                role: TeacherRoleValues.HOMEROOM,
+                schoolId: school.id,
+                userId: null,
             });
         }
-    }, [selectedTeacher]);
+    }, [selectedTeacher, school]);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setError("");
+        setSuccessMessage("");
 
         try {
-            const newTeacher: Teacher = {
-                id: Date.now().toString(),
-                name: formData.name,
-                role: formData.role as TeacherRole,
-                primaryClass: formData.primaryClass,
-            };
+            if (!formData.schoolId) {
+                setError(messages.school.idRequired);
+                setIsLoading(false);
+                return;
+            }
 
-            setTeachers((prev) => [...prev, newTeacher]);
+            const response = await addTeacherAction(formData);
 
-            // add teacher to the DB
-
-            // Reset form
-            setFormData({
-                name: "",
-                role: "מורה קיים",
-                primaryClass: "",
-            });
+            if (response.success && response.data) {
+                updateTeachers(response.data as TeacherType);
+                
+                // Show success message
+                setSuccessMessage(response.message);
+                
+                // Reset form
+                setFormData({
+                    name: "",
+                    role: TeacherRoleValues.HOMEROOM,
+                    schoolId: school?.id || "",
+                    userId: null,
+                });
+            } else {
+                setError(response.message);
+            }
         } catch (err) {
-            setError("אירעה שגיאה בהוספת המורה. אנא נסה שוב.");
+            setError(messages.teachers.createError);
             console.error(err);
         } finally {
             setIsLoading(false);
@@ -68,36 +94,20 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers, selectedTeache
             handleSubmit={handleSubmit}
             isLoading={isLoading}
             error={error}
+            success={successMessage}
             loadingText="מוסיף מורה..."
             btnText="הוסף מורה"
         >
             <InputText
                 label="שם"
-                id="name"
                 name="name"
                 value={formData.name}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     setFormData((prev) => ({
                         ...prev,
-                        [e.target.name]: e.target.value,
+                        name: e.target.value,
                     }));
                 }}
-                placeholder="הזינו שם"
-                required
-            />
-
-            <InputText
-                label="כיתה ראשית"
-                id="primaryClass"
-                name="primaryClass"
-                value={formData.primaryClass}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    setFormData((prev) => ({
-                        ...prev,
-                        primaryClass: e.target.value,
-                    }));
-                }}
-                placeholder="לדוגמה: א1"
                 required
             />
 
@@ -112,8 +122,8 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ setTeachers, selectedTeache
                     }));
                 }}
                 options={[
-                    { value: "מורה קיים", label: "מורה קיים" },
-                    { value: "מורה מחליף", label: "מורה מחליף" },
+                    { value: TeacherRoleValues.HOMEROOM, label: "מחנך/ת כיתה" },
+                    { value: TeacherRoleValues.SUBSTITUTE, label: "מורה מחליף/ה" },
                 ]}
             />
         </Form>

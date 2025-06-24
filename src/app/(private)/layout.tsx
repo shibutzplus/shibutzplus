@@ -1,33 +1,16 @@
-"use client";
-
 import React from "react";
 import TopNav from "@/components/navigation/TopNav/TopNav";
-import { PopupProvider } from "@/context/PopupContext";
+import Providers from "./providers";
+import "./layout.css";
 
 export default function ContentLayout({ children }: { children: React.ReactNode }) {
     return (
-        <PopupProvider>
+        <Providers>
             <div className="content-layout" dir="rtl">
                 <TopNav />
 
                 <main className="content-main">{children}</main>
-
-            <style jsx>{`
-                .content-layout {
-                    min-height: 100vh;
-                    display: flex;
-                    flex-direction: column;
-                    background-color: var(--background);
-                }
-
-                .content-main {
-                    flex: 1;
-                    padding: 2rem;
-                    margin: 0 auto;
-                    width: 100%;
-                }
-            `}</style>
             </div>
-        </PopupProvider>
+        </Providers>
     );
 }

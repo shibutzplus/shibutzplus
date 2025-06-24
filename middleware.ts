@@ -9,13 +9,13 @@ export async function middleware(req: NextRequest) {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
     if (url.pathname === router.home.p) {
-        url.pathname = router.login.p;
+        url.pathname = router.signIn.p;
         return NextResponse.redirect(url);
     }
 
     if (protectedPaths.some((path) => url.pathname.startsWith(path))) {
         if (!token) {
-            url.pathname = router.login.p;
+            url.pathname = router.signIn.p;
             return NextResponse.redirect(url);
         }
     }

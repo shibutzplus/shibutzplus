@@ -3,10 +3,8 @@ export const customStyles = (error: any) => {
         control: (provided: any, state: any) => ({
             ...provided,
             minHeight: "42px",
-            borderColor: error ? "#e53935" : state.isFocused ? "#4a90e2" : "#ccc",
-            borderRadius: "4px",
-            borderWidth: "1px",
-            boxShadow: state.isFocused ? "0 0 0 2px rgba(74, 144, 226, 0.2)" : "none",
+            borderWidth: "0px",
+            boxShadow: "none",
             fontSize: "16px",
             backgroundColor: "white",
             color: "#333",
@@ -57,7 +55,7 @@ export const customStyles = (error: any) => {
         }),
         indicatorSeparator: (provided: any) => ({
             ...provided,
-            backgroundColor: "#ccc",
+            display: "none",
         }),
         dropdownIndicator: (provided: any) => ({
             ...provided,

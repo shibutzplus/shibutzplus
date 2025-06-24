@@ -1,53 +1,72 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import styles from "./ClassesForm.module.css";
-import { Class, ClassRequest } from "@/models/types/classes";
+import { ClassType, ClassRequest } from "@/models/types/classes";
 import InputText from "../ui/InputText/InputText";
 import Form from "../core/Form/Form";
+import { useMainContext } from "@/context/MainContext";
+import { addClassAction } from "@/app/actions/addClassAction";
+import messages from "@/resources/messages";
 
 type ClassesFormProps = {
-    setClasses: React.Dispatch<React.SetStateAction<Class[]>>;
-    selectedClass: Class | null;
+    selectedClass: ClassType | null;
 };
 
-const ClassesForm: React.FC<ClassesFormProps> = ({ setClasses, selectedClass }) => {
+const ClassesForm: React.FC<ClassesFormProps> = ({ selectedClass }) => {
+    const { school, updateClasses } = useMainContext();
+
     const [formData, setFormData] = useState<ClassRequest>({
         name: selectedClass ? selectedClass.name : "",
+        schoolId: selectedClass ? selectedClass.schoolId : school?.id || "",
     });
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
 
     useEffect(() => {
         if (selectedClass) {
             setFormData({
                 name: selectedClass.name,
+                schoolId: selectedClass.schoolId,
+            });
+        } else if (school) {
+            setFormData({
+                name: "",
+                schoolId: school?.id || "",
             });
         }
-    }, [selectedClass]);
+    }, [selectedClass, school]);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setError("");
+        setSuccessMessage("");
 
         try {
-            const newClass: Class = {
-                id: Date.now().toString(),
-                name: formData.name,
-            };
+            if (!formData.schoolId) {
+                setError(messages.school.idRequired);
+                setIsLoading(false);
+                return;
+            }
 
-            setClasses((prev) => [...prev, newClass]);
+            const response = await addClassAction(formData);
 
-            // add class to the DB
+            if (response.success && response.data) {
+                updateClasses(response.data as ClassType);
 
-            // Reset form
-            setFormData({
-                name: "",
-            });
+                setSuccessMessage(response.message);
+
+                setFormData({
+                    name: "",
+                    schoolId: school?.id || "",
+                });
+            } else {
+                setError(response.message || messages.classes.createError);
+            }
         } catch (err) {
-            setError("אירעה שגיאה בהוספת הכיתה. אנא נסה שוב.");
+            setError(messages.classes.createError);
             console.error(err);
         } finally {
             setIsLoading(false);
@@ -59,6 +78,7 @@ const ClassesForm: React.FC<ClassesFormProps> = ({ setClasses, selectedClass }) 
             handleSubmit={handleSubmit}
             isLoading={isLoading}
             error={error}
+            success={successMessage}
             loadingText="מוסיף כיתה..."
             btnText="הוסף כיתה"
         >
@@ -77,7 +97,7 @@ const ClassesForm: React.FC<ClassesFormProps> = ({ setClasses, selectedClass }) 
                     }}
                     placeholder="לדוגמה: א1"
                     required
-                />
+                />,
             ]}
         </Form>
     );
