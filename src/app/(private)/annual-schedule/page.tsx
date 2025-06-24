@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import styles from "./annualSchedule.module.css";
 import { NextPage } from "next";
-import SubmitBtn from "@/components/ui/SubmitBtn/SubmitBtn";
 import { useMainContext } from "@/context/MainContext";
 import DynamicInputSelect from "@/components/ui/InputSelect/DynamicInputSelect";
 import { createSelectOptions } from "@/utils/format";
@@ -102,7 +101,7 @@ const AnnualSchedulePage: NextPage = () => {
                 newSchedule[selectedClassId][day][hour] = { teacher: "", subject: "" };
             }
             // check if the type selected is already filled
-            const isFilled = newSchedule[selectedClassId][day][hour][type];
+            const isAlreadyFilled = newSchedule[selectedClassId][day][hour][type];
 
             // fill it and get the IDs
             newSchedule[selectedClassId][day][hour][type] = value;
@@ -126,7 +125,7 @@ const AnnualSchedulePage: NextPage = () => {
                     subject: selectedSubject,
                 };
 
-                if (isFilled) {
+                if (isAlreadyFilled) {
                     // need to update the cell
                     // check if the other type select is filled
                     if ((type === "teacher" && subjectId) || (type === "subject" && teacherId)) {
@@ -169,31 +168,6 @@ const AnnualSchedulePage: NextPage = () => {
     return (
         <div className={styles.container}>
             <div className={styles.whiteBox}>
-                {error && <div className={styles.errorMessage}>{error}</div>}
-                <section className={styles.classSelectorSection}>
-                    <div className={styles.classSelectorRight}>
-                        <h3>בחרו כיתה: </h3>
-
-                        <div className={styles.classSelector}>
-                            <DynamicInputSelect
-                                options={createSelectOptions<ClassType>(classes)}
-                                value={selectedClassId}
-                                onChange={handleClassChange}
-                                placeholder="בחר כיתה..."
-                            />
-                        </div>
-                        {isLoading ? <div>שמירת נתונים מתבצעת...</div> : null}
-                    </div>
-                    <div className={styles.publishButtonContainer}>
-                        <SubmitBtn
-                            type={"button"}
-                            isLoading={false}
-                            loadingText={""}
-                            buttonText={"פרסם גרסה סופית"}
-                        />
-                    </div>
-                </section>
-
                 {showTable && (
                     <div className={styles.tableContainer}>
                         <table className={styles.scheduleTable}>
@@ -219,26 +193,6 @@ const AnnualSchedulePage: NextPage = () => {
                                                 >
                                                     <div className={styles.cellContent}>
                                                         <DynamicInputSelect
-                                                            options={createSelectOptions<TeacherType>(
-                                                                teachers,
-                                                            )}
-                                                            placeholder="מורה"
-                                                            value={
-                                                                schedule[selectedClassId]?.[day]?.[
-                                                                    hour
-                                                                ]?.teacher || ""
-                                                            }
-                                                            onChange={(value: string) =>
-                                                                handleTeacherChange(
-                                                                    day,
-                                                                    hour,
-                                                                    value,
-                                                                )
-                                                            }
-                                                            isSearchable
-                                                            allowAddNew
-                                                        />
-                                                        <DynamicInputSelect
                                                             options={createSelectOptions<SubjectType>(
                                                                 subjects,
                                                             )}
@@ -258,6 +212,26 @@ const AnnualSchedulePage: NextPage = () => {
                                                             isSearchable
                                                             allowAddNew
                                                         />
+                                                        <DynamicInputSelect
+                                                            options={createSelectOptions<TeacherType>(
+                                                                teachers,
+                                                            )}
+                                                            placeholder="מורה"
+                                                            value={
+                                                                schedule[selectedClassId]?.[day]?.[
+                                                                    hour
+                                                                ]?.teacher || ""
+                                                            }
+                                                            onChange={(value: string) =>
+                                                                handleTeacherChange(
+                                                                    day,
+                                                                    hour,
+                                                                    value,
+                                                                )
+                                                            }
+                                                            isSearchable
+                                                            allowAddNew
+                                                        />
                                                     </div>
                                                 </td>
                                             ))}
@@ -268,6 +242,14 @@ const AnnualSchedulePage: NextPage = () => {
                         </table>
                     </div>
                 )}
+            </div>
+            <div className={styles.fab}>
+                <DynamicInputSelect
+                    options={createSelectOptions<ClassType>(classes)}
+                    value={selectedClassId}
+                    onChange={handleClassChange}
+                    placeholder="בחר כיתה..."
+                />
             </div>
         </div>
     );

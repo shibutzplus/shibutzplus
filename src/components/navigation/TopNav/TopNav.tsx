@@ -19,7 +19,7 @@ const TopNav: React.FC = () => {
                 (currentPath === "" && routePath[key].p === "/"),
         );
 
-        return routeKey ? `עמוד ${routePath[routeKey].title}` : "";
+        return routeKey ? routePath[routeKey].title : "";
     };
 
     const toggleMenu = () => {
