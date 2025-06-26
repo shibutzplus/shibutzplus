@@ -1,16 +1,5 @@
 import { SelectOption } from "@/models/types";
 
-// TODO: no need anymore
-export function safeParseJSON<T>(jsonString: string | null): T | null {
-    if (!jsonString) return null;
-    try {
-        return JSON.parse(jsonString) as T;
-    } catch (e) {
-        console.error("Error parsing JSON from storage:", e);
-        return null;
-    }
-}
-
 export const createSelectOptions = <T extends { id: string; name: string }>(
     data: T[] | undefined,
 ) => {

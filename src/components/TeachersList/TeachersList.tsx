@@ -4,9 +4,9 @@ import React from "react";
 import styles from "./TeachersList.module.css";
 import { TeacherType } from "@/models/types/teachers";
 import { usePopup } from "@/context/PopupContext";
-import DeleteTeacherPopup from "../popups/DeleteTeacherPopup/DeleteTeacherPopup";
 import TableList from "../core/TableList/TableList";
 import { useMainContext } from "@/context/MainContext";
+import DeletePopup from "../popups/DeletePopup/DeletePopup";
 
 type TeachersListProps = {
     teachers: TeacherType[];
@@ -26,8 +26,8 @@ const TeachersList: React.FC<TeachersListProps> = ({ teachers, handleSelectTeach
         openPopup(
             "deleteTeacher",
             "S",
-            <DeleteTeacherPopup
-                teacher={teacher}
+            <DeletePopup
+                text={`האם אתה בטוח שברצונך למחוק את המורה ${teacher.name}`}
                 onDelete={() => handleDeleteTeacherFromState(teacher.id)}
                 onCancel={() => closePopup()}
             />,

@@ -1,5 +1,6 @@
 import { SchoolAgeGroup } from "@/models/types/school";
 // not in use
+// should give default options to add
 const initClasses = (type: SchoolAgeGroup) => {
     switch (type) {
         case "Elementary":

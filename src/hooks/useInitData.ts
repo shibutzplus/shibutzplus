@@ -2,11 +2,11 @@
 
 import { AnnualScheduleType } from "@/models/types/annualSchedule";
 import { GetSchoolResponse, SchoolType } from "@/models/types/school";
-import { SubjectType } from "@/models/types/subjects";
-import { TeacherType } from "@/models/types/teachers";
+import { GetSubjectsResponse, SubjectType } from "@/models/types/subjects";
+import { GetTeachersResponse, TeacherType } from "@/models/types/teachers";
 import { useSession } from "next-auth/react";
-import { ClassType } from "@/models/types/classes";
-import { useEffect, useState } from "react";
+import { ClassType, GetClassesResponse } from "@/models/types/classes";
+import { useEffect } from "react";
 import {
     getCacheTimestamp,
     getStorageClasses,
@@ -59,13 +59,13 @@ const useInitData = ({
 }: useInitDataProps) => {
     const { data: session, status } = useSession();
 
+    // Promise that checks if data is in cache, if not, fetches from DB
     const promiseFromCacheOrDB = <T, R>(
         schoolId: string,
         storage: T | null,
         getFromDB: (id: string) => Promise<R>,
     ) => {
-        const cacheTimestamp = getCacheTimestamp();
-        return storage && isCacheFresh(cacheTimestamp)
+        return storage && isCacheFresh(getCacheTimestamp())
             ? Promise.resolve({ success: true, message: "", data: storage })
             : getFromDB(schoolId);
     };
@@ -73,7 +73,6 @@ const useInitData = ({
     useEffect(() => {
         const fetchData = async (schoolId: string) => {
             try {
-                const cacheTimestamp = getCacheTimestamp();
                 let schoolPromise, classesPromise, teachersPromise, subjectsPromise, annualPromise;
 
                 if (!school) {
@@ -85,27 +84,27 @@ const useInitData = ({
                 }
 
                 if (!classes) {
-                    const storageClasses = getStorageClasses();
-                    classesPromise =
-                        storageClasses && isCacheFresh(cacheTimestamp)
-                            ? Promise.resolve({ success: true, message: "", data: storageClasses })
-                            : getClassesFromDB(schoolId);
+                    classesPromise = promiseFromCacheOrDB<ClassType[], GetClassesResponse>(
+                        schoolId,
+                        getStorageClasses(),
+                        getClassesFromDB,
+                    );
                 }
 
                 if (!teachers) {
-                    const storageTeachers = getStorageTeachers();
-                    teachersPromise =
-                        storageTeachers && isCacheFresh(cacheTimestamp)
-                            ? Promise.resolve({ success: true, message: "", data: storageTeachers })
-                            : getTeachersFromDB(schoolId);
+                    teachersPromise = promiseFromCacheOrDB<TeacherType[], GetTeachersResponse>(
+                        schoolId,
+                        getStorageTeachers(),
+                        getTeachersFromDB,
+                    );
                 }
 
                 if (!subjects) {
-                    const storageSubjects = getStorageSubjects();
-                    subjectsPromise =
-                        storageSubjects && isCacheFresh(cacheTimestamp)
-                            ? Promise.resolve({ success: true, message: "", data: storageSubjects })
-                            : getSubjectsFromDB(schoolId);
+                    subjectsPromise = promiseFromCacheOrDB<SubjectType[], GetSubjectsResponse>(
+                        schoolId,
+                        getStorageSubjects(),
+                        getSubjectsFromDB,
+                    );
                 }
 
                 // No cache for annual schedule

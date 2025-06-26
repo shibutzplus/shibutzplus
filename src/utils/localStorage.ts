@@ -1,4 +1,3 @@
-import { AnnualScheduleType } from "@/models/types/annualSchedule";
 import { SchoolType } from "@/models/types/school";
 import { SubjectType } from "@/models/types/subjects";
 import { TeacherType } from "@/models/types/teachers";

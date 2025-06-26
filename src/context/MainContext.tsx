@@ -12,7 +12,15 @@ import { addSubjectAction } from "@/app/actions/addSubjectAction";
 import { updateAnnualScheduleAction } from "@/app/actions/updateAnnualScheduleAction";
 import { addAnnualScheduleAction } from "@/app/actions/addAnnualScheduleAction";
 import useInitData from "@/hooks/useInitData";
-import { setStorageClasses, setStorageSubjects, setStorageTeachers } from "@/utils/localStorage";
+import {
+    getStorageSchoolId,
+    setStorageClasses,
+    setStorageSubjects,
+    setStorageTeachers,
+} from "@/utils/localStorage";
+import { deleteClassAction } from "@/app/actions/deleteClassAction";
+import { deleteTeacherAction } from "@/app/actions/deleteTeacherAction";
+import { deleteSubjectAction } from "@/app/actions/deleteSubjectAction";
 
 interface MainContextType {
     school: SchoolType | undefined;
@@ -83,14 +91,17 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         return response.message;
     };
 
-    const deleteClass = (classId: string) => {
-        // deleteClassAction
-        setClasses((prev) => {
-            if (!prev) return prev;
-            const updatedClasses = prev.filter((c) => c.id !== classId);
-            setStorageClasses(updatedClasses);
-            return updatedClasses;
-        });
+    const deleteClass = async (classId: string) => {
+        const schoolId = getStorageSchoolId();
+        if (!schoolId) return;
+        const response = await deleteClassAction(schoolId, classId);
+        if (response.success && response.classes && response.annualSchedules) {
+            setClasses(response.classes);
+            setStorageClasses(response.classes);
+            setAnnualScheduleTable(response.annualSchedules);
+        }
+        //error msg alert
+        return response.message;
     };
 
     const addNewTeacher = async (newTeacher: TeacherRequest) => {
@@ -107,14 +118,17 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         return response.message;
     };
 
-    const deleteTeacher = (teacherId: string) => {
-        // deleteTeacherAction
-        setTeachers((prev) => {
-            if (!prev) return prev;
-            const updatedTeachers = prev.filter((t) => t.id !== teacherId);
-            setStorageTeachers(updatedTeachers);
-            return updatedTeachers;
-        });
+    const deleteTeacher = async (teacherId: string) => {
+        const schoolId = getStorageSchoolId();
+        if (!schoolId) return;
+        const response = await deleteTeacherAction(schoolId, teacherId);
+        if (response.success && response.teachers && response.annualSchedules) {
+            setTeachers(response.teachers);
+            setStorageTeachers(response.teachers);
+            setAnnualScheduleTable(response.annualSchedules);
+        }
+        //error msg alert
+        return response.message;
     };
 
     const addNewSubject = async (newSubject: SubjectRequest) => {
@@ -131,14 +145,17 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         return response.message;
     };
 
-    const deleteSubject = (subjectId: string) => {
-        // deleteSubjectAction
-        setSubjects((prev) => {
-            if (!prev) return prev;
-            const updatedSubjects = prev.filter((s) => s.id !== subjectId);
-            setStorageSubjects(updatedSubjects);
-            return updatedSubjects;
-        });
+    const deleteSubject = async (subjectId: string) => {
+        const schoolId = getStorageSchoolId();
+        if (!schoolId) return;
+        const response = await deleteSubjectAction(schoolId, subjectId);
+        if (response.success && response.subjects && response.annualSchedules) {
+            setSubjects(response.subjects);
+            setStorageSubjects(response.subjects);
+            setAnnualScheduleTable(response.annualSchedules);
+        }
+        //error msg alert
+        return response.message;
     };
 
     const addNewAnnualScheduleItem = async (newScheduleItem: AnnualScheduleRequest) => {

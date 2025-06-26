@@ -1,5 +1,3 @@
-export const CACHE_DURATION_1_HOUR = 60 * 60; // 1 hour
-
 // Days of the week in Hebrew
 export const DAYS_OF_WEEK = ["א", "ב", "ג", "ד", "ה", "ו"];
 

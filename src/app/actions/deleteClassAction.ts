@@ -6,26 +6,23 @@ import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema } from "@/db";
 import { and, eq } from "drizzle-orm";
-
-export type DeleteClassResponse = ActionResponse & {
-    deletedAnnualSchedules?: AnnualScheduleType[];
-};
+import { ClassType } from "@/models/types/classes";
 
 export async function deleteClassAction(
     schoolId: string,
-    classId: string
-): Promise<DeleteClassResponse> {
+    classId: string,
+): Promise<ActionResponse & { classes?: ClassType[]; annualSchedules?: AnnualScheduleType[] }> {
     try {
         const authError = await checkAuthAndParams({ schoolId, classId });
         if (authError) {
-            return authError as DeleteClassResponse;
+            return authError as ActionResponse;
         }
 
         // Get all annual schedule records related to this class
         const annualSchedules = await db.query.annualSchedule.findMany({
             where: and(
                 eq(schema.annualSchedule.schoolId, schoolId),
-                eq(schema.annualSchedule.classId, classId)
+                eq(schema.annualSchedule.classId, classId),
             ),
             with: {
                 school: true,
@@ -36,42 +33,47 @@ export async function deleteClassAction(
         });
 
         const formattedAnnualSchedules = annualSchedules.map(
-            (schedule: any) => ({
-                id: schedule.id,
-                day: schedule.day,
-                hour: schedule.hour,
-                position: schedule.position,
-                school: schedule.school,
-                class: schedule.class,
-                teacher: schedule.teacher,
-                subject: schedule.subject,
-                createdAt: schedule.createdAt,
-                updatedAt: schedule.updatedAt,
-            }) as AnnualScheduleType
+            (schedule: any) =>
+                ({
+                    id: schedule.id,
+                    day: schedule.day,
+                    hour: schedule.hour,
+                    position: schedule.position,
+                    school: schedule.school,
+                    class: schedule.class,
+                    teacher: schedule.teacher,
+                    subject: schedule.subject,
+                    createdAt: schedule.createdAt,
+                    updatedAt: schedule.updatedAt,
+                }) as AnnualScheduleType,
         );
 
         // Delete all annual schedule records for this class
-        await db.delete(schema.annualSchedule)
+        await db
+            .delete(schema.annualSchedule)
             .where(
                 and(
                     eq(schema.annualSchedule.schoolId, schoolId),
-                    eq(schema.annualSchedule.classId, classId)
-                )
+                    eq(schema.annualSchedule.classId, classId),
+                ),
             );
 
         // Delete the class
-        await db.delete(schema.classes)
-            .where(
-                and(
-                    eq(schema.classes.schoolId, schoolId),
-                    eq(schema.classes.id, classId)
-                )
-            );
+        await db
+            .delete(schema.classes)
+            .where(and(eq(schema.classes.schoolId, schoolId), eq(schema.classes.id, classId)));
+
+        // Get the remaining classes for this school
+        const remainingClasses = await db
+            .select()
+            .from(schema.classes)
+            .where(eq(schema.classes.schoolId, schoolId));
 
         return {
             success: true,
             message: messages.classes.deleteSuccess,
-            deletedAnnualSchedules: formattedAnnualSchedules,
+            annualSchedules: formattedAnnualSchedules,
+            classes: remainingClasses,
         };
     } catch (error) {
         console.error("Error deleting class:", error);

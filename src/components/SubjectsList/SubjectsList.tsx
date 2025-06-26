@@ -5,8 +5,8 @@ import styles from "./SubjectsList.module.css";
 import { SubjectType } from "@/models/types/subjects";
 import { usePopup } from "@/context/PopupContext";
 import TableList from "../core/TableList/TableList";
-import DeleteSubjectPopup from "../popups/DeleteSubjectPopup/DeleteSubjectPopup";
 import { useMainContext } from "@/context/MainContext";
+import DeletePopup from "../popups/DeletePopup/DeletePopup";
 
 type SubjectsListProps = {
     subjects: SubjectType[];
@@ -26,8 +26,8 @@ const SubjectsList: React.FC<SubjectsListProps> = ({ subjects, handleSelectSubje
         openPopup(
             "deleteSubject",
             "S",
-            <DeleteSubjectPopup
-                subject={subject}
+            <DeletePopup
+                text={`האם אתה בטוח שברצונך למחוק את המקצוע ${subject.name}`}
                 onDelete={() => handleDeleteSubjectFromState(subject.id)}
                 onCancel={() => closePopup()}
             />,

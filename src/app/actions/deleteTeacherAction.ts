@@ -6,19 +6,16 @@ import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema } from "@/db";
 import { and, eq } from "drizzle-orm";
-
-export type DeleteTeacherResponse = ActionResponse & {
-    deletedAnnualSchedules?: AnnualScheduleType[];
-};
+import { TeacherType } from "@/models/types/teachers";
 
 export async function deleteTeacherAction(
     schoolId: string,
     teacherId: string
-): Promise<DeleteTeacherResponse> {
+): Promise<ActionResponse & { annualSchedules?: AnnualScheduleType[]; teachers?: TeacherType[] }> {
     try {
         const authError = await checkAuthAndParams({ schoolId, teacherId });
         if (authError) {
-            return authError as DeleteTeacherResponse;
+            return authError as ActionResponse;
         }
 
         // Get all annual schedule records related to this teacher
@@ -68,10 +65,17 @@ export async function deleteTeacherAction(
                 )
             );
 
+        // Get the remaining teachers for this school
+        const remainingTeachers = await db
+            .select()
+            .from(schema.teachers)
+            .where(eq(schema.teachers.schoolId, schoolId));
+
         return {
             success: true,
             message: messages.teachers.deleteSuccess,
-            deletedAnnualSchedules: formattedAnnualSchedules,
+            annualSchedules: formattedAnnualSchedules,
+            teachers: remainingTeachers,
         };
     } catch (error) {
         console.error("Error deleting teacher:", error);

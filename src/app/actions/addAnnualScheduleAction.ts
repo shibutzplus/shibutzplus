@@ -12,7 +12,6 @@ export async function addAnnualScheduleAction(
 ): Promise<ActionResponse & { data?: AnnualScheduleType }> {
     try {
         const { school, class: classData, teacher, subject } = scheduleData;
-        // Check authentication and required parameters
         const authError = await checkAuthAndParams({
             day: scheduleData.day,
             hour: scheduleData.hour,

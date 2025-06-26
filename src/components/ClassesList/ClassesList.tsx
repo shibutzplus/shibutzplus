@@ -5,8 +5,8 @@ import styles from "./ClassesList.module.css";
 import { ClassType } from "@/models/types/classes";
 import { usePopup } from "@/context/PopupContext";
 import TableList from "../core/TableList/TableList";
-import DeleteClassPopup from "../popups/DeleteClassPopup/DeleteClassPopup";
 import { useMainContext } from "@/context/MainContext";
+import DeletePopup from "../popups/DeletePopup/DeletePopup";
 
 type ClassesListProps = {
     classes: ClassType[];
@@ -26,8 +26,8 @@ const ClassesList: React.FC<ClassesListProps> = ({ classes, handleSelectClass })
         openPopup(
             "deleteClass",
             "S",
-            <DeleteClassPopup 
-                classItem={classItem} 
+            <DeletePopup 
+                text={`האם אתה בטוח שברצונך למחוק את הכיתה ${classItem.name}`} 
                 onDelete={() => handleDeleteClassFromState(classItem.id)} 
                 onCancel={() => closePopup()} 
             />,
