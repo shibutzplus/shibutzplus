@@ -26,15 +26,15 @@ const DeleteSvg = () => {
 
 interface DeletePopupProps {
     text: string;
-    onDelete: () => void;
+    onDelete: () => Promise<void>;
     onCancel: () => void;
 }
 
 const DeletePopup: React.FC<DeletePopupProps> = ({ text, onDelete, onCancel }) => {
     const { closePopup } = usePopup();
 
-    const handleDelete = () => {
-        onDelete();
+    const handleDelete = async () => {
+        await onDelete();
         closePopup();
     };
 

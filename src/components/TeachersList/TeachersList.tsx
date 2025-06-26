@@ -7,6 +7,9 @@ import { usePopup } from "@/context/PopupContext";
 import TableList from "../core/TableList/TableList";
 import { useMainContext } from "@/context/MainContext";
 import DeletePopup from "../popups/DeletePopup/DeletePopup";
+import useSubmit from "@/hooks/useSubmit";
+import messages from "@/resources/messages";
+import { getStorageSchoolId } from "@/utils/localStorage";
 
 type TeachersListProps = {
     teachers: TeacherType[];
@@ -17,8 +20,17 @@ const TeachersList: React.FC<TeachersListProps> = ({ teachers, handleSelectTeach
     const { openPopup, closePopup } = usePopup();
     const { deleteTeacher } = useMainContext();
 
-    const handleDeleteTeacherFromState = (teacherId: string) => {
-        deleteTeacher(teacherId);
+    const { handleSubmitDelete, isLoading } = useSubmit(
+        () => {},
+        messages.teachers.deleteSuccess,
+        messages.teachers.deleteError,
+        messages.teachers.invalid,
+    );
+
+    const handleDeleteTeacherFromState = async (teacherId: string) => {
+        const schoolId = getStorageSchoolId();
+        if (!schoolId) return;
+        await handleSubmitDelete(schoolId, teacherId, deleteTeacher);
         closePopup();
     };
 

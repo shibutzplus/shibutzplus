@@ -39,7 +39,8 @@ const messages = {
         createError: "שגיאה בהוספת מורה. אנא נסה שוב מאוחר יותר",
         deleteSuccess: "מורה נמחק בהצלחה",
         deleteError: "שגיאה במחיקת מורה. אנא נסה שוב מאוחר יותר",
-        alreadyExists: "מורה עם שם זה כבר קיים"
+        alreadyExists: "מורה עם שם זה כבר קיים",
+        invalid: "חסרים פרמטרים",
     },
     subjects: {
         retrieveSuccess: "רשימת מקצועות נשלפה בהצלחה",
@@ -48,7 +49,8 @@ const messages = {
         createError: "שגיאה בהוספת מקצוע. אנא נסה שוב מאוחר יותר",
         deleteSuccess: "מקצוע נמחק בהצלחה",
         deleteError: "שגיאה במחיקת מקצוע. אנא נסה שוב מאוחר יותר",
-        alreadyExists: "מקצוע עם שם זה כבר קיים"
+        alreadyExists: "מקצוע עם שם זה כבר קיים",
+        invalid: "חסרים פרמטרים",
     },
     classes: {
         retrieveSuccess: "רשימת כיתות נשלפה בהצלחה",
@@ -57,7 +59,8 @@ const messages = {
         createError: "שגיאה בהוספת כיתה. אנא נסה שוב מאוחר יותר",
         deleteSuccess: "כיתה נמחקה בהצלחה",
         deleteError: "שגיאה במחיקת כיתה. אנא נסה שוב מאוחר יותר",
-        alreadyExists: "כיתה עם שם זה כבר קיימת"
+        alreadyExists: "כיתה עם שם זה כבר קיימת",
+        invalid: "חסרים פרמטרים",
     },
     annualSchedule: {
         retrieveSuccess: "מערכת שנתית נשלפה בהצלחה",
@@ -67,6 +70,9 @@ const messages = {
         updateSuccess: "שיעור עודכן במערכת השנתית בהצלחה",
         updateError: "שגיאה בעדכון שיעור במערכת השנתית. אנא נסה שוב מאוחר יותר",
         alreadyExists: "שיעור כבר קיים במערכת השנתית בשעה זו"
+    },
+    common: {
+        invalid: "חסרים פרמטרים",
     }
 }
 

@@ -34,7 +34,6 @@ const LoginForm: React.FC = () => {
         }
 
         router.push(routePath.dashboard.p);
-        setIsLoading(false);
     };
 
     return (
@@ -81,13 +80,7 @@ const LoginForm: React.FC = () => {
                     </div>
                 </div>
 
-                <SubmitBtn
-                    type="submit"
-                    isLoading={isLoading}
-                    loadingText="כניסה למערכת"
-                    buttonText="כניסה"
-                    error={error}
-                />
+                <SubmitBtn type="submit" isLoading={isLoading} buttonText="כניסה" error={error} />
             </form>
 
             <div className={styles.registerLink}>

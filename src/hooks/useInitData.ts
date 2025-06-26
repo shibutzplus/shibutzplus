@@ -170,9 +170,3 @@ const useInitData = ({
 };
 
 export default useInitData;
-
-// const storageSchool = getStorageSchool();
-// schoolPromise =
-//     storageSchool && isCacheFresh(cacheTimestamp)
-//         ? Promise.resolve({ success: true, message: "", data: storageSchool })
-//         : getSchoolFromDB(schoolId);

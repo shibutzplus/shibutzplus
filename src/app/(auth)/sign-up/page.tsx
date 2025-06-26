@@ -117,7 +117,6 @@ const SignUpPage: NextPage = () => {
                     <SubmitBtn
                         type="submit"
                         isLoading={isLoading}
-                        loadingText="הירשם..."
                         buttonText="הירשם"
                         error={error}
                     />

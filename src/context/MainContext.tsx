@@ -12,12 +12,7 @@ import { addSubjectAction } from "@/app/actions/addSubjectAction";
 import { updateAnnualScheduleAction } from "@/app/actions/updateAnnualScheduleAction";
 import { addAnnualScheduleAction } from "@/app/actions/addAnnualScheduleAction";
 import useInitData from "@/hooks/useInitData";
-import {
-    getStorageSchoolId,
-    setStorageClasses,
-    setStorageSubjects,
-    setStorageTeachers,
-} from "@/utils/localStorage";
+import { setStorageClasses, setStorageSubjects, setStorageTeachers } from "@/utils/localStorage";
 import { deleteClassAction } from "@/app/actions/deleteClassAction";
 import { deleteTeacherAction } from "@/app/actions/deleteTeacherAction";
 import { deleteSubjectAction } from "@/app/actions/deleteSubjectAction";
@@ -28,17 +23,17 @@ interface MainContextType {
     subjects: SubjectType[] | undefined;
     classes: ClassType[] | undefined;
     annualScheduleTable: AnnualScheduleType[] | undefined;
-    addNewClass: (newClass: ClassRequest) => Promise<string>;
-    deleteClass: (classId: string) => void;
-    addNewTeacher: (newTeacher: TeacherRequest) => Promise<string>;
-    deleteTeacher: (teacherId: string) => void;
-    addNewSubject: (newSubject: SubjectRequest) => Promise<string>;
-    deleteSubject: (subjectId: string) => void;
-    addNewAnnualScheduleItem: (newScheduleItem: AnnualScheduleRequest) => Promise<string>;
+    addNewClass: (newClass: ClassRequest) => Promise<boolean>;
+    deleteClass: (schoolId: string, classId: string) => Promise<boolean>;
+    addNewTeacher: (newTeacher: TeacherRequest) => Promise<boolean>;
+    deleteTeacher: (schoolId: string, teacherId: string) => Promise<boolean>;
+    addNewSubject: (newSubject: SubjectRequest) => Promise<boolean>;
+    deleteSubject: (schoolId: string, subjectId: string) => Promise<boolean>;
+    addNewAnnualScheduleItem: (newScheduleItem: AnnualScheduleRequest) => Promise<boolean>;
     updateExistingAnnualScheduleItem: (
         id: string,
         updatedScheduleItem: AnnualScheduleRequest,
-    ) => Promise<string>;
+    ) => Promise<boolean>;
 }
 
 const MainContext = createContext<MainContextType | undefined>(undefined);
@@ -86,22 +81,20 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
                 setStorageClasses(updatedClasses);
                 return updatedClasses;
             });
+            return true;
         }
-        //error msg alert
-        return response.message;
+        return false;
     };
 
-    const deleteClass = async (classId: string) => {
-        const schoolId = getStorageSchoolId();
-        if (!schoolId) return;
+    const deleteClass = async (schoolId: string, classId: string) => {
         const response = await deleteClassAction(schoolId, classId);
         if (response.success && response.classes && response.annualSchedules) {
             setClasses(response.classes);
             setStorageClasses(response.classes);
             setAnnualScheduleTable(response.annualSchedules);
+            return true;
         }
-        //error msg alert
-        return response.message;
+        return false;
     };
 
     const addNewTeacher = async (newTeacher: TeacherRequest) => {
@@ -113,22 +106,20 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
                 setStorageTeachers(updatedTeachers);
                 return updatedTeachers;
             });
+            return true;
         }
-        //error msg alert
-        return response.message;
+        return false;
     };
 
-    const deleteTeacher = async (teacherId: string) => {
-        const schoolId = getStorageSchoolId();
-        if (!schoolId) return;
+    const deleteTeacher = async (schoolId: string, teacherId: string) => {
         const response = await deleteTeacherAction(schoolId, teacherId);
         if (response.success && response.teachers && response.annualSchedules) {
             setTeachers(response.teachers);
             setStorageTeachers(response.teachers);
             setAnnualScheduleTable(response.annualSchedules);
+            return true;
         }
-        //error msg alert
-        return response.message;
+        return false;
     };
 
     const addNewSubject = async (newSubject: SubjectRequest) => {
@@ -140,22 +131,20 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
                 setStorageSubjects(updatedSubjects);
                 return updatedSubjects;
             });
+            return true;
         }
-        //error msg alert
-        return response.message;
+        return false;
     };
 
-    const deleteSubject = async (subjectId: string) => {
-        const schoolId = getStorageSchoolId();
-        if (!schoolId) return;
+    const deleteSubject = async (schoolId: string, subjectId: string) => {
         const response = await deleteSubjectAction(schoolId, subjectId);
         if (response.success && response.subjects && response.annualSchedules) {
             setSubjects(response.subjects);
             setStorageSubjects(response.subjects);
             setAnnualScheduleTable(response.annualSchedules);
+            return true;
         }
-        //error msg alert
-        return response.message;
+        return false;
     };
 
     const addNewAnnualScheduleItem = async (newScheduleItem: AnnualScheduleRequest) => {
@@ -166,9 +155,9 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
                 const updatedSchedule = prev ? [...prev, response.data] : [response.data];
                 return updatedSchedule;
             });
+            return true;
         }
-        //error msg alert
-        return response.message;
+        return false;
     };
 
     const updateExistingAnnualScheduleItem = async (
@@ -184,9 +173,9 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
                 );
                 return updatedSchedule;
             });
+            return true;
         }
-        //error msg alert
-        return response.message;
+        return false;
     };
 
     const value: MainContextType = {
