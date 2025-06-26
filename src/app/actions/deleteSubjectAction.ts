@@ -1,0 +1,83 @@
+"use server";
+
+import { ActionResponse } from "@/models/types/actions";
+import { AnnualScheduleType } from "@/models/types/annualSchedule";
+import { checkAuthAndParams } from "@/utils/authUtils";
+import messages from "@/resources/messages";
+import { db, schema } from "@/db";
+import { and, eq } from "drizzle-orm";
+
+export type DeleteSubjectResponse = ActionResponse & {
+    deletedAnnualSchedules?: AnnualScheduleType[];
+};
+
+export async function deleteSubjectAction(
+    schoolId: string,
+    subjectId: string
+): Promise<DeleteSubjectResponse> {
+    try {
+        const authError = await checkAuthAndParams({ schoolId, subjectId });
+        if (authError) {
+            return authError as DeleteSubjectResponse;
+        }
+
+        // Get all annual schedule records related to this subject
+        const annualSchedules = await db.query.annualSchedule.findMany({
+            where: and(
+                eq(schema.annualSchedule.schoolId, schoolId),
+                eq(schema.annualSchedule.subjectId, subjectId)
+            ),
+            with: {
+                school: true,
+                class: true,
+                teacher: true,
+                subject: true,
+            },
+        });
+
+        const formattedAnnualSchedules = annualSchedules.map(
+            (schedule: any) => ({
+                id: schedule.id,
+                day: schedule.day,
+                hour: schedule.hour,
+                position: schedule.position,
+                school: schedule.school,
+                class: schedule.class,
+                teacher: schedule.teacher,
+                subject: schedule.subject,
+                createdAt: schedule.createdAt,
+                updatedAt: schedule.updatedAt,
+            }) as AnnualScheduleType
+        );
+
+        // Delete all annual schedule records for this subject
+        await db.delete(schema.annualSchedule)
+            .where(
+                and(
+                    eq(schema.annualSchedule.schoolId, schoolId),
+                    eq(schema.annualSchedule.subjectId, subjectId)
+                )
+            );
+
+        // Delete the subject
+        await db.delete(schema.subjects)
+            .where(
+                and(
+                    eq(schema.subjects.schoolId, schoolId),
+                    eq(schema.subjects.id, subjectId)
+                )
+            );
+
+        return {
+            success: true,
+            message: messages.subjects.deleteSuccess,
+            deletedAnnualSchedules: formattedAnnualSchedules,
+        };
+    } catch (error) {
+        console.error("Error deleting subject:", error);
+        return {
+            success: false,
+            message: messages.subjects.deleteError,
+        };
+    }
+}

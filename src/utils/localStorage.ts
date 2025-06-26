@@ -72,3 +72,7 @@ export const getStorageClasses = () => {
 export const setStorageClasses = (classes: ClassType[]) => {
     return setStorage(STORAGE_KEYS.CLASSES_DATA, classes);
 };
+
+export const clearStorage = () => {
+    localStorage.clear();
+};

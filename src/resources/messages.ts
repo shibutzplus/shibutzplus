@@ -37,6 +37,8 @@ const messages = {
         retrieveError: "שגיאה בשליפת רשימת המורים. אנא נסה שוב מאוחר יותר",
         createSuccess: "מורה נוסף בהצלחה",
         createError: "שגיאה בהוספת מורה. אנא נסה שוב מאוחר יותר",
+        deleteSuccess: "מורה נמחק בהצלחה",
+        deleteError: "שגיאה במחיקת מורה. אנא נסה שוב מאוחר יותר",
         alreadyExists: "מורה עם שם זה כבר קיים"
     },
     subjects: {
@@ -44,6 +46,8 @@ const messages = {
         retrieveError: "שגיאה בשליפת רשימת המקצועות. אנא נסה שוב מאוחר יותר",
         createSuccess: "מקצוע נוסף בהצלחה",
         createError: "שגיאה בהוספת מקצוע. אנא נסה שוב מאוחר יותר",
+        deleteSuccess: "מקצוע נמחק בהצלחה",
+        deleteError: "שגיאה במחיקת מקצוע. אנא נסה שוב מאוחר יותר",
         alreadyExists: "מקצוע עם שם זה כבר קיים"
     },
     classes: {
