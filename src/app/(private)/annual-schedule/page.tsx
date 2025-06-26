@@ -11,13 +11,18 @@ import { TeacherType } from "@/models/types/teachers";
 import { SubjectType } from "@/models/types/subjects";
 import { WeeklySchedule, AnnualScheduleRequest } from "@/models/types/annualSchedule";
 import { DAYS_OF_WEEK, HOURS_IN_DAY } from "@/utils/time";
-import { addAnnualScheduleAction } from "@/app/actions/addAnnualScheduleAction";
 import messages from "@/resources/messages";
-import { updateAnnualScheduleAction } from "@/app/actions/updateAnnualScheduleAction";
 
 const AnnualSchedulePage: NextPage = () => {
-    const { classes, teachers, subjects, annualScheduleTable, school, updateAnnualSchedule } =
-        useMainContext();
+    const {
+        classes,
+        teachers,
+        subjects,
+        annualScheduleTable,
+        school,
+        addNewAnnualScheduleItem,
+        updateExistingAnnualScheduleItem,
+    } = useMainContext();
 
     const [selectedClassId, setSelectedClassId] = useState<string>(classes?.[0]?.id || "");
     const [showTable, setShowTable] = useState<boolean>(true);
@@ -131,20 +136,15 @@ const AnnualSchedulePage: NextPage = () => {
                     if ((type === "teacher" && subjectId) || (type === "subject" && teacherId)) {
                         // if both already filled -> update the cell function
                         const id = getRowId(day, hour);
-                        response = await updateAnnualScheduleAction(id, scheduleRequest);
+                        response = await updateExistingAnnualScheduleItem(id, scheduleRequest);
                     }
                 } else {
                     // need to create the cell
                     // check if the other type select is filled
                     if (teacherId && subjectId) {
                         // if both fresh filled -> create new cell function
-                        response = await addAnnualScheduleAction(scheduleRequest);
+                        response = await addNewAnnualScheduleItem(scheduleRequest);
                     }
-                }
-                if (response.success && response.data) {
-                    updateAnnualSchedule(response.data);
-                } else {
-                    setError(response.message);
                 }
             }
         } catch (err) {

@@ -5,7 +5,6 @@ import { ClassType, ClassRequest } from "@/models/types/classes";
 import { ActionResponse } from "@/models/types/actions";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
-import { revalidateTag } from "next/cache";
 
 export async function addClassAction(
     classData: ClassRequest,
@@ -30,9 +29,6 @@ export async function addClassAction(
                 message: messages.classes.createError,
             };
         }
-
-        // Revalidate the server-side cache to ensure fresh data is fetched
-        revalidateTag("classes-data");
 
         return {
             success: true,

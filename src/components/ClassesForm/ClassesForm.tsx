@@ -5,7 +5,6 @@ import { ClassType, ClassRequest } from "@/models/types/classes";
 import InputText from "../ui/InputText/InputText";
 import Form from "../core/Form/Form";
 import { useMainContext } from "@/context/MainContext";
-import { addClassAction } from "@/app/actions/addClassAction";
 import messages from "@/resources/messages";
 
 type ClassesFormProps = {
@@ -13,7 +12,7 @@ type ClassesFormProps = {
 };
 
 const ClassesForm: React.FC<ClassesFormProps> = ({ selectedClass }) => {
-    const { school, updateClasses } = useMainContext();
+    const { school, addNewClass } = useMainContext();
 
     const [formData, setFormData] = useState<ClassRequest>({
         name: selectedClass ? selectedClass.name : "",
@@ -51,23 +50,14 @@ const ClassesForm: React.FC<ClassesFormProps> = ({ selectedClass }) => {
                 return;
             }
 
-            const response = await addClassAction(formData);
-
-            if (response.success && response.data) {
-                updateClasses(response.data as ClassType);
-
-                setSuccessMessage(response.message);
-
-                setFormData({
-                    name: "",
-                    schoolId: school?.id || "",
-                });
-            } else {
-                setError(response.message || messages.classes.createError);
-            }
-        } catch (err) {
+            await addNewClass(formData);
+            setFormData({
+                name: "",
+                schoolId: school?.id || "",
+            });
+        } catch (error) {
+            console.error(error);
             setError(messages.classes.createError);
-            console.error(err);
         } finally {
             setIsLoading(false);
         }

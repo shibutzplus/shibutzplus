@@ -1,5 +1,6 @@
 import { SelectOption } from "@/models/types";
 
+// TODO: no need anymore
 export function safeParseJSON<T>(jsonString: string | null): T | null {
     if (!jsonString) return null;
     try {

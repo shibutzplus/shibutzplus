@@ -6,6 +6,7 @@ import { TeacherType } from "@/models/types/teachers";
 import { usePopup } from "@/context/PopupContext";
 import DeleteTeacherPopup from "../popups/DeleteTeacherPopup/DeleteTeacherPopup";
 import TableList from "../core/TableList/TableList";
+import { useMainContext } from "@/context/MainContext";
 
 type TeachersListProps = {
     teachers: TeacherType[];
@@ -13,13 +14,23 @@ type TeachersListProps = {
 };
 
 const TeachersList: React.FC<TeachersListProps> = ({ teachers, handleSelectTeacher }) => {
-    const { openPopup } = usePopup();
+    const { openPopup, closePopup } = usePopup();
+    const { deleteTeacher } = useMainContext();
+
+    const handleDeleteTeacherFromState = (teacherId: string) => {
+        deleteTeacher(teacherId);
+        closePopup();
+    };
 
     const handleOpenPopup = (teacher: TeacherType) => {
         openPopup(
             "deleteTeacher",
             "S",
-            <DeleteTeacherPopup teacher={teacher} onDelete={() => {}} onCancel={() => {}} />,
+            <DeleteTeacherPopup
+                teacher={teacher}
+                onDelete={() => handleDeleteTeacherFromState(teacher.id)}
+                onCancel={() => closePopup()}
+            />,
         );
     };
 

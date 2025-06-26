@@ -5,7 +5,6 @@ import { AnnualScheduleType, AnnualScheduleRequest } from "@/models/types/annual
 import { ActionResponse } from "@/models/types/actions";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
-import { revalidateTag } from "next/cache";
 import { NewAnnualScheduleSchema } from "@/db/schema";
 
 export async function addAnnualScheduleAction(
@@ -50,9 +49,6 @@ export async function addAnnualScheduleAction(
                 message: messages.annualSchedule.createError,
             };
         }
-
-        // Revalidate the server-side cache to ensure fresh data is fetched
-        revalidateTag("annual-schedule-data");
 
         return {
             success: true,

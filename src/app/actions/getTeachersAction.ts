@@ -1,20 +1,10 @@
 "use server";
 
-import { getTeachersBySchool } from "@/db/utils";
-import { unstable_cache } from "next/cache";
 import { GetTeachersResponse } from "@/models/types/teachers";
 import { checkAuthAndParams } from "@/utils/authUtils";
-import { CACHE_DURATION_1_HOUR } from "@/utils/time";
 import messages from "@/resources/messages";
-
-// Cache teachers data with a 1-hour revalidation period
-const getCachedTeachers = unstable_cache(
-    async (schoolId: string) => {
-        return await getTeachersBySchool(schoolId);
-    },
-    ["teachers-data"],
-    { revalidate: CACHE_DURATION_1_HOUR },
-);
+import { db, schema } from "@/db";
+import { eq } from "drizzle-orm";
 
 export async function getTeachersAction(schoolId: string): Promise<GetTeachersResponse> {
     try {
@@ -23,7 +13,18 @@ export async function getTeachersAction(schoolId: string): Promise<GetTeachersRe
             return authError as GetTeachersResponse;
         }
 
-        const teachers = await getCachedTeachers(schoolId);
+        const teachers = await db
+            .select()
+            .from(schema.teachers)
+            .where(eq(schema.teachers.schoolId, schoolId));
+
+        if (!teachers || teachers.length === 0) {
+            return {
+                success: false,
+                message: messages.teachers.retrieveError,
+            };
+        }
+
         return {
             success: true,
             message: messages.teachers.retrieveSuccess,

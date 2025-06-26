@@ -6,6 +6,7 @@ import { SubjectType } from "@/models/types/subjects";
 import { usePopup } from "@/context/PopupContext";
 import TableList from "../core/TableList/TableList";
 import DeleteSubjectPopup from "../popups/DeleteSubjectPopup/DeleteSubjectPopup";
+import { useMainContext } from "@/context/MainContext";
 
 type SubjectsListProps = {
     subjects: SubjectType[];
@@ -13,13 +14,23 @@ type SubjectsListProps = {
 };
 
 const SubjectsList: React.FC<SubjectsListProps> = ({ subjects, handleSelectSubject }) => {
-    const { openPopup } = usePopup();
+    const { openPopup, closePopup } = usePopup();
+    const { deleteSubject } = useMainContext();
+
+    const handleDeleteSubjectFromState = (subjectId: string) => {
+        deleteSubject(subjectId);
+        closePopup();
+    };
 
     const handleOpenPopup = (subject: SubjectType) => {
         openPopup(
             "deleteSubject",
             "S",
-            <DeleteSubjectPopup subject={subject} onDelete={() => {}} onCancel={() => {}} />,
+            <DeleteSubjectPopup
+                subject={subject}
+                onDelete={() => handleDeleteSubjectFromState(subject.id)}
+                onCancel={() => closePopup()}
+            />,
         );
     };
 

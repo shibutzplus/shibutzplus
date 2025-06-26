@@ -18,10 +18,7 @@ const ClassesList: React.FC<ClassesListProps> = ({ classes, handleSelectClass })
     const { deleteClass } = useMainContext();
 
     const handleDeleteClassFromState = (classId: string) => {
-        // Use the MainContext's deleteClass function
         deleteClass(classId);
-        
-        // Close the popup after deletion
         closePopup();
     };
 

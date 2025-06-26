@@ -51,6 +51,8 @@ const messages = {
         retrieveError: "שגיאה בשליפת רשימת הכיתות. אנא נסה שוב מאוחר יותר",
         createSuccess: "כיתה נוספה בהצלחה",
         createError: "שגיאה בהוספת כיתה. אנא נסה שוב מאוחר יותר",
+        deleteSuccess: "כיתה נמחקה בהצלחה",
+        deleteError: "שגיאה במחיקת כיתה. אנא נסה שוב מאוחר יותר",
         alreadyExists: "כיתה עם שם זה כבר קיימת"
     },
     annualSchedule: {

@@ -11,7 +11,6 @@ import RadioGroup from "../ui/RadioGroup/RadioGroup";
 import Form from "../core/Form/Form";
 import InputText from "../ui/InputText/InputText";
 import { useMainContext } from "@/context/MainContext";
-import { addTeacherAction } from "@/app/actions/addTeacherAction";
 import messages from "@/resources/messages";
 
 type TeachersFormProps = {
@@ -19,7 +18,7 @@ type TeachersFormProps = {
 };
 
 const TeachersForm: React.FC<TeachersFormProps> = ({ selectedTeacher }) => {
-    const { school, updateTeachers } = useMainContext();
+    const { school, addNewTeacher } = useMainContext();
 
     const [formData, setFormData] = useState<TeacherRequest>({
         name: selectedTeacher ? selectedTeacher.name : "",
@@ -62,28 +61,17 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ selectedTeacher }) => {
                 setIsLoading(false);
                 return;
             }
-
-            const response = await addTeacherAction(formData);
-
-            if (response.success && response.data) {
-                updateTeachers(response.data as TeacherType);
-                
-                // Show success message
-                setSuccessMessage(response.message);
-                
-                // Reset form
-                setFormData({
-                    name: "",
-                    role: TeacherRoleValues.HOMEROOM,
-                    schoolId: school?.id || "",
-                    userId: null,
-                });
-            } else {
-                setError(response.message);
-            }
-        } catch (err) {
+            await addNewTeacher(formData);
+            // Reset form
+            setFormData({
+                name: "",
+                role: TeacherRoleValues.HOMEROOM,
+                schoolId: school?.id || "",
+                userId: null,
+            });
+        } catch (error) {
             setError(messages.teachers.createError);
-            console.error(err);
+            console.error(error);
         } finally {
             setIsLoading(false);
         }

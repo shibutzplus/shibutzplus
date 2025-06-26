@@ -5,7 +5,6 @@ import { SubjectType, SubjectRequest } from "@/models/types/subjects";
 import Form from "../core/Form/Form";
 import InputText from "../ui/InputText/InputText";
 import { useMainContext } from "@/context/MainContext";
-import { addSubjectAction } from "@/app/actions/addSubjectAction";
 import messages from "@/resources/messages";
 
 type SubjectsFormProps = {
@@ -13,8 +12,8 @@ type SubjectsFormProps = {
 };
 
 const SubjectsForm: React.FC<SubjectsFormProps> = ({ selectedSubject }) => {
-    const { school, updateSubjects } = useMainContext();
-    
+    const { school, addNewSubject } = useMainContext();
+
     const [formData, setFormData] = useState<SubjectRequest>({
         name: selectedSubject ? selectedSubject.name : "",
         schoolId: selectedSubject ? selectedSubject.schoolId : school?.id || "",
@@ -51,21 +50,11 @@ const SubjectsForm: React.FC<SubjectsFormProps> = ({ selectedSubject }) => {
                 setIsLoading(false);
                 return;
             }
-
-            const response = await addSubjectAction(formData);
-
-            if (response.success && response.data) {
-                updateSubjects(response.data as SubjectType);
-                
-                setSuccessMessage(response.message);
-                
-                setFormData({
-                    name: "",
-                    schoolId: school?.id || "",
-                });
-            } else {
-                setError(response.message);
-            }
+            await addNewSubject(formData);
+            setFormData({
+                name: "",
+                schoolId: school?.id || "",
+            });
         } catch (err) {
             setError(messages.subjects.createError);
             console.error(err);
