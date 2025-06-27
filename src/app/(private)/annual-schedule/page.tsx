@@ -158,11 +158,11 @@ const AnnualSchedulePage: NextPage = () => {
     // TODO: not cache the table but fetch it if refresh
 
     const handleTeacherChange = (day: string, hour: number, value: string) => {
-        addNewRow("teacher", day, hour, value);
+        // addNewRow("teacher", day, hour, value);
     };
 
     const handleProfessionChange = async (day: string, hour: number, value: string) => {
-        addNewRow("subject", day, hour, value);
+        // addNewRow("subject", day, hour, value);
     };
 
     return (
@@ -243,14 +243,14 @@ const AnnualSchedulePage: NextPage = () => {
                     </div>
                 )}
             </div>
-            <div className={styles.fab}>
+            {/* <div className={styles.fab}>
                 <DynamicInputSelect
                     options={createSelectOptions<ClassType>(classes)}
                     value={selectedClassId}
                     onChange={handleClassChange}
                     placeholder="בחר כיתה..."
                 />
-            </div>
+            </div> */}
         </div>
     );
 };

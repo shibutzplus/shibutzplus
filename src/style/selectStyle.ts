@@ -2,7 +2,7 @@ export const customStyles = (error: any) => {
     return {
         control: (provided: any, state: any) => ({
             ...provided,
-            minHeight: "42px",
+            minHeight: "38px",
             borderWidth: "0px",
             boxShadow: "none",
             fontSize: "16px",

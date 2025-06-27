@@ -54,9 +54,9 @@ const InputSelect: React.FC<InputSelectProps> = ({
         setOptions(initialOptions);
     }, [initialOptions]);
 
-    const handleCreate = (inputValue: string) => {
+    const handleOnCreate = (inputValue: string) => {
         const newOption: SelectOption = {
-            value: inputValue.toLowerCase().replace(/\s+/g, "-"),
+            value: inputValue,
             label: inputValue,
         };
 
@@ -89,7 +89,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
             );
 
             if (!exists) {
-                handleCreate(inputValue);
+                handleOnCreate(inputValue);
             }
         }
     };
@@ -119,7 +119,6 @@ const InputSelect: React.FC<InputSelectProps> = ({
                 }
                 onKeyDown={handleKeyDown}
                 styles={customStyles(error || "")}
-                className={styles.reactSelect}
                 classNamePrefix="react-select"
             />
 

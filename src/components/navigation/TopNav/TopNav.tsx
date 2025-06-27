@@ -6,6 +6,7 @@ import HamburgerNav, { HamburgerButton } from "../HamburgerNav/HamburgerNav";
 import Logo from "../../core/Logo/Logo";
 import routePath from "../../../routes";
 import { usePathname } from "next/navigation";
+import DynamicInputSelect from "@/components/ui/InputSelect/DynamicInputSelect";
 
 const TopNav: React.FC = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -36,6 +37,12 @@ const TopNav: React.FC = () => {
                 <div className={styles.headerLeft}>
                     <HamburgerButton onClick={toggleMenu} isOpen={isMenuOpen} />
                     <h2 className={styles.routeTitle}>{getCurrentRouteTitle()}</h2>
+                    <DynamicInputSelect
+                        options={[
+                            { label: "כיתה א1", value: "1" },
+                            { label: "כיתה ב1", value: "2" },
+                        ]}
+                    />
                 </div>
                 <div>
                     <Logo size="S" />
