@@ -69,10 +69,29 @@ const messages = {
         createError: "שגיאה בהוספת שיעור למערכת השנתית. אנא נסה שוב מאוחר יותר",
         updateSuccess: "שיעור עודכן במערכת השנתית בהצלחה",
         updateError: "שגיאה בעדכון שיעור במערכת השנתית. אנא נסה שוב מאוחר יותר",
-        alreadyExists: "שיעור כבר קיים במערכת השנתית בשעה זו"
+        alreadyExists: "שיעור כבר קיים במערכת השנתית בשעה זו",
+        ANNUAL_SCHEDULE_UPDATED_SUCCESSFULLY: "מערכת שנתית עודכנה בהצלחה",
+        ANNUAL_SCHEDULE_CREATED_SUCCESSFULLY: "מערכת שנתית נוצרה בהצלחה",
+        FAILED_TO_CREATE_ANNUAL_SCHEDULE: "שגיאה ביצירת מערכת שנתית",
+        FAILED_TO_UPDATE_ANNUAL_SCHEDULE: "שגיאה בעדכון מערכת שנתית",
+        DAILY_SCHEDULE_UPDATED_SUCCESSFULLY: "מערכת יומית עודכנה בהצלחה",
+        DAILY_SCHEDULE_CREATED_SUCCESSFULLY: "מערכת יומית נוצרה בהצלחה",
+        FAILED_TO_CREATE_DAILY_SCHEDULE: "שגיאה ביצירת מערכת יומית",
+        FAILED_TO_UPDATE_DAILY_SCHEDULE: "שגיאה בעדכון מערכת יומית",
+    },
+    dailySchedule: {
+        retrieveSuccess: "מערכת יומית נשלפה בהצלחה",
+        retrieveError: "שגיאה בשליפת המערכת היומית. אנא נסה שוב מאוחר יותר",
+        createSuccess: "שיעור נוסף למערכת היומית בהצלחה",
+        createError: "שגיאה בהוספת שיעור למערכת היומית. אנא נסה שוב מאוחר יותר",
+        updateSuccess: "שיעור עודכן במערכת היומית בהצלחה",
+        updateError: "שגיאה בעדכון שיעור במערכת היומית. אנא נסה שוב מאוחר יותר",
+        alreadyExists: "שיעור כבר קיים במערכת היומית בשעה זו"
     },
     common: {
         invalid: "חסרים פרמטרים",
+        invalidParameters: "חסרים פרמטרים או פרמטרים שגויים",
+        serverError: "שגיאת שרת פנימית. אנא נסה שוב מאוחר יותר"
     }
 }
 

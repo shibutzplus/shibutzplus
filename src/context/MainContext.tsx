@@ -6,11 +6,14 @@ import { SubjectRequest, SubjectType } from "@/models/types/subjects";
 import { ClassRequest, ClassType } from "@/models/types/classes";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { AnnualScheduleRequest, AnnualScheduleType } from "@/models/types/annualSchedule";
+import { DailyScheduleType, DailyScheduleRequest } from "@/models/types/dailySchedule";
 import { addClassAction } from "@/app/actions/addClassAction";
 import { addTeacherAction } from "@/app/actions/addTeacherAction";
 import { addSubjectAction } from "@/app/actions/addSubjectAction";
 import { updateAnnualScheduleAction } from "@/app/actions/updateAnnualScheduleAction";
 import { addAnnualScheduleAction } from "@/app/actions/addAnnualScheduleAction";
+import { addDailyScheduleAction } from "@/app/actions/addDailyScheduleAction";
+import { updateDailyScheduleAction } from "@/app/actions/updateDailyScheduleAction";
 import useInitData from "@/hooks/useInitData";
 import { setStorageClasses, setStorageSubjects, setStorageTeachers } from "@/utils/localStorage";
 import { deleteClassAction } from "@/app/actions/deleteClassAction";
@@ -23,6 +26,7 @@ interface MainContextType {
     subjects: SubjectType[] | undefined;
     classes: ClassType[] | undefined;
     annualScheduleTable: AnnualScheduleType[] | undefined;
+    dailyScheduleData: DailyScheduleType[] | undefined;
     addNewClass: (newClass: ClassRequest) => Promise<boolean>;
     deleteClass: (schoolId: string, classId: string) => Promise<boolean>;
     addNewTeacher: (newTeacher: TeacherRequest) => Promise<boolean>;
@@ -34,6 +38,12 @@ interface MainContextType {
         id: string,
         updatedScheduleItem: AnnualScheduleRequest,
     ) => Promise<boolean>;
+    addNewDailyScheduleItem: (newScheduleItem: DailyScheduleRequest) => Promise<boolean>;
+    updateExistingDailyScheduleItem: (
+        id: string,
+        updatedScheduleItem: DailyScheduleRequest,
+    ) => Promise<boolean>;
+    updateDailySchedule: (dailySchedule: DailyScheduleType[]) => void;
 }
 
 const MainContext = createContext<MainContextType | undefined>(undefined);
@@ -58,6 +68,9 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
     const [annualScheduleTable, setAnnualScheduleTable] = useState<
         AnnualScheduleType[] | undefined
     >(undefined);
+    const [dailyScheduleData, setDailyScheduleData] = useState<DailyScheduleType[] | undefined>(
+        undefined,
+    );
 
     useInitData({
         school,
@@ -70,6 +83,8 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         setClasses,
         annualScheduleTable,
         setAnnualScheduleTable,
+        dailyScheduleData,
+        setDailyScheduleData,
     });
 
     const addNewClass = async (newClass: ClassRequest) => {
@@ -178,12 +193,50 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         return false;
     };
 
+    const addNewDailyScheduleItem = async (newScheduleItem: DailyScheduleRequest) => {
+        const response = await addDailyScheduleAction(newScheduleItem);
+        if (response.success && response.data) {
+            setDailyScheduleData((prev) => {
+                if (!response.data) return prev;
+                const updatedSchedule = prev ? [...prev, response.data] : [response.data];
+                return updatedSchedule;
+            });
+            return true;
+        }
+        return false;
+    };
+
+    const updateExistingDailyScheduleItem = async (
+        id: string,
+        updatedScheduleItem: DailyScheduleRequest,
+    ) => {
+        const response = await updateDailyScheduleAction(id, updatedScheduleItem);
+        if (response.success && response.data) {
+            setDailyScheduleData((prev) => {
+                if (!prev || !response.data) return prev;
+                const updatedSchedule = prev?.map((item) =>
+                    item.id === response.data?.id ? response.data : item,
+                );
+                return updatedSchedule;
+            });
+            return true;
+        }
+        return false;
+    };
+
+    const updateDailySchedule = (dailySchedule: DailyScheduleType[]) => {
+        setDailyScheduleData(dailySchedule);
+    };
+
+    // Daily schedule data is now fetched through the useInitData hook
+
     const value: MainContextType = {
         school,
         teachers,
         subjects,
         classes,
         annualScheduleTable,
+        dailyScheduleData,
         addNewClass,
         deleteClass,
         addNewTeacher,
@@ -192,6 +245,9 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         deleteSubject,
         addNewAnnualScheduleItem,
         updateExistingAnnualScheduleItem,
+        addNewDailyScheduleItem,
+        updateExistingDailyScheduleItem,
+        updateDailySchedule,
     };
 
     return <MainContext.Provider value={value}>{children}</MainContext.Provider>;

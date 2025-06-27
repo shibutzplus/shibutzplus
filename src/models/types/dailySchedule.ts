@@ -1,30 +1,39 @@
-export type DailySchedule = {
-  id: string;
-  date: Date;
-  hour: number; // period number
-  position: string; // YYYY-MM-DD + '-hour' + hour (e.g. "2025-11-04-hour2")
-  eventTitle?: string;
-  event?: string;
-  schoolId: string;
-  classId: string;
-  subjectId?: string;
-  absentTeacherId?: string;
-  presentTeacherId?: string;
-  subTeacherId?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
+import { ClassType } from "./classes";
+import { SchoolType } from "./school";
+import { TeacherType } from "./teachers";
+import { SubjectType } from "./subjects";
+import { ActionResponse } from "./actions";
+
+export type DailyScheduleType = {
+    id: string;
+    date: Date;
+    hour: number; // period number
+    position: string; // YYYY-MM-DD + '-hour' + hour (e.g. "2025-11-04-hour2")
+    eventTitle?: string;
+    event?: string;
+    school: SchoolType;
+    class: ClassType;
+    subject?: SubjectType;
+    absentTeacher?: TeacherType;
+    presentTeacher?: TeacherType;
+    subTeacher?: TeacherType;
+    createdAt?: Date;
+    updatedAt?: Date;
+};
 
 export type DailyScheduleRequest = {
-  date: Date | string;
-  hour: number;
-  position: string;
-  eventTitle?: string;
-  event?: string;
-  schoolId: string;
-  classId: string;
-  subjectId?: string;
-  absentTeacherId?: string;
-  presentTeacherId?: string;
-  subTeacherId?: string;
-}
+    date: string;
+    hour: number;
+    eventTitle?: string;
+    event?: string;
+    school: SchoolType;
+    class: ClassType;
+    subject: SubjectType;
+    absentTeacher?: TeacherType;
+    presentTeacher?: TeacherType;
+    subTeacher?: TeacherType;
+};
+
+export type GetDailyScheduleResponse = ActionResponse & {
+    data?: DailyScheduleType[];
+};

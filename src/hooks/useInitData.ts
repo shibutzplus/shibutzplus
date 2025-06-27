@@ -6,6 +6,7 @@ import { GetSubjectsResponse, SubjectType } from "@/models/types/subjects";
 import { GetTeachersResponse, TeacherType } from "@/models/types/teachers";
 import { useSession } from "next-auth/react";
 import { ClassType, GetClassesResponse } from "@/models/types/classes";
+import { DailyScheduleType } from "@/models/types/dailySchedule";
 import { useEffect } from "react";
 import {
     getCacheTimestamp,
@@ -26,6 +27,7 @@ import { getTeachersAction as getTeachersFromDB } from "@/app/actions/getTeacher
 import { getSubjectsAction as getSubjectsFromDB } from "@/app/actions/getSubjectsAction";
 import { getClassesAction as getClassesFromDB } from "@/app/actions/getClassesAction";
 import { getAnnualScheduleAction as getAnnualScheduleFromDB } from "@/app/actions/getAnnualScheduleAction";
+import { getDailyScheduleAction as getDailyScheduleFromDB } from "@/app/actions/getDailyScheduleAction";
 import { isCacheFresh } from "@/utils/time";
 
 interface useInitDataProps {
@@ -39,6 +41,8 @@ interface useInitDataProps {
     setClasses: (classes: ClassType[] | undefined) => void;
     annualScheduleTable: AnnualScheduleType[] | undefined;
     setAnnualScheduleTable: (annualSchedule: AnnualScheduleType[] | undefined) => void;
+    dailyScheduleData: DailyScheduleType[] | undefined;
+    setDailyScheduleData: (dailySchedule: DailyScheduleType[] | undefined) => void;
 }
 
 /**
@@ -56,6 +60,8 @@ const useInitData = ({
     setClasses,
     annualScheduleTable,
     setAnnualScheduleTable,
+    dailyScheduleData,
+    setDailyScheduleData,
 }: useInitDataProps) => {
     const { data: session, status } = useSession();
 
@@ -73,7 +79,7 @@ const useInitData = ({
     useEffect(() => {
         const fetchData = async (schoolId: string) => {
             try {
-                let schoolPromise, classesPromise, teachersPromise, subjectsPromise, annualPromise;
+                let schoolPromise, classesPromise, teachersPromise, subjectsPromise, annualPromise, dailyPromise;
 
                 if (!school) {
                     schoolPromise = promiseFromCacheOrDB<SchoolType, GetSchoolResponse>(
@@ -108,18 +114,23 @@ const useInitData = ({
                 }
 
                 // No cache for annual schedule
-                if (!annualScheduleTable && classes) {
+                if (!annualScheduleTable) {
                     annualPromise = getAnnualScheduleFromDB(schoolId);
                 }
+                
+                // No cache for daily schedule
+                if (!dailyScheduleData) {
+                    dailyPromise = getDailyScheduleFromDB(schoolId);
+                }
 
-                const [schoolRes, teachersRes, subjectsRes, classesRes, annualRes] =
-                    await Promise.all([
-                        schoolPromise,
-                        teachersPromise,
-                        subjectsPromise,
-                        classesPromise,
-                        annualPromise,
-                    ]);
+                const [schoolRes, classesRes, teachersRes, subjectsRes, annualRes, dailyRes] = await Promise.all([
+                    schoolPromise || Promise.resolve(null),
+                    classesPromise || Promise.resolve(null),
+                    teachersPromise || Promise.resolve(null),
+                    subjectsPromise || Promise.resolve(null),
+                    annualPromise || Promise.resolve(null),
+                    dailyPromise || Promise.resolve(null),
+                ]);
 
                 if (schoolRes && schoolRes.success && schoolRes.data) {
                     setSchool(schoolRes.data);
@@ -139,6 +150,10 @@ const useInitData = ({
                 }
                 if (annualRes && annualRes.success && annualRes.data) {
                     setAnnualScheduleTable(annualRes.data);
+                }
+                
+                if (dailyRes && dailyRes.success && dailyRes.data) {
+                    setDailyScheduleData(dailyRes.data);
                 }
 
                 // Update cache timestamp if any data was fetched
