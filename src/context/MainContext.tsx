@@ -1,14 +1,24 @@
 "use client";
 
 import { SchoolType } from "@/models/types/school";
-import { TeacherType } from "@/models/types/teachers";
-import { SubjectType } from "@/models/types/subjects";
-import { ClassType } from "@/models/types/classes";
-import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
-import { AnnualScheduleType } from "@/models/types/annualSchedule";
-import { useSchoolData } from "@/hooks/useSchoolData";
-import { useSession } from "next-auth/react";
-import { STORAGE_KEYS } from "@/resources/storage";
+import { TeacherRequest, TeacherType } from "@/models/types/teachers";
+import { SubjectRequest, SubjectType } from "@/models/types/subjects";
+import { ClassRequest, ClassType } from "@/models/types/classes";
+import React, { createContext, useContext, useState, ReactNode } from "react";
+import { AnnualScheduleRequest, AnnualScheduleType } from "@/models/types/annualSchedule";
+import { DailyScheduleType, DailyScheduleRequest } from "@/models/types/dailySchedule";
+import { addClassAction } from "@/app/actions/addClassAction";
+import { addTeacherAction } from "@/app/actions/addTeacherAction";
+import { addSubjectAction } from "@/app/actions/addSubjectAction";
+import { updateAnnualScheduleAction } from "@/app/actions/updateAnnualScheduleAction";
+import { addAnnualScheduleAction } from "@/app/actions/addAnnualScheduleAction";
+import { addDailyScheduleAction } from "@/app/actions/addDailyScheduleAction";
+import { updateDailyScheduleAction } from "@/app/actions/updateDailyScheduleAction";
+import useInitData from "@/hooks/useInitData";
+import { setStorageClasses, setStorageSubjects, setStorageTeachers } from "@/utils/localStorage";
+import { deleteClassAction } from "@/app/actions/deleteClassAction";
+import { deleteTeacherAction } from "@/app/actions/deleteTeacherAction";
+import { deleteSubjectAction } from "@/app/actions/deleteSubjectAction";
 
 interface MainContextType {
     school: SchoolType | undefined;
@@ -16,15 +26,24 @@ interface MainContextType {
     subjects: SubjectType[] | undefined;
     classes: ClassType[] | undefined;
     annualScheduleTable: AnnualScheduleType[] | undefined;
-    isLoading: boolean;
-    error: string | null;
-    setSchoolIdInStorage: (id: string) => void;
-    updateClasses: (newClass: ClassType) => void;
-    deleteClass: (classId: string) => void;
-    updateTeachers: (newTeacher: TeacherType) => void;
-    updateSubjects: (newSubject: SubjectType) => void;
-    updateAnnualSchedule: (newScheduleItem: AnnualScheduleType) => void;
-    updateExistingAnnualSchedule: (updatedScheduleItem: AnnualScheduleType) => void;
+    dailyScheduleData: DailyScheduleType[] | undefined;
+    addNewClass: (newClass: ClassRequest) => Promise<ClassType | undefined>;
+    deleteClass: (schoolId: string, classId: string) => Promise<boolean>;
+    addNewTeacher: (newTeacher: TeacherRequest) => Promise<TeacherType | undefined>;
+    deleteTeacher: (schoolId: string, teacherId: string) => Promise<boolean>;
+    addNewSubject: (newSubject: SubjectRequest) => Promise<SubjectType | undefined>;
+    deleteSubject: (schoolId: string, subjectId: string) => Promise<boolean>;
+    addNewAnnualScheduleItem: (newScheduleItem: AnnualScheduleRequest) => Promise<AnnualScheduleType | undefined>;
+    updateExistingAnnualScheduleItem: (
+        id: string,
+        updatedScheduleItem: AnnualScheduleRequest,
+    ) => Promise<string | undefined>;
+    addNewDailyScheduleItem: (newScheduleItem: DailyScheduleRequest) => Promise<DailyScheduleType | undefined>;
+    updateExistingDailyScheduleItem: (
+        id: string,
+        updatedScheduleItem: DailyScheduleRequest,
+    ) => Promise<string | undefined>;
+    updateDailySchedule: (dailySchedule: DailyScheduleType[]) => void;
 }
 
 const MainContext = createContext<MainContextType | undefined>(undefined);
@@ -42,7 +61,6 @@ interface MainContextProviderProps {
 }
 
 export const MainContextProvider: React.FC<MainContextProviderProps> = ({ children }) => {
-    const { data: session } = useSession();
     const [school, setSchool] = useState<SchoolType | undefined>(undefined);
     const [teachers, setTeachers] = useState<TeacherType[] | undefined>(undefined);
     const [subjects, setSubjects] = useState<SubjectType[] | undefined>(undefined);
@@ -50,94 +68,165 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
     const [annualScheduleTable, setAnnualScheduleTable] = useState<
         AnnualScheduleType[] | undefined
     >(undefined);
+    const [dailyScheduleData, setDailyScheduleData] = useState<DailyScheduleType[] | undefined>(
+        undefined,
+    );
 
-    const { isLoading, error } = useSchoolData({
+    useInitData({
+        school,
         setSchool,
+        teachers,
         setTeachers,
+        subjects,
         setSubjects,
+        classes,
         setClasses,
+        annualScheduleTable,
         setAnnualScheduleTable,
+        dailyScheduleData,
+        setDailyScheduleData,
     });
 
-    const setSchoolIdInStorage = (id: string) => {
-        localStorage.setItem(STORAGE_KEYS.SCHOOL_ID, id);
-    };
-
-    const updateClasses = (newClass: ClassType) => {
-        setClasses((prev) => {
-            const updatedClasses = prev ? [...prev, newClass] : [newClass];
-            if (typeof window !== "undefined") {
-                localStorage.setItem(STORAGE_KEYS.CLASSES_DATA, JSON.stringify(updatedClasses));
-            }
-            return updatedClasses;
-        });
-    };
-    
-    const deleteClass = (classId: string) => {
-        setClasses((prev) => {
-            if (!prev) return prev;
-            const updatedClasses = prev.filter(c => c.id !== classId);
-            if (typeof window !== "undefined") {
-                localStorage.setItem(STORAGE_KEYS.CLASSES_DATA, JSON.stringify(updatedClasses));
-            }
-            return updatedClasses;
-        });
-    };
-
-    const updateTeachers = (newTeacher: TeacherType) => {
-        setTeachers((prev) => {
-            const updatedTeachers = prev ? [...prev, newTeacher] : [newTeacher];
-            if (typeof window !== "undefined") {
-                localStorage.setItem(STORAGE_KEYS.TEACHERS_DATA, JSON.stringify(updatedTeachers));
-            }
-            return updatedTeachers;
-        });
-    };
-
-    const updateSubjects = (newSubject: SubjectType) => {
-        setSubjects((prev) => {
-            const updatedSubjects = prev ? [...prev, newSubject] : [newSubject];
-            if (typeof window !== "undefined") {
-                localStorage.setItem(STORAGE_KEYS.SUBJECTS_DATA, JSON.stringify(updatedSubjects));
-            }
-            return updatedSubjects;
-        });
-    };
-
-    const updateAnnualSchedule = (newScheduleItem: AnnualScheduleType) => {
-        setAnnualScheduleTable((prev) => {
-            const updatedSchedule = prev ? [...prev, newScheduleItem] : [newScheduleItem];
-            if (typeof window !== "undefined") {
-                localStorage.setItem(STORAGE_KEYS.ANNUAL_SCHEDULE_DATA, JSON.stringify(updatedSchedule));
-            }
-            return updatedSchedule;
-        });
-    };
-    
-    const updateExistingAnnualSchedule = (updatedScheduleItem: AnnualScheduleType) => {
-        setAnnualScheduleTable((prev) => {
-            if (!prev) return [updatedScheduleItem];
-            
-            const updatedSchedule = prev.map(item => 
-                item.id === updatedScheduleItem.id ? updatedScheduleItem : item
-            );
-            
-            if (typeof window !== "undefined") {
-                localStorage.setItem(STORAGE_KEYS.ANNUAL_SCHEDULE_DATA, JSON.stringify(updatedSchedule));
-            }
-            return updatedSchedule;
-        });
-    };
-
-    useEffect(() => {
-        // Initialize school ID from user session if available
-        if (session?.user?.schoolId && typeof window !== "undefined") {
-            const storedSchoolId = localStorage.getItem(STORAGE_KEYS.SCHOOL_ID);
-            if (!storedSchoolId) {
-                setSchoolIdInStorage(session.user.schoolId);
-            }
+    const addNewClass = async (newClass: ClassRequest) => {
+        const response = await addClassAction(newClass);
+        if (response.success && response.data) {
+            setClasses((prev) => {
+                if (!response.data) return prev;
+                const updatedClasses = prev ? [...prev, response.data] : [response.data];
+                setStorageClasses(updatedClasses);
+                return updatedClasses;
+            });
+            return response.data;
         }
-    }, [session]);
+        return undefined;
+    };
+
+    const deleteClass = async (schoolId: string, classId: string) => {
+        const response = await deleteClassAction(schoolId, classId);
+        if (response.success && response.classes && response.annualSchedules) {
+            setClasses(response.classes);
+            setStorageClasses(response.classes);
+            setAnnualScheduleTable(response.annualSchedules);
+            return true;
+        }
+        return false;
+    };
+
+    const addNewTeacher = async (newTeacher: TeacherRequest) => {
+        const response = await addTeacherAction(newTeacher);
+        if (response.success && response.data) {
+            setTeachers((prev) => {
+                if (!response.data) return prev;
+                const updatedTeachers = prev ? [...prev, response.data] : [response.data];
+                setStorageTeachers(updatedTeachers);
+                return updatedTeachers;
+            });
+            return response.data;
+        }
+        return undefined;
+    };
+
+    const deleteTeacher = async (schoolId: string, teacherId: string) => {
+        const response = await deleteTeacherAction(schoolId, teacherId);
+        if (response.success && response.teachers && response.annualSchedules) {
+            setTeachers(response.teachers);
+            setStorageTeachers(response.teachers);
+            setAnnualScheduleTable(response.annualSchedules);
+            return true;
+        }
+        return false;
+    };
+
+    const addNewSubject = async (newSubject: SubjectRequest) => {
+        const response = await addSubjectAction(newSubject);
+        if (response.success && response.data) {
+            setSubjects((prev) => {
+                if (!response.data) return prev;
+                const updatedSubjects = prev ? [...prev, response.data] : [response.data];
+                setStorageSubjects(updatedSubjects);
+                return updatedSubjects;
+            });
+            return response.data;
+        }
+        return undefined;
+    };
+
+    const deleteSubject = async (schoolId: string, subjectId: string) => {
+        const response = await deleteSubjectAction(schoolId, subjectId);
+        if (response.success && response.subjects && response.annualSchedules) {
+            setSubjects(response.subjects);
+            setStorageSubjects(response.subjects);
+            setAnnualScheduleTable(response.annualSchedules);
+            return true;
+        }
+        return false;
+    };
+
+    const addNewAnnualScheduleItem = async (newScheduleItem: AnnualScheduleRequest) => {
+        const response = await addAnnualScheduleAction(newScheduleItem);
+        if (response.success && response.data) {
+            setAnnualScheduleTable((prev) => {
+                if (!response.data) return prev;
+                const updatedSchedule = prev ? [...prev, response.data] : [response.data];
+                return updatedSchedule;
+            });
+            return response.data;
+        }
+        return undefined;
+    };
+
+    const updateExistingAnnualScheduleItem = async (
+        id: string,
+        updatedScheduleItem: AnnualScheduleRequest,
+    ) => {
+        const response = await updateAnnualScheduleAction(id, updatedScheduleItem);
+        if (response.success && response.data) {
+            setAnnualScheduleTable((prev) => {
+                if (!response.data) return prev;
+                const updatedSchedule = prev?.map((item) =>
+                    item.id === response.data?.id ? response.data : item,
+                );
+                return updatedSchedule;
+            });
+            return response.data.id;
+        }
+        return undefined;
+    };
+
+    const addNewDailyScheduleItem = async (newScheduleItem: DailyScheduleRequest) => {
+        const response = await addDailyScheduleAction(newScheduleItem);
+        if (response.success && response.data) {
+            setDailyScheduleData((prev) => {
+                if (!response.data) return prev;
+                const updatedSchedule = prev ? [...prev, response.data] : [response.data];
+                return updatedSchedule;
+            });
+            return response.data;
+        }
+        return undefined;
+    };
+
+    const updateExistingDailyScheduleItem = async (
+        id: string,
+        updatedScheduleItem: DailyScheduleRequest,
+    ) => {
+        const response = await updateDailyScheduleAction(id, updatedScheduleItem);
+        if (response.success && response.data) {
+            setDailyScheduleData((prev) => {
+                if (!prev || !response.data) return prev;
+                const updatedSchedule = prev?.map((item) =>
+                    item.id === response.data?.id ? response.data : item,
+                );
+                return updatedSchedule;
+            });
+            return response.data.id;
+        }
+        return undefined;
+    };
+
+    const updateDailySchedule = (dailySchedule: DailyScheduleType[]) => {
+        setDailyScheduleData(dailySchedule);
+    };
 
     const value: MainContextType = {
         school,
@@ -145,15 +234,18 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         subjects,
         classes,
         annualScheduleTable,
-        isLoading,
-        error,
-        setSchoolIdInStorage,
-        updateClasses,
+        dailyScheduleData,
+        addNewClass,
         deleteClass,
-        updateTeachers,
-        updateSubjects,
-        updateAnnualSchedule,
-        updateExistingAnnualSchedule,
+        addNewTeacher,
+        deleteTeacher,
+        addNewSubject,
+        deleteSubject,
+        addNewAnnualScheduleItem,
+        updateExistingAnnualScheduleItem,
+        addNewDailyScheduleItem,
+        updateExistingDailyScheduleItem,
+        updateDailySchedule,
     };
 
     return <MainContext.Provider value={value}>{children}</MainContext.Provider>;

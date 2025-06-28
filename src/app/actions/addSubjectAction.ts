@@ -4,7 +4,6 @@ import { SubjectType, SubjectRequest } from "@/models/types/subjects";
 import { ActionResponse } from "@/models/types/actions";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
-import { revalidateTag } from "next/cache";
 import { db, schema } from "@/db";
 import { NewSubjectSchema } from "@/db/schema";
 
@@ -34,9 +33,6 @@ export async function addSubjectAction(
                 message: messages.subjects.createError,
             };
         }
-
-        // Revalidate the server-side cache to ensure fresh data is fetched
-        revalidateTag("subjects-data");
 
         return {
             success: true,

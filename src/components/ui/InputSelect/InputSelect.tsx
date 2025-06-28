@@ -12,13 +12,14 @@ interface InputSelectProps {
     error?: string;
     id?: string;
     value?: string;
-    onChange?: any;
-    onOptionsChange?: any;
+    onChange: (value: string) => void;
     placeholder?: string;
     isSearchable?: boolean;
     allowAddNew?: boolean;
     isDisabled?: boolean;
+    hasBorder?: boolean;
     isClearable?: boolean;
+    onCreate?: (value: string) => Promise<string | undefined>;
 }
 
 const InputSelect: React.FC<InputSelectProps> = ({
@@ -28,12 +29,13 @@ const InputSelect: React.FC<InputSelectProps> = ({
     id,
     value,
     onChange,
-    onOptionsChange,
     placeholder = "בחר אופציה...",
     isSearchable = true,
     allowAddNew = true,
     isDisabled = false,
+    hasBorder = false,
     isClearable = false,
+    onCreate,
 }) => {
     const [options, setOptions] = useState<SelectOption[]>(initialOptions);
     const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
@@ -54,44 +56,29 @@ const InputSelect: React.FC<InputSelectProps> = ({
         setOptions(initialOptions);
     }, [initialOptions]);
 
-    const handleCreate = (inputValue: string) => {
-        const newOption: SelectOption = {
-            value: inputValue.toLowerCase().replace(/\s+/g, "-"),
-            label: inputValue,
-        };
+    const handleOnCreate = async (inputValue: string) => {
+        // Check if the option already exists
+        const exists = options.some(
+            (option) => option.label.toLowerCase() === inputValue.toLowerCase(),
+        );
 
-        const updatedOptions = [...options, newOption];
-        setOptions(updatedOptions);
-        setSelectedOption(newOption);
-
-        if (onOptionsChange) {
-            onOptionsChange(updatedOptions);
-        }
-        if (onChange) {
-            onChange(newOption.value);
+        if (!exists && allowAddNew && onCreate) {
+            const valueId = await onCreate(inputValue);
+            if (valueId) {
+                const newOption: SelectOption = {
+                    value: valueId,
+                    label: inputValue,
+                };
+                const updatedOptions = [...options, newOption];
+                setOptions(updatedOptions);
+                setSelectedOption(newOption);
+            }
         }
     };
 
     const handleChange = (option: SelectOption | null) => {
         setSelectedOption(option);
-
-        if (onChange) {
-            onChange(option ? option.value : "");
-        }
-    };
-
-    const handleKeyDown = (event: any) => {
-        if (allowAddNew && event.key === "Enter" && event.target.value) {
-            const inputValue = event.target.value;
-            // Check if the option already exists
-            const exists = options.some(
-                (option) => option.label.toLowerCase() === inputValue.toLowerCase(),
-            );
-
-            if (!exists) {
-                handleCreate(inputValue);
-            }
-        }
+        onChange(option ? option.value : "");
     };
 
     return (
@@ -112,14 +99,12 @@ const InputSelect: React.FC<InputSelectProps> = ({
                 isClearable={isClearable}
                 isDisabled={isDisabled}
                 placeholder={placeholder}
-                noOptionsMessage={({ inputValue }) =>
-                    allowAddNew && inputValue
-                        ? `לחץ Enter בשביל להוסיף את "${inputValue}"`
-                        : "לא נמצאו אפשרויות"
-                }
-                onKeyDown={handleKeyDown}
-                styles={customStyles(error || "")}
-                className={styles.reactSelect}
+                noOptionsMessage={({ inputValue }) => (
+                    <div className={styles.addBtn} onClick={() => handleOnCreate(inputValue)}>
+                        הוסף את: "{inputValue}" לרשימה
+                    </div>
+                )}
+                styles={customStyles(error || "", hasBorder)}
                 classNamePrefix="react-select"
             />
 
@@ -129,3 +114,23 @@ const InputSelect: React.FC<InputSelectProps> = ({
 };
 
 export default InputSelect;
+
+// noOptionsMessage={({ inputValue }) =>
+//     allowAddNew && inputValue
+//         ? `לחץ Enter בשביל להוסיף את "${inputValue}"`
+//         : "לא נמצאו אפשרויות"
+// }
+
+// const handleKeyDown = (event: any) => {
+//     if (allowAddNew && event.key === "Enter" && event.target.value) {
+//         const inputValue = event.target.value;
+//         // Check if the option already exists
+//         const exists = options.some(
+//             (option) => option.label.toLowerCase() === inputValue.toLowerCase(),
+//         );
+
+//         if (!exists) {
+//             handleOnCreate(inputValue);
+//         }
+//     }
+// };

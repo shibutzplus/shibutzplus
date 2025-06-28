@@ -1,9 +1,8 @@
 "use client";
 
 import React from "react";
-import styles from "./DeleteClassPopup.module.css";
+import styles from "./DeletePopup.module.css";
 import { usePopup } from "@/context/PopupContext";
-import { ClassType } from "@/models/types/classes";
 
 const DeleteSvg = () => {
     return (
@@ -25,17 +24,17 @@ const DeleteSvg = () => {
     );
 };
 
-interface DeleteClassPopupProps {
-    classItem: ClassType;
-    onDelete: () => void;
+interface DeletePopupProps {
+    text: string;
+    onDelete: () => Promise<void>;
     onCancel: () => void;
 }
 
-const DeleteClassPopup: React.FC<DeleteClassPopupProps> = ({ classItem, onDelete, onCancel }) => {
+const DeletePopup: React.FC<DeletePopupProps> = ({ text, onDelete, onCancel }) => {
     const { closePopup } = usePopup();
 
-    const handleDelete = () => {
-        onDelete();
+    const handleDelete = async () => {
+        await onDelete();
         closePopup();
     };
 
@@ -52,7 +51,7 @@ const DeleteClassPopup: React.FC<DeleteClassPopupProps> = ({ classItem, onDelete
                 </div>
             </div>
 
-            <h2 className={styles.title}>האם אתה בטוח שברצונך למחוק את הכיתה {classItem.name}?</h2>
+            <h2 className={styles.title}>{text}</h2>
 
             <div className={styles.buttonContainer}>
                 <button className={styles.deleteButton} onClick={handleDelete}>
@@ -66,4 +65,4 @@ const DeleteClassPopup: React.FC<DeleteClassPopupProps> = ({ classItem, onDelete
     );
 };
 
-export default DeleteClassPopup;
+export default DeletePopup;

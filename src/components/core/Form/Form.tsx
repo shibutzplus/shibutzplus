@@ -6,34 +6,17 @@ type FormProps = {
     children: React.ReactNode[] | React.ReactNode;
     handleSubmit: (e: React.FormEvent) => void;
     isLoading: boolean;
-    error: string;
-    success?: string;
-    loadingText: string;
+    error?: string;
     btnText: string;
 };
 
-const Form: React.FC<FormProps> = ({
-    children,
-    handleSubmit,
-    isLoading,
-    error,
-    success,
-    loadingText,
-    btnText,
-}) => {
+const Form: React.FC<FormProps> = ({ children, handleSubmit, isLoading, error, btnText }) => {
     return (
         <form onSubmit={handleSubmit} className={styles.addTeacherForm}>
             {children}
 
             <div className={styles.formActions}>
-                {success && <div className={styles.successMessage}>{success}</div>}
-                <SubmitBtn
-                    type="submit"
-                    isLoading={isLoading}
-                    loadingText={loadingText}
-                    buttonText={btnText}
-                    error={error}
-                />
+                <SubmitBtn type="submit" isLoading={isLoading} buttonText={btnText} error={error} />
             </div>
         </form>
     );

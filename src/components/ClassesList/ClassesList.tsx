@@ -5,8 +5,11 @@ import styles from "./ClassesList.module.css";
 import { ClassType } from "@/models/types/classes";
 import { usePopup } from "@/context/PopupContext";
 import TableList from "../core/TableList/TableList";
-import DeleteClassPopup from "../popups/DeleteClassPopup/DeleteClassPopup";
 import { useMainContext } from "@/context/MainContext";
+import DeletePopup from "../popups/DeletePopup/DeletePopup";
+import useSubmit from "@/hooks/useSubmit";
+import messages from "@/resources/messages";
+import { getStorageSchoolId } from "@/utils/localStorage";
 
 type ClassesListProps = {
     classes: ClassType[];
@@ -17,11 +20,17 @@ const ClassesList: React.FC<ClassesListProps> = ({ classes, handleSelectClass })
     const { openPopup, closePopup } = usePopup();
     const { deleteClass } = useMainContext();
 
-    const handleDeleteClassFromState = (classId: string) => {
-        // Use the MainContext's deleteClass function
-        deleteClass(classId);
-        
-        // Close the popup after deletion
+    const { handleSubmitDelete, isLoading } = useSubmit(
+        () => {},
+        messages.classes.deleteSuccess,
+        messages.classes.deleteError,
+        messages.classes.invalid,
+    );
+
+    const handleDeleteClassFromState = async (classId: string) => {
+        const schoolId = getStorageSchoolId();
+        if (!schoolId) return;
+        await handleSubmitDelete(schoolId, classId, deleteClass);
         closePopup();
     };
 
@@ -29,10 +38,10 @@ const ClassesList: React.FC<ClassesListProps> = ({ classes, handleSelectClass })
         openPopup(
             "deleteClass",
             "S",
-            <DeleteClassPopup 
-                classItem={classItem} 
-                onDelete={() => handleDeleteClassFromState(classItem.id)} 
-                onCancel={() => closePopup()} 
+            <DeletePopup
+                text={`האם אתה בטוח שברצונך למחוק את הכיתה ${classItem.name}`}
+                onDelete={() => handleDeleteClassFromState(classItem.id)}
+                onCancel={() => closePopup()}
             />,
         );
     };

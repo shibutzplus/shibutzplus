@@ -7,6 +7,7 @@ import { signOut, useSession } from "next-auth/react";
 import routePath from "../../../routes";
 import { useAccessibility } from "../../../hooks/useAccessibility";
 import { PiChairLight } from "react-icons/pi";
+import { clearStorage } from "@/utils/localStorage";
 import {
     IoHomeOutline,
     IoCalendarOutline,
@@ -124,6 +125,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose }) => {
                             href="#"
                             onClick={() => {
                                 onClose();
+                                clearStorage();
                                 signOut({ callbackUrl: routePath.signIn.p });
                             }}
                             className={styles.navLink}

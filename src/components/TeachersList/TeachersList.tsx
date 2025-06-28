@@ -4,8 +4,12 @@ import React from "react";
 import styles from "./TeachersList.module.css";
 import { TeacherType } from "@/models/types/teachers";
 import { usePopup } from "@/context/PopupContext";
-import DeleteTeacherPopup from "../popups/DeleteTeacherPopup/DeleteTeacherPopup";
 import TableList from "../core/TableList/TableList";
+import { useMainContext } from "@/context/MainContext";
+import DeletePopup from "../popups/DeletePopup/DeletePopup";
+import useSubmit from "@/hooks/useSubmit";
+import messages from "@/resources/messages";
+import { getStorageSchoolId } from "@/utils/localStorage";
 
 type TeachersListProps = {
     teachers: TeacherType[];
@@ -13,13 +17,32 @@ type TeachersListProps = {
 };
 
 const TeachersList: React.FC<TeachersListProps> = ({ teachers, handleSelectTeacher }) => {
-    const { openPopup } = usePopup();
+    const { openPopup, closePopup } = usePopup();
+    const { deleteTeacher } = useMainContext();
+
+    const { handleSubmitDelete, isLoading } = useSubmit(
+        () => {},
+        messages.teachers.deleteSuccess,
+        messages.teachers.deleteError,
+        messages.teachers.invalid,
+    );
+
+    const handleDeleteTeacherFromState = async (teacherId: string) => {
+        const schoolId = getStorageSchoolId();
+        if (!schoolId) return;
+        await handleSubmitDelete(schoolId, teacherId, deleteTeacher);
+        closePopup();
+    };
 
     const handleOpenPopup = (teacher: TeacherType) => {
         openPopup(
             "deleteTeacher",
             "S",
-            <DeleteTeacherPopup teacher={teacher} onDelete={() => {}} onCancel={() => {}} />,
+            <DeletePopup
+                text={`האם אתה בטוח שברצונך למחוק את המורה ${teacher.name}`}
+                onDelete={() => handleDeleteTeacherFromState(teacher.id)}
+                onCancel={() => closePopup()}
+            />,
         );
     };
 

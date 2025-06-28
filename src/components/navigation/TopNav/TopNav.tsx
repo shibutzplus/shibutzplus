@@ -1,17 +1,20 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./TopNav.module.css";
 import HamburgerNav, { HamburgerButton } from "../HamburgerNav/HamburgerNav";
 import Logo from "../../core/Logo/Logo";
 import routePath from "../../../routes";
 import { usePathname } from "next/navigation";
+import TopNavSelect from "../TopNavSelect/TopNavSelect";
 
 const TopNav: React.FC = () => {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const pathname = usePathname();
+    const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+    const [pageTitle, setPageTitle] = useState<string>("");
+    const [pageKey, setPageKey] = useState<string | null>(null);
 
-    const getCurrentRouteTitle = () => {
+    useEffect(() => {
         const currentPath = pathname.split("/").filter(Boolean)[0] || "";
         const routeKey = Object.keys(routePath).find(
             (key) =>
@@ -19,8 +22,11 @@ const TopNav: React.FC = () => {
                 (currentPath === "" && routePath[key].p === "/"),
         );
 
-        return routeKey ? routePath[routeKey].title : "";
-    };
+        if (routeKey) {
+            setPageTitle(routePath[routeKey].title);
+            setPageKey(routeKey);
+        }
+    }, [pathname]);
 
     const toggleMenu = () => {
         setIsMenuOpen((prev) => !prev);
@@ -29,13 +35,13 @@ const TopNav: React.FC = () => {
     const closeMenu = () => {
         setIsMenuOpen(false);
     };
-
     return (
         <>
             <header className={styles.contentHeader}>
                 <div className={styles.headerLeft}>
                     <HamburgerButton onClick={toggleMenu} isOpen={isMenuOpen} />
-                    <h2 className={styles.routeTitle}>{getCurrentRouteTitle()}</h2>
+                    <h2 className={styles.routeTitle}>{pageTitle}</h2>
+                    <TopNavSelect type={pageKey} />
                 </div>
                 <div>
                     <Logo size="S" />

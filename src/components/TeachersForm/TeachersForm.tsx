@@ -11,16 +11,15 @@ import RadioGroup from "../ui/RadioGroup/RadioGroup";
 import Form from "../core/Form/Form";
 import InputText from "../ui/InputText/InputText";
 import { useMainContext } from "@/context/MainContext";
-import { addTeacherAction } from "@/app/actions/addTeacherAction";
 import messages from "@/resources/messages";
+import useSubmit from "@/hooks/useSubmit";
 
 type TeachersFormProps = {
     selectedTeacher: TeacherType | null;
 };
 
 const TeachersForm: React.FC<TeachersFormProps> = ({ selectedTeacher }) => {
-    const { school, updateTeachers } = useMainContext();
-
+    const { school, addNewTeacher } = useMainContext();
     const [formData, setFormData] = useState<TeacherRequest>({
         name: selectedTeacher ? selectedTeacher.name : "",
         role: selectedTeacher ? selectedTeacher.role : TeacherRoleValues.HOMEROOM,
@@ -28,9 +27,12 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ selectedTeacher }) => {
         userId: selectedTeacher ? selectedTeacher.userId : null,
     });
 
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState("");
-    const [successMessage, setSuccessMessage] = useState("");
+    const { handleSubmitAdd, isLoading } = useSubmit<TeacherRequest>(
+        setFormData,
+        messages.teachers.createSuccess,
+        messages.teachers.createError,
+        messages.teachers.invalid,
+    );
 
     useEffect(() => {
         if (selectedTeacher) {
@@ -51,53 +53,11 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ selectedTeacher }) => {
     }, [selectedTeacher, school]);
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsLoading(true);
-        setError("");
-        setSuccessMessage("");
-
-        try {
-            if (!formData.schoolId) {
-                setError(messages.school.idRequired);
-                setIsLoading(false);
-                return;
-            }
-
-            const response = await addTeacherAction(formData);
-
-            if (response.success && response.data) {
-                updateTeachers(response.data as TeacherType);
-                
-                // Show success message
-                setSuccessMessage(response.message);
-                
-                // Reset form
-                setFormData({
-                    name: "",
-                    role: TeacherRoleValues.HOMEROOM,
-                    schoolId: school?.id || "",
-                    userId: null,
-                });
-            } else {
-                setError(response.message);
-            }
-        } catch (err) {
-            setError(messages.teachers.createError);
-            console.error(err);
-        } finally {
-            setIsLoading(false);
-        }
+        await handleSubmitAdd(e, formData, addNewTeacher);
     };
 
     return (
-        <Form
-            handleSubmit={handleSubmit}
-            isLoading={isLoading}
-            error={error}
-            success={successMessage}
-            loadingText="מוסיף מורה..."
-            btnText="הוסף מורה"
-        >
+        <Form handleSubmit={handleSubmit} isLoading={isLoading} btnText="הוסף מורה">
             <InputText
                 label="שם"
                 name="name"

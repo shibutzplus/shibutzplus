@@ -4,7 +4,6 @@ import { TeacherType, TeacherRequest } from "@/models/types/teachers";
 import { ActionResponse } from "@/models/types/actions";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
-import { revalidateTag } from "next/cache";
 import { db, schema } from "@/db";
 import { NewTeacherSchema } from "@/db/schema";
 
@@ -35,9 +34,6 @@ export async function addTeacherAction(
                 message: messages.teachers.createError,
             };
         }
-
-        // Revalidate the server-side cache to ensure fresh data is fetched
-        revalidateTag("teachers-data");
 
         return {
             success: true,

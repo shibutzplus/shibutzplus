@@ -5,7 +5,6 @@ import { AnnualScheduleType, AnnualScheduleRequest } from "@/models/types/annual
 import { ActionResponse } from "@/models/types/actions";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
-import { revalidateTag } from "next/cache";
 import { NewAnnualScheduleSchema } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
@@ -53,9 +52,6 @@ export async function updateAnnualScheduleAction(
                 message: messages.annualSchedule.updateError,
             };
         }
-
-        // Revalidate the server-side cache to ensure fresh data is fetched
-        revalidateTag("annual-schedule-data");
 
         const updateSchedule = updatedEntry[0];
         return {

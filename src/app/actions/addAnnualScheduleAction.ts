@@ -5,7 +5,6 @@ import { AnnualScheduleType, AnnualScheduleRequest } from "@/models/types/annual
 import { ActionResponse } from "@/models/types/actions";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
-import { revalidateTag } from "next/cache";
 import { NewAnnualScheduleSchema } from "@/db/schema";
 
 export async function addAnnualScheduleAction(
@@ -13,7 +12,6 @@ export async function addAnnualScheduleAction(
 ): Promise<ActionResponse & { data?: AnnualScheduleType }> {
     try {
         const { school, class: classData, teacher, subject } = scheduleData;
-        // Check authentication and required parameters
         const authError = await checkAuthAndParams({
             day: scheduleData.day,
             hour: scheduleData.hour,
@@ -50,9 +48,6 @@ export async function addAnnualScheduleAction(
                 message: messages.annualSchedule.createError,
             };
         }
-
-        // Revalidate the server-side cache to ensure fresh data is fetched
-        revalidateTag("annual-schedule-data");
 
         return {
             success: true,

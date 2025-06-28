@@ -5,24 +5,26 @@ import { ClassType, ClassRequest } from "@/models/types/classes";
 import InputText from "../ui/InputText/InputText";
 import Form from "../core/Form/Form";
 import { useMainContext } from "@/context/MainContext";
-import { addClassAction } from "@/app/actions/addClassAction";
 import messages from "@/resources/messages";
+import useSubmit from "@/hooks/useSubmit";
 
 type ClassesFormProps = {
     selectedClass: ClassType | null;
 };
 
 const ClassesForm: React.FC<ClassesFormProps> = ({ selectedClass }) => {
-    const { school, updateClasses } = useMainContext();
-
+    const { school, addNewClass } = useMainContext();
     const [formData, setFormData] = useState<ClassRequest>({
         name: selectedClass ? selectedClass.name : "",
         schoolId: selectedClass ? selectedClass.schoolId : school?.id || "",
     });
 
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState("");
-    const [successMessage, setSuccessMessage] = useState("");
+    const { handleSubmitAdd, isLoading, error } = useSubmit<ClassRequest>(
+        setFormData,
+        messages.classes.createSuccess,
+        messages.classes.createError,
+        messages.classes.invalid,
+    );
 
     useEffect(() => {
         if (selectedClass) {
@@ -39,49 +41,11 @@ const ClassesForm: React.FC<ClassesFormProps> = ({ selectedClass }) => {
     }, [selectedClass, school]);
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsLoading(true);
-        setError("");
-        setSuccessMessage("");
-
-        try {
-            if (!formData.schoolId) {
-                setError(messages.school.idRequired);
-                setIsLoading(false);
-                return;
-            }
-
-            const response = await addClassAction(formData);
-
-            if (response.success && response.data) {
-                updateClasses(response.data as ClassType);
-
-                setSuccessMessage(response.message);
-
-                setFormData({
-                    name: "",
-                    schoolId: school?.id || "",
-                });
-            } else {
-                setError(response.message || messages.classes.createError);
-            }
-        } catch (err) {
-            setError(messages.classes.createError);
-            console.error(err);
-        } finally {
-            setIsLoading(false);
-        }
+        handleSubmitAdd(e, formData, addNewClass);
     };
 
     return (
-        <Form
-            handleSubmit={handleSubmit}
-            isLoading={isLoading}
-            error={error}
-            success={successMessage}
-            loadingText="מוסיף כיתה..."
-            btnText="הוסף כיתה"
-        >
+        <Form handleSubmit={handleSubmit} btnText="הוסף כיתה" isLoading={isLoading} error={error}>
             {[
                 <InputText
                     key="name"
@@ -104,3 +68,29 @@ const ClassesForm: React.FC<ClassesFormProps> = ({ selectedClass }) => {
 };
 
 export default ClassesForm;
+
+// const handleSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     setIsLoading(true);
+//     setError("");
+
+//     try {
+//         if (!formData.schoolId || !formData.name) {
+//             setError(messages.classes.invalid);
+//             setIsLoading(false);
+//             return;
+//         }
+
+//         const res = await addNewClass(formData);
+//         toast.success(res ? messages.classes.createSuccess : messages.classes.createError);
+//         setFormData({
+//             name: "",
+//             schoolId: school?.id || "",
+//         });
+//     } catch (error) {
+//         console.error(error);
+//         toast.error(messages.classes.createError);
+//     } finally {
+//         setIsLoading(false);
+//     }
+// };
