@@ -30,30 +30,30 @@
   font-size: 0.875rem;
 }
 
-.teacherButton {
+.existingTeacher {
   border-left: 4px solid #27ae60; /* Green for present teacher */
   color: #27ae60;
 }
 
-.teacherButton:hover {
+.existingTeacher:hover {
   background-color: rgba(39, 174, 96, 0.1);
 }
 
-.infoButton {
+.info {
   border-left: 4px solid #3498db; /* Blue for info */
   color: #3498db;
 }
 
-.infoButton:hover {
+.info:hover {
   background-color: rgba(52, 152, 219, 0.1);
 }
 
-.missingButton {
+.missingTeacher {
   border-left: 4px solid #e74c3c; /* Red for missing teacher */
   color: #e74c3c;
 }
 
-.missingButton:hover {
+.missingTeacher:hover {
   background-color: rgba(231, 76, 60, 0.1);
 }
 

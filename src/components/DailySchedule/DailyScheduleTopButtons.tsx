@@ -40,42 +40,22 @@ const DailyScheduleTopButtons: React.FC = () => {
 
     return (
         <div className={styles.topButtonsContainer}>
-            <button
-                className={`${styles.topButton} ${styles.teacherButton}`}
-                onClick={() => {
-                    if (actions[2].disabled) return;
-                    if (actions[2].isDelete) dispatch({ type: "REMOVE_COL" });
-                    else if (actions[2].key) dispatch({ type: "ADD_COL", colType: actions[2].key });
-                }}
-                title={actions[2].label}
-            >
-                <FaPlus className={styles.buttonIcon} />
-                <span>{actions[2].label}</span>
-            </button>
-            <button
-                className={`${styles.topButton} ${styles.infoButton}`}
-                onClick={() => {
-                    if (actions[3].disabled) return;
-                    if (actions[3].isDelete) dispatch({ type: "REMOVE_COL" });
-                    else if (actions[3].key) dispatch({ type: "ADD_COL", colType: actions[3].key });
-                }}
-                title={actions[3].label}
-            >
-                <FaPlus className={styles.buttonIcon} />
-                <span>{actions[3].label}</span>
-            </button>
-            <button
-                className={`${styles.topButton} ${styles.missingButton}`}
-                onClick={() => {
-                    if (actions[4].disabled) return;
-                    if (actions[4].isDelete) dispatch({ type: "REMOVE_COL" });
-                    else if (actions[4].key) dispatch({ type: "ADD_COL", colType: actions[4].key });
-                }}
-                title={actions[4].label}
-            >
-                <FaPlus className={styles.buttonIcon} />
-                <span>{actions[4].label}</span>
-            </button>
+            {actions.map((act, i) => (
+                <button
+                    key={i}
+                    className={`${styles.topButton} ${act.dotClass} ${act.disabled ? styles.disabled : ""}`}
+                    title={act.label}
+                    disabled={act.disabled}
+                    onClick={() => {
+                        if (act.disabled) return;
+                        if (act.isDelete) dispatch({ type: "REMOVE_COL" });
+                        else if (act.key) dispatch({ type: "ADD_COL", colType: act.key });
+                    }}
+                >
+                    <FaPlus className={styles.buttonIcon} />
+                    <span>{act.label}</span>
+                </button>
+            ))}
         </div>
     );
 };
