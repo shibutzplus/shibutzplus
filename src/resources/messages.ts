@@ -65,9 +65,9 @@ const messages = {
     annualSchedule: {
         retrieveSuccess: "מערכת שנתית נשלפה בהצלחה",
         retrieveError: "שגיאה בשליפת המערכת השנתית. אנא נסה שוב מאוחר יותר",
-        createSuccess: "שיעור נוסף למערכת השנתית בהצלחה",
+        createSuccess: "השעה נוספה למערכת השנתית בהצלחה",
         createError: "שגיאה בהוספת שיעור למערכת השנתית. אנא נסה שוב מאוחר יותר",
-        updateSuccess: "שיעור עודכן במערכת השנתית בהצלחה",
+        updateSuccess: "השעה עודכנה במערכת השנתית בהצלחה",
         updateError: "שגיאה בעדכון שיעור במערכת השנתית. אנא נסה שוב מאוחר יותר",
         alreadyExists: "שיעור כבר קיים במערכת השנתית בשעה זו",
         ANNUAL_SCHEDULE_UPDATED_SUCCESSFULLY: "מערכת שנתית עודכנה בהצלחה",

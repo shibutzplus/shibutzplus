@@ -18,12 +18,18 @@ export async function deleteSubjectAction(
             return authError as ActionResponse;
         }
 
-        // Get all annual schedule records related to this subject
-        const annualSchedules = await db.query.annualSchedule.findMany({
-            where: and(
-                eq(schema.annualSchedule.schoolId, schoolId),
-                eq(schema.annualSchedule.subjectId, subjectId),
-            ),
+        // Delete all annual schedule records for this subject
+        await db
+            .delete(schema.annualSchedule)
+            .where(
+                and(
+                    eq(schema.annualSchedule.schoolId, schoolId),
+                    eq(schema.annualSchedule.subjectId, subjectId),
+                ),
+            );
+
+        const schedules = await db.query.annualSchedule.findMany({
+            where: eq(schema.annualSchedule.schoolId, schoolId),
             with: {
                 school: true,
                 class: true,
@@ -32,7 +38,7 @@ export async function deleteSubjectAction(
             },
         });
 
-        const formattedAnnualSchedules = annualSchedules.map(
+        const annualSchedule = schedules.map(
             (schedule: any) =>
                 ({
                     id: schedule.id,
@@ -48,16 +54,6 @@ export async function deleteSubjectAction(
                 }) as AnnualScheduleType,
         );
 
-        // Delete all annual schedule records for this subject
-        await db
-            .delete(schema.annualSchedule)
-            .where(
-                and(
-                    eq(schema.annualSchedule.schoolId, schoolId),
-                    eq(schema.annualSchedule.subjectId, subjectId),
-                ),
-            );
-
         // Delete the subject
         await db
             .delete(schema.subjects)
@@ -72,7 +68,7 @@ export async function deleteSubjectAction(
         return {
             success: true,
             message: messages.subjects.deleteSuccess,
-            annualSchedules: formattedAnnualSchedules,
+            annualSchedules: annualSchedule,
             subjects: remainingSubjects,
         };
     } catch (error) {

@@ -1,6 +1,6 @@
+import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { useState } from "react";
-import toast from "react-hot-toast";
 
 function useSubmit<T extends { schoolId: string }>(
     setFormData: (value: React.SetStateAction<T>) => void,
@@ -14,7 +14,7 @@ function useSubmit<T extends { schoolId: string }>(
     const handleSubmitAdd = async (
         e: React.FormEvent,
         formData: T,
-        addNewClass: (formData: T) => Promise<boolean>,
+        addNewClass: (formData: T) => Promise<string | undefined>,
     ) => {
         e.preventDefault();
         setIsLoading(true);
@@ -31,10 +31,7 @@ function useSubmit<T extends { schoolId: string }>(
             }
 
             const res = await addNewClass(formData);
-            toast.success(res ? successMessage : errorMessage, {
-                duration: 5000,
-                position: "top-center",
-            });
+            successToast(res ? successMessage : errorMessage);
             const updatedFormData = {
                 ...formData,
                 name: "",
@@ -43,10 +40,7 @@ function useSubmit<T extends { schoolId: string }>(
             setFormData(updatedFormData);
         } catch (error) {
             console.error(error);
-            toast.error(errorMessage, {
-                duration: 5000,
-                position: "bottom-left",
-            });
+            errorToast(errorMessage);
         } finally {
             setIsLoading(false);
         }
@@ -68,16 +62,10 @@ function useSubmit<T extends { schoolId: string }>(
             }
 
             const res = await deleteFunction(schoolId, idToDelete);
-            toast.success(res ? successMessage : errorMessage, {
-                duration: 5000,
-                position: "top-center",
-            });
+            successToast(res ? successMessage : errorMessage);
         } catch (error) {
             console.error(error);
-            toast.error(errorMessage, {
-                duration: 5000,
-                position: "bottom-left",
-            });
+            errorToast(errorMessage);
         } finally {
             setIsLoading(false);
         }

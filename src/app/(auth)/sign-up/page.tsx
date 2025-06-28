@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import InputText from "@/components/ui/InputText/InputText";
 import InputPassword from "@/components/ui/InputPassword/InputPassword";
-import InputSelect from "@/components/ui/InputSelect/InputSelect";
 import SubmitBtn from "@/components/ui/SubmitBtn/SubmitBtn";
 import styles from "./signUp.module.css";
 import routePath from "../../../routes";
@@ -12,6 +11,7 @@ import { NextPage } from "next";
 import { RegisterRequest, UserGender, UserRole } from "@/models/types/auth";
 import signUp from "@/app/actions/singUpAction";
 import RadioGroup from "@/components/ui/RadioGroup/RadioGroup";
+import DynamicInputSelect from "@/components/ui/InputSelect/DynamicInputSelect";
 
 const SignUpPage: NextPage = () => {
     const router = useRouter();
@@ -78,7 +78,7 @@ const SignUpPage: NextPage = () => {
                         required
                     />
 
-                    {/* <InputSelect
+                    <DynamicInputSelect
                         label="תפקיד"
                         id="role"
                         value={formData.role}
@@ -87,7 +87,7 @@ const SignUpPage: NextPage = () => {
                             { value: "admin", label: "מנהל/ת" },
                             { value: "teacher", label: "מורה" },
                         ]}
-                    /> */}
+                    />
 
                     <InputText
                         label="שם בית ספר"

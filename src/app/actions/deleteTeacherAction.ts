@@ -10,7 +10,7 @@ import { TeacherType } from "@/models/types/teachers";
 
 export async function deleteTeacherAction(
     schoolId: string,
-    teacherId: string
+    teacherId: string,
 ): Promise<ActionResponse & { annualSchedules?: AnnualScheduleType[]; teachers?: TeacherType[] }> {
     try {
         const authError = await checkAuthAndParams({ schoolId, teacherId });
@@ -18,12 +18,18 @@ export async function deleteTeacherAction(
             return authError as ActionResponse;
         }
 
-        // Get all annual schedule records related to this teacher
-        const annualSchedules = await db.query.annualSchedule.findMany({
-            where: and(
-                eq(schema.annualSchedule.schoolId, schoolId),
-                eq(schema.annualSchedule.teacherId, teacherId)
-            ),
+        // Delete all annual schedule records for this teacher
+        await db
+            .delete(schema.annualSchedule)
+            .where(
+                and(
+                    eq(schema.annualSchedule.schoolId, schoolId),
+                    eq(schema.annualSchedule.teacherId, teacherId),
+                ),
+            );
+
+        const schedules = await db.query.annualSchedule.findMany({
+            where: eq(schema.annualSchedule.schoolId, schoolId),
             with: {
                 school: true,
                 class: true,
@@ -32,38 +38,26 @@ export async function deleteTeacherAction(
             },
         });
 
-        const formattedAnnualSchedules = annualSchedules.map(
-            (schedule: any) => ({
-                id: schedule.id,
-                day: schedule.day,
-                hour: schedule.hour,
-                position: schedule.position,
-                school: schedule.school,
-                class: schedule.class,
-                teacher: schedule.teacher,
-                subject: schedule.subject,
-                createdAt: schedule.createdAt,
-                updatedAt: schedule.updatedAt,
-            }) as AnnualScheduleType
+        const annualSchedule = schedules.map(
+            (schedule: any) =>
+                ({
+                    id: schedule.id,
+                    day: schedule.day,
+                    hour: schedule.hour,
+                    position: schedule.position,
+                    school: schedule.school,
+                    class: schedule.class,
+                    teacher: schedule.teacher,
+                    subject: schedule.subject,
+                    createdAt: schedule.createdAt,
+                    updatedAt: schedule.updatedAt,
+                }) as AnnualScheduleType,
         );
 
-        // Delete all annual schedule records for this teacher
-        await db.delete(schema.annualSchedule)
-            .where(
-                and(
-                    eq(schema.annualSchedule.schoolId, schoolId),
-                    eq(schema.annualSchedule.teacherId, teacherId)
-                )
-            );
-
         // Delete the teacher
-        await db.delete(schema.teachers)
-            .where(
-                and(
-                    eq(schema.teachers.schoolId, schoolId),
-                    eq(schema.teachers.id, teacherId)
-                )
-            );
+        await db
+            .delete(schema.teachers)
+            .where(and(eq(schema.teachers.schoolId, schoolId), eq(schema.teachers.id, teacherId)));
 
         // Get the remaining teachers for this school
         const remainingTeachers = await db
@@ -74,7 +68,7 @@ export async function deleteTeacherAction(
         return {
             success: true,
             message: messages.teachers.deleteSuccess,
-            annualSchedules: formattedAnnualSchedules,
+            annualSchedules: annualSchedule,
             teachers: remainingTeachers,
         };
     } catch (error) {

@@ -4,11 +4,11 @@ import { DailyScheduleType } from '@/models/types/dailySchedule';
 import { TeacherType } from '@/models/types/teachers';
 import { ClassType } from '@/models/types/classes';
 import { SubjectType } from '@/models/types/subjects';
-import InputSelect from '@/components/ui/InputSelect/InputSelect';
 import InputText from '@/components/ui/InputText/InputText';
 import InputTextArea from '@/components/ui/InputTextArea/InputTextArea';
 import { SelectOption } from '@/models/types';
 import { useMainContext } from '@/context/MainContext';
+import DynamicInputSelect from '../ui/InputSelect/DynamicInputSelect';
 
 // Column types
 type ColumnType = 'teacher' | 'info' | 'missing';
@@ -232,33 +232,33 @@ const DailyScheduleTable = forwardRef<DailyScheduleTableRef, DailyScheduleTableP
                   {column.type === 'teacher' && (
                     <>
                       <div className={styles.cellInputContainer}>
-                        <InputSelect
+                        <DynamicInputSelect
                           label="כיתה"
                           options={classes.map(cls => ({ value: cls.id, label: cls.name }))}
                           value={findScheduleItem(hour, 'teacher')?.class?.id || ''}
-                          onChange={(option: SelectOption) => handleCellChange(hour, column.id, 'classId', option?.value || null)}
+                          onChange={(value: string) => handleCellChange(hour, column.id, 'classId', value)}
                           placeholder="בחר כיתה"
                           isSearchable={true}
                           isClearable={true}
                         />
                       </div>
                       <div className={styles.cellInputContainer}>
-                        <InputSelect
+                        <DynamicInputSelect
                           label="מקצוע"
                           options={subjects.map(subject => ({ value: subject.id, label: subject.name }))}
                           value={findScheduleItem(hour, 'teacher')?.subject?.id || ''}
-                          onChange={(option: SelectOption) => handleCellChange(hour, column.id, 'subjectId', option?.value || null)}
+                          onChange={(value: string) => handleCellChange(hour, column.id, 'subjectId', value)}
                           placeholder="בחר מקצוע"
                           isSearchable={true}
                           isClearable={true}
                         />
                       </div>
                       <div className={styles.cellInputContainer}>
-                        <InputSelect
+                        <DynamicInputSelect
                           label="מורה"
                           options={teachers.map(teacher => ({ value: teacher.id, label: teacher.name }))}
                           value={findScheduleItem(hour, 'teacher')?.presentTeacher?.id || ''}
-                          onChange={(option: SelectOption) => handleCellChange(hour, column.id, 'presentTeacherId', option?.value || null)}
+                          onChange={(value: string) => handleCellChange(hour, column.id, 'presentTeacherId', value)}
                           placeholder="בחר מורה"
                           isSearchable={true}
                           isClearable={true}
@@ -269,44 +269,44 @@ const DailyScheduleTable = forwardRef<DailyScheduleTableRef, DailyScheduleTableP
                   {column.type === 'missing' && (
                     <>
                       <div className={styles.cellInputContainer}>
-                        <InputSelect
+                        <DynamicInputSelect
                           label="כיתה"
                           options={classes.map(cls => ({ value: cls.id, label: cls.name }))}
                           value={findScheduleItem(hour, 'missing')?.class?.id || ''}
-                          onChange={(option: SelectOption) => handleCellChange(hour, column.id, 'classId', option?.value || null)}
+                          onChange={(value: string) => handleCellChange(hour, column.id, 'classId', value)}
                           placeholder="בחר כיתה"
                           isSearchable={true}
                           isClearable={true}
                         />
                       </div>
                       <div className={styles.cellInputContainer}>
-                        <InputSelect
+                        <DynamicInputSelect
                           label="מקצוע"
                           options={subjects.map(subject => ({ value: subject.id, label: subject.name }))}
                           value={findScheduleItem(hour, 'missing')?.subject?.id || ''}
-                          onChange={(option: SelectOption) => handleCellChange(hour, column.id, 'subjectId', option?.value || null)}
+                          onChange={(value: string) => handleCellChange(hour, column.id, 'subjectId', value)}
                           placeholder="בחר מקצוע"
                           isSearchable={true}
                           isClearable={true}
                         />
                       </div>
                       <div className={styles.cellInputContainer}>
-                        <InputSelect
+                        <DynamicInputSelect
                           label="מורה חסר"
                           options={teachers.map(teacher => ({ value: teacher.id, label: teacher.name }))}
                           value={findScheduleItem(hour, 'missing')?.absentTeacher?.id || ''}
-                          onChange={(option: SelectOption) => handleCellChange(hour, column.id, 'absentTeacherId', option?.value || null)}
+                          onChange={(value: string) => handleCellChange(hour, column.id, 'absentTeacherId', value)}
                           placeholder="בחר מורה חסר"
                           isSearchable={true}
                           isClearable={true}
                         />
                       </div>
                       <div className={styles.cellInputContainer}>
-                        <InputSelect
+                        <DynamicInputSelect
                           label="מורה מחליף"
                           options={teachers.map(teacher => ({ value: teacher.id, label: teacher.name }))}
                           value={findScheduleItem(hour, 'missing')?.subTeacher?.id || ''}
-                          onChange={(option: SelectOption) => handleCellChange(hour, column.id, 'subTeacherId', option?.value || null)}
+                          onChange={(value: string) => handleCellChange(hour, column.id, 'subTeacherId', value)}
                           placeholder="בחר מורה מחליף"
                           isSearchable={true}
                           isClearable={true}

@@ -18,12 +18,18 @@ export async function deleteClassAction(
             return authError as ActionResponse;
         }
 
-        // Get all annual schedule records related to this class
-        const annualSchedules = await db.query.annualSchedule.findMany({
-            where: and(
-                eq(schema.annualSchedule.schoolId, schoolId),
-                eq(schema.annualSchedule.classId, classId),
-            ),
+        // Delete all annual schedule records for this class
+        await db
+            .delete(schema.annualSchedule)
+            .where(
+                and(
+                    eq(schema.annualSchedule.schoolId, schoolId),
+                    eq(schema.annualSchedule.classId, classId),
+                ),
+            );
+
+        const schedules = await db.query.annualSchedule.findMany({
+            where: eq(schema.annualSchedule.schoolId, schoolId),
             with: {
                 school: true,
                 class: true,
@@ -32,7 +38,7 @@ export async function deleteClassAction(
             },
         });
 
-        const formattedAnnualSchedules = annualSchedules.map(
+        const annualSchedule = schedules.map(
             (schedule: any) =>
                 ({
                     id: schedule.id,
@@ -48,16 +54,6 @@ export async function deleteClassAction(
                 }) as AnnualScheduleType,
         );
 
-        // Delete all annual schedule records for this class
-        await db
-            .delete(schema.annualSchedule)
-            .where(
-                and(
-                    eq(schema.annualSchedule.schoolId, schoolId),
-                    eq(schema.annualSchedule.classId, classId),
-                ),
-            );
-
         // Delete the class
         await db
             .delete(schema.classes)
@@ -72,7 +68,7 @@ export async function deleteClassAction(
         return {
             success: true,
             message: messages.classes.deleteSuccess,
-            annualSchedules: formattedAnnualSchedules,
+            annualSchedules: annualSchedule,
             classes: remainingClasses,
         };
     } catch (error) {
