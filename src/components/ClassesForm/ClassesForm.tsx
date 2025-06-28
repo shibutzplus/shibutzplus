@@ -7,24 +7,23 @@ import Form from "../core/Form/Form";
 import { useMainContext } from "@/context/MainContext";
 import messages from "@/resources/messages";
 import useSubmit from "@/hooks/useSubmit";
+import styles from "./ClassesForm.module.css";
+import SubmitBtn from "../ui/SubmitBtn/SubmitBtn";
+import { errorToast, successToast } from "@/lib/toast";
 
 type ClassesFormProps = {
     selectedClass: ClassType | null;
 };
 
 const ClassesForm: React.FC<ClassesFormProps> = ({ selectedClass }) => {
-    const { school, addNewClass } = useMainContext();
+    const { school, addNewClass, updateClass } = useMainContext();
     const [formData, setFormData] = useState<ClassRequest>({
         name: selectedClass ? selectedClass.name : "",
         schoolId: selectedClass ? selectedClass.schoolId : school?.id || "",
     });
-
-    const { handleSubmitAdd, isLoading, error } = useSubmit<ClassRequest>(
-        setFormData,
-        messages.classes.createSuccess,
-        messages.classes.createError,
-        messages.classes.invalid,
-    );
+    
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string>("");
 
     useEffect(() => {
         if (selectedClass) {
@@ -40,29 +39,93 @@ const ClassesForm: React.FC<ClassesFormProps> = ({ selectedClass }) => {
         }
     }, [selectedClass, school]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        handleSubmitAdd(e, formData, addNewClass);
+    const handleSubmitAdd = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setError("");
+
+        try {
+            if (!formData.name || !formData.schoolId) {
+                setError(messages.classes.invalid);
+                setIsLoading(false);
+                return;
+            }
+
+            const res = await addNewClass(formData);
+            successToast(res ? messages.classes.createSuccess : messages.classes.createError);
+            setFormData({
+                ...formData,
+                name: "",
+            });
+        } catch (error) {
+            console.error(error);
+            errorToast(messages.classes.createError);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    
+    const handleUpdate = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setError("");
+
+        try {
+            if (!selectedClass?.id) {
+                setError("No class selected for update");
+                setIsLoading(false);
+                return;
+            }
+
+            if (!formData.name || !formData.schoolId) {
+                setError(messages.classes.invalid);
+                setIsLoading(false);
+                return;
+            }
+
+            const res = await updateClass(selectedClass.id, formData);
+            successToast(res ? messages.classes.updateSuccess : messages.classes.updateError);
+            setFormData({
+                ...formData,
+                name: "",
+                schoolId: formData.schoolId,
+            });
+        } catch (error) {
+            console.error(error);
+            errorToast(messages.classes.updateError);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
-        <Form handleSubmit={handleSubmit} btnText="הוסף כיתה" isLoading={isLoading} error={error}>
-            {[
-                <InputText
-                    key="name"
-                    label="שם כיתה"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        setFormData((prev) => ({
-                            ...prev,
-                            [e.target.name]: e.target.value,
-                        }));
-                    }}
-                    placeholder="לדוגמה: א1"
-                    required
-                />,
-            ]}
+        <Form handleSubmit={handleSubmitAdd} isLoading={isLoading}>
+            <InputText
+                key="name"
+                label="שם כיתה"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setFormData((prev) => ({
+                        ...prev,
+                        [e.target.name]: e.target.value,
+                    }));
+                }}
+                placeholder="לדוגמה: א1"
+                required
+            />
+            <div className={styles.formActions}>
+                <SubmitBtn type="submit" isLoading={isLoading} buttonText="הוספה" />
+                <button
+                    type="button"
+                    onClick={handleUpdate}
+                    className={styles.updateButton}
+                    disabled={!selectedClass}
+                >
+                    עדכון
+                </button>
+            </div>
         </Form>
     );
 };

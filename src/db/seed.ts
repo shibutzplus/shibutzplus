@@ -194,13 +194,13 @@ async function seedTeachers(db: any, userIds: string[], schoolIds: string[]) {
   
   const teachers = [
     {
-      role: 'homeroom' as TeacherRole,
+      role: 'regular' as TeacherRole,
       userId: userIds[1], // John Smith
       schoolId: schoolIds[0],
       name: userMap[userIds[1]]?.name || 'John Smith',
     },
     {
-      role: 'homeroom' as TeacherRole,
+      role: 'regular' as TeacherRole,
       userId: userIds[2], // Sarah Johnson
       schoolId: schoolIds[1],
       name: userMap[userIds[2]]?.name || 'Sarah Johnson',

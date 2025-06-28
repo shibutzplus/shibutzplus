@@ -20,7 +20,7 @@ export type GetTeachersResponse = ActionResponse & {
 };
 
 export const TeacherRoleValues = {
-    HOMEROOM: "homeroom" as const,
+    REGULAR: "regular" as const,
     SUBSTITUTE: "substitute" as const,
 };
 export type TeacherRole = (typeof TeacherRoleValues)[keyof typeof TeacherRoleValues];

@@ -31,8 +31,3 @@
 .updateButton:active {
     transform: translateY(0);
 }
-
-.updateButton:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}

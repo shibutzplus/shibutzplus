@@ -1,7 +1,7 @@
 import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { useState } from "react";
-
+//(newTeacher: TeacherRequest) => Promise<TeacherType | undefined>
 function useSubmit<T extends { schoolId: string }>(
     setFormData: (value: React.SetStateAction<T>) => void,
     successMessage: string,

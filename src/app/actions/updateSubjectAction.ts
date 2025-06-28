@@ -1,0 +1,53 @@
+"use server";
+
+import { SubjectType, SubjectRequest } from "@/models/types/subjects";
+import { ActionResponse } from "@/models/types/actions";
+import { checkAuthAndParams } from "@/utils/authUtils";
+import messages from "@/resources/messages";
+import { db, schema } from "@/db";
+import { eq } from "drizzle-orm";
+
+export async function updateSubjectAction(
+    subjectId: string,
+    subjectData: SubjectRequest,
+): Promise<ActionResponse & { data?: SubjectType }> {
+    try {
+        const authError = await checkAuthAndParams({
+            subjectId,
+            name: subjectData.name,
+            schoolId: subjectData.schoolId,
+        });
+
+        if (authError) {
+            return authError as ActionResponse;
+        }
+
+        const updatedSubject = (await db
+            .update(schema.subjects)
+            .set({
+                name: subjectData.name,
+                updatedAt: new Date(),
+            })
+            .where(eq(schema.subjects.id, subjectId))
+            .returning())[0];
+
+        if (!updatedSubject) {
+            return {
+                success: false,
+                message: messages.subjects.updateError,
+            };
+        }
+
+        return {
+            success: true,
+            message: messages.subjects.updateSuccess,
+            data: updatedSubject,
+        };
+    } catch (error) {
+        console.error("Error updating subject:", error);
+        return {
+            success: false,
+            message: messages.subjects.updateError,
+        };
+    }
+}

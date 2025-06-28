@@ -167,7 +167,7 @@ const AnnualSchedulePage: NextPage = () => {
         try {
             const newTeacher: TeacherRequest = {
                 name: value,
-                role: TeacherRoleValues.HOMEROOM,
+                role: TeacherRoleValues.REGULAR,
                 schoolId: school.id,
                 userId: null,
             };

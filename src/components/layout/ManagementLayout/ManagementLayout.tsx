@@ -17,8 +17,6 @@ const ManagementLayout: React.FC<ManagementLayoutProps> = ({
     return (
         <main className={styles.container}>
             <section className={styles.teachersListSection}>
-                <h1 className={styles.title}>{listTitle}</h1>
-                <div className={styles.teachersCount}>{listInfo}</div>
                 {children[0]}
             </section>
             <section className={styles.formSection}>
