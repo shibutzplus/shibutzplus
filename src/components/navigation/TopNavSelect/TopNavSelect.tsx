@@ -16,7 +16,6 @@ const TopNavSelect: React.FC<TopNavSelectProps> = ({ type }) => {
         case routePath.dailySchedule.id:
             return (
                 <div className={styles.selectContainer}>
-                    <span>בחר יום:</span>
                     <DynamicInputSelect
                         options={setSelectOptions()}
                         value={selectedClassId}

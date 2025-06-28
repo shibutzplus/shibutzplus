@@ -13,7 +13,7 @@ export type DailyScheduleType = {
     event?: string;
     school: SchoolType;
     class: ClassType;
-    subject?: SubjectType;
+    subject: SubjectType;
     absentTeacher?: TeacherType;
     presentTeacher?: TeacherType;
     subTeacher?: TeacherType;
@@ -37,3 +37,11 @@ export type DailyScheduleRequest = {
 export type GetDailyScheduleResponse = ActionResponse & {
     data?: DailyScheduleType[];
 };
+
+export type ColumnType = "existingTeacher" | "info" | "missingTeacher";
+
+export interface ScheduleColumn {
+    id: string;
+    type: ColumnType;
+    title: string;
+}

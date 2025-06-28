@@ -1,0 +1,16 @@
+.container {
+    margin-top: var(--header-height);
+    padding: 1rem;
+    width: 100%;
+}
+
+.whiteBox {
+    background-color: var(--background-inner);
+    border-radius: var(--box-border-radius);
+    /* padding: 1rem; */
+    width: 100%;
+    height: auto;
+    min-height: 80vh;
+    overflow: hidden;
+    border: 1px solid #ccc;
+}

@@ -3,8 +3,10 @@
 import React, { createContext, useReducer, useContext, ReactNode } from "react";
 import { TeacherRow, ActionColumnType } from "@/models/types/table";
 import { ColumnDef } from "@tanstack/react-table";
-import TableCell from "@/components/TableCell/TableCell";
-import TableHeader from "@/components/TableHeader/TableHeader";
+import ExistingTeacherCell from "@/components/ExistingTeacherCell/ExistingTeacherCell";
+import InfoCell from "@/components/InfoCell/InfoCell";
+import ExistingTeacherHeader from "@/components/ExistingTeacherHeader/ExistingTeacherHeader";
+import InfoHeader from "@/components/InfoHeader/InfoHeader";
 
 interface State {
     data: TeacherRow[];
@@ -29,23 +31,23 @@ function buildColumn(colType: ActionColumnType, id: string): ColumnDef<TeacherRo
     if (colType === "missingTeacher") {
         return {
             id,
-            header: () => <TableHeader type="select" />,
-            cell: () => <TableCell type="select" />,
+            header: () => <ExistingTeacherHeader />,
+            cell: () => <ExistingTeacherCell />,
             meta: { bgColor: "#f3e5f5" },
         };
     }
     if (colType === "existingTeacher") {
         return {
             id,
-            header: () => <TableHeader type="select" />,
-            cell: () => <TableCell type="select" />,
+            header: () => <ExistingTeacherHeader />,
+            cell: () => <ExistingTeacherCell />,
             meta: { bgColor: "#fff3e0" },
         };
     }
     return {
         id,
-        header: () => <TableHeader type="text" />,
-        cell: () => <TableCell type="text" />,
+        header: () => <InfoHeader />,
+        cell: () => <InfoCell />,
         meta: { bgColor: "#e8f5e9" },
     };
 }
