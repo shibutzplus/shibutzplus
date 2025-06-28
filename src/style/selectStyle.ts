@@ -14,12 +14,18 @@ export const customStyles = (error: any, hasBorder: boolean) => {
                 borderColor: error ? "#e53935" : "#ccc",
             },
         }),
+        menuPlacement: "auto",
+        menuPosition: "absolute",
         menu: (provided: any) => ({
             ...provided,
             zIndex: 9999,
             borderRadius: "4px",
             boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
             border: "1px solid #ccc",
+        }),
+        menuPortal: (provided: any) => ({
+            ...provided,
+            zIndex: 9999
         }),
         option: (provided: any, state: any) => ({
             ...provided,

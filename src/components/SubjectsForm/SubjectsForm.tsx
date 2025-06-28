@@ -7,25 +7,24 @@ import InputText from "../ui/InputText/InputText";
 import { useMainContext } from "@/context/MainContext";
 import messages from "@/resources/messages";
 import useSubmit from "@/hooks/useSubmit";
+import styles from "./SubjectsForm.module.css";
+import SubmitBtn from "../ui/SubmitBtn/SubmitBtn";
+import { errorToast, successToast } from "@/lib/toast";
 
 type SubjectsFormProps = {
     selectedSubject: SubjectType | null;
 };
 
 const SubjectsForm: React.FC<SubjectsFormProps> = ({ selectedSubject }) => {
-    const { school, addNewSubject } = useMainContext();
+    const { school, addNewSubject, updateSubject } = useMainContext();
 
     const [formData, setFormData] = useState<SubjectRequest>({
         name: selectedSubject ? selectedSubject.name : "",
         schoolId: selectedSubject ? selectedSubject.schoolId : school?.id || "",
     });
-
-    const { handleSubmitAdd, isLoading, error } = useSubmit<SubjectRequest>(
-        setFormData,
-        messages.subjects.createSuccess,
-        messages.subjects.createError,
-        messages.subjects.invalid,
-    );
+    
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string>("");
 
     useEffect(() => {
         if (selectedSubject) {
@@ -42,29 +41,93 @@ const SubjectsForm: React.FC<SubjectsFormProps> = ({ selectedSubject }) => {
         }
     }, [selectedSubject, school]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        handleSubmitAdd(e, formData, addNewSubject);
+    const handleSubmitAdd = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setError("");
+
+        try {
+            if (!formData.name || !formData.schoolId) {
+                setError(messages.subjects.invalid);
+                setIsLoading(false);
+                return;
+            }
+
+            const res = await addNewSubject(formData);
+            successToast(res ? messages.subjects.createSuccess : messages.subjects.createError);
+            setFormData({
+                ...formData,
+                name: "",
+            });
+        } catch (error) {
+            console.error(error);
+            errorToast(messages.subjects.createError);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    
+    const handleUpdate = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setError("");
+
+        try {
+            if (!selectedSubject?.id) {
+                setError("No subject selected for update");
+                setIsLoading(false);
+                return;
+            }
+
+            if (!formData.name || !formData.schoolId) {
+                setError(messages.subjects.invalid);
+                setIsLoading(false);
+                return;
+            }
+
+            const res = await updateSubject(selectedSubject.id, formData);
+            successToast(res ? messages.subjects.updateSuccess : messages.subjects.updateError);
+            setFormData({
+                ...formData,
+                name: "",
+                schoolId: formData.schoolId,
+            });
+        } catch (error) {
+            console.error(error);
+            errorToast(messages.subjects.updateError);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
-        <Form handleSubmit={handleSubmit} isLoading={isLoading} btnText="הוסף מקצוע">
-            {[
-                <InputText
-                    key="name"
-                    label="שם מקצוע"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        setFormData((prev) => ({
-                            ...prev,
-                            [e.target.name]: e.target.value,
-                        }));
-                    }}
-                    placeholder="לדוגמה: מתמטיקה"
-                    required
-                />,
-            ]}
+        <Form handleSubmit={handleSubmitAdd} isLoading={isLoading}>
+            <InputText
+                key="name"
+                label="שם מקצוע"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setFormData((prev) => ({
+                        ...prev,
+                        [e.target.name]: e.target.value,
+                    }));
+                }}
+                placeholder="לדוגמה: מתמטיקה"
+                required
+            />
+            <div className={styles.formActions}>
+                <SubmitBtn type="submit" isLoading={isLoading} buttonText="הוספה" />
+                <button
+                    type="button"
+                    onClick={handleUpdate}
+                    className={styles.updateButton}
+                    disabled={!selectedSubject}
+                >
+                    עדכון
+                </button>
+            </div>
         </Form>
     );
 };

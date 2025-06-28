@@ -48,14 +48,14 @@ export async function setupSampleData() {
         // Create teachers linked to users
         const teacher1 = await createTeacher({
             name: user1.name || "Teacher 1",
-            role: "homeroom" as TeacherRole,
+            role: "regular" as TeacherRole,
             userId: user1.id,
             schoolId: school.id,
         });
 
         const teacher2 = await createTeacher({
             name: user2.name || "Teacher 2",
-            role: "homeroom" as TeacherRole,
+            role: "regular" as TeacherRole,
             userId: user2.id,
             schoolId: school.id,
         });

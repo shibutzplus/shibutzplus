@@ -53,7 +53,7 @@ const TeachersList: React.FC<TeachersListProps> = ({ teachers, handleSelectTeach
 
     const displayRole = (role: string): React.ReactNode => {
         switch (role) {
-            case "homeroom":
+            case "regular":
                 return (
                     <td className={styles.roleCellGreen}>
                         <span>מחנך/ת</span>
@@ -75,7 +75,7 @@ const TeachersList: React.FC<TeachersListProps> = ({ teachers, handleSelectTeach
     };
 
     return (
-        <TableList headThs={["שם", "תפקיד", ""]}>
+        <TableList headThs={["שם", "סטטוס", ""]}>
             <tbody>
                 {teachers.map((teacher) => (
                     <tr

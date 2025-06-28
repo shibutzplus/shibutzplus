@@ -9,7 +9,10 @@ import { AnnualScheduleRequest, AnnualScheduleType } from "@/models/types/annual
 import { DailyScheduleType, DailyScheduleRequest } from "@/models/types/dailySchedule";
 import { addClassAction } from "@/app/actions/addClassAction";
 import { addTeacherAction } from "@/app/actions/addTeacherAction";
+import { updateTeacherAction } from "@/app/actions/updateTeacherAction";
 import { addSubjectAction } from "@/app/actions/addSubjectAction";
+import { updateSubjectAction } from "@/app/actions/updateSubjectAction";
+import { updateClassAction } from "@/app/actions/updateClassAction";
 import { updateAnnualScheduleAction } from "@/app/actions/updateAnnualScheduleAction";
 import { addAnnualScheduleAction } from "@/app/actions/addAnnualScheduleAction";
 import { addDailyScheduleAction } from "@/app/actions/addDailyScheduleAction";
@@ -28,10 +31,13 @@ interface MainContextType {
     annualScheduleTable: AnnualScheduleType[] | undefined;
     dailyScheduleData: DailyScheduleType[] | undefined;
     addNewClass: (newClass: ClassRequest) => Promise<ClassType | undefined>;
+    updateClass: (classId: string, classData: ClassRequest) => Promise<ClassType | undefined>;
     deleteClass: (schoolId: string, classId: string) => Promise<boolean>;
     addNewTeacher: (newTeacher: TeacherRequest) => Promise<TeacherType | undefined>;
+    updateTeacher: (teacherId: string, teacherData: TeacherRequest) => Promise<TeacherType | undefined>;
     deleteTeacher: (schoolId: string, teacherId: string) => Promise<boolean>;
     addNewSubject: (newSubject: SubjectRequest) => Promise<SubjectType | undefined>;
+    updateSubject: (subjectId: string, subjectData: SubjectRequest) => Promise<SubjectType | undefined>;
     deleteSubject: (schoolId: string, subjectId: string) => Promise<boolean>;
     addNewAnnualScheduleItem: (newScheduleItem: AnnualScheduleRequest) => Promise<AnnualScheduleType | undefined>;
     updateExistingAnnualScheduleItem: (
@@ -101,6 +107,22 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         return undefined;
     };
 
+    const updateClass = async (classId: string, classData: ClassRequest) => {
+        const response = await updateClassAction(classId, classData);
+        if (response.success && response.data) {
+            setClasses((prev) => {
+                if (!prev || !response.data) return prev;
+                const updatedClasses = prev.map(cls => 
+                    cls.id === classId ? response.data! : cls
+                );
+                setStorageClasses(updatedClasses);
+                return updatedClasses;
+            });
+            return response.data;
+        }
+        return undefined;
+    };
+
     const deleteClass = async (schoolId: string, classId: string) => {
         const response = await deleteClassAction(schoolId, classId);
         if (response.success && response.classes && response.annualSchedules) {
@@ -126,6 +148,23 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         return undefined;
     };
 
+    const updateTeacher = async (teacherId: string, teacherData: TeacherRequest) => {
+        const response = await updateTeacherAction(teacherId, teacherData);
+        if (response.success && response.data) {
+            setTeachers((prev) => {
+                if (!prev || !response.data) return prev;
+                // Ensure we're mapping to a definite TeacherType (not undefined)
+                const updatedTeachers = prev.map(teacher => 
+                    teacher.id === teacherId ? response.data! : teacher
+                );
+                setStorageTeachers(updatedTeachers);
+                return updatedTeachers;
+            });
+            return response.data;
+        }
+        return undefined;
+    };
+
     const deleteTeacher = async (schoolId: string, teacherId: string) => {
         const response = await deleteTeacherAction(schoolId, teacherId);
         if (response.success && response.teachers && response.annualSchedules) {
@@ -137,12 +176,30 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         return false;
     };
 
+
+
     const addNewSubject = async (newSubject: SubjectRequest) => {
         const response = await addSubjectAction(newSubject);
         if (response.success && response.data) {
             setSubjects((prev) => {
                 if (!response.data) return prev;
                 const updatedSubjects = prev ? [...prev, response.data] : [response.data];
+                setStorageSubjects(updatedSubjects);
+                return updatedSubjects;
+            });
+            return response.data;
+        }
+        return undefined;
+    };
+
+    const updateSubject = async (subjectId: string, subjectData: SubjectRequest) => {
+        const response = await updateSubjectAction(subjectId, subjectData);
+        if (response.success && response.data) {
+            setSubjects((prev) => {
+                if (!prev || !response.data) return prev;
+                const updatedSubjects = prev.map(subject => 
+                    subject.id === subjectId ? response.data! : subject
+                );
                 setStorageSubjects(updatedSubjects);
                 return updatedSubjects;
             });
@@ -236,10 +293,13 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         annualScheduleTable,
         dailyScheduleData,
         addNewClass,
+        updateClass,
         deleteClass,
         addNewTeacher,
+        updateTeacher,
         deleteTeacher,
         addNewSubject,
+        updateSubject,
         deleteSubject,
         addNewAnnualScheduleItem,
         updateExistingAnnualScheduleItem,

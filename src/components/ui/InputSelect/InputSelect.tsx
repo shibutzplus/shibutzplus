@@ -81,6 +81,13 @@ const InputSelect: React.FC<InputSelectProps> = ({
         onChange(option ? option.value : "");
     };
 
+    useEffect(() => {
+        // Ensure document is defined (client-side only)
+        if (typeof document !== 'undefined') {
+            // This effect runs only on client-side
+        }
+    }, []);
+    
     return (
         <div className={styles.selectContainer}>
             {label && (
@@ -99,6 +106,8 @@ const InputSelect: React.FC<InputSelectProps> = ({
                 isClearable={isClearable}
                 isDisabled={isDisabled}
                 placeholder={placeholder}
+                menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
+                menuPlacement="auto"
                 noOptionsMessage={({ inputValue }) => (
                     <div className={styles.addBtn} onClick={() => handleOnCreate(inputValue)}>
                         הוסף את: "{inputValue}" לרשימה

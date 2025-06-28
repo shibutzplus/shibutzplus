@@ -58,30 +58,34 @@ const DailySchedulePage: NextPage = () => {
     };
 
     return (
-        <div className="p-4">
+        <>
+        <div style={{marginBottom: "5rem"}}>
             <DailyScheduleTopButtons
                 onAddTeacherColumn={handleAddTeacherColumn}
                 onAddInfoColumn={handleAddInfoColumn}
                 onAddMissingTeacherColumn={handleAddMissingTeacherColumn}
             />
 
-            {isLoading ? (
-                <div className="flex justify-center items-center h-64">
-                    <div className="text-xl">טוען נתונים...</div>
-                </div>
-            ) : teachers && classes && subjects ? (
-                <DailyScheduleTable
-                    ref={tableRef}
-                    scheduleData={dailySchedule}
-                    teachers={teachers}
-                    classes={classes}
-                    subjects={subjects}
-                    onScheduleChange={handleScheduleChange}
-                />
-            ) : (
-                <div className="text-center py-8">אין נתונים זמינים</div>
-            )}
         </div>
+            <div style={{marginTop: "5rem"}}>
+                {isLoading ? (
+                    <div className="flex justify-center items-center h-64">
+                        <div className="text-xl">טוען נתונים...</div>
+                    </div>
+                ) : teachers && classes && subjects ? (
+                    <DailyScheduleTable
+                        ref={tableRef}
+                        scheduleData={dailySchedule}
+                        teachers={teachers}
+                        classes={classes}
+                        subjects={subjects}
+                        onScheduleChange={handleScheduleChange}
+                    />
+                ) : (
+                    <div className="text-center py-8">אין נתונים זמינים</div>
+                )}
+            </div>
+        </>
     );
 };
 

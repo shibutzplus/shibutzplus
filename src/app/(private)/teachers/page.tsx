@@ -17,15 +17,15 @@ const TeachersPage: NextPage = () => {
     };
 
     const listInfo = useMemo(() => {
-        const homeroomTeachersCount = teachers?.filter((teacher) => teacher.role === "homeroom").length || 0;
+        const homeroomTeachersCount = teachers?.filter((teacher) => teacher.role === "regular").length || 0;
         const substituteTeachersCount = teachers?.filter((teacher) => teacher.role === "substitute").length || 0;
-        return `${homeroomTeachersCount} מחנכים, ${substituteTeachersCount} מחליפים`;
+        return `${homeroomTeachersCount} מורים מן המניין, ${substituteTeachersCount} מחליפים`;
     }, [teachers])
 
     return (
         <ManagementLayout
             formTitle="הוספת מורה"
-            listTitle="רשימת מורים"
+            listTitle="מורים"
             listInfo={listInfo}
             children={[
                 <TeachersList key="teachers-list" teachers={teachers || []} handleSelectTeacher={handleSelectTeacher} />,
