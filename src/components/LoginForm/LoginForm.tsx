@@ -87,7 +87,7 @@ const LoginForm: React.FC = () => {
                 <p>
                     בעיה בהתחברות?{" "}
                     <Link href={EmailLink} className={styles.problemLink}>
-                        צרו קשר עם שיבוץ+
+                        צרו קשר
                     </Link>
                 </p>
             </div>

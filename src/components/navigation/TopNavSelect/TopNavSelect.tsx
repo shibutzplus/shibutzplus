@@ -29,7 +29,6 @@ const TopNavSelect: React.FC<TopNavSelectProps> = ({ type }) => {
         case routePath.annualSchedule.id:
             return (
                 <div className={styles.selectContainer}>
-                    <span>בחר כיתה:</span>
                     <DynamicInputSelect
                         options={setSelectOptions()}
                         value={selectedClassId}
