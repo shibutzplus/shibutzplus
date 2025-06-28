@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import styles from "./ExistingTeacherCell.module.css";
+import styles from "./MissingTeacherCell.module.css";
 import { TeacherType } from "@/models/types/teachers";
-import DynamicInputSelect from "../ui/InputSelect/DynamicInputSelect";
+import DynamicInputSelect from "../../ui/InputSelect/DynamicInputSelect";
 import { useMainContext } from "@/context/MainContext";
 
-interface ExistingTeacherCellProps {}
+interface MissingTeacherCellProps {}
 
-const ExistingTeacherCell: React.FC<ExistingTeacherCellProps> = () => {
+const MissingTeacherCell: React.FC<MissingTeacherCellProps> = () => {
     const { teachers } = useMainContext();
     const [selectedTeacher, setSelectedTeacher] = useState<TeacherType | undefined>();
     return (
@@ -30,4 +30,4 @@ const ExistingTeacherCell: React.FC<ExistingTeacherCellProps> = () => {
     );
 };
 
-export default ExistingTeacherCell;
+export default MissingTeacherCell;

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styles from "./InfoCell.module.css";
-import InputTextArea from "../ui/InputTextArea/InputTextArea";
+import InputTextArea from "../../ui/InputTextArea/InputTextArea";
 
 type InfoCellProps = {};
 

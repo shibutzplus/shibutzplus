@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./ExistingTeacherHeader.module.css";
-import DynamicInputSelect from "../ui/InputSelect/DynamicInputSelect";
+import DynamicInputSelect from "../../ui/InputSelect/DynamicInputSelect";
 
 type ExistingTeacherHeaderProps = {};
 

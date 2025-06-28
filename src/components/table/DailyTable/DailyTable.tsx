@@ -5,9 +5,9 @@ import styles from "./dailySchedule.module.css";
 import { useTable } from "@/context/TableContext";
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
-interface DailyScheduleTableProps {}
+interface DailyTableProps {}
 
-const DailyScheduleTable: React.FC<DailyScheduleTableProps> = () => {
+const DailyTable: React.FC<DailyTableProps> = () => {
     const { state } = useTable();
     const { data, actionCols } = state;
 
@@ -28,15 +28,15 @@ const DailyScheduleTable: React.FC<DailyScheduleTableProps> = () => {
 
     return (
         <div className={styles.container}>
-            <div className={styles.tableWrapper}>
-                <table className={styles.table}>
+            <div className={styles.tableContainer}>
+                <table className={styles.scheduleTable}>
                     <thead>
                         {table.getHeaderGroups().map((hg) => (
                             <tr key={hg.id}>
                                 {hg.headers.map((header) => (
                                     <th
                                         key={header.id}
-                                        className={`${styles.headerCell} ${header.column.id === "hour" ? styles.hourCell : ""}`}
+                                        className={header.column.id === "hour" ? styles.hourCell : styles.dayHeader}
                                         style={{
                                             background: (header.column.columnDef.meta as any)
                                                 ?.bgColor,
@@ -55,8 +55,13 @@ const DailyScheduleTable: React.FC<DailyScheduleTableProps> = () => {
                         {table.getRowModel().rows.map((row) => (
                             <tr key={row.id}>
                                 {row.getVisibleCells().map((cell) => (
-                                    <td key={cell.id} className={styles.cell}>
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                    <td 
+                                        key={cell.id} 
+                                        className={cell.column.id === "hour" ? styles.hourCell : styles.scheduleCell}
+                                    >
+                                        <div className={styles.cellContent}>
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        </div>
                                     </td>
                                 ))}
                             </tr>
@@ -68,4 +73,4 @@ const DailyScheduleTable: React.FC<DailyScheduleTableProps> = () => {
     );
 };
 
-export default DailyScheduleTable;
+export default DailyTable;

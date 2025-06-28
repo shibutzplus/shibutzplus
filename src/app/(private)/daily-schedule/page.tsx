@@ -2,10 +2,10 @@
 
 import React from "react";
 import { NextPage } from "next";
-import DailyScheduleTopButtons from "@/components/DailySchedule/DailyScheduleTopButtons";
-import DailyScheduleTable from "@/components/DailySchedule/DailyScheduleTable";
-import styles from "./DailySchedule.module.css";
+import DailyScheduleTopButtons from "@/components/table/DailyTable/DailyScheduleTopButtons";
+import DailyTable from "@/components/table/DailyTable/DailyTable";
 import { TableProvider } from "@/context/TableContext";
+import styles from "./DailySchedule.module.css";
 
 const DailySchedulePage: NextPage = () => {
     return (
@@ -13,7 +13,7 @@ const DailySchedulePage: NextPage = () => {
             <TableProvider>
                 <DailyScheduleTopButtons />
                 <div className={styles.whiteBox}>
-                    <DailyScheduleTable />
+                    <DailyTable />
                 </div>
             </TableProvider>
         </div>

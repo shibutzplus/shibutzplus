@@ -1,0 +1,33 @@
+import React, { useState } from "react";
+import styles from "./ExistingTeacherCell.module.css";
+import { TeacherType } from "@/models/types/teachers";
+import DynamicInputSelect from "../../ui/InputSelect/DynamicInputSelect";
+import { useMainContext } from "@/context/MainContext";
+
+interface ExistingTeacherCellProps {}
+
+const ExistingTeacherCell: React.FC<ExistingTeacherCellProps> = () => {
+    const { teachers } = useMainContext();
+    const [selectedTeacher, setSelectedTeacher] = useState<TeacherType | undefined>();
+    return (
+        <div>
+            <div>כיתה א1 | מקצוע מתמטיקה</div>
+            <div className={styles.cellInputContainer}>
+                <DynamicInputSelect
+                    options={(teachers || []).map((teacher) => ({
+                        value: teacher.id,
+                        label: teacher.name,
+                    }))}
+                    value={selectedTeacher?.id || ""}
+                    onChange={(value: string) =>
+                        setSelectedTeacher(teachers?.find((teacher) => teacher.id === value))
+                    }
+                    placeholder="בחר מורה"
+                    isSearchable
+                />
+            </div>
+        </div>
+    );
+};
+
+export default ExistingTeacherCell;

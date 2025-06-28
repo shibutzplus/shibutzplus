@@ -3,10 +3,13 @@
 import React, { createContext, useReducer, useContext, ReactNode } from "react";
 import { TeacherRow, ActionColumnType } from "@/models/types/table";
 import { ColumnDef } from "@tanstack/react-table";
-import ExistingTeacherCell from "@/components/ExistingTeacherCell/ExistingTeacherCell";
-import InfoCell from "@/components/InfoCell/InfoCell";
-import ExistingTeacherHeader from "@/components/ExistingTeacherHeader/ExistingTeacherHeader";
-import InfoHeader from "@/components/InfoHeader/InfoHeader";
+import { TableRows } from "@/models/constant/table";
+import MissingTeacherHeader from "@/components/table/MissingTeacherHeader/MissingTeacherHeader";
+import MissingTeacherCell from "@/components/table/MissingTeacherCell/MissingTeacherCell";
+import ExistingTeacherHeader from "@/components/table/ExistingTeacherHeader/ExistingTeacherHeader";
+import ExistingTeacherCell from "@/components/table/ExistingTeacherCell/ExistingTeacherCell";
+import InfoCell from "@/components/table/InfoCell/InfoCell";
+import InfoHeader from "@/components/table/InfoHeader/InfoHeader";
 
 interface State {
     data: TeacherRow[];
@@ -17,7 +20,7 @@ interface State {
 type Action = { type: "ADD_COL"; colType: ActionColumnType } | { type: "REMOVE_COL" };
 
 const initialState: State = {
-    data: Array.from({ length: 8 }, (_, i) => ({ hour: i + 1 })),
+    data: Array.from({ length: TableRows }, (_, i) => ({ hour: i + 1 })),
     actionCols: [],
     nextId: 1,
 };
@@ -31,8 +34,8 @@ function buildColumn(colType: ActionColumnType, id: string): ColumnDef<TeacherRo
     if (colType === "missingTeacher") {
         return {
             id,
-            header: () => <ExistingTeacherHeader />,
-            cell: () => <ExistingTeacherCell />,
+            header: () => <MissingTeacherHeader />,
+            cell: () => <MissingTeacherCell />,
             meta: { bgColor: "#f3e5f5" },
         };
     }
