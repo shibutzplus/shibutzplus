@@ -1,9 +1,10 @@
-export const customStyles = (error: any) => {
+export const customStyles = (error: any, hasBorder: boolean) => {
     return {
         control: (provided: any, state: any) => ({
             ...provided,
+            width: "100%",
             minHeight: "38px",
-            borderWidth: "0px",
+            borderWidth: hasBorder ? "1px" : "0px",
             boxShadow: "none",
             fontSize: "16px",
             backgroundColor: "white",

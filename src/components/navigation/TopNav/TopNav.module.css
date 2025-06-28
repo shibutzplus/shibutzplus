@@ -18,9 +18,8 @@
 .headerLeft {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 2em;
     min-width: 200px;
-    width: 30%;
 }
 
 .routeTitle {
@@ -30,5 +29,5 @@
     color: var(--text-primary);
     position: relative;
     top: -2px;
-    width: 100%;
+    width: fit-content;
 }

@@ -19,6 +19,7 @@ interface InputSelectProps {
     allowAddNew?: boolean;
     isDisabled?: boolean;
     isClearable?: boolean;
+    hasBorder?: boolean;
 }
 
 const InputSelect: React.FC<InputSelectProps> = ({
@@ -34,6 +35,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
     allowAddNew = true,
     isDisabled = false,
     isClearable = false,
+    hasBorder = false,
 }) => {
     const [options, setOptions] = useState<SelectOption[]>(initialOptions);
     const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
@@ -118,7 +120,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
                         : "לא נמצאו אפשרויות"
                 }
                 onKeyDown={handleKeyDown}
-                styles={customStyles(error || "")}
+                styles={customStyles(error || "", hasBorder)}
                 classNamePrefix="react-select"
             />
 

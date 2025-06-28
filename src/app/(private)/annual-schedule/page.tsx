@@ -11,10 +11,11 @@ import { SubjectType } from "@/models/types/subjects";
 import { WeeklySchedule, AnnualScheduleRequest } from "@/models/types/annualSchedule";
 import { DAYS_OF_WEEK, HOURS_IN_DAY } from "@/utils/time";
 import messages from "@/resources/messages";
+import { useActions } from "@/context/ActionsContext";
 
 const AnnualSchedulePage: NextPage = () => {
     const {
-        classes,
+        classes, // move to useActions
         teachers,
         subjects,
         annualScheduleTable,
@@ -23,8 +24,8 @@ const AnnualSchedulePage: NextPage = () => {
         updateExistingAnnualScheduleItem,
     } = useMainContext();
 
-    const [selectedClassId, setSelectedClassId] = useState<string>(classes?.[0]?.id || "");
-    const [showTable, setShowTable] = useState<boolean>(true);
+    const { selectedClassId } = useActions();
+
     const [schedule, setSchedule] = useState<WeeklySchedule>({});
 
     const [isLoading, setIsLoading] = useState(false); // TODO: add loading in the cell
@@ -71,11 +72,6 @@ const AnnualSchedulePage: NextPage = () => {
             setSchedule(newSchedule);
         }
     }, [selectedClassId, schedule, annualScheduleTable]);
-
-    const handleClassChange = (value: string) => {
-        setSelectedClassId(value);
-        setShowTable(true);
-    };
 
     const getRowId = (day: string, hour: number) => {
         const id =
@@ -167,80 +163,63 @@ const AnnualSchedulePage: NextPage = () => {
     return (
         <div className={styles.container}>
             <div className={styles.whiteBox}>
-                {showTable && (
-                    <div className={styles.tableContainer}>
-                        <table className={styles.scheduleTable}>
-                            <thead>
-                                <tr>
-                                    <th className={styles.hourHeader}></th>
+                <div className={styles.tableContainer}>
+                    <table className={styles.scheduleTable}>
+                        <thead>
+                            <tr>
+                                <th className={styles.hourHeader}></th>
+                                {DAYS_OF_WEEK.map((day) => (
+                                    <th key={day} className={styles.dayHeader}>
+                                        יום {day}׳
+                                    </th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {Array.from({ length: HOURS_IN_DAY }, (_, i) => i + 1).map((hour) => (
+                                <tr key={hour}>
+                                    <td className={styles.hourCell}>{hour}</td>
                                     {DAYS_OF_WEEK.map((day) => (
-                                        <th key={day} className={styles.dayHeader}>
-                                            יום {day}׳
-                                        </th>
+                                        <td key={`${day}-${hour}`} className={styles.scheduleCell}>
+                                            <div className={styles.cellContent}>
+                                                <DynamicInputSelect
+                                                    options={createSelectOptions<SubjectType>(
+                                                        subjects,
+                                                    )}
+                                                    placeholder="מקצוע"
+                                                    value={
+                                                        schedule[selectedClassId]?.[day]?.[hour]
+                                                            ?.subject || ""
+                                                    }
+                                                    onChange={(value: string) =>
+                                                        handleProfessionChange(day, hour, value)
+                                                    }
+                                                    isSearchable
+                                                    allowAddNew
+                                                />
+                                                <DynamicInputSelect
+                                                    options={createSelectOptions<TeacherType>(
+                                                        teachers,
+                                                    )}
+                                                    placeholder="מורה"
+                                                    value={
+                                                        schedule[selectedClassId]?.[day]?.[hour]
+                                                            ?.teacher || ""
+                                                    }
+                                                    onChange={(value: string) =>
+                                                        handleTeacherChange(day, hour, value)
+                                                    }
+                                                    isSearchable
+                                                    allowAddNew
+                                                />
+                                            </div>
+                                        </td>
                                     ))}
                                 </tr>
-                            </thead>
-                            <tbody>
-                                {Array.from({ length: HOURS_IN_DAY }, (_, i) => i + 1).map(
-                                    (hour) => (
-                                        <tr key={hour}>
-                                            <td className={styles.hourCell}>{hour}</td>
-                                            {DAYS_OF_WEEK.map((day) => (
-                                                <td
-                                                    key={`${day}-${hour}`}
-                                                    className={styles.scheduleCell}
-                                                >
-                                                    <div className={styles.cellContent}>
-                                                        <DynamicInputSelect
-                                                            options={createSelectOptions<SubjectType>(
-                                                                subjects,
-                                                            )}
-                                                            placeholder="מקצוע"
-                                                            value={
-                                                                schedule[selectedClassId]?.[day]?.[
-                                                                    hour
-                                                                ]?.subject || ""
-                                                            }
-                                                            onChange={(value: string) =>
-                                                                handleProfessionChange(
-                                                                    day,
-                                                                    hour,
-                                                                    value,
-                                                                )
-                                                            }
-                                                            isSearchable
-                                                            allowAddNew
-                                                        />
-                                                        <DynamicInputSelect
-                                                            options={createSelectOptions<TeacherType>(
-                                                                teachers,
-                                                            )}
-                                                            placeholder="מורה"
-                                                            value={
-                                                                schedule[selectedClassId]?.[day]?.[
-                                                                    hour
-                                                                ]?.teacher || ""
-                                                            }
-                                                            onChange={(value: string) =>
-                                                                handleTeacherChange(
-                                                                    day,
-                                                                    hour,
-                                                                    value,
-                                                                )
-                                                            }
-                                                            isSearchable
-                                                            allowAddNew
-                                                        />
-                                                    </div>
-                                                </td>
-                                            ))}
-                                        </tr>
-                                    ),
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
             {/* <div className={styles.fab}>
                 <DynamicInputSelect
