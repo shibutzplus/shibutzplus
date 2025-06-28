@@ -1,6 +1,6 @@
 import React from "react";
-import DynamicInputSelect from "../ui/InputSelect/DynamicInputSelect";
-import routePath from "../../routes";
+import DynamicInputSelect from "../../ui/InputSelect/DynamicInputSelect";
+import routePath from "../../../routes";
 import { useActions } from "@/context/ActionsContext";
 import styles from "./TopNavSelect.module.css";
 
