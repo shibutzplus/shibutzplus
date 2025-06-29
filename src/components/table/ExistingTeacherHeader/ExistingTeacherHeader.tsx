@@ -13,26 +13,22 @@ type ExistingTeacherHeaderProps = {
 
 const ExistingTeacherHeader: React.FC<ExistingTeacherHeaderProps> = ({ id }) => {
     const { teachers, school } = useMainContext();
-    const { state, dispatch } = useTable();
-    const [selectedTeacher, setSelectedTeacher] = useState<TeacherType | undefined>();
+    const { currentDay, clearTeacherSchedule, setTeacherSchedule, setSelectedTeacher } = useTable();
+    const [selectedTeacherState, setSelectedTeacherState] = useState<TeacherType | undefined>();
     const [isLoading, setIsLoading] = useState(false);
 
     const fetchTeacherSchedule = async (teacherId: string) => {
-        if (!school?.id) return;
+        if (!school?.id || !id) return;
 
         setIsLoading(true);
         try {
             // First, clear any existing data for this column
-            dispatch({
-                type: "CLEAR_TEACHER_SCHEDULE",
-                day: state.currentDay,
-                headerId: id || "",
-            });
+            clearTeacherSchedule(currentDay, id);
             
             const dayNumber = getDayNumber();
             const response = await getTeacherScheduleByDayAction(school.id, dayNumber, teacherId);
 
-            if (response.success && response.data && id) {
+            if (response.success && response.data) {
                 // Transform the data for the context
                 const scheduleData = response.data.map((item) => ({
                     hour: item.hour,
@@ -41,18 +37,10 @@ const ExistingTeacherHeader: React.FC<ExistingTeacherHeaderProps> = ({ id }) => 
                 }));
 
                 // Update the context with the teacher's schedule
-                dispatch({
-                    type: "SET_TEACHER_SCHEDULE",
-                    day: state.currentDay,
-                    headerId: id,
-                    schedule: scheduleData,
-                });
+                setTeacherSchedule(currentDay, id, scheduleData);
 
                 // Set the selected teacher in the context
-                dispatch({
-                    type: "SET_SELECTED_TEACHER",
-                    teacherId,
-                });
+                setSelectedTeacher(teacherId);
             }
         } catch (error) {
             console.error("Error fetching teacher schedule:", error);
@@ -63,7 +51,7 @@ const ExistingTeacherHeader: React.FC<ExistingTeacherHeaderProps> = ({ id }) => 
 
     const handleTeacherChange = (value: string) => {
         const teacher = teachers?.find((t) => t.id === value);
-        setSelectedTeacher(teacher);
+        setSelectedTeacherState(teacher);
 
         if (value) {
             fetchTeacherSchedule(value);
@@ -77,7 +65,7 @@ const ExistingTeacherHeader: React.FC<ExistingTeacherHeaderProps> = ({ id }) => 
                     value: teacher.id,
                     label: teacher.name,
                 }))}
-                value={selectedTeacher?.id || ""}
+                value={selectedTeacherState?.id || ""}
                 onChange={handleTeacherChange}
                 placeholder="מורה"
                 isSearchable

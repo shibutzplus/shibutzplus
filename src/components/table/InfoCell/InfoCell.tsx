@@ -12,7 +12,7 @@ const InfoCell: React.FC<InfoCellProps> = () => {
             <InputTextArea
                 value={info}
                 onChange={(e) => setInfo(e.target.value)}
-                placeholder="רשום כאן את מה שמתרחש באירוע"
+                placeholder="מה הולך לקרות בשעה זו?"
                 rows={3}
             />
         </div>

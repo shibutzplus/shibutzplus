@@ -8,8 +8,7 @@ import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-tabl
 interface DailyTableProps {}
 
 const DailyTable: React.FC<DailyTableProps> = () => {
-    const { state } = useTable();
-    const { data, actionCols } = state;
+    const { data, actionCols } = useTable();
 
     const baseCols = React.useMemo(
         () => [
