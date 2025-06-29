@@ -8,13 +8,12 @@ const InfoCell: React.FC<InfoCellProps> = () => {
     const [info, setInfo] = useState<string>("");
 
     return (
-        <div className={styles.cellInputContainer}>
+        <div className={styles.cellContent}>
             <InputTextArea
                 value={info}
                 onChange={(e) => setInfo(e.target.value)}
                 placeholder="רשום כאן את מה שמתרחש באירוע"
-                className={styles.cellTextArea}
-                rows={4}
+                rows={3}
             />
         </div>
     );

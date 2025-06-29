@@ -31,7 +31,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
     onChange,
     placeholder = "בחר אופציה...",
     isSearchable = true,
-    allowAddNew = true,
+    allowAddNew = false,
     isDisabled = false,
     hasBorder = false,
     isClearable = false,
@@ -108,11 +108,11 @@ const InputSelect: React.FC<InputSelectProps> = ({
                 placeholder={placeholder}
                 menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
                 menuPlacement="auto"
-                noOptionsMessage={({ inputValue }) => (
+                noOptionsMessage={({ inputValue }) => allowAddNew ? (
                     <div className={styles.addBtn} onClick={() => handleOnCreate(inputValue)}>
                         הוסף את: "{inputValue}" לרשימה
                     </div>
-                )}
+                ) : "לא נמצאו אפשרויות"}
                 styles={customStyles(error || "", hasBorder)}
                 classNamePrefix="react-select"
             />

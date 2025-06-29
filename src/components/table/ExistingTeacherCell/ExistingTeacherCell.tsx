@@ -10,9 +10,9 @@ const ExistingTeacherCell: React.FC<ExistingTeacherCellProps> = () => {
     const { teachers } = useMainContext();
     const [selectedTeacher, setSelectedTeacher] = useState<TeacherType | undefined>();
     return (
-        <div>
-            <div>כיתה א1 | מקצוע מתמטיקה</div>
-            <div className={styles.cellInputContainer}>
+        <div className={styles.cellContent}>
+            <div className={styles.classAndSubject}>כיתה א1 | מקצוע מתמטיקה</div>
+            <div className={styles.teacherSelect}>
                 <DynamicInputSelect
                     options={(teachers || []).map((teacher) => ({
                         value: teacher.id,
@@ -24,6 +24,7 @@ const ExistingTeacherCell: React.FC<ExistingTeacherCellProps> = () => {
                     }
                     placeholder="בחר מורה"
                     isSearchable
+                    hasBorder
                 />
             </div>
         </div>

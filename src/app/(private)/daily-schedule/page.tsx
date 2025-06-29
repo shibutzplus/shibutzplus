@@ -2,21 +2,19 @@
 
 import React from "react";
 import { NextPage } from "next";
-import DailyScheduleTopButtons from "@/components/table/DailyTable/DailyScheduleTopButtons";
 import DailyTable from "@/components/table/DailyTable/DailyTable";
 import { TableProvider } from "@/context/TableContext";
 import styles from "./DailySchedule.module.css";
+import DailyTableTopBtns from "@/components/table/DailyTableTopBtns/DailyTableTopBtns";
 
 const DailySchedulePage: NextPage = () => {
     return (
-        <div className={styles.container}>
-            <TableProvider>
-                <DailyScheduleTopButtons />
-                <div className={styles.whiteBox}>
-                    <DailyTable />
-                </div>
-            </TableProvider>
-        </div>
+        <TableProvider>
+            <section className={styles.container}>
+                <DailyTableTopBtns />
+                <DailyTable />
+            </section>
+        </TableProvider>
     );
 };
 

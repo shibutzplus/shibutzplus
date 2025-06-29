@@ -4,4 +4,12 @@ export type TeacherRow = {
     hour: number;
 };
 
-export type ActionColumnType = "missingTeacher" | "existingTeacher" | "info";
+export type ActionColumnType =
+    | "publish"
+    | "history"
+    | "missingTeacher"
+    | "existingTeacher"
+    | "info"
+    | "delete"
+    | "update"
+    | "move";

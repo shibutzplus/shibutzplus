@@ -3,7 +3,7 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     height: var(--header-height);
     box-sizing: border-box;
-    padding: 0 5vw;
+    padding: 0 3vw;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -15,11 +15,18 @@
     width: 100%;
 }
 
-.headerLeft {
+.headerRight {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 2em;
-    min-width: 200px;
+    width: 50%;
+    max-width: 35vw;
+}
+
+.headerLeft {
+    width: fit-content;
+    max-width: 35vw;
 }
 
 .routeTitle {
@@ -29,5 +36,6 @@
     color: var(--text-primary);
     position: relative;
     top: -2px;
-    width: fit-content;
+    width: 100%;
+    max-width: fit-content;
 }

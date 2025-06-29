@@ -1,0 +1,13 @@
+.cellContent{
+    width: 100%;
+    height: 100%;
+    height: 120px;
+    padding: 21px 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between
+}
+
+.teacherSelect{
+    text-align: right;
+}

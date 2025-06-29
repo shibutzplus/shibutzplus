@@ -2,40 +2,42 @@ import React from "react";
 import DynamicInputSelect from "../../ui/InputSelect/DynamicInputSelect";
 import routePath from "../../../routes";
 import { useActions } from "@/context/ActionsContext";
-import styles from "./TopNavSelect.module.css";
 
 type TopNavSelectProps = {
     type: string | null;
 };
 
 const TopNavSelect: React.FC<TopNavSelectProps> = ({ type }) => {
-    const { setSelectOptions, handleClassChange, selectedClassId } = useActions();
+    const {
+        classesSelectOptions,
+        daysSelectOptions,
+        handleClassChange,
+        handleDayChange,
+        selectedClassId,
+        selectedDayId,
+    } = useActions();
 
     if (!type) return null;
     switch (type) {
         case routePath.dailySchedule.id:
             return (
-                <div className={styles.selectContainer}>
-                    <DynamicInputSelect
-                        options={setSelectOptions()}
-                        value={selectedClassId}
-                        onChange={handleClassChange}
-                        placeholder="בחר יום..."
-                        hasBorder
-                    />
-                </div>
+                <DynamicInputSelect
+                    options={daysSelectOptions()}
+                    value={selectedDayId}
+                    onChange={handleDayChange}
+                    placeholder="בחר יום..."
+                    hasBorder
+                />
             );
         case routePath.annualSchedule.id:
             return (
-                <div className={styles.selectContainer}>
-                    <DynamicInputSelect
-                        options={setSelectOptions()}
-                        value={selectedClassId}
-                        onChange={handleClassChange}
-                        placeholder="בחר כיתה..."
-                        hasBorder
-                    />
-                </div>
+                <DynamicInputSelect
+                    options={classesSelectOptions()}
+                    value={selectedClassId}
+                    onChange={handleClassChange}
+                    placeholder="בחר כיתה..."
+                    hasBorder
+                />
             );
         default:
             return null;
