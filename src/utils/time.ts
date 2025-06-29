@@ -11,4 +11,15 @@ export const isCacheFresh = (cacheTimestamp: string | null) =>
     cacheTimestamp && Date.now() - parseInt(cacheTimestamp) < 3600000; // 1 hour
 
 // Generate hours from 0 to 8 to match the reference image
-export const displayHours = Array.from({ length: hoursOfDay.length+1 }, (_, i) => i);
+export const displayHours = Array.from({ length: hoursOfDay.length + 1 }, (_, i) => i);
+
+export const todayDateFormat = () => {
+    return new Date().toISOString().split("T")[0]; // Today's date in YYYY-MM-DD format
+};
+
+// Get the current day number (1-7) from the current date
+export const getDayNumber = () => {
+    const date = new Date();
+    // Convert from 0-6 (Sunday-Saturday) to 1-7 (Sunday-Saturday)
+    return date.getDay() + 1;
+};

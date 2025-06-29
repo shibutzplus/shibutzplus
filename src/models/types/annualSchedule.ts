@@ -30,7 +30,7 @@ export type GetAnnualScheduleResponse = ActionResponse & {
     data?: AnnualScheduleType[];
 };
 
-export type ScheduleCell = {
+export type AnnualScheduleCell = {
     teacher: string;
     subject: string;
 };
@@ -38,7 +38,7 @@ export type ScheduleCell = {
 export type WeeklySchedule = {
     [className: string]: {
         [day: string]: {
-            [hour: string]: ScheduleCell;
+            [hour: string]: AnnualScheduleCell;
         };
     };
 };

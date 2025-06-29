@@ -45,3 +45,18 @@ export interface ScheduleColumn {
     type: ColumnType;
     title: string;
 }
+
+export type DailyScheduleCell = {
+    teacherId?: string;
+    subjectId?: string;
+    classId?: string;
+    event?: string;
+};
+
+export type DailySchedule = {
+    [day: string]: {
+        [header: string]: {
+            [hour: string]: DailyScheduleCell;
+        };
+    };
+};
