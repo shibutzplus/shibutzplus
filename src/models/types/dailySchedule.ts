@@ -6,14 +6,13 @@ import { ActionResponse } from "./actions";
 
 export type DailyScheduleType = {
     id: string;
-    date: Date;
+    date: string;
     hour: number; // period number
-    position: string; // YYYY-MM-DD + '-hour' + hour (e.g. "2025-11-04-hour2")
     eventTitle?: string;
     event?: string;
     school: SchoolType;
     class: ClassType;
-    subject?: SubjectType;
+    subject: SubjectType;
     absentTeacher?: TeacherType;
     presentTeacher?: TeacherType;
     subTeacher?: TeacherType;
@@ -36,4 +35,27 @@ export type DailyScheduleRequest = {
 
 export type GetDailyScheduleResponse = ActionResponse & {
     data?: DailyScheduleType[];
+};
+
+export type ColumnType = "existingTeacher" | "info" | "missingTeacher";
+
+export interface ScheduleColumn {
+    id: string;
+    type: ColumnType;
+    title: string;
+}
+
+export type DailyScheduleCell = {
+    teacherId?: string;
+    subjectId?: string;
+    classId?: string;
+    event?: string;
+};
+
+export type DailySchedule = {
+    [day: string]: {
+        [header: string]: {
+            [hour: string]: DailyScheduleCell;
+        };
+    };
 };

@@ -30,6 +30,21 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
 }
 
+// Next.js requires the matcher to be hardcoded here for static analysis
 export const config = {
-    matcher: configMatcher,
+    matcher: [
+        '/',
+        '/sign-in',
+        '/sign-up',
+        '/forget',
+        '/about',
+        '/dashboard',
+        '/classes',
+        '/teachers',
+        '/subjects',
+        '/annual-schedule',
+        '/daily-schedule',
+        '/connect',
+        '/profile',
+    ],
 };

@@ -26,12 +26,6 @@
           "primaryKey": false,
           "notNull": true
         },
-        "position": {
-          "name": "position",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
         "school_id": {
           "name": "school_id",
           "type": "text",
@@ -77,12 +71,6 @@
           "columns": [
             {
               "expression": "school_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "position",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -158,19 +146,13 @@
         },
         "date": {
           "name": "date",
-          "type": "date",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
         "hour": {
           "name": "hour",
           "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "position": {
-          "name": "position",
-          "type": "varchar(30)",
           "primaryKey": false,
           "notNull": true
         },
@@ -243,12 +225,6 @@
           "columns": [
             {
               "expression": "school_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "position",
               "isExpression": false,
               "asc": true,
               "nulls": "last"

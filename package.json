@@ -28,8 +28,6 @@
     "bcryptjs": "^3.0.2",
     "dotenv": "^16.5.0",
     "drizzle-orm": "^0.44.2",
-    "mongodb": "^6.17.0",
-    "mongoose": "^8.15.1",
     "next": "15.3.3",
     "next-auth": "^4.24.11",
     "nodemailer": "^6.10.1",

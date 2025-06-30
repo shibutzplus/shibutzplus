@@ -6,7 +6,7 @@ import styles from "./InputSelect.module.css";
 import { SelectOption } from "@/models/types";
 import { customStyles } from "@/style/selectStyle";
 
-interface InputSelectProps {
+type InputSelectProps = {
     label?: string;
     options: SelectOption[];
     error?: string;
@@ -18,6 +18,7 @@ interface InputSelectProps {
     allowAddNew?: boolean;
     isDisabled?: boolean;
     hasBorder?: boolean;
+    backgroundColor?: "white" | "transparent";
     isClearable?: boolean;
     onCreate?: (value: string) => Promise<string | undefined>;
 }
@@ -31,9 +32,10 @@ const InputSelect: React.FC<InputSelectProps> = ({
     onChange,
     placeholder = "בחר אופציה...",
     isSearchable = true,
-    allowAddNew = true,
+    allowAddNew = false,
     isDisabled = false,
     hasBorder = false,
+    backgroundColor = "white",
     isClearable = false,
     onCreate,
 }) => {
@@ -83,11 +85,11 @@ const InputSelect: React.FC<InputSelectProps> = ({
 
     useEffect(() => {
         // Ensure document is defined (client-side only)
-        if (typeof document !== 'undefined') {
+        if (typeof document !== "undefined") {
             // This effect runs only on client-side
         }
     }, []);
-    
+
     return (
         <div className={styles.selectContainer}>
             {label && (
@@ -106,14 +108,18 @@ const InputSelect: React.FC<InputSelectProps> = ({
                 isClearable={isClearable}
                 isDisabled={isDisabled}
                 placeholder={placeholder}
-                menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
+                menuPortalTarget={typeof document !== "undefined" ? document.body : null}
                 menuPlacement="auto"
-                noOptionsMessage={({ inputValue }) => (
-                    <div className={styles.addBtn} onClick={() => handleOnCreate(inputValue)}>
-                        הוסף את: "{inputValue}" לרשימה
-                    </div>
-                )}
-                styles={customStyles(error || "", hasBorder)}
+                noOptionsMessage={({ inputValue }) =>
+                    allowAddNew ? (
+                        <div className={styles.addBtn} onClick={() => handleOnCreate(inputValue)}>
+                            הוסף את: "{inputValue}" לרשימה
+                        </div>
+                    ) : (
+                        <div>לא נמצאו אפשרויות</div>
+                    )
+                }
+                styles={customStyles(error || "", hasBorder, true, backgroundColor)}
                 classNamePrefix="react-select"
             />
 
@@ -123,23 +129,3 @@ const InputSelect: React.FC<InputSelectProps> = ({
 };
 
 export default InputSelect;
-
-// noOptionsMessage={({ inputValue }) =>
-//     allowAddNew && inputValue
-//         ? `לחץ Enter בשביל להוסיף את "${inputValue}"`
-//         : "לא נמצאו אפשרויות"
-// }
-
-// const handleKeyDown = (event: any) => {
-//     if (allowAddNew && event.key === "Enter" && event.target.value) {
-//         const inputValue = event.target.value;
-//         // Check if the option already exists
-//         const exists = options.some(
-//             (option) => option.label.toLowerCase() === inputValue.toLowerCase(),
-//         );
-
-//         if (!exists) {
-//             handleOnCreate(inputValue);
-//         }
-//     }
-// };

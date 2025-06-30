@@ -12,6 +12,8 @@ export async function addDailyScheduleAction(
 ): Promise<ActionResponse & { data?: DailyScheduleType }> {
     try {
         const {
+            date,
+            hour,
             school,
             class: classData,
             subject,
@@ -21,8 +23,8 @@ export async function addDailyScheduleAction(
         } = scheduleData;
 
         const authError = await checkAuthAndParams({
-            date: scheduleData.date,
-            hour: scheduleData.hour,
+            date: date,
+            hour: hour,
             schoolId: school.id,
             classId: classData.id,
             subjectId: subject.id,
@@ -31,14 +33,9 @@ export async function addDailyScheduleAction(
             return authError as ActionResponse;
         }
 
-        // Create the daily schedule entry
-        // Format date as YYYY-MM-DD string for database compatibility
-        const position = `date${scheduleData.date.split("T")[0]}-hour${scheduleData.hour}`;
-
         const newRow: NewDailyScheduleSchema = {
-            date: scheduleData.date,
-            hour: scheduleData.hour,
-            position,
+            date: date,
+            hour: hour,
             schoolId: school.id,
             classId: classData.id,
             subjectId: subject.id,
@@ -63,9 +60,8 @@ export async function addDailyScheduleAction(
             message: messages.dailySchedule.createSuccess,
             data: {
                 id: newDailySchedule.id,
-                date: new Date(newDailySchedule.date),
+                date: newDailySchedule.date,
                 hour: newDailySchedule.hour,
-                position: newDailySchedule.position,
                 createdAt: newDailySchedule.createdAt,
                 updatedAt: newDailySchedule.updatedAt,
                 class: classData,

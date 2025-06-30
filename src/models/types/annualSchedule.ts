@@ -8,7 +8,6 @@ export type AnnualScheduleType = {
     id: string;
     day: number; // 1-7 representing days of the week
     hour: number; // period within the day
-    position: string; // concatenation day + '-hour' + hour (e.g. "day2-hour3")
     school: SchoolType;
     class: ClassType;
     teacher: TeacherType;
@@ -30,7 +29,7 @@ export type GetAnnualScheduleResponse = ActionResponse & {
     data?: AnnualScheduleType[];
 };
 
-export type ScheduleCell = {
+export type AnnualScheduleCell = {
     teacher: string;
     subject: string;
 };
@@ -38,7 +37,7 @@ export type ScheduleCell = {
 export type WeeklySchedule = {
     [className: string]: {
         [day: string]: {
-            [hour: string]: ScheduleCell;
+            [hour: string]: AnnualScheduleCell;
         };
     };
 };

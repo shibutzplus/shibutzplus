@@ -38,12 +38,12 @@ const TopNav: React.FC = () => {
     return (
         <>
             <header className={styles.contentHeader}>
-                <div className={styles.headerLeft}>
+                <div className={styles.headerRight}>
                     <HamburgerButton onClick={toggleMenu} isOpen={isMenuOpen} />
                     <h2 className={styles.routeTitle}>{pageTitle}</h2>
                     <TopNavSelect type={pageKey} />
                 </div>
-                <div>
+                <div className={styles.headerLeft }>
                     <Logo size="S" />
                 </div>
             </header>

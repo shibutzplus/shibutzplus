@@ -23,7 +23,7 @@
   box-shadow: var(--input-box-shadow);
   text-align: right;
   direction: rtl;
-  min-height: 100px;
+  min-height: 80px;
   resize: vertical;
   font-family: inherit;
 }

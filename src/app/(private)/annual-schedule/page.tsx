@@ -19,6 +19,7 @@ import {
     getSelectedElements,
     setNewScheduleTemplate,
 } from "@/services/ annualScheduleService";
+import { TableRows } from "@/models/constant/table";
 
 const AnnualSchedulePage: NextPage = () => {
     const {
@@ -228,7 +229,7 @@ const AnnualSchedulePage: NextPage = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {Array.from({ length: HOURS_IN_DAY }, (_, i) => i + 1).map((hour) => (
+                            {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => (
                                 <tr key={hour}>
                                     <td className={styles.hourCell}>{hour}</td>
                                     {DAYS_OF_WEEK.map((day) => (

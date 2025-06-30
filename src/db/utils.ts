@@ -250,7 +250,6 @@ export async function getAnnualSchedulesBySchool(schoolId: string) {
         id: schedule.id,
         day: schedule.day,
         hour: schedule.hour,
-        position: schedule.position,
         school: schedule.school,
         class: schedule.class,
         teacher: schedule.teacher,

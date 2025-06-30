@@ -1,0 +1,16 @@
+v- daily - table headr style
+v- daily - handle info column
+v- daily - table cell has select that can be text (teacher or information)
+v- daily - if not selected teacher -> show placeholder
+- daily - update the new columns in the DB
+
+- annual - error on adding new cell for deffrent class (except first in array)
+- annual - if teacher teachs in a class, do not show him in the list of other classes in the same hour
+
+- annual - responsive table
+- annual - style the table
+v - teachers - fix the role in the DB
+
+- auth - remember me
+- auth - register via google
+
