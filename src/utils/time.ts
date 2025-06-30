@@ -23,3 +23,11 @@ export const getDayNumber = () => {
     // Convert from 0-6 (Sunday-Saturday) to 1-7 (Sunday-Saturday)
     return date.getDay() + 1;
 };
+
+export const getDateString = (dayNumber: number) => {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const day = date.getDate();
+    return `${year}-${month + 1}-${day + dayNumber}`;
+};
