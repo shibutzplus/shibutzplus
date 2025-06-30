@@ -1,11 +1,10 @@
-import { pgTable, text, varchar, timestamp, integer, uniqueIndex, date } from 'drizzle-orm/pg-core';
+import { pgTable, text, varchar, timestamp, integer, uniqueIndex } from 'drizzle-orm/pg-core';
 import { createId } from '@paralleldrive/cuid2';
 
 export const dailySchedule = pgTable('daily_schedule', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
-  date: date('date').notNull(),
+  date: text('date').notNull(), // need to be in format YYYY-MM-DD
   hour: integer('hour').notNull(), // period number
-  position: varchar('position', { length: 30 }).notNull(), // YYYY-MM-DD + '-hour' + hour
   eventTitle: varchar('event_title', { length: 255 }),
   event: text('event'),
   schoolId: text('school_id').notNull(),
@@ -18,7 +17,7 @@ export const dailySchedule = pgTable('daily_schedule', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 }, (table) => {
   return {
-    positionIdx: uniqueIndex('daily_position_idx').on(table.schoolId, table.position),
+    dateHourIdx: uniqueIndex('daily_date_hour_idx').on(table.schoolId, table.date, table.hour, table.classId),
   };
 });
 

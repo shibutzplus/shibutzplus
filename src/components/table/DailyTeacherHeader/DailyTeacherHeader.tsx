@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styles from "./ExistingTeacherHeader.module.css";
+import styles from "./DailyTeacherHeader.module.css";
 import DynamicInputSelect from "../../ui/InputSelect/DynamicInputSelect";
 import { useMainContext } from "@/context/MainContext";
 import { useTable } from "@/context/TableContext";

@@ -25,13 +25,9 @@ export async function addAnnualScheduleAction(
             return authError as ActionResponse;
         }
 
-        // Generate the position string (e.g., "day2-hour3")
-        const position = `day${scheduleData.day}-hour${scheduleData.hour}`;
-
         const newRow: NewAnnualScheduleSchema = {
             day: scheduleData.day,
             hour: scheduleData.hour,
-            position,
             schoolId: school.id,
             classId: classData.id,
             teacherId: teacher.id,
@@ -56,7 +52,6 @@ export async function addAnnualScheduleAction(
                 id: newScheduleEntry.id,
                 day: newScheduleEntry.day,
                 hour: newScheduleEntry.hour,
-                position: newScheduleEntry.position,
                 createdAt: newScheduleEntry.createdAt,
                 updatedAt: newScheduleEntry.updatedAt,
                 class: classData,

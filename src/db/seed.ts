@@ -294,7 +294,6 @@ async function seedAnnualSchedule(db: any, schoolIds: string[], classIds: string
       subjectId: subjectIds[0],
       day: 1, // Sunday
       hour: 1,
-      position: '1-1', // day-hour format
     },
     {
       schoolId: schoolIds[0],
@@ -303,7 +302,6 @@ async function seedAnnualSchedule(db: any, schoolIds: string[], classIds: string
       subjectId: subjectIds[1],
       day: 1, // Sunday
       hour: 2,
-      position: '1-2', // day-hour format
     },
     {
       schoolId: schoolIds[1],
@@ -312,7 +310,6 @@ async function seedAnnualSchedule(db: any, schoolIds: string[], classIds: string
       subjectId: subjectIds[3],
       day: 2, // Monday
       hour: 3,
-      position: '2-3', // day-hour format
     },
   ];
   

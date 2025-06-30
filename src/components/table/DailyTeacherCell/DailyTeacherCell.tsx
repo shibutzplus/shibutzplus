@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./ExistingTeacherCell.module.css";
+import styles from "./DailyTeacherCell.module.css";
 import DynamicInputTextSelect from "../../ui/InputTextSelect/DynamicInputTextSelect";
 import { useMainContext } from "@/context/MainContext";
 import { useTable } from "@/context/TableContext";

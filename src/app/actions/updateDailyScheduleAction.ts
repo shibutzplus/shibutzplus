@@ -34,15 +34,11 @@ export async function updateDailyScheduleAction(
             return authError as ActionResponse;
         }
 
-        // Generate the position string (e.g., "date2025-06-28-hour3")
-        const position = `date${scheduleData.date.split("T")[0]}-hour${scheduleData.hour}`;
-
         const updatedEntry = await db
             .update(schema.dailySchedule)
             .set({
                 date: scheduleData.date,
                 hour: scheduleData.hour,
-                position,
                 schoolId: school.id,
                 classId: classData.id,
                 subjectId: subject.id,
@@ -66,9 +62,8 @@ export async function updateDailyScheduleAction(
             message: messages.annualSchedule.updateSuccess,
             data: {
                 id: updateSchedule.id,
-                date: new Date(updateSchedule.date),
+                date: updateSchedule.date,
                 hour: updateSchedule.hour,
-                position: updateSchedule.position,
                 createdAt: updateSchedule.createdAt,
                 updatedAt: updateSchedule.updatedAt,
                 class: classData,

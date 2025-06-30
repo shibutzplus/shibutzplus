@@ -5,7 +5,6 @@ export const annualSchedule = pgTable('annual_schedule', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
   day: integer('day').notNull(), // 1-7 representing days of the week
   hour: integer('hour').notNull(), // period within the day
-  position: varchar('position', { length: 20 }).notNull(), // concatenation day + '-hour' + hour
   schoolId: text('school_id').notNull(),
   classId: text('class_id').notNull(),
   teacherId: text('teacher_id').notNull(),
@@ -14,7 +13,7 @@ export const annualSchedule = pgTable('annual_schedule', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 }, (table) => {
   return {
-    positionIdx: uniqueIndex('annual_position_idx').on(table.schoolId, table.position),
+    positionIdx: uniqueIndex('annual_position_idx').on(table.schoolId, table.day, table.hour, table.classId),
   };
 });
 

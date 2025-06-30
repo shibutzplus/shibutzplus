@@ -29,15 +29,11 @@ export async function updateAnnualScheduleAction(
             return authError as ActionResponse;
         }
 
-        // Generate the position string (e.g., "day2-hour3")
-        const position = `day${scheduleData.day}-hour${scheduleData.hour}`;
-
         const updatedEntry = await db
             .update(schema.annualSchedule)
             .set({
                 day: scheduleData.day,
                 hour: scheduleData.hour,
-                position,
                 schoolId: school.id,
                 classId: classData.id,
                 teacherId: teacher.id,
@@ -61,7 +57,6 @@ export async function updateAnnualScheduleAction(
                 id: updateSchedule.id,
                 day: updateSchedule.day,
                 hour: updateSchedule.hour,
-                position: updateSchedule.position,
                 createdAt: updateSchedule.createdAt,
                 updatedAt: updateSchedule.updatedAt,
                 class: classData,

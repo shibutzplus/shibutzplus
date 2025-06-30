@@ -2,7 +2,6 @@ CREATE TABLE "annual_schedule" (
 	"id" text PRIMARY KEY NOT NULL,
 	"day" integer NOT NULL,
 	"hour" integer NOT NULL,
-	"position" varchar(20) NOT NULL,
 	"school_id" text NOT NULL,
 	"class_id" text NOT NULL,
 	"teacher_id" text NOT NULL,
@@ -21,9 +20,8 @@ CREATE TABLE "classes" (
 --> statement-breakpoint
 CREATE TABLE "daily_schedule" (
 	"id" text PRIMARY KEY NOT NULL,
-	"date" date NOT NULL,
+	"date" text NOT NULL,
 	"hour" integer NOT NULL,
-	"position" varchar(30) NOT NULL,
 	"event_title" varchar(255),
 	"event" text,
 	"school_id" text NOT NULL,
@@ -77,5 +75,5 @@ CREATE TABLE "users" (
 	CONSTRAINT "users_email_unique" UNIQUE("email")
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX "annual_position_idx" ON "annual_schedule" USING btree ("school_id","position");--> statement-breakpoint
-CREATE UNIQUE INDEX "daily_position_idx" ON "daily_schedule" USING btree ("school_id","position");
+CREATE UNIQUE INDEX "annual_position_idx" ON "annual_schedule" USING btree ("school_id","day","hour","class_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "daily_position_idx" ON "daily_schedule" USING btree ("school_id","date","hour","class_id");

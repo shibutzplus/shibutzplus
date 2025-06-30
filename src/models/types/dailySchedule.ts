@@ -6,9 +6,8 @@ import { ActionResponse } from "./actions";
 
 export type DailyScheduleType = {
     id: string;
-    date: Date;
+    date: string;
     hour: number; // period number
-    position: string; // YYYY-MM-DD + '-hour' + hour (e.g. "2025-11-04-hour2")
     eventTitle?: string;
     event?: string;
     school: SchoolType;
