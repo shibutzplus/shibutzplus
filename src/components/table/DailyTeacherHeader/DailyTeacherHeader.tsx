@@ -1,35 +1,38 @@
 import React, { useState } from "react";
-import styles from "./MissingTeacherHeader.module.css";
+import styles from "./ExistingTeacherHeader.module.css";
 import DynamicInputSelect from "../../ui/InputSelect/DynamicInputSelect";
 import { useMainContext } from "@/context/MainContext";
 import { useTable } from "@/context/TableContext";
 import { getTeacherScheduleByDayAction } from "@/app/actions/getTeacherScheduleByDayAction";
 import { TeacherType } from "@/models/types/teachers";
-import { getDayNumber } from "@/utils/time";
+import { useActions } from "@/context/ActionsContext";
 
-type MissingTeacherHeaderProps = {
-    id: string;
+type DailyTeacherHeaderProps = {
+    id?: string;
+    type: "existing" | "missing";
 };
 
-const MissingTeacherHeader: React.FC<MissingTeacherHeaderProps> = ({ id }) => {
+const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ id, type }) => {
     const { teachers, school } = useMainContext();
-    const { currentDay, clearTeacherSchedule, setTeacherSchedule, setSelectedTeacher } = useTable();
+    const { clearTeacherSchedule, setTeacherSchedule, setSelectedTeacher } = useTable();
+    const { selectedDayId } = useActions();
     const [selectedTeacherState, setSelectedTeacherState] = useState<TeacherType | undefined>();
     const [isLoading, setIsLoading] = useState(false);
 
     const fetchTeacherSchedule = async (teacherId: string) => {
-        if (!school?.id) return;
+        if (!school?.id || !id) return;
 
         setIsLoading(true);
         try {
             // First, clear any existing data for this column
-            clearTeacherSchedule(currentDay, id);
+            clearTeacherSchedule(selectedDayId, id);
             
-            const dayNumber = getDayNumber();
+            const dayNumber = 1/////
             const response = await getTeacherScheduleByDayAction(school.id, dayNumber, teacherId);
 
             if (response.success && response.data) {
                 // Transform the data for the context
+
                 const scheduleData = response.data.map((item) => ({
                     hour: item.hour,
                     classId: item.class.id,
@@ -37,7 +40,7 @@ const MissingTeacherHeader: React.FC<MissingTeacherHeaderProps> = ({ id }) => {
                 }));
 
                 // Update the context with the teacher's schedule
-                setTeacherSchedule(currentDay, id, scheduleData);
+                setTeacherSchedule(selectedDayId, id, scheduleData);
 
                 // Set the selected teacher in the context
                 setSelectedTeacher(teacherId);
@@ -55,9 +58,6 @@ const MissingTeacherHeader: React.FC<MissingTeacherHeaderProps> = ({ id }) => {
 
         if (value) {
             fetchTeacherSchedule(value);
-        } else {
-            // Clear the schedule if no teacher is selected
-            clearTeacherSchedule(currentDay, id);
         }
     };
 
@@ -73,11 +73,11 @@ const MissingTeacherHeader: React.FC<MissingTeacherHeaderProps> = ({ id }) => {
                 backgroundColor="transparent"
                 placeholder="מורה"
                 isSearchable
-                hasBorder
                 isDisabled={isLoading}
+                hasBorder
             />
         </div>
     );
 };
 
-export default MissingTeacherHeader;
+export default DailyTeacherHeader;

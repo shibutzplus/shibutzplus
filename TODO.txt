@@ -9,7 +9,7 @@ v- daily - if not selected teacher -> show placeholder
 
 - annual - responsive table
 - annual - style the table
-- teachers - fix the role in the DB
+v - teachers - fix the role in the DB
 
 - auth - remember me
 - auth - register via google

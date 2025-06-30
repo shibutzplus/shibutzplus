@@ -1,28 +1,31 @@
 import React from "react";
-import styles from "./MissingTeacherCell.module.css";
+import styles from "./ExistingTeacherCell.module.css";
+import DynamicInputTextSelect from "../../ui/InputTextSelect/DynamicInputTextSelect";
 import { useMainContext } from "@/context/MainContext";
 import { useTable } from "@/context/TableContext";
 import { CellContext } from "@tanstack/react-table";
 import { TeacherRow } from "@/models/types/table";
 import { createSelectOptions } from "@/utils/format";
-import DynamicInputTextSelect from "@/components/ui/InputTextSelect/DynamicInputTextSelect";
+import { useActions } from "@/context/ActionsContext";
 
-interface MissingTeacherCellProps {
-    cell: CellContext<TeacherRow, unknown>;
+type DailyTeacherCellProps = {
+    cell?: CellContext<TeacherRow, unknown>;
+    type: "existing" | "missing";
 }
 
-const MissingTeacherCell: React.FC<MissingTeacherCellProps> = ({ cell }) => {
+const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
     const { classes, subjects, teachers } = useMainContext();
-    const { currentDay, dailySchedule, selectedTeacherId } = useTable();
+    const { dailySchedule, selectedTeacherId } = useTable();
+    const { selectedDayId } = useActions();
 
     // Get the current hour from the row data
-    const hour = cell.row.original.hour;
+    const hour = cell?.row?.original?.hour;
 
     // Get the column ID which contains the header ID
-    const headerId = cell.column.id;
+    const headerId = cell?.column?.id;
 
     // Get the schedule data for this cell
-    const cellData = dailySchedule[currentDay]?.[headerId]?.[String(hour)];
+    const cellData = hour && headerId && dailySchedule[selectedDayId]?.[headerId]?.[String(hour)];
 
     // Find the class and subject based on their IDs
     const classData =
@@ -65,4 +68,4 @@ const MissingTeacherCell: React.FC<MissingTeacherCellProps> = ({ cell }) => {
     );
 };
 
-export default MissingTeacherCell;
+export default DailyTeacherCell;

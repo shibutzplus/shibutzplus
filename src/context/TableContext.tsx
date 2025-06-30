@@ -4,14 +4,11 @@ import React, { createContext, useState, useContext, ReactNode } from "react";
 import { TeacherRow, ActionColumnType } from "@/models/types/table";
 import { ColumnDef } from "@tanstack/react-table";
 import { TableRows } from "@/models/constant/table";
-import MissingTeacherHeader from "@/components/table/MissingTeacherHeader/MissingTeacherHeader";
-import MissingTeacherCell from "@/components/table/MissingTeacherCell/MissingTeacherCell";
-import ExistingTeacherHeader from "@/components/table/ExistingTeacherHeader/ExistingTeacherHeader";
-import ExistingTeacherCell from "@/components/table/ExistingTeacherCell/ExistingTeacherCell";
 import InfoCell from "@/components/table/InfoCell/InfoCell";
 import InfoHeader from "@/components/table/InfoHeader/InfoHeader";
 import { DailySchedule } from "@/models/types/dailySchedule";
-import { todayDateFormat } from "@/utils/time";
+import DailyTeacherCell from "@/components/table/DailyTeacherCell/DailyTeacherCell";
+import DailyTeacherHeader from "@/components/table/DailyTeacherHeader/DailyTeacherHeader";
 
 interface TableContextType {
     data: TeacherRow[];
@@ -19,10 +16,13 @@ interface TableContextType {
     nextId: number;
     dailySchedule: DailySchedule;
     selectedTeacherId?: string;
-    currentDay: string;
     addColumn: (colType: ActionColumnType) => void;
     removeColumn: () => void;
-    setTeacherSchedule: (day: string, headerId: string, schedule: { hour: number; classId: string; subjectId: string }[]) => void;
+    setTeacherSchedule: (
+        day: string,
+        headerId: string,
+        schedule: { hour: number; classId: string; subjectId: string }[],
+    ) => void;
     clearTeacherSchedule: (day: string, headerId: string) => void;
     setSelectedTeacher: (teacherId: string) => void;
 }
@@ -39,16 +39,16 @@ function buildColumn(colType: ActionColumnType, id: string): ColumnDef<TeacherRo
     if (colType === "missingTeacher") {
         return {
             id,
-            header: () => <MissingTeacherHeader id={id} />,
-            cell: (props) => <MissingTeacherCell cell={props} />,
+            header: () => <DailyTeacherHeader id={id} type="missing" />,
+            cell: (props) => <DailyTeacherCell cell={props} type="missing" />,
             meta: { bgColor: "#f9fcf1" },
         };
     }
     if (colType === "existingTeacher") {
         return {
             id,
-            header: () => <ExistingTeacherHeader id={id} />,
-            cell: (props) => <ExistingTeacherCell cell={props} />,
+            header: () => <DailyTeacherHeader id={id} type={"existing"} />,
+            cell: (props) => <DailyTeacherCell cell={props} type="existing" />,
             meta: { bgColor: "#f1f6fc" },
         };
     }
@@ -65,12 +65,13 @@ interface TableProviderProps {
 }
 
 export const TableProvider: React.FC<TableProviderProps> = ({ children }) => {
-    const [data] = useState<TeacherRow[]>(Array.from({ length: TableRows }, (_, i) => ({ hour: i + 1 })));
+    const [data] = useState<TeacherRow[]>(
+        Array.from({ length: TableRows }, (_, i) => ({ hour: i + 1 })),
+    );
     const [actionCols, setActionCols] = useState<ColumnDef<TeacherRow>[]>([]);
     const [nextId, setNextId] = useState<number>(1);
     const [dailySchedule, setDailySchedule] = useState<DailySchedule>({});
     const [selectedTeacherId, setSelectedTeacherId] = useState<string | undefined>(undefined);
-    const [currentDay] = useState<string>(todayDateFormat());
 
     const addColumn = (colType: ActionColumnType) => {
         const id = `${colType}-${nextId}`;
@@ -85,9 +86,13 @@ export const TableProvider: React.FC<TableProviderProps> = ({ children }) => {
 
     const setSelectedTeacher = (teacherId: string) => {
         setSelectedTeacherId(teacherId);
-    }
+    };
 
-    const setTeacherSchedule = (day: string, headerId: string, schedule: { hour: number; classId: string; subjectId: string }[]) => {
+    const setTeacherSchedule = (
+        day: string,
+        headerId: string,
+        schedule: { hour: number; classId: string; subjectId: string }[],
+    ) => {
         const updatedSchedule = { ...dailySchedule };
 
         // Initialize day if it doesn't exist
@@ -113,13 +118,13 @@ export const TableProvider: React.FC<TableProviderProps> = ({ children }) => {
 
     const clearTeacherSchedule = (day: string, headerId: string) => {
         const updatedSchedule = { ...dailySchedule };
-        
+
         // Check if the day and header exist before trying to clear
         if (updatedSchedule[day] && updatedSchedule[day][headerId]) {
             // Clear all schedule data for this header on this day
             updatedSchedule[day][headerId] = {};
         }
-        
+
         setDailySchedule(updatedSchedule);
     };
 
@@ -131,7 +136,6 @@ export const TableProvider: React.FC<TableProviderProps> = ({ children }) => {
                 nextId,
                 dailySchedule,
                 selectedTeacherId,
-                currentDay,
                 addColumn,
                 removeColumn,
                 setTeacherSchedule,
