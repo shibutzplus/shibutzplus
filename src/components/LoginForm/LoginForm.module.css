@@ -84,6 +84,59 @@
   color: var(--input-hover-color) !important;
 }
 
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 1.5rem 0;
+  text-align: center;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e1e5e9;
+}
+
+.divider span {
+  padding: 0 1rem;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.googleButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid #dadce0;
+  border-radius: 8px;
+  background-color: white;
+  color: #3c4043;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 1rem;
+}
+
+.googleButton:hover {
+  background-color: #f8f9fa;
+  border-color: #c8c9ca;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.googleButton:active {
+  background-color: #f1f3f4;
+}
+
+.googleIcon {
+  flex-shrink: 0;
+}
+
 /* Responsive Design */
 @media (max-width: 1200px) {
   .formContainer {

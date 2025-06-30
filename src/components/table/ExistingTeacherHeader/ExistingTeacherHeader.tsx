@@ -27,9 +27,10 @@ const ExistingTeacherHeader: React.FC<ExistingTeacherHeaderProps> = ({ id }) => 
             
             const dayNumber = getDayNumber();
             const response = await getTeacherScheduleByDayAction(school.id, dayNumber, teacherId);
-
+console.log("1", response)
             if (response.success && response.data) {
                 // Transform the data for the context
+                console.log("2")
                 const scheduleData = response.data.map((item) => ({
                     hour: item.hour,
                     classId: item.class.id,
@@ -67,9 +68,11 @@ const ExistingTeacherHeader: React.FC<ExistingTeacherHeaderProps> = ({ id }) => 
                 }))}
                 value={selectedTeacherState?.id || ""}
                 onChange={handleTeacherChange}
+                backgroundColor="transparent"
                 placeholder="מורה"
                 isSearchable
                 isDisabled={isLoading}
+                hasBorder
             />
         </div>
     );

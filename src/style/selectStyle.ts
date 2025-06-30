@@ -1,15 +1,23 @@
-export const customStyles = (error: any, hasBorder: boolean) => {
+export const customStyles = (
+    error: any,
+    hasBorder: boolean,
+    hasArrow: boolean = true,
+    backgroundColor: string = "white",
+    noOptionsMsgColor: string = "#aaa",
+) => {
     return {
         control: (provided: any, state: any) => ({
             ...provided,
             width: "100%",
             minHeight: "38px",
             borderWidth: hasBorder ? "1px" : "0px",
+            borderColor: "#e0e0e0",
             boxShadow: "none",
             fontSize: "16px",
-            backgroundColor: "white",
-            color: "#333",
+            backgroundColor: backgroundColor,
+            color: "#aaa",
             transition: "all 0.2s ease",
+            fontWeight: "normal",
             "&:hover": {
                 borderColor: error ? "#e53935" : "#ccc",
             },
@@ -25,7 +33,7 @@ export const customStyles = (error: any, hasBorder: boolean) => {
         }),
         menuPortal: (provided: any) => ({
             ...provided,
-            zIndex: 9999
+            zIndex: 9999,
         }),
         option: (provided: any, state: any) => ({
             ...provided,
@@ -43,7 +51,7 @@ export const customStyles = (error: any, hasBorder: boolean) => {
         }),
         placeholder: (provided: any) => ({
             ...provided,
-            color: "#999",
+            color: "#aaa",
             fontSize: "16px",
         }),
         singleValue: (provided: any) => ({
@@ -71,6 +79,7 @@ export const customStyles = (error: any, hasBorder: boolean) => {
             "&:hover": {
                 color: "#333",
             },
+            display: hasArrow ? "block" : "none",
         }),
         clearIndicator: (provided: any) => ({
             ...provided,
@@ -79,6 +88,11 @@ export const customStyles = (error: any, hasBorder: boolean) => {
             "&:hover": {
                 color: "#333",
             },
+        }),
+        noOptionsMessage: (provided: any) => ({
+            ...provided,
+            color: noOptionsMsgColor,
+            fontSize: "16px",
         }),
     };
 };

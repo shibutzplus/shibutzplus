@@ -44,15 +44,14 @@ export const getPublicRoutes = (): Route[] => {
  * @returns Array of path patterns for the middleware matcher
  */
 export const getConfigMatcher = (): string[] => {
-    // Get all protected paths and add "/:path*" to enable matching all subpaths
-    const protectedPathsWithWildcard = getProtectedPaths().map(path => `${path}/:path*`);
-    
+    const protectedPathsWithWildcard = getProtectedPaths();
+
     // Get login and register paths (typically need exact matches)
     const authPaths = [router.signIn.p, router.signUp.p];
-    
+
     // Add root path to the matcher
     const rootPath = router.home.p;
-    
+
     // Combine all arrays for the complete matcher configuration
     return [...protectedPathsWithWildcard, ...authPaths, rootPath];
 };

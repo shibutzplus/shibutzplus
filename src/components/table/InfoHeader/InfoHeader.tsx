@@ -7,7 +7,7 @@ type InfoHeaderProps = {};
 const InfoHeader: React.FC<InfoHeaderProps> = () => {
     return (
         <div className={styles.columnHeader}>
-            <InputText placeholder="מידע" />
+            <InputText placeholder="מידע" backgroundColor="transparent" />
         </div>
     );
 };

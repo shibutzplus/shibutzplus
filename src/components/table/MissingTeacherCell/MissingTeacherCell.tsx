@@ -4,15 +4,16 @@ import { useMainContext } from "@/context/MainContext";
 import { useTable } from "@/context/TableContext";
 import { CellContext } from "@tanstack/react-table";
 import { TeacherRow } from "@/models/types/table";
-import DynamicInputSelect from "@/components/ui/InputSelect/DynamicInputSelect";
+import { createSelectOptions } from "@/utils/format";
+import DynamicInputTextSelect from "@/components/ui/InputTextSelect/DynamicInputTextSelect";
 
 interface MissingTeacherCellProps {
     cell: CellContext<TeacherRow, unknown>;
 }
 
 const MissingTeacherCell: React.FC<MissingTeacherCellProps> = ({ cell }) => {
-    const { classes, subjects } = useMainContext();
-    const { currentDay, dailySchedule } = useTable();
+    const { classes, subjects, teachers } = useMainContext();
+    const { currentDay, dailySchedule, selectedTeacherId } = useTable();
 
     // Get the current hour from the row data
     const hour = cell.row.original.hour;
@@ -33,23 +34,33 @@ const MissingTeacherCell: React.FC<MissingTeacherCellProps> = ({ cell }) => {
             ? subjects?.find((s) => s.id === cellData.subjectId)
             : undefined;
 
-    return (
+    return selectedTeacherId ? (
         <div className={styles.cellContent}>
-            <div className={styles.classAndSubject}>
-                {cellData && classData && subjectData
-                    ? `${classData.name} | ${subjectData.name}`
-                    : ""}
-            </div>
-            <div className={styles.teacherSelect}>
-                <DynamicInputSelect
-                    options={[]}
-                    value=""
-                    onChange={() => {}}
-                    placeholder="בחר מורה"
-                    isSearchable
-                    hasBorder
-                />
-            </div>
+            {cellData && classData && subjectData ? (
+                <>
+                    <div className={styles.classAndSubject}>
+                        {cellData && classData && subjectData
+                            ? `${classData.name} | ${subjectData.name}`
+                            : ""}
+                    </div>
+                    <div className={styles.teacherSelect}>
+                        <DynamicInputTextSelect
+                            options={createSelectOptions(teachers)}
+                            value=""
+                            onChange={() => {}}
+                            placeholder="בחר מורה"
+                            isSearchable
+                            hasBorder
+                        />
+                    </div>
+                </>
+            ) : (
+                <div />
+            )}
+        </div>
+    ) : (
+        <div className={styles.cellContent}>
+            <div className={styles.cellPlaceholder}>בחר מורה</div>
         </div>
     );
 };

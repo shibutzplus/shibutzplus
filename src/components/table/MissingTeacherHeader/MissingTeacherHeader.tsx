@@ -70,8 +70,10 @@ const MissingTeacherHeader: React.FC<MissingTeacherHeaderProps> = ({ id }) => {
                 }))}
                 value={selectedTeacherState?.id || ""}
                 onChange={handleTeacherChange}
+                backgroundColor="transparent"
                 placeholder="מורה"
                 isSearchable
+                hasBorder
                 isDisabled={isLoading}
             />
         </div>

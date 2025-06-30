@@ -1,13 +1,10 @@
-"use client";
-
-import React, { useState, useEffect, useId } from "react";
-import Select from "react-select";
-import styles from "./InputSelect.module.css";
+import React, { useEffect, useId, useRef, useState } from "react";
+import styles from "./InputTextSelect.module.css";
 import { SelectOption } from "@/models/types";
+import Select, { SelectInstance } from "react-select";
 import { customStyles } from "@/style/selectStyle";
 
-type InputSelectProps = {
-    label?: string;
+type InputTextSelectProps = {
     options: SelectOption[];
     error?: string;
     id?: string;
@@ -15,16 +12,12 @@ type InputSelectProps = {
     onChange: (value: string) => void;
     placeholder?: string;
     isSearchable?: boolean;
-    allowAddNew?: boolean;
     isDisabled?: boolean;
     hasBorder?: boolean;
-    backgroundColor?: "white" | "transparent";
     isClearable?: boolean;
-    onCreate?: (value: string) => Promise<string | undefined>;
-}
+};
 
-const InputSelect: React.FC<InputSelectProps> = ({
-    label,
+const InputTextSelect: React.FC<InputTextSelectProps> = ({
     options: initialOptions,
     error,
     id,
@@ -32,15 +25,15 @@ const InputSelect: React.FC<InputSelectProps> = ({
     onChange,
     placeholder = "בחר אופציה...",
     isSearchable = true,
-    allowAddNew = false,
     isDisabled = false,
     hasBorder = false,
-    backgroundColor = "white",
     isClearable = false,
-    onCreate,
 }) => {
     const [options, setOptions] = useState<SelectOption[]>(initialOptions);
     const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
+
+    // Reference to the select component
+    const selectRef = useRef<SelectInstance<SelectOption> | null>(null);
 
     // Generate a unique instanceId for SSR consistency
     const selectInstanceId = useId();
@@ -58,26 +51,6 @@ const InputSelect: React.FC<InputSelectProps> = ({
         setOptions(initialOptions);
     }, [initialOptions]);
 
-    const handleOnCreate = async (inputValue: string) => {
-        // Check if the option already exists
-        const exists = options.some(
-            (option) => option.label.toLowerCase() === inputValue.toLowerCase(),
-        );
-
-        if (!exists && allowAddNew && onCreate) {
-            const valueId = await onCreate(inputValue);
-            if (valueId) {
-                const newOption: SelectOption = {
-                    value: valueId,
-                    label: inputValue,
-                };
-                const updatedOptions = [...options, newOption];
-                setOptions(updatedOptions);
-                setSelectedOption(newOption);
-            }
-        }
-    };
-
     const handleChange = (option: SelectOption | null) => {
         setSelectedOption(option);
         onChange(option ? option.value : "");
@@ -90,19 +63,32 @@ const InputSelect: React.FC<InputSelectProps> = ({
         }
     }, []);
 
-    return (
-        <div className={styles.selectContainer}>
-            {label && (
-                <label htmlFor={id} className={styles.label}>
-                    {label}
-                </label>
-            )}
+    const handleInputChange = (inputValue: string, { action }: any) => {
+        if (action === "input-change" && inputValue) {
+            setSelectedOption({
+                value: inputValue,
+                label: inputValue,
+            });
+        }
+    };
 
+    const handleKeyDown = (event: any) => {
+        if (event.key === "Enter" && event.target.value) {
+            if (selectRef.current) {
+                selectRef.current.blur();
+            }
+        }
+    };
+
+    return (
+        <div>
             <Select
+                ref={selectRef}
                 instanceId={selectInstanceId}
                 id={id}
                 value={selectedOption}
                 onChange={handleChange}
+                onInputChange={handleInputChange}
                 options={options}
                 isSearchable={isSearchable}
                 isClearable={isClearable}
@@ -110,16 +96,9 @@ const InputSelect: React.FC<InputSelectProps> = ({
                 placeholder={placeholder}
                 menuPortalTarget={typeof document !== "undefined" ? document.body : null}
                 menuPlacement="auto"
-                noOptionsMessage={({ inputValue }) =>
-                    allowAddNew ? (
-                        <div className={styles.addBtn} onClick={() => handleOnCreate(inputValue)}>
-                            הוסף את: "{inputValue}" לרשימה
-                        </div>
-                    ) : (
-                        <div>לא נמצאו אפשרויות</div>
-                    )
-                }
-                styles={customStyles(error || "", hasBorder, true, backgroundColor)}
+                onKeyDown={handleKeyDown}
+                noOptionsMessage={({ inputValue }) => inputValue}
+                styles={customStyles(error || "", hasBorder, false, "transparent", "#333")}
                 classNamePrefix="react-select"
             />
 
@@ -128,4 +107,4 @@ const InputSelect: React.FC<InputSelectProps> = ({
     );
 };
 
-export default InputSelect;
+export default InputTextSelect;

@@ -14,14 +14,12 @@
 
 .input {
   width: 100%;
-  padding: 12px 16px;
+  padding: 10px 16px;
   border: 1px solid var(--input-border);
   border-radius: 4px;
   font-size: 16px;
   transition: all 0.2s ease;
-  background-color: var(--background-inner);
   color: var(--foreground);
-  box-shadow: var(--input-box-shadow);
   text-align: right;
   direction: rtl;
 }

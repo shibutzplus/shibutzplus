@@ -41,7 +41,7 @@ function buildColumn(colType: ActionColumnType, id: string): ColumnDef<TeacherRo
             id,
             header: () => <MissingTeacherHeader id={id} />,
             cell: (props) => <MissingTeacherCell cell={props} />,
-            meta: { bgColor: "#f3e5f5" },
+            meta: { bgColor: "#f9fcf1" },
         };
     }
     if (colType === "existingTeacher") {
@@ -49,14 +49,14 @@ function buildColumn(colType: ActionColumnType, id: string): ColumnDef<TeacherRo
             id,
             header: () => <ExistingTeacherHeader id={id} />,
             cell: (props) => <ExistingTeacherCell cell={props} />,
-            meta: { bgColor: "#fff3e0" },
+            meta: { bgColor: "#f1f6fc" },
         };
     }
     return {
         id,
         header: () => <InfoHeader />,
         cell: () => <InfoCell />,
-        meta: { bgColor: "#e8f5e9" },
+        meta: { bgColor: "#f2fcf1" },
     };
 }
 
@@ -82,6 +82,10 @@ export const TableProvider: React.FC<TableProviderProps> = ({ children }) => {
     const removeColumn = () => {
         setActionCols(actionCols.slice(1));
     };
+
+    const setSelectedTeacher = (teacherId: string) => {
+        setSelectedTeacherId(teacherId);
+    }
 
     const setTeacherSchedule = (day: string, headerId: string, schedule: { hour: number; classId: string; subjectId: string }[]) => {
         const updatedSchedule = { ...dailySchedule };
@@ -132,7 +136,7 @@ export const TableProvider: React.FC<TableProviderProps> = ({ children }) => {
                 removeColumn,
                 setTeacherSchedule,
                 clearTeacherSchedule,
-                setSelectedTeacher: setSelectedTeacherId,
+                setSelectedTeacher,
             }}
         >
             {children}
