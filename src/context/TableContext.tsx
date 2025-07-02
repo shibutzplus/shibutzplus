@@ -10,7 +10,6 @@ import { ColumnType, DailySchedule, DailyScheduleRequest } from "@/models/types/
 import DailyTeacherCell from "@/components/table/DailyTeacherCell/DailyTeacherCell";
 import DailyTeacherHeader from "@/components/table/DailyTeacherHeader/DailyTeacherHeader";
 import { getTeacherScheduleByDayAction } from "@/app/actions/getTeacherScheduleByDayAction";
-import { TeacherType } from "@/models/types/teachers";
 import { addDailyCellAction } from "@/app/actions/addDailyCellAction";
 import { useMainContext } from "./MainContext";
 import { getDateString } from "@/utils/time";
@@ -80,15 +79,13 @@ interface TableProviderProps {
 export const TableProvider: React.FC<TableProviderProps> = ({ children }) => {
     const { school, classes, subjects, teachers } = useMainContext();
 
-    const [data] = useState<TeacherRow[]>(
+    const [data, setData] = useState<TeacherRow[]>(
         Array.from({ length: TableRows }, (_, i) => ({ hour: i + 1 })),
     );
     const [actionCols, setActionCols] = useState<ColumnDef<TeacherRow>[]>([]);
     const [nextId, setNextId] = useState<number>(1);
     const [dailySchedule, setDailySchedule] = useState<DailySchedule>({});
     const [selectedTeacherId, setSelectedTeacherId] = useState<string | undefined>(undefined);
-
-    const populateTable = () => {};
 
     const addColumn = (colType: ActionColumnType) => {
         const id = `${colType}-${nextId}`;
@@ -122,6 +119,20 @@ export const TableProvider: React.FC<TableProviderProps> = ({ children }) => {
 
                 // Update the context with the teacher's schedule
                 setTeacherColumn(selectedDayId, id, scheduleData);
+
+                // Update the row data with class and subject information
+                const updatedData = [...data];
+                response.data.forEach((item) => {
+                    const rowIndex = item.hour - 1;
+                    updatedData[rowIndex] = {
+                        ...updatedData[rowIndex],
+                        school: school,
+                        class: item.class,
+                        subject: item.subject,
+                    };
+                });
+
+                setData(updatedData);
                 setSelectedTeacherId(teacherId);
                 return true;
             }
@@ -214,7 +225,22 @@ export const TableProvider: React.FC<TableProviderProps> = ({ children }) => {
             cellData.absentTeacher = headerTeacherData;
         }
         const response = await addDailyCellAction(cellData);
-        return response.success ? true : false;
+
+        if (response.success) {
+            // Update the row data with class and subject information
+            const updatedData = [...data];
+            const rowIndex = hour - 1;
+            updatedData[rowIndex] = {
+                ...updatedData[rowIndex],
+                school: school,
+                class: classData,
+                subject: subjectData,
+            };
+            setData(updatedData);
+            return true;
+        }
+
+        return false;
     };
 
     return (

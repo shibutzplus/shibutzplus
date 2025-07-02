@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import styles from "./DailyTeacherCell.module.css";
 import { useMainContext } from "@/context/MainContext";
 import { useTableContext } from "@/context/TableContext";
@@ -12,44 +12,26 @@ import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 
 type DailyTeacherCellProps = {
-    cell?: CellContext<TeacherRow, unknown>;
+    cell: CellContext<TeacherRow, unknown>;
     type: Exclude<ColumnType, "info">;
 };
 
 const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
-    const { classes, subjects, teachers, school } = useMainContext();
-    const { dailySchedule, selectedTeacherId, addNewSubTeacherCell } = useTableContext();
+    const { teachers } = useMainContext();
+    const { selectedTeacherId, addNewSubTeacherCell } = useTableContext();
     const { selectedDayId } = useActions();
     const [isLoading, setIsLoading] = useState(false);
     const [selectedSubTeacher, setSelectedSubTeacher] = useState<string>("");
-
-    console.log("cell", cell);
+    console.log("cell", cell?.row?.original);
 
     // Get the current hour from the row data
     const hour = cell?.row?.original?.hour;
-
-    // Get the column ID which contains the header ID
-    const headerId = cell?.column?.id;
-
-    // Get the schedule data for this cell
-    const cellData = hour && headerId && dailySchedule[selectedDayId]?.[headerId]?.[String(hour)];
-
-    // Find the class and subject based on their IDs
-    const classData = useMemo(() => {
-        if (cellData && "classId" in cellData && cellData.classId && classes) {
-            return classes.find((c) => c.id === cellData.classId);
-        }
-        return undefined;
-    }, [cellData, classes]);
-
-    const subjectData = useMemo(() => {
-        if (cellData && "subjectId" in cellData && cellData.subjectId && subjects) {
-            return subjects.find((s) => s.id === cellData.subjectId);
-        }
-        return undefined;
-    }, [cellData, subjects]);
+    const classData = cell?.row?.original?.class;
+    const subjectData = cell?.row?.original?.subject;
 
     const handleTeacherChange = async (teacherId: string) => {
+        // Get the column ID which contains the header ID
+        const headerId = cell?.column?.id;
         if (!hour || !headerId || !selectedDayId) return;
         setIsLoading(true);
         setSelectedSubTeacher(teacherId);
@@ -79,7 +61,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
 
     return selectedTeacherId ? (
         <div className={styles.cellContent}>
-            {cellData && classData && subjectData ? (
+            {classData && subjectData ? (
                 <div className={styles.innerCellContent}>
                     <div className={styles.classAndSubject}>
                         {classData.name} | {subjectData.name}
