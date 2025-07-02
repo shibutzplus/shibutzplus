@@ -30,8 +30,9 @@ export async function getTeacherScheduleByDayAction(
 
         if (!schedules || schedules.length === 0) {
             return {
-                success: false,
-                message: messages.dailySchedule.retrieveError,
+                success: true,
+                message: messages.dailySchedule.retrieveSuccess,
+                data: [],
             };
         }
 

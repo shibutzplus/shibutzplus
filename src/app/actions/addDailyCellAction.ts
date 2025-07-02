@@ -7,8 +7,8 @@ import { db, schema } from "../../db";
 import { ActionResponse } from "@/models/types/actions";
 import { NewDailyScheduleSchema } from "@/db/schema";
 
-export async function addDailyScheduleAction(
-    scheduleData: DailyScheduleRequest,
+export async function addDailyCellAction(
+    scheduleCellData: DailyScheduleRequest,
 ): Promise<ActionResponse & { data?: DailyScheduleType }> {
     try {
         const {
@@ -20,7 +20,7 @@ export async function addDailyScheduleAction(
             absentTeacher,
             presentTeacher,
             subTeacher,
-        } = scheduleData;
+        } = scheduleCellData;
 
         const authError = await checkAuthAndParams({
             date: date,

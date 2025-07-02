@@ -1,6 +1,8 @@
+"use client";
+
 import React from "react";
 import styles from "./DailyTableTopBtns.module.css";
-import { useTable } from "@/context/TableContext";
+import { useTableContext } from "@/context/TableContext";
 import { tableActions } from "@/resources/tableActions";
 
 /**
@@ -8,7 +10,7 @@ import { tableActions } from "@/resources/tableActions";
  * Each button adds a new column to the schedule with specific input types and colors
  */
 const DailyTableTopBtns: React.FC = () => {
-    const { addColumn, removeColumn } = useTable();
+    const { addColumn, removeColumn } = useTableContext();
     return (
         <div className={styles.topButtonsContainer}>
             {tableActions.map((act, i) => (

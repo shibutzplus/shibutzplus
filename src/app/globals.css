@@ -35,6 +35,9 @@
   --error-color: #e53935;
   --error-shadow: #e5393533;
 
+  /* Cell colors */
+  --empty-cell-color: #f8f4f4;
+
   /* Box shadows */
   --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   --input-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);

@@ -2,6 +2,14 @@
     width: 100%;
     height: 100%;
     height: 80px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+.innerCellContent{
+    width: 100%;
     padding: 15px;
     display: flex;
     flex-direction: row;
@@ -17,4 +25,10 @@
 .teacherSelect {
     text-align: right;
     width: 100%;
+}
+
+.emptyCell{
+    width: 100%;
+    height: 100%;
+    background-color: var(--empty-cell-color);
 }

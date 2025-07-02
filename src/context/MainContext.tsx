@@ -15,7 +15,7 @@ import { updateSubjectAction } from "@/app/actions/updateSubjectAction";
 import { updateClassAction } from "@/app/actions/updateClassAction";
 import { updateAnnualScheduleAction } from "@/app/actions/updateAnnualScheduleAction";
 import { addAnnualScheduleAction } from "@/app/actions/addAnnualScheduleAction";
-import { addDailyScheduleAction } from "@/app/actions/addDailyScheduleAction";
+import { addDailyCellAction } from "@/app/actions/addDailyCellAction";
 import { updateDailyScheduleAction } from "@/app/actions/updateDailyScheduleAction";
 import useInitData from "@/hooks/useInitData";
 import { setStorageClasses, setStorageSubjects, setStorageTeachers } from "@/utils/localStorage";
@@ -44,12 +44,12 @@ interface MainContextType {
         id: string,
         updatedScheduleItem: AnnualScheduleRequest,
     ) => Promise<string | undefined>;
-    addNewDailyScheduleItem: (newScheduleItem: DailyScheduleRequest) => Promise<DailyScheduleType | undefined>;
-    updateExistingDailyScheduleItem: (
-        id: string,
-        updatedScheduleItem: DailyScheduleRequest,
-    ) => Promise<string | undefined>;
-    updateDailySchedule: (dailySchedule: DailyScheduleType[]) => void;
+    // addNewDailyScheduleItem: (newScheduleItem: DailyScheduleRequest) => Promise<DailyScheduleType | undefined>;
+    // updateExistingDailyScheduleItem: (
+    //     id: string,
+    //     updatedScheduleItem: DailyScheduleRequest,
+    // ) => Promise<string | undefined>;
+    // updateDailySchedule: (dailySchedule: DailyScheduleType[]) => void;
 }
 
 const MainContext = createContext<MainContextType | undefined>(undefined);
@@ -250,40 +250,40 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         return undefined;
     };
 
-    const addNewDailyScheduleItem = async (newScheduleItem: DailyScheduleRequest) => {
-        const response = await addDailyScheduleAction(newScheduleItem);
-        if (response.success && response.data) {
-            setDailyScheduleData((prev) => {
-                if (!response.data) return prev;
-                const updatedSchedule = prev ? [...prev, response.data] : [response.data];
-                return updatedSchedule;
-            });
-            return response.data;
-        }
-        return undefined;
-    };
+    // const addNewDailyScheduleItem = async (newScheduleItem: DailyScheduleRequest) => {
+    //     const response = await addDailyCellAction(newScheduleItem);
+    //     if (response.success && response.data) {
+    //         setDailyScheduleData((prev) => {
+    //             if (!response.data) return prev;
+    //             const updatedSchedule = prev ? [...prev, response.data] : [response.data];
+    //             return updatedSchedule;
+    //         });
+    //         return response.data;
+    //     }
+    //     return undefined;
+    // };
 
-    const updateExistingDailyScheduleItem = async (
-        id: string,
-        updatedScheduleItem: DailyScheduleRequest,
-    ) => {
-        const response = await updateDailyScheduleAction(id, updatedScheduleItem);
-        if (response.success && response.data) {
-            setDailyScheduleData((prev) => {
-                if (!prev || !response.data) return prev;
-                const updatedSchedule = prev?.map((item) =>
-                    item.id === response.data?.id ? response.data : item,
-                );
-                return updatedSchedule;
-            });
-            return response.data.id;
-        }
-        return undefined;
-    };
+    // const updateExistingDailyScheduleItem = async (
+    //     id: string,
+    //     updatedScheduleItem: DailyScheduleRequest,
+    // ) => {
+    //     const response = await updateDailyScheduleAction(id, updatedScheduleItem);
+    //     if (response.success && response.data) {
+    //         setDailyScheduleData((prev) => {
+    //             if (!prev || !response.data) return prev;
+    //             const updatedSchedule = prev?.map((item) =>
+    //                 item.id === response.data?.id ? response.data : item,
+    //             );
+    //             return updatedSchedule;
+    //         });
+    //         return response.data.id;
+    //     }
+    //     return undefined;
+    // };
 
-    const updateDailySchedule = (dailySchedule: DailyScheduleType[]) => {
-        setDailyScheduleData(dailySchedule);
-    };
+    // const updateDailySchedule = (dailySchedule: DailyScheduleType[]) => {
+    //     setDailyScheduleData(dailySchedule);
+    // };
 
     const value: MainContextType = {
         school,
@@ -303,9 +303,9 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         deleteSubject,
         addNewAnnualScheduleItem,
         updateExistingAnnualScheduleItem,
-        addNewDailyScheduleItem,
-        updateExistingDailyScheduleItem,
-        updateDailySchedule,
+        // addNewDailyScheduleItem,
+        // updateExistingDailyScheduleItem,
+        // updateDailySchedule,
     };
 
     return <MainContext.Provider value={value}>{children}</MainContext.Provider>;

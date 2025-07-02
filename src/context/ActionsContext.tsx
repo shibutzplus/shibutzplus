@@ -9,6 +9,7 @@ import { dayOptions } from "@/resources/dayOptions";
 
 interface ActionsContextType {
     selectedClassId: string;
+    getSelectedClass: () => ClassType | undefined;
     classesSelectOptions: () => SelectOption[];
     daysSelectOptions: () => SelectOption[];
     handleClassChange: (value: string) => void;
@@ -37,6 +38,10 @@ export const ActionsProvider: React.FC<{ children: ReactNode }> = ({ children })
         }
     }, [classes]);
 
+    const getSelectedClass = () => {
+        return classes?.find((c) => c.id === selectedClassId);
+    };
+
     const classesSelectOptions = () => {
         return createSelectOptions<ClassType>(classes);
     };
@@ -55,6 +60,7 @@ export const ActionsProvider: React.FC<{ children: ReactNode }> = ({ children })
 
     const value: ActionsContextType = {
         selectedClassId,
+        getSelectedClass,
         classesSelectOptions,
         daysSelectOptions,
         handleClassChange,

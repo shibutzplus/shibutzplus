@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import styles from "./annualSchedule.module.css";
 import { NextPage } from "next";
 import { useMainContext } from "@/context/MainContext";
@@ -9,21 +9,23 @@ import { createSelectOptions } from "@/utils/format";
 import { TeacherRequest, TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import { SubjectRequest, SubjectType } from "@/models/types/subjects";
 import { WeeklySchedule, AnnualScheduleRequest } from "@/models/types/annualSchedule";
-import { DAYS_OF_WEEK, HOURS_IN_DAY } from "@/utils/time";
+import { DAYS_OF_WEEK } from "@/utils/time";
 import messages from "@/resources/messages";
 import { useActions } from "@/context/ActionsContext";
 import { errorToast, successToast } from "@/lib/toast";
 import {
     getRowId,
-    getSelectedClass,
     getSelectedElements,
     setNewScheduleTemplate,
 } from "@/services/ annualScheduleService";
 import { TableRows } from "@/models/constant/table";
+import { populateAnnualSchedule } from "@/utils/schedule";
+import { initializeEmptyAnnualSchedule } from "@/utils/Initialize";
+import { filterExistingTeachers } from "@/utils/teachers";
 
 const AnnualSchedulePage: NextPage = () => {
     const {
-        classes, // move to useActions
+        classes,
         teachers,
         subjects,
         annualScheduleTable,
@@ -34,53 +36,37 @@ const AnnualSchedulePage: NextPage = () => {
         updateExistingAnnualScheduleItem,
     } = useMainContext();
 
-    const { selectedClassId } = useActions();
+    const { selectedClassId, getSelectedClass } = useActions();
 
     const [schedule, setSchedule] = useState<WeeklySchedule>({});
 
-    const [isLoading, setIsLoading] = useState(false); // TODO: add loading in the cell
+    const [isLoading, setIsLoading] = useState(false);
+    const [filteredTeachersMap, setFilteredTeachersMap] = useState<
+        Record<string, Record<number, TeacherType[]>>
+    >({});
+
+    // TODO: add loading in the cell
 
     // Initialize schedule for the selected class
     // If annualScheduleTable has data, populate the schedule with it
     useEffect(() => {
         if (!schedule[selectedClassId]) {
-            const newSchedule = { ...schedule };
-            newSchedule[selectedClassId] = {};
-
-            // Initialize empty schedule structure
-            DAYS_OF_WEEK.forEach((day) => {
-                newSchedule[selectedClassId][day] = {};
-
-                for (let hour = 1; hour <= HOURS_IN_DAY; hour++) {
-                    newSchedule[selectedClassId][day][hour] = {
-                        teacher: "",
-                        subject: "",
-                    };
-                }
-            });
-
-            // If annualScheduleTable has data for this class, populate the schedule
-            if (annualScheduleTable && annualScheduleTable.length > 0) {
-                const classEntries = annualScheduleTable.filter(
-                    (entry) => entry.class.id === selectedClassId,
-                );
-
-                classEntries.forEach((entry) => {
-                    // Convert day number (1-7) to day name from DAYS_OF_WEEK array (0-based index)
-                    const dayName = DAYS_OF_WEEK[entry.day - 1];
-
-                    if (dayName && newSchedule[selectedClassId][dayName]) {
-                        newSchedule[selectedClassId][dayName][entry.hour] = {
-                            teacher: entry.teacher.id,
-                            subject: entry.subject.id,
-                        };
-                    }
-                });
-            }
-
+            let newSchedule = { ...schedule };
+            newSchedule = initializeEmptyAnnualSchedule(newSchedule, selectedClassId);
+            newSchedule = populateAnnualSchedule(annualScheduleTable, selectedClassId, newSchedule);
             setSchedule(newSchedule);
         }
     }, [selectedClassId, schedule, annualScheduleTable]);
+
+    // Filter out from the list teachers that already teach on other classes
+    const memoizedFilteredTeachers = useMemo(() => {
+        if (!teachers || !classes || !schedule) return {};
+        return filterExistingTeachers(classes, schedule, selectedClassId, teachers);
+    }, [teachers, classes, schedule, selectedClassId]);
+
+    useEffect(() => {
+        setFilteredTeachersMap(memoizedFilteredTeachers);
+    }, [memoizedFilteredTeachers]);
 
     const addNewRow = async (
         type: "teacher" | "subject",
@@ -104,7 +90,7 @@ const AnnualSchedulePage: NextPage = () => {
             const subjectId = schedule[selectedClassId][day][hour].subject;
             setSchedule(newSchedule);
 
-            const selectedClassObj = getSelectedClass(classes, selectedClassId);
+            const selectedClassObj = getSelectedClass();
             const { selectedTeacher, selectedSubject } = getSelectedElements(
                 teacherId,
                 subjectId,
@@ -256,7 +242,7 @@ const AnnualSchedulePage: NextPage = () => {
                                                 <DynamicInputSelect
                                                     placeholder="מורה"
                                                     options={createSelectOptions<TeacherType>(
-                                                        teachers,
+                                                        filteredTeachersMap[day]?.[hour] || [],
                                                     )}
                                                     value={
                                                         schedule[selectedClassId]?.[day]?.[hour]
