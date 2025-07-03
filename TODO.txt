@@ -12,6 +12,7 @@ v- daily - on select header teacher, all the not relevent hours are gray
 - daily - the cell select is from type SelectText not Select
 - daily - add info to DB
 - daily - open the date select on ..?
+- daily - get from DB 7 day when current day is the middle of the week (even if getting next week) - need to check with mom
 
 v- annual - error on adding new cell for deffrent class (except first in array)
 v- annual - if teacher teachs in a class, do not show him in the list of other classes in the same hour

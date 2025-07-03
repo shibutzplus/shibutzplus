@@ -22,6 +22,7 @@ export const setTeacherColumn = (
             class: row.class,
             subject: row.subject,
             hour: row.hour,
+            subTeacher: row.subTeacher,
         };
     });
 

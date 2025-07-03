@@ -1,3 +1,5 @@
+import { DailyScheduleType } from "@/models/types/dailySchedule";
+
 // Days of the week in Hebrew
 export const DAYS_OF_WEEK = ["א", "ב", "ג", "ד", "ה", "ו"];
 
@@ -35,6 +37,27 @@ export const stringDate = (date: string) => {
 export const getColumnDate = (dayNumber: number): Date => {
     return new Date();
     // TODO - need to handle the day number per current date
+};
+
+export const getCurrentWeekEntries = (data?: DailyScheduleType[]) => {
+    // Filter entries to only include the current week
+    const today = new Date();
+    const currentDay = today.getDay(); // 0 = Sunday, 6 = Saturday
+
+    // Calculate the start and end of the current week (Sunday to Saturday)
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - currentDay); // Go back to Sunday
+
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6); // Go forward to Saturday
+
+    // Filter entries to only include the current week
+    const currentWeekEntries = data?.filter((entry) => {
+        const entryDate = new Date(entry.date);
+        return entryDate >= startOfWeek && entryDate <= endOfWeek;
+    });
+
+    return currentWeekEntries;
 };
 
 // const date = new Date();

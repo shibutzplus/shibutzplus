@@ -8,6 +8,7 @@ export const dailySchedule = pgTable('daily_schedule', {
   hour: integer('hour').notNull(), // period number
   eventTitle: varchar('event_title', { length: 255 }),
   event: text('event'),
+  columnId: text('column_id'),
   schoolId: text('school_id').notNull(),
   classId: text('class_id').notNull(),
   subjectId: text('subject_id'),

@@ -5,7 +5,7 @@ import messages from "@/resources/messages";
 import { db, schema } from "@/db";
 import { and, asc, eq } from "drizzle-orm";
 import { GetTeacherScheduleResponse, TeacherHourlyScheduleItem } from "@/models/types/dailySchedule";
-
+//TODO: need to search the data by current date week and by day
 export async function getTeacherScheduleByDayAction(
     schoolId: string,
     day: number,

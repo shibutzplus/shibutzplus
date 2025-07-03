@@ -9,6 +9,7 @@ export type DailyScheduleType = {
     date: Date;
     day: string; // 1-7
     hour: number; // 1-7
+    columnId: string;
     eventTitle?: string;
     event?: string;
     school: SchoolType;
@@ -25,6 +26,7 @@ export type DailyScheduleRequest = {
     date: Date;
     day: string; // 1-7
     hour: number;
+    columnId: string;
     eventTitle?: string;
     event?: string;
     school: SchoolType;

@@ -18,27 +18,29 @@ type DailyTeacherCellProps = {
 
 const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
     const { teachers } = useMainContext();
-    const { dailySchedule, selectedTeacherId, addNewSubTeacherCell } = useTableContext();
+    const { dailySchedule, addNewSubTeacherCell } = useTableContext();
     const { selectedDayId } = useActions();
     const [isLoading, setIsLoading] = useState(false);
-    const [selectedSubTeacher, setSelectedSubTeacher] = useState<string>("");
 
-    // Get the current hour from the row data
-    const hour = dailySchedule[selectedDayId]?.[cell?.column?.id]?.[String(cell?.row?.original?.hour)]?.hour;
+    // Get the current hour, class and subject from the row data
+    const hour = cell?.row?.original?.hour;
     const classData = dailySchedule[selectedDayId]?.[cell?.column?.id]?.[String(hour)]?.class;
     const subjectData = dailySchedule[selectedDayId]?.[cell?.column?.id]?.[String(hour)]?.subject;
+    const subTeacherData = dailySchedule[selectedDayId]?.[cell?.column?.id]?.[String(hour)]?.subTeacher;
+
+    const [selectedSubTeacher, setSelectedSubTeacher] = useState<string>(subTeacherData?.id || "");
 
     const handleTeacherChange = async (teacherId: string) => {
         // Get the column ID which contains the header ID
-        const headerId = cell?.column?.id;
-        if (!hour || !headerId || !selectedDayId) return;
+        const columnId = cell?.column?.id;
+        if (!hour || !columnId || !selectedDayId) return;
         setIsLoading(true);
         setSelectedSubTeacher(teacherId);
 
         try {
             const response = await addNewSubTeacherCell(
                 hour,
-                headerId,
+                columnId,
                 selectedDayId,
                 teacherId,
                 type,
@@ -58,7 +60,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
         }
     };
 
-    return selectedTeacherId ? (
+    return (
         <div className={styles.cellContent}>
             {classData && subjectData ? (
                 <div className={styles.innerCellContent}>
@@ -80,10 +82,6 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
             ) : (
                 <div className={styles.emptyCell} />
             )}
-        </div>
-    ) : (
-        <div className={styles.cellContent}>
-            <div className={styles.cellPlaceholder}>בחר מורה</div>
         </div>
     );
 };

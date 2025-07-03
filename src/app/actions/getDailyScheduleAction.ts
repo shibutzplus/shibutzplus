@@ -3,8 +3,9 @@
 import { DailyScheduleType, GetDailyScheduleResponse } from "@/models/types/dailySchedule";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
-import { eq } from "drizzle-orm";
+import { and, between, eq, inArray } from "drizzle-orm";
 import { db, schema } from "../../db";
+import { dateString } from "@/utils/time";
 
 export async function getDailyScheduleAction(schoolId: string): Promise<GetDailyScheduleResponse> {
     try {
@@ -13,8 +14,31 @@ export async function getDailyScheduleAction(schoolId: string): Promise<GetDaily
             return authError as GetDailyScheduleResponse;
         }
 
+        // Calculate the start and end of the current week (Sunday to Friday)
+        const today = new Date();
+        const currentDay = today.getDay(); // 0 = Sunday, 6 = Saturday
+        
+        // Calculate the start of the week (Sunday)
+        const startOfWeek = new Date(today);
+        startOfWeek.setDate(today.getDate() - currentDay); // Go back to Sunday
+        
+        // Calculate the end of the week (Friday)
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 5); // Go forward to Friday (5 days from Sunday)
+        
+        // Format dates for database query
+        const startDateStr = dateString(startOfWeek);
+        const endDateStr = dateString(endOfWeek);
+        
+        // Get days 1-6 (Sunday to Friday)
+        const weekDays = ['1', '2', '3', '4', '5', '6'];
+        
         const schedules = await db.query.dailySchedule.findMany({
-            where: eq(schema.dailySchedule.schoolId, schoolId),
+            where: and(
+                eq(schema.dailySchedule.schoolId, schoolId),
+                between(schema.dailySchedule.date, startDateStr, endDateStr),
+                inArray(schema.dailySchedule.day, weekDays)
+            ),
             with: {
                 class: true,
                 subject: true,
@@ -31,6 +55,7 @@ export async function getDailyScheduleAction(schoolId: string): Promise<GetDaily
                     date: schedule.date,
                     day: schedule.day,
                     hour: schedule.hour,
+                    columnId: schedule.columnId,
                     eventTitle: schedule.eventTitle,
                     event: schedule.event,
                     school: schedule.school,

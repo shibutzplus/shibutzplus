@@ -10,11 +10,11 @@ import { errorToast, successToast } from "@/lib/toast";
 import { createSelectOptions } from "@/utils/format";
 
 type DailyTeacherHeaderProps = {
-    id?: string;
+    columnId?: string;
     type: Exclude<ColumnType, "info">;
 };
 
-const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ id, type }) => {
+const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId, type }) => {
     const { teachers, school } = useMainContext();
     const { populateTeacherColumn } = useTableContext();
     const { selectedDayId } = useActions();
@@ -22,7 +22,7 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ id, type }) => 
     const [isLoading, setIsLoading] = useState(false);
 
     const handleTeacherChange = async (value: string) => {
-        if (!school?.id || !id) return;
+        if (!school?.id || !columnId) return;
         const teacherId = value;
         if (teacherId) {
             setIsLoading(true);
@@ -30,7 +30,7 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ id, type }) => 
             const dayNumber = 1; /////TODO
             const response = await populateTeacherColumn(
                 selectedDayId,
-                id,
+                columnId,
                 school.id,
                 dayNumber,
                 teacherId,
