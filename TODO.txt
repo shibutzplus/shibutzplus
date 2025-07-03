@@ -2,13 +2,13 @@ v- daily - table headr style
 v- daily - handle info column
 v- daily - table cell has select that can be text (teacher or information)
 v- daily - if not selected teacher -> show placeholder
-- daily - update the new columns in the DB
-
+v- daily - update the new columns in the DB
+v- daily - on select header teacher, all the not relevent hours are gray
+-daily - update cell
 - daily - populate the table on reload with the current day
 - daily - allow to add for all days
 - daily - DB take the day and convert it to date
 - daily - delete column if click remove
-- daily - on select header teacher, all the not relevent hours are gray
 - daily - the cell select is from type SelectText not Select
 - daily - add info to DB
 - daily - open the date select on ..?
@@ -36,3 +36,7 @@ v - teachers - fix the role in the DB
 - annual - filter teachers in the select not working on first render
 
 - helper/guide box for the user to understand the system
+- hamburger open by default and responsive to the screen
+- side nav split into sections with title
+
+- text per gender (he / she) 

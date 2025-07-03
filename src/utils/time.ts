@@ -24,10 +24,21 @@ export const getDayNumber = () => {
     return date.getDay() + 1;
 };
 
-export const getDateString = (dayNumber: number) => {
-    const date = new Date();
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const day = date.getDate();
-    return `${day}-${month + 1}-${year}|${dayNumber}`;
+export const dateString = (date: Date) => {
+    return date.toISOString().split("T")[0];
 };
+
+export const stringDate = (date: string) => {
+    return new Date(date);
+};
+
+export const getColumnDate = (dayNumber: number): Date => {
+    return new Date();
+    // TODO - need to handle the day number per current date
+};
+
+// const date = new Date();
+//     const year = date.getFullYear();
+//     const month = date.getMonth();
+//     const day = date.getDate();
+//     return `${day}-${month + 1}-${year}|${dayNumber}`;

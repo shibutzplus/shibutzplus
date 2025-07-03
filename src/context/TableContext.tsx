@@ -12,9 +12,7 @@ import DailyTeacherHeader from "@/components/table/DailyTeacherHeader/DailyTeach
 import { getTeacherScheduleByDayAction } from "@/app/actions/getTeacherScheduleByDayAction";
 import { addDailyCellAction } from "@/app/actions/addDailyCellAction";
 import { useMainContext } from "./MainContext";
-import { getDateString } from "@/utils/time";
-import { ClassType } from "@/models/types/classes";
-import { SubjectType } from "@/models/types/subjects";
+import { getColumnDate } from "@/utils/time";
 import { setTeacherColumn } from "@/services/dailyScheduleService";
 
 interface TableContextType {
@@ -177,7 +175,8 @@ export const TableProvider: React.FC<TableProviderProps> = ({ children }) => {
         }
 
         const cellData: DailyScheduleRequest = {
-            date: getDateString(Number(selectedDayId)),
+            date: getColumnDate(Number(selectedDayId)),
+            day: selectedDayId,
             hour: hour,
             school: school,
             class: classData,

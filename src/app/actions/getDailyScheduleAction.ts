@@ -29,6 +29,7 @@ export async function getDailyScheduleAction(schoolId: string): Promise<GetDaily
                 ({
                     id: schedule.id,
                     date: schedule.date,
+                    day: schedule.day,
                     hour: schedule.hour,
                     eventTitle: schedule.eventTitle,
                     event: schedule.event,

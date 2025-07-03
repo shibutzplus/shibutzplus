@@ -6,6 +6,7 @@ import messages from "@/resources/messages";
 import { db, schema } from "../../db";
 import { ActionResponse } from "@/models/types/actions";
 import { NewDailyScheduleSchema } from "@/db/schema";
+import { dateString } from "@/utils/time";
 
 export async function addDailyCellAction(
     scheduleCellData: DailyScheduleRequest,
@@ -13,6 +14,7 @@ export async function addDailyCellAction(
     try {
         const {
             date,
+            day,
             hour,
             school,
             class: classData,
@@ -34,7 +36,8 @@ export async function addDailyCellAction(
         }
 
         const newRow: NewDailyScheduleSchema = {
-            date: date,
+            date: dateString(date),
+            day: day,
             hour: hour,
             schoolId: school.id,
             classId: classData.id,
@@ -60,7 +63,8 @@ export async function addDailyCellAction(
             message: messages.dailySchedule.createSuccess,
             data: {
                 id: newDailySchedule.id,
-                date: newDailySchedule.date,
+                date: new Date(newDailySchedule.date),
+                day: newDailySchedule.day,
                 hour: newDailySchedule.hour,
                 createdAt: newDailySchedule.createdAt,
                 updatedAt: newDailySchedule.updatedAt,

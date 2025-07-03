@@ -7,6 +7,7 @@ import { eq } from "drizzle-orm";
 import { db, schema } from "../../db";
 import { ActionResponse } from "@/models/types/actions";
 import { NewDailyScheduleSchema } from "@/db/schema";
+import { dateString, stringDate } from "@/utils/time";
 
 export async function updateDailyScheduleAction(
     id: string,
@@ -25,6 +26,7 @@ export async function updateDailyScheduleAction(
         const authError = await checkAuthAndParams({
             id,
             date: scheduleData.date,
+            day: scheduleData.day,
             hour: scheduleData.hour,
             schoolId: school.id,
             classId: classData.id,
@@ -37,7 +39,8 @@ export async function updateDailyScheduleAction(
         const updatedEntry = await db
             .update(schema.dailySchedule)
             .set({
-                date: scheduleData.date,
+                date: dateString(scheduleData.date),
+                day: scheduleData.day,
                 hour: scheduleData.hour,
                 schoolId: school.id,
                 classId: classData.id,
@@ -62,7 +65,8 @@ export async function updateDailyScheduleAction(
             message: messages.annualSchedule.updateSuccess,
             data: {
                 id: updateSchedule.id,
-                date: updateSchedule.date,
+                date: stringDate(updateSchedule.date),
+                day: updateSchedule.day,
                 hour: updateSchedule.hour,
                 createdAt: updateSchedule.createdAt,
                 updatedAt: updateSchedule.updatedAt,
