@@ -1,10 +1,10 @@
 "use server";
 
 import { checkAuthAndParams } from "@/utils/authUtils";
-import { GetTeacherScheduleResponse, TeacherHourlyScheduleItem } from "@/models/types/teachers";
 import messages from "@/resources/messages";
 import { db, schema } from "@/db";
 import { and, asc, eq } from "drizzle-orm";
+import { GetTeacherScheduleResponse, TeacherHourlyScheduleItem } from "@/models/types/dailySchedule";
 
 export async function getTeacherScheduleByDayAction(
     schoolId: string,

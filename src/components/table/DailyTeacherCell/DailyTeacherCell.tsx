@@ -18,16 +18,15 @@ type DailyTeacherCellProps = {
 
 const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
     const { teachers } = useMainContext();
-    const { selectedTeacherId, addNewSubTeacherCell } = useTableContext();
+    const { dailySchedule, selectedTeacherId, addNewSubTeacherCell } = useTableContext();
     const { selectedDayId } = useActions();
     const [isLoading, setIsLoading] = useState(false);
     const [selectedSubTeacher, setSelectedSubTeacher] = useState<string>("");
-    console.log("cell", cell?.row?.original);
 
     // Get the current hour from the row data
-    const hour = cell?.row?.original?.hour;
-    const classData = cell?.row?.original?.class;
-    const subjectData = cell?.row?.original?.subject;
+    const hour = dailySchedule[selectedDayId]?.[cell?.column?.id]?.[String(cell?.row?.original?.hour)]?.hour;
+    const classData = dailySchedule[selectedDayId]?.[cell?.column?.id]?.[String(hour)]?.class;
+    const subjectData = dailySchedule[selectedDayId]?.[cell?.column?.id]?.[String(hour)]?.subject;
 
     const handleTeacherChange = async (teacherId: string) => {
         // Get the column ID which contains the header ID

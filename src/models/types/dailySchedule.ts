@@ -46,10 +46,12 @@ export interface ScheduleColumn {
 }
 
 export type DailyScheduleCell = {
-    teacherId?: string;
-    subjectId?: string;
-    classId?: string;
+    headerTeacher?: TeacherType;
+    subTeacher?: TeacherType;
+    subject?: SubjectType;
+    class?: ClassType;
     event?: string;
+    hour: number;
 };
 
 export type DailySchedule = {
@@ -58,4 +60,14 @@ export type DailySchedule = {
             [hour: string]: DailyScheduleCell;
         };
     };
+};
+
+export type TeacherHourlyScheduleItem = {
+    hour: number;
+    class: ClassType;
+    subject: SubjectType;
+};
+
+export type GetTeacherScheduleResponse = ActionResponse & {
+    data?: TeacherHourlyScheduleItem[];
 };

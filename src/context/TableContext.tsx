@@ -6,13 +6,16 @@ import { ColumnDef } from "@tanstack/react-table";
 import { TableRows } from "@/models/constant/table";
 import InfoCell from "@/components/table/InfoCell/InfoCell";
 import InfoHeader from "@/components/table/InfoHeader/InfoHeader";
-import { ColumnType, DailySchedule, DailyScheduleRequest } from "@/models/types/dailySchedule";
+import { ColumnType, DailySchedule, DailyScheduleCell, DailyScheduleRequest } from "@/models/types/dailySchedule";
 import DailyTeacherCell from "@/components/table/DailyTeacherCell/DailyTeacherCell";
 import DailyTeacherHeader from "@/components/table/DailyTeacherHeader/DailyTeacherHeader";
 import { getTeacherScheduleByDayAction } from "@/app/actions/getTeacherScheduleByDayAction";
 import { addDailyCellAction } from "@/app/actions/addDailyCellAction";
 import { useMainContext } from "./MainContext";
 import { getDateString } from "@/utils/time";
+import { ClassType } from "@/models/types/classes";
+import { SubjectType } from "@/models/types/subjects";
+import { setTeacherColumn } from "@/services/dailyScheduleService";
 
 interface TableContextType {
     data: TeacherRow[];
@@ -77,9 +80,9 @@ interface TableProviderProps {
 }
 
 export const TableProvider: React.FC<TableProviderProps> = ({ children }) => {
-    const { school, classes, subjects, teachers } = useMainContext();
+    const { school, teachers } = useMainContext();
 
-    const [data, setData] = useState<TeacherRow[]>(
+    const [data] = useState<TeacherRow[]>(
         Array.from({ length: TableRows }, (_, i) => ({ hour: i + 1 })),
     );
     const [actionCols, setActionCols] = useState<ColumnDef<TeacherRow>[]>([]);
@@ -113,26 +116,18 @@ export const TableProvider: React.FC<TableProviderProps> = ({ children }) => {
             if (response.success && response.data) {
                 const scheduleData = response.data.map((item) => ({
                     hour: item.hour,
-                    classId: item.class.id,
-                    subjectId: item.subject.id,
-                }));
+                    class: item.class,
+                    subject: item.subject,
+                } as DailyScheduleCell));
 
                 // Update the context with the teacher's schedule
-                setTeacherColumn(selectedDayId, id, scheduleData);
-
-                // Update the row data with class and subject information
-                const updatedData = [...data];
-                response.data.forEach((item) => {
-                    const rowIndex = item.hour - 1;
-                    updatedData[rowIndex] = {
-                        ...updatedData[rowIndex],
-                        school: school,
-                        class: item.class,
-                        subject: item.subject,
-                    };
-                });
-
-                setData(updatedData);
+                const updatedSchedule = setTeacherColumn(
+                    { ...dailySchedule },
+                    selectedDayId,
+                    scheduleData,
+                    id,
+                );
+                setDailySchedule(updatedSchedule);
                 setSelectedTeacherId(teacherId);
                 return true;
             }
@@ -141,34 +136,6 @@ export const TableProvider: React.FC<TableProviderProps> = ({ children }) => {
             console.error("Error fetching teacher schedule:", error);
             return false;
         }
-    };
-
-    const setTeacherColumn = (
-        day: string,
-        headerId: string,
-        columnData: { hour: number; classId: string; subjectId: string }[],
-    ) => {
-        const updatedSchedule = { ...dailySchedule };
-
-        // Initialize day if it doesn't exist
-        if (!updatedSchedule[day]) {
-            updatedSchedule[day] = {};
-        }
-
-        // Initialize header if it doesn't exist
-        if (!updatedSchedule[day][headerId]) {
-            updatedSchedule[day][headerId] = {};
-        }
-
-        // Add schedule entries for each hour
-        columnData.forEach((row) => {
-            updatedSchedule[day][headerId][`${row.hour}`] = {
-                classId: row.classId,
-                subjectId: row.subjectId,
-            };
-        });
-
-        setDailySchedule(updatedSchedule);
     };
 
     const clearTeacherColumn = (day: string, headerId: string) => {
@@ -193,8 +160,8 @@ export const TableProvider: React.FC<TableProviderProps> = ({ children }) => {
         const cell = hour && headerId && dailySchedule[selectedDayId]?.[headerId]?.[String(hour)];
         if (!cell) return false;
 
-        const classData = classes?.find((c) => c.id === cell.classId);
-        const subjectData = subjects?.find((s) => s.id === cell.subjectId);
+        const classData = cell.class;
+        const subjectData = cell.subject;
         const subTeacherData = teachers?.find((t) => t.id === subTeacherId);
         const headerTeacherData = teachers?.find((t) => t.id === selectedTeacherId);
 
@@ -227,16 +194,6 @@ export const TableProvider: React.FC<TableProviderProps> = ({ children }) => {
         const response = await addDailyCellAction(cellData);
 
         if (response.success) {
-            // Update the row data with class and subject information
-            const updatedData = [...data];
-            const rowIndex = hour - 1;
-            updatedData[rowIndex] = {
-                ...updatedData[rowIndex],
-                school: school,
-                class: classData,
-                subject: subjectData,
-            };
-            setData(updatedData);
             return true;
         }
 

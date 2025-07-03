@@ -26,13 +26,3 @@ export const TeacherRoleValues = {
     SUBSTITUTE: "substitute" as const,
 };
 export type TeacherRole = (typeof TeacherRoleValues)[keyof typeof TeacherRoleValues];
-
-export type TeacherHourlyScheduleItem = {
-    hour: number;
-    class: ClassType;
-    subject: SubjectType;
-};
-
-export type GetTeacherScheduleResponse = ActionResponse & {
-    data?: TeacherHourlyScheduleItem[];
-}
