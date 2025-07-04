@@ -89,6 +89,7 @@ export const TableProvider: React.FC<TableProviderProps> = ({ children }) => {
     const [data] = useState<TeacherRow[]>(
         Array.from({ length: TableRows }, (_, i) => ({ hour: i + 1 })),
     );
+
     const [actionCols, setActionCols] = useState<ColumnDef<TeacherRow>[]>([]);
     const [nextId, setNextId] = useState<number>(1);
     const [dailySchedule, setDailySchedule] = useState<DailySchedule>({});

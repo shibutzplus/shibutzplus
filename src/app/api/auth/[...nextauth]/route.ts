@@ -32,6 +32,7 @@ export const authOptions: NextAuthOptions = {
                     name: user.name,
                     email: user.email,
                     role: user.role,
+                    gender: user.gender,
                     schoolId: user.schoolId,
                     remember: credentials.remember,
                 };
@@ -47,6 +48,7 @@ export const authOptions: NextAuthOptions = {
             if (user) {
                 token.id = user.id;
                 token.role = (user as any).role;
+                token.gender = (user as any).gender;
                 token.schoolId = (user as any).schoolId;
                 const remember = (user as any).remember;
                 const maxAge = remember ? 30 * 24 * 60 * 60 : 60 * 60; // 30d vs 1h
