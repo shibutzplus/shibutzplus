@@ -2,7 +2,7 @@
 
 import React from "react";
 import styles from "./DailyTableTopBtns.module.css";
-import { useTableContext } from "@/context/TableContext";
+import { useDailyTableContext } from "@/context/DailyTableContext";
 import { tableActions } from "@/resources/tableActions";
 
 /**
@@ -10,7 +10,7 @@ import { tableActions } from "@/resources/tableActions";
  * Each button adds a new column to the schedule with specific input types and colors
  */
 const DailyTableTopBtns: React.FC = () => {
-    const { addColumn, removeColumn } = useTableContext();
+    const { addColumn, removeColumn } = useDailyTableContext();
     return (
         <div className={styles.topButtonsContainer}>
             {tableActions.map((act, i) => (

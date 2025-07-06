@@ -5,7 +5,7 @@ import { useMainContext } from "./MainContext";
 import { createSelectOptions } from "@/utils/format";
 import { ClassType } from "@/models/types/classes";
 import { SelectOption } from "@/models/types";
-import { dayOptions } from "@/resources/dayOptions";
+import { getDayOptions, getTomorrowOption } from "@/resources/dayOptions";
 
 interface ActionsContextType {
     selectedClassId: string;
@@ -13,7 +13,7 @@ interface ActionsContextType {
     classesSelectOptions: () => SelectOption[];
     daysSelectOptions: () => SelectOption[];
     handleClassChange: (value: string) => void;
-    selectedDayId: string;
+    selectedDate: string;
     handleDayChange: (value: string) => void;
 }
 
@@ -30,7 +30,7 @@ export const useActions = () => {
 export const ActionsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const { classes } = useMainContext();
     const [selectedClassId, setSelectedClassId] = useState<string>(classes?.[0]?.id || "");
-    const [selectedDayId, setSelectedDayId] = useState<string>(dayOptions[0].value);
+    const [selectedDate, setSelectedDayId] = useState<string>(getTomorrowOption());
 
     useEffect(() => {
         if (classes && classes?.length > 0 && selectedClassId === "") {
@@ -47,7 +47,7 @@ export const ActionsProvider: React.FC<{ children: ReactNode }> = ({ children })
     };
 
     const daysSelectOptions = () => {
-        return dayOptions;
+        return getDayOptions();
     };
 
     const handleClassChange = (value: string) => {
@@ -64,7 +64,7 @@ export const ActionsProvider: React.FC<{ children: ReactNode }> = ({ children })
         classesSelectOptions,
         daysSelectOptions,
         handleClassChange,
-        selectedDayId,
+        selectedDate,
         handleDayChange,
     };
 

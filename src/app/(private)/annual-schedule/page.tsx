@@ -65,6 +65,7 @@ const AnnualSchedulePage: NextPage = () => {
     }, [teachers, classes, schedule, selectedClassId]);
 
     useEffect(() => {
+        // TODO: remove filter
         setFilteredTeachersMap(memoizedFilteredTeachers);
     }, [memoizedFilteredTeachers]);
 

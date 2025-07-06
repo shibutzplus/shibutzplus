@@ -2,13 +2,13 @@
 
 import React from "react";
 import styles from "./DailyTable.module.css";
-import { useTableContext } from "@/context/TableContext";
+import { useDailyTableContext } from "@/context/DailyTableContext";
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
 interface DailyTableProps {}
 
 const DailyTable: React.FC<DailyTableProps> = () => {
-    const { data, actionCols } = useTableContext();
+    const { data, tableColumns } = useDailyTableContext();
 
     const baseCols = React.useMemo(
         () => [
@@ -22,7 +22,7 @@ const DailyTable: React.FC<DailyTableProps> = () => {
         [],
     );
 
-    const columns = React.useMemo(() => [...baseCols, ...actionCols], [actionCols]);
+    const columns = React.useMemo(() => [...baseCols, ...tableColumns], [tableColumns]);
     const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() });
 
     return (

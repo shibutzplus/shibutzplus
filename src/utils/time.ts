@@ -1,7 +1,6 @@
 import { DailyScheduleType } from "@/models/types/dailySchedule";
 
-// Days of the week in Hebrew
-export const DAYS_OF_WEEK = ["א", "ב", "ג", "ד", "ה", "ו"];
+export const DAYS_OF_WEEK = ["א", "ב", "ג", "ד", "ה", "ו", "ש"];
 
 export const hoursOfDay = ["1", "2", "3", "4", "5", "6", "7"];
 

@@ -14,7 +14,7 @@ const TopNavSelect: React.FC<TopNavSelectProps> = ({ type }) => {
         handleClassChange,
         handleDayChange,
         selectedClassId,
-        selectedDayId,
+        selectedDate,
     } = useActions();
 
     if (!type) return null;
@@ -23,7 +23,7 @@ const TopNavSelect: React.FC<TopNavSelectProps> = ({ type }) => {
             return (
                 <DynamicInputSelect
                     options={daysSelectOptions()}
-                    value={selectedDayId}
+                    value={selectedDate}
                     onChange={handleDayChange}
                     placeholder="בחר יום..."
                     hasBorder

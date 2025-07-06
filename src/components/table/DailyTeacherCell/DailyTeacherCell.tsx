@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styles from "./DailyTeacherCell.module.css";
 import { useMainContext } from "@/context/MainContext";
-import { useTableContext } from "@/context/TableContext";
+import { useDailyTableContext } from "@/context/DailyTableContext";
 import { CellContext } from "@tanstack/react-table";
 import { TeacherRow } from "@/models/types/table";
 import { createSelectOptions } from "@/utils/format";
@@ -18,22 +18,22 @@ type DailyTeacherCellProps = {
 
 const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
     const { teachers } = useMainContext();
-    const { dailySchedule, addNewSubTeacherCell } = useTableContext();
-    const { selectedDayId } = useActions();
+    const { dailySchedule, addNewSubTeacherCell } = useDailyTableContext();
+    const { selectedDate } = useActions();
     const [isLoading, setIsLoading] = useState(false);
 
     // Get the current hour, class and subject from the row data
     const hour = cell?.row?.original?.hour;
-    const classData = dailySchedule[selectedDayId]?.[cell?.column?.id]?.[String(hour)]?.class;
-    const subjectData = dailySchedule[selectedDayId]?.[cell?.column?.id]?.[String(hour)]?.subject;
-    const subTeacherData = dailySchedule[selectedDayId]?.[cell?.column?.id]?.[String(hour)]?.subTeacher;
+    const classData = dailySchedule[selectedDate]?.[cell?.column?.id]?.[String(hour)]?.class;
+    const subjectData = dailySchedule[selectedDate]?.[cell?.column?.id]?.[String(hour)]?.subject;
+    const subTeacherData = dailySchedule[selectedDate]?.[cell?.column?.id]?.[String(hour)]?.subTeacher;
 
     const [selectedSubTeacher, setSelectedSubTeacher] = useState<string>(subTeacherData?.id || "");
 
     const handleTeacherChange = async (teacherId: string) => {
         // Get the column ID which contains the header ID
         const columnId = cell?.column?.id;
-        if (!hour || !columnId || !selectedDayId) return;
+        if (!hour || !columnId || !selectedDate) return;
         setIsLoading(true);
         setSelectedSubTeacher(teacherId);
 
@@ -41,7 +41,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
             const response = await addNewSubTeacherCell(
                 hour,
                 columnId,
-                selectedDayId,
+                selectedDate,
                 teacherId,
                 type,
             );

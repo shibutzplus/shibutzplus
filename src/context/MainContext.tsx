@@ -51,9 +51,6 @@ interface MainContextType {
         id: string,
         updatedScheduleItem: AnnualScheduleRequest,
     ) => Promise<string | undefined>;
-    addNewDailyScheduleCell: (
-        newScheduleItem: DailyScheduleRequest,
-    ) => Promise<DailyScheduleType | undefined>; 
     // updateExistingDailyScheduleItem: (
     //     id: string,
     //     updatedScheduleItem: DailyScheduleRequest,
@@ -97,9 +94,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         classes,
         setClasses,
         annualScheduleTable,
-        setAnnualScheduleTable,
-        dailyScheduleData,
-        setDailyScheduleData,
+        setAnnualScheduleTable
     });
 
     const addNewClass = async (newClass: ClassRequest) => {
@@ -257,19 +252,6 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         return undefined;
     };
 
-    const addNewDailyScheduleCell = async (newScheduleItem: DailyScheduleRequest) => {
-        const response = await addDailyCellAction(newScheduleItem);
-        if (response.success && response.data) {
-            setDailyScheduleData((prev) => {
-                if (!response.data) return prev;
-                const updatedSchedule = prev ? [...prev, response.data] : [response.data];
-                return updatedSchedule;
-            });
-            return response.data;
-        }
-        return undefined;
-    };
-
     // const updateExistingDailyScheduleItem = async (
     //     id: string,
     //     updatedScheduleItem: DailyScheduleRequest,
@@ -310,7 +292,6 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         deleteSubject,
         addNewAnnualScheduleItem,
         updateExistingAnnualScheduleItem,
-        addNewDailyScheduleCell,
         // updateExistingDailyScheduleItem,
         // updateDailySchedule,
     };

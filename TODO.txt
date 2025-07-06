@@ -4,7 +4,7 @@ v- daily - table cell has select that can be text (teacher or information)
 v- daily - if not selected teacher -> show placeholder
 v- daily - update the new columns in the DB
 v- daily - on select header teacher, all the not relevent hours are gray
--daily - update cell
+- daily - update cell
 - daily - populate the table on reload with the current day
 - daily - allow to add for all days
 - daily - DB take the day and convert it to date
@@ -41,3 +41,9 @@ v - teachers - fix the role in the DB
 - side nav split into sections with title
 
 - text per gender (he / she) 
+
+
+---
+
+- annual - insted of filter teachers. show all the teachers but color the teachers that already selected in the same time
+- daily - show week before, two week after in the day select (day of the week + date)

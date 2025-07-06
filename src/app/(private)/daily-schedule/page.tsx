@@ -1,18 +1,18 @@
 import React from "react";
 import { NextPage } from "next";
 import DailyTable from "@/components/table/DailyTable/DailyTable";
-import { TableProvider } from "@/context/TableContext";
+import { DailyTableProvider } from "@/context/DailyTableContext";
 import styles from "./DailySchedule.module.css";
 import DailyTableTopBtns from "@/components/table/DailyTableTopBtns/DailyTableTopBtns";
 
 const DailySchedulePage: NextPage = () => {
     return (
-        <TableProvider>
+        <DailyTableProvider>
             <section className={styles.container}>
                 <DailyTableTopBtns />
                 <DailyTable />
             </section>
-        </TableProvider>
+        </DailyTableProvider>
     );
 };
 

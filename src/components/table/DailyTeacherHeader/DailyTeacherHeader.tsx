@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styles from "./DailyTeacherHeader.module.css";
 import DynamicInputSelect from "../../ui/InputSelect/DynamicInputSelect";
 import { useMainContext } from "@/context/MainContext";
-import { useTableContext } from "@/context/TableContext";
+import { useDailyTableContext } from "@/context/DailyTableContext";
 import { useActions } from "@/context/ActionsContext";
 import { ColumnType } from "@/models/types/dailySchedule";
 import messages from "@/resources/messages";
@@ -16,8 +16,8 @@ type DailyTeacherHeaderProps = {
 
 const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId, type }) => {
     const { teachers, school } = useMainContext();
-    const { populateTeacherColumn } = useTableContext();
-    const { selectedDayId } = useActions();
+    const { populateTeacherColumn } = useDailyTableContext();
+    const { selectedDate } = useActions();
     const [selectedTeacherId, setSelectedTeacherId] = useState<string>("");
     const [isLoading, setIsLoading] = useState(false);
 
@@ -29,7 +29,7 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId, type 
             setSelectedTeacherId(teacherId);
             const dayNumber = 1; /////TODO
             const response = await populateTeacherColumn(
-                selectedDayId,
+                selectedDate,
                 columnId,
                 school.id,
                 dayNumber,
