@@ -12,6 +12,7 @@ import {
     DailyScheduleCell,
     DailyScheduleRequest,
     DailyScheduleType,
+    TeacherHourlyScheduleItem,
 } from "@/models/types/dailySchedule";
 import DailyTeacherCell from "@/components/table/DailyTeacherCell/DailyTeacherCell";
 import DailyTeacherHeader from "@/components/table/DailyTeacherHeader/DailyTeacherHeader";
@@ -22,18 +23,19 @@ import {
     createNewCellData,
     filterScheduleByDate,
     groupScheduleEntriesByDateAndCol,
+    setEmptyTeacherColumn,
     setTeacherColumn,
 } from "@/services/dailyScheduleService";
 import { generateId } from "@/utils";
 import useInitDailyData from "@/hooks/useInitDailyData";
 import { addDailyCellAction } from "@/app/actions/addDailyCellAction";
 import { useActions } from "./ActionsContext";
+import { TeacherType } from "@/models/types/teachers";
 
 interface DailyTableContextType {
     data: TeacherRow[];
     tableColumns: ColumnDef<TeacherRow>[];
     dailySchedule: DailySchedule;
-    selectedTeacherId?: string;
     addColumn: (colType: ActionColumnType) => void;
     removeColumn: () => void;
     clearTeacherColumn: (day: string, headerId: string) => void;
@@ -41,12 +43,12 @@ interface DailyTableContextType {
         id: string,
         dayNumber: number,
         teacherId: string,
-    ) => Promise<DailyScheduleCell[] | undefined>;
+    ) => Promise<TeacherHourlyScheduleItem[] | undefined>;
     addNewSubTeacherCell: (
-        hour: number,
+        cellData: DailyScheduleCell,
         columnId: string,
         selectedDate: string,
-        subTeacherId: string,
+        subTeacherData: TeacherType,
         type: ColumnType,
     ) => Promise<DailyScheduleType | undefined>;
 }
@@ -98,7 +100,6 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
 
     const [tableColumns, setActionCols] = useState<ColumnDef<TeacherRow>[]>([]);
     const [dailySchedule, setDailySchedule] = useState<DailySchedule>({});
-    const [selectedTeacherId, setSelectedTeacherId] = useState<string | undefined>(undefined);
 
     const [dailyScheduleData, setDailyScheduleData] = useState<DailyScheduleType[] | undefined>(
         undefined,
@@ -214,30 +215,38 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
 
             const response = await getTeacherScheduleByDayAction(schoolId, dayNumber, teacherId);
             if (response.success && response.data) {
-                if(response.data.length === 0){
-                    return [];
-                }
-                
-                const scheduleData = response.data.map(
-                    (item) =>
-                        ({
-                            hour: item.hour,
-                            class: item.class,
-                            subject: item.subject,
-                            headerTeacher: item.headerTeacher,
-                        }) as DailyScheduleCell,
-                );
+                let updatedSchedule: DailySchedule;
+                if (response.data.length > 0) {
+                    const scheduleData = response.data.map(
+                        (item) =>
+                            ({
+                                hour: item.hour,
+                                class: item.class,
+                                subject: item.subject,
+                                headerTeacher: item.headerTeacher,
+                            }) as DailyScheduleCell,
+                    );
 
-                // Update the context with the teacher's schedule
-                const updatedSchedule = setTeacherColumn(
-                    { ...dailySchedule },
-                    selectedDate,
-                    scheduleData,
-                    columnId,
-                );
+                    // Update the context with the teacher's schedule
+                    updatedSchedule = setTeacherColumn(
+                        { ...dailySchedule },
+                        selectedDate,
+                        scheduleData,
+                        columnId,
+                    );
+                } else {
+                    const headerTeacher = teachers?.find((t) => t.id === teacherId);
+                    if (!headerTeacher) return;
+
+                    updatedSchedule = setEmptyTeacherColumn(
+                        { ...dailySchedule },
+                        selectedDate,
+                        headerTeacher,
+                        columnId,
+                    );
+                }
                 setDailySchedule(updatedSchedule);
-                setSelectedTeacherId(teacherId);
-                return scheduleData;
+                return response.data;
             }
             return undefined;
         } catch (error) {
@@ -265,44 +274,30 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     };
 
     const addNewSubTeacherCell = async (
-        hour: number,
+        cellData: DailyScheduleCell,
         columnId: string,
         selectedDate: string,
-        subTeacherId: string,
+        subTeacher: TeacherType,
         type: ColumnType,
     ) => {
-        const cell = hour && columnId && dailySchedule[selectedDate]?.[columnId]?.[String(hour)];
-        if (!cell) return;
-
-        const classData = cell.class;
-        const subjectData = cell.subject;
-        const subTeacherData = teachers?.find((t) => t.id === subTeacherId);
-        const headerTeacherData = teachers?.find((t) => t.id === selectedTeacherId);
-
-        if (
-            !hour ||
-            !school ||
-            !classData ||
-            !subjectData ||
-            !subTeacherData ||
-            !headerTeacherData
-        ) {
+        const { hour, class: classData, subject, headerTeacher } = cellData;
+        if (!school || !classData || !subject || !subTeacher || !headerTeacher) {
             return;
         }
 
-        const cellData: DailyScheduleRequest = createNewCellData(
+        const dailyCellData: DailyScheduleRequest = createNewCellData(
             type,
             selectedDate,
             columnId,
             hour,
             school,
             classData,
-            subjectData,
-            subTeacherData,
-            headerTeacherData,
+            subject,
+            subTeacher,
+            headerTeacher,
         );
 
-        const response = await addDailyCellAction(cellData);
+        const response = await addDailyCellAction(dailyCellData);
         if (response.success && response.data) {
             setDailyScheduleData((prev) => {
                 if (!response.data) return prev;
@@ -320,7 +315,6 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 data,
                 tableColumns,
                 dailySchedule,
-                selectedTeacherId,
                 addColumn,
                 removeColumn,
                 clearTeacherColumn,

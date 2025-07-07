@@ -21,10 +21,7 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId }) => 
     const { selectedDate } = useActions();
     const [isLoading, setIsLoading] = useState(false);
 
-    // const selectedTeacherData = dailySchedule[selectedDate]?.[columnId]?.["1"]?.headerTeacher;
-    const selectedTeacherData = dailySchedule[selectedDate]?.[columnId]?.["1"]?.headerTeacher; //TODO need to get the teacher from all the hours
-    const selectedTeacherData1 = dailySchedule[selectedDate];
-    // console.log("selectedTeacherData1", selectedTeacherData1);
+    const selectedTeacherData = dailySchedule[selectedDate]?.[columnId]?.["1"]?.headerTeacher;
 
     const handleTeacherChange = async (value: string) => {
         const teacherId = value;

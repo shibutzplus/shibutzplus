@@ -60,7 +60,7 @@ export const getCurrentWeekEntries = (data?: DailyScheduleType[]) => {
 };
 
 export const getDayNumberByDate = (date: string) => {
-    return new Date(date).getDay();
+    return new Date(date).getDay(); //TODO for Tuesday (3) I got Monday (2)
 };
 
 // const date = new Date();

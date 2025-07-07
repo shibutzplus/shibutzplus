@@ -22,27 +22,33 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
     const { selectedDate } = useActions();
     const [isLoading, setIsLoading] = useState(false);
 
-    // Get the current hour, class and subject from the row data
-    const hour = cell?.row?.original?.hour;
-    const classData = dailySchedule[selectedDate]?.[cell?.column?.id]?.[String(hour)]?.class;
-    const subjectData = dailySchedule[selectedDate]?.[cell?.column?.id]?.[String(hour)]?.subject;
-    const subTeacherData = dailySchedule[selectedDate]?.[cell?.column?.id]?.[String(hour)]?.subTeacher;
+    // Get the current hour, class, subject, subTeacher and headerTeacher from the row data
+    const columnId = cell?.column?.id;
+    const hour = cell?.row?.original?.hour.toString();
+    const classData = dailySchedule[selectedDate]?.[columnId]?.[hour]?.class;
+    const subjectData = dailySchedule[selectedDate]?.[columnId]?.[hour]?.subject;
+    const subTeacherData = dailySchedule[selectedDate]?.[columnId]?.[hour]?.subTeacher;
+    const headerTeacherData = dailySchedule[selectedDate]?.[columnId]?.[hour]?.headerTeacher;
 
     const [selectedSubTeacher, setSelectedSubTeacher] = useState<string>(subTeacherData?.id || "");
 
     const handleTeacherChange = async (teacherId: string) => {
-        // Get the column ID which contains the header ID
-        const columnId = cell?.column?.id;
-        if (!hour || !columnId || !selectedDate) return;
+        if (!hour || !columnId || !selectedDate || !headerTeacherData) return;
         setIsLoading(true);
         setSelectedSubTeacher(teacherId);
 
         try {
+            const newSubTeacherData = teachers?.find((t) => t.id === teacherId);
+            if (!newSubTeacherData) return;
+
+            const cellData = dailySchedule[selectedDate]?.[columnId]?.[hour];
+            if (!cellData) return;
+
             const response = await addNewSubTeacherCell(
-                hour,
+                cellData,
                 columnId,
                 selectedDate,
-                teacherId,
+                newSubTeacherData,
                 type,
             );
             if (response) {
