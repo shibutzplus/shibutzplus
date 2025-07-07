@@ -7,6 +7,8 @@ import { ClassType } from "@/models/types/classes";
 import { SelectOption } from "@/models/types";
 import { getDayOptions, getTomorrowOption } from "@/resources/dayOptions";
 
+// TODO: delete this context and use the layout props
+
 interface ActionsContextType {
     selectedClassId: string;
     getSelectedClass: () => ClassType | undefined;

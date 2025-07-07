@@ -5,7 +5,7 @@ import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { and, between, eq, inArray } from "drizzle-orm";
 import { db, schema } from "../../db";
-import { dateString } from "@/utils/time";
+import { getDateReturnString } from "@/utils/time";
 
 export async function getDailyScheduleAction(schoolId: string): Promise<GetDailyScheduleResponse> {
     try {
@@ -27,8 +27,8 @@ export async function getDailyScheduleAction(schoolId: string): Promise<GetDaily
         endOfWeek.setDate(startOfWeek.getDate() + 5); // Go forward to Friday (5 days from Sunday)
         
         // Format dates for database query
-        const startDateStr = dateString(startOfWeek);
-        const endDateStr = dateString(endOfWeek);
+        const startDateStr = getDateReturnString(startOfWeek);
+        const endDateStr = getDateReturnString(endOfWeek);
         
         // Get days 1-6 (Sunday to Friday)
         const weekDays = ['1', '2', '3', '4', '5', '6'];

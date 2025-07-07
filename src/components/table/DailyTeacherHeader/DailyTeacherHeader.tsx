@@ -8,7 +8,7 @@ import { ColumnType } from "@/models/types/dailySchedule";
 import messages from "@/resources/messages";
 import { errorToast, successToast } from "@/lib/toast";
 import { createSelectOptions } from "@/utils/format";
-import { getDayNumberByDate } from "@/utils/time";
+import { getDayNumberByDateString } from "@/utils/time";
 
 type DailyTeacherHeaderProps = {
     columnId: string;
@@ -27,7 +27,7 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId }) => 
         const teacherId = value;
         if (teacherId) {
             setIsLoading(true);
-            const dayNumber = getDayNumberByDate(selectedDate);
+            const dayNumber = getDayNumberByDateString(selectedDate);
             const response = await populateTeacherColumn(columnId, dayNumber, teacherId);
             if (response) {
                 if (response.length === 0) {

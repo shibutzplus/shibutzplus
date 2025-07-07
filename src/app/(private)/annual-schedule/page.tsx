@@ -9,7 +9,7 @@ import { createSelectOptions } from "@/utils/format";
 import { TeacherRequest, TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import { SubjectRequest, SubjectType } from "@/models/types/subjects";
 import { WeeklySchedule, AnnualScheduleRequest } from "@/models/types/annualSchedule";
-import { DAYS_OF_WEEK } from "@/utils/time";
+import { DAYS_OF_WEEK, dayToNumber } from "@/utils/time";
 import messages from "@/resources/messages";
 import { useActions } from "@/context/ActionsContext";
 import { errorToast, successToast } from "@/lib/toast";
@@ -104,7 +104,7 @@ const AnnualSchedulePage: NextPage = () => {
             let response: any;
             if (selectedClassObj && selectedTeacher && selectedSubject) {
                 const scheduleRequest: AnnualScheduleRequest = {
-                    day: Number(DAYS_OF_WEEK.indexOf(day) + 1), // Convert day name to number (1-7)
+                    day: dayToNumber(day),
                     hour: hour,
                     school: school,
                     class: selectedClassObj,

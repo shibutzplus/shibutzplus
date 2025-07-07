@@ -1,5 +1,15 @@
 import { SelectOption } from "@/models/types";
-import { DAYS_OF_WEEK } from "@/utils/time";
+import {
+    DAYS_OF_WEEK,
+    getDateReturnString,
+    getDayNumberByDate,
+    getTodayDateString,
+    getTodayNumber,
+    getTomorrowDateString,
+    ONE_WEEK,
+    SATURDAY_NUMBER,
+    THREE_WEEKS,
+} from "@/utils/time";
 
 /**
  * Generates date options for a range of days (1 week before and 2 weeks after the current date)
@@ -11,28 +21,22 @@ export const getDayOptions = (): SelectOption[] => {
 
     // Start from 7 days ago
     const startDate = new Date(today);
-    startDate.setDate(today.getDate() - 7);
+    startDate.setDate(getTodayNumber() - ONE_WEEK);
 
     // Generate options for 21 days (1 week before + today + 2 weeks after)
-    for (let i = 0; i < 21; i++) {
+    for (let i = 0; i < THREE_WEEKS; i++) {
         // Create a new date object for each day to avoid modifying the reference
         const currentDate = new Date(startDate);
-        currentDate.setDate(startDate.getDate() + i);
+        currentDate.setDate(getDayNumberByDate(startDate) + i);
 
-        // Format date as YYYY-MM-DD
-        const dateValue = currentDate.toISOString().split("T")[0];
-
-        // Get day of week (0 = Sunday, 6 = Saturday)
-        const dayOfWeek = currentDate.getDay();
+        const dateValue = getDateReturnString(currentDate);
+        const dayOfWeek = getDayNumberByDate(currentDate);
 
         // Skip Saturday
-        if (DAYS_OF_WEEK[dayOfWeek] === "ש") {
-            continue;
-        }
+        if (dayOfWeek === SATURDAY_NUMBER) continue;
 
         // Check if this date is today and add 'today' text if it is
-        const isToday =
-            currentDate.toISOString().split("T")[0] === today.toISOString().split("T")[0];
+        const isToday = getDateReturnString(currentDate) === getTodayDateString();
         const label = `${dateValue} | יום ${DAYS_OF_WEEK[dayOfWeek]}${isToday ? " (היום)" : ""}`;
 
         options.push({
@@ -45,14 +49,9 @@ export const getDayOptions = (): SelectOption[] => {
 };
 
 export const getTodayOption = () => {
-    const today = new Date();
-    const dateValue = today.toISOString().split("T")[0];
-    return dateValue;
+    return getTodayDateString();
 };
 
 export const getTomorrowOption = () => {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const dateValue = tomorrow.toISOString().split("T")[0];
-    return dateValue;
+    return getTomorrowDateString();
 };

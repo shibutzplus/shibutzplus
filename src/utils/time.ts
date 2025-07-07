@@ -1,42 +1,70 @@
 import { DailyScheduleType } from "@/models/types/dailySchedule";
 
 export const DAYS_OF_WEEK = ["א", "ב", "ג", "ד", "ה", "ו", "ש"];
+export const SUNDAY_NUMBER = 0;
+export const SATURDAY_NUMBER = 6;
 
-export const hoursOfDay = ["1", "2", "3", "4", "5", "6", "7"];
+export const THREE_WEEKS = 21;
+export const ONE_WEEK = 7;
 
 // Number of hours in a day
 export const HOURS_IN_DAY = 7;
 
-// Check if cache is fresh (less than 1 hour old)
-export const isCacheFresh = (cacheTimestamp: string | null) =>
-    cacheTimestamp && Date.now() - parseInt(cacheTimestamp) < 3600000; // 1 hour
-
-// Generate hours from 0 to 8 to match the reference image
-export const displayHours = Array.from({ length: hoursOfDay.length + 1 }, (_, i) => i);
-
-export const todayDateFormat = () => {
-    return new Date().toISOString().split("T")[0]; // Today's date in YYYY-MM-DD format
-};
-
-// Get the current day number (1-7) from the current date
-export const getDayNumber = () => {
-    const date = new Date();
-    // Convert from 0-6 (Sunday-Saturday) to 1-7 (Sunday-Saturday)
-    return date.getDay() + 1;
-};
-
-export const dateString = (date: Date) => {
+export const getDateReturnString = (date: Date) => {
     return date.toISOString().split("T")[0];
 };
 
-export const stringDate = (date: string) => {
+export const getStringReturnDate = (date: string) => {
     return new Date(date);
 };
 
-export const getColumnDate = (dayNumber: number): Date => {
-    return new Date();
-    // TODO - need to handle the day number per current date
+export const getTodayDateString = () => {
+    return getDateReturnString(new Date());
 };
+
+export const getTomorrowDateString = () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return getDateReturnString(tomorrow);
+};
+
+export const getDayNumberByDate = (date: Date) => {
+    // Get day of week (0 = Sunday, 6 = Saturday)
+    return date.getDay(); //TODO for Tuesday (3) I got Monday (2)
+};
+
+export const getDayNumberByDateString = (date: string) => {
+    return new Date(date).getDay(); //TODO for Tuesday (3) I got Monday (2)
+};
+
+export const getTodayNumber = () => {
+    return getDayNumberByDate(new Date());
+};
+
+export const dayToNumber = (day: string) => {
+    //Convert day name to number (1-7)
+    return DAYS_OF_WEEK.indexOf(day) + 1;
+};
+
+// ---
+
+// Cache expiration time (1 hour in milliseconds)
+export const CACHE_EXPIRATION = 60 * 60 * 1000;
+
+// Check if cache is fresh (less than 1 hour old)
+export const isCacheFresh = (cacheTimestamp: string | null) =>
+    cacheTimestamp && Date.now() - parseInt(cacheTimestamp) < CACHE_EXPIRATION;
+
+//---
+
+export const TWENTY_FOUR_HOURS = 24 * 60 * 60;
+
+export const getExpireTime = (remember: any) => {
+    const maxAge = remember ? 30 * 24 * 60 * 60 : 60 * 60; // 30d vs 1h
+    return Math.floor(Date.now() / 1000) + maxAge;
+};
+
+//--
 
 export const getCurrentWeekEntries = (data?: DailyScheduleType[]) => {
     // Filter entries to only include the current week
@@ -58,13 +86,3 @@ export const getCurrentWeekEntries = (data?: DailyScheduleType[]) => {
 
     return currentWeekEntries;
 };
-
-export const getDayNumberByDate = (date: string) => {
-    return new Date(date).getDay(); //TODO for Tuesday (3) I got Monday (2)
-};
-
-// const date = new Date();
-//     const year = date.getFullYear();
-//     const month = date.getMonth();
-//     const day = date.getDate();
-//     return `${day}-${month + 1}-${year}|${dayNumber}`;

@@ -3,6 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { schema } from "@/db";
 import { getUserByEmail } from "@/db/utils";
+import { getExpireTime, TWENTY_FOUR_HOURS } from "@/utils/time";
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -17,9 +18,9 @@ export const authOptions: NextAuthOptions = {
                 if (!credentials?.email || !credentials?.password) {
                     throw new Error("Email and password required");
                 }
-                
+
                 const user = await getUserByEmail(credentials.email);
-                
+
                 if (!user) {
                     throw new Error("No user found with this email");
                 }
@@ -41,7 +42,7 @@ export const authOptions: NextAuthOptions = {
     ],
     session: {
         strategy: "jwt",
-        updateAge: 24 * 60 * 60, // 24 hours
+        updateAge: TWENTY_FOUR_HOURS,
     },
     callbacks: {
         async jwt({ token, user }) {
@@ -51,8 +52,7 @@ export const authOptions: NextAuthOptions = {
                 token.gender = (user as any).gender;
                 token.schoolId = (user as any).schoolId;
                 const remember = (user as any).remember;
-                const maxAge = remember ? 30 * 24 * 60 * 60 : 60 * 60; // 30d vs 1h
-                token.exp = Math.floor(Date.now() / 1000) + maxAge;
+                token.exp = getExpireTime(remember);
             }
             return token;
         },

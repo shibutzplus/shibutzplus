@@ -9,7 +9,12 @@ import {
 import { SchoolType } from "@/models/types/school";
 import { SubjectType } from "@/models/types/subjects";
 import { TeacherType } from "@/models/types/teachers";
-import { getColumnDate, getDayNumberByDate, HOURS_IN_DAY, stringDate } from "@/utils/time";
+import {
+    getDayNumberByDateString,
+    HOURS_IN_DAY,
+    getStringReturnDate,
+    getDateReturnString,
+} from "@/utils/time";
 
 export const initDailySchedule = (dailySchedule: DailySchedule, date: string, columnId: string) => {
     // Initialize date if it doesn't exist
@@ -109,8 +114,8 @@ export const createNewCellData = (
     headerTeacher: TeacherType,
 ) => {
     const cellData: DailyScheduleRequest = {
-        date: stringDate(selectedDate),
-        day: getDayNumberByDate(selectedDate).toString(),
+        date: getStringReturnDate(selectedDate),
+        day: getDayNumberByDateString(selectedDate).toString(),
         columnId,
         hour,
         school,
@@ -134,11 +139,10 @@ export const filterScheduleByDate = (
 ) => {
     // Filter data to only include entries for the selected date
     const filteredData = dailyScheduleData?.filter((entry) => {
-        // Convert Date object to string format (YYYY-MM-DD) for comparison
         const entryDateStr =
             entry.date instanceof Date
-                ? entry.date.toISOString().split("T")[0]
-                : new Date(entry.date).toISOString().split("T")[0];
+                ? getDateReturnString(entry.date)
+                : getDateReturnString(new Date(entry.date));
 
         return entryDateStr === selectedDate;
     });

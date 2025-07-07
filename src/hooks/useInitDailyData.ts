@@ -5,6 +5,7 @@ import { DailyScheduleType } from "@/models/types/dailySchedule";
 import { useEffect, useRef } from "react";
 import { getCacheTimestamp, setCacheTimestamp } from "@/utils/localStorage";
 import { getDailyScheduleAction as getDailyScheduleFromDB } from "@/app/actions/getDailyScheduleAction";
+import { CACHE_EXPIRATION } from "@/utils/time";
 
 interface useInitDailyDataProps {
     dailyScheduleData: DailyScheduleType[] | undefined;
@@ -19,9 +20,6 @@ const useInitDailyData = ({ dailyScheduleData, setDailyScheduleData }: useInitDa
     const { data: session, status } = useSession();
     const dataFetchedRef = useRef(false);
     const lastFetchTimeRef = useRef<number>(0);
-    
-    // Cache expiration time (1 hour in milliseconds)
-    const CACHE_EXPIRATION = 60 * 60 * 1000;
 
     useEffect(() => {
         const fetchData = async (schoolId: string) => {

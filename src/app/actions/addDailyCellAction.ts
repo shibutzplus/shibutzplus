@@ -6,7 +6,7 @@ import messages from "@/resources/messages";
 import { db, schema } from "../../db";
 import { ActionResponse } from "@/models/types/actions";
 import { NewDailyScheduleSchema } from "@/db/schema";
-import { dateString } from "@/utils/time";
+import { getDateReturnString } from "@/utils/time";
 
 export async function addDailyCellAction(
     scheduleCellData: DailyScheduleRequest,
@@ -38,7 +38,7 @@ export async function addDailyCellAction(
         }
 
         const newRow: NewDailyScheduleSchema = {
-            date: dateString(date),
+            date: getDateReturnString(date),
             day: day,
             hour: hour,
             columnId: columnId,
