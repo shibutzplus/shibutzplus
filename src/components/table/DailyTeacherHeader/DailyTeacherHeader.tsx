@@ -8,35 +8,36 @@ import { ColumnType } from "@/models/types/dailySchedule";
 import messages from "@/resources/messages";
 import { errorToast, successToast } from "@/lib/toast";
 import { createSelectOptions } from "@/utils/format";
+import { getDayNumberByDate } from "@/utils/time";
 
 type DailyTeacherHeaderProps = {
-    columnId?: string;
+    columnId: string;
     type: Exclude<ColumnType, "info">;
 };
 
-const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId, type }) => {
-    const { teachers, school } = useMainContext();
-    const { populateTeacherColumn } = useDailyTableContext();
+const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId }) => {
+    const { teachers } = useMainContext();
+    const { dailySchedule, populateTeacherColumn, clearTeacherColumn } = useDailyTableContext();
     const { selectedDate } = useActions();
-    const [selectedTeacherId, setSelectedTeacherId] = useState<string>("");
     const [isLoading, setIsLoading] = useState(false);
 
+    // const selectedTeacherData = dailySchedule[selectedDate]?.[columnId]?.["1"]?.headerTeacher;
+    const selectedTeacherData = dailySchedule[selectedDate]?.[columnId]?.["1"]?.headerTeacher; //TODO need to get the teacher from all the hours
+    const selectedTeacherData1 = dailySchedule[selectedDate];
+    // console.log("selectedTeacherData1", selectedTeacherData1);
+
     const handleTeacherChange = async (value: string) => {
-        if (!school?.id || !columnId) return;
         const teacherId = value;
         if (teacherId) {
             setIsLoading(true);
-            setSelectedTeacherId(teacherId);
-            const dayNumber = 1; /////TODO
-            const response = await populateTeacherColumn(
-                selectedDate,
-                columnId,
-                school.id,
-                dayNumber,
-                teacherId,
-            );
+            const dayNumber = getDayNumberByDate(selectedDate);
+            const response = await populateTeacherColumn(columnId, dayNumber, teacherId);
             if (response) {
-                successToast(messages.dailySchedule.retrieveSuccess);
+                if (response.length === 0) {
+                    successToast(messages.dailySchedule.noScheduleFound);
+                } else {
+                    successToast(messages.dailySchedule.retrieveSuccess);
+                }
             } else {
                 errorToast(messages.dailySchedule.retrieveError);
             }
@@ -44,11 +45,20 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId, type 
         }
     };
 
+    const handleClearColumn = () => {
+        clearTeacherColumn(selectedDate, columnId);
+    };
+
     return (
         <div className={styles.columnHeader}>
+            <div>
+                <button className={styles.clearButton} onClick={handleClearColumn}>
+                    הסר
+                </button>
+            </div>
             <DynamicInputSelect
                 options={createSelectOptions(teachers)}
-                value={selectedTeacherId}
+                value={selectedTeacherData?.id || ""}
                 onChange={handleTeacherChange}
                 backgroundColor="transparent"
                 placeholder="מורה"

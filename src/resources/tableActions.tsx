@@ -45,26 +45,4 @@ export const tableActions: {
         style: { borderLeft: "4px solid #27ae60", color: "#27ae60" },
         disabled: false,
     },
-    {
-        key: "delete",
-        isDelete: true,
-        Icon: <FaPlus />,
-        label: "מחיקה",
-        style: { borderLeft: "4px solid #e74c3c", color: "#e74c3c" },
-        disabled: false,
-    },
-    {
-        key: "update",
-        Icon: <FaPlus />,
-        label: "עדכון",
-        style: { borderLeft: "4px solid #2a2a2a" },
-        disabled: true,
-    },
-    {
-        key: "move",
-        Icon: <FaPlus />,
-        label: "הזזה",
-        style: { borderLeft: "4px solid #2a2a2a" },
-        disabled: true,
-    },
 ];

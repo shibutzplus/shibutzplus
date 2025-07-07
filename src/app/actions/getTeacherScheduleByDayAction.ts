@@ -4,8 +4,11 @@ import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema } from "@/db";
 import { and, asc, eq } from "drizzle-orm";
-import { GetTeacherScheduleResponse, TeacherHourlyScheduleItem } from "@/models/types/dailySchedule";
-//TODO: need to search the data by current date week and by day
+import {
+    GetTeacherScheduleResponse,
+    TeacherHourlyScheduleItem,
+} from "@/models/types/dailySchedule";
+
 export async function getTeacherScheduleByDayAction(
     schoolId: string,
     day: number,
@@ -24,6 +27,7 @@ export async function getTeacherScheduleByDayAction(
             with: {
                 class: true,
                 subject: true,
+                teacher: true,
             },
             orderBy: [asc(schema.annualSchedule.hour)],
         });
@@ -42,6 +46,7 @@ export async function getTeacherScheduleByDayAction(
                     hour: schedule.hour,
                     class: schedule.class,
                     subject: schedule.subject,
+                    headerTeacher: schedule.teacher,
                 }) as TeacherHourlyScheduleItem,
         );
 

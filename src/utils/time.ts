@@ -59,6 +59,10 @@ export const getCurrentWeekEntries = (data?: DailyScheduleType[]) => {
     return currentWeekEntries;
 };
 
+export const getDayNumberByDate = (date: string) => {
+    return new Date(date).getDay();
+};
+
 // const date = new Date();
 //     const year = date.getFullYear();
 //     const month = date.getMonth();

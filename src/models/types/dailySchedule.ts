@@ -70,6 +70,7 @@ export type TeacherHourlyScheduleItem = {
     hour: number;
     class: ClassType;
     subject: SubjectType;
+    headerTeacher: TeacherType;
 };
 
 export type GetTeacherScheduleResponse = ActionResponse & {

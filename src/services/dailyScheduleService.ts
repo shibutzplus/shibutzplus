@@ -34,6 +34,7 @@ export const setTeacherColumn = (
             subject: row.subject,
             hour: row.hour,
             subTeacher: row.subTeacher,
+            headerTeacher: row.headerTeacher,
         };
     });
 
@@ -105,4 +106,63 @@ export const filterScheduleByDate = (
     });
 
     return filteredData;
+};
+
+/**
+ * Check if a column already exists in the daily schedule for a specific date
+ * @param dailySchedule The current daily schedule state
+ * @param date The date to check (YYYY-MM-DD format)
+ * @param columnId The column ID to check for
+ * @returns Boolean indicating if the column exists and has data
+ */
+export const columnExistsForDate = (
+    dailySchedule: DailySchedule,
+    date: string,
+    columnId: string,
+): boolean => {
+    // Check if the date exists in the schedule
+    if (!dailySchedule[date]) {
+        return false;
+    }
+
+    // Check if the column exists for this date
+    if (!dailySchedule[date][columnId]) {
+        return false;
+    }
+
+    // Check if the column has any data (at least one hour entry)
+    const hasData = Object.keys(dailySchedule[date][columnId]).length > 0;
+
+    return hasData;
+};
+
+/**
+ * Group daily schedule entries by date and column ID
+ * @param filteredData The filtered schedule data for a specific date
+ * @param selectedDate The selected date (YYYY-MM-DD format)
+ * @returns Grouped entries by date and column ID
+ */
+export const groupScheduleEntriesByDateAndCol = (
+    filteredData: DailyScheduleType[],
+    selectedDate: string,
+): Record<string, Record<string, DailyScheduleCell[]>> => {
+    const entriesByDayAndHeader: Record<string, Record<string, DailyScheduleCell[]>> = {};
+
+    filteredData?.forEach((entry) => {
+        const columnId = entry.columnId;
+
+        // Initialize grouping structure if needed
+        if (!entriesByDayAndHeader[selectedDate]) {
+            entriesByDayAndHeader[selectedDate] = {};
+        }
+
+        if (!entriesByDayAndHeader[selectedDate][columnId]) {
+            entriesByDayAndHeader[selectedDate][columnId] = [];
+        }
+
+        const cellData = initCellData(entry);
+        entriesByDayAndHeader[selectedDate][columnId].push(cellData);
+    });
+
+    return entriesByDayAndHeader;
 };

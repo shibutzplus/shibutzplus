@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useState, useContext, ReactNode, useEffect, useRef } from "react";
+import React, { createContext, useState, useContext, ReactNode, useEffect } from "react";
 import { TeacherRow, ActionColumnType } from "@/models/types/table";
 import { ColumnDef } from "@tanstack/react-table";
 import { TableRows } from "@/models/constant/table";
@@ -17,11 +17,11 @@ import DailyTeacherCell from "@/components/table/DailyTeacherCell/DailyTeacherCe
 import DailyTeacherHeader from "@/components/table/DailyTeacherHeader/DailyTeacherHeader";
 import { getTeacherScheduleByDayAction } from "@/app/actions/getTeacherScheduleByDayAction";
 import { useMainContext } from "./MainContext";
-import { getColumnDate } from "@/utils/time";
 import {
+    columnExistsForDate,
     createNewCellData,
     filterScheduleByDate,
-    initCellData,
+    groupScheduleEntriesByDateAndCol,
     setTeacherColumn,
 } from "@/services/dailyScheduleService";
 import { generateId } from "@/utils";
@@ -38,12 +38,10 @@ interface DailyTableContextType {
     removeColumn: () => void;
     clearTeacherColumn: (day: string, headerId: string) => void;
     populateTeacherColumn: (
-        selectedDate: string,
         id: string,
-        schoolId: string,
         dayNumber: number,
         teacherId: string,
-    ) => Promise<boolean>;
+    ) => Promise<DailyScheduleCell[] | undefined>;
     addNewSubTeacherCell: (
         hour: number,
         columnId: string,
@@ -52,13 +50,6 @@ interface DailyTableContextType {
         type: ColumnType,
     ) => Promise<DailyScheduleType | undefined>;
 }
-
-// on first load I need to get all the data from DB into dailyScheduleData.
-// in the popultion function Im checking the dailySchedule for the selected date, 
-// if the column already exsits Im render the column
-// if the column not exsits Im creating the column and render it
-// only if create new column or update exsisting one I update the dailySchedule state
-
 
 const DailyTableContext = createContext<DailyTableContextType | undefined>(undefined);
 
@@ -136,28 +127,24 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
 
     const populateDailyScheduleTable = async (dailyScheduleData: DailyScheduleType[]) => {
         try {
-            // Group entries by day and header ID for batch processing
-            const entriesByDayAndHeader: Record<string, Record<string, DailyScheduleCell[]>> = {};
-            const newSchedule: DailySchedule = { ...dailySchedule };
-            clearDailySchedule();
-
             const filteredData = filterScheduleByDate(dailyScheduleData, selectedDate);
 
-            // Process each schedule entry for the selected date
-            filteredData?.forEach((entry) => {
+            if (!filteredData || filteredData.length === 0) {
+                clearDailySchedule();
+                return true;
+            }
+
+            const entriesByDayAndHeader = groupScheduleEntriesByDateAndCol(
+                filteredData,
+                selectedDate,
+            );
+
+            // Track columns that need to be created or updated
+            const newColumns: { id: string; type: ActionColumnType }[] = [];
+            const columnsToUpdate = new Set<string>();
+
+            filteredData.forEach((entry) => {
                 const columnId = entry.columnId;
-
-                // Initialize grouping structure if needed
-                if (!entriesByDayAndHeader[selectedDate]) {
-                    entriesByDayAndHeader[selectedDate] = {};
-                }
-
-                if (!entriesByDayAndHeader[selectedDate][columnId]) {
-                    entriesByDayAndHeader[selectedDate][columnId] = [];
-                }
-
-                const cellData: DailyScheduleCell = initCellData(entry);
-                entriesByDayAndHeader[selectedDate][columnId].push(cellData);
 
                 let columnType: ColumnType = "info";
                 if (entry.absentTeacher) {
@@ -166,50 +153,78 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                     columnType = "existingTeacher";
                 }
 
-                // Make sure the column exists in tableColumns if it doesn't already
+                // Check if column exists in the UI
                 const columnExists = tableColumns.some((col) => col.id === columnId);
+
+                // Check if column exists in the schedule data
+                const columnHasData = columnExistsForDate(dailySchedule, selectedDate, columnId);
+
+                // If column doesn't exist in UI, create it
                 if (!columnExists) {
-                    const newCol = buildColumn(columnType as ActionColumnType, columnId);
-                    setActionCols((prev) => [...prev, newCol]);
+                    newColumns.push({
+                        id: columnId,
+                        type: columnType as ActionColumnType,
+                    });
+                }
+
+                // If column data needs updating, mark it for update
+                if (!columnHasData) {
+                    columnsToUpdate.add(columnId);
                 }
             });
 
-            // Use the service function to update the schedule for each date and header
-            Object.entries(entriesByDayAndHeader).forEach(([date, headerEntries]) => {
-                Object.entries(headerEntries).forEach(([columnId, cells]) => {
-                    // Use the service function to set the teacher column data
-                    setTeacherColumn(newSchedule, date, cells, columnId);
-                });
-            });
+            // Only create new columns if needed
+            if (newColumns.length > 0) {
+                const newColumnDefs = newColumns.map((col) => buildColumn(col.type, col.id));
 
-            // Update the daily schedule state
-            setDailySchedule(newSchedule);
+                setActionCols((prev) => [...prev, ...newColumnDefs]);
+            }
+
+            // Only update schedule data if needed
+            if (columnsToUpdate.size > 0) {
+                const newSchedule: DailySchedule = { ...dailySchedule };
+
+                Object.entries(entriesByDayAndHeader).forEach(([date, headerEntries]) => {
+                    Object.entries(headerEntries).forEach(([columnId, cells]) => {
+                        if (columnsToUpdate.has(columnId)) {
+                            setTeacherColumn(newSchedule, date, cells, columnId);
+                        }
+                    });
+                });
+                setDailySchedule(newSchedule);
+            }
+
             return true;
         } catch (error) {
-            console.error("Error fetching daily schedule data:", error);
+            console.error("Error processing daily schedule data:", error);
             return false;
         }
     };
 
     const populateTeacherColumn = async (
-        selectedDate: string,
         columnId: string,
-        schoolId: string,
         dayNumber: number,
         teacherId: string,
     ) => {
+        const schoolId = school?.id;
+        if (!schoolId) return;
         try {
             // Clear any existing data for this column
             clearTeacherColumn(selectedDate, columnId);
 
             const response = await getTeacherScheduleByDayAction(schoolId, dayNumber, teacherId);
             if (response.success && response.data) {
+                if(response.data.length === 0){
+                    return [];
+                }
+                
                 const scheduleData = response.data.map(
                     (item) =>
                         ({
                             hour: item.hour,
                             class: item.class,
                             subject: item.subject,
+                            headerTeacher: item.headerTeacher,
                         }) as DailyScheduleCell,
                 );
 
@@ -222,12 +237,12 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 );
                 setDailySchedule(updatedSchedule);
                 setSelectedTeacherId(teacherId);
-                return true;
+                return scheduleData;
             }
-            return false;
+            return undefined;
         } catch (error) {
             console.error("Error fetching teacher schedule:", error);
-            return false;
+            return undefined;
         }
     };
 
