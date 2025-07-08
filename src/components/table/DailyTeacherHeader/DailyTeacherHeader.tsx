@@ -1,14 +1,16 @@
 import React, { useState } from "react";
-import styles from "./DailyTeacherHeader.module.css";
 import DynamicInputSelect from "../../ui/InputSelect/DynamicInputSelect";
-import { useMainContext } from "@/context/MainContext";
 import { useDailyTableContext } from "@/context/DailyTableContext";
-import { useTopNav } from "@/context/TopNavContext";
 import { ColumnType } from "@/models/types/dailySchedule";
-import messages from "@/resources/messages";
-import { errorToast, successToast } from "@/lib/toast";
-import { createSelectOptions } from "@/utils/format";
 import { getDayNumberByDateString } from "@/utils/time";
+import { useMainContext } from "@/context/MainContext";
+import { errorToast, successToast } from "@/lib/toast";
+import { PopupAction } from "@/context/PopupContext";
+import { createSelectOptions } from "@/utils/format";
+import styles from "./DailyTeacherHeader.module.css";
+import useDeletePopup from "@/hooks/useDeletePopup";
+import { useTopNav } from "@/context/TopNavContext";
+import messages from "@/resources/messages";
 
 type DailyTeacherHeaderProps = {
     columnId: string;
@@ -17,8 +19,9 @@ type DailyTeacherHeaderProps = {
 
 const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId }) => {
     const { teachers } = useMainContext();
-    const { dailySchedule, populateTeacherColumn, clearTeacherColumn } = useDailyTableContext();
+    const { dailySchedule, populateTeacherColumn, deleteTeacherColumn } = useDailyTableContext();
     const { selectedDate } = useTopNav();
+    const { handleOpenPopup } = useDeletePopup();
     const [isLoading, setIsLoading] = useState(false);
 
     const selectedTeacherData = dailySchedule[selectedDate]?.[columnId]?.["1"]?.headerTeacher;
@@ -42,17 +45,29 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId }) => 
         }
     };
 
-    const handleClearColumn = () => {
-        clearTeacherColumn(selectedDate, columnId);
+    const deleteColumn = async () => {
+        const response = await deleteTeacherColumn(columnId);
+        if (response) {
+            successToast(messages.dailySchedule.deleteSuccess);
+        } else {
+            errorToast(messages.dailySchedule.deleteError);
+        }
+    };
+
+    const handleDeleteColumn = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        handleOpenPopup(
+            PopupAction.deleteDailyCol,
+            `האם אתה בטוח שברצונך למחוק את השורה`,
+            deleteColumn,
+        );
     };
 
     return (
         <div className={styles.columnHeader}>
-            <div>
-                <button className={styles.clearButton} onClick={handleClearColumn}>
-                    הסר
-                </button>
-            </div>
+            <button className={styles.clearButton} onClick={handleDeleteColumn}>
+                הסר
+            </button>
             <DynamicInputSelect
                 options={createSelectOptions(teachers)}
                 value={selectedTeacherData?.id || ""}

@@ -3,13 +3,13 @@
 import React from "react";
 import styles from "./ClassesList.module.css";
 import { ClassType } from "@/models/types/classes";
-import { usePopup } from "@/context/PopupContext";
 import TableList from "../core/TableList/TableList";
 import { useMainContext } from "@/context/MainContext";
-import DeletePopup from "../popups/DeletePopup/DeletePopup";
 import useSubmit from "@/hooks/useSubmit";
 import messages from "@/resources/messages";
 import { getStorageSchoolId } from "@/utils/localStorage";
+import useDeletePopup from "@/hooks/useDeletePopup";
+import { PopupAction } from "@/context/PopupContext";
 
 type ClassesListProps = {
     classes: ClassType[];
@@ -17,7 +17,7 @@ type ClassesListProps = {
 };
 
 const ClassesList: React.FC<ClassesListProps> = ({ classes, handleSelectClass }) => {
-    const { openPopup, closePopup } = usePopup();
+    const { handleOpenPopup } = useDeletePopup();
     const { deleteClass } = useMainContext();
 
     const { handleSubmitDelete, isLoading } = useSubmit(
@@ -31,24 +31,15 @@ const ClassesList: React.FC<ClassesListProps> = ({ classes, handleSelectClass })
         const schoolId = getStorageSchoolId();
         if (!schoolId) return;
         await handleSubmitDelete(schoolId, classId, deleteClass);
-        closePopup();
-    };
-
-    const handleOpenPopup = (classItem: ClassType) => {
-        openPopup(
-            "deleteClass",
-            "S",
-            <DeletePopup
-                text={`האם אתה בטוח שברצונך למחוק את הכיתה ${classItem.name}`}
-                onDelete={() => handleDeleteClassFromState(classItem.id)}
-                onCancel={() => closePopup()}
-            />,
-        );
     };
 
     const handleDeleteClass = (e: React.MouseEvent, classItem: ClassType) => {
         e.stopPropagation(); // Prevent row click when clicking delete
-        handleOpenPopup(classItem);
+        handleOpenPopup(
+            PopupAction.deleteClass,
+            `האם אתה בטוח שברצונך למחוק את הכיתה ${classItem.name}`,
+            () => handleDeleteClassFromState(classItem.id),
+        );
     };
 
     return (

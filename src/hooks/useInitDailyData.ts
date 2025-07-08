@@ -8,15 +8,15 @@ import { getDailyScheduleAction as getDailyScheduleFromDB } from "@/app/actions/
 import { CACHE_EXPIRATION } from "@/utils/time";
 
 interface useInitDailyDataProps {
-    dailyScheduleData: DailyScheduleType[] | undefined;
-    setDailyScheduleData: (dailySchedule: DailyScheduleType[] | undefined) => void;
+    dailyScheduleRawData: DailyScheduleType[] | undefined;
+    setDailyScheduleRawData: (dailySchedule: DailyScheduleType[] | undefined) => void;
 }
 
 /**
  * Initialize data for the app
  * Fetches data only when needed and minimizes redundant requests
  */
-const useInitDailyData = ({ dailyScheduleData, setDailyScheduleData }: useInitDailyDataProps) => {
+const useInitDailyData = ({ dailyScheduleRawData, setDailyScheduleRawData }: useInitDailyDataProps) => {
     const { data: session, status } = useSession();
     const dataFetchedRef = useRef(false);
     const lastFetchTimeRef = useRef<number>(0);
@@ -29,7 +29,7 @@ const useInitDailyData = ({ dailyScheduleData, setDailyScheduleData }: useInitDa
                 const lastCacheTime = Number(getCacheTimestamp() || '0');
                 const cacheExpired = (currentTime - lastCacheTime) > CACHE_EXPIRATION;
                 const shouldFetch = 
-                    !dailyScheduleData || 
+                    !dailyScheduleRawData || 
                     cacheExpired || 
                     (currentTime - lastFetchTimeRef.current > CACHE_EXPIRATION);
                 
@@ -40,7 +40,7 @@ const useInitDailyData = ({ dailyScheduleData, setDailyScheduleData }: useInitDa
                     const dailyRes = await getDailyScheduleFromDB(schoolId);
                     
                     if (dailyRes && dailyRes.success && dailyRes.data) {
-                        setDailyScheduleData(dailyRes.data);
+                        setDailyScheduleRawData(dailyRes.data);
                         lastFetchTimeRef.current = currentTime;
                         setCacheTimestamp(currentTime.toString());
                     }
@@ -63,7 +63,7 @@ const useInitDailyData = ({ dailyScheduleData, setDailyScheduleData }: useInitDa
         return () => {
             dataFetchedRef.current = false;
         };
-    }, [session, status, dailyScheduleData, setDailyScheduleData]);
+    }, [session, status, dailyScheduleRawData, setDailyScheduleRawData]);
 };
 
 export default useInitDailyData;

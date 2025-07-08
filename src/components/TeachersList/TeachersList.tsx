@@ -3,13 +3,13 @@
 import React from "react";
 import styles from "./TeachersList.module.css";
 import { TeacherType } from "@/models/types/teachers";
-import { usePopup } from "@/context/PopupContext";
 import TableList from "../core/TableList/TableList";
 import { useMainContext } from "@/context/MainContext";
-import DeletePopup from "../popups/DeletePopup/DeletePopup";
 import useSubmit from "@/hooks/useSubmit";
 import messages from "@/resources/messages";
 import { getStorageSchoolId } from "@/utils/localStorage";
+import useDeletePopup from "@/hooks/useDeletePopup";
+import { PopupAction } from "@/context/PopupContext";
 
 type TeachersListProps = {
     teachers: TeacherType[];
@@ -17,7 +17,7 @@ type TeachersListProps = {
 };
 
 const TeachersList: React.FC<TeachersListProps> = ({ teachers, handleSelectTeacher }) => {
-    const { openPopup, closePopup } = usePopup();
+    const { handleOpenPopup } = useDeletePopup();
     const { deleteTeacher } = useMainContext();
 
     const { handleSubmitDelete, isLoading } = useSubmit(
@@ -31,24 +31,15 @@ const TeachersList: React.FC<TeachersListProps> = ({ teachers, handleSelectTeach
         const schoolId = getStorageSchoolId();
         if (!schoolId) return;
         await handleSubmitDelete(schoolId, teacherId, deleteTeacher);
-        closePopup();
-    };
-
-    const handleOpenPopup = (teacher: TeacherType) => {
-        openPopup(
-            "deleteTeacher",
-            "S",
-            <DeletePopup
-                text={`האם אתה בטוח שברצונך למחוק את המורה ${teacher.name}`}
-                onDelete={() => handleDeleteTeacherFromState(teacher.id)}
-                onCancel={() => closePopup()}
-            />,
-        );
     };
 
     const handleDeleteTeacher = (e: React.MouseEvent, teacher: TeacherType) => {
         e.stopPropagation(); // Prevent row click when clicking delete
-        handleOpenPopup(teacher);
+        handleOpenPopup(
+            PopupAction.deleteTeacher,
+            `האם אתה בטוח שברצונך למחוק את המורה ${teacher.name}`,
+            () => handleDeleteTeacherFromState(teacher.id),
+        );
     };
 
     const displayRole = (role: string): React.ReactNode => {

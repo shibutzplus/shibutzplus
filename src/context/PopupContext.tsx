@@ -3,7 +3,14 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import PopupModal from "@/components/ui/PopupModal/PopupModal";
 import { PopupSize } from "@/models/types/ui";
-import { PopupType } from "@/models/types/ui";
+
+export type PopupType = "deleteTeacher" | "deleteClass" | "deleteSubject" | "deleteDailyCol";
+export const PopupAction: Record<PopupType, PopupType> = {
+    deleteTeacher: "deleteTeacher",
+    deleteClass: "deleteClass",
+    deleteSubject: "deleteSubject",
+    deleteDailyCol: "deleteDailyCol",
+};
 
 interface PopupContextType {
     openPopup: (name: PopupType, size: PopupSize, content: React.ReactNode) => void;

@@ -1,7 +1,18 @@
-export const sentences = {
+export type Sentences = {
+    description?: string;
+    m?: string;
+    f?: string;
+};
+
+export const sentences: Record<string, Sentences> = {
     test: {
+        description: "test description in english",
         m: "",
-        f: ""
+        f: "",
     },
-    test2: ""
-}
+    test2: {
+        description: "test description in english",
+        m: "",
+        f: "",
+    },
+};

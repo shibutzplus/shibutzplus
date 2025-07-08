@@ -10,7 +10,7 @@ import { tableActions } from "@/resources/tableActions";
  * Each button adds a new column to the schedule with specific input types and colors
  */
 const DailyTableTopBtns: React.FC = () => {
-    const { addColumn, removeColumn } = useDailyTableContext();
+    const { addNewColumn } = useDailyTableContext();
     return (
         <div className={styles.topButtonsContainer}>
             {tableActions.map((act, i) => (
@@ -22,8 +22,7 @@ const DailyTableTopBtns: React.FC = () => {
                     disabled={act.disabled}
                     onClick={() => {
                         if (act.disabled) return;
-                        if (act.isDelete) removeColumn();
-                        else if (act.key) addColumn(act.key);
+                        if (act.key) addNewColumn(act.key);
                     }}
                 >
                     {act.Icon}

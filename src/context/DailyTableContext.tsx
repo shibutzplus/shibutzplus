@@ -29,6 +29,7 @@ import {
 import { generateId } from "@/utils";
 import useInitDailyData from "@/hooks/useInitDailyData";
 import { addDailyCellAction } from "@/app/actions/addDailyCellAction";
+import { deleteDailyColumnAction } from "@/app/actions/deleteDailyColumnAction";
 import { useTopNav } from "./TopNavContext";
 import { TeacherType } from "@/models/types/teachers";
 
@@ -36,9 +37,9 @@ interface DailyTableContextType {
     data: TeacherRow[];
     tableColumns: ColumnDef<TeacherRow>[];
     dailySchedule: DailySchedule;
-    addColumn: (colType: ActionColumnType) => void;
-    removeColumn: () => void;
-    clearTeacherColumn: (day: string, headerId: string) => void;
+    addNewColumn: (colType: ActionColumnType) => void;
+    deleteTeacherColumn: (columnId: string) => Promise<boolean>;
+    clearTeacherColumn: (day: string, headerId: string) => Promise<void>;
     populateTeacherColumn: (
         id: string,
         dayNumber: number,
@@ -101,34 +102,55 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     const [tableColumns, setActionCols] = useState<ColumnDef<TeacherRow>[]>([]);
     const [dailySchedule, setDailySchedule] = useState<DailySchedule>({});
 
-    const [dailyScheduleData, setDailyScheduleData] = useState<DailyScheduleType[] | undefined>(
-        undefined,
-    );
+    const [dailyScheduleRawData, setDailyScheduleRawData] = useState<
+        DailyScheduleType[] | undefined
+    >(undefined);
 
     useInitDailyData({
-        dailyScheduleData,
-        setDailyScheduleData,
+        dailyScheduleRawData,
+        setDailyScheduleRawData,
     });
 
     useEffect(() => {
-        if (school && teachers && dailyScheduleData && dailyScheduleData.length > 0) {
-            populateDailyScheduleTable(dailyScheduleData);
+        if (school && teachers && dailyScheduleRawData && dailyScheduleRawData.length > 0) {
+            populateDailyScheduleTable(dailyScheduleRawData);
         }
-    }, [school, teachers, dailyScheduleData, selectedDate]);
+    }, [school, teachers, dailyScheduleRawData, selectedDate]);
 
-    const addColumn = (colType: ActionColumnType) => {
+    const addNewColumn = (colType: ActionColumnType) => {
         const columnId = `${colType}-${generateId()}`;
         const newCol = buildColumn(colType, columnId);
         setActionCols([...tableColumns, newCol]);
     };
 
-    const removeColumn = () => {
-        setActionCols(tableColumns.slice(1));
+    const deleteTeacherColumn = async (columnId: string) => {
+        if (!school?.id) return false;
+        const filteredCols = tableColumns.filter((col) => col.id !== columnId);
+        if (filteredCols.length === 0 || filteredCols.length === tableColumns.length) return false;
+
+        // Update UI immediately
+        setActionCols(filteredCols);
+        setDailySchedule((prev) => {
+            const updatedSchedule = { ...prev };
+            delete updatedSchedule[columnId];
+            return updatedSchedule;
+        });
+
+        try {
+            const response = await deleteDailyColumnAction(school.id, columnId);
+            if (response.success && response.dailySchedules) {
+                setDailyScheduleRawData(response.dailySchedules);
+                return true;
+            }
+        } catch (error) {
+            console.error("Error deleting daily column:", error);
+        }
+        return false;
     };
 
-    const populateDailyScheduleTable = async (dailyScheduleData: DailyScheduleType[]) => {
+    const populateDailyScheduleTable = async (dailyScheduleRawData: DailyScheduleType[]) => {
         try {
-            const filteredData = filterScheduleByDate(dailyScheduleData, selectedDate);
+            const filteredData = filterScheduleByDate(dailyScheduleRawData, selectedDate);
 
             if (!filteredData || filteredData.length === 0) {
                 clearDailySchedule();
@@ -210,7 +232,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         if (!schoolId) return;
         try {
             // Clear any existing data for this column
-            clearTeacherColumn(selectedDate, columnId);
+            await clearTeacherColumn(selectedDate, columnId);
 
             const response = await getTeacherScheduleByDayAction(schoolId, dayNumber, teacherId);
             if (response.success && response.data) {
@@ -254,24 +276,6 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         }
     };
 
-    const clearTeacherColumn = (day: string, columnId: string) => {
-        const updatedSchedule = { ...dailySchedule };
-
-        // Check if the day and header exist before trying to clear
-        if (updatedSchedule[day] && updatedSchedule[day][columnId]) {
-            // Clear all schedule data for this header on this day
-            updatedSchedule[day][columnId] = {};
-        }
-
-        setDailySchedule(updatedSchedule);
-    };
-
-    const clearDailySchedule = () => {
-        // Clear all existing data
-        setDailySchedule({});
-        setActionCols([]);
-    };
-
     const addNewSubTeacherCell = async (
         cellData: DailyScheduleCell,
         columnId: string,
@@ -298,7 +302,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
 
         const response = await addDailyCellAction(dailyCellData);
         if (response.success && response.data) {
-            setDailyScheduleData((prev) => {
+            setDailyScheduleRawData((prev) => {
                 if (!response.data) return prev;
                 const updatedSchedule = prev ? [...prev, response.data] : [response.data];
                 return updatedSchedule;
@@ -308,14 +312,32 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         return undefined;
     };
 
+    const clearTeacherColumn = async (day: string, columnId: string) => {
+        const updatedSchedule = { ...dailySchedule };
+
+        // Check if the day and header exist before trying to clear
+        if (updatedSchedule[day] && updatedSchedule[day][columnId]) {
+            // Clear all schedule data for this header on this day
+            updatedSchedule[day][columnId] = {};
+        }
+
+        setDailySchedule(updatedSchedule);
+    };
+
+    const clearDailySchedule = () => {
+        // Clear all existing data
+        setDailySchedule({});
+        setActionCols([]);
+    };
+
     return (
         <DailyTableContext.Provider
             value={{
                 data,
                 tableColumns,
                 dailySchedule,
-                addColumn,
-                removeColumn,
+                addNewColumn,
+                deleteTeacherColumn,
                 clearTeacherColumn,
                 populateTeacherColumn,
                 addNewSubTeacherCell,
