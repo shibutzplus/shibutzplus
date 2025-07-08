@@ -21,11 +21,11 @@ import {
     setStorageSubjects,
     setStorageTeachers,
 } from "@/utils/localStorage";
-import { getSchoolAction as getSchoolFromDB } from "@/app/actions/getSchoolAction";
-import { getTeachersAction as getTeachersFromDB } from "@/app/actions/getTeachersAction";
-import { getSubjectsAction as getSubjectsFromDB } from "@/app/actions/getSubjectsAction";
-import { getClassesAction as getClassesFromDB } from "@/app/actions/getClassesAction";
-import { getAnnualScheduleAction as getAnnualScheduleFromDB } from "@/app/actions/getAnnualScheduleAction";
+import { getSchoolAction as getSchoolFromDB } from "@/app/actions/GET/getSchoolAction";
+import { getTeachersAction as getTeachersFromDB } from "@/app/actions/GET/getTeachersAction";
+import { getSubjectsAction as getSubjectsFromDB } from "@/app/actions/GET/getSubjectsAction";
+import { getClassesAction as getClassesFromDB } from "@/app/actions/GET/getClassesAction";
+import { getAnnualScheduleAction as getAnnualScheduleFromDB } from "@/app/actions/GET/getAnnualScheduleAction";
 import { isCacheFresh } from "@/utils/time";
 
 interface useInitDataProps {

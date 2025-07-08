@@ -16,7 +16,7 @@ import {
 } from "@/models/types/dailySchedule";
 import DailyTeacherCell from "@/components/table/DailyTeacherCell/DailyTeacherCell";
 import DailyTeacherHeader from "@/components/table/DailyTeacherHeader/DailyTeacherHeader";
-import { getTeacherScheduleByDayAction } from "@/app/actions/getTeacherScheduleByDayAction";
+import { getTeacherScheduleByDayAction } from "@/app/actions/GET/getTeacherScheduleByDayAction";
 import { useMainContext } from "./MainContext";
 import {
     columnExistsForDate,
@@ -28,10 +28,10 @@ import {
 } from "@/services/dailyScheduleService";
 import { generateId } from "@/utils";
 import useInitDailyData from "@/hooks/useInitDailyData";
-import { addDailyCellAction } from "@/app/actions/addDailyCellAction";
-import { deleteDailyColumnAction } from "@/app/actions/deleteDailyColumnAction";
+import { deleteDailyColumnAction } from "@/app/actions/DELETE/deleteDailyColumnAction";
 import { useTopNav } from "./TopNavContext";
 import { TeacherType } from "@/models/types/teachers";
+import { addDailyCellAction } from "@/app/actions/POST/addDailyCellAction";
 
 interface DailyTableContextType {
     data: TeacherRow[];

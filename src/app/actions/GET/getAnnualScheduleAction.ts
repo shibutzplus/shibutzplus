@@ -4,7 +4,7 @@ import { AnnualScheduleType, GetAnnualScheduleResponse } from "@/models/types/an
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { eq } from "drizzle-orm";
-import { db, schema } from "../../db";
+import { db, schema } from "../../../db";
 
 export async function getAnnualScheduleAction(
     schoolId: string,

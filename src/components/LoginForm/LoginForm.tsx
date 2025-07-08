@@ -10,7 +10,7 @@ import Link from "next/link";
 import routePath from "../../routes";
 import { EmailLink } from "@/models/constant";
 import { SignInRequest } from "@/models/types/auth";
-import signInWithCredentials from "@/app/actions/singInAction";
+import signInWithCredentials from "@/app/actions/POST/singInAction";
 
 const LoginForm: React.FC = () => {
     const router = useRouter();
