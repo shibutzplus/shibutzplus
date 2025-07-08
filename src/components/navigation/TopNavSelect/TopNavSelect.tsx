@@ -1,7 +1,7 @@
 import React from "react";
 import DynamicInputSelect from "../../ui/InputSelect/DynamicInputSelect";
 import routePath from "../../../routes";
-import { useActions } from "@/context/ActionsContext";
+import { useTopNav } from "@/context/TopNavContext";
 
 type TopNavSelectProps = {
     type: string | null;
@@ -15,7 +15,7 @@ const TopNavSelect: React.FC<TopNavSelectProps> = ({ type }) => {
         handleDayChange,
         selectedClassId,
         selectedDate,
-    } = useActions();
+    } = useTopNav();
 
     if (!type) return null;
     switch (type) {

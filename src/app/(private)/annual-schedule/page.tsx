@@ -11,7 +11,7 @@ import { SubjectRequest, SubjectType } from "@/models/types/subjects";
 import { WeeklySchedule, AnnualScheduleRequest } from "@/models/types/annualSchedule";
 import { DAYS_OF_WEEK, dayToNumber } from "@/utils/time";
 import messages from "@/resources/messages";
-import { useActions } from "@/context/ActionsContext";
+import { useTopNav } from "@/context/TopNavContext";
 import { errorToast, successToast } from "@/lib/toast";
 import {
     getRowId,
@@ -36,7 +36,7 @@ const AnnualSchedulePage: NextPage = () => {
         updateExistingAnnualScheduleItem,
     } = useMainContext();
 
-    const { selectedClassId, getSelectedClass } = useActions();
+    const { selectedClassId, getSelectedClass } = useTopNav();
 
     const [schedule, setSchedule] = useState<WeeklySchedule>({});
 

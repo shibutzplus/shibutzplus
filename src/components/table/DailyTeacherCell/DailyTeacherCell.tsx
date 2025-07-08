@@ -5,7 +5,7 @@ import { useDailyTableContext } from "@/context/DailyTableContext";
 import { CellContext } from "@tanstack/react-table";
 import { TeacherRow } from "@/models/types/table";
 import { createSelectOptions } from "@/utils/format";
-import { useActions } from "@/context/ActionsContext";
+import { useTopNav } from "@/context/TopNavContext";
 import DynamicInputSelect from "@/components/ui/InputSelect/DynamicInputSelect";
 import { ColumnType } from "@/models/types/dailySchedule";
 import { errorToast, successToast } from "@/lib/toast";
@@ -19,7 +19,7 @@ type DailyTeacherCellProps = {
 const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
     const { teachers } = useMainContext();
     const { dailySchedule, addNewSubTeacherCell } = useDailyTableContext();
-    const { selectedDate } = useActions();
+    const { selectedDate } = useTopNav();
     const [isLoading, setIsLoading] = useState(false);
 
     // Get the current hour, class, subject, subTeacher and headerTeacher from the row data

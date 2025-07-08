@@ -3,7 +3,7 @@ import styles from "./DailyTeacherHeader.module.css";
 import DynamicInputSelect from "../../ui/InputSelect/DynamicInputSelect";
 import { useMainContext } from "@/context/MainContext";
 import { useDailyTableContext } from "@/context/DailyTableContext";
-import { useActions } from "@/context/ActionsContext";
+import { useTopNav } from "@/context/TopNavContext";
 import { ColumnType } from "@/models/types/dailySchedule";
 import messages from "@/resources/messages";
 import { errorToast, successToast } from "@/lib/toast";
@@ -18,7 +18,7 @@ type DailyTeacherHeaderProps = {
 const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId }) => {
     const { teachers } = useMainContext();
     const { dailySchedule, populateTeacherColumn, clearTeacherColumn } = useDailyTableContext();
-    const { selectedDate } = useActions();
+    const { selectedDate } = useTopNav();
     const [isLoading, setIsLoading] = useState(false);
 
     const selectedTeacherData = dailySchedule[selectedDate]?.[columnId]?.["1"]?.headerTeacher;

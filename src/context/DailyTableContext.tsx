@@ -29,7 +29,7 @@ import {
 import { generateId } from "@/utils";
 import useInitDailyData from "@/hooks/useInitDailyData";
 import { addDailyCellAction } from "@/app/actions/addDailyCellAction";
-import { useActions } from "./ActionsContext";
+import { useTopNav } from "./TopNavContext";
 import { TeacherType } from "@/models/types/teachers";
 
 interface DailyTableContextType {
@@ -92,7 +92,7 @@ interface DailyTableProviderProps {
 
 export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children }) => {
     const { school, teachers } = useMainContext();
-    const { selectedDate } = useActions();
+    const { selectedDate } = useTopNav();
 
     const [data] = useState<TeacherRow[]>(
         Array.from({ length: TableRows }, (_, i) => ({ hour: i + 1 })),
@@ -157,7 +157,6 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 // Check if column exists in the UI
                 const columnExists = tableColumns.some((col) => col.id === columnId);
 
-                // Check if column exists in the schedule data
                 const columnHasData = columnExistsForDate(dailySchedule, selectedDate, columnId);
 
                 // If column doesn't exist in UI, create it

@@ -7,9 +7,7 @@ import { ClassType } from "@/models/types/classes";
 import { SelectOption } from "@/models/types";
 import { getDayOptions, getTomorrowOption } from "@/resources/dayOptions";
 
-// TODO: delete this context and use the layout props
-
-interface ActionsContextType {
+interface TopNavContextType {
     selectedClassId: string;
     getSelectedClass: () => ClassType | undefined;
     classesSelectOptions: () => SelectOption[];
@@ -19,17 +17,17 @@ interface ActionsContextType {
     handleDayChange: (value: string) => void;
 }
 
-const ActionsContext = createContext<ActionsContextType | undefined>(undefined);
+const TopNavContext = createContext<TopNavContextType | undefined>(undefined);
 
-export const useActions = () => {
-    const context = useContext(ActionsContext);
+export const useTopNav = () => {
+    const context = useContext(TopNavContext);
     if (context === undefined) {
-        throw new Error("useActions must be used within an ActionsProvider");
+        throw new Error("useTopNav must be used within an TopNavProvider");
     }
     return context;
 };
 
-export const ActionsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const TopNavProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const { classes } = useMainContext();
     const [selectedClassId, setSelectedClassId] = useState<string>(classes?.[0]?.id || "");
     const [selectedDate, setSelectedDayId] = useState<string>(getTomorrowOption());
@@ -60,7 +58,7 @@ export const ActionsProvider: React.FC<{ children: ReactNode }> = ({ children })
         setSelectedDayId(value);
     };
 
-    const value: ActionsContextType = {
+    const value: TopNavContextType = {
         selectedClassId,
         getSelectedClass,
         classesSelectOptions,
@@ -70,5 +68,5 @@ export const ActionsProvider: React.FC<{ children: ReactNode }> = ({ children })
         handleDayChange,
     };
 
-    return <ActionsContext.Provider value={value}>{children}</ActionsContext.Provider>;
+    return <TopNavContext.Provider value={value}>{children}</TopNavContext.Provider>;
 };

@@ -2,12 +2,12 @@
 
 import React from "react";
 import { PopupProvider } from "@/context/PopupContext";
-import { ActionsProvider } from "@/context/ActionsContext";
+import { TopNavProvider } from "@/context/TopNavContext";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
     return (
         <PopupProvider>
-            <ActionsProvider>{children}</ActionsProvider>
+            <TopNavProvider>{children}</TopNavProvider>
         </PopupProvider>
     );
 }

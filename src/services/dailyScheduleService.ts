@@ -18,14 +18,10 @@ import {
 
 export const initDailySchedule = (dailySchedule: DailySchedule, date: string, columnId: string) => {
     // Initialize date if it doesn't exist
-    if (!dailySchedule[date]) {
-        dailySchedule[date] = {};
-    }
+    if (!dailySchedule[date]) dailySchedule[date] = {};
 
     // Initialize header if it doesn't exist
-    if (!dailySchedule[date][columnId]) {
-        dailySchedule[date][columnId] = {};
-    }
+    if (!dailySchedule[date][columnId]) dailySchedule[date][columnId] = {};
 
     return dailySchedule;
 };
