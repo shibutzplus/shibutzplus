@@ -25,6 +25,7 @@ const TopNavSelect: React.FC<TopNavSelectProps> = ({ type }) => {
                     options={daysSelectOptions()}
                     value={selectedDate}
                     onChange={handleDayChange}
+                    isSearchable={false}
                     placeholder="בחר יום..."
                     hasBorder
                 />
@@ -35,6 +36,7 @@ const TopNavSelect: React.FC<TopNavSelectProps> = ({ type }) => {
                     options={classesSelectOptions()}
                     value={selectedClassId}
                     onChange={handleClassChange}
+                    isSearchable={false}
                     placeholder="בחר כיתה..."
                     hasBorder
                 />

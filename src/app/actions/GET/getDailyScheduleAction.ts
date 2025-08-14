@@ -4,9 +4,9 @@ import { DailyScheduleType, GetDailyScheduleResponse } from "@/models/types/dail
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { and, between, eq, inArray } from "drizzle-orm";
-import { db, schema } from "../../db";
+import { db, schema } from "../../../db";
 import { getDateReturnString } from "@/utils/time";
-
+//ROY should only return the daily day he ask for
 export async function getDailyScheduleAction(schoolId: string): Promise<GetDailyScheduleResponse> {
     try {
         const authError = await checkAuthAndParams({ schoolId });
@@ -17,11 +17,9 @@ export async function getDailyScheduleAction(schoolId: string): Promise<GetDaily
         // Calculate the start and end of the current week (Sunday to Friday)
         const today = new Date();
         const currentDay = today.getDay(); // 0 = Sunday, 6 = Saturday
-        
         // Calculate the start of the week (Sunday)
         const startOfWeek = new Date(today);
         startOfWeek.setDate(today.getDate() - currentDay); // Go back to Sunday
-        
         // Calculate the end of the week (Friday)
         const endOfWeek = new Date(startOfWeek);
         endOfWeek.setDate(startOfWeek.getDate() + 5); // Go forward to Friday (5 days from Sunday)

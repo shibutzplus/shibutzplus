@@ -18,7 +18,7 @@ interface useInitDailyDataProps {
  */
 const useInitDailyData = ({ dailyScheduleRawData, setDailyScheduleRawData }: useInitDailyDataProps) => {
     const { data: session, status } = useSession();
-    const dataFetchedRef = useRef(false);
+    const BlockFetchRef = useRef<boolean>(false);
     const lastFetchTimeRef = useRef<number>(0);
 
     useEffect(() => {
@@ -32,13 +32,11 @@ const useInitDailyData = ({ dailyScheduleRawData, setDailyScheduleRawData }: use
                     !dailyScheduleRawData || 
                     cacheExpired || 
                     (currentTime - lastFetchTimeRef.current > CACHE_EXPIRATION);
-                
-                // Only fetch if we need to
-                if (shouldFetch && !dataFetchedRef.current) {
-                    dataFetchedRef.current = true; // Prevent multiple fetches
-                    
+
+                if (shouldFetch && !BlockFetchRef.current) {
+                    BlockFetchRef.current = true;
                     const dailyRes = await getDailyScheduleAction(schoolId);
-                    
+
                     if (dailyRes && dailyRes.success && dailyRes.data) {
                         setDailyScheduleRawData(dailyRes.data);
                         lastFetchTimeRef.current = currentTime;
@@ -47,7 +45,7 @@ const useInitDailyData = ({ dailyScheduleRawData, setDailyScheduleRawData }: use
                 }
             } catch (error) {
                 console.error("Error fetching daily schedule data:", error);
-                dataFetchedRef.current = false; // Reset so we can try again
+                BlockFetchRef.current = false;
             }
         };
 
@@ -61,7 +59,7 @@ const useInitDailyData = ({ dailyScheduleRawData, setDailyScheduleRawData }: use
         
         // Reset fetch flag when dependencies change
         return () => {
-            dataFetchedRef.current = false;
+            BlockFetchRef.current = false;
         };
     }, [session, status, dailyScheduleRawData, setDailyScheduleRawData]);
 };

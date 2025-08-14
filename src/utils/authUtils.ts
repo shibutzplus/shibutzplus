@@ -22,7 +22,7 @@ export async function checkAuthAndParams(
 
   // Check if all required parameters are provided
   for (const [paramName, paramValue] of Object.entries(requiredParams)) {
-    if (!paramValue) {
+    if (paramValue === null || paramValue === undefined || paramValue === "") {
       return {
         success: false,
         message: `${paramName} ${messages.auth.paramRequired}`,

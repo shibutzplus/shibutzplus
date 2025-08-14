@@ -28,17 +28,15 @@ export const getTomorrowDateString = () => {
     return getDateReturnString(tomorrow);
 };
 
+// -- Day -- //
+
 export const getDayNumberByDate = (date: Date) => {
     // Get day of week (0 = Sunday, 6 = Saturday)
     return date.getDay(); //TODO for Tuesday (3) I got Monday (2)
 };
 
 export const getDayNumberByDateString = (date: string) => {
-    return new Date(date).getDay(); //TODO for Tuesday (3) I got Monday (2)
-};
-
-export const getTodayNumber = () => {
-    return getDayNumberByDate(new Date());
+    return new Date(date).getDay()+1; //TODO for Tuesday (3) I got Monday (2)
 };
 
 export const dayToNumber = (day: string) => {
@@ -46,7 +44,21 @@ export const dayToNumber = (day: string) => {
     return DAYS_OF_WEEK.indexOf(day) + 1;
 };
 
-// ---
+// -- Date -- //
+
+export const getDateNumberByDate = (date: Date) => {
+    return date.getDate();
+};
+
+export const getDateNumberByDateString = (date: string) => {
+    return new Date(date).getDate();
+};
+
+export const getTodayDateNumber = () => {
+    return getDateNumberByDate(new Date());
+};
+
+// -- Cache -- //
 
 // Cache expiration time (1 hour in milliseconds)
 export const CACHE_EXPIRATION = 60 * 60 * 1000;
@@ -55,7 +67,7 @@ export const CACHE_EXPIRATION = 60 * 60 * 1000;
 export const isCacheFresh = (cacheTimestamp: string | null) =>
     cacheTimestamp && Date.now() - parseInt(cacheTimestamp) < CACHE_EXPIRATION;
 
-//---
+// -- Session -- //
 
 export const TWENTY_FOUR_HOURS = 24 * 60 * 60;
 

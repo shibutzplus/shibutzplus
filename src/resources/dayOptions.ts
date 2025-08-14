@@ -1,10 +1,11 @@
 import { SelectOption } from "@/models/types";
 import {
     DAYS_OF_WEEK,
+    getDateNumberByDate,
     getDateReturnString,
     getDayNumberByDate,
+    getTodayDateNumber,
     getTodayDateString,
-    getTodayNumber,
     getTomorrowDateString,
     ONE_WEEK,
     SATURDAY_NUMBER,
@@ -13,7 +14,8 @@ import {
 
 /**
  * Generates date options for a range of days (1 week before and 2 weeks after the current date)
- * @returns Array of SelectOption with date values in YYYY-MM-DD format and labels showing date and Hebrew day of week
+ * @returns Array of SelectOption with date values in YYYY-MM-DD format (getDateReturnString) 
+ * and labels showing date and day of week
  */
 export const getDayOptions = (): SelectOption[] => {
     const today = new Date();
@@ -21,13 +23,13 @@ export const getDayOptions = (): SelectOption[] => {
 
     // Start from 7 days ago
     const startDate = new Date(today);
-    startDate.setDate(getTodayNumber() - ONE_WEEK);
+    startDate.setDate(getTodayDateNumber() - ONE_WEEK);
 
     // Generate options for 21 days (1 week before + today + 2 weeks after)
     for (let i = 0; i < THREE_WEEKS; i++) {
         // Create a new date object for each day to avoid modifying the reference
         const currentDate = new Date(startDate);
-        currentDate.setDate(getDayNumberByDate(startDate) + i);
+        currentDate.setDate(getDateNumberByDate(startDate) + i);
 
         const dateValue = getDateReturnString(currentDate);
         const dayOfWeek = getDayNumberByDate(currentDate);
@@ -37,7 +39,8 @@ export const getDayOptions = (): SelectOption[] => {
 
         // Check if this date is today and add 'today' text if it is
         const isToday = getDateReturnString(currentDate) === getTodayDateString();
-        const label = `${dateValue} | יום ${DAYS_OF_WEEK[dayOfWeek]}${isToday ? " (היום)" : ""}`;
+        const isTomorrow = getDateReturnString(currentDate) === getTomorrowDateString();
+        const label = `${dateValue} | יום ${DAYS_OF_WEEK[dayOfWeek]}${isToday ? " (היום)" : ""}${isTomorrow ? " (מחר)" : ""}`;
 
         options.push({
             value: dateValue,

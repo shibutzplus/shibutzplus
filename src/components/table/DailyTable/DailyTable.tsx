@@ -1,14 +1,19 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import styles from "./DailyTable.module.css";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { TeacherRow } from "@/models/types/table";
+import { TableRows } from "@/models/constant/table";
 
 interface DailyTableProps {}
 
 const DailyTable: React.FC<DailyTableProps> = () => {
-    const { data, tableColumns } = useDailyTableContext();
+    const { tableColumns } = useDailyTableContext();
+    const [data] = useState<TeacherRow[]>(
+        Array.from({ length: TableRows }, (_, i) => ({ hour: i + 1 })),
+    );
 
     const baseCols = React.useMemo(
         () => [

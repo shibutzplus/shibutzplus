@@ -3,7 +3,6 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from "react";
 import { TeacherRow, ActionColumnType } from "@/models/types/table";
 import { ColumnDef } from "@tanstack/react-table";
-import { TableRows } from "@/models/constant/table";
 import InfoCell from "@/components/table/InfoCell/InfoCell";
 import InfoHeader from "@/components/table/InfoHeader/InfoHeader";
 import {
@@ -34,7 +33,6 @@ import { TeacherType } from "@/models/types/teachers";
 import { addDailyCellAction } from "@/app/actions/POST/addDailyCellAction";
 
 interface DailyTableContextType {
-    data: TeacherRow[];
     tableColumns: ColumnDef<TeacherRow>[];
     dailySchedule: DailySchedule;
     addNewColumn: (colType: ActionColumnType) => void;
@@ -95,10 +93,6 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     const { school, teachers } = useMainContext();
     const { selectedDate } = useTopNav();
 
-    const [data] = useState<TeacherRow[]>(
-        Array.from({ length: TableRows }, (_, i) => ({ hour: i + 1 })),
-    );
-
     const [tableColumns, setActionCols] = useState<ColumnDef<TeacherRow>[]>([]);
     const [dailySchedule, setDailySchedule] = useState<DailySchedule>({});
 
@@ -112,6 +106,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     });
 
     useEffect(() => {
+        // TODO trigger twice and not once
         if (school && teachers && dailyScheduleRawData && dailyScheduleRawData.length > 0) {
             populateDailyScheduleTable(dailyScheduleRawData);
         }
@@ -333,7 +328,6 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     return (
         <DailyTableContext.Provider
             value={{
-                data,
                 tableColumns,
                 dailySchedule,
                 addNewColumn,

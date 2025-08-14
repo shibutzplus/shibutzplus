@@ -4,7 +4,7 @@ import { DailyScheduleType, DailyScheduleRequest } from "@/models/types/dailySch
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { eq } from "drizzle-orm";
-import { db, schema } from "../../db";
+import { db, schema } from "../../../db";
 import { ActionResponse } from "@/models/types/actions";
 import { NewDailyScheduleSchema } from "@/db/schema";
 import { getDateReturnString, getStringReturnDate } from "@/utils/time";
