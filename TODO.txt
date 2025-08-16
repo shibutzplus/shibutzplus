@@ -10,7 +10,7 @@ v- daily - allow to add for all days
 - daily - DB take the day and convert it to date
 v- daily - delete column if click remove
 - daily - the cell select is from type SelectText not Select
-- daily - add info to DB
+v- daily - add info to DB
 - daily - open the date select on ..?
 - daily - get from DB 7 day when current day is the middle of the week (even if getting next week) - need to check with mom
 - daily - if I save one row from a teacher column, I only populate one row and not all the teacher rows. need to populate all the rows

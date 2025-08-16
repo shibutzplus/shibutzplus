@@ -9,12 +9,7 @@ import {
 import { SchoolType } from "@/models/types/school";
 import { SubjectType } from "@/models/types/subjects";
 import { TeacherType } from "@/models/types/teachers";
-import {
-    getDayNumberByDateString,
-    HOURS_IN_DAY,
-    getStringReturnDate,
-    getDateReturnString,
-} from "@/utils/time";
+import { getDayNumberByDateString, HOURS_IN_DAY, getStringReturnDate } from "@/utils/time";
 
 export const initDailySchedule = (dailySchedule: DailySchedule, date: string, columnId: string) => {
     // Initialize date if it doesn't exist
@@ -227,52 +222,6 @@ export const createNewEventCellData = (
 };
 
 // TODO: not in use
-export const filterScheduleByDate = (
-    dailyScheduleData: DailyScheduleType[],
-    selectedDate: string,
-) => {
-    // Filter data to only include entries for the selected date
-    const filteredData = dailyScheduleData?.filter((entry) => {
-        const entryDateStr =
-            entry.date instanceof Date
-                ? getDateReturnString(entry.date)
-                : getDateReturnString(new Date(entry.date));
-
-        return entryDateStr === selectedDate;
-    });
-
-    return filteredData;
-};
-
-/**
- * Check if a column already exists in the daily schedule for a specific date
- * @param dailySchedule The current daily schedule state
- * @param date The date to check (YYYY-MM-DD format)
- * @param columnId The column ID to check for
- * @returns Boolean indicating if the column exists and has data
- */
-export const columnExistsForDate = (
-    dailySchedule: DailySchedule,
-    date: string,
-    columnId: string,
-): boolean => {
-    // Check if the date exists in the schedule
-    if (!dailySchedule[date]) {
-        return false;
-    }
-
-    // Check if the column exists for this date
-    if (!dailySchedule[date][columnId]) {
-        return false;
-    }
-
-    // Check if the column has any data (at least one hour entry)
-    const hasData = Object.keys(dailySchedule[date][columnId]).length > 0;
-
-    return hasData;
-};
-
-// TODO: not in use
 /**
  * Group daily schedule entries by date and column ID
  * @param filteredData The filtered schedule data for a specific date
@@ -335,7 +284,7 @@ export const addNewEventCell = (
     event: string,
 ) => {
     const { hour, headerCol } = cellData;
-    console.log("cellData", cellData);
+
     if (!school || !event || !headerCol?.headerEvent) {
         return;
     }
@@ -345,8 +294,8 @@ export const addNewEventCell = (
         columnId,
         hour,
         school,
-        event,
         headerCol.headerEvent,
+        event,
     );
     return dailyCellData;
 };

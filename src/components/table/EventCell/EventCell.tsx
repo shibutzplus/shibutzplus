@@ -13,7 +13,7 @@ type EventCellProps = {
 };
 
 const EventCell: React.FC<EventCellProps> = ({ cell }) => {
-    const { dailySchedule, addNewCell, dailyScheduleRawData } = useDailyTableContext();
+    const { dailySchedule, addNewCell, updateCell, dailyScheduleRawData } = useDailyTableContext();
     const { selectedDate } = useTopNav();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -43,7 +43,14 @@ const EventCell: React.FC<EventCellProps> = ({ cell }) => {
                         entry.event === eventData,
                 );
                 if (existingDailyEntry) {
-                    //update
+                    response = await updateCell(
+                        "event",
+                        cellData,
+                        columnId,
+                        selectedDate,
+                        existingDailyEntry.id,
+                        { event: info },
+                    );
                 }
             } else {
                 response = await addNewCell("event", cellData, columnId, selectedDate, {
