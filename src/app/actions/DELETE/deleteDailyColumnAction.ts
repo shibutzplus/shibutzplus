@@ -10,14 +10,14 @@ import { and, eq } from "drizzle-orm";
 export async function deleteDailyColumnAction(
     schoolId: string,
     columnId: string,
+    date: string,
 ): Promise<ActionResponse & { dailySchedules?: DailyScheduleType[] }> {
     try {
-        const authError = await checkAuthAndParams({ schoolId, columnId });
+        const authError = await checkAuthAndParams({ schoolId, columnId, date });
         if (authError) {
             return authError as ActionResponse;
         }
 
-        // Delete all daily schedule entries for this column
         await db
             .delete(schema.dailySchedule)
             .where(
@@ -27,9 +27,11 @@ export async function deleteDailyColumnAction(
                 ),
             );
 
-        // Get the remaining daily schedules for this school
         const schedules = await db.query.dailySchedule.findMany({
-            where: eq(schema.dailySchedule.schoolId, schoolId),
+            where: and(
+                eq(schema.dailySchedule.schoolId, schoolId),
+                eq(schema.dailySchedule.date, date)
+            ),
             with: {
                 school: true,
                 class: true,
@@ -40,7 +42,6 @@ export async function deleteDailyColumnAction(
             },
         });
 
-        // Map the schedules to the expected format
         const dailySchedules = schedules.map((schedule) => ({
             id: schedule.id,
             date: new Date(schedule.date),

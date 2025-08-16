@@ -3,39 +3,21 @@
 import { DailyScheduleType, GetDailyScheduleResponse } from "@/models/types/dailySchedule";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
-import { and, between, eq, inArray } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db, schema } from "../../../db";
-import { getDateReturnString } from "@/utils/time";
-//ROY should only return the daily day he ask for
-export async function getDailyScheduleAction(schoolId: string): Promise<GetDailyScheduleResponse> {
+
+export async function getDailyScheduleAction(schoolId: string, date: string): Promise<GetDailyScheduleResponse> {
     try {
-        const authError = await checkAuthAndParams({ schoolId });
+        const authError = await checkAuthAndParams({ schoolId, date });
         if (authError) {
             return authError as GetDailyScheduleResponse;
         }
 
-        // Calculate the start and end of the current week (Sunday to Friday)
-        const today = new Date();
-        const currentDay = today.getDay(); // 0 = Sunday, 6 = Saturday
-        // Calculate the start of the week (Sunday)
-        const startOfWeek = new Date(today);
-        startOfWeek.setDate(today.getDate() - currentDay); // Go back to Sunday
-        // Calculate the end of the week (Friday)
-        const endOfWeek = new Date(startOfWeek);
-        endOfWeek.setDate(startOfWeek.getDate() + 5); // Go forward to Friday (5 days from Sunday)
-        
-        // Format dates for database query
-        const startDateStr = getDateReturnString(startOfWeek);
-        const endDateStr = getDateReturnString(endOfWeek);
-        
-        // Get days 1-6 (Sunday to Friday)
-        const weekDays = ['1', '2', '3', '4', '5', '6'];
-        
+
         const schedules = await db.query.dailySchedule.findMany({
             where: and(
                 eq(schema.dailySchedule.schoolId, schoolId),
-                between(schema.dailySchedule.date, startDateStr, endDateStr),
-                inArray(schema.dailySchedule.day, weekDays)
+                eq(schema.dailySchedule.date, date)
             ),
             with: {
                 class: true,

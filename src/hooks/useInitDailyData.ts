@@ -4,9 +4,9 @@ import { useSession } from "next-auth/react";
 import { DailyScheduleType } from "@/models/types/dailySchedule";
 import { useEffect, useRef } from "react";
 import { getCacheTimestamp, setCacheTimestamp } from "@/utils/localStorage";
-import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
+import { fetchDailyScheduleData } from "@/services/getDailyPerDate";
 import { CACHE_EXPIRATION } from "@/utils/time";
-
+// TODO: not in use
 interface useInitDailyDataProps {
     dailyScheduleRawData: DailyScheduleType[] | undefined;
     setDailyScheduleRawData: (dailySchedule: DailyScheduleType[] | undefined) => void;
@@ -35,7 +35,7 @@ const useInitDailyData = ({ dailyScheduleRawData, setDailyScheduleRawData }: use
 
                 if (shouldFetch && !BlockFetchRef.current) {
                     BlockFetchRef.current = true;
-                    const dailyRes = await getDailyScheduleAction(schoolId);
+                    const dailyRes = await fetchDailyScheduleData(schoolId);
 
                     if (dailyRes && dailyRes.success && dailyRes.data) {
                         setDailyScheduleRawData(dailyRes.data);

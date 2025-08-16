@@ -39,7 +39,7 @@ export const tableActions: {
         disabled: false,
     },
     {
-        key: "info",
+        key: "event",
         Icon: <FaPlus />,
         label: "מידע",
         style: { borderLeft: "4px solid #27ae60", color: "#27ae60" },

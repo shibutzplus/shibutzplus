@@ -30,10 +30,10 @@ export async function updateDailyScheduleAction(
             hour: scheduleData.hour,
             columnId: scheduleData.columnId,
             schoolId: school.id,
-            classId: classData.id,
-            subjectId: subject.id,
+            classId: classData?.id,
+            subjectId: subject?.id,
         });
-        if (authError) {
+        if (authError || !classData || !subject) {
             return authError as ActionResponse;
         }
 

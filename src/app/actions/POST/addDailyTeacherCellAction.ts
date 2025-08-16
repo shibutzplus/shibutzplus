@@ -8,10 +8,11 @@ import { ActionResponse } from "@/models/types/actions";
 import { NewDailyScheduleSchema } from "@/db/schema";
 import { getDateReturnString } from "@/utils/time";
 
-export async function addDailyCellAction(
+export async function addDailyTeacherCellAction(
     scheduleCellData: DailyScheduleRequest,
 ): Promise<ActionResponse & { data?: DailyScheduleType }> {
     try {
+        console.log("RYP scheduleCellData", scheduleCellData)
         const {
             date,
             day,
@@ -23,6 +24,8 @@ export async function addDailyCellAction(
             absentTeacher,
             presentTeacher,
             subTeacher,
+            eventTitle,
+            event
         } = scheduleCellData;
 
         const authError = await checkAuthAndParams({
@@ -30,10 +33,12 @@ export async function addDailyCellAction(
             hour: hour,
             columnId: columnId,
             schoolId: school.id,
-            classId: classData.id,
-            subjectId: subject.id,
+            classId: classData?.id,
+            subjectId: subject?.id,
+            eventTitle: eventTitle,
+            event: event
         });
-        if (authError) {
+        if (authError || !classData || !subject) {
             return authError as ActionResponse;
         }
 
@@ -48,6 +53,8 @@ export async function addDailyCellAction(
             absentTeacherId: absentTeacher?.id,
             presentTeacherId: presentTeacher?.id,
             subTeacherId: subTeacher?.id,
+            eventTitle: eventTitle,
+            event: event
         };
 
         const newDailySchedule = (
@@ -78,6 +85,8 @@ export async function addDailyCellAction(
                 presentTeacher,
                 subTeacher,
                 subject,
+                eventTitle,
+                event,
             } as DailyScheduleType,
         };
     } catch (error) {

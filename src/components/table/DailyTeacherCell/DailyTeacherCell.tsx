@@ -13,27 +13,28 @@ import messages from "@/resources/messages";
 
 type DailyTeacherCellProps = {
     cell: CellContext<TeacherRow, unknown>;
-    type: Exclude<ColumnType, "info">;
+    type: Exclude<ColumnType, "event">;
 };
 
 const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
     const { teachers } = useMainContext();
-    const { dailySchedule, addNewSubTeacherCell } = useDailyTableContext();
+    const { dailySchedule, addNewCell, dailyScheduleRawData, updateCell } =
+        useDailyTableContext();
     const { selectedDate } = useTopNav();
     const [isLoading, setIsLoading] = useState(false);
 
-    // Get the current hour, class, subject, subTeacher and headerTeacher from the row data
+    // Get the current hour, class, subject, subTeacher and headerCol from the row data
     const columnId = cell?.column?.id;
     const hour = cell?.row?.original?.hour.toString();
     const classData = dailySchedule[selectedDate]?.[columnId]?.[hour]?.class;
     const subjectData = dailySchedule[selectedDate]?.[columnId]?.[hour]?.subject;
     const subTeacherData = dailySchedule[selectedDate]?.[columnId]?.[hour]?.subTeacher;
-    const headerTeacherData = dailySchedule[selectedDate]?.[columnId]?.[hour]?.headerTeacher;
+    const headerData = dailySchedule[selectedDate]?.[columnId]?.[hour]?.headerCol;
 
     const [selectedSubTeacher, setSelectedSubTeacher] = useState<string>(subTeacherData?.id || "");
 
     const handleTeacherChange = async (teacherId: string) => {
-        if (!hour || !columnId || !selectedDate || !headerTeacherData) return;
+        if (!hour || !columnId || !selectedDate || !headerData) return;
         setIsLoading(true);
         setSelectedSubTeacher(teacherId);
 
@@ -44,22 +45,51 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
             const cellData = dailySchedule[selectedDate]?.[columnId]?.[hour];
             if (!cellData) return;
 
-            const response = await addNewSubTeacherCell(
-                cellData,
-                columnId,
-                selectedDate,
-                newSubTeacherData,
-                type,
-            );
-            if (response) {
-                successToast(messages.dailySchedule.createSuccess);
+            let response;
+            if (subTeacherData) {
+                const existingDailyEntry = dailyScheduleRawData?.find(
+                    (entry) =>
+                        entry.columnId === columnId &&
+                        entry.hour === Number(hour) &&
+                        entry.subTeacher?.id === subTeacherData.id,
+                );
+                if (existingDailyEntry) {
+                    response = await updateCell(
+                        type,
+                        cellData,
+                        columnId,
+                        selectedDate,
+                        existingDailyEntry.id,
+                        { subTeacher: newSubTeacherData },
+                    );
+                }
             } else {
-                errorToast(messages.dailySchedule.createError);
+                response = await addNewCell(type, cellData, columnId, selectedDate, {
+                    subTeacher: newSubTeacherData,
+                });
+            }
+
+            if (response) {
+                successToast(
+                    subTeacherData
+                        ? messages.dailySchedule.updateSuccess
+                        : messages.dailySchedule.createSuccess,
+                );
+            } else {
+                errorToast(
+                    subTeacherData
+                        ? messages.dailySchedule.updateError
+                        : messages.dailySchedule.createError,
+                );
                 setSelectedSubTeacher("");
             }
         } catch (error) {
-            console.error("Error adding daily schedule entry:", error);
-            errorToast(messages.dailySchedule.createError);
+            console.error("Error handling daily schedule entry:", error);
+            errorToast(
+                subTeacherData
+                    ? messages.dailySchedule.updateError
+                    : messages.dailySchedule.createError,
+            );
             setSelectedSubTeacher("");
         } finally {
             setIsLoading(false);
