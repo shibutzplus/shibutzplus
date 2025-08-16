@@ -13,28 +13,28 @@ import messages from "@/resources/messages";
 
 type DailyTeacherCellProps = {
     cell: CellContext<TeacherRow, unknown>;
-    type: Exclude<ColumnType, "info">;
+    type: Exclude<ColumnType, "event">;
 };
 
 const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
     const { teachers } = useMainContext();
-    const { dailySchedule, addNewSubTeacherCell, dailyScheduleRawData, updateSubTeacherCell } =
+    const { dailySchedule, addNewCell, dailyScheduleRawData, updateSubTeacherCell } =
         useDailyTableContext();
     const { selectedDate } = useTopNav();
     const [isLoading, setIsLoading] = useState(false);
 
-    // Get the current hour, class, subject, subTeacher and headerTeacher from the row data
+    // Get the current hour, class, subject, subTeacher and headerCol from the row data
     const columnId = cell?.column?.id;
     const hour = cell?.row?.original?.hour.toString();
     const classData = dailySchedule[selectedDate]?.[columnId]?.[hour]?.class;
     const subjectData = dailySchedule[selectedDate]?.[columnId]?.[hour]?.subject;
     const subTeacherData = dailySchedule[selectedDate]?.[columnId]?.[hour]?.subTeacher;
-    const headerTeacherData = dailySchedule[selectedDate]?.[columnId]?.[hour]?.headerTeacher;
+    const headerData = dailySchedule[selectedDate]?.[columnId]?.[hour]?.headerCol;
 
     const [selectedSubTeacher, setSelectedSubTeacher] = useState<string>(subTeacherData?.id || "");
 
     const handleTeacherChange = async (teacherId: string) => {
-        if (!hour || !columnId || !selectedDate || !headerTeacherData) return;
+        if (!hour || !columnId || !selectedDate || !headerData) return;
         setIsLoading(true);
         setSelectedSubTeacher(teacherId);
 
@@ -64,13 +64,9 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
                     );
                 }
             } else {
-                response = await addNewSubTeacherCell(
-                    cellData,
-                    columnId,
-                    selectedDate,
-                    newSubTeacherData,
-                    type,
-                );
+                response = await addNewCell(type, cellData, columnId, selectedDate, {
+                    subTeacher: newSubTeacherData,
+                });
             }
 
             if (response) {

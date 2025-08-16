@@ -9,7 +9,7 @@ export type ActionColumnType =
     | "history"
     | "missingTeacher"
     | "existingTeacher"
-    | "info"
+    | "event"
     | "delete"
     | "update"
     | "move";

@@ -13,8 +13,8 @@ export type DailyScheduleType = {
     eventTitle?: string;
     event?: string;
     school: SchoolType;
-    class: ClassType;
-    subject: SubjectType;
+    class?: ClassType;
+    subject?: SubjectType;
     absentTeacher?: TeacherType;
     presentTeacher?: TeacherType;
     subTeacher?: TeacherType;
@@ -30,8 +30,8 @@ export type DailyScheduleRequest = {
     eventTitle?: string;
     event?: string;
     school: SchoolType;
-    class: ClassType;
-    subject: SubjectType;
+    class?: ClassType;
+    subject?: SubjectType;
     absentTeacher?: TeacherType;
     presentTeacher?: TeacherType;
     subTeacher?: TeacherType;
@@ -41,7 +41,7 @@ export type GetDailyScheduleResponse = ActionResponse & {
     data?: DailyScheduleType[];
 };
 
-export type ColumnType = "existingTeacher" | "info" | "missingTeacher";
+export type ColumnType = "existingTeacher" | "event" | "missingTeacher";
 
 export interface ScheduleColumn {
     id: string;
@@ -49,8 +49,13 @@ export interface ScheduleColumn {
     title: string;
 }
 
-export type DailyScheduleCell = {
+export type HeaderCol = {
     headerTeacher?: TeacherType;
+    headerEvent?: string;
+}
+
+export type DailyScheduleCell = {
+    headerCol?: HeaderCol;
     subTeacher?: TeacherType;
     subject?: SubjectType;
     class?: ClassType;
@@ -70,7 +75,7 @@ export type TeacherHourlyScheduleItem = {
     hour: number;
     class: ClassType;
     subject: SubjectType;
-    headerTeacher: TeacherType;
+    headerCol: HeaderCol;
 };
 
 export type GetTeacherScheduleResponse = ActionResponse & {

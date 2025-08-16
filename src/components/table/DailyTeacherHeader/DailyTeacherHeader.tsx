@@ -14,7 +14,7 @@ import messages from "@/resources/messages";
 
 type DailyTeacherHeaderProps = {
     columnId: string;
-    type: Exclude<ColumnType, "info">;
+    type: Exclude<ColumnType, "event">;
 };
 
 const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId }) => {
@@ -24,7 +24,8 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId }) => 
     const { handleOpenPopup } = useDeletePopup();
     const [isLoading, setIsLoading] = useState(false);
 
-    const selectedTeacherData = dailySchedule[selectedDate]?.[columnId]?.["1"]?.headerTeacher;
+    const selectedTeacherData =
+        dailySchedule[selectedDate]?.[columnId]?.["1"]?.headerCol?.headerTeacher;
 
     const handleTeacherChange = async (value: string) => {
         const teacherId = value;

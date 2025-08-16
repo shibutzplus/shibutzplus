@@ -46,7 +46,7 @@ export async function getTeacherScheduleByDayAction(
                     hour: schedule.hour,
                     class: schedule.class,
                     subject: schedule.subject,
-                    headerTeacher: schedule.teacher,
+                    headerCol: {headerTeacher: schedule.teacher}
                 }) as TeacherHourlyScheduleItem,
         );
 

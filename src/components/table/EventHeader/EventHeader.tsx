@@ -1,22 +1,29 @@
 import React from "react";
-import styles from "./InfoHeader.module.css";
+import styles from "./EventHeader.module.css";
 import InputText from "../../ui/InputText/InputText";
 import useDeletePopup from "@/hooks/useDeletePopup";
 import { PopupAction } from "@/context/PopupContext";
 import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { useDailyTableContext } from "@/context/DailyTableContext";
+import { useTopNav } from "@/context/TopNavContext";
 
-type InfoHeaderProps = {
+type EventHeaderProps = {
     columnId: string;
 };
 
-const InfoHeader: React.FC<InfoHeaderProps> = ({ columnId }) => {
+const EventHeader: React.FC<EventHeaderProps> = ({ columnId }) => {
     const { handleOpenPopup } = useDeletePopup();
-    const { dailySchedule, populateTeacherColumn, deleteColumn } = useDailyTableContext();
+    const { deleteColumn, populateEventColumn, dailySchedule } = useDailyTableContext();
+    const { selectedDate } = useTopNav();
+
+    const selectedEventData =
+        dailySchedule[selectedDate]?.[columnId]?.["1"]?.headerCol?.headerEvent;
 
     const handleChange = (value: string) => {
-        console.log("InfoHeader input changed:", value);
+        if (value.trim()) {
+            populateEventColumn(columnId, value);
+        }
     };
 
     const deleteCol = async () => {
@@ -46,9 +53,10 @@ const InfoHeader: React.FC<InfoHeaderProps> = ({ columnId }) => {
                 placeholder="מידע"
                 backgroundColor="transparent"
                 onBlur={(e) => handleChange(e.target.value)}
+                defaultValue={selectedEventData || ""}
             />
         </div>
     );
 };
 
-export default InfoHeader;
+export default EventHeader;
