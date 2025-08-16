@@ -19,7 +19,7 @@ type DailyTeacherHeaderProps = {
 
 const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId }) => {
     const { teachers } = useMainContext();
-    const { dailySchedule, populateTeacherColumn, deleteTeacherColumn } = useDailyTableContext();
+    const { dailySchedule, populateTeacherColumn, deleteColumn } = useDailyTableContext();
     const { selectedDate } = useTopNav();
     const { handleOpenPopup } = useDeletePopup();
     const [isLoading, setIsLoading] = useState(false);
@@ -45,8 +45,8 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId }) => 
         }
     };
 
-    const deleteColumn = async () => {
-        const response = await deleteTeacherColumn(columnId);
+    const deleteCol = async () => {
+        const response = await deleteColumn(columnId);
         if (response) {
             successToast(messages.dailySchedule.deleteSuccess);
         } else {
@@ -59,7 +59,7 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId }) => 
         handleOpenPopup(
             PopupAction.deleteDailyCol,
             `האם אתה בטוח שברצונך למחוק את השורה`,
-            deleteColumn,
+            deleteCol,
         );
     };
 

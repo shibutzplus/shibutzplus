@@ -18,7 +18,8 @@ type DailyTeacherCellProps = {
 
 const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
     const { teachers } = useMainContext();
-    const { dailySchedule, addNewSubTeacherCell } = useDailyTableContext();
+    const { dailySchedule, addNewSubTeacherCell, dailyScheduleRawData, updateSubTeacherCell } =
+        useDailyTableContext();
     const { selectedDate } = useTopNav();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -44,22 +45,55 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
             const cellData = dailySchedule[selectedDate]?.[columnId]?.[hour];
             if (!cellData) return;
 
-            const response = await addNewSubTeacherCell(
-                cellData,
-                columnId,
-                selectedDate,
-                newSubTeacherData,
-                type,
-            );
-            if (response) {
-                successToast(messages.dailySchedule.createSuccess);
+            let response;
+            if (subTeacherData) {
+                const existingDailyEntry = dailyScheduleRawData?.find(
+                    (entry) =>
+                        entry.columnId === columnId &&
+                        entry.hour === Number(hour) &&
+                        entry.subTeacher?.id === subTeacherData.id,
+                );
+                if (existingDailyEntry) {
+                    response = await updateSubTeacherCell(
+                        existingDailyEntry.id,
+                        cellData,
+                        columnId,
+                        selectedDate,
+                        newSubTeacherData,
+                        type,
+                    );
+                }
             } else {
-                errorToast(messages.dailySchedule.createError);
+                response = await addNewSubTeacherCell(
+                    cellData,
+                    columnId,
+                    selectedDate,
+                    newSubTeacherData,
+                    type,
+                );
+            }
+
+            if (response) {
+                successToast(
+                    subTeacherData
+                        ? messages.dailySchedule.updateSuccess
+                        : messages.dailySchedule.createSuccess,
+                );
+            } else {
+                errorToast(
+                    subTeacherData
+                        ? messages.dailySchedule.updateError
+                        : messages.dailySchedule.createError,
+                );
                 setSelectedSubTeacher("");
             }
         } catch (error) {
-            console.error("Error adding daily schedule entry:", error);
-            errorToast(messages.dailySchedule.createError);
+            console.error("Error handling daily schedule entry:", error);
+            errorToast(
+                subTeacherData
+                    ? messages.dailySchedule.updateError
+                    : messages.dailySchedule.createError,
+            );
             setSelectedSubTeacher("");
         } finally {
             setIsLoading(false);
