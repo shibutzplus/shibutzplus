@@ -76,6 +76,8 @@ export const getExpireTime = (remember: any) => {
     return Math.floor(Date.now() / 1000) + maxAge;
 };
 
+export const COOKIES_EXPIRE_TIME = 365;
+
 //--
 
 export const getCurrentWeekEntries = (data?: DailyScheduleType[]) => {

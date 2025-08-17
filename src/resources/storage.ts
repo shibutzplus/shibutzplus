@@ -7,3 +7,8 @@ export const STORAGE_KEYS = {
     SUBJECTS_DATA: "shibutzplus_subjects_data",
     CACHE_TIMESTAMP: "shibutzplus_cache_timestamp",
 };
+
+// Cookies keys
+export const COOKIES_KEYS = {
+    REMEMBERED_TEACHER: "remembered_teacher",
+}

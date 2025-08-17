@@ -41,6 +41,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
 }) => {
     const [options, setOptions] = useState<SelectOption[]>(initialOptions);
     const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
+    const [isMounted, setIsMounted] = useState(false);
 
     // Generate a unique instanceId for SSR consistency
     const selectInstanceId = useId();
@@ -84,10 +85,8 @@ const InputSelect: React.FC<InputSelectProps> = ({
     };
 
     useEffect(() => {
-        // Ensure document is defined (client-side only)
-        if (typeof document !== "undefined") {
-            // This effect runs only on client-side
-        }
+        // Set mounted state to true after component mounts on client
+        setIsMounted(true);
     }, []);
 
     return (
@@ -108,7 +107,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
                 isClearable={isClearable}
                 isDisabled={isDisabled}
                 placeholder={placeholder}
-                menuPortalTarget={typeof document !== "undefined" ? document.body : null}
+                menuPortalTarget={isMounted ? document.body : null}
                 menuPlacement="auto"
                 noOptionsMessage={({ inputValue }) =>
                     allowAddNew ? (

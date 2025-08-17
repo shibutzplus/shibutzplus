@@ -12,7 +12,6 @@ export async function addDailyTeacherCellAction(
     scheduleCellData: DailyScheduleRequest,
 ): Promise<ActionResponse & { data?: DailyScheduleType }> {
     try {
-        console.log("RYP scheduleCellData", scheduleCellData)
         const {
             date,
             day,
@@ -35,8 +34,6 @@ export async function addDailyTeacherCellAction(
             schoolId: school.id,
             classId: classData?.id,
             subjectId: subject?.id,
-            eventTitle: eventTitle,
-            event: event
         });
         if (authError || !classData || !subject) {
             return authError as ActionResponse;

@@ -48,3 +48,10 @@ v - teachers - fix the role in the DB
 
 - annual - insted of filter teachers. show all the teachers but color the teachers that already selected in the same time
 - daily - show week before, two week after in the day select (day of the week + date)
+
+
+
+DB addition
+- school - publish_dates [01-01-1111, 02-02-2222]
+- daily - class_ids possible null
+- daily - instructions

@@ -1,0 +1,52 @@
+.container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  padding: 0;
+}
+
+.contentWrapper {
+  display: flex;
+  flex-direction: row-reverse; /* Reverse the order for RTL layout */
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .schoolSection,
+  .formContainer {
+    padding: 3rem 3rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .schoolSection,
+  .formContainer {
+    padding: 3rem 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .contentWrapper {
+    flex-direction: column;
+  }
+  
+  .schoolSection {
+    padding: 3rem 2rem;
+    min-height: 50vh;
+  }
+  
+  .formContainer {
+    padding: 3rem 2rem;
+    min-height: 50vh;
+  }
+}
+
+@media (max-width: 576px) {
+  .schoolSection,
+  .formContainer {
+    padding: 2rem 1.5rem;
+  }
+}

@@ -171,7 +171,7 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ selectedTeacher }) => {
                     }));
                 }}
                 options={[
-                    { value: TeacherRoleValues.REGULAR, label: "מן המניין" },
+                    { value: TeacherRoleValues.REGULAR, label: "מורה" },
                     { value: TeacherRoleValues.SUBSTITUTE, label: "מורה מחליף/ה" },
                 ]}
             />

@@ -68,7 +68,6 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
                     subTeacher: newSubTeacherData,
                 });
             }
-
             if (response) {
                 successToast(
                     subTeacherData
@@ -84,7 +83,6 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
                 setSelectedSubTeacher("");
             }
         } catch (error) {
-            console.error("Error handling daily schedule entry:", error);
             errorToast(
                 subTeacherData
                     ? messages.dailySchedule.updateError
@@ -108,7 +106,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
                             options={createSelectOptions(teachers)}
                             value={selectedSubTeacher}
                             onChange={handleTeacherChange}
-                            placeholder="בחר מורה"
+                            placeholder="בחירת מורה מחליף"
                             isSearchable
                             hasBorder
                             isDisabled={isLoading}

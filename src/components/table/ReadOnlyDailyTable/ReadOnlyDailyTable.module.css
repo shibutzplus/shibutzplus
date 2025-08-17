@@ -1,0 +1,157 @@
+.tableContainer {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    background-color: white;
+}
+
+.scheduleTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    direction: rtl;
+}
+
+.hourHeader,
+.columnHeader {
+    background-color: #f7fafc;
+    border: 1px solid #e2e8f0;
+    padding: 0.75rem;
+    text-align: center;
+    font-weight: 600;
+    color: #2d3748;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.hourHeader {
+    background-color: #edf2f7;
+    min-width: 60px;
+    position: sticky;
+    right: 0;
+    z-index: 11;
+}
+
+.hourCell {
+    background-color: #f7fafc;
+    border: 1px solid #e2e8f0;
+    padding: 0.75rem;
+    text-align: center;
+    font-weight: 600;
+    color: #2d3748;
+    min-width: 60px;
+    position: sticky;
+    right: 0;
+    z-index: 1;
+}
+
+.scheduleCell {
+    border: 1px solid #e2e8f0;
+    padding: 0.5rem;
+    vertical-align: top;
+    min-height: 80px;
+    background-color: white;
+}
+
+.scheduleCell:hover {
+    background-color: #f7fafc;
+}
+
+.teacherCell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-height: 60px;
+}
+
+.classSubject {
+    font-weight: 600;
+    color: #2d3748;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+}
+
+.absentTeacher,
+.presentTeacher,
+.subTeacher {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+}
+
+.absentTeacher {
+    color: #e53e3e;
+}
+
+.presentTeacher {
+    color: #38a169;
+}
+
+.subTeacher {
+    color: #3182ce;
+}
+
+.label {
+    font-weight: 500;
+}
+
+.teacherName {
+    font-weight: 400;
+}
+
+.eventCell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    background-color: #fef5e7;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    border: 1px solid #f6ad55;
+}
+
+.eventTitle {
+    font-weight: 600;
+    color: #c05621;
+    font-size: 0.875rem;
+}
+
+.eventDescription {
+    font-size: 0.75rem;
+    color: #744210;
+}
+
+.noData {
+    text-align: center;
+    padding: 3rem;
+    color: #718096;
+    font-size: 1.1rem;
+    background-color: #f7fafc;
+    border-radius: 0.5rem;
+    border: 2px dashed #e2e8f0;
+}
+
+@media (max-width: 768px) {
+    .scheduleTable {
+        font-size: 0.75rem;
+    }
+    
+    .hourHeader,
+    .columnHeader,
+    .hourCell,
+    .scheduleCell {
+        padding: 0.5rem;
+    }
+    
+    .classSubject {
+        font-size: 0.75rem;
+    }
+    
+    .absentTeacher,
+    .presentTeacher,
+    .subTeacher {
+        font-size: 0.625rem;
+    }
+}

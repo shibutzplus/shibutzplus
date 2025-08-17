@@ -345,7 +345,6 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
             );
             if (dailyCellData) response = await addDailyTeacherCellAction(dailyCellData);
         }
-
         if (response?.success && response.data) {
             setDailyScheduleRawData((prev) => {
                 if (!response.data) return prev;
