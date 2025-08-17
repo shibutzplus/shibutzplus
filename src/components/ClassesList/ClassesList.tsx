@@ -10,6 +10,7 @@ import messages from "@/resources/messages";
 import { getStorageSchoolId } from "@/utils/localStorage";
 import useDeletePopup from "@/hooks/useDeletePopup";
 import { PopupAction } from "@/context/PopupContext";
+import { sortByHebrewName } from "@/utils/format";
 
 type ClassesListProps = {
     classes: ClassType[];
@@ -42,10 +43,12 @@ const ClassesList: React.FC<ClassesListProps> = ({ classes, handleSelectClass })
         );
     };
 
+    const sortedClasses = sortByHebrewName(classes);
+
     return (
         <TableList headThs={["שם כיתה", ""]}>
             <tbody>
-                {classes.map((classItem) => (
+                {sortedClasses.map((classItem) => (
                     <tr
                         key={classItem.id}
                         className={styles.classRow}

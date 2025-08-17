@@ -8,6 +8,7 @@ import routePath from "../../../routes";
 import { useAccessibility } from "../../../hooks/useAccessibility";
 import { PiChairLight } from "react-icons/pi";
 import { clearStorage } from "@/utils/localStorage";
+import { GoHistory } from "react-icons/go";
 import {
     IoHomeOutline,
     IoCalendarOutline,
@@ -67,6 +68,11 @@ const links: ILink[] = [
         p: routePath.connect.p,
         Icon: <IoMailOutline size={24} />,
     },
+    {
+        name: routePath.history.title,
+        p: routePath.history.p,
+        Icon: <GoHistory size={24} />,
+    }
 ];
 
 const LinkComponent = ({ link, onClose }: { link: ILink; onClose: () => void }) => {

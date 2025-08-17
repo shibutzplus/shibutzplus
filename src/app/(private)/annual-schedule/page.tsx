@@ -5,7 +5,7 @@ import styles from "./annualSchedule.module.css";
 import { NextPage } from "next";
 import { useMainContext } from "@/context/MainContext";
 import DynamicInputSelect from "@/components/ui/InputSelect/DynamicInputSelect";
-import { createSelectOptions } from "@/utils/format";
+import { createSelectOptions, sortByHebrewName } from "@/utils/format";
 import { TeacherRequest, TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import { SubjectRequest, SubjectType } from "@/models/types/subjects";
 import { WeeklySchedule, AnnualScheduleRequest } from "@/models/types/annualSchedule";
@@ -21,7 +21,7 @@ import {
 import { TableRows } from "@/models/constant/table";
 import { populateAnnualSchedule } from "@/utils/schedule";
 import { initializeEmptyAnnualSchedule } from "@/utils/Initialize";
-import { filterExistingTeachers } from "@/utils/teachers";
+import { sortTeachersForSchedule } from "@/utils/teachers";
 
 const AnnualSchedulePage: NextPage = () => {
     const {
@@ -41,9 +41,6 @@ const AnnualSchedulePage: NextPage = () => {
     const [schedule, setSchedule] = useState<WeeklySchedule>({});
 
     const [isLoading, setIsLoading] = useState(false);
-    const [filteredTeachersMap, setFilteredTeachersMap] = useState<
-        Record<string, Record<number, TeacherType[]>>
-    >({});
 
     // TODO: add loading in the cell
 
@@ -57,17 +54,6 @@ const AnnualSchedulePage: NextPage = () => {
             setSchedule(newSchedule);
         }
     }, [selectedClassId, schedule, annualScheduleTable]);
-
-    // Filter out from the list teachers that already teach on other classes
-    const memoizedFilteredTeachers = useMemo(() => {
-        if (!teachers || !classes || !schedule) return {};
-        return filterExistingTeachers(classes, schedule, selectedClassId, teachers);
-    }, [teachers, classes, schedule, selectedClassId]);
-
-    useEffect(() => {
-        // TODO: remove filter
-        setFilteredTeachersMap(memoizedFilteredTeachers);
-    }, [memoizedFilteredTeachers]);
 
     const addNewRow = async (
         type: "teacher" | "subject",
@@ -225,7 +211,7 @@ const AnnualSchedulePage: NextPage = () => {
                                                 <DynamicInputSelect
                                                     placeholder="מקצוע"
                                                     options={createSelectOptions<SubjectType>(
-                                                        subjects,
+                                                        sortByHebrewName(subjects || []),
                                                     )}
                                                     value={
                                                         schedule[selectedClassId]?.[day]?.[hour]
@@ -242,8 +228,13 @@ const AnnualSchedulePage: NextPage = () => {
                                                 />
                                                 <DynamicInputSelect
                                                     placeholder="מורה"
-                                                    options={createSelectOptions<TeacherType>(
-                                                        filteredTeachersMap[day]?.[hour] || [],
+                                                    options={sortTeachersForSchedule(
+                                                        teachers || [],
+                                                        classes || [],
+                                                        schedule,
+                                                        selectedClassId,
+                                                        day,
+                                                        hour
                                                     )}
                                                     value={
                                                         schedule[selectedClassId]?.[day]?.[hour]

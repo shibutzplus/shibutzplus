@@ -10,10 +10,11 @@ import {
     ONE_WEEK,
     SATURDAY_NUMBER,
     THREE_WEEKS,
+    THREE_DAYS,
 } from "@/utils/time";
 
 /**
- * Generates date options for a range of days (1 week before and 2 weeks after the current date)
+ * Generates date options for a range of days (3 days before and 2 weeks after the current date)
  * @returns Array of SelectOption with date values in YYYY-MM-DD format (getDateReturnString) 
  * and labels showing date and day of week
  */
@@ -21,12 +22,12 @@ export const getDayOptions = (): SelectOption[] => {
     const today = new Date();
     const options: SelectOption[] = [];
 
-    // Start from 7 days ago
+    // Start from 3 days ago
     const startDate = new Date(today);
-    startDate.setDate(getTodayDateNumber() - ONE_WEEK);
+    startDate.setDate(getTodayDateNumber() - THREE_DAYS);
 
-    // Generate options for 21 days (1 week before + today + 2 weeks after)
-    for (let i = 0; i < THREE_WEEKS; i++) {
+    // Generate options for 17 days (3 days before + today + 2 weeks after)
+    for (let i = 0; i < (THREE_DAYS + 1 + (ONE_WEEK * 2)); i++) {
         // Create a new date object for each day to avoid modifying the reference
         const currentDate = new Date(startDate);
         currentDate.setDate(getDateNumberByDate(startDate) + i);

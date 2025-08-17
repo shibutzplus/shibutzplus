@@ -10,6 +10,7 @@ import messages from "@/resources/messages";
 import { getStorageSchoolId } from "@/utils/localStorage";
 import useDeletePopup from "@/hooks/useDeletePopup";
 import { PopupAction } from "@/context/PopupContext";
+import { sortByHebrewName } from "@/utils/format";
 
 type SubjectsListProps = {
     subjects: SubjectType[];
@@ -42,10 +43,12 @@ const SubjectsList: React.FC<SubjectsListProps> = ({ subjects, handleSelectSubje
         );
     };
 
+    const sortedSubjects = sortByHebrewName(subjects);
+
     return (
         <TableList headThs={["שם מקצוע", ""]}>
             <tbody>
-                {subjects.map((subject) => (
+                {sortedSubjects.map((subject) => (
                     <tr
                         key={subject.id}
                         className={styles.subjectRow}

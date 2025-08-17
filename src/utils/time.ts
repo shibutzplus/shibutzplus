@@ -6,6 +6,7 @@ export const SATURDAY_NUMBER = 6;
 
 export const THREE_WEEKS = 21;
 export const ONE_WEEK = 7;
+export const THREE_DAYS = 3;
 
 // Number of hours in a day
 export const HOURS_IN_DAY = 7;

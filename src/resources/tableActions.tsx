@@ -1,6 +1,6 @@
 import { ActionColumnType } from "@/models/types/table";
 import React from "react";
-import { FaHistory, FaPlus } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa";
 
 export const tableActions: {
     key?: ActionColumnType;
@@ -14,13 +14,6 @@ export const tableActions: {
         key: "publish",
         Icon: <FaPlus />,
         label: "פרסום",
-        style: { borderLeft: "4px solid #2a2a2a" },
-        disabled: true,
-    },
-    {
-        key: "history",
-        Icon: <FaHistory />,
-        label: "היסטוריה",
         style: { borderLeft: "4px solid #2a2a2a" },
         disabled: true,
     },

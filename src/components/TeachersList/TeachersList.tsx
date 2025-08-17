@@ -10,6 +10,7 @@ import messages from "@/resources/messages";
 import { getStorageSchoolId } from "@/utils/localStorage";
 import useDeletePopup from "@/hooks/useDeletePopup";
 import { PopupAction } from "@/context/PopupContext";
+import { sortByHebrewName } from "@/utils/format";
 
 type TeachersListProps = {
     teachers: TeacherType[];
@@ -47,7 +48,7 @@ const TeachersList: React.FC<TeachersListProps> = ({ teachers, handleSelectTeach
             case "regular":
                 return (
                     <td className={styles.roleCellGreen}>
-                        <span>מחנך/ת</span>
+                        <span>מורה</span>
                     </td>
                 );
             case "substitute":
@@ -65,10 +66,12 @@ const TeachersList: React.FC<TeachersListProps> = ({ teachers, handleSelectTeach
         }
     };
 
+    const sortedTeachers = sortByHebrewName(teachers);
+
     return (
         <TableList headThs={["שם", "סטטוס", ""]}>
             <tbody>
-                {teachers.map((teacher) => (
+                {sortedTeachers.map((teacher) => (
                     <tr
                         key={teacher.id}
                         className={styles.teacherRow}

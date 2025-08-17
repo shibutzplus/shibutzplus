@@ -136,7 +136,7 @@ const ClassesForm: React.FC<ClassesFormProps> = ({ selectedClass }) => {
                         [e.target.name]: e.target.value,
                     }));
                 }}
-                placeholder="לדוגמה: א1"
+                placeholder="כיתה א1 - שם המחנך"
                 error={validationErrors.name}
                 required
             />
@@ -156,29 +156,3 @@ const ClassesForm: React.FC<ClassesFormProps> = ({ selectedClass }) => {
 };
 
 export default ClassesForm;
-
-// const handleSubmit = async (e: React.FormEvent) => {
-//     e.preventDefault();
-//     setIsLoading(true);
-//     setError("");
-
-//     try {
-//         if (!formData.schoolId || !formData.name) {
-//             setError(messages.classes.invalid);
-//             setIsLoading(false);
-//             return;
-//         }
-
-//         const res = await addNewClass(formData);
-//         toast.success(res ? messages.classes.createSuccess : messages.classes.createError);
-//         setFormData({
-//             name: "",
-//             schoolId: school?.id || "",
-//         });
-//     } catch (error) {
-//         console.error(error);
-//         toast.error(messages.classes.createError);
-//     } finally {
-//         setIsLoading(false);
-//     }
-// };

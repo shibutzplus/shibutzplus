@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { useMainContext } from "./MainContext";
-import { createSelectOptions } from "@/utils/format";
+import { createSelectOptions, sortByHebrewName } from "@/utils/format";
 import { ClassType } from "@/models/types/classes";
 import { SelectOption } from "@/models/types";
 import { getDayOptions, getTomorrowOption } from "@/resources/dayOptions";
@@ -43,7 +43,7 @@ export const TopNavProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     };
 
     const classesSelectOptions = () => {
-        return createSelectOptions<ClassType>(classes);
+        return createSelectOptions<ClassType>(sortByHebrewName(classes || []));
     };
 
     const daysSelectOptions = () => {
