@@ -15,6 +15,7 @@ import messages from "@/resources/messages";
 import styles from "./TeachersForm.module.css";
 import SubmitBtn from "../ui/SubmitBtn/SubmitBtn";
 import { errorToast, successToast } from "@/lib/toast";
+import { teacherSchema } from "@/models/validation/teacher";
 
 type TeachersFormProps = {
     selectedTeacher: TeacherType | null;
@@ -31,6 +32,11 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ selectedTeacher }) => {
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
+    const [validationErrors, setValidationErrors] = useState<{
+        name?: string;
+        role?: string;
+        schoolId?: string;
+    }>({});
 
     // const { handleSubmitAdd, isLoading } = useSubmit<TeacherRequest>(
     //     setFormData,
@@ -61,15 +67,22 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ selectedTeacher }) => {
         e.preventDefault();
         setIsLoading(true);
         setError("");
+        setValidationErrors({});
 
         try {
-            for (const key in formData) {
-                // check if any of values is empty
-                if (formData[key as keyof TeacherRequest] === "") {
-                    setError(messages.teachers.invalid);
-                    setIsLoading(false);
-                    return;
-                }
+            const validationResult = teacherSchema.safeParse(formData);
+
+            if (!validationResult.success) {
+                const fieldErrors: { name?: string; role?: string; schoolId?: string } = {};
+                validationResult.error.issues.forEach((issue) => {
+                    const field = issue.path[0] as keyof typeof fieldErrors;
+                    if (field === 'name' || field === 'role' || field === 'schoolId') {
+                        fieldErrors[field] = issue.message;
+                    }
+                });
+                setValidationErrors(fieldErrors);
+                setIsLoading(false);
+                return;
             }
 
             const res = await addNewTeacher(formData);
@@ -92,6 +105,7 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ selectedTeacher }) => {
         e.preventDefault();
         setIsLoading(true);
         setError("");
+        setValidationErrors({});
 
         try {
             if (!selectedTeacher?.id) {
@@ -100,13 +114,19 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ selectedTeacher }) => {
                 return;
             }
 
-            for (const key in formData) {
-                // check if any of values is empty
-                if (formData[key as keyof TeacherRequest] === "") {
-                    setError(messages.teachers.invalid);
-                    setIsLoading(false);
-                    return;
-                }
+            const validationResult = teacherSchema.safeParse(formData);
+
+            if (!validationResult.success) {
+                const fieldErrors: { name?: string; role?: string; schoolId?: string } = {};
+                validationResult.error.issues.forEach((issue) => {
+                    const field = issue.path[0] as keyof typeof fieldErrors;
+                    if (field === 'name' || field === 'role' || field === 'schoolId') {
+                        fieldErrors[field] = issue.message;
+                    }
+                });
+                setValidationErrors(fieldErrors);
+                setIsLoading(false);
+                return;
             }
 
             const res = await updateTeacher(selectedTeacher.id, formData);
@@ -137,6 +157,7 @@ const TeachersForm: React.FC<TeachersFormProps> = ({ selectedTeacher }) => {
                         name: e.target.value,
                     }));
                 }}
+                error={validationErrors.name}
                 required
             />
 

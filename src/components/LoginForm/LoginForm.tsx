@@ -11,6 +11,7 @@ import routePath from "../../routes";
 import { EmailLink } from "@/models/constant";
 import { SignInRequest } from "@/models/types/auth";
 import signInWithCredentials from "@/app/actions/POST/singInAction";
+import { loginSchema } from "@/models/validation/login";
 
 const LoginForm: React.FC = () => {
     const router = useRouter();
@@ -18,12 +19,36 @@ const LoginForm: React.FC = () => {
     const [password, setPassword] = useState("");
     const [remember, setRemember] = useState(false);
     const [error, setError] = useState<string>("");
+    const [validationErrors, setValidationErrors] = useState<{
+        email?: string;
+        password?: string;
+    }>({});
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
+        setValidationErrors({});
         setIsLoading(true);
+
+        const validationResult = loginSchema.safeParse({
+            email,
+            password,
+            remember
+        });
+
+        if (!validationResult.success) {
+            const fieldErrors: { email?: string; password?: string } = {};
+            validationResult.error.issues.forEach((issue) => {
+                const field = issue.path[0] as keyof typeof fieldErrors;
+                if (field === 'email' || field === 'password') {
+                    fieldErrors[field] = issue.message;
+                }
+            });
+            setValidationErrors(fieldErrors);
+            setIsLoading(false);
+            return;
+        }
 
         const res = await signInWithCredentials({ email, password, remember } as SignInRequest);
 
@@ -52,6 +77,7 @@ const LoginForm: React.FC = () => {
                         label="כתובת אימייל"
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="your.email@gmail.com"
+                        error={validationErrors.email}
                         required
                     />
                 </div>
@@ -63,6 +89,7 @@ const LoginForm: React.FC = () => {
                         label="סיסמה"
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="הזינו את הסיסמה"
+                        error={validationErrors.password}
                         required
                     />
                 </div>

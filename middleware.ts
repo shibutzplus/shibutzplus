@@ -32,19 +32,5 @@ export async function middleware(req: NextRequest) {
 
 // Next.js requires the matcher to be hardcoded here for static analysis
 export const config = {
-    matcher: [
-        '/',
-        '/sign-in',
-        '/sign-up',
-        '/forget',
-        '/about',
-        '/dashboard',
-        '/classes',
-        '/teachers',
-        '/subjects',
-        '/annual-schedule',
-        '/daily-schedule',
-        '/connect',
-        '/profile',
-    ],
+    matcher: ['/((?!.+\\.[\\w]+$|_next).*)','/','/(api|trpc)(.*)']
 };

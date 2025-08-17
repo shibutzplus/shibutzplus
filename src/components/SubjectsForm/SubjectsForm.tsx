@@ -10,6 +10,7 @@ import useSubmit from "@/hooks/useSubmit";
 import styles from "./SubjectsForm.module.css";
 import SubmitBtn from "../ui/SubmitBtn/SubmitBtn";
 import { errorToast, successToast } from "@/lib/toast";
+import { subjectSchema } from "@/models/validation/subject";
 
 type SubjectsFormProps = {
     selectedSubject: SubjectType | null;
@@ -25,6 +26,10 @@ const SubjectsForm: React.FC<SubjectsFormProps> = ({ selectedSubject }) => {
     
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
+    const [validationErrors, setValidationErrors] = useState<{
+        name?: string;
+        schoolId?: string;
+    }>({});
 
     useEffect(() => {
         if (selectedSubject) {
@@ -45,10 +50,20 @@ const SubjectsForm: React.FC<SubjectsFormProps> = ({ selectedSubject }) => {
         e.preventDefault();
         setIsLoading(true);
         setError("");
+        setValidationErrors({});
 
         try {
-            if (!formData.name || !formData.schoolId) {
-                setError(messages.subjects.invalid);
+            const validationResult = subjectSchema.safeParse(formData);
+
+            if (!validationResult.success) {
+                const fieldErrors: { name?: string; schoolId?: string } = {};
+                validationResult.error.issues.forEach((issue) => {
+                    const field = issue.path[0] as keyof typeof fieldErrors;
+                    if (field === 'name' || field === 'schoolId') {
+                        fieldErrors[field] = issue.message;
+                    }
+                });
+                setValidationErrors(fieldErrors);
                 setIsLoading(false);
                 return;
             }
@@ -71,6 +86,7 @@ const SubjectsForm: React.FC<SubjectsFormProps> = ({ selectedSubject }) => {
         e.preventDefault();
         setIsLoading(true);
         setError("");
+        setValidationErrors({});
 
         try {
             if (!selectedSubject?.id) {
@@ -79,8 +95,17 @@ const SubjectsForm: React.FC<SubjectsFormProps> = ({ selectedSubject }) => {
                 return;
             }
 
-            if (!formData.name || !formData.schoolId) {
-                setError(messages.subjects.invalid);
+            const validationResult = subjectSchema.safeParse(formData);
+
+            if (!validationResult.success) {
+                const fieldErrors: { name?: string; schoolId?: string } = {};
+                validationResult.error.issues.forEach((issue) => {
+                    const field = issue.path[0] as keyof typeof fieldErrors;
+                    if (field === 'name' || field === 'schoolId') {
+                        fieldErrors[field] = issue.message;
+                    }
+                });
+                setValidationErrors(fieldErrors);
                 setIsLoading(false);
                 return;
             }
@@ -115,6 +140,7 @@ const SubjectsForm: React.FC<SubjectsFormProps> = ({ selectedSubject }) => {
                     }));
                 }}
                 placeholder="לדוגמה: מתמטיקה"
+                error={validationErrors.name}
                 required
             />
             <div className={styles.formActions}>

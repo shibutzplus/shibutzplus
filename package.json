@@ -37,7 +37,8 @@
     "react-email": "^4.0.16",
     "react-hot-toast": "^2.5.2",
     "react-icons": "^5.5.0",
-    "react-select": "^5.10.1"
+    "react-select": "^5.10.1",
+    "zod": "^4.0.17"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

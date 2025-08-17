@@ -6,10 +6,10 @@ import InputText from "../ui/InputText/InputText";
 import Form from "../core/Form/Form";
 import { useMainContext } from "@/context/MainContext";
 import messages from "@/resources/messages";
-import useSubmit from "@/hooks/useSubmit";
 import styles from "./ClassesForm.module.css";
 import SubmitBtn from "../ui/SubmitBtn/SubmitBtn";
 import { errorToast, successToast } from "@/lib/toast";
+import { classSchema } from "@/models/validation/class";
 
 type ClassesFormProps = {
     selectedClass: ClassType | null;
@@ -24,6 +24,10 @@ const ClassesForm: React.FC<ClassesFormProps> = ({ selectedClass }) => {
     
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
+    const [validationErrors, setValidationErrors] = useState<{
+        name?: string;
+        schoolId?: string;
+    }>({});
 
     useEffect(() => {
         if (selectedClass) {
@@ -43,10 +47,20 @@ const ClassesForm: React.FC<ClassesFormProps> = ({ selectedClass }) => {
         e.preventDefault();
         setIsLoading(true);
         setError("");
+        setValidationErrors({});
 
         try {
-            if (!formData.name || !formData.schoolId) {
-                setError(messages.classes.invalid);
+            const validationResult = classSchema.safeParse(formData);
+
+            if (!validationResult.success) {
+                const fieldErrors: { name?: string; schoolId?: string } = {};
+                validationResult.error.issues.forEach((issue) => {
+                    const field = issue.path[0] as keyof typeof fieldErrors;
+                    if (field === 'name' || field === 'schoolId') {
+                        fieldErrors[field] = issue.message;
+                    }
+                });
+                setValidationErrors(fieldErrors);
                 setIsLoading(false);
                 return;
             }
@@ -69,6 +83,7 @@ const ClassesForm: React.FC<ClassesFormProps> = ({ selectedClass }) => {
         e.preventDefault();
         setIsLoading(true);
         setError("");
+        setValidationErrors({});
 
         try {
             if (!selectedClass?.id) {
@@ -77,8 +92,17 @@ const ClassesForm: React.FC<ClassesFormProps> = ({ selectedClass }) => {
                 return;
             }
 
-            if (!formData.name || !formData.schoolId) {
-                setError(messages.classes.invalid);
+            const validationResult = classSchema.safeParse(formData);
+
+            if (!validationResult.success) {
+                const fieldErrors: { name?: string; schoolId?: string } = {};
+                validationResult.error.issues.forEach((issue) => {
+                    const field = issue.path[0] as keyof typeof fieldErrors;
+                    if (field === 'name' || field === 'schoolId') {
+                        fieldErrors[field] = issue.message;
+                    }
+                });
+                setValidationErrors(fieldErrors);
                 setIsLoading(false);
                 return;
             }
@@ -113,6 +137,7 @@ const ClassesForm: React.FC<ClassesFormProps> = ({ selectedClass }) => {
                     }));
                 }}
                 placeholder="לדוגמה: א1"
+                error={validationErrors.name}
                 required
             />
             <div className={styles.formActions}>
