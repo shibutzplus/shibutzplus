@@ -18,6 +18,8 @@ export type DailyScheduleType = {
     absentTeacher?: TeacherType;
     presentTeacher?: TeacherType;
     subTeacher?: TeacherType;
+    instructions?: string;
+    position?: number;
     createdAt?: Date;
     updatedAt?: Date;
 };

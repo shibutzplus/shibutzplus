@@ -53,5 +53,6 @@ v - teachers - fix the role in the DB
 
 DB addition
 - school - publish_dates [01-01-1111, 02-02-2222]
-- daily - class_ids possible null
-- daily - instructions
+v- daily - class_ids possible null
+v- daily - instructions
+v- daily - position 1 2 3
