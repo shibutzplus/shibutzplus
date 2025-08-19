@@ -19,7 +19,8 @@ export async function addDailyEventCellAction(
             columnId,
             school,
             eventTitle,
-            event
+            event,
+            position
         } = scheduleCellData;
 
         const authError = await checkAuthAndParams({
@@ -28,7 +29,8 @@ export async function addDailyEventCellAction(
             columnId: columnId,
             schoolId: school.id,
             eventTitle: eventTitle,
-            event: event
+            event: event,
+            position: position
         });
         if (authError) {
             return authError as ActionResponse;
@@ -40,13 +42,14 @@ export async function addDailyEventCellAction(
             hour: hour,
             columnId: columnId,
             schoolId: school.id,
-            classId: "",
+            classId: null,
             subjectId: null,
             absentTeacherId: null,
             presentTeacherId: null,
             subTeacherId: null,
             eventTitle: eventTitle,
-            event: event
+            event: event,
+            position: position
         };
 
         const newDailySchedule = (
@@ -79,6 +82,7 @@ export async function addDailyEventCellAction(
                 subject: undefined,
                 eventTitle,
                 event,
+                position,
             } as DailyScheduleType,
         };
     } catch (error) {

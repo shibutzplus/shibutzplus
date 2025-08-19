@@ -24,7 +24,8 @@ export async function addDailyTeacherCellAction(
             presentTeacher,
             subTeacher,
             eventTitle,
-            event
+            event,
+            position,
         } = scheduleCellData;
 
         const authError = await checkAuthAndParams({
@@ -51,7 +52,8 @@ export async function addDailyTeacherCellAction(
             presentTeacherId: presentTeacher?.id,
             subTeacherId: subTeacher?.id,
             eventTitle: eventTitle,
-            event: event
+            event: event,
+            position: position,
         };
 
         const newDailySchedule = (
@@ -84,6 +86,7 @@ export async function addDailyTeacherCellAction(
                 subject,
                 eventTitle,
                 event,
+                position,
             } as DailyScheduleType,
         };
     } catch (error) {

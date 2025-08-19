@@ -7,7 +7,6 @@ import {
     ColumnType,
     DailySchedule,
     DailyScheduleCell,
-    DailyScheduleRequest,
     DailyScheduleType,
     TeacherHourlyScheduleItem,
 } from "@/models/types/dailySchedule";
@@ -18,12 +17,10 @@ import { useMainContext } from "./MainContext";
 import {
     addNewEventCell,
     addNewSubTeacherCell,
-    createNewTeacherCellData,
     initEventCellData,
     initTeacherCellData,
     setEmptyTeacherColumn,
     setTeacherColumn,
-    setEventColumn,
     setEmptyEventColumn,
     setColumn,
 } from "@/services/dailyScheduleService";
@@ -31,12 +28,14 @@ import { generateId } from "@/utils";
 import { deleteDailyColumnAction } from "@/app/actions/DELETE/deleteDailyColumnAction";
 import { useTopNav } from "./TopNavContext";
 import { TeacherType } from "@/models/types/teachers";
-import { updateDailyScheduleAction } from "@/app/actions/PUT/updateDailyScheduleAction";
+import { updateDailyTeacherCellAction } from "@/app/actions/PUT/updateDailyTeacherCellAction";
 import { fetchDailyScheduleData } from "@/services/getDailyPerDate";
 import EventHeader from "@/components/table/EventHeader/EventHeader";
 import EventCell from "@/components/table/EventCell/EventCell";
 import { addDailyTeacherCellAction } from "@/app/actions/POST/addDailyTeacherCellAction";
 import { addDailyEventCellAction } from "@/app/actions/POST/addDailyEventCellAction";
+import { getDayNumberByDateString } from "@/utils/time";
+import { updateDailyEventCellAction } from "@/app/actions/PUT/updateDailyEventCellAction";
 
 interface DailyTableContextType {
     tableColumns: ColumnDef<TeacherRow>[];
@@ -161,12 +160,12 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
             const columnsToCreate: { id: string; type: ActionColumnType }[] = []; // ?
             const seenColumnIds = new Set<string>();
 
-            dailyScheduleRawData.forEach((entry) => {
+            for (const entry of dailyScheduleRawData) {
                 const columnId = entry.columnId;
 
                 // Skip if we've already processed this column ID
                 if (seenColumnIds.has(columnId)) {
-                    return;
+                    continue;
                 }
                 seenColumnIds.add(columnId);
 
@@ -176,9 +175,23 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                     columnType = "event";
                     cellData = initEventCellData(entry);
                 } else {
-                    if (entry.absentTeacher) columnType = "missingTeacher";
-                    else if (entry.presentTeacher) columnType = "existingTeacher";
+                    let teacherId: string = "";
+                    if (entry.absentTeacher){
+                        columnType = "missingTeacher"
+                        teacherId = entry.absentTeacher.id
+                    }
+                    else if (entry.presentTeacher){
+                        columnType = "existingTeacher"
+                        teacherId = entry.presentTeacher.id
+                    }
                     cellData = initTeacherCellData(entry);
+                    const response = await getTeacherScheduleByDayAction(
+                        entry.school.id,
+                        getDayNumberByDateString(selectedDate),
+                        teacherId,
+                    );
+                    console.log("response", response)
+                    console.log("--")
                 }
 
                 columnsToCreate.push({
@@ -194,7 +207,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 }
 
                 entriesByDayAndHeader[selectedDate][columnId].push(cellData);
-            });
+            };
 
             if (columnsToCreate.length > 0) {
                 const newColumnDefs = columnsToCreate.map((col) => buildColumn(col.type, col.id));
@@ -332,6 +345,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 columnId,
                 selectedDate,
                 data.event,
+                0,
             );
             if (dailyCellData) response = await addDailyEventCellAction(dailyCellData);
         } else if ((type === "existingTeacher" || type === "missingTeacher") && data.subTeacher) {
@@ -342,6 +356,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 selectedDate,
                 data.subTeacher,
                 type,
+                0,
             );
             if (dailyCellData) response = await addDailyTeacherCellAction(dailyCellData);
         }
@@ -374,8 +389,9 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 columnId,
                 selectedDate,
                 data.event,
+                0,
             );
-            if (dailyCellData) response = await updateDailyScheduleAction(dailyScheduleId, dailyCellData);
+            if (dailyCellData) response = await updateDailyEventCellAction(dailyScheduleId, dailyCellData);
         } else if ((type === "existingTeacher" || type === "missingTeacher") && data.subTeacher) {
             const dailyCellData = addNewSubTeacherCell(
                 school,
@@ -384,8 +400,9 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 selectedDate,
                 data.subTeacher,
                 type,
+                0,
             );
-            if (dailyCellData) response = await updateDailyScheduleAction(dailyScheduleId, dailyCellData);
+            if (dailyCellData) response = await updateDailyTeacherCellAction(dailyScheduleId, dailyCellData);
         }
 
         if (response?.success && response.data) {

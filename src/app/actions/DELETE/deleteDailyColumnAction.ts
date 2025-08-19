@@ -56,6 +56,7 @@ export async function deleteDailyColumnAction(
             subTeacher: schedule.subTeacher,
             createdAt: schedule.createdAt,
             updatedAt: schedule.updatedAt,
+            position: schedule.position,
         } as DailyScheduleType));
 
         return {

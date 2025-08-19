@@ -9,7 +9,7 @@ import { ActionResponse } from "@/models/types/actions";
 import { NewDailyScheduleSchema } from "@/db/schema";
 import { getDateReturnString, getStringReturnDate } from "@/utils/time";
 
-export async function updateDailyScheduleAction(
+export async function updateDailyTeacherCellAction(
     id: string,
     scheduleData: DailyScheduleRequest,
 ): Promise<ActionResponse & { data?: DailyScheduleType }> {
@@ -21,6 +21,9 @@ export async function updateDailyScheduleAction(
             absentTeacher,
             presentTeacher,
             subTeacher,
+            eventTitle,
+            event,
+            position
         } = scheduleData;
 
         const authError = await checkAuthAndParams({
@@ -50,6 +53,9 @@ export async function updateDailyScheduleAction(
                 absentTeacherId: absentTeacher?.id,
                 presentTeacherId: presentTeacher?.id,
                 subTeacherId: subTeacher?.id,
+                eventTitle: eventTitle,
+                event: event,
+                position: position,
             } as Partial<NewDailyScheduleSchema>)
             .where(eq(schema.dailySchedule.id, id))
             .returning();
@@ -79,6 +85,9 @@ export async function updateDailyScheduleAction(
                 absentTeacher,
                 presentTeacher,
                 subTeacher,
+                eventTitle,
+                event,
+                position,
             } as DailyScheduleType,
         };
     } catch (error) {

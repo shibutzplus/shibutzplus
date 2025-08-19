@@ -179,6 +179,7 @@ export const createNewTeacherCellData = (
     subject: SubjectType,
     subTeacher: TeacherType,
     headerTeacher: TeacherType,
+    position: number,
 ) => {
     const cellData: DailyScheduleRequest = {
         date: getStringReturnDate(selectedDate),
@@ -189,6 +190,7 @@ export const createNewTeacherCellData = (
         class: classData,
         subject,
         subTeacher,
+        position,
     };
 
     if (type === "existingTeacher") {
@@ -207,6 +209,7 @@ export const createNewEventCellData = (
     school: SchoolType,
     eventTitle: string,
     event: string,
+    position: number,
 ) => {
     const cellData: DailyScheduleRequest = {
         date: getStringReturnDate(selectedDate),
@@ -216,6 +219,7 @@ export const createNewEventCellData = (
         school,
         eventTitle,
         event,
+        position,
     };
 
     return cellData;
@@ -282,6 +286,7 @@ export const addNewEventCell = (
     columnId: string,
     selectedDate: string,
     event: string,
+    position: number,
 ) => {
     const { hour, headerCol } = cellData;
 
@@ -296,6 +301,7 @@ export const addNewEventCell = (
         school,
         headerCol.headerEvent,
         event,
+        position,
     );
     return dailyCellData;
 };
@@ -307,6 +313,7 @@ export const addNewSubTeacherCell = (
     selectedDate: string,
     subTeacher: TeacherType,
     type: ColumnType,
+    position: number,
 ) => {
     const { hour, class: classData, subject, headerCol } = cellData;
     if (!school || !classData || !subject || !subTeacher || !headerCol?.headerTeacher) {
@@ -323,6 +330,7 @@ export const addNewSubTeacherCell = (
         subject,
         subTeacher,
         headerCol.headerTeacher,
+        position,
     );
     return dailyCellData;
 };

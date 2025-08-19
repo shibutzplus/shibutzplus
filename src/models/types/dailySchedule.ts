@@ -19,7 +19,7 @@ export type DailyScheduleType = {
     presentTeacher?: TeacherType;
     subTeacher?: TeacherType;
     instructions?: string;
-    position?: number;
+    position: number;
     createdAt?: Date;
     updatedAt?: Date;
 };
@@ -37,6 +37,7 @@ export type DailyScheduleRequest = {
     absentTeacher?: TeacherType;
     presentTeacher?: TeacherType;
     subTeacher?: TeacherType;
+    position: number;
 };
 
 export type GetDailyScheduleResponse = ActionResponse & {
