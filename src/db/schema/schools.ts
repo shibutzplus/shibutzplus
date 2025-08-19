@@ -7,6 +7,7 @@ export const schools = pgTable('schools', {
   name: varchar('name', { length: 100 }).notNull().unique(),
   type: varchar('type', { length: 20 }).notNull().$type<SchoolAgeGroup>().default('Elementary'),
   status: varchar('status', { length: 20 }).notNull().$type<SchoolStatus>().default('onboarding'),
+  publishDates: text('publish_dates').array().default([]).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });

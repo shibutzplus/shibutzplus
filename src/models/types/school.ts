@@ -9,6 +9,7 @@ export type SchoolType = {
     name: string;
     type: SchoolAgeGroup;
     status: SchoolStatus;
+    publishDates: string[];
     createdAt: Date;
     updatedAt: Date;
 };

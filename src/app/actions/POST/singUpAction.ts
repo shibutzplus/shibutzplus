@@ -43,6 +43,7 @@ const signUp = async (params: RegisterRequest): Promise<RegisterResponse> => {
                     name: schoolName,
                     type: "Elementary",
                     status: "onboarding",
+                    publishDates: [],
                 })
                 .returning({ id: schema.schools.id });
 

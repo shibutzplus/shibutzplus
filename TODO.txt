@@ -7,14 +7,14 @@ v- daily - on select header teacher, all the not relevent hours are gray
 v- daily - update cell
 v- daily - populate the table on reload with the current day
 v- daily - allow to add for all days
-- daily - DB take the day and convert it to date
 v- daily - delete column if click remove
-- daily - the cell select is from type SelectText not Select
 v- daily - add info to DB
+- daily - DB take the day and convert it to date
+- daily - the cell select is from type SelectText not Select
 - daily - open the date select on ..?
-- daily - get from DB 7 day when current day is the middle of the week (even if getting next week) - need to check with mom
-- daily - if I save one row from a teacher column, I only populate one row and not all the teacher rows. need to populate all the rows
-- daily - if you select a teacher you cant select it again (remove from the list)
+v- daily - get from DB 7 day when current day is the middle of the week (even if getting next week) - need to check with mom
+v- daily - if I save one row from a teacher column, I only populate one row and not all the teacher rows. need to populate all the rows
+- daily - need to add - if you select a teacher you cant select it again (remove from the list)
 
 v- annual - error on adding new cell for deffrent class (except first in array)
 v- annual - if teacher teachs in a class, do not show him in the list of other classes in the same hour
@@ -48,12 +48,12 @@ v - teachers - fix the role in the DB
 ---
 
 - annual - insted of filter teachers. show all the teachers but color the teachers that already selected in the same time
-- daily - show week before, two week after in the day select (day of the week + date)
+v- daily - show week before, two week after in the day select (day of the week + date)
 
 
 
 DB addition
-- school - publish_dates [01-01-1111, 02-02-2222]
+v- school - publish_dates [01-01-1111, 02-02-2222]
 v- daily - class_ids possible null
 v- daily - instructions
 v- daily - position 1 2 3
