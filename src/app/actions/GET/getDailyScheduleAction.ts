@@ -25,6 +25,7 @@ export async function getDailyScheduleAction(schoolId: string, date: string): Pr
                 absentTeacher: true,
                 presentTeacher: true,
                 subTeacher: true,
+                school: true,
             },
         });
 

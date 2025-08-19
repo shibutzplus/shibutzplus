@@ -13,6 +13,7 @@ import {
 import DailyTeacherCell from "@/components/table/DailyTeacherCell/DailyTeacherCell";
 import DailyTeacherHeader from "@/components/table/DailyTeacherHeader/DailyTeacherHeader";
 import { getTeacherScheduleByDayAction } from "@/app/actions/GET/getTeacherScheduleByDayAction";
+import { getDailyEmptyCellsAction } from "@/app/actions/GET/getDailyEmptyCellsAction";
 import { useMainContext } from "./MainContext";
 import {
     addNewEventCell,
@@ -23,18 +24,19 @@ import {
     setTeacherColumn,
     setEmptyEventColumn,
     setColumn,
+    addTeacherToExistingCells,
 } from "@/services/dailyScheduleService";
 import { generateId } from "@/utils";
 import { deleteDailyColumnAction } from "@/app/actions/DELETE/deleteDailyColumnAction";
 import { useTopNav } from "./TopNavContext";
 import { TeacherType } from "@/models/types/teachers";
+import { getDayNumberByDateString } from "@/utils/time";
 import { updateDailyTeacherCellAction } from "@/app/actions/PUT/updateDailyTeacherCellAction";
 import { fetchDailyScheduleData } from "@/services/getDailyPerDate";
 import EventHeader from "@/components/table/EventHeader/EventHeader";
 import EventCell from "@/components/table/EventCell/EventCell";
 import { addDailyTeacherCellAction } from "@/app/actions/POST/addDailyTeacherCellAction";
 import { addDailyEventCellAction } from "@/app/actions/POST/addDailyEventCellAction";
-import { getDayNumberByDateString } from "@/utils/time";
 import { updateDailyEventCellAction } from "@/app/actions/PUT/updateDailyEventCellAction";
 
 interface DailyTableContextType {
@@ -151,53 +153,46 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         }
     }, [school, teachers, dailyScheduleRawData, selectedDate]);
 
-    const populateDailyScheduleTable = async (dailyScheduleRawData: DailyScheduleType[]) => {
+
+    const populateDailyScheduleTable = async (dailySchedulColumns: DailyScheduleType[]) => {
         try {
             clearDailySchedule();
-            if (!dailyScheduleRawData || dailyScheduleRawData.length === 0) return true;
+            if (!dailySchedulColumns || dailySchedulColumns.length === 0) return;
 
             const entriesByDayAndHeader: Record<string, Record<string, DailyScheduleCell[]>> = {};
-            const columnsToCreate: { id: string; type: ActionColumnType }[] = []; // ?
+            const columnsToCreate: { id: string; type: ActionColumnType }[] = [];
             const seenColumnIds = new Set<string>();
+            let existingCells: { teacherId: string; hours: number[] }[] = [];
 
-            for (const entry of dailyScheduleRawData) {
-                const columnId = entry.columnId;
+            for (const columnCell of dailySchedulColumns) {
+                const columnId = columnCell.columnId;
 
-                // Skip if we've already processed this column ID
-                if (seenColumnIds.has(columnId)) {
-                    continue;
-                }
-                seenColumnIds.add(columnId);
+                const { absentTeacher, presentTeacher, event, hour } = columnCell;
 
                 let cellData: DailyScheduleCell;
                 let columnType: ColumnType = "event";
-                if (entry.event) {
+                if (event) {
                     columnType = "event";
-                    cellData = initEventCellData(entry);
+                    cellData = initEventCellData(columnCell);
                 } else {
-                    let teacherId: string = "";
-                    if (entry.absentTeacher){
-                        columnType = "missingTeacher"
-                        teacherId = entry.absentTeacher.id
+                    if (absentTeacher) {
+                        columnType = "missingTeacher";
+                        addTeacherToExistingCells(existingCells, absentTeacher.id, hour);
+                    } else if (presentTeacher) {
+                        columnType = "existingTeacher";
+                        addTeacherToExistingCells(existingCells, presentTeacher.id, hour);
                     }
-                    else if (entry.presentTeacher){
-                        columnType = "existingTeacher"
-                        teacherId = entry.presentTeacher.id
-                    }
-                    cellData = initTeacherCellData(entry);
-                    const response = await getTeacherScheduleByDayAction(
-                        entry.school.id,
-                        getDayNumberByDateString(selectedDate),
-                        teacherId,
-                    );
-                    console.log("response", response)
-                    console.log("--")
+                    cellData = initTeacherCellData(columnCell);
                 }
 
-                columnsToCreate.push({
-                    id: columnId,
-                    type: columnType as ActionColumnType,
-                });
+                // If the column is not already in the columnsToCreate array, add it
+                if (!seenColumnIds.has(columnId)) {
+                    columnsToCreate.push({
+                        id: columnId,
+                        type: columnType as ActionColumnType,
+                    });
+                    seenColumnIds.add(columnId);
+                }
 
                 if (!entriesByDayAndHeader[selectedDate]) {
                     entriesByDayAndHeader[selectedDate] = {};
@@ -207,8 +202,26 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 }
 
                 entriesByDayAndHeader[selectedDate][columnId].push(cellData);
-            };
+            }
 
+            if (existingCells.length > 0 && school) {
+                const day = getDayNumberByDateString(selectedDate);
+                const response = await getDailyEmptyCellsAction(school.id, day, existingCells);
+                if (response.success && response.data && response.data.length > 0) {
+                    response.data.forEach((cellData) => {
+                        const columnid = dailySchedulColumns.find(
+                            (col) =>
+                                col.absentTeacher?.id === cellData.headerCol?.headerTeacher?.id ||
+                                col.presentTeacher?.id === cellData.headerCol?.headerTeacher?.id,
+                        )?.columnId;
+                        if (columnid) {
+                            entriesByDayAndHeader[selectedDate][columnid].push(cellData);
+                        }
+                    });
+                }
+            }
+
+            // Add new columns to the table
             if (columnsToCreate.length > 0) {
                 const newColumnDefs = columnsToCreate.map((col) => buildColumn(col.type, col.id));
                 setActionCols(newColumnDefs);
@@ -222,11 +235,8 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 });
             });
             setDailySchedule(newSchedule);
-
-            return true;
         } catch (error) {
             console.error("Error processing daily schedule data:", error);
-            return false;
         }
     };
 
@@ -391,7 +401,8 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 data.event,
                 0,
             );
-            if (dailyCellData) response = await updateDailyEventCellAction(dailyScheduleId, dailyCellData);
+            if (dailyCellData)
+                response = await updateDailyEventCellAction(dailyScheduleId, dailyCellData);
         } else if ((type === "existingTeacher" || type === "missingTeacher") && data.subTeacher) {
             const dailyCellData = addNewSubTeacherCell(
                 school,
@@ -402,7 +413,8 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 type,
                 0,
             );
-            if (dailyCellData) response = await updateDailyTeacherCellAction(dailyScheduleId, dailyCellData);
+            if (dailyCellData)
+                response = await updateDailyTeacherCellAction(dailyScheduleId, dailyCellData);
         }
 
         if (response?.success && response.data) {

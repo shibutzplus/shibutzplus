@@ -334,3 +334,16 @@ export const addNewSubTeacherCell = (
     );
     return dailyCellData;
 };
+
+export const addTeacherToExistingCells = (
+    existingCells: { teacherId: string; hours: number[] }[],
+    teacherId: string,
+    hour: number,
+) => {
+    const existingTeacher = existingCells.find((item) => item.teacherId === teacherId);
+    if (existingTeacher) {
+        existingTeacher.hours.push(hour);
+    } else {
+        existingCells.push({ teacherId, hours: [hour] });
+    }
+};
