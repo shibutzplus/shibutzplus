@@ -30,14 +30,14 @@ import { generateId } from "@/utils";
 import { deleteDailyColumnAction } from "@/app/actions/DELETE/deleteDailyColumnAction";
 import { useTopNav } from "./TopNavContext";
 import { TeacherType } from "@/models/types/teachers";
-import { getDayNumberByDateString } from "@/utils/time";
+import { getDayNumberByDateString, getTodayDateString } from "@/utils/time";
 import { updateDailyTeacherCellAction } from "@/app/actions/PUT/updateDailyTeacherCellAction";
-import { fetchDailyScheduleData } from "@/services/getDailyPerDate";
 import EventHeader from "@/components/table/EventHeader/EventHeader";
 import EventCell from "@/components/table/EventCell/EventCell";
 import { addDailyTeacherCellAction } from "@/app/actions/POST/addDailyTeacherCellAction";
 import { addDailyEventCellAction } from "@/app/actions/POST/addDailyEventCellAction";
 import { updateDailyEventCellAction } from "@/app/actions/PUT/updateDailyEventCellAction";
+import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
 
 interface DailyTableContextType {
     tableColumns: ColumnDef<TeacherRow>[];
@@ -124,7 +124,8 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
 
             setIsLoading(true);
             try {
-                const response = await fetchDailyScheduleData(school.id, selectedDate);
+                const targetDate = selectedDate || getTodayDateString();
+                const response = await getDailyScheduleAction(school.id, targetDate);
 
                 if (response.success && response.data) {
                     setDailyScheduleRawData(response.data);

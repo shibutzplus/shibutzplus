@@ -1,3 +1,4 @@
+import { getDailyEmptyCellsAction } from "@/app/actions/GET/getDailyEmptyCellsAction";
 import { ClassType } from "@/models/types/classes";
 import {
     ColumnType,
@@ -223,61 +224,6 @@ export const createNewEventCellData = (
     };
 
     return cellData;
-};
-
-// TODO: not in use
-/**
- * Group daily schedule entries by date and column ID
- * @param filteredData The filtered schedule data for a specific date
- * @param selectedDate The selected date (YYYY-MM-DD format)
- * @returns Grouped entries by date and column ID
- */
-export const groupScheduleEntriesByDateAndCol = async (
-    filteredData: DailyScheduleType[],
-    selectedDate: string,
-): Promise<Record<string, Record<string, DailyScheduleCell[]>>> => {
-    const entriesByDayAndHeader: Record<string, Record<string, DailyScheduleCell[]>> = {};
-
-    for (const entry of filteredData) {
-        const columnId = entry.columnId;
-
-        // Initialize grouping structure if needed
-        if (!entriesByDayAndHeader[selectedDate]) {
-            entriesByDayAndHeader[selectedDate] = {};
-        }
-
-        if (!entriesByDayAndHeader[selectedDate][columnId]) {
-            entriesByDayAndHeader[selectedDate][columnId] = [];
-        }
-
-        // if(entriesByDayAndHeader[selectedDate][columnId].length === 0){
-        //     let emptyRows;
-        //     const teacherId = entry.absentTeacher ? entry.absentTeacher.id : entry.presentTeacher?.id;
-        //     if (teacherId && entry.school) {
-        //         const response = await getTeacherScheduleByDayAction(
-        //             entry.school.id,
-        //             getDayNumberByDateString(selectedDate),
-        //             teacherId,
-        //         );
-        //         if (response && response.data) {
-        //             emptyRows = response.data.filter((row) => row.hour !== entry.hour);
-        //             emptyRows.forEach((row) => {
-        //                 const cellData: DailyScheduleCell = {
-        //                     hour: row.hour,
-        //                     class: row.class,
-        //                     subject: row.subject,
-        //                     headerTeacher: row.headerTeacher
-        //                 };
-        //                 entriesByDayAndHeader[selectedDate][columnId].push(cellData);
-        //             });
-        //         }
-        //     }
-        // }
-        const cellData = initTeacherCellData(entry);
-        entriesByDayAndHeader[selectedDate][columnId].push(cellData);
-    }
-
-    return entriesByDayAndHeader;
 };
 
 export const addNewEventCell = (
