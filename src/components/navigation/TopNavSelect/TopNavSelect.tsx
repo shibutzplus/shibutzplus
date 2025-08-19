@@ -13,8 +13,11 @@ const TopNavSelect: React.FC<TopNavSelectProps> = ({ type }) => {
         daysSelectOptions,
         handleClassChange,
         handleDayChange,
+        yearDaysSelectOptions,
         selectedClassId,
         selectedDate,
+        selectedYearDate,
+        handleYearDayChange,
     } = useTopNav();
 
     if (!type) return null;
@@ -38,6 +41,17 @@ const TopNavSelect: React.FC<TopNavSelectProps> = ({ type }) => {
                     onChange={handleClassChange}
                     isSearchable={false}
                     placeholder="בחר כיתה..."
+                    hasBorder
+                />
+            );
+        case routePath.history.id:
+            return (
+                <DynamicInputSelect
+                    options={yearDaysSelectOptions()}
+                    value={selectedYearDate}
+                    onChange={handleYearDayChange}
+                    isSearchable={false}
+                    placeholder="בחר תאריך..."
                     hasBorder
                 />
             );

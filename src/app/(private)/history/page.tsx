@@ -1,9 +1,56 @@
-import React from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
+import styles from "./history.module.css";
+import HistoryTable from "@/components/table/HistoryTable/HistoryTable";
+import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
+import { DailyScheduleType } from "@/models/types/dailySchedule";
+import { useMainContext } from "@/context/MainContext";
+import { useTopNav } from "@/context/TopNavContext";
+import { errorToast, successToast } from "@/lib/toast";
+import messages from "@/resources/messages";
 
 const History = () => {
+    const { school } = useMainContext();
+    const { selectedYearDate } = useTopNav();
+    const [currentDateData, setCurrentDateData] = useState<DailyScheduleType[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const fetchDailyScheduleData = async (date: string) => {
+        if (!school || !date) return;
+
+        setIsLoading(true);
+        try {
+            const response = await getDailyScheduleAction(school.id, date);
+            if (response.success && response.data) {
+                setCurrentDateData(response.data);
+                successToast("נתוני יום נטענו בהצלחה");
+            } else {
+                errorToast(response.message || messages.dailySchedule.retrieveError);
+                setCurrentDateData([]);
+            }
+        } catch (error) {
+            console.error("Error fetching daily schedule:", error);
+            errorToast(messages.dailySchedule.retrieveError);
+            setCurrentDateData([]);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (selectedYearDate && school) {
+            fetchDailyScheduleData(selectedYearDate);
+        } else {
+            setCurrentDateData([]);
+        }
+    }, [selectedYearDate, school]);
+
     return (
-        <div>
-            <h1>History</h1>
+        <div className={styles.content}>
+            <div className={styles.tableWrapper}>
+                <HistoryTable scheduleData={currentDateData} />
+            </div>
         </div>
     );
 };

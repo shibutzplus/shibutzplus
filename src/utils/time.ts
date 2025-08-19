@@ -37,12 +37,22 @@ export const getDayNumberByDate = (date: Date) => {
 };
 
 export const getDayNumberByDateString = (date: string) => {
-    return new Date(date).getDay()+1; //TODO for Tuesday (3) I got Monday (2)
+    return new Date(date).getDay() + 1; //TODO for Tuesday (3) I got Monday (2)
 };
 
 export const dayToNumber = (day: string) => {
     //Convert day name to number (1-7)
     return DAYS_OF_WEEK.indexOf(day) + 1;
+};
+
+// -- Month -- //
+export const getCurrentMonth = (): number => {
+    return new Date().getMonth();
+};
+
+// -- Year -- //
+export const getCurrentYear = (): number => {
+    return new Date().getFullYear();
 };
 
 // -- Date -- //
@@ -57,6 +67,25 @@ export const getDateNumberByDateString = (date: string) => {
 
 export const getTodayDateNumber = () => {
     return getDateNumberByDate(new Date());
+};
+
+export const israelTimezoneDate = () => {
+    // Create date in Israel timezone (UTC+3)
+    const now = new Date();
+    const israelOffset = 3 * 60; // Israel is UTC+3 (3 hours * 60 minutes)
+    const israelTime = new Date(now.getTime() + israelOffset * 60 * 1000);
+    return israelTime;
+};
+
+export const generateDateRange = (startDate: Date, endDate: Date): string[] => {
+    const dates: string[] = [];
+    const currentDate = new Date(startDate);
+    while (currentDate <= endDate) {
+        dates.push(currentDate.toISOString().split("T")[0]); // YYYY-MM-DD format
+        currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    return dates;
 };
 
 // -- Cache -- //
