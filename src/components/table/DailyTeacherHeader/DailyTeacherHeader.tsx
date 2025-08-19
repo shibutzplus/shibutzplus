@@ -5,12 +5,10 @@ import { ColumnType } from "@/models/types/dailySchedule";
 import { getDayNumberByDateString } from "@/utils/time";
 import { useMainContext } from "@/context/MainContext";
 import { errorToast, successToast } from "@/lib/toast";
-import { PopupAction } from "@/context/PopupContext";
 import { createSelectOptions } from "@/utils/format";
-import styles from "./DailyTeacherHeader.module.css";
-import useDeletePopup from "@/hooks/useDeletePopup";
 import { useTopNav } from "@/context/TopNavContext";
 import messages from "@/resources/messages";
+import ColHeader from "../ColHeader/ColHeader";
 
 type DailyTeacherHeaderProps = {
     columnId: string;
@@ -19,9 +17,8 @@ type DailyTeacherHeaderProps = {
 
 const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId }) => {
     const { teachers } = useMainContext();
-    const { dailySchedule, populateTeacherColumn, deleteColumn } = useDailyTableContext();
+    const { dailySchedule, populateTeacherColumn } = useDailyTableContext();
     const { selectedDate } = useTopNav();
-    const { handleOpenPopup } = useDeletePopup();
     const [isLoading, setIsLoading] = useState(false);
 
     const selectedTeacherData =
@@ -46,29 +43,8 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId }) => 
         }
     };
 
-    const deleteCol = async () => {
-        const response = await deleteColumn(columnId);
-        if (response) {
-            successToast(messages.dailySchedule.deleteSuccess);
-        } else {
-            errorToast(messages.dailySchedule.deleteError);
-        }
-    };
-
-    const handleDeleteColumn = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        handleOpenPopup(
-            PopupAction.deleteDailyCol,
-            `האם אתה בטוח שברצונך למחוק את השורה`,
-            deleteCol,
-        );
-    };
-
     return (
-        <div className={styles.columnHeader}>
-            <button className={styles.clearButton} onClick={handleDeleteColumn}>
-                הסר
-            </button>
+        <ColHeader columnId={columnId}>
             <DynamicInputSelect
                 options={createSelectOptions(teachers)}
                 value={selectedTeacherData?.id || ""}
@@ -79,7 +55,7 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId }) => 
                 isDisabled={isLoading}
                 hasBorder
             />
-        </div>
+        </ColHeader>
     );
 };
 

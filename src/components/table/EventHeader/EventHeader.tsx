@@ -1,20 +1,15 @@
 import React from "react";
-import styles from "./EventHeader.module.css";
 import InputText from "../../ui/InputText/InputText";
-import useDeletePopup from "@/hooks/useDeletePopup";
-import { PopupAction } from "@/context/PopupContext";
-import { errorToast, successToast } from "@/lib/toast";
-import messages from "@/resources/messages";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import { useTopNav } from "@/context/TopNavContext";
+import ColHeader from "../ColHeader/ColHeader";
 
 type EventHeaderProps = {
     columnId: string;
 };
 
 const EventHeader: React.FC<EventHeaderProps> = ({ columnId }) => {
-    const { handleOpenPopup } = useDeletePopup();
-    const { deleteColumn, populateEventColumn, dailySchedule } = useDailyTableContext();
+    const { populateEventColumn, dailySchedule } = useDailyTableContext();
     const { selectedDate } = useTopNav();
 
     const selectedEventData =
@@ -26,36 +21,15 @@ const EventHeader: React.FC<EventHeaderProps> = ({ columnId }) => {
         }
     };
 
-    const deleteCol = async () => {
-        const response = await deleteColumn(columnId);
-        if (response) {
-            successToast(messages.dailySchedule.deleteSuccess);
-        } else {
-            errorToast(messages.dailySchedule.deleteError);
-        }
-    };
-
-    const handleDeleteColumn = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        handleOpenPopup(
-            PopupAction.deleteDailyCol,
-            `האם אתה בטוח שברצונך למחוק את השורה`,
-            deleteCol,
-        );
-    };
-
     return (
-        <div className={styles.columnHeader}>
-            <button className={styles.clearButton} onClick={handleDeleteColumn}>
-                הסר
-            </button>
+        <ColHeader columnId={columnId}>
             <InputText
                 placeholder="מידע"
                 backgroundColor="transparent"
                 onBlur={(e) => handleChange(e.target.value)}
                 defaultValue={selectedEventData || ""}
             />
-        </div>
+        </ColHeader>
     );
 };
 
