@@ -20,8 +20,8 @@
     align-items: center;
     justify-content: center;
     gap: 2em;
-    width: 50%;
-    max-width: 35vw;
+    width: 100%;
+    max-width: 80vw;
 }
 
 .headerLeft {

@@ -9,7 +9,7 @@ import styles from "./signUp.module.css";
 import routePath from "../../../routes";
 import { NextPage } from "next";
 import { RegisterRequest, UserGender, UserRole } from "@/models/types/auth";
-import signUp from "@/app/actions/POST/singUpAction";
+import signUp from "@/app/actions/POST/signUpAction";
 import RadioGroup from "@/components/ui/RadioGroup/RadioGroup";
 import DynamicInputSelect from "@/components/ui/InputSelect/DynamicInputSelect";
 

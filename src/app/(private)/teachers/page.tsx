@@ -3,8 +3,8 @@
 import React, { useState, useMemo } from "react";
 import { NextPage } from "next";
 import { TeacherType } from "@/models/types/teachers";
-import TeachersForm from "@/components/TeachersForm/TeachersForm";
-import TeachersList from "@/components/TeachersList/TeachersList";
+import TeachersForm from "@/components/teacherDetails/TeachersForm/TeachersForm";
+import TeachersList from "@/components/teacherDetails/TeachersList/TeachersList";
 import ManagementLayout from "@/components/layout/ManagementLayout/ManagementLayout";
 import { useMainContext } from "@/context/MainContext";
 

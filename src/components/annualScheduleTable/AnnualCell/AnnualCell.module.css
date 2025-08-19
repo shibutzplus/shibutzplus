@@ -1,0 +1,14 @@
+.scheduleCell {
+    padding: 8px;
+    border: 1px solid #e0e0e0;
+    vertical-align: top;
+    min-width: 200px;
+    height: 80px;
+}
+
+.cellContent {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    height: 100%;
+}

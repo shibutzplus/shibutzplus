@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import styles from "./history.module.css";
-import HistoryTable from "@/components/table/HistoryTable/HistoryTable";
+import HistoryTable from "@/components/historyTable/HistoryTable/HistoryTable";
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
 import { DailyScheduleType } from "@/models/types/dailySchedule";
 import { useMainContext } from "@/context/MainContext";

@@ -10,8 +10,8 @@ import {
     DailyScheduleType,
     TeacherHourlyScheduleItem,
 } from "@/models/types/dailySchedule";
-import DailyTeacherCell from "@/components/table/DailyTeacherCell/DailyTeacherCell";
-import DailyTeacherHeader from "@/components/table/DailyTeacherHeader/DailyTeacherHeader";
+import DailyTeacherCell from "@/components/dailyScheduleTable/DailyTeacherCell/DailyTeacherCell";
+import DailyTeacherHeader from "@/components/dailyScheduleTable/DailyTeacherHeader/DailyTeacherHeader";
 import { getTeacherScheduleByDayAction } from "@/app/actions/GET/getTeacherScheduleByDayAction";
 import { getDailyEmptyCellsAction } from "@/app/actions/GET/getDailyEmptyCellsAction";
 import { useMainContext } from "./MainContext";
@@ -32,8 +32,8 @@ import { useTopNav } from "./TopNavContext";
 import { TeacherType } from "@/models/types/teachers";
 import { getDayNumberByDateString, getTodayDateString } from "@/utils/time";
 import { updateDailyTeacherCellAction } from "@/app/actions/PUT/updateDailyTeacherCellAction";
-import EventHeader from "@/components/table/EventHeader/EventHeader";
-import EventCell from "@/components/table/EventCell/EventCell";
+import EventHeader from "@/components/dailyScheduleTable/DailyEventHeader/DailyEventHeader";
+import EventCell from "@/components/dailyScheduleTable/DailyEventCell/DailyEventCell";
 import { addDailyTeacherCellAction } from "@/app/actions/POST/addDailyTeacherCellAction";
 import { addDailyEventCellAction } from "@/app/actions/POST/addDailyEventCellAction";
 import { updateDailyEventCellAction } from "@/app/actions/PUT/updateDailyEventCellAction";

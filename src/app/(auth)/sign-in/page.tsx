@@ -1,7 +1,7 @@
 "use client";
 
-import AuthHero from "@/components/AuthHero/AuthHero";
-import LoginForm from "@/components/LoginForm/LoginForm";
+import AuthHero from "@/components/layout/AuthHero/AuthHero";
+import LoginForm from "@/components/auth/LoginForm/LoginForm";
 import styles from "./signIn.module.css";
 import { NextPage } from "next";
 

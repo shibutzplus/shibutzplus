@@ -6,7 +6,7 @@ import HamburgerNav, { HamburgerButton } from "../HamburgerNav/HamburgerNav";
 import Logo from "../../core/Logo/Logo";
 import routePath from "../../../routes";
 import { usePathname } from "next/navigation";
-import TopNavSelect from "../TopNavSelect/TopNavSelect";
+import TopNavSelect from "../TopNavActions/TopNavActions";
 
 const TopNav: React.FC = () => {
     const pathname = usePathname();

@@ -3,8 +3,8 @@
 import React, { useState, useMemo } from "react";
 import { NextPage } from "next";
 import { SubjectType } from "@/models/types/subjects";
-import SubjectsForm from "@/components/SubjectsForm/SubjectsForm";
-import SubjectsList from "@/components/SubjectsList/SubjectsList";
+import SubjectsForm from "@/components/subjectDetails/SubjectsForm/SubjectsForm";
+import SubjectsList from "@/components/subjectDetails/SubjectsList/SubjectsList";
 import ManagementLayout from "@/components/layout/ManagementLayout/ManagementLayout";
 import { useMainContext } from "@/context/MainContext";
 

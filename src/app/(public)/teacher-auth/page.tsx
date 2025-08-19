@@ -1,7 +1,7 @@
 "use client";
 
-import AuthHero from "@/components/AuthHero/AuthHero";
-import TeacherAuthForm from "@/components/TeacherAuthForm/TeacherAuthForm";
+import AuthHero from "@/components/layout/AuthHero/AuthHero";
+import TeacherAuthForm from "@/components/auth/TeacherAuthForm/TeacherAuthForm";
 import styles from "./teacherAuth.module.css";
 import { NextPage } from "next";
 
