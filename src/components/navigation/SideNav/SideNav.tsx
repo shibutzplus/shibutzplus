@@ -43,12 +43,6 @@ const SideNav: React.FC = () => {
                         </Link>
                     </li>
                     <li>
-                        <Link href={routePath.about.p} className={styles.navLink}>
-                            <IoSchoolOutline className={styles.icon} />
-                            <span>אודות</span>
-                        </Link>
-                    </li>
-                    <li>
                         <Link href={routePath.teachers.p} className={styles.navLink}>
                             <IoPeopleOutline className={styles.icon} />
                             <span>מורים</span>

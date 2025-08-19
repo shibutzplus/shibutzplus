@@ -9,11 +9,11 @@ v- daily - populate the table on reload with the current day
 v- daily - allow to add for all days
 v- daily - delete column if click remove
 v- daily - add info to DB
-- daily - DB take the day and convert it to date
-- daily - the cell select is from type SelectText not Select
-- daily - open the date select on ..?
 v- daily - get from DB 7 day when current day is the middle of the week (even if getting next week) - need to check with mom
 v- daily - if I save one row from a teacher column, I only populate one row and not all the teacher rows. need to populate all the rows
+- daily - DB take the day and convert it to date
+- daily - the cell select is from type Select+Text not only Select
+- daily - open the date select on ..?
 - daily - need to add - if you select a teacher you cant select it again (remove from the list)
 
 v- annual - error on adding new cell for deffrent class (except first in array)

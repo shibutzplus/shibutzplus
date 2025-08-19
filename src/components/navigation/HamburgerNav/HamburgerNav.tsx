@@ -54,6 +54,11 @@ const links: ILink[] = [
         Icon: <IoSchoolOutline size={24} />,
     },
     {
+        name: routePath.substitute.title,
+        p: routePath.substitute.p,
+        Icon: <IoSchoolOutline size={24} />,
+    },
+    {
         name: routePath.subjects.title,
         p: routePath.subjects.p,
         Icon: <IoPeopleOutline size={24} />,
