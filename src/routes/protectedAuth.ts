@@ -60,5 +60,5 @@ export const protectedPaths = getProtectedPaths();
 export const publicPaths = getPublicPaths();
 export const configMatcher = getConfigMatcher();
 export const apiAuthPrefix = "/api/auth";
-export const DEFAULT_REDIRECT = router.dashboard.p;
+export const DEFAULT_REDIRECT = router.onboarding.p;
 export const DEFAULT_ERROR_REDIRECT = router.signIn.p;

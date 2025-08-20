@@ -2,7 +2,7 @@
 import "next-auth";
 import { ActionResponse } from "./actions";
 
-export type UserRole = "admin" | "teacher";
+export type UserRole = "admin" | "principal" | "deputy_principal" | "teacher";
 
 export type UserGender = "male" | "female";
 
@@ -44,6 +44,7 @@ declare module "next-auth" {
             gender?: UserGender;
             role?: UserRole;
             schoolId?: string;
+            status?: string;
             maxAge?: number;
         };
     }
@@ -53,6 +54,7 @@ declare module "next-auth" {
         name?: string;
         role?: UserRole;
         schoolId?: string;
+        status?: string;
         maxAge?: number;
     }
 }

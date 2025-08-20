@@ -2,10 +2,10 @@ import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { schema } from "@/db";
-import { getUserByEmail } from "@/db/utils";
 import { getExpireTime, getSessionMaxAge, mathFloorNow, TWENTY_FOUR_HOURS } from "@/utils/time";
 import Google from "next-auth/providers/google"
 import { registerNewGoogleUserAction } from "@/app/actions/POST/registerNewGoogleUserAction";
+import { getUserByEmailAction } from "@/app/actions/GET/getUserByEmailAction";
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -24,22 +24,25 @@ export const authOptions: NextAuthOptions = {
                 if (!credentials?.email || !credentials?.password) {
                     throw new Error("Email and password required");
                 }
-
-                const user = await getUserByEmail(credentials.email);
-
-                if (!user) {
+                const response = await getUserByEmailAction(credentials.email);
+                
+                if (!response.success || !response.data) {
                     throw new Error("No user found with this email");
                 }
-                const isValid = await bcrypt.compare(credentials.password, user.password);
-                if (user && isValid) {
+                
+                const { data: { id, name, email, password, role, gender, schoolId, status } } = response
+                const isValid = await bcrypt.compare(credentials.password, password);
+
+                if (isValid) {
                     const maxAge = getExpireTime(credentials.remember === "true")
                     return {
-                        id: user.id,
-                        name: user.name,
-                        email: user.email,
-                        role: user.role,
-                        gender: user.gender,
-                        schoolId: user.schoolId,
+                        id,
+                        name,
+                        email,
+                        role,
+                        gender,
+                        schoolId,
+                        status,
                         maxAge: maxAge,
                     };
                 } else {
@@ -73,6 +76,7 @@ export const authOptions: NextAuthOptions = {
                 token.role = (user as any).role;
                 token.gender = (user as any).gender;
                 token.schoolId = (user as any).schoolId;
+                token.status = (user as any).status;
                 const remember = (user as any).remember === true || (user as any).remember === "true";
                 token.maxAge = getSessionMaxAge(remember);
                 if (token.maxAge) token.exp = mathFloorNow + Number(token.maxAge);
@@ -89,6 +93,7 @@ export const authOptions: NextAuthOptions = {
                 session.user.role = token.role as schema.UserRole;
                 session.user.gender = token.gender as schema.UserGender;
                 session.user.schoolId = token.schoolId as string;
+                session.user.status = token.status as string;
                 session.user.maxAge = token.maxAge as number;
                 session.expires = new Date((token.exp as number) * 1000).toISOString();
             }

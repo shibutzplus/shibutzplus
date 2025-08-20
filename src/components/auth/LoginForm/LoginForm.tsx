@@ -13,6 +13,7 @@ import { SignInRequest } from "@/models/types/auth";
 import { signInWithCredentials, signInWithGoogle } from "@/app/actions/POST/signInAction";
 import { loginSchema } from "@/models/validation/login";
 import GoogleIcon from "@/components/ui/assets/googleIcon";
+import { DEFAULT_REDIRECT } from "@/routes/protectedAuth";
 
 const LoginForm: React.FC = () => {
     const router = useRouter();
@@ -58,8 +59,6 @@ const LoginForm: React.FC = () => {
             setIsLoading(false);
             return;
         }
-
-        router.push(routePath.dashboard.p);
     };
 
     const handleGoogleSignIn = async () => {
@@ -69,7 +68,7 @@ const LoginForm: React.FC = () => {
             setIsLoading(false);
             return;
         }
-        router.push(routePath.dashboard.p);
+        router.push(DEFAULT_REDIRECT);
     };
 
     return (

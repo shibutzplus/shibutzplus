@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { STATUS_AUTH, STATUS_LOADING } from "@/models/constant/session";
+import { DEFAULT_REDIRECT } from "@/routes/protectedAuth";
 
 const SignInPage: NextPage = () => {
     const { data: session, status } = useSession();
@@ -15,7 +16,7 @@ const SignInPage: NextPage = () => {
 
     useEffect(() => {
         if (status === STATUS_AUTH) {
-            router.replace("/dashboard");
+            router.replace(DEFAULT_REDIRECT);
         }
     }, [status, router]);
 

@@ -1,6 +1,11 @@
 import { ActionResponse } from "./actions";
 
-export type SchoolStatus = "onboarding" | "active" | "archived";
+export type SchoolStatus =
+    | "onboarding"
+    | "onboarding-annual"
+    | "annual"
+    | "onboarding-daily"
+    | "daily";
 
 export type SchoolAgeGroup = "Elementary" | "Middle" | "High";
 

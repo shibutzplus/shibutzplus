@@ -3,7 +3,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #667eea 0%, #3f357e 100%);
     padding: 2rem;
 }
 
@@ -15,6 +15,7 @@
     width: 100%;
     max-width: 500px;
     position: relative;
+    height: 65vh;
 }
 
 .header {
@@ -39,49 +40,6 @@
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-}
-
-.buttonGroup {
-    display: flex;
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.buttonGroup > * {
-    flex: 1;
-}
-
-.field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.label {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 0.25rem;
-}
-
-.select {
-    padding: 0.75rem;
-    border: 2px solid #e5e7eb;
-    border-radius: 8px;
-    font-size: 1rem;
-    background-color: white;
-    color: #374151;
-    transition: border-color 0.2s ease;
-}
-
-.select:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-.select option {
-    padding: 0.5rem;
 }
 
 .progress {
@@ -110,21 +68,29 @@
     color: #718096;
 }
 
+.navLink {
+    margin-top: 1em;
+    text-align: center;
+    color: #718096;
+    font-size: 0.9rem;
+    width: 100%;
+    position: relative;
+}
+.navLink a {
+    text-decoration: underline;
+}
+
 /* Responsive design */
 @media (max-width: 640px) {
     .container {
         padding: 1rem;
     }
-    
+
     .card {
         padding: 2rem;
     }
-    
+
     .title {
         font-size: 1.5rem;
-    }
-    
-    .buttonGroup {
-        flex-direction: column;
     }
 }
