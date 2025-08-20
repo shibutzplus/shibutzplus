@@ -6,13 +6,13 @@ import HistoryTable from "@/components/historyTable/HistoryTable/HistoryTable";
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
 import { DailyScheduleType } from "@/models/types/dailySchedule";
 import { useMainContext } from "@/context/MainContext";
-import { useTopNav } from "@/context/TopNavContext";
 import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
+import { useHistoryTable } from "@/context/HistoryTableContext";
 
 const History = () => {
     const { school } = useMainContext();
-    const { selectedYearDate } = useTopNav();
+    const { selectedYearDate } = useHistoryTable();
     const [currentDateData, setCurrentDateData] = useState<DailyScheduleType[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 

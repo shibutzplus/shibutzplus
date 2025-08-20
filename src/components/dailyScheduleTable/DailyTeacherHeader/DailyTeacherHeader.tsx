@@ -6,7 +6,6 @@ import { getDayNumberByDateString } from "@/utils/time";
 import { useMainContext } from "@/context/MainContext";
 import { errorToast, successToast } from "@/lib/toast";
 import { createSelectOptions } from "@/utils/format";
-import { useTopNav } from "@/context/TopNavContext";
 import messages from "@/resources/messages";
 import EditableHeader from "../../ui/table/EditableHeader/EditableHeader";
 
@@ -17,8 +16,7 @@ type DailyTeacherHeaderProps = {
 
 const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId }) => {
     const { teachers } = useMainContext();
-    const { dailySchedule, populateTeacherColumn } = useDailyTableContext();
-    const { selectedDate } = useTopNav();
+    const { dailySchedule, selectedDate, populateTeacherColumn } = useDailyTableContext();
     const [isLoading, setIsLoading] = useState(false);
 
     const selectedTeacherData =

@@ -1,11 +1,11 @@
-.content-layout {
+.privatePageLayout {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     background-color: var(--background);
 }
 
-.content-main {
+.contentMain {
     flex: 1;
     margin: 0 auto;
     width: 100%;

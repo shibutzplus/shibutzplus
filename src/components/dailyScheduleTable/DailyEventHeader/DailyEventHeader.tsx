@@ -1,7 +1,6 @@
 import React from "react";
 import InputText from "../../ui/InputText/InputText";
 import { useDailyTableContext } from "@/context/DailyTableContext";
-import { useTopNav } from "@/context/TopNavContext";
 import EditableHeader from "../../ui/table/EditableHeader/EditableHeader";
 
 type DailyEventHeaderProps = {
@@ -9,8 +8,7 @@ type DailyEventHeaderProps = {
 };
 
 const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId }) => {
-    const { populateEventColumn, dailySchedule } = useDailyTableContext();
-    const { selectedDate } = useTopNav();
+    const { populateEventColumn, dailySchedule, selectedDate } = useDailyTableContext();
 
     const selectedEventData =
         dailySchedule[selectedDate]?.[columnId]?.["1"]?.headerCol?.headerEvent;

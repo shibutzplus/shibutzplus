@@ -5,7 +5,6 @@ import messages from "@/resources/messages";
 import { CellContext } from "@tanstack/react-table";
 import { TeacherRow } from "@/models/types/table";
 import { useDailyTableContext } from "@/context/DailyTableContext";
-import { useTopNav } from "@/context/TopNavContext";
 import { errorToast, successToast } from "@/lib/toast";
 
 type DailyEventCellProps = {
@@ -13,8 +12,7 @@ type DailyEventCellProps = {
 };
 
 const DailyEventCell: React.FC<DailyEventCellProps> = ({ cell }) => {
-    const { dailySchedule, addNewCell, updateCell, dailyScheduleRawData } = useDailyTableContext();
-    const { selectedDate } = useTopNav();
+    const { dailySchedule, addNewCell, updateCell, dailyScheduleRawData, selectedDate } = useDailyTableContext();
     const [isLoading, setIsLoading] = useState(false);
 
     // Get the current hour, event and headerCol from the row data

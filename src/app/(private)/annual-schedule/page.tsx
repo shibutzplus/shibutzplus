@@ -9,7 +9,6 @@ import { SubjectType } from "@/models/types/subjects";
 import { WeeklySchedule, AnnualScheduleRequest } from "@/models/types/annualSchedule";
 import { dayToNumber } from "@/utils/time";
 import messages from "@/resources/messages";
-import { useTopNav } from "@/context/TopNavContext";
 import { errorToast, successToast } from "@/lib/toast";
 import {
     getRowId,
@@ -19,6 +18,7 @@ import {
 import { populateAnnualSchedule } from "@/utils/schedule";
 import { initializeEmptyAnnualSchedule } from "@/utils/Initialize";
 import AnnualScheduleTable from "@/components/annualScheduleTable/AnnualTable/AnnualTable";
+import { useAnnualTable } from "@/context/AnnualTableContext";
 
 const AnnualSchedulePage: NextPage = () => {
     const {
@@ -31,7 +31,7 @@ const AnnualSchedulePage: NextPage = () => {
         updateExistingAnnualScheduleItem,
     } = useMainContext();
 
-    const { selectedClassId, getSelectedClass } = useTopNav();
+    const { selectedClassId, getSelectedClass } = useAnnualTable();
 
     const [schedule, setSchedule] = useState<WeeklySchedule>({});
 

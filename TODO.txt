@@ -19,6 +19,7 @@ v- daily - if I save one row from a teacher column, I only populate one row and 
 v- annual - error on adding new cell for deffrent class (except first in array)
 v- annual - if teacher teachs in a class, do not show him in the list of other classes in the same hour
 - annual - for each select (subject or teacher) there is also "remove" option to clear the cell
+- annual - add "שומר..." text on the top nav (loading) 
 
 - annual - responsive table
 - annual - style the table
@@ -27,6 +28,8 @@ v- annual - if teacher teachs in a class, do not show him in the list of other c
 - daily - responsive table
 - daily - style the table
 - daily - loading spinner
+
+- each page has his own layout with his own provider
 
 - improve preformance by converting the teachers classes and subjects array to Dictionary
 

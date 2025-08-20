@@ -6,13 +6,15 @@ import HamburgerNav, { HamburgerButton } from "../HamburgerNav/HamburgerNav";
 import Logo from "../../core/Logo/Logo";
 import routePath from "../../../routes";
 import { usePathname } from "next/navigation";
-import TopNavSelect from "../TopNavActions/TopNavActions";
 
-const TopNav: React.FC = () => {
+type TopNavProps = {
+    Actions?: React.ReactNode;
+};
+
+const TopNav: React.FC<TopNavProps> = ({ Actions }) => {
     const pathname = usePathname();
     const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
     const [pageTitle, setPageTitle] = useState<string>("");
-    const [pageKey, setPageKey] = useState<string | null>(null);
 
     useEffect(() => {
         const currentPath = pathname.split("/").filter(Boolean)[0] || "";
@@ -24,7 +26,6 @@ const TopNav: React.FC = () => {
 
         if (routeKey) {
             setPageTitle(routePath[routeKey].title);
-            setPageKey(routeKey);
         }
     }, [pathname]);
 
@@ -41,9 +42,9 @@ const TopNav: React.FC = () => {
                 <div className={styles.headerRight}>
                     <HamburgerButton onClick={toggleMenu} isOpen={isMenuOpen} />
                     <h2 className={styles.routeTitle}>{pageTitle}</h2>
-                    <TopNavSelect type={pageKey} />
+                    {Actions ? Actions : null}
                 </div>
-                <div className={styles.headerLeft }>
+                <div className={styles.headerLeft}>
                     <Logo size="S" />
                 </div>
             </header>
