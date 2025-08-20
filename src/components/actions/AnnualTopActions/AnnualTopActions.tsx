@@ -6,7 +6,8 @@ import DynamicInputSelect from "@/components/ui/InputSelect/DynamicInputSelect";
 import { useAnnualTable } from "@/context/AnnualTableContext";
 
 const AnnualTopActions: React.FC = () => {
-    const { classesSelectOptions, selectedClassId, handleClassChange } = useAnnualTable();
+    const { classesSelectOptions, selectedClassId, handleClassChange, isLoading } =
+        useAnnualTable();
 
     return (
         <section className={styles.actionsContainer}>
@@ -18,9 +19,9 @@ const AnnualTopActions: React.FC = () => {
                 placeholder="בחר כיתה..."
                 hasBorder
             />
+            {isLoading ? <div>שומר...</div> : null}
         </section>
     );
 };
 
 export default AnnualTopActions;
-

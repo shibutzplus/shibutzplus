@@ -11,6 +11,8 @@ interface AnnualTableContextType {
     getSelectedClass: () => ClassType | undefined;
     classesSelectOptions: () => SelectOption[];
     handleClassChange: (value: string) => void;
+    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+    isLoading: boolean;
 }
 
 const AnnualTableContext = createContext<AnnualTableContextType | undefined>(undefined);
@@ -26,6 +28,7 @@ export const useAnnualTable = () => {
 export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const { classes } = useMainContext();
     const [selectedClassId, setSelectedClassId] = useState<string>(classes?.[0]?.id || "");
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
         if (classes && classes?.length > 0 && selectedClassId === "") {
@@ -50,6 +53,8 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
         getSelectedClass,
         classesSelectOptions,
         handleClassChange,
+        setIsLoading,
+        isLoading,
     };
 
     return <AnnualTableContext.Provider value={value}>{children}</AnnualTableContext.Provider>;

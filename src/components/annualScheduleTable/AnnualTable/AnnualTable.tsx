@@ -12,6 +12,7 @@ import { TableRows } from "@/models/constant/table";
 import { useMainContext } from "@/context/MainContext";
 import messages from "@/resources/messages";
 import { errorToast, successToast } from "@/lib/toast";
+import { useAnnualTable } from "@/context/AnnualTableContext";
 
 type AnnualTableProps = {
     schedule: WeeklySchedule;
@@ -30,7 +31,7 @@ type AnnualTableProps = {
 
 const AnnualTable: React.FC<AnnualTableProps> = (props) => {
     const { school, addNewTeacher, addNewSubject } = useMainContext();
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const { setIsLoading } = useAnnualTable();
     const { addNewRow } = props;
 
     const handleTeacherChange = async (day: string, hour: number, value: string) => {

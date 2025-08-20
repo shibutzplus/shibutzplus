@@ -33,8 +33,8 @@ v- annual - if teacher teachs in a class, do not show him in the list of other c
 
 - improve preformance by converting the teachers classes and subjects array to Dictionary
 
-- auth - remember me
-- auth - register via google
+v- auth - remember me
+v- auth - register via google
 
 - lists - for all lists pages, improve design
 v - teachers - fix the role in the DB

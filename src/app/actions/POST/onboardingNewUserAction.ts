@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from "@/db";
+import { db, schema } from "@/db";
 import { users } from "@/db/schema/users";
 import { schools } from "@/db/schema/schools";
 import { eq } from "drizzle-orm";
@@ -8,6 +8,7 @@ import { FullUser } from "@/models/types/onboarding";
 import { SchoolAgeGroup } from "@/models/types/school";
 import { ActionResponse } from "@/models/types/actions";
 import messages from "@/resources/messages";
+import { initClasses, initSubjects } from "@/resources/levelsOptions";
 
 export interface OnboardingNewUserResponse extends ActionResponse {
     status?: "onboarding-annual" | "onboarding-daily";
@@ -72,6 +73,20 @@ export async function onboardingNewUserAction(
                 schoolId,
             })
             .where(eq(users.id, existingUser.id));
+
+        const classes = initClasses(fullUser.level as SchoolAgeGroup);
+        const subjects = initSubjects(fullUser.level as SchoolAgeGroup);
+
+        for (const className of classes) {
+            await db.insert(schema.classes).values({ name: className, schoolId }).returning();
+        }
+
+        for (const subject of subjects) {
+            await db.insert(schema.subjects).values({
+                name: subject,
+                schoolId,
+            });
+        }
 
         return {
             success: true,
