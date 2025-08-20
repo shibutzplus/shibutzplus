@@ -133,10 +133,6 @@
   background-color: #f1f3f4;
 }
 
-.googleIcon {
-  flex-shrink: 0;
-}
-
 /* Responsive Design */
 @media (max-width: 1200px) {
   .formContainer {

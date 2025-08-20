@@ -7,6 +7,7 @@ import { DailyScheduleType } from "@/models/types/dailySchedule";
 import { useMainContext } from "@/context/MainContext";
 import ReadOnlyDailyTable from "@/components/teacherPortalTable/ReadOnlyDailyTable/ReadOnlyDailyTable";
 import styles from "./page.module.css";
+import router from "@/routes";
 
 const DailyScheduleReadOnlyPage = () => {
     const { school } = useMainContext();
@@ -70,7 +71,7 @@ const DailyScheduleReadOnlyPage = () => {
                 <h1 className={styles.title}>מערכת שעות יומית - תצוגה</h1>
                 <p className={styles.schoolName}>{school.name}</p>
                 <div className={styles.navigation}>
-                    <Link href="/teacher-portal" className={styles.navLink}>
+                    <Link href={router.teacherPortal.p} className={styles.navLink}>
                         פורטל המורים
                     </Link>
                 </div>

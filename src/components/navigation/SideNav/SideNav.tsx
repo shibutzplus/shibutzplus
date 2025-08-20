@@ -14,6 +14,7 @@ import {
     IoPeopleOutline,
 } from "react-icons/io5";
 import { useSession } from "next-auth/react";
+import { STATUS_AUTH } from "@/models/constant/session";
 
 const SideNav: React.FC = () => {
     const { data: session, status } = useSession({
@@ -66,7 +67,7 @@ const SideNav: React.FC = () => {
             </section>
             
             {/* Logout Section */}
-            {status === "authenticated" && (
+            {status === STATUS_AUTH && (
                 <section className={styles.logoutSection}>
                     <button
                         onClick={() => signOut({ callbackUrl: routePath.signIn.p })}

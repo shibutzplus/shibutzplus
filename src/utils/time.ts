@@ -99,12 +99,18 @@ export const isCacheFresh = (cacheTimestamp: string | null) =>
 
 // -- Session -- //
 
+export const mathFloorNow = Math.floor(Date.now() / 1000)
+
 export const TWENTY_FOUR_HOURS = 24 * 60 * 60;
 
 export const getExpireTime = (remember: any) => {
     const maxAge = remember ? 30 * 24 * 60 * 60 : 60 * 60; // 30d vs 1h
-    return Math.floor(Date.now() / 1000) + maxAge;
+    return mathFloorNow + maxAge;
 };
+
+// Returns session duration in seconds
+export const getSessionMaxAge = (remember: boolean) => remember ? 30 * 24 * 60 * 60 : 60 * 60;
+
 
 export const COOKIES_EXPIRE_TIME = 365;
 

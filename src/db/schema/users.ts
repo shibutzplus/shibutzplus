@@ -11,7 +11,7 @@ export const users = pgTable("users", {
     password: varchar("password", { length: 255 }).notNull(),
     role: varchar("role", { length: 20 }).notNull().$type<UserRole>().default("admin"),
     gender: varchar("gender", { length: 20 }).notNull().$type<UserGender>().default("female"),
-    schoolId: text("school_id").notNull(),
+    schoolId: text("school_id"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

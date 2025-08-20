@@ -8,10 +8,11 @@ import styles from "./TeacherAuthForm.module.css";
 import { SelectOption } from "@/models/types";
 import { getAllTeachersAction } from "@/app/actions/GET/getAllTeachersAction";
 import Cookies from "js-cookie";
+import router from "@/routes";
 import { COOKIES_KEYS } from "@/resources/storage";
 
 const TeacherAuthForm: React.FC = () => {
-    const router = useRouter();
+    const route = useRouter();
     const [selectedTeacher, setSelectedTeacher] = useState("");
     const [teachers, setTeachers] = useState<SelectOption[]>([]);
     const [error, setError] = useState<string>("");
@@ -22,7 +23,7 @@ const TeacherAuthForm: React.FC = () => {
         // Check for remembered teacher first
         const rememberedTeacherId = Cookies.get(COOKIES_KEYS.REMEMBERED_TEACHER);
         if (rememberedTeacherId) {
-            router.push(`/teacher-portal/${rememberedTeacherId}`);
+            route.push(`${router.teacherPortal.p}/${rememberedTeacherId}`);
             return;
         }
 
@@ -47,7 +48,7 @@ const TeacherAuthForm: React.FC = () => {
         };
 
         fetchTeachers();
-    }, [router]);
+    }, [route]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -64,7 +65,7 @@ const TeacherAuthForm: React.FC = () => {
         //     expires: COOKIES_EXPIRE_TIME,
         // });
 
-        router.push(`/teacher-portal/${selectedTeacher}`);
+        route.push(`${router.teacherPortal.p}/${selectedTeacher}`);
         setIsLoading(false);
     };
 

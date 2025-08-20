@@ -20,6 +20,7 @@ import {
     IoCloseOutline,
     IoMailOutline,
 } from "react-icons/io5";
+import { STATUS_AUTH } from "@/models/constant/session";
 
 type HamburgerNavProps = {
     isOpen: boolean;
@@ -130,7 +131,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose }) => {
                     </section>
                 )}
 
-                {status === "authenticated" && (
+                {status === STATUS_AUTH && (
                     <section className={styles.logoutSection}>
                         <Link
                             href="#"

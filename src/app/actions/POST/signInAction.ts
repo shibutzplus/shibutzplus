@@ -4,7 +4,7 @@ import { SignInRequest, SignInResponse } from "@/models/types/auth";
 import { signIn } from "next-auth/react";
 import msg from "@/resources/messages";
 
-const signInWithCredentials = async (params: SignInRequest): Promise<SignInResponse> => {
+export const signInWithCredentials = async (params: SignInRequest): Promise<SignInResponse> => {
     try {
         const { email, password, remember } = params;
         if (!email || !password) {
@@ -28,4 +28,18 @@ const signInWithCredentials = async (params: SignInRequest): Promise<SignInRespo
     }
 };
 
-export default signInWithCredentials;
+export const signInWithGoogle = async () => {
+    try {
+        const res = await signIn("google", {
+            redirect: false,
+        });
+
+        if (res?.error) {
+            return { success: false, message: msg.auth.login.failed };
+        } else {
+            return { success: true, message: msg.auth.login.success };
+        }
+    } catch (error) {
+        return { success: false, message: msg.auth.serverError };
+    }
+};

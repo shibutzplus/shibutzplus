@@ -4,8 +4,23 @@ import AuthHero from "@/components/layout/AuthHero/AuthHero";
 import LoginForm from "@/components/auth/LoginForm/LoginForm";
 import styles from "./signIn.module.css";
 import { NextPage } from "next";
+import { useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { STATUS_AUTH, STATUS_LOADING } from "@/models/constant/session";
 
 const SignInPage: NextPage = () => {
+    const { data: session, status } = useSession();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (status === STATUS_AUTH) {
+            router.replace("/dashboard");
+        }
+    }, [status, router]);
+
+    if (status === STATUS_LOADING) return null;
+
     return (
         <main className={styles.container}>
             <div className={styles.contentWrapper}>

@@ -21,7 +21,7 @@ const router: Record<string, IRoute> = {
     profile: { id: "profile", p: "/profile", private: true, title: "המשתמש שלי" },
     history: { id: "history", p: "/history", private: true, title: "היסטוריה" },
     substituteAuth: { id: "substituteAuth", p: "/substitute-auth", private: false, title: "כניסה למורים מחליפים" },
-    teacherAuth: { id: "teacherAuth", p: "/teacher-auth", private: false, title: "כניסה למורים" },
+    teacherSignIn: { id: "teacherSignIn", p: "/teacher-sign-in", private: false, title: "כניסה למורים" },
     teacherPortal: { id: "teacherPortal", p: "/teacher-portal", private: false, title: "פורטל המורה" },
 };
 

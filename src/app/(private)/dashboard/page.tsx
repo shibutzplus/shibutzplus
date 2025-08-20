@@ -5,6 +5,7 @@ import styles from "./dashboard.module.css";
 import { useSession } from "next-auth/react";
 import { UserRole } from "../../../models/types/auth";
 import { NextPage } from "next";
+import { STATUS_LOADING } from "@/models/constant/session";
 
 const DashboardPage: NextPage = () => {
     // useSession to access the user data
@@ -12,7 +13,7 @@ const DashboardPage: NextPage = () => {
         required: true,
     });
 
-    if (status === "loading") {
+    if (status === STATUS_LOADING) {
         return (
             <div className={styles.container}>
                 <div className={styles.content}>

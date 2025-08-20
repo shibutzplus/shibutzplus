@@ -11,7 +11,7 @@ export type UserType = {
     email: string;
     role: UserRole;
     gender?: string;
-    schoolId: string;
+    schoolId?: string;
     createdAt?: Date;
     updatedAt?: Date;
 };
@@ -44,6 +44,7 @@ declare module "next-auth" {
             gender?: UserGender;
             role?: UserRole;
             schoolId?: string;
+            maxAge?: number;
         };
     }
 
@@ -52,5 +53,6 @@ declare module "next-auth" {
         name?: string;
         role?: UserRole;
         schoolId?: string;
+        maxAge?: number;
     }
 }

@@ -27,6 +27,7 @@ import { getSubjectsAction as getSubjectsFromDB } from "@/app/actions/GET/getSub
 import { getClassesAction as getClassesFromDB } from "@/app/actions/GET/getClassesAction";
 import { getAnnualScheduleAction as getAnnualScheduleFromDB } from "@/app/actions/GET/getAnnualScheduleAction";
 import { isCacheFresh } from "@/utils/time";
+import { STATUS_AUTH } from "@/models/constant/session";
 
 interface useInitDataProps {
     school: SchoolType | undefined;
@@ -157,7 +158,7 @@ const useInitData = ({
         };
 
         if (
-            status === "authenticated" &&
+            status === STATUS_AUTH &&
             typeof window !== "undefined" &&
             session?.user?.schoolId
         ) {

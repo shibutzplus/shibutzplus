@@ -4,3 +4,5 @@ export const OurLogo = "https://shibutzplus.com/logo.png";
 export const OurName = "שיבוץ+"
 
 export const EmailLink = `mailto:${OurEmail}`
+
+export const emailPlaceholder = "your.email@gmail.com"

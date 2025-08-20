@@ -2,29 +2,41 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 import router from "@/routes";
-import { protectedPaths, publicPaths, configMatcher } from "@/routes/protectedAuth";
+import {
+    apiAuthPrefix,
+    DEFAULT_ERROR_REDIRECT,
+    DEFAULT_REDIRECT,
+    protectedPaths,
+    publicPaths,
+} from "@/routes/protectedAuth";
 
 export async function middleware(req: NextRequest) {
     const { nextUrl: url } = req;
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    const isLoggedIn = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+
+    const isApiAuthRoute = url.pathname.startsWith(apiAuthPrefix);
+    const isPublicRoute = publicPaths.some((path) => url.pathname.startsWith(path));
+    const isProtectedRoute = protectedPaths.some((path) => url.pathname.startsWith(path));
+
+    if (isApiAuthRoute) {
+        return NextResponse.next();
+    }
 
     if (url.pathname === router.home.p) {
-        url.pathname = router.signIn.p;
+        url.pathname = DEFAULT_ERROR_REDIRECT;
         return NextResponse.redirect(url);
     }
 
-    if (protectedPaths.some((path) => url.pathname.startsWith(path))) {
-        if (!token) {
-            url.pathname = router.signIn.p;
+    if (isProtectedRoute) {
+        if (isLoggedIn) {
+            url.pathname = DEFAULT_REDIRECT;
             return NextResponse.redirect(url);
         }
     }
 
-    if (publicPaths.some((path) => url.pathname.startsWith(path))) {
-        if (token) {
-            url.pathname = router.dashboard.p;
-            return NextResponse.redirect(url);
-        }
+    if (!isLoggedIn && !isPublicRoute) {
+        url.pathname = DEFAULT_ERROR_REDIRECT;
+        return NextResponse.redirect(url);
     }
 
     return NextResponse.next();
@@ -32,5 +44,5 @@ export async function middleware(req: NextRequest) {
 
 // Next.js requires the matcher to be hardcoded here for static analysis
 export const config = {
-    matcher: ['/((?!.+\\.[\\w]+$|_next).*)','/','/(api|trpc)(.*)']
+    matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
 };
