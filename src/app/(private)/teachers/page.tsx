@@ -1,37 +1,15 @@
-"use client";
-
-import React, { useState, useMemo } from "react";
+import React from "react";
 import { NextPage } from "next";
-import { TeacherType } from "@/models/types/teachers";
-import TeachersForm from "@/components/teacherDetails/TeachersForm/TeachersForm";
+import styles from "./teachers.module.css";
 import TeachersList from "@/components/teacherDetails/TeachersList/TeachersList";
-import ManagementLayout from "@/components/layout/ManagementLayout/ManagementLayout";
-import { useMainContext } from "@/context/MainContext";
 
 const TeachersPage: NextPage = () => {
-    const { teachers } = useMainContext();
-    const [selectedTeacher, setSelectedTeacher] = useState<TeacherType | null>(null);
-
-    const handleSelectTeacher = (teacher: TeacherType) => {
-        setSelectedTeacher(teacher);
-    };
-
-    const listInfo = useMemo(() => {
-        const homeroomTeachersCount = teachers?.filter((teacher) => teacher.role === "regular").length || 0;
-        const substituteTeachersCount = teachers?.filter((teacher) => teacher.role === "substitute").length || 0;
-        return `${homeroomTeachersCount} מורים מן המניין, ${substituteTeachersCount} מחליפים`;
-    }, [teachers])
-
     return (
-        <ManagementLayout
-            formTitle="הוספת מורה"
-            listTitle="מורים"
-            listInfo={listInfo}
-            children={[
-                <TeachersList key="teachers-list" teachers={teachers || []} handleSelectTeacher={handleSelectTeacher} />,
-                <TeachersForm key="teachers-form" selectedTeacher={selectedTeacher} />,
-            ]}
-        />
+        <main className={styles.container}>
+            <section className={styles.teachersList}>
+                <TeachersList />
+            </section>
+        </main>
     );
 };
 

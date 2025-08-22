@@ -1,6 +1,45 @@
+/* Mobile 320px - 767px -- 812px */
 .actionsContainer {
+    margin-right: 10px;
     width: 100%;
     display: flex;
     align-items: center;
-    gap: 5em;
+    gap: 0;
+}
+
+.selectContainer{
+    width: 100%;
+}
+
+.loading{
+    position: fixed;
+    bottom: 10;
+    left: 11;
+    background-color: var(--background);
+    padding: 5px 7px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Tablet 768px - 1279px -- 800px*/
+@media screen and (min-width: 768px) {
+    .actionsContainer {
+        margin-right: 0;
+        gap: 3em;
+    }
+
+    .selectContainer{
+        min-width: fit-content;
+        width: 25%;
+    }
+
+    .loading{
+        position: relative;
+        top: 0;
+        left: 0;
+        background-color: transparent;
+        padding: unset;
+        border-radius: unset;
+        box-shadow: unset;
+    }
 }

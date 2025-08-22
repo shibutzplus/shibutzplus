@@ -8,7 +8,9 @@ import { SubjectType } from "@/models/types/subjects";
 import { TeacherType } from "@/models/types/teachers";
 import { WeeklySchedule } from "@/models/types/annualSchedule";
 import { sortTeachersForSchedule } from "@/utils/teachers";
+import DynamicInputGroupSelect from "@/components/ui/InputGroupSelect/DynamicInputGroupSelect";
 import { ClassType } from "@/models/types/classes";
+import InputGroupSelect from "@/components/ui/InputGroupSelect/InputGroupSelect";
 
 type AnnualCellProps = {
     day: string;
@@ -57,7 +59,8 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
                     isSearchable
                     allowAddNew
                 />
-                <DynamicInputSelect
+                {/* Grouped teacher select */}
+                <DynamicInputGroupSelect
                     placeholder="מורה"
                     options={sortTeachersForSchedule(
                         teachers || [],
@@ -73,11 +76,7 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
                     onChange={(value: string) =>
                         onTeacherChange(day, hour, value)
                     }
-                    onCreate={(value: string) =>
-                        onCreateTeacher(day, hour, value)
-                    }
                     isSearchable
-                    allowAddNew
                 />
             </div>
         </td>

@@ -1,6 +1,75 @@
+/* Mobile 320px - 767px -- 812px */
 .actionsContainer {
+    margin-right: 10px;
     width: 100%;
     display: flex;
     align-items: center;
-    gap: 5em;
+    gap: 0;
+}
+
+.selectContainer {
+    width: 100%;
+}
+
+.topButtonsContainer {
+    display: none;
+}
+
+.spacer {
+    display: none;
+}
+
+.topButton {
+    width: 140px;
+    height: 40px;
+    padding: 0.7rem 0;
+    padding-left: 5px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.topButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Tablet 768px - 1279px -- 800px*/
+@media screen and (min-width: 768px) {
+    .actionsContainer {
+        margin-right: 0;
+        gap: 3em;
+    }
+
+    .selectContainer {
+        min-width: fit-content;
+        width: 25%;
+    }
+
+    .topButtonsContainer {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        height: 40px;
+        min-width: fit-content;
+        width: fit-content;
+    }
+
+    .spacer {
+        display: flex;
+        width: 1px;
+        height: 70%;
+        background-color: var(--input-border);
+        margin: 0 1em;
+    }
 }

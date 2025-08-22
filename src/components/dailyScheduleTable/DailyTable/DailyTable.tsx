@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import styles from "./DailyTable.module.css";
+import "./mockStyles.css";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { TeacherRow } from "@/models/types/table";
@@ -27,7 +28,26 @@ const DailyTable: React.FC<DailyTableProps> = () => {
         [],
     );
 
-    const columns = React.useMemo(() => [...baseCols, ...tableColumns], [tableColumns]);
+    // If no columns except baseCols, add a single wide template column
+    const hasExtraCols = tableColumns.length > 0;
+    const mockCol = {
+        id: "mock",
+        header: () => <span>עמודות יתווספו כאן לפי הפעלות שתבחר</span>,
+        cell: () => (
+            <div className={styles.mockCell}>
+                <div className={styles.mockIcon} />
+                <div className={styles.mockText}>אין נתונים להצגה</div>
+            </div>
+        ),
+        meta: { bgColor: "#f5f5f5" },
+    };
+    const columns = React.useMemo(
+        () =>
+            hasExtraCols
+                ? [...baseCols, ...tableColumns]
+                : [...baseCols, mockCol],
+        [baseCols, tableColumns]
+    );
     const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() });
 
     return (

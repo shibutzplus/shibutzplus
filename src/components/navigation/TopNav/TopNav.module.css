@@ -1,3 +1,4 @@
+/* Mobile 320px - 767px -- 812px */
 .contentHeader {
     background-color: var(--background-inner);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -18,24 +19,34 @@
 .headerRight {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 2em;
+    justify-content: flex-start;
+    gap: 0;
     width: 100%;
     max-width: 80vw;
 }
 
 .headerLeft {
     width: fit-content;
-    max-width: 35vw;
+    max-width: 20vw;
 }
 
 .routeTitle {
-    font-size: 1.2rem;
+    font-size: 14px;
     font-weight: 600;
     margin: 0;
     color: var(--text-primary);
     position: relative;
-    top: -2px;
-    width: 100%;
     max-width: fit-content;
+    width: 100%;
+}
+
+/* Tablet 768px - 1279px -- 800px*/
+@media screen and (min-width: 768px) {
+    .headerRight {
+        gap: 1em;
+    }
+
+    .routeTitle {
+        font-size: 18px;
+    }
 }

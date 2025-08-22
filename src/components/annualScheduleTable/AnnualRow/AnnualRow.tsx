@@ -2,7 +2,7 @@
 
 import React from "react";
 import styles from "./AnnualRow.module.css";
-import { DAYS_OF_WEEK } from "@/utils/time";
+import { DAYS_OF_WORK_WEEK } from "@/utils/time";
 import AnnualScheduleCell from "../AnnualCell/AnnualCell";
 import { WeeklySchedule } from "@/models/types/annualSchedule";
 import { SubjectType } from "@/models/types/subjects";
@@ -37,7 +37,7 @@ const AnnualRow: React.FC<AnnualRowProps> = ({
     return (
         <tr>
             <td className={styles.hourCell}>{hour}</td>
-            {DAYS_OF_WEEK.map((day) => (
+            {DAYS_OF_WORK_WEEK.map((day) => (
                 <AnnualScheduleCell
                     key={`${day}-${hour}`}
                     day={day}

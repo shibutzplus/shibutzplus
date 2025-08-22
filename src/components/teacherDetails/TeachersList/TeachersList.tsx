@@ -1,27 +1,23 @@
 "use client";
 
 import React from "react";
-import styles from "./TeachersList.module.css";
-import { TeacherType } from "@/models/types/teachers";
 import TableList from "../../core/TableList/TableList";
 import { useMainContext } from "@/context/MainContext";
-import useSubmit from "@/hooks/useSubmit";
 import messages from "@/resources/messages";
 import { getStorageSchoolId } from "@/utils/localStorage";
 import useDeletePopup from "@/hooks/useDeletePopup";
 import { PopupAction } from "@/context/PopupContext";
 import { sortByHebrewName } from "@/utils/format";
+import { TeacherType } from "@/models/types/teachers";
+import useSubmit from "@/hooks/useSubmit";
+import AddTeacherRow from "../AddTeacherRow/AddTeacherRow";
+import TeacherRow from "../teacherRow/teacherRow";
 
-type TeachersListProps = {
-    teachers: TeacherType[];
-    handleSelectTeacher: (teacher: TeacherType) => void;
-};
-
-const TeachersList: React.FC<TeachersListProps> = ({ teachers, handleSelectTeacher }) => {
+const TeachersList: React.FC = () => {
     const { handleOpenPopup } = useDeletePopup();
-    const { deleteTeacher } = useMainContext();
+    const { teachers, deleteTeacher } = useMainContext();
 
-    const { handleSubmitDelete, isLoading } = useSubmit(
+    const { handleSubmitDelete } = useSubmit(
         () => {},
         messages.teachers.deleteSuccess,
         messages.teachers.deleteError,
@@ -43,52 +39,18 @@ const TeachersList: React.FC<TeachersListProps> = ({ teachers, handleSelectTeach
         );
     };
 
-    const displayRole = (role: string): React.ReactNode => {
-        switch (role) {
-            case "regular":
-                return (
-                    <td className={styles.roleCellGreen}>
-                        <span>מורה</span>
-                    </td>
-                );
-            case "substitute":
-                return (
-                    <td className={styles.roleCellBlue}>
-                        <span>מחליף/ה</span>
-                    </td>
-                );
-            default:
-                return (
-                    <td className={styles.roleCell}>
-                        <span>-</span>
-                    </td>
-                );
-        }
-    };
-
-    const sortedTeachers = sortByHebrewName(teachers);
+    const sortedTeachers = sortByHebrewName(teachers || []);
 
     return (
-        <TableList headThs={["שם", "סטטוס", ""]}>
+        <TableList headThs={["שם המורה", "תפקיד", "פעולות"]}>
             <tbody>
-                {sortedTeachers.map((teacher) => (
-                    <tr
+                <AddTeacherRow />
+                {sortedTeachers.map((teacher: TeacherType) => (
+                    <TeacherRow
                         key={teacher.id}
-                        className={styles.teacherRow}
-                        onClick={() => handleSelectTeacher(teacher)}
-                    >
-                        <td>{teacher.name}</td>
-                        {displayRole(teacher.role)}
-                        <td>
-                            <button
-                                className={styles.deleteBtn}
-                                aria-label="מחק"
-                                onClick={(e) => handleDeleteTeacher(e, teacher)}
-                            >
-                                מחיקה
-                            </button>
-                        </td>
-                    </tr>
+                        teacher={teacher}
+                        handleDeleteTeacher={handleDeleteTeacher}
+                    />
                 ))}
             </tbody>
         </TableList>
@@ -96,15 +58,3 @@ const TeachersList: React.FC<TeachersListProps> = ({ teachers, handleSelectTeach
 };
 
 export default TeachersList;
-
-{
-    /* <div className={styles.actionButtons}>
-                                    <button
-                                        className={styles.deleteButton}
-                                        aria-label="מחק"
-                                        onClick={(e) => handleDeleteTeacher(e, teacher)}
-                                    >
-                                        <IoTrashBin className={styles.deleteIcon} size={20} />
-                                    </button>
-                                </div> */
-}

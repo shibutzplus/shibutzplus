@@ -1,0 +1,27 @@
+import React from "react";
+import styles from "./Btn.module.css";
+import Loading from "@/components/core/Loading/Loading";
+
+interface BtnProps {
+    text: string;
+    onClick?: (e: React.MouseEvent) => void;
+    isLoading: boolean;
+    Icon?: React.ReactNode;
+}
+
+const Btn: React.FC<BtnProps> = ({ text, onClick, isLoading, Icon }) => {
+    return (
+        <button onClick={onClick} disabled={isLoading} aria-label={text} className={styles.btn}>
+            {isLoading ? (
+                <Loading size="S" />
+            ) : (
+                <span className={styles.btnText}>
+                    {Icon ? Icon : null}
+                    {text}
+                </span>
+            )}
+        </button>
+    );
+};
+
+export default Btn;

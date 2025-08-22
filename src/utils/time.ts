@@ -1,6 +1,7 @@
 import { DailyScheduleType } from "@/models/types/dailySchedule";
 
 export const DAYS_OF_WEEK = ["א", "ב", "ג", "ד", "ה", "ו", "ש"];
+export const DAYS_OF_WORK_WEEK = ["א", "ב", "ג", "ד", "ה", "ו"];
 export const SUNDAY_NUMBER = 0;
 export const SATURDAY_NUMBER = 6;
 

@@ -10,7 +10,7 @@ interface DeletePopupProps {
     onDelete: () => Promise<void>;
     onCancel: () => void;
 }
-
+// TODO: loading on the button
 const DeletePopup: React.FC<DeletePopupProps> = ({ text, onDelete, onCancel }) => {
     const { closePopup } = usePopup();
 

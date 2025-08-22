@@ -10,14 +10,16 @@ const HistoryTopActions: React.FC = () => {
 
     return (
         <section className={styles.actionsContainer}>
-            <DynamicInputSelect
-                options={yearDaysSelectOptions()}
-                value={selectedYearDate}
-                onChange={handleYearDayChange}
-                isSearchable={false}
-                placeholder="בחר תאריך..."
-                hasBorder
-            />
+            <div className={styles.selectContainer}>
+                <DynamicInputSelect
+                    options={yearDaysSelectOptions()}
+                    value={selectedYearDate}
+                    onChange={handleYearDayChange}
+                    isSearchable={false}
+                    placeholder="בחר תאריך..."
+                    hasBorder
+                />
+            </div>
         </section>
     );
 };

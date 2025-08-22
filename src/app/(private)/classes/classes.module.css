@@ -1,0 +1,11 @@
+.container {
+    margin-top: calc(var(--header-height) + 2rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.classesList{
+    min-width: 60vw;
+    width: 70%;
+}

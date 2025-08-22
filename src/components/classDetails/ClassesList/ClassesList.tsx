@@ -12,14 +12,12 @@ import useDeletePopup from "@/hooks/useDeletePopup";
 import { PopupAction } from "@/context/PopupContext";
 import { sortByHebrewName } from "@/utils/format";
 
-type ClassesListProps = {
-    classes: ClassType[];
-    handleSelectClass: (classItem: ClassType) => void;
-};
+import AddClassRow from "../AddClassRow/AddClassRow";
+import ClassRow from "../ClassRow/ClassRow";
 
-const ClassesList: React.FC<ClassesListProps> = ({ classes, handleSelectClass }) => {
+const ClassesList: React.FC = () => {
+    const { classes, deleteClass } = useMainContext();
     const { handleOpenPopup } = useDeletePopup();
-    const { deleteClass } = useMainContext();
 
     const { handleSubmitDelete, isLoading } = useSubmit(
         () => {},
@@ -43,28 +41,18 @@ const ClassesList: React.FC<ClassesListProps> = ({ classes, handleSelectClass })
         );
     };
 
-    const sortedClasses = sortByHebrewName(classes);
+    const sortedClasses = sortByHebrewName(classes || []);
 
     return (
-        <TableList headThs={["שם כיתה", ""]}>
+        <TableList headThs={["שם הכיתה", "פעולות"]}>
             <tbody>
+                <AddClassRow />
                 {sortedClasses.map((classItem) => (
-                    <tr
+                    <ClassRow
                         key={classItem.id}
-                        className={styles.classRow}
-                        onClick={() => handleSelectClass(classItem)}
-                    >
-                        <td>{classItem.name}</td>
-                        <td>
-                            <button
-                                className={styles.deleteBtn}
-                                aria-label="מחק"
-                                onClick={(e) => handleDeleteClass(e, classItem)}
-                            >
-                                מחיקה
-                            </button>
-                        </td>
-                    </tr>
+                        classItem={classItem}
+                        handleDeleteClass={handleDeleteClass}
+                    />
                 ))}
             </tbody>
         </TableList>

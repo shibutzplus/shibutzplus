@@ -69,11 +69,11 @@ const links: ILink[] = [
         p: routePath.classes.p,
         Icon: <PiChairLight size={24} />,
     },
-    {
-        name: routePath.connect.title,
-        p: routePath.connect.p,
-        Icon: <IoMailOutline size={24} />,
-    },
+    // {
+    //     name: routePath.connect.title,
+    //     p: routePath.connect.p,
+    //     Icon: <IoMailOutline size={24} />,
+    // },
     {
         name: routePath.history.title,
         p: routePath.history.p,
@@ -95,8 +95,22 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose }) => {
     const navRef = useRef<HTMLDivElement>(null);
     useAccessibility({ isOpen, navRef, onClose });
 
+    const overlayRef = useRef<HTMLDivElement>(null);
+    React.useEffect(() => {
+        if (overlayRef.current) {
+            if (!isOpen) {
+                overlayRef.current.setAttribute("inert", "");
+            } else {
+                overlayRef.current.removeAttribute("inert");
+            }
+        }
+    }, [isOpen]);
+
     return (
-        <div className={`${styles.overlay} ${isOpen ? styles.open : ""}`} aria-hidden={!isOpen}>
+        <div
+            ref={overlayRef}
+            className={`${styles.overlay} ${isOpen ? styles.open : ""}`}
+        >
             <div
                 ref={navRef}
                 className={`${styles.nav} ${isOpen ? styles.open : ""}`}

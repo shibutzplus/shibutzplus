@@ -11,15 +11,17 @@ const AnnualTopActions: React.FC = () => {
 
     return (
         <section className={styles.actionsContainer}>
-            <DynamicInputSelect
-                options={classesSelectOptions()}
-                value={selectedClassId}
-                onChange={handleClassChange}
-                isSearchable={false}
-                placeholder="בחר כיתה..."
-                hasBorder
-            />
-            {isLoading ? <div>שומר...</div> : null}
+            <div className={styles.selectContainer}>
+                <DynamicInputSelect
+                    options={classesSelectOptions()}
+                    value={selectedClassId}
+                    onChange={handleClassChange}
+                    isSearchable={false}
+                    placeholder="בחר כיתה..."
+                    hasBorder
+                />
+            </div>
+            {isLoading ? <div className={styles.loading}>שומר...</div> : null}
         </section>
     );
 };

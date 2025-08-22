@@ -7,7 +7,7 @@ type TableListProps = {
     height?: string;
 };
 
-const TableList: React.FC<TableListProps> = ({ headThs, children, height = "60vh" }) => {
+const TableList: React.FC<TableListProps> = ({ headThs, children, height = "90vh" }) => {
     return (
         <section className={styles.tableListSection} style={{ height }}>
             <table className={styles.tableList}>

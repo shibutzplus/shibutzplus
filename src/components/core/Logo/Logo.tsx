@@ -1,15 +1,19 @@
+"use client";
+
 import React from "react";
 import styles from "./Logo.module.css";
 import Image from "next/image";
+import { useMobileSize } from "@/hooks/useMobileSize";
 
 type LogoProps = {
     size?: "S" | "M" | "L";
 };
 
 const Logo: React.FC<LogoProps> = ({ size = "M" }) => {
+    const isMobile = useMobileSize();
     const placeholderSize = {
-        width: size === "S" ? 40 : size === "M" ? 60 : 80,
-        height: size === "S" ? 40 : size === "M" ? 60 : 80,
+        width: isMobile ? (size === "S" ? 30 : size === "M" ? 60 : 80) : (size === "S" ? 40 : size === "M" ? 60 : 80),
+        height: isMobile ? (size === "S" ? 30 : size === "M" ? 60 : 80) : (size === "S" ? 40 : size === "M" ? 60 : 80),
     };
     const imageSize = size === "S" ? 20 : size === "M" ? 40 : 60;
 

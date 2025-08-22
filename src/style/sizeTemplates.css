@@ -1,0 +1,19 @@
+/* Mobile 320px - 767px -- 812px */
+
+/* Tablet 768px - 1279px -- 800px*/
+@media screen and (min-width: 768px) {
+}
+
+/* Laptop HD 1280px - 1439px -- 720px*/
+@media screen and (min-width: 1280px) {
+}
+
+/*OPTIONAL*/
+
+/* Desktop Full HD 1920px - 2559px -- 1080px*/
+@media screen and (min-width: 1920px) {
+}
+
+/* Desktop 2K 2560px -- 1440px*/
+@media screen and (min-width: 2560px) {
+}

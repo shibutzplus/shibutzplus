@@ -1,3 +1,62 @@
+- daily - still not working 
+- daily - days select are wrong
+- daily - DB take the day and convert it to date
+- daily - open the date select on ..?
+- daily - need to add - if you select a teacher you cant select it again (remove from the list)
+- daily - responsive table
+- daily - style the table
+- daily - loading skeleton
+- daily - publish proccess 
+- daily - on select subTeacher - option to select teacher or free text (Select+Text)
+- daily - group subteacher select
+
+- annual - for each select (subject or teacher) there is also "remove" option to clear the cell
+- annual - responsive table
+- annual - loading skeleton
+
+- lists - for all lists pages, improve design
+- lists - responsive
+- lists - add search
+- lists - update do not show the new update
+
+- onboarding - not working 
+- onboarding - new design 
+
+- history - finish build
+- history - new design
+- history - responsive
+- history - loading skeleton
+
+- improve preformance by converting the teachers classes and subjects array to Dictionary
+- helper/guide box for the user to understand the system
+- hamburger open by default and responsive to the screen
+- side nav split into sections with title
+
+- text per gender (he / she) 
+
+- teacher - mobile screen for the teachers
+- teacher - select the teacher name from a list
+- teacher - you can see your replacement or you can see the daily (all teachers)
+
+- replacement - mobile screen for the replacements + url id
+- replacement - you can only see what you need to teach, where and what
+
+- how does new user register? (maybe on first login he register)
+- why it takes so much time to page to load on the first time
+
+- add clerity
+- add domain
+- setup google auth for prod
+- new logo
+
+DB addition
+- school - hours: int (7)
+- school - days: int (6)
+
+
+
+
+
 v- daily - table headr style
 v- daily - handle info column
 v- daily - table cell has select that can be text (teacher or information)
@@ -11,46 +70,27 @@ v- daily - delete column if click remove
 v- daily - add info to DB
 v- daily - get from DB 7 day when current day is the middle of the week (even if getting next week) - need to check with mom
 v- daily - if I save one row from a teacher column, I only populate one row and not all the teacher rows. need to populate all the rows
-- daily - DB take the day and convert it to date
-- daily - the cell select is from type Select+Text not only Select
-- daily - open the date select on ..?
-- daily - need to add - if you select a teacher you cant select it again (remove from the list)
 
 v- annual - error on adding new cell for deffrent class (except first in array)
 v- annual - if teacher teachs in a class, do not show him in the list of other classes in the same hour
-- annual - for each select (subject or teacher) there is also "remove" option to clear the cell
-- annual - add "שומר..." text on the top nav (loading) 
+v- annual - add "שומר..." text on the top nav (loading) 
 
-- annual - responsive table
-- annual - style the table
-- annual - loading spinner
 
-- daily - responsive table
-- daily - style the table
-- daily - loading spinner
+v- annual - style the table
+v- annual - loading spinner
 
-- each page has his own layout with his own provider
 
-- improve preformance by converting the teachers classes and subjects array to Dictionary
+v- each page has his own layout with his own provider
 
 v- auth - remember me
 v- auth - register via google
 
-- lists - for all lists pages, improve design
+
 v - teachers - fix the role in the DB
 
-- annual - filter teachers in the select not working on first render
+v- annual - filter teachers in the select not working on first render
 
-- helper/guide box for the user to understand the system
-- hamburger open by default and responsive to the screen
-- side nav split into sections with title
-
-- text per gender (he / she) 
-
-
----
-
-- annual - insted of filter teachers. show all the teachers but color the teachers that already selected in the same time
+v- annual - insted of filter teachers. show all the teachers but color the teachers that already selected in the same time
 v- daily - show week before, two week after in the day select (day of the week + date)
 
 

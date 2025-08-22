@@ -28,7 +28,7 @@ export const useAnnualTable = () => {
 export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const { classes } = useMainContext();
     const [selectedClassId, setSelectedClassId] = useState<string>(classes?.[0]?.id || "");
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     useEffect(() => {
         if (classes && classes?.length > 0 && selectedClassId === "") {

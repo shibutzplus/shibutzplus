@@ -1,0 +1,45 @@
+.mockCell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100px;
+  padding: 2.5em 0;
+}
+
+.mockIcon {
+  width: 32px;
+  height: 32px;
+  background: #e0e0e0;
+  border-radius: 6px;
+  margin-bottom: 0.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.mockIcon::before, .mockIcon::after {
+  content: '';
+  display: block;
+  position: absolute;
+  background: #c8c8c8;
+}
+.mockIcon::before {
+  top: 6px;
+  left: 6px;
+  width: 20px;
+  height: 4px;
+  border-radius: 2px;
+}
+.mockIcon::after {
+  top: 14px;
+  left: 6px;
+  width: 20px;
+  height: 10px;
+  border-radius: 2px;
+}
+.mockText {
+  color: #888;
+  font-size: 1em;
+  text-align: center;
+}

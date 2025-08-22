@@ -24,6 +24,22 @@
   direction: rtl;
 }
 
+.readonly {
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  font-size: 16px;
+  color: var(--foreground);
+  text-align: right;
+  direction: rtl;
+  cursor: default;
+}
+
+.readonly:focus,
+.readonly:active {
+  border: none;
+}
+
 .input::placeholder {
   color: var(--placeholder-color);
   opacity: 0.8;

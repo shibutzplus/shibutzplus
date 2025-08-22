@@ -1,27 +1,25 @@
 "use client";
 
 import React from "react";
-import styles from "./SubjectsList.module.css";
-import { SubjectType } from "@/models/types/subjects";
 import TableList from "../../core/TableList/TableList";
 import { useMainContext } from "@/context/MainContext";
-import useSubmit from "@/hooks/useSubmit";
 import messages from "@/resources/messages";
 import { getStorageSchoolId } from "@/utils/localStorage";
 import useDeletePopup from "@/hooks/useDeletePopup";
 import { PopupAction } from "@/context/PopupContext";
 import { sortByHebrewName } from "@/utils/format";
+import SubjectRow from "../SubjectRow/SubjectRow";
+import { SubjectType } from "@/models/types/subjects";
+import useSubmit from "@/hooks/useSubmit";
+import AddSubjectRow from "../AddSubjectRow/AddSubjectRow";
 
-type SubjectsListProps = {
-    subjects: SubjectType[];
-    handleSelectSubject: (subject: SubjectType) => void;
-};
+type SubjectsListProps = {};
 
-const SubjectsList: React.FC<SubjectsListProps> = ({ subjects, handleSelectSubject }) => {
+const SubjectsList: React.FC<SubjectsListProps> = () => {
     const { handleOpenPopup } = useDeletePopup();
-    const { deleteSubject } = useMainContext();
+    const { subjects, deleteSubject } = useMainContext();
 
-    const { handleSubmitDelete, isLoading } = useSubmit(
+    const { handleSubmitDelete } = useSubmit(
         () => {},
         messages.subjects.deleteSuccess,
         messages.subjects.deleteError,
@@ -43,28 +41,18 @@ const SubjectsList: React.FC<SubjectsListProps> = ({ subjects, handleSelectSubje
         );
     };
 
-    const sortedSubjects = sortByHebrewName(subjects);
+    const sortedSubjects = sortByHebrewName(subjects || []);
 
     return (
-        <TableList headThs={["שם מקצוע", ""]}>
+        <TableList headThs={["שם המקצוע", "פעולות"]}>
             <tbody>
-                {sortedSubjects.map((subject) => (
-                    <tr
+                <AddSubjectRow />
+                {sortedSubjects.map((subject: SubjectType) => (
+                    <SubjectRow
                         key={subject.id}
-                        className={styles.subjectRow}
-                        onClick={() => handleSelectSubject(subject)}
-                    >
-                        <td>{subject.name}</td>
-                        <td>
-                            <button
-                                className={styles.deleteBtn}
-                                aria-label="מחק"
-                                onClick={(e) => handleDeleteSubject(e, subject)}
-                            >
-                                מחיקה
-                            </button>
-                        </td>
-                    </tr>
+                        subject={subject}
+                        handleDeleteSubject={handleDeleteSubject}
+                    />
                 ))}
             </tbody>
         </TableList>

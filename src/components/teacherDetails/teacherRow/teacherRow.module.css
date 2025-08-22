@@ -1,0 +1,25 @@
+.teacherRow {
+    align-items: flex-start;
+}
+
+.actions {
+    display: flex;
+    gap: 35px;
+}
+
+.roleCell,
+.roleCellBlue,
+.roleCellGreen {
+    padding: 5px 15px !important;
+    border-radius: 5px;
+}
+
+.roleCellGreen {
+    background-color: #15bf78;
+    color: #fff;
+}
+
+.roleCellBlue {
+    background-color: #436dce;
+    color: #fff;
+}

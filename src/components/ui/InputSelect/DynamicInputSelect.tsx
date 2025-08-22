@@ -6,7 +6,7 @@ const DynamicInputSelect = dynamic(() => import("./InputSelect"), {
         <div
             style={{
                 minHeight: "42px",
-                borderColor: "#ccc",
+                borderColor: "#d7d6d6",
                 borderRadius: "4px",
                 borderWidth: "1px",
                 borderStyle: "solid",
