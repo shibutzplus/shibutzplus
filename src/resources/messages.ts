@@ -1,5 +1,7 @@
 const messages = {
     auth: {
+        accessDenied: "שגיאה בהתחברות, אנא נסו שנית",
+
         serverError: "שגיאה",
         unauthorized: "אין הרשאה. אנא התחבר כדי לגשת למידע זה",
         paramRequired: "פרמטר נדרש",
@@ -18,6 +20,9 @@ const messages = {
             error: "שגיאה"
         }
     },
+
+
+
     connect: {
         error: "שגיאה"
     },

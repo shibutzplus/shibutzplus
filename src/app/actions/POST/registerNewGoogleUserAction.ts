@@ -4,58 +4,38 @@ import { eq } from "drizzle-orm";
 import { ActionResponse } from "@/models/types/actions";
 import messages from "@/resources/messages";
 import { UserSchema } from "@/db/schema/users";
-import { googlePlaceholder } from "@/models/constant";
 
 export interface RegisterGoogleUserInput {
-  email: string;
-  name: string;
+    email: string;
 }
 
 export interface RegisterGoogleUserResponse extends ActionResponse {
-  data?: UserSchema;
+    data?: UserSchema;
 }
 
-export async function registerNewGoogleUserAction({ email, name }: RegisterGoogleUserInput): Promise<RegisterGoogleUserResponse> {
-  try {
-    const existing = await db.query.users.findFirst({ where: eq(users.email, email) });
-    if (existing) {
-      return {
-        success: true,
-        message: messages.auth.register.success,
-        data: existing,
-      };
+export async function registerNewGoogleUserAction({
+    email,
+}: RegisterGoogleUserInput): Promise<RegisterGoogleUserResponse> {
+    try {
+        const existing = await db.query.users.findFirst({ where: eq(users.email, email) });
+
+        if (existing) {
+            return {
+                success: true,
+                message: messages.auth.register.success,
+                data: existing,
+            };
+        }
+
+        return {
+            success: false,
+            message: messages.auth.register.error,
+        };
+    } catch (error) {
+        console.error("Error registering Google user:", error);
+        return {
+            success: false,
+            message: messages.auth.register.error,
+        };
     }
-
-    const [user] = await db
-      .insert(users)
-      .values({
-        name,
-        email,
-        password: googlePlaceholder,
-        role: "teacher",
-        gender: "male",
-        schoolId: null,
-      })
-      .returning();
-
-    if (!user) {
-      return {
-        success: false,
-        message: messages.auth.register.error,
-      };
-    }
-
-    return {
-      success: true,
-      message: messages.auth.register.success,
-      data: user,
-    };
-  } catch (error) {
-    console.error("Error registering Google user:", error);
-    return {
-      success: false,
-      message: messages.auth.register.error,
-    };
-  }
 }
-

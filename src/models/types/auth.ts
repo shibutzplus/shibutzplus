@@ -32,14 +32,6 @@ export type RegisterRequest = {
 
 export type RegisterResponse = ActionResponse;
 
-export type SignInRequest = {
-    email: string;
-    password: string;
-    remember: boolean;
-};
-
-export type SignInResponse = ActionResponse;
-
 declare module "next-auth" {
     interface Session {
         user: {

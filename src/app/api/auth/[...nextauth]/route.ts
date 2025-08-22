@@ -1,38 +1,14 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
 import { schema } from "@/db";
 import { getSessionMaxAge, mathFloorNow, TWENTY_FOUR_HOURS } from "@/utils/time";
 import Google from "next-auth/providers/google";
 import { registerNewGoogleUserAction } from "@/app/actions/POST/registerNewGoogleUserAction";
-import { getUserByEmailAction } from "@/app/actions/GET/getUserByEmailAction";
-import { authUser } from "@/utils/authUtils";
-import { googlePlaceholder } from "@/models/constant";
 
 export const authOptions: NextAuthOptions = {
     providers: [
         Google({
             clientId: process.env.GOOGLE_CLIENT_ID || "",
             clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
-        }),
-        CredentialsProvider({
-            name: "Credentials",
-            credentials: {
-                email: { label: "Email", type: "email" },
-                password: { label: "Password", type: "password" },
-                remember: { label: "Remember me", type: "boolean" },
-            },
-            async authorize(credentials) {
-                if (!credentials?.email || !credentials?.password) {
-                    throw new Error("Email and password required");
-                }
-                const response = await getUserByEmailAction(credentials.email);
-
-                if (!response.success || !response.data) {
-                    throw new Error("No user found with this email");
-                }
-
-                return authUser(response, credentials.password, credentials.remember);
-            },
         }),
     ],
     session: {
@@ -45,20 +21,15 @@ export const authOptions: NextAuthOptions = {
                 const email = typeof profile?.email === "string" ? profile.email : undefined;
                 const name = typeof profile?.name === "string" ? profile.name : undefined;
                 if (!email || !name) return false;
-
-                let response;
                 try {
-                    response = await registerNewGoogleUserAction({ email, name });
+                    const response = await registerNewGoogleUserAction({ email });
                     if (!response.success) return false;
                 } catch (err) {
-                    const response = await getUserByEmailAction(email);
-                    if (!response.success) return false;
+                    return false;
                 }
-                //TODO: google auth not working good, google does not fill all the session and you alwaiys enter onboarding
-                authUser(response, googlePlaceholder, "true");
                 return true;
             }
-            return true;
+            return false;
         },
         async jwt({ token, user }) {
             if (user) {
