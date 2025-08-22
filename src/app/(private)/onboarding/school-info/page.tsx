@@ -9,8 +9,8 @@ import Link from "next/link";
 import router from "@/routes";
 import { useOnboarding } from "@/context/onboardingContext";
 import { citiesOptions, schoolLevelOptions } from "@/resources/onboarding";
-import { SchoolLevel } from "@/models/types/onboarding";
 import DynamicInputSelect from "@/components/ui/InputSelect/DynamicInputSelect";
+import { SchoolLevel } from "@/models/types/school";
 
 const SchoolInfoPage: React.FC = () => {
     const route = useRouter();
@@ -19,8 +19,8 @@ const SchoolInfoPage: React.FC = () => {
     const [error, setError] = useState("");
 
     const [schoolName, setSchoolName] = useState("");
-    const [city, setCity] = useState("TelAviv");
-    const [level, setLevel] = useState("elementary");
+    const [city, setCity] = useState("");
+    const [level, setLevel] = useState("");
 
     useEffect(() => {
         if (!fullUser) {

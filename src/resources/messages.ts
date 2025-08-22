@@ -14,7 +14,8 @@ const messages = {
             invalid: "חסרים פרמטרים",
             success: "Registered successfully",
             schoolExist: "בית הספר כבר קיים",
-            schoolNotFound: "בית ספר לא נמצא"
+            schoolNotFound: "בית ספר לא נמצא",
+            error: "שגיאה"
         }
     },
     connect: {

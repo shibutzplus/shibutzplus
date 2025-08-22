@@ -68,7 +68,7 @@ const LoginForm: React.FC = () => {
             setIsLoading(false);
             return;
         }
-        router.push(DEFAULT_REDIRECT);
+        // router.push(DEFAULT_REDIRECT);
     };
 
     return (

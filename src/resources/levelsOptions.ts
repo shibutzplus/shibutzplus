@@ -1,6 +1,6 @@
-import { SchoolAgeGroup } from "@/models/types/school";
+import { SchoolLevel } from "@/models/types/school";
 
-const initClasses = (type: SchoolAgeGroup) => {
+const initClasses = (type: SchoolLevel) => {
     switch (type) {
         case "Elementary":
             return [
@@ -26,7 +26,7 @@ const initClasses = (type: SchoolAgeGroup) => {
     }
 };
 
-const initSubjects = (type: SchoolAgeGroup) => {
+const initSubjects = (type: SchoolLevel) => {
     switch (type) {
         case "Elementary":
             return ["חשבון", "עברית", "אנגלית", "מדעים", "תנך", "ספורט"];

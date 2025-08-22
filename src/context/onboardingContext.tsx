@@ -2,7 +2,9 @@
 
 import { onboardingNewUserAction } from "@/app/actions/POST/onboardingNewUserAction";
 import { UserGender, UserRole } from "@/db/schema";
-import { FullUser, SchoolLevel } from "@/models/types/onboarding";
+import { FullUser } from "@/models/types/onboarding";
+import { SchoolLevel } from "@/models/types/school";
+import { useSession } from "next-auth/react";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 interface OnboardingContextType {
@@ -28,12 +30,14 @@ export const useOnboarding = () => {
 };
 
 export const OnboardingProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+    const {data: session } = useSession();
     const [fullUser, setFullUser] = useState<FullUser>({
+        email: session?.user.email || "",
         name: "",
         gender: "male",
         role: "teacher",
         schoolName: "",
-        level: "middle",
+        level: "Middle",
     });
 
     const fillUserInfo = (name: string, gender: UserGender, role: UserRole) => {
@@ -41,15 +45,19 @@ export const OnboardingProvider: React.FC<{ children: ReactNode }> = ({ children
     };
 
     const fillSchoolInfo = async (schoolName: string, level: SchoolLevel) => {
-        const user: FullUser = {
-            name: fullUser.name,
-            gender: fullUser.gender,
-            role: fullUser.role,
-            schoolName,
-            level,
-        };
-        const { success, status } = await onboardingNewUserAction(user);
-        return { success, status };
+        if(session?.user.email){
+            const user: FullUser = {
+                email: session?.user.email,
+                name: fullUser.name,
+                gender: fullUser.gender,
+                role: fullUser.role,
+                schoolName,
+                level,
+            };
+            const { success, status } = await onboardingNewUserAction(user);
+            return { success, status };
+        }
+        return { success: false, status: undefined };
     };
 
     const value: OnboardingContextType = {

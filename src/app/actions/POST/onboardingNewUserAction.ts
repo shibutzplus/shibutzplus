@@ -5,7 +5,7 @@ import { users } from "@/db/schema/users";
 import { schools } from "@/db/schema/schools";
 import { eq } from "drizzle-orm";
 import { FullUser } from "@/models/types/onboarding";
-import { SchoolAgeGroup } from "@/models/types/school";
+import { SchoolLevel } from "@/models/types/school";
 import { ActionResponse } from "@/models/types/actions";
 import messages from "@/resources/messages";
 import { initClasses, initSubjects } from "@/resources/levelsOptions";
@@ -18,15 +18,14 @@ export async function onboardingNewUserAction(
     fullUser: FullUser,
 ): Promise<OnboardingNewUserResponse> {
     try {
-        // Find the user by name (or by email if available in your context)
         const existingUser = await db.query.users.findFirst({
-            where: eq(users.name, fullUser.name),
+            where: eq(users.email, fullUser.email),
         });
+
         if (!existingUser) {
             return { success: false, message: messages.auth.register.invalid };
         }
 
-        // Check if school exists
         const existingSchool = await db.query.schools.findFirst({
             where: eq(schools.name, fullUser.schoolName),
         });
@@ -41,14 +40,13 @@ export async function onboardingNewUserAction(
             status = "onboarding-daily";
             message = messages.auth.register.success;
         } else {
-            // Create new school
-            // Map onboarding level to SchoolAgeGroup type
-            const levelMap: Record<string, SchoolAgeGroup> = {
+            const levelMap: Record<string, SchoolLevel> = {
                 elementary: "Elementary",
                 middle: "Middle",
                 high: "High",
             };
             const schoolType = levelMap[fullUser.level] || "Elementary";
+
             const [newSchool] = await db
                 .insert(schools)
                 .values({
@@ -74,8 +72,8 @@ export async function onboardingNewUserAction(
             })
             .where(eq(users.id, existingUser.id));
 
-        const classes = initClasses(fullUser.level as SchoolAgeGroup);
-        const subjects = initSubjects(fullUser.level as SchoolAgeGroup);
+        const classes = initClasses(fullUser.level as SchoolLevel);
+        const subjects = initSubjects(fullUser.level as SchoolLevel);
 
         for (const className of classes) {
             await db.insert(schema.classes).values({ name: className, schoolId }).returning();

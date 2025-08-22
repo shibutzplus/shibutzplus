@@ -4,7 +4,7 @@ import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
 import { sql } from 'drizzle-orm';
 import { UserRole, UserGender } from '@/models/types/auth';
-import { SchoolAgeGroup, SchoolStatus } from '@/models/types/school';
+import { SchoolLevel, SchoolStatus } from '@/models/types/school';
 import { TeacherRole } from '@/models/types/teachers';
 
 /**
@@ -103,22 +103,22 @@ async function seedSchools(db: any) {
   const schools = [
     {
       name: 'Elementary School 1',
-      type: 'elementary' as SchoolAgeGroup,
+      type: 'Elementary' as SchoolLevel,
       status: 'active' as SchoolStatus,
     },
     {
       name: 'Middle School 1',
-      type: 'middle' as SchoolAgeGroup,
+      type: 'Middle' as SchoolLevel,
       status: 'active' as SchoolStatus,
     },
     {
       name: 'High School 1',
-      type: 'high' as SchoolAgeGroup,
+      type: 'High' as SchoolLevel,
       status: 'active' as SchoolStatus,
     },
     {
       name: 'New School',
-      type: 'elementary' as SchoolAgeGroup,
+      type: 'Elementary' as SchoolLevel,
       status: 'onboarding' as SchoolStatus,
     },
   ];

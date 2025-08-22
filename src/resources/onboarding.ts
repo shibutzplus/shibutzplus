@@ -1,6 +1,6 @@
+import { SchoolLevel } from "@/db/schema";
 import { SelectOption } from "@/models/types";
 import { UserGender, UserRole } from "@/models/types/auth";
-import { SchoolLevel } from "@/models/types/onboarding";
 
 export const genderOptions: SelectOption<UserGender>[] = [
     { value: "male", label: "זכר" },
@@ -16,9 +16,9 @@ export const roleOptions: SelectOption<UserRole>[] = [
 ];
 
 export const schoolLevelOptions: SelectOption<SchoolLevel>[] = [
-    { value: "elementary", label: "יסודי" },
-    { value: "middle", label: "חטיבה" },
-    { value: "high", label: "תיכון" },
+    { value: "Elementary", label: "יסודי" },
+    { value: "Middle", label: "חטיבה" },
+    { value: "High", label: "תיכון" },
 ];
 
 export const citiesOptions: SelectOption<string>[] = [

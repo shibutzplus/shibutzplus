@@ -1,11 +1,11 @@
 import { pgTable, text, varchar, timestamp } from 'drizzle-orm/pg-core';
 import { createId } from '@paralleldrive/cuid2';
-import { SchoolStatus, SchoolAgeGroup } from '@/models/types/school';
+import { SchoolStatus, SchoolLevel } from '@/models/types/school';
 
 export const schools = pgTable('schools', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
   name: varchar('name', { length: 100 }).notNull().unique(),
-  type: varchar('type', { length: 20 }).notNull().$type<SchoolAgeGroup>().default('Elementary'),
+  type: varchar('type', { length: 20 }).notNull().$type<SchoolLevel>().default('Elementary'),
   status: varchar('status', { length: 20 }).notNull().$type<SchoolStatus>().default('onboarding'),
   publishDates: text('publish_dates').array().default([]).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),

@@ -1,8 +1,8 @@
 import { UserGender, UserRole } from "./auth";
-
-export type SchoolLevel = "elementary" | "middle" | "high";
+import { SchoolLevel } from "./school";
 
 export type FullUser = {
+    email: string;
     name: string;
     gender: UserGender;
     role: UserRole;

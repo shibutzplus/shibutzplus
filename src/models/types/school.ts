@@ -7,12 +7,12 @@ export type SchoolStatus =
     | "onboarding-daily"
     | "daily";
 
-export type SchoolAgeGroup = "Elementary" | "Middle" | "High";
+export type SchoolLevel = "Elementary" | "Middle" | "High";
 
 export type SchoolType = {
     id: string;
     name: string;
-    type: SchoolAgeGroup;
+    type: SchoolLevel;
     status: SchoolStatus;
     publishDates: string[];
     createdAt: Date;

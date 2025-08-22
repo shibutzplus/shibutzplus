@@ -10,7 +10,7 @@ const SkeletonCell: React.FC = () => (
         height: 100,
         borderRadius: 6,
         background: "#e0e0e0",
-        width: "90%",
+        width: 305,
         margin: "0 auto",
         marginTop: 8,
         marginBottom: 8,

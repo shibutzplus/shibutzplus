@@ -4,7 +4,7 @@ import { relations } from 'drizzle-orm';
 import { users, type UserSchema, type NewUserSchema } from './users';
 import { type UserRole, type UserGender } from '@/models/types/auth';
 import { schools, type SchoolSchema, type NewSchoolSchema } from './schools';
-import { type SchoolAgeGroup, type SchoolStatus } from '@/models/types/school';
+import { type SchoolLevel, type SchoolStatus } from '@/models/types/school';
 import { teachers, type TeacherSchema, type NewTeacherSchema } from './teachers';
 import { type TeacherRole } from '@/models/types/teachers';
 import { classes, type ClassSchema, type NewClassSchema } from './classes';
@@ -123,7 +123,7 @@ export const dailyScheduleRelations = relations(dailySchedule, ({ one }) => ({
 // Export all tables and types
 export {
   users, type UserRole, type UserGender, type UserSchema, type NewUserSchema,
-  schools, type SchoolAgeGroup, type SchoolStatus, type SchoolSchema, type NewSchoolSchema,
+  schools, type SchoolLevel, type SchoolStatus, type SchoolSchema, type NewSchoolSchema,
   teachers, type TeacherRole, type TeacherSchema, type NewTeacherSchema,
   classes, type ClassSchema, type NewClassSchema,
   subjects, type SubjectSchema, type NewSubjectSchema,
