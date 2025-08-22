@@ -37,8 +37,9 @@ import { addDailyTeacherCellAction } from "@/app/actions/POST/addDailyTeacherCel
 import { addDailyEventCellAction } from "@/app/actions/POST/addDailyEventCellAction";
 import { updateDailyEventCellAction } from "@/app/actions/PUT/updateDailyEventCellAction";
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
-import { getDayOptions, getTomorrowOption } from "@/resources/dayOptions";
+import { getIsraeliDateOptions, getTomorrowOption } from "@/resources/dayOptions";
 import { SelectOption } from "@/models/types";
+import { DailyTableColors } from "@/style/tableColors";
 
 interface DailyTableContextType {
     tableColumns: ColumnDef<TeacherRow>[];
@@ -87,7 +88,7 @@ function buildColumn(colType: ActionColumnType, columnId: string): ColumnDef<Tea
             id: columnId,
             header: () => <DailyTeacherHeader columnId={columnId} type="missingTeacher" />,
             cell: (props) => <DailyTeacherCell cell={props} type="missingTeacher" />,
-            meta: { bgColor: "#f9fcf1" },
+            meta: { bgColor: DailyTableColors.missingTeacher.headerColor },
         };
     }
     if (colType === "existingTeacher") {
@@ -95,14 +96,14 @@ function buildColumn(colType: ActionColumnType, columnId: string): ColumnDef<Tea
             id: columnId,
             header: () => <DailyTeacherHeader columnId={columnId} type="existingTeacher" />,
             cell: (props) => <DailyTeacherCell cell={props} type="existingTeacher" />,
-            meta: { bgColor: "#f1f6fc" },
+            meta: { bgColor: DailyTableColors.existingTeacher.headerColor },
         };
     }
     return {
         id: columnId,
         header: () => <EventHeader columnId={columnId} />,
         cell: (props) => <EventCell cell={props} />,
-        meta: { bgColor: "#f2fcf1" },
+        meta: { bgColor: DailyTableColors.event.headerColor },
     };
 }
 
@@ -124,7 +125,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     const [selectedDate, setSelectedDayId] = useState<string>(getTomorrowOption());
 
     const daysSelectOptions = () => {
-        return getDayOptions();
+        return getIsraeliDateOptions();
     };
 
     const handleDayChange = (value: string) => {
@@ -134,12 +135,10 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     useEffect(() => {
         const fetchDataForDate = async () => {
             if (!school?.id || !selectedDate) return;
-
             setIsLoading(true);
             try {
                 const targetDate = selectedDate || getTodayDateString();
                 const response = await getDailyScheduleAction(school.id, targetDate);
-
                 if (response.success && response.data) {
                     setDailyScheduleRawData(response.data);
                 } else {
@@ -159,13 +158,10 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
 
     useEffect(() => {
         // Populate table when data is available
-        if (school && teachers && dailyScheduleRawData && dailyScheduleRawData.length > 0) {
+        if (school && teachers && dailyScheduleRawData) {
             populateDailyScheduleTable(dailyScheduleRawData);
-        } else if (dailyScheduleRawData && dailyScheduleRawData.length === 0) {
-            // Clear table if no data for selected date
-            clearDailySchedule();
-        }
-    }, [school, teachers, dailyScheduleRawData, selectedDate]);
+        } 
+    }, [dailyScheduleRawData]);
 
     const populateDailyScheduleTable = async (dailySchedulColumns: DailyScheduleType[]) => {
         try {
@@ -206,6 +202,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                     });
                     seenColumnIds.add(columnId);
                 }
+
 
                 if (!entriesByDayAndHeader[selectedDate]) {
                     entriesByDayAndHeader[selectedDate] = {};
@@ -456,7 +453,6 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     };
 
     const clearDailySchedule = () => {
-        // Clear all existing data
         setDailySchedule({});
         setActionCols([]);
     };

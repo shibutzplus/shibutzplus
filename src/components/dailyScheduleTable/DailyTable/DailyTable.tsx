@@ -2,15 +2,14 @@
 
 import React, { useState } from "react";
 import styles from "./DailyTable.module.css";
-import "./mockStyles.css";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { TeacherRow } from "@/models/types/table";
 import { TableRows } from "@/models/constant/table";
+import { MdOutlineImageNotSupported } from "react-icons/md";
 
-interface DailyTableProps {}
 
-const DailyTable: React.FC<DailyTableProps> = () => {
+const DailyTable: React.FC = () => {
     const { tableColumns } = useDailyTableContext();
     const [data] = useState<TeacherRow[]>(
         Array.from({ length: TableRows }, (_, i) => ({ hour: i + 1 })),
@@ -21,7 +20,7 @@ const DailyTable: React.FC<DailyTableProps> = () => {
             {
                 accessorKey: "hour",
                 header: "שעה",
-                cell: (info: any) => <span>{info.getValue()}</span>,
+                cell: (info: any) => <span className={styles.hourCell}>{info.getValue()}</span>,
                 meta: { bgColor: "#f5f5f5" },
             },
         ],
@@ -30,23 +29,28 @@ const DailyTable: React.FC<DailyTableProps> = () => {
 
     // If no columns except baseCols, add a single wide template column
     const hasExtraCols = tableColumns.length > 0;
-    const mockCol = {
-        id: "mock",
-        header: () => <span>עמודות יתווספו כאן לפי הפעלות שתבחר</span>,
-        cell: () => (
-            <div className={styles.mockCell}>
-                <div className={styles.mockIcon} />
-                <div className={styles.mockText}>אין נתונים להצגה</div>
-            </div>
-        ),
-        meta: { bgColor: "#f5f5f5" },
+    const baseEmpty = (id: string) => {
+        return {
+            id: id,
+            header: () => <span className={styles.templateHeaderText}>עמודות יתווספו כאן לפי הפעלות שתבחר</span>,
+            cell: () => (
+                <div className={styles.templateCell}>
+                    <MdOutlineImageNotSupported className={styles.templateIcon} size={18} />
+                    <div className={styles.templateText}>אין נתונים להצגה</div>
+                </div>
+            ),
+            meta: { bgColor: "#f5f5f5" },
+        };
     };
     const columns = React.useMemo(
         () =>
             hasExtraCols
                 ? [...baseCols, ...tableColumns]
-                : [...baseCols, mockCol],
-        [baseCols, tableColumns]
+                : [
+                      ...baseCols,
+                      baseEmpty("cell1"),
+                  ],
+        [baseCols, tableColumns],
     );
     const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() });
 
@@ -61,7 +65,7 @@ const DailyTable: React.FC<DailyTableProps> = () => {
                                     key={header.id}
                                     className={
                                         header.column.id === "hour"
-                                            ? styles.hourCell
+                                            ? styles.hourHeader
                                             : styles.dayHeader
                                     }
                                     style={{

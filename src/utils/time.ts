@@ -2,6 +2,7 @@ import { DailyScheduleType } from "@/models/types/dailySchedule";
 
 export const DAYS_OF_WEEK = ["א", "ב", "ג", "ד", "ה", "ו", "ש"];
 export const DAYS_OF_WORK_WEEK = ["א", "ב", "ג", "ד", "ה", "ו"];
+export const DAYS_OF_WEEK_FORMAT = ["יום א", "יום ב", "יום ג", "יום ד", "יום ה", "יום ו", "יום ש"];
 export const SUNDAY_NUMBER = 0;
 export const SATURDAY_NUMBER = 6;
 
@@ -30,6 +31,12 @@ export const getTomorrowDateString = () => {
     return getDateReturnString(tomorrow);
 };
 
+export const getTwoDaysFromNowDateString = () => {
+    const twoDaysFromNow = new Date();
+    twoDaysFromNow.setDate(twoDaysFromNow.getDate() + 2);
+    return getDateReturnString(twoDaysFromNow);
+};
+
 // -- Day -- //
 
 export const getDayNumberByDate = (date: Date) => {
@@ -38,7 +45,7 @@ export const getDayNumberByDate = (date: Date) => {
 };
 
 export const getDayNumberByDateString = (date: string) => {
-    return new Date(date).getDay() + 1; //TODO for Tuesday (3) I got Monday (2)
+    return new Date(date).getDay() + 1;
 };
 
 export const dayToNumber = (day: string) => {
@@ -89,6 +96,11 @@ export const generateDateRange = (startDate: Date, endDate: Date): string[] => {
     return dates;
 };
 
+// current date in Israel timezone
+export const israelToday = new Date(
+    new Date().toLocaleString("en-US", { timeZone: "Asia/Jerusalem" }),
+);
+
 // -- Cache -- //
 
 // Cache expiration time (1 hour in milliseconds)
@@ -100,7 +112,7 @@ export const isCacheFresh = (cacheTimestamp: string | null) =>
 
 // -- Session -- //
 
-export const mathFloorNow = Math.floor(Date.now() / 1000)
+export const mathFloorNow = Math.floor(Date.now() / 1000);
 
 export const TWENTY_FOUR_HOURS = 24 * 60 * 60;
 
@@ -110,8 +122,7 @@ export const getExpireTime = (remember: any) => {
 };
 
 // Returns session duration in seconds
-export const getSessionMaxAge = (remember: boolean) => remember ? 30 * 24 * 60 * 60 : 60 * 60;
-
+export const getSessionMaxAge = (remember: boolean) => (remember ? 30 * 24 * 60 * 60 : 60 * 60);
 
 export const COOKIES_EXPIRE_TIME = 365;
 

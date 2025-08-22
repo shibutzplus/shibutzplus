@@ -47,7 +47,14 @@
   /* Size */
   --header-height: 50px;
   --nav-width: 240px;
-  --cell-width: 300px;
+
+  --table-header-min-height: 70px;
+  --table-header-height: 8vh;
+  
+  --table-template-cell-width: 60px;
+  --table-cell-width: 300px;
+  --table-cell-min-height: 80px;
+  --table-cell-height: 12vh;
 
   --box-border-radius: 10px;
   --btn-border-radius: 4px;

@@ -1,6 +1,6 @@
 - daily - still not working 
-- daily - days select are wrong
-- daily - DB take the day and convert it to date
+v- daily - days select are wrong
+v- daily - DB take the day and convert it to date
 - daily - open the date select on ..?
 - daily - need to add - if you select a teacher you cant select it again (remove from the list)
 - daily - responsive table
@@ -13,11 +13,13 @@
 - annual - for each select (subject or teacher) there is also "remove" option to clear the cell
 - annual - responsive table
 - annual - loading skeleton
+- annual - select group does not allow to add new teachers
 
 - lists - for all lists pages, improve design
 - lists - responsive
 - lists - add search
-- lists - update do not show the new update
+- lists - update btn does not show the new update
+- lists - when delete element, need to delete his references (delete class, remove his teachers from annual and daily)
 
 - onboarding - not working 
 - onboarding - new design 

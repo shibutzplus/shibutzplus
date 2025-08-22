@@ -7,10 +7,7 @@ import { useDailyTableContext } from "@/context/DailyTableContext";
 import { ActionColumnType } from "@/models/types/table";
 import { BsMegaphoneFill, BsCalendar4Event, BsPersonFillAdd } from "react-icons/bs";
 import { MdPersonAdd } from "react-icons/md";
-
-
-
-
+import { DailyTableColors } from "@/style/tableColors";
 
 const ActionBtn: React.FC<{
     type: ActionColumnType;
@@ -47,7 +44,10 @@ const DailyTopActions: React.FC = () => {
                     type="existingTeacher"
                     Icon={<MdPersonAdd size={16} />}
                     label="מורה קיים"
-                    style={{ borderLeft: "4px solid #3498db", color: "#3498db" }}
+                    style={{
+                        borderLeft: DailyTableColors.existingTeacher.borderLeft,
+                        color: DailyTableColors.existingTeacher.color,
+                    }}
                     func={() => addNewColumn("existingTeacher")}
                 />
 
@@ -55,7 +55,10 @@ const DailyTopActions: React.FC = () => {
                     type="event"
                     Icon={<BsCalendar4Event size={16} />}
                     label="מידע"
-                    style={{ borderLeft: "4px solid #27ae60", color: "#27ae60" }}
+                    style={{
+                        borderLeft: DailyTableColors.event.borderLeft,
+                        color: DailyTableColors.event.color,
+                    }}
                     func={() => addNewColumn("event")}
                 />
 
@@ -63,7 +66,10 @@ const DailyTopActions: React.FC = () => {
                     type="missingTeacher"
                     Icon={<MdPersonAdd size={16} />}
                     label="מורה חסר"
-                    style={{ borderLeft: "4px solid #aeac27", color: "#aeac27" }}
+                    style={{
+                        borderLeft: DailyTableColors.missingTeacher.borderLeft,
+                        color: DailyTableColors.missingTeacher.color,
+                    }}
                     func={() => addNewColumn("missingTeacher")}
                 />
 
@@ -73,7 +79,10 @@ const DailyTopActions: React.FC = () => {
                     type="publish"
                     Icon={<BsMegaphoneFill size={16} />}
                     label="פרסום"
-                    style={{ borderLeft: "4px solid #6827ae", color: "#6d27ae" }}
+                    style={{
+                        borderLeft: DailyTableColors.publish.borderLeft,
+                        color: DailyTableColors.publish.color,
+                    }}
                     func={() => {}}
                 />
             </div>

@@ -1,5 +1,7 @@
 .container {
     margin-top: var(--header-height);
-    padding: 1rem;
     width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

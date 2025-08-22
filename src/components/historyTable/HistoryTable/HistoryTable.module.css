@@ -11,13 +11,13 @@
 }
 
 .scheduleTable thead {
-  min-height: 80px;
-  height: 12vh;
+  min-height: var(--table-cell-min-height);
+  height: var(--table-cell-height);
 }
 
 .scheduleTable tr {
-  min-height: 80px;
-  height: 12vh;
+  min-height: var(--table-cell-min-height);
+  height: var(--table-cell-height);
 }
 
 .scheduleTable th {
