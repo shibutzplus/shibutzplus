@@ -40,6 +40,9 @@ import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction
 import { getIsraeliDateOptions, getTomorrowOption } from "@/resources/dayOptions";
 import { SelectOption } from "@/models/types";
 import { DailyTableColors } from "@/style/tableColors";
+import { publishDailyScheduleAction } from "@/app/actions/POST/publishDailyScheduleAction";
+import { errorToast, successToast } from "@/lib/toast";
+import messages from "@/resources/messages";
 
 interface DailyTableContextType {
     tableColumns: ColumnDef<TeacherRow>[];
@@ -59,19 +62,18 @@ interface DailyTableContextType {
         type: ColumnType,
         cellData: DailyScheduleCell,
         columnId: string,
-        selectedDate: string,
         data: { event?: string; subTeacher?: TeacherType },
     ) => Promise<DailyScheduleType | undefined>;
     updateCell: (
         type: ColumnType,
         cellData: DailyScheduleCell,
         columnId: string,
-        selectedDate: string,
         dailyScheduleId: string,
         data: { event?: string; subTeacher?: TeacherType },
     ) => Promise<DailyScheduleType | undefined>;
     daysSelectOptions: () => SelectOption[];
     handleDayChange: (value: string) => void;
+    publishDailySchedule: () => void;
 }
 
 const DailyTableContext = createContext<DailyTableContextType | undefined>(undefined);
@@ -160,7 +162,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         // Populate table when data is available
         if (school && teachers && dailyScheduleRawData) {
             populateDailyScheduleTable(dailyScheduleRawData);
-        } 
+        }
     }, [dailyScheduleRawData]);
 
     const populateDailyScheduleTable = async (dailySchedulColumns: DailyScheduleType[]) => {
@@ -202,7 +204,6 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                     });
                     seenColumnIds.add(columnId);
                 }
-
 
                 if (!entriesByDayAndHeader[selectedDate]) {
                     entriesByDayAndHeader[selectedDate] = {};
@@ -352,7 +353,6 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         type: ColumnType,
         cellData: DailyScheduleCell,
         columnId: string,
-        selectedDate: string, // TODOD can remove
         data: { event?: string; subTeacher?: TeacherType },
     ) => {
         let response;
@@ -395,7 +395,6 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         type: ColumnType,
         cellData: DailyScheduleCell,
         columnId: string,
-        selectedDate: string, // TODOD can remove
         dailyScheduleId: string,
         data: { event?: string; subTeacher?: TeacherType },
     ) => {
@@ -457,6 +456,15 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         setActionCols([]);
     };
 
+    const publishDailySchedule = async () => {
+        const response = await publishDailyScheduleAction(school?.id || "", selectedDate);
+        if (response.success) {
+            successToast(messages.publish.success);
+        } else {
+            errorToast(messages.publish.error);
+        }
+    };
+
     return (
         <DailyTableContext.Provider
             value={{
@@ -473,6 +481,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 updateCell,
                 daysSelectOptions,
                 handleDayChange,
+                publishDailySchedule,
             }}
         >
             {children}

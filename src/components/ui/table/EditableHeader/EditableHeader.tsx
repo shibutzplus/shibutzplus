@@ -5,6 +5,9 @@ import { PopupAction } from "@/context/PopupContext";
 import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { useDailyTableContext } from "@/context/DailyTableContext";
+import { IoMdCloseCircle } from "react-icons/io";
+
+
 
 type EditableHeaderProps = {
     children: React.ReactNode;
@@ -35,9 +38,7 @@ const EditableHeader: React.FC<EditableHeaderProps> = ({ children, columnId }) =
 
     return (
         <div className={styles.columnHeader}>
-            <button className={styles.clearButton} onClick={handleDeleteColumn}>
-                הסר
-            </button>
+            <IoMdCloseCircle className={styles.clearButton} onClick={handleDeleteColumn} />
             {children}
         </div>
     );

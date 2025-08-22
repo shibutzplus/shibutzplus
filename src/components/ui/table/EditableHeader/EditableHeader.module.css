@@ -1,7 +1,24 @@
 .columnHeader {
     display: flex;
     justify-content: center;
+    align-items: center;
+    gap: 10px;
     width: 100%;
     padding: 0 15px;
     text-align: right;
+}
+
+.clearButton {
+    cursor: pointer;
+    color: var(--input-focus-shadow);
+    font-size: 26px;
+    transition: all 0.2s ease;
+}
+
+.clearButton:hover {
+    color: var(--input-border);
+}
+
+.clearButton:active {
+    transform: translateY(1px);
 }

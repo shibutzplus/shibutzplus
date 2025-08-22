@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import InputSelect from "@/components/ui/InputSelect/InputSelect";
+import DynamicInputSelect from "@/components/ui/InputSelect/InputSelect";
 import SubmitBtn from "@/components/ui/SubmitBtn/SubmitBtn";
 import styles from "./TeacherAuthForm.module.css";
 import { SelectOption } from "@/models/types";
@@ -71,31 +71,23 @@ const TeacherAuthForm: React.FC = () => {
 
     return (
         <div className={styles.formContainer}>
-            <h1 className={styles.title}>כניסה למורים</h1>
-            <p className={styles.subtitle}>בחרו את שמכם מהרשימה להיכנס לפורטל המורים</p>
-
-            <form className={styles.form} onSubmit={handleSubmit}>
+            <form className={styles.form}>
                 <div className={styles.inputGroup}>
-                    <InputSelect
+                    <label htmlFor="teacher" className={styles.formLabel}>
+                        שלום, נא לבחור את שמך מהרשימה:
+                    </label>
+                    <DynamicInputSelect
                         id="teacher"
-                        label="בחר מורה"
+                        label={undefined}
                         options={teachers}
                         value={selectedTeacher}
                         onChange={setSelectedTeacher}
-                        placeholder={isLoadingTeachers ? "טוען רשימת מורים..." : "בחר מורה מהרשימה"}
+                        placeholder={isLoadingTeachers ? "טוען רשימת מורים..." : "בחירת מורה..."}
                         isSearchable={true}
                         isDisabled={isLoadingTeachers}
-                        error=""
+                        error={error}
                     />
                 </div>
-
-                <SubmitBtn
-                    type="submit"
-                    isLoading={isLoading}
-                    buttonText="כניסה"
-                    error={error}
-                    disabled={!selectedTeacher || isLoadingTeachers}
-                />
             </form>
         </div>
     );

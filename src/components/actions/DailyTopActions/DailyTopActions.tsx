@@ -23,7 +23,7 @@ const ActionBtn: React.FC<{
 );
 
 const DailyTopActions: React.FC = () => {
-    const { addNewColumn, daysSelectOptions, selectedDate, handleDayChange } =
+    const { addNewColumn, daysSelectOptions, selectedDate, handleDayChange, publishDailySchedule } =
         useDailyTableContext();
 
     return (
@@ -83,7 +83,7 @@ const DailyTopActions: React.FC = () => {
                         borderLeft: DailyTableColors.publish.borderLeft,
                         color: DailyTableColors.publish.color,
                     }}
-                    func={() => {}}
+                    func={() => publishDailySchedule()}
                 />
             </div>
         </section>

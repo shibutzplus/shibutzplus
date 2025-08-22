@@ -102,6 +102,10 @@ const messages = {
         invalid: "חסרים פרמטרים",
         invalidParameters: "חסרים פרמטרים או פרמטרים שגויים",
         serverError: "שגיאת שרת פנימית. אנא נסה שוב מאוחר יותר"
+    },
+    publish: {
+        success: "היום פורסם בהצלחה",
+        error: "שגיאה בפרסום היום"
     }
 }
 

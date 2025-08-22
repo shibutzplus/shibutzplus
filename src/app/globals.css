@@ -34,6 +34,7 @@
   /* Error colors */
   --error-color: #e53935;
   --error-shadow: #e5393533;
+  --error-color-hover: #9d3130;
 
   /* Cell colors */
   --empty-cell-color: #f8f4f4;
@@ -54,7 +55,7 @@
   --table-template-cell-width: 60px;
   --table-cell-width: 300px;
   --table-cell-min-height: 80px;
-  --table-cell-height: 12vh;
+  --table-cell-height: 13vh;
 
   --box-border-radius: 10px;
   --btn-border-radius: 4px;

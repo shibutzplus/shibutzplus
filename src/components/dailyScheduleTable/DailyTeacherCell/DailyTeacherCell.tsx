@@ -56,13 +56,12 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
                         type,
                         cellData,
                         columnId,
-                        selectedDate,
                         existingDailyEntry.id,
                         { subTeacher: newSubTeacherData },
                     );
                 }
             } else {
-                response = await addNewCell(type, cellData, columnId, selectedDate, {
+                response = await addNewCell(type, cellData, columnId, {
                     subTeacher: newSubTeacherData,
                 });
             }

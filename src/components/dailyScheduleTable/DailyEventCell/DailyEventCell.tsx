@@ -45,13 +45,12 @@ const DailyEventCell: React.FC<DailyEventCellProps> = ({ cell }) => {
                         "event",
                         cellData,
                         columnId,
-                        selectedDate,
                         existingDailyEntry.id,
                         { event: info },
                     );
                 }
             } else {
-                response = await addNewCell("event", cellData, columnId, selectedDate, {
+                response = await addNewCell("event", cellData, columnId, {
                     event: info,
                 });
             }
