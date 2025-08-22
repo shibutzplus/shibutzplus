@@ -28,6 +28,16 @@ export async function deleteSubjectAction(
                 ),
             );
 
+        // Delete all daily schedule records for this class
+        await db
+            .delete(schema.dailySchedule)
+            .where(
+                and(
+                    eq(schema.dailySchedule.schoolId, schoolId),
+                    eq(schema.dailySchedule.subjectId, subjectId),
+                ),
+            );
+
         const schedules = await db.query.annualSchedule.findMany({
             where: eq(schema.annualSchedule.schoolId, schoolId),
             with: {

@@ -6,11 +6,12 @@ import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema } from "@/db";
 import { eq } from "drizzle-orm";
+import { getSubjectsAction } from "@/app/actions/GET/getSubjectsAction";
 
 export async function updateSubjectAction(
     subjectId: string,
     subjectData: SubjectRequest,
-): Promise<ActionResponse & { data?: SubjectType }> {
+): Promise<ActionResponse & { data?: SubjectType[] }> {
     try {
         const authError = await checkAuthAndParams({
             subjectId,
@@ -38,11 +39,14 @@ export async function updateSubjectAction(
             };
         }
 
+        // Fetch all subjects for the updated subject's school
+        const allSubjectsResp = await getSubjectsAction(subjectData.schoolId);
         return {
             success: true,
             message: messages.subjects.updateSuccess,
-            data: updatedSubject,
+            data: allSubjectsResp.data || [],
         };
+
     } catch (error) {
         console.error("Error updating subject:", error);
         return {

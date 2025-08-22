@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./ClassRow.module.css";
 import InputText from "@/components/ui/InputText/InputText";
 import { ClassType } from "@/models/types/classes";
@@ -8,7 +8,6 @@ import { useMainContext } from "@/context/MainContext";
 import { classSchema } from "@/models/validation/class";
 import Btn from "@/components/ui/Btn/Btn";
 import { RiEdit2Fill, RiDeleteBin6Line } from "react-icons/ri";
-
 
 type ClassRowProps = {
     classItem: ClassType;
@@ -24,6 +23,12 @@ const ClassRow: React.FC<ClassRowProps> = ({ classItem, handleDeleteClass }) => 
         name?: string;
         schoolId?: string;
     }>({});
+
+    useEffect(() => {
+        if (classItem) {
+            setClassValue(classItem.name);
+        }
+    }, [classItem]);
 
     const handleUpdate = async (e: React.MouseEvent, classItem: ClassType) => {
         e.stopPropagation();
@@ -71,6 +76,7 @@ const ClassRow: React.FC<ClassRowProps> = ({ classItem, handleDeleteClass }) => 
     return (
         <tr className={styles.classRow}>
             <td>
+                <span className={styles.dot} />
                 <InputText
                     key="editName"
                     id="name"
@@ -86,16 +92,16 @@ const ClassRow: React.FC<ClassRowProps> = ({ classItem, handleDeleteClass }) => 
             </td>
             <td className={styles.actions}>
                 <Btn
-                    text={isEdit ? "שמור עריכה" : "עריכה"}
+                    text={isEdit ? "שמירה" : "עריכה"}
                     onClick={(e) => handleUpdate(e, classItem)}
                     isLoading={isEditLoading}
-                    Icon={<RiEdit2Fill/>}
+                    Icon={<RiEdit2Fill />}
                 />
                 <Btn
                     text="מחיקה"
                     onClick={(e) => handleDeleteClass(e, classItem)}
                     isLoading={false}
-                    Icon={<RiDeleteBin6Line/>}
+                    Icon={<RiDeleteBin6Line />}
                 />
             </td>
         </tr>

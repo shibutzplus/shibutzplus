@@ -12,6 +12,7 @@ import { TeacherType } from "@/models/types/teachers";
 import useSubmit from "@/hooks/useSubmit";
 import AddTeacherRow from "../AddTeacherRow/AddTeacherRow";
 import TeacherRow from "../teacherRow/teacherRow";
+import EmptyTable from "@/components/ui/table/EmptyTable/EmptyTable";
 
 const TeachersList: React.FC = () => {
     const { handleOpenPopup } = useDeletePopup();
@@ -39,19 +40,26 @@ const TeachersList: React.FC = () => {
         );
     };
 
-    const sortedTeachers = sortByHebrewName(teachers || []);
+    const sortedTeachers = React.useMemo(
+        () => (teachers !== undefined ? sortByHebrewName(teachers) : undefined),
+        [teachers],
+    );
 
     return (
         <TableList headThs={["שם המורה", "תפקיד", "פעולות"]}>
             <tbody>
                 <AddTeacherRow />
-                {sortedTeachers.map((teacher: TeacherType) => (
-                    <TeacherRow
-                        key={teacher.id}
-                        teacher={teacher}
-                        handleDeleteTeacher={handleDeleteTeacher}
-                    />
-                ))}
+                {sortedTeachers?.length === 0 ? (
+                    <EmptyTable text="עדיין לא נוספו מורים לרשימה" />
+                ) : (
+                    sortedTeachers?.map((teacher: TeacherType) => (
+                        <TeacherRow
+                            key={teacher.id}
+                            teacher={teacher}
+                            handleDeleteTeacher={handleDeleteTeacher}
+                        />
+                    ))
+                )}
             </tbody>
         </TableList>
     );

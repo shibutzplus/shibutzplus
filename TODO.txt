@@ -15,14 +15,16 @@ v- daily - DB take the day and convert it to date
 - annual - loading skeleton
 - annual - select group does not allow to add new teachers
 
-- lists - for all lists pages, improve design
-- lists - responsive
+v- lists - for all lists pages, improve design
+v- lists - responsive
+- lists - responsive - teacher table
 - lists - add search
-- lists - update btn does not show the new update
-- lists - when delete element, need to delete his references (delete class, remove his teachers from annual and daily)
+- lists - improve loading skeleton
+v- lists - update btn does not show the new update
+v- lists - when delete element, need to delete his references (delete class, remove his teachers from annual and daily)
 
-- onboarding - not working 
-- onboarding - new design 
+v- onboarding - not working 
+v- onboarding - new design 
 
 - history - finish build
 - history - new design
@@ -43,7 +45,7 @@ v- daily - DB take the day and convert it to date
 - replacement - mobile screen for the replacements + url id
 - replacement - you can only see what you need to teach, where and what
 
-- how does new user register? (maybe on first login he register)
+v- how does new user register? (maybe on first login he register)
 - why it takes so much time to page to load on the first time
 
 - add clerity
@@ -55,6 +57,8 @@ DB addition
 - school - hours: int (7)
 - school - days: int (6)
 
+- daily - select header colors
+- annual - populate the table from an excel file
 
 
 

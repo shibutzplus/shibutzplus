@@ -37,6 +37,7 @@
 
 .readonly:focus,
 .readonly:active {
+  outline: none;
   border: none;
 }
 

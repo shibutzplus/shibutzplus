@@ -1,24 +1,48 @@
-.btn{
-    background-color: var(--button-bg);
-    color: var(--button-color);
+/* Mobile 320px - 767px -- 812px */
+.btn {
+    border: 1px solid var(--input-border);
+    background-color: transparent;
+    color: var(--input-color);
     border-radius: 5px;
-    padding: 12px 20px;
-    border: none;
+    padding: 10px;
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.btn:hover{
+.btn:hover {
     cursor: pointer;
-    background-color: var(--button-hover-bg);
+    background-color: var(--feature-icon-bg);
 }
 
-.btnText{
+.btnText {
     display: flex;
     align-items: center;
     gap: 10px;
     font-size: 14px;
     letter-spacing: 1px;
+}
+
+.btnText span {
+    display: none;
+}
+
+.btnText svg {
+    font-size: 14px;
+}
+
+/* Tablet 768px - 1279px -- 800px*/
+@media screen and (min-width: 768px) {
+    .btn {
+        padding: 12px 20px;
+    }
+
+    .btnText span {
+        display: block;
+    }
+
+    .btnText svg {
+        font-size: 16px;
+    }
 }

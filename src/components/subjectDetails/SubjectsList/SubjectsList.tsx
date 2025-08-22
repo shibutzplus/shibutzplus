@@ -12,10 +12,10 @@ import SubjectRow from "../SubjectRow/SubjectRow";
 import { SubjectType } from "@/models/types/subjects";
 import useSubmit from "@/hooks/useSubmit";
 import AddSubjectRow from "../AddSubjectRow/AddSubjectRow";
+import EmptyTable from "@/components/ui/table/EmptyTable/EmptyTable";
 
-type SubjectsListProps = {};
 
-const SubjectsList: React.FC<SubjectsListProps> = () => {
+const SubjectsList: React.FC = () => {
     const { handleOpenPopup } = useDeletePopup();
     const { subjects, deleteSubject } = useMainContext();
 
@@ -41,19 +41,25 @@ const SubjectsList: React.FC<SubjectsListProps> = () => {
         );
     };
 
-    const sortedSubjects = sortByHebrewName(subjects || []);
+    const sortedSubjects = React.useMemo(() => (
+        subjects !== undefined ? sortByHebrewName(subjects) : undefined
+    ), [subjects]);
 
     return (
         <TableList headThs={["שם המקצוע", "פעולות"]}>
             <tbody>
                 <AddSubjectRow />
-                {sortedSubjects.map((subject: SubjectType) => (
-                    <SubjectRow
-                        key={subject.id}
-                        subject={subject}
-                        handleDeleteSubject={handleDeleteSubject}
-                    />
-                ))}
+                {sortedSubjects?.length === 0 ? (
+                    <EmptyTable text="עדיין לא נוספו מקצועות לרשימה" />
+                ) : (
+                    sortedSubjects?.map((subject: SubjectType) => (
+                        <SubjectRow
+                            key={subject.id}
+                            subject={subject}
+                            handleDeleteSubject={handleDeleteSubject}
+                        />
+                    ))
+                )}
             </tbody>
         </TableList>
     );

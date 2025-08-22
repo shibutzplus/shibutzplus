@@ -1,8 +1,33 @@
+/* Mobile 320px - 767px -- 812px */
 .classRow {
+    position: relative;
     align-items: flex-start;
+}
+
+.dot {
+    display: none;
 }
 
 .actions {
     display: flex;
-    gap: 35px;
+    gap: 5px;
+}
+
+/* Tablet 768px - 1279px -- 800px*/
+@media screen and (min-width: 768px) {
+    .dot {
+        display: block;
+        position: absolute;
+        top: 50%;
+        right: 3em;
+        transform: translateY(-50%);
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background-color: var(--placeholder-color);
+    }
+
+    .actions {
+        gap: 35px;
+    }
 }

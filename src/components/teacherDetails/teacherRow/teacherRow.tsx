@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./teacherRow.module.css";
 import InputText from "@/components/ui/InputText/InputText";
 import { errorToast, successToast } from "@/lib/toast";
@@ -26,6 +26,13 @@ const TeacherRow: React.FC<TeacherRowProps> = ({ teacher, handleDeleteTeacher })
         role?: string;
         schoolId?: string;
     }>({});
+
+    useEffect(()=> {
+        if(teacher){
+            setTeacherValue(teacher.name);
+            setRoleValue(teacher.role);
+        }
+    },[teacher])
 
     const handleUpdate = async (e: React.MouseEvent, teacher: TeacherType) => {
         e.stopPropagation();
@@ -76,23 +83,18 @@ const TeacherRow: React.FC<TeacherRowProps> = ({ teacher, handleDeleteTeacher })
     const displayRole = (role: string): React.ReactNode => {
         switch (role) {
             case "regular":
-                return (
-                        <span className={styles.roleCellGreen}>מורה</span>
-                );
+                return <span className={styles.roleCellGreen}>מורה</span>;
             case "substitute":
-                return (
-                    <span className={styles.roleCellBlue}>מחליף/ה</span>
-                );
+                return <span className={styles.roleCellBlue}>מחליף/ה</span>;
             default:
-                return (
-                    <span className={styles.roleCell}>-</span>
-                );
+                return <span className={styles.roleCell}>-</span>;
         }
     };
 
     return (
-        <tr className={styles.subjectRow}>
+        <tr className={styles.teacherRow}>
             <td>
+                <span className={styles.dot} />
                 <InputText
                     key="editName"
                     id="name"
@@ -125,7 +127,7 @@ const TeacherRow: React.FC<TeacherRowProps> = ({ teacher, handleDeleteTeacher })
             </td>
             <td className={styles.actions}>
                 <Btn
-                    text={isEdit ? "שמור עריכה" : "עריכה"}
+                    text={isEdit ? "שמירה" : "עריכה"}
                     onClick={(e) => handleUpdate(e, teacher)}
                     isLoading={isEditLoading}
                     Icon={<RiEdit2Fill />}

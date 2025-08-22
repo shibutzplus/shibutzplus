@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./SubjectRow.module.css";
 import InputText from "@/components/ui/InputText/InputText";
 import { SubjectType } from "@/models/types/subjects";
@@ -25,6 +25,12 @@ const SubjectRow: React.FC<SubjectRowProps> = ({ subject, handleDeleteSubject })
         name?: string;
         schoolId?: string;
     }>({});
+
+    useEffect(()=> {
+        if(subject){
+            setSubjectValue(subject.name);
+        }
+    },[subject])
 
     const handleUpdate = async (e: React.MouseEvent, subject: SubjectType) => {
         e.stopPropagation();
@@ -73,6 +79,7 @@ const SubjectRow: React.FC<SubjectRowProps> = ({ subject, handleDeleteSubject })
     return (
         <tr className={styles.subjectRow}>
             <td>
+                <span className={styles.dot}/>
                 <InputText
                     key="editName"
                     id="name"
@@ -88,7 +95,7 @@ const SubjectRow: React.FC<SubjectRowProps> = ({ subject, handleDeleteSubject })
             </td>
             <td className={styles.actions}>
                 <Btn
-                    text={isEdit ? "שמור עריכה" : "עריכה"}
+                    text={isEdit ? "שמירה" : "עריכה"}
                     onClick={(e) => handleUpdate(e, subject)}
                     isLoading={isEditLoading}
                     Icon={<RiEdit2Fill/>}

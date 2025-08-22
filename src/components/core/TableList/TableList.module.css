@@ -1,10 +1,11 @@
+/* Mobile 320px - 767px -- 812px */
 .tableListSection {
     width: 100%;
     overflow-y: auto;
     position: relative;
     background-color: var(--background-inner);
     border-radius: var(--box-border-radius) var(--box-border-radius) 0 0;
-    padding: 0 2em;
+    padding: 0;
 }
 
 .tableList {
@@ -22,15 +23,31 @@
 
 .tableList th {
     text-align: right;
-    padding: 1rem 5rem 1rem 0;
+    padding: 1rem 2rem 1rem 0;
     border-bottom: 2px solid #eee;
     font-weight: 600;
     color: #666;
-    width: 70%;
+    width: 100%;
 }
 
 .tableList td {
     text-align: right;
-    padding: 1rem 5rem 1rem 0;
+    padding: 1rem 2rem 1rem 0;
     border-bottom: 1px solid #eee;
+}
+
+/* Tablet 768px - 1279px -- 800px*/
+@media screen and (min-width: 768px) {
+    .tableListSection {
+        padding: 0 2em;
+    }
+
+    .tableList th {
+        padding: 1rem 5rem 1rem 0;
+        width: 70%;
+    }
+
+    .tableList td {
+        padding: 1rem 5rem 1rem 0;
+    }
 }

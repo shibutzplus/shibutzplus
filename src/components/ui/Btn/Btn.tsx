@@ -17,7 +17,7 @@ const Btn: React.FC<BtnProps> = ({ text, onClick, isLoading, Icon }) => {
             ) : (
                 <span className={styles.btnText}>
                     {Icon ? Icon : null}
-                    {text}
+                    <span>{text}</span>
                 </span>
             )}
         </button>

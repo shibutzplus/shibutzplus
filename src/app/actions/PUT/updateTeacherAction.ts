@@ -6,11 +6,12 @@ import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema } from "@/db";
 import { eq } from "drizzle-orm";
+import { getTeachersAction } from "../GET/getTeachersAction";
 
 export async function updateTeacherAction(
     teacherId: string,
     teacherData: TeacherRequest,
-): Promise<ActionResponse & { data?: TeacherType }> {
+): Promise<ActionResponse & { data?: TeacherType[] }> {
     try {
         const authError = await checkAuthAndParams({
             teacherId,
@@ -23,16 +24,18 @@ export async function updateTeacherAction(
             return authError as ActionResponse;
         }
 
-        const updatedTeacher = (await db
-            .update(schema.teachers)
-            .set({
-                name: teacherData.name,
-                role: teacherData.role,
-                userId: teacherData.userId,
-                updatedAt: new Date(),
-            })
-            .where(eq(schema.teachers.id, teacherId))
-            .returning())[0];
+        const updatedTeacher = (
+            await db
+                .update(schema.teachers)
+                .set({
+                    name: teacherData.name,
+                    role: teacherData.role,
+                    userId: teacherData.userId,
+                    updatedAt: new Date(),
+                })
+                .where(eq(schema.teachers.id, teacherId))
+                .returning()
+        )[0];
 
         if (!updatedTeacher) {
             return {
@@ -41,10 +44,12 @@ export async function updateTeacherAction(
             };
         }
 
+        // Fetch all teachers for the updated teacher's school
+        const allTeachersResp = await getTeachersAction(teacherData.schoolId);
         return {
             success: true,
             message: messages.teachers.updateSuccess,
-            data: updatedTeacher,
+            data: allTeachersResp.data || [],
         };
     } catch (error) {
         console.error("Error updating teacher:", error);

@@ -1,3 +1,4 @@
+/* Mobile 320px - 767px -- 812px */
 .container {
     margin-top: calc(var(--header-height) + 2rem);
     display: flex;
@@ -7,5 +8,12 @@
 
 .subjectsList{
     min-width: 60vw;
-    width: 70%;
+    width: 95%;
+}
+
+/* Tablet 768px - 1279px -- 800px*/
+@media screen and (min-width: 768px) {
+    .subjectsList{
+        width: 70%;
+    }
 }

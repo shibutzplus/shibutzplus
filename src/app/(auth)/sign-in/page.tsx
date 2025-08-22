@@ -20,12 +20,12 @@ import Loading from "@/components/core/Loading/Loading";
 
 const SignInPage: NextPage = () => {
     const { data: session, status } = useSession();
-    const searchParams = useSearchParams()
-    const googleError = searchParams.get('error')
+    const searchParams = useSearchParams();
+    const googleError = searchParams.get("error");
     const route = useRouter();
     const [error, setError] = useState<string>("");
     const [isLoading, setIsLoading] = useState(false);
-    
+
     useEffect(() => {
         if (googleError === "AccessDenied") {
             errorToast(messages.auth.accessDenied);

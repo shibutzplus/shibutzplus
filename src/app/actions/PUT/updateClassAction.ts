@@ -6,11 +6,12 @@ import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema } from "@/db";
 import { eq } from "drizzle-orm";
+import { getClassesAction } from "../GET/getClassesAction";
 
 export async function updateClassAction(
     classId: string,
     classData: ClassRequest,
-): Promise<ActionResponse & { data?: ClassType }> {
+): Promise<ActionResponse & { data?: ClassType[] }> {
     try {
         const authError = await checkAuthAndParams({
             classId,
@@ -22,14 +23,16 @@ export async function updateClassAction(
             return authError as ActionResponse;
         }
 
-        const updatedClass = (await db
-            .update(schema.classes)
-            .set({
-                name: classData.name,
-                updatedAt: new Date(),
-            })
-            .where(eq(schema.classes.id, classId))
-            .returning())[0];
+        const updatedClass = (
+            await db
+                .update(schema.classes)
+                .set({
+                    name: classData.name,
+                    updatedAt: new Date(),
+                })
+                .where(eq(schema.classes.id, classId))
+                .returning()
+        )[0];
 
         if (!updatedClass) {
             return {
@@ -38,10 +41,12 @@ export async function updateClassAction(
             };
         }
 
+        // Fetch all classes for the updated class's school
+        const allClassesResp = await getClassesAction(classData.schoolId);
         return {
             success: true,
             message: messages.classes.updateSuccess,
-            data: updatedClass,
+            data: allClassesResp.data || [],
         };
     } catch (error) {
         console.error("Error updating class:", error);

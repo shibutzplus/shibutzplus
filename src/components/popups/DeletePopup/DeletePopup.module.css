@@ -64,13 +64,16 @@
 }
 
 .deleteButton {
-    padding: 10px;
     border-radius: 6px;
     border: none;
     background-color: #ff6b6b;
     color: white;
     font-weight: 500;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 35px;
     transition: background-color 0.2s;
 }
 

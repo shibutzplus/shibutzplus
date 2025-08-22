@@ -3,6 +3,7 @@ import { schema } from "@/db";
 import { getSessionMaxAge, mathFloorNow, TWENTY_FOUR_HOURS } from "@/utils/time";
 import Google from "next-auth/providers/google";
 import { registerNewGoogleUserAction } from "@/app/actions/POST/registerNewGoogleUserAction";
+import { getUserByEmailAction } from "@/app/actions/GET/getUserByEmailAction";
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -31,17 +32,22 @@ export const authOptions: NextAuthOptions = {
             }
             return false;
         },
-        async jwt({ token, user }) {
-            if (user) {
-                token.id = user.id;
-                token.role = (user as any).role;
-                token.gender = (user as any).gender;
-                token.schoolId = (user as any).schoolId;
-                token.status = (user as any).status;
-                const remember =
-                    (user as any).remember === true || (user as any).remember === "true";
-                token.maxAge = getSessionMaxAge(remember);
-                if (token.maxAge) token.exp = mathFloorNow + Number(token.maxAge);
+        async jwt({ token, user, account, profile }) {
+            if ((account?.provider === "google" && profile?.email) || (user && user.email)) {
+                const email = (user?.email || profile?.email) as string;
+                const response = await getUserByEmailAction(email);
+                if (response.success && response.data) {
+                    token.id = response.data.id;
+                    token.role = response.data.role;
+                    token.gender = response.data.gender;
+                    token.schoolId = response.data.schoolId;
+                    token.status = response.data.status;
+                }
+                token.email = email;
+                token.name = user?.name || profile?.name;
+                token.image = user?.image || profile?.image;
+                token.maxAge = getSessionMaxAge(true);
+                token.exp = mathFloorNow + Number(token.maxAge);
             }
             if (token.maxAge && (!token.exp || Number(token.exp) < mathFloorNow)) {
                 token.exp = mathFloorNow + Number(token.maxAge);

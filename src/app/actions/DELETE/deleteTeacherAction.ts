@@ -28,6 +28,20 @@ export async function deleteTeacherAction(
                 ),
             );
 
+        // Delete all daily schedule records where this teacher is absent, present, or substitute
+        await db
+            .delete(schema.dailySchedule)
+            .where(
+                and(
+                    eq(schema.dailySchedule.schoolId, schoolId),
+                    (
+                        eq(schema.dailySchedule.absentTeacherId, teacherId) ||
+                        eq(schema.dailySchedule.presentTeacherId, teacherId) ||
+                        eq(schema.dailySchedule.subTeacherId, teacherId)
+                    )
+                ),
+            );
+
         const schedules = await db.query.annualSchedule.findMany({
             where: eq(schema.annualSchedule.schoolId, schoolId),
             with: {

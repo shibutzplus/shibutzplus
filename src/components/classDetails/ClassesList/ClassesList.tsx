@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import styles from "./ClassesList.module.css";
 import { ClassType } from "@/models/types/classes";
 import TableList from "../../core/TableList/TableList";
 import { useMainContext } from "@/context/MainContext";
@@ -11,9 +10,9 @@ import { getStorageSchoolId } from "@/utils/localStorage";
 import useDeletePopup from "@/hooks/useDeletePopup";
 import { PopupAction } from "@/context/PopupContext";
 import { sortByHebrewName } from "@/utils/format";
-
 import AddClassRow from "../AddClassRow/AddClassRow";
 import ClassRow from "../ClassRow/ClassRow";
+import EmptyTable from "@/components/ui/table/EmptyTable/EmptyTable";
 
 const ClassesList: React.FC = () => {
     const { classes, deleteClass } = useMainContext();
@@ -41,19 +40,26 @@ const ClassesList: React.FC = () => {
         );
     };
 
-    const sortedClasses = sortByHebrewName(classes || []);
+    const sortedClasses = React.useMemo(
+        () => (classes !== undefined ? sortByHebrewName(classes) : undefined),
+        [classes],
+    );
 
     return (
         <TableList headThs={["שם הכיתה", "פעולות"]}>
             <tbody>
                 <AddClassRow />
-                {sortedClasses.map((classItem) => (
-                    <ClassRow
-                        key={classItem.id}
-                        classItem={classItem}
-                        handleDeleteClass={handleDeleteClass}
-                    />
-                ))}
+                {sortedClasses?.length === 0 ? (
+                    <EmptyTable text="עדיין לא נוספו כיתות לרשימה" />
+                ) : (
+                    sortedClasses?.map((classItem) => (
+                        <ClassRow
+                            key={classItem.id}
+                            classItem={classItem}
+                            handleDeleteClass={handleDeleteClass}
+                        />
+                    ))
+                )}
             </tbody>
         </TableList>
     );
