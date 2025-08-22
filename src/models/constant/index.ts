@@ -6,3 +6,5 @@ export const OurName = "שיבוץ+"
 export const EmailLink = `mailto:${OurEmail}`
 
 export const emailPlaceholder = "your.email@gmail.com"
+
+export const googlePlaceholder = "GOOGLE"

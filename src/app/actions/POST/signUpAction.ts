@@ -3,14 +3,19 @@
 import { RegisterRequest, RegisterResponse } from "@/models/types/auth";
 import { db, schema } from "@/db";
 import { eq } from "drizzle-orm";
-import bcrypt from "bcryptjs";
 import msg from "@/resources/messages";
+import { initClasses, initSubjects } from "@/resources/levelsOptions";
+import { SchoolLevel } from "@/db/schema";
+import bcrypt from "bcryptjs";
 
 const signUp = async (params: RegisterRequest): Promise<RegisterResponse> => {
     try {
-        const { name, email, password, role, gender, school: schoolName } = params;
+        const { name, email, password, systemPassword, role, gender, schoolName, level } = params;
 
-        if (!name || !email || !password || !role || !gender || !schoolName) {
+        if (!name || !email || !password || !systemPassword || !role || !gender || !schoolName || !level) {
+            return { success: false, message: msg.auth.register.invalid };
+        }
+        if (systemPassword !== process.env.SYSTEM_PASSWORD) {
             return { success: false, message: msg.auth.register.invalid };
         }
 
@@ -32,8 +37,8 @@ const signUp = async (params: RegisterRequest): Promise<RegisterResponse> => {
 
         let schoolId: string;
 
-        // For admin role, create a new school
-        if (role === "admin") {
+        // For deputy principal role, create a new school
+        if (role === "deputy_principal") {
             if (existingSchool) return { success: false, message: msg.auth.register.schoolExist };
 
             // Create new school
@@ -41,8 +46,8 @@ const signUp = async (params: RegisterRequest): Promise<RegisterResponse> => {
                 .insert(schema.schools)
                 .values({
                     name: schoolName,
-                    type: "Elementary",
-                    status: "onboarding",
+                    type: level,
+                    status: "annual",
                     publishDates: [],
                 })
                 .returning({ id: schema.schools.id });
@@ -56,15 +61,30 @@ const signUp = async (params: RegisterRequest): Promise<RegisterResponse> => {
             schoolId = existingSchool.id;
         }
 
-        // Create new user
         await db.insert(schema.users).values({
             name,
             email,
             password: hash,
             role: role as any,
             gender: gender as any,
+            authType: "google",
             schoolId,
         });
+
+        // Create classes and subjects
+        const classes = initClasses(level as SchoolLevel);
+        const subjects = initSubjects(level as SchoolLevel);
+
+        for (const className of classes) {
+            await db.insert(schema.classes).values({ name: className, schoolId }).returning();
+        }
+
+        for (const subject of subjects) {
+            await db.insert(schema.subjects).values({
+                name: subject,
+                schoolId,
+            });
+        }
 
         return { success: true, message: msg.auth.register.success };
     } catch (error) {

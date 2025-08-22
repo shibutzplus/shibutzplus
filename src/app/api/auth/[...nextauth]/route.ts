@@ -6,6 +6,7 @@ import Google from "next-auth/providers/google";
 import { registerNewGoogleUserAction } from "@/app/actions/POST/registerNewGoogleUserAction";
 import { getUserByEmailAction } from "@/app/actions/GET/getUserByEmailAction";
 import { authUser } from "@/utils/authUtils";
+import { googlePlaceholder } from "@/models/constant";
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -54,7 +55,7 @@ export const authOptions: NextAuthOptions = {
                     if (!response.success) return false;
                 }
                 //TODO: google auth not working good, google does not fill all the session and you alwaiys enter onboarding
-                authUser(response, "GOOGLE", "true");
+                authUser(response, googlePlaceholder, "true");
                 return true;
             }
             return true;

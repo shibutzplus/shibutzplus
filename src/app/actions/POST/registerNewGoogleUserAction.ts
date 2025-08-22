@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { ActionResponse } from "@/models/types/actions";
 import messages from "@/resources/messages";
 import { UserSchema } from "@/db/schema/users";
+import { googlePlaceholder } from "@/models/constant";
 
 export interface RegisterGoogleUserInput {
   email: string;
@@ -30,7 +31,7 @@ export async function registerNewGoogleUserAction({ email, name }: RegisterGoogl
       .values({
         name,
         email,
-        password: "GOOGLE",
+        password: googlePlaceholder,
         role: "teacher",
         gender: "male",
         schoolId: null,

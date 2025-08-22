@@ -1,10 +1,13 @@
 // Extend the next-auth types
 import "next-auth";
 import { ActionResponse } from "./actions";
+import { SchoolLevel } from "./school";
 
 export type UserRole = "admin" | "principal" | "deputy_principal" | "teacher";
 
 export type UserGender = "male" | "female";
+
+export type AuthType = "google" | "credentials";
 
 export type UserType = {
     id: string;
@@ -17,12 +20,14 @@ export type UserType = {
 };
 
 export type RegisterRequest = {
+    systemPassword: string;
     name: string;
     email: string;
     password: string;
     role: UserRole;
     gender: UserGender;
-    school: string;
+    schoolName: string;
+    level: SchoolLevel;
 };
 
 export type RegisterResponse = ActionResponse;
