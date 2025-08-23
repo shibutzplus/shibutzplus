@@ -23,23 +23,23 @@ interface ILink {
 
 const links: ILink[] = [
     {
-        name: routePath.annualSchedule.title,
-        p: routePath.annualSchedule.p,
-        Icon: <Icons.calendar size={24} />,
-    },
-    {
         name: routePath.dailySchedule.title,
         p: routePath.dailySchedule.p,
         Icon: <Icons.calendar size={24} />,
     },
     {
-        name: routePath.teachers.title,
-        p: routePath.teachers.p,
-        Icon: <Icons.school size={24} />,
+        name: routePath.history.title,
+        p: routePath.history.p,
+        Icon: <Icons.history size={24} />,
     },
     {
-        name: routePath.substitute.title,
-        p: routePath.substitute.p,
+        name: routePath.annualSchedule.title,
+        p: routePath.annualSchedule.p,
+        Icon: <Icons.calendar size={24} />,
+    },
+    {
+        name: routePath.teachers.title,
+        p: routePath.teachers.p,
         Icon: <Icons.school size={24} />,
     },
     {
@@ -53,10 +53,11 @@ const links: ILink[] = [
         Icon: <Icons.chair size={24} />,
     },
     {
-        name: routePath.history.title,
-        p: routePath.history.p,
-        Icon: <Icons.history size={24} />,
-    }
+        name: routePath.substitute.title,
+        p: routePath.substitute.p,
+        Icon: <Icons.school size={24} />,
+    },
+    
 ];
 
 const LinkComponent = ({ link, onClose }: { link: ILink; onClose: () => void }) => {

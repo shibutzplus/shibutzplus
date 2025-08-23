@@ -54,7 +54,6 @@ const AddTeacherRow: React.FC = () => {
                 schoolId: school?.id || "",
                 userId: null,
             } as TeacherRequest);
-            successToast(res ? messages.teachers.createSuccess : messages.teachers.createError);
             setTeacherValue("");
             setRoleValue(TeacherRoleValues.REGULAR);
         } catch (error) {
@@ -95,7 +94,7 @@ const AddTeacherRow: React.FC = () => {
             </td>
             <td>
                 <Btn
-                    text="הוספת מורה"
+                    text="הוספה"
                     onClick={handleSubmitAdd}
                     isLoading={isLoading}
                     Icon={<Icons.plus />}

@@ -12,7 +12,16 @@ const signUp = async (params: RegisterRequest): Promise<RegisterResponse> => {
     try {
         const { name, email, password, systemPassword, role, gender, schoolName, level } = params;
 
-        if (!name || !email || !password || !systemPassword || !role || !gender || !schoolName || !level) {
+        if (
+            !name ||
+            !email ||
+            !password ||
+            !systemPassword ||
+            !role ||
+            !gender ||
+            !schoolName ||
+            !level
+        ) {
             return { success: false, message: msg.auth.register.invalid };
         }
         if (systemPassword !== process.env.SYSTEM_PASSWORD) {
@@ -37,10 +46,9 @@ const signUp = async (params: RegisterRequest): Promise<RegisterResponse> => {
 
         let schoolId: string;
 
-        // For deputy principal role, create a new school
-        if (role === "deputy_principal") {
-            if (existingSchool) return { success: false, message: msg.auth.register.schoolExist };
-
+        if (existingSchool) {
+            schoolId = existingSchool.id;
+        } else {
             // Create new school
             const [newSchool] = await db
                 .insert(schema.schools)
@@ -53,14 +61,7 @@ const signUp = async (params: RegisterRequest): Promise<RegisterResponse> => {
                 .returning({ id: schema.schools.id });
 
             schoolId = newSchool.id;
-        } else {
-            // For non-admin roles, add user to existing school
-            if (!existingSchool)
-                return { success: false, message: msg.auth.register.schoolNotFound };
-
-            schoolId = existingSchool.id;
         }
-
         await db.insert(schema.users).values({
             name,
             email,

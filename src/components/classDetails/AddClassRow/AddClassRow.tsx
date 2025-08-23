@@ -44,7 +44,6 @@ const AddClassRow: React.FC = () => {
                 name: classValue,
                 schoolId: school?.id || "",
             });
-            successToast(res ? messages.classes.createSuccess : messages.classes.createError);
             setClassValue("");
         } catch (error) {
             console.error(error);
@@ -71,7 +70,7 @@ const AddClassRow: React.FC = () => {
             </td>
             <td>
                 <Btn
-                    text="הוספת כיתה"
+                    text="הוספה"
                     onClick={handleSubmitAdd}
                     isLoading={isLoading}
                     Icon={<Icons.plus />}

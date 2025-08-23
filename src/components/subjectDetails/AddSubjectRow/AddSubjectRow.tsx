@@ -48,7 +48,6 @@ const AddSubjectRow: React.FC = () => {
                 name: subjectValue,
                 schoolId: school?.id || "",
             });
-            successToast(res ? messages.subjects.createSuccess : messages.subjects.createError);
             setSubjectValue("");
         } catch (error) {
             console.error(error);
@@ -75,7 +74,7 @@ const AddSubjectRow: React.FC = () => {
             </td>
             <td>
                 <Btn
-                    text="הוספת מקצוע"
+                    text="הוספה"
                     onClick={handleSubmitAdd}
                     isLoading={isLoading}
                     Icon={<Icons.plus />}
