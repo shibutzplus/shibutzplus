@@ -4,27 +4,19 @@ import React from "react";
 import styles from "./DailyTopActions.module.css";
 import DynamicInputSelect from "@/components/ui/InputSelect/DynamicInputSelect";
 import { useDailyTableContext } from "@/context/DailyTableContext";
-import { ActionColumnType } from "@/models/types/table";
 import { DailyTableColors } from "@/style/tableColors";
 import Icons from "@/style/icons";
-
-
-const ActionBtn: React.FC<{
-    type: ActionColumnType;
-    Icon: React.ReactNode;
-    label: string;
-    style: React.CSSProperties;
-    func: () => void;
-}> = ({ type, Icon, label, style, func }) => (
-    <button key={type} style={style} className={styles.topButton} title={label} onClick={func}>
-        {Icon}
-        <span>{label}</span>
-    </button>
-);
+import ActionBtn from "@/components/ui/buttons/ActionBtn/ActionBtn";
 
 const DailyTopActions: React.FC = () => {
-    const { addNewColumn, daysSelectOptions, selectedDate, handleDayChange, publishDailySchedule } =
-        useDailyTableContext();
+    const {
+        isLoading,
+        addNewColumn,
+        daysSelectOptions,
+        selectedDate,
+        handleDayChange,
+        publishDailySchedule,
+    } = useDailyTableContext();
 
     return (
         <section className={styles.actionsContainer}>
@@ -32,6 +24,7 @@ const DailyTopActions: React.FC = () => {
                 <DynamicInputSelect
                     options={daysSelectOptions()}
                     value={selectedDate}
+                    isDisabled={isLoading}
                     onChange={handleDayChange}
                     isSearchable={false}
                     placeholder="בחר יום..."
@@ -44,6 +37,7 @@ const DailyTopActions: React.FC = () => {
                     type="missingTeacher"
                     Icon={<Icons.addTeacher size={16} />}
                     label="מורה חסר"
+                    isDisabled={isLoading}
                     style={{
                         borderLeft: DailyTableColors.missingTeacher.borderLeft,
                         color: DailyTableColors.missingTeacher.color,
@@ -55,6 +49,7 @@ const DailyTopActions: React.FC = () => {
                     type="existingTeacher"
                     Icon={<Icons.addTeacher size={16} />}
                     label="מורה קיים"
+                    isDisabled={isLoading}
                     style={{
                         borderLeft: DailyTableColors.existingTeacher.borderLeft,
                         color: DailyTableColors.existingTeacher.color,
@@ -66,6 +61,7 @@ const DailyTopActions: React.FC = () => {
                     type="event"
                     Icon={<Icons.event size={16} />}
                     label="מידע"
+                    isDisabled={isLoading}
                     style={{
                         borderLeft: DailyTableColors.event.borderLeft,
                         color: DailyTableColors.event.color,
@@ -79,6 +75,7 @@ const DailyTopActions: React.FC = () => {
                     type="publish"
                     Icon={<Icons.publish size={16} />}
                     label="פרסום"
+                    isDisabled={isLoading}
                     style={{
                         borderLeft: DailyTableColors.publish.borderLeft,
                         color: DailyTableColors.publish.color,

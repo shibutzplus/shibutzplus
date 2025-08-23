@@ -19,6 +19,7 @@ const AnnualTopActions: React.FC = () => {
                     value={selectedClassId}
                     onChange={handleClassChange}
                     isSearchable={false}
+                    isDisabled={isSaving || isLoading}
                     placeholder="בחר כיתה..."
                     hasBorder
                 />

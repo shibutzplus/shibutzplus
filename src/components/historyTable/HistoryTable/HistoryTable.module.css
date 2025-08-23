@@ -34,7 +34,7 @@
 }
 
 .scheduleCell{
-  min-width: 400px !important;
+  min-width: var(--table-cell-min-width) !important;
 }
 
 .cellContent {

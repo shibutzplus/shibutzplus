@@ -6,7 +6,7 @@ import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { and, eq, gte, lte } from "drizzle-orm";
 import { db, schema } from "../../../db";
-import { generateDateRange, getCurrentMonth, getCurrentYear } from "@/utils/time";
+import { generateDateRange, getCurrentMonth, getCurrentYear, getDateReturnString } from "@/utils/time";
 
 export type DailyHistoryMatrix = {
     [date: string]: DailyScheduleType[];
@@ -38,8 +38,8 @@ export async function getDailyHistoryAction(schoolId: string): Promise<GetDailyH
         const schedules = await db.query.dailySchedule.findMany({
             where: and(
                 eq(schema.dailySchedule.schoolId, schoolId),
-                gte(schema.dailySchedule.date, startDate.toISOString().split('T')[0]),
-                lte(schema.dailySchedule.date, endDate.toISOString().split('T')[0])
+                gte(schema.dailySchedule.date, getDateReturnString(startDate)),
+                lte(schema.dailySchedule.date, getDateReturnString(endDate))
             ),
             with: {
                 class: true,

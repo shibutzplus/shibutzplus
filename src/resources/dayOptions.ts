@@ -14,7 +14,9 @@ import {
     getCurrentYear,
     israelToday,
     DAYS_OF_WEEK_FORMAT,
+    formatTMDintoDMY,
 } from "@/utils/time";
+
 
 /**
  * Generates date options for a range of days (3 days before and 2 weeks after the current date)
@@ -22,6 +24,7 @@ import {
  * and labels showing date and day of week
  */
 export const getDayOptions = (): SelectOption[] => {
+    // TODO: not in use
     const israelTime = israelTimezoneDate();
 
     const options: SelectOption[] = [];
@@ -50,7 +53,7 @@ export const getDayOptions = (): SelectOption[] => {
 
         const isToday = dateValue === todayString;
         const isTomorrow = dateValue === tomorrowString;
-        const label = `${dateValue} | יום ${DAYS_OF_WEEK[dayOfWeek]}${isToday ? " (היום)" : ""}${isTomorrow ? " (מחר)" : ""}`;
+        const label = `${formatTMDintoDMY(dateValue)} | יום ${DAYS_OF_WEEK[dayOfWeek]}${isToday ? " (היום)" : ""}${isTomorrow ? " (מחר)" : ""}`;
 
         options.push({
             value: dateValue,
@@ -78,7 +81,7 @@ export function getIsraeliDateOptions(): SelectOption[] {
         const tomorrow = new Date(israelToday);
         tomorrow.setDate(israelToday.getDate() + 1);
 
-        let label = `${dateString} | ${hebrewDay}`;
+        let label = `${formatTMDintoDMY(dateString)} | ${hebrewDay}`;
 
         if (date.toDateString() === israelToday.toDateString()) {
             label += " (היום)";

@@ -1,0 +1,20 @@
+import React from "react";
+import styles from "./ActionBtn.module.css";
+import { ActionColumnType } from "@/models/types/table";
+
+const ActionBtn: React.FC<{
+    type: ActionColumnType;
+    Icon: React.ReactNode;
+    label: string;
+    style: React.CSSProperties;
+    func: () => void;
+    isDisabled?: boolean;
+}> = ({ type, Icon, label, style, func, isDisabled = false }) => (
+    <button key={type} style={style} className={styles.topButton} title={label} onClick={func} disabled={isDisabled}>
+        {Icon}
+        <span>{label}</span>
+    </button>
+);
+
+export default ActionBtn;
+

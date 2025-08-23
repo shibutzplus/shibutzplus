@@ -58,6 +58,7 @@
   --table-header-height: 8vh;
   
   --table-template-cell-width: 60px;
+  --table-cell-min-width: 300px;
   --table-cell-width: 300px;
   --table-cell-min-height: 80px;
   --table-cell-height: 13vh;

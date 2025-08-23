@@ -13,9 +13,9 @@ v- daily - publish proccess
 - daily - on select subTeacher - option to select teacher or free text (Select+Text)
 - daily - group subteacher select
 v- daily - order: missingTeacher-red existingTeacher-blue event-green
-- daily - delete button - bin icon
-- daily - hour column need to stay fixed
-- daily - smaller width
+v- daily - delete button - bin icon
+v- daily - hour column need to stay fixed
+v- daily - smaller width
 
 - annual - for each select (subject or teacher) there is also "remove" option to clear the cell
 v- annual - responsive table
@@ -38,8 +38,8 @@ v- onboarding - new design
 - history - responsive
 - history - loading skeleton
 
-- date format - 21-08-2025
-- change toast position
+v- date format - 21-08-2025
+v- change toast position
 
 - improve preformance by converting the teachers classes and subjects array to Dictionary
 - helper/guide box for the user to understand the system
@@ -62,7 +62,7 @@ v- how does new user register? (maybe on first login he register)
 
 - add clerity
 - add domain
-- setup google auth for prod
+v- setup google auth for prod
 - new logo
 
 DB addition

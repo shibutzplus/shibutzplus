@@ -8,6 +8,7 @@ import { useMainContext } from "@/context/MainContext";
 import ReadOnlyDailyTable from "@/components/teacherPortalTable/ReadOnlyDailyTable/ReadOnlyDailyTable";
 import styles from "./page.module.css";
 import router from "@/routes";
+import { getToday } from "@/utils/time";
 
 const DailyScheduleReadOnlyPage = () => {
     const { school } = useMainContext();
@@ -18,8 +19,7 @@ const DailyScheduleReadOnlyPage = () => {
 
     // Set default date to today
     useEffect(() => {
-        const today = new Date().toISOString().split('T')[0];
-        setSelectedDate(today);
+        setSelectedDate(getToday());
     }, []);
 
     // Fetch schedule data when date or school changes

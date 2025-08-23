@@ -24,6 +24,12 @@ const DailyTable: React.FC = () => {
                 cell: (info: any) => <span className={styles.hourCell}>{info.getValue()}</span>,
                 meta: { bgColor: "#f5f5f5" },
             },
+            {
+                // Allow me to position fixed the hour col (use as a size under the hour column)
+                accessorKey: "empty",
+                header: "",
+                cell: () => <span className={styles.empty}></span>,
+            },
         ],
         [],
     );
@@ -90,7 +96,9 @@ const DailyTable: React.FC = () => {
                                     key={cell.id}
                                     className={
                                         cell.column.id === "hour"
-                                            ? styles.hourCell
+                                            ? styles.hourCell : 
+                                        cell.column.id === "empty"
+                                            ? styles.empty
                                             : styles.scheduleCell
                                     }
                                 >

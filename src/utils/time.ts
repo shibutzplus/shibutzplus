@@ -13,8 +13,15 @@ export const THREE_DAYS = 3;
 // Number of hours in a day
 export const HOURS_IN_DAY = 7;
 
+// YYYY-MM-DD format
 export const getDateReturnString = (date: Date) => {
     return date.toISOString().split("T")[0];
+};
+
+// DD-MM-YYYY format
+export const formatTMDintoDMY = (date: string) => {
+    const [year, month, day] = date.split("-");
+    return `${day}-${month}-${year}`;
 };
 
 export const getStringReturnDate = (date: string) => {
@@ -39,9 +46,13 @@ export const getTwoDaysFromNowDateString = () => {
 
 // -- Day -- //
 
+export const getToday = () => {
+    return getDateReturnString(new Date());
+};
+
 export const getDayNumberByDate = (date: Date) => {
     // Get day of week (0 = Sunday, 6 = Saturday)
-    return date.getDay(); //TODO for Tuesday (3) I got Monday (2)
+    return date.getDay();
 };
 
 export const getDayNumberByDateString = (date: string) => {
@@ -89,7 +100,7 @@ export const generateDateRange = (startDate: Date, endDate: Date): string[] => {
     const dates: string[] = [];
     const currentDate = new Date(startDate);
     while (currentDate <= endDate) {
-        dates.push(currentDate.toISOString().split("T")[0]); // YYYY-MM-DD format
+        dates.push(getDateReturnString(currentDate));
         currentDate.setDate(currentDate.getDate() + 1);
     }
 
