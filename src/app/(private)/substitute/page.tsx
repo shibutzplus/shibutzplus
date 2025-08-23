@@ -25,11 +25,11 @@ const SubstitutePage: NextPage = () => {
                 if (response.success && response.data) {
                     setSubstitutes(response.data);
                 } else {
-                    errorToast(response.message || messages.teachers.retrieveError);
+                    errorToast(response.message || messages.teachers.error);
                 }
             } catch (error) {
                 console.error("Error fetching substitute teachers:", error);
-                errorToast(messages.teachers.retrieveError);
+                errorToast(messages.teachers.error);
             } finally {
                 setIsLoading(false);
             }

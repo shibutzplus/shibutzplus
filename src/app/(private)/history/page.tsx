@@ -24,14 +24,14 @@ const History = () => {
             const response = await getDailyScheduleAction(school.id, date);
             if (response.success && response.data) {
                 setCurrentDateData(response.data);
-                successToast("נתוני יום נטענו בהצלחה");
+                successToast(messages.dailySchedule.success);
             } else {
-                errorToast(response.message || messages.dailySchedule.retrieveError);
+                errorToast(response.message || messages.dailySchedule.error);
                 setCurrentDateData([]);
             }
         } catch (error) {
             console.error("Error fetching daily schedule:", error);
-            errorToast(messages.dailySchedule.retrieveError);
+            errorToast(messages.dailySchedule.error);
             setCurrentDateData([]);
         } finally {
             setIsLoading(false);

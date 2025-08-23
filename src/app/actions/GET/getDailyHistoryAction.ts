@@ -87,14 +87,14 @@ export async function getDailyHistoryAction(schoolId: string): Promise<GetDailyH
 
         return {
             success: true,
-            message: messages.dailySchedule.retrieveSuccess,
+            message: messages.dailySchedule.success,
             data: orderedResult,
         };
     } catch (error) {
         console.error("Error fetching daily schedule history:", error);
         return {
             success: false,
-            message: messages.dailySchedule.retrieveError,
+            message: messages.common.serverError,
         };
     }
 }

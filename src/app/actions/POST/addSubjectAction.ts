@@ -43,7 +43,7 @@ export async function addSubjectAction(
         console.error("Error creating subject:", error);
         return {
             success: false,
-            message: messages.subjects.createError,
+            message: messages.common.serverError,
         };
     }
 }

@@ -54,14 +54,14 @@ export async function getSubstituteTeachersAction(
 
         return {
             success: true,
-            message: messages.dailySchedule.retrieveSuccess,
+            message: messages.dailySchedule.success,
             data: dailySchedule,
         };
     } catch (error) {
         console.error("Error fetching substitute teachers:", error);
         return {
             success: false,
-            message: messages.dailySchedule.retrieveError,
+            message: messages.common.serverError,
         };
     }
 }

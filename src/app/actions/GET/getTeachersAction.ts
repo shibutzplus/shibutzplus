@@ -21,20 +21,20 @@ export async function getTeachersAction(schoolId: string): Promise<GetTeachersRe
         if (!teachers || teachers.length === 0) {
             return {
                 success: false,
-                message: messages.teachers.retrieveError,
+                message: messages.teachers.error,
             };
         }
 
         return {
             success: true,
-            message: messages.teachers.retrieveSuccess,
+            message: messages.teachers.success,
             data: teachers,
         };
     } catch (error) {
         console.error("Error fetching teachers:", error);
         return {
             success: false,
-            message: messages.teachers.retrieveError,
+            message: messages.common.serverError,
         };
     }
 }

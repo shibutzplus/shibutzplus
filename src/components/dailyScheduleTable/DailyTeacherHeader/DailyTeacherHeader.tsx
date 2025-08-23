@@ -32,10 +32,10 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId }) => 
                 if (response.length === 0) {
                     successToast(messages.dailySchedule.noScheduleFound);
                 } else {
-                    successToast(messages.dailySchedule.retrieveSuccess);
+                    successToast(messages.dailySchedule.success);
                 }
             } else {
-                errorToast(messages.dailySchedule.retrieveError);
+                errorToast(messages.dailySchedule.error);
             }
             setIsLoading(false);
         }

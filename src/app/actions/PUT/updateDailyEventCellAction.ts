@@ -94,7 +94,7 @@ export async function updateDailyEventCellAction(
         console.error("Error updating daily schedule:", error);
         return {
             success: false,
-            message: messages.dailySchedule.updateError,
+            message: messages.common.serverError,
         };
     }
 }

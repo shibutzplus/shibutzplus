@@ -35,7 +35,7 @@ export async function getTeacherScheduleByDayAction(
         if (!schedules || schedules.length === 0) {
             return {
                 success: true,
-                message: messages.dailySchedule.retrieveSuccess,
+                message: messages.dailySchedule.success,
                 data: [],
             };
         }
@@ -52,14 +52,14 @@ export async function getTeacherScheduleByDayAction(
 
         return {
             success: true,
-            message: messages.dailySchedule.retrieveSuccess,
+            message: messages.dailySchedule.success,
             data: teacherSchedule,
         };
     } catch (error) {
         console.error("Error fetching teacher schedule:", error);
         return {
             success: false,
-            message: messages.dailySchedule.retrieveError,
+            message: messages.common.serverError,
         };
     }
 }

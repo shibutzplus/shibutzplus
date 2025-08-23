@@ -51,7 +51,7 @@ export async function updateSubjectAction(
         console.error("Error updating subject:", error);
         return {
             success: false,
-            message: messages.subjects.updateError,
+            message: messages.common.serverError,
         };
     }
 }

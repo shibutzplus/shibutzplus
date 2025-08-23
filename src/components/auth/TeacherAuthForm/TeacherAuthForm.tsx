@@ -10,6 +10,7 @@ import { getAllTeachersAction } from "@/app/actions/GET/getAllTeachersAction";
 import Cookies from "js-cookie";
 import router from "@/routes";
 import { COOKIES_KEYS } from "@/resources/storage";
+import messages from "@/resources/messages";
 
 const TeacherAuthForm: React.FC = () => {
     const route = useRouter();
@@ -37,11 +38,11 @@ const TeacherAuthForm: React.FC = () => {
                     }));
                     setTeachers(teacherOptions);
                 } else {
-                    setError("שגיאה בטעינת רשימת המורים");
+                    setError(messages.teachers.error);
                 }
             } catch (error) {
                 console.error("Error fetching teachers:", error);
-                setError("שגיאה בטעינת רשימת המורים");
+                setError(messages.teachers.error);
             } finally {
                 setIsLoadingTeachers(false);
             }
@@ -56,7 +57,7 @@ const TeacherAuthForm: React.FC = () => {
         setIsLoading(true);
 
         if (!selectedTeacher) {
-            setError("יש לבחור מורה מהרשימה");
+            setError(messages.teachers.needToSelect);
             setIsLoading(false);
             return;
         }

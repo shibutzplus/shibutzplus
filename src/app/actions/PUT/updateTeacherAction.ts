@@ -55,7 +55,7 @@ export async function updateTeacherAction(
         console.error("Error updating teacher:", error);
         return {
             success: false,
-            message: messages.teachers.updateError,
+            message: messages.common.serverError,
         };
     }
 }

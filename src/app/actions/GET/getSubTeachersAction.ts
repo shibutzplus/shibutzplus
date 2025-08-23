@@ -25,14 +25,14 @@ export async function getSubTeachersAction(schoolId: string): Promise<GetTeacher
 
         return {
             success: true,
-            message: messages.teachers.retrieveSuccess,
+            message: messages.teachers.success,
             data: subTeachers || [],
         };
     } catch (error) {
         console.error("Error fetching substitute teachers:", error);
         return {
             success: false,
-            message: messages.teachers.retrieveError,
+            message: messages.common.serverError,
         };
     }
 }

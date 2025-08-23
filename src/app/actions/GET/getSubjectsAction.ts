@@ -21,20 +21,20 @@ export async function getSubjectsAction(schoolId: string): Promise<GetSubjectsRe
         if (!subjects || subjects.length === 0) {
             return {
                 success: false,
-                message: messages.subjects.retrieveError,
+                message: messages.subjects.error,
             };
         }
 
         return {
             success: true,
-            message: messages.subjects.retrieveSuccess,
+            message: messages.subjects.success,
             data: subjects,
         };
     } catch (error) {
         console.error("Error fetching subjects:", error);
         return {
             success: false,
-            message: messages.subjects.retrieveError,
+            message: messages.common.serverError,
         };
     }
 }

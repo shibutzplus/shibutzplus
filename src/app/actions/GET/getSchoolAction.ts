@@ -26,14 +26,14 @@ export async function getSchoolAction(schoolId: string): Promise<GetSchoolRespon
 
         return {
             success: true,
-            message: messages.school.retrieveSuccess,
+            message: messages.school.success,
             data: school,
         };
     } catch (error) {
         console.error("Error fetching school:", error);
         return {
             success: false,
-            message: messages.school.retrieveError,
+            message: messages.common.serverError,
         };
     }
 }

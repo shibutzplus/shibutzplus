@@ -44,7 +44,7 @@ export async function addTeacherAction(
         console.error("Error creating teacher:", error);
         return {
             success: false,
-            message: messages.teachers.createError,
+            message: messages.common.serverError,
         };
     }
 }

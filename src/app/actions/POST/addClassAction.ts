@@ -39,7 +39,7 @@ export async function addClassAction(
         console.error("Error creating class:", error);
         return {
             success: false,
-            message: messages.classes.createError,
+            message: messages.common.serverError,
         };
     }
 }

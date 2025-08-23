@@ -64,7 +64,7 @@ export async function addAnnualScheduleAction(
         console.error("Error creating annual schedule entry:", error);
         return {
             success: false,
-            message: messages.annualSchedule.createError,
+            message: messages.common.serverError,
         };
     }
 }

@@ -69,7 +69,7 @@ export async function updateAnnualScheduleAction(
         console.error("Error updating annual schedule entry:", error);
         return {
             success: false,
-            message: messages.annualSchedule.updateError,
+            message: messages.common.serverError,
         };
     }
 }

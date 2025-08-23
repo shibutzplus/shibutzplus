@@ -89,7 +89,7 @@ export async function addDailyEventCellAction(
         console.error("Error creating daily schedule entry:", error);
         return {
             success: false,
-            message: messages.dailySchedule.createError,
+            message: messages.common.serverError,
         };
     }
 }

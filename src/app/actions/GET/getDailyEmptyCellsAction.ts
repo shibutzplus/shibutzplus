@@ -28,7 +28,7 @@ export async function getDailyEmptyCellsAction(
         if (teacherIds.length === 0) {
             return {
                 success: true,
-                message: messages.dailySchedule.retrieveSuccess,
+                message: messages.dailySchedule.success,
                 data: [],
             };
         }
@@ -50,7 +50,7 @@ export async function getDailyEmptyCellsAction(
         if (!schedules || schedules.length === 0) {
             return {
                 success: true,
-                message: messages.dailySchedule.retrieveSuccess,
+                message: messages.dailySchedule.success,
                 data: [],
             };
         }
@@ -76,14 +76,14 @@ export async function getDailyEmptyCellsAction(
 
         return {
             success: true,
-            message: messages.dailySchedule.retrieveSuccess,
+            message: messages.dailySchedule.success,
             data: emptyCells,
         };
     } catch (error) {
         console.error("Error fetching empty daily schedule cells:", error);
         return {
             success: false,
-            message: messages.dailySchedule.retrieveError,
+            message: messages.common.serverError,
         };
     }
 }

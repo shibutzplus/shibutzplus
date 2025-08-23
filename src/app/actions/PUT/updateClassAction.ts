@@ -52,7 +52,7 @@ export async function updateClassAction(
         console.error("Error updating class:", error);
         return {
             success: false,
-            message: messages.classes.updateError,
+            message: messages.common.serverError,
         };
     }
 }
