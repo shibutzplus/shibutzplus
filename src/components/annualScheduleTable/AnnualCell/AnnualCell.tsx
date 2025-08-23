@@ -8,7 +8,7 @@ import { WeeklySchedule } from "@/models/types/annualSchedule";
 import { sortTeachersForSchedule } from "@/utils/teachers";
 import DynamicInputGroupSelect from "@/components/ui/InputGroupSelect/DynamicInputGroupSelect";
 import { ClassType } from "@/models/types/classes";
-import { RiDeleteBin6Line } from "react-icons/ri";
+
 
 type AnnualCellProps = {
     day: string;

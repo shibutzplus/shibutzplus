@@ -5,10 +5,10 @@ import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { useMainContext } from "@/context/MainContext";
 import Btn from "@/components/ui/buttons/Btn/Btn";
-import { RiEdit2Fill, RiDeleteBin6Line } from "react-icons/ri";
 import { TeacherRole, TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import { teacherSchema } from "@/models/validation/teacher";
 import RadioGroup from "@/components/ui/RadioGroup/RadioGroup";
+import Icons from "@/style/icons";
 
 type TeacherRowProps = {
     teacher: TeacherType;
@@ -130,13 +130,13 @@ const TeacherRow: React.FC<TeacherRowProps> = ({ teacher, handleDeleteTeacher })
                     text={isEdit ? "שמירה" : "עריכה"}
                     onClick={(e) => handleUpdate(e, teacher)}
                     isLoading={isEditLoading}
-                    Icon={<RiEdit2Fill />}
+                    Icon={<Icons.edit />}
                 />
                 <Btn
                     text="מחיקה"
                     onClick={(e) => handleDeleteTeacher(e, teacher)}
                     isLoading={false}
-                    Icon={<RiDeleteBin6Line />}
+                    Icon={<Icons.delete />}
                 />
             </td>
         </tr>

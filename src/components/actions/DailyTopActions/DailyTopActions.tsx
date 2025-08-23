@@ -5,10 +5,10 @@ import styles from "./DailyTopActions.module.css";
 import DynamicInputSelect from "@/components/ui/InputSelect/DynamicInputSelect";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import { ActionColumnType } from "@/models/types/table";
-import { BsMegaphoneFill, BsCalendar4Event, BsPersonFillAdd } from "react-icons/bs";
-import { MdPersonAdd } from "react-icons/md";
 import { DailyTableColors } from "@/style/tableColors";
-//test for deployment//
+import Icons from "@/style/icons";
+
+
 const ActionBtn: React.FC<{
     type: ActionColumnType;
     Icon: React.ReactNode;
@@ -41,8 +41,19 @@ const DailyTopActions: React.FC = () => {
 
             <div className={styles.topButtonsContainer}>
                 <ActionBtn
+                    type="missingTeacher"
+                    Icon={<Icons.addTeacher size={16} />}
+                    label="מורה חסר"
+                    style={{
+                        borderLeft: DailyTableColors.missingTeacher.borderLeft,
+                        color: DailyTableColors.missingTeacher.color,
+                    }}
+                    func={() => addNewColumn("missingTeacher")}
+                />
+
+                <ActionBtn
                     type="existingTeacher"
-                    Icon={<MdPersonAdd size={16} />}
+                    Icon={<Icons.addTeacher size={16} />}
                     label="מורה קיים"
                     style={{
                         borderLeft: DailyTableColors.existingTeacher.borderLeft,
@@ -53,7 +64,7 @@ const DailyTopActions: React.FC = () => {
 
                 <ActionBtn
                     type="event"
-                    Icon={<BsCalendar4Event size={16} />}
+                    Icon={<Icons.event size={16} />}
                     label="מידע"
                     style={{
                         borderLeft: DailyTableColors.event.borderLeft,
@@ -62,22 +73,11 @@ const DailyTopActions: React.FC = () => {
                     func={() => addNewColumn("event")}
                 />
 
-                <ActionBtn
-                    type="missingTeacher"
-                    Icon={<MdPersonAdd size={16} />}
-                    label="מורה חסר"
-                    style={{
-                        borderLeft: DailyTableColors.missingTeacher.borderLeft,
-                        color: DailyTableColors.missingTeacher.color,
-                    }}
-                    func={() => addNewColumn("missingTeacher")}
-                />
-
                 <div className={styles.spacer} />
 
                 <ActionBtn
                     type="publish"
-                    Icon={<BsMegaphoneFill size={16} />}
+                    Icon={<Icons.publish size={16} />}
                     label="פרסום"
                     style={{
                         borderLeft: DailyTableColors.publish.borderLeft,

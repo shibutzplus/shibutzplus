@@ -1,4 +1,5 @@
 - daily - still not working 
+- daily - delete column still not working good
 v- daily - days select are wrong
 v- daily - DB take the day and convert it to date
 - daily - open the date select on ..?
@@ -9,7 +10,7 @@ v- daily - DB take the day and convert it to date
 - daily - publish proccess 
 - daily - on select subTeacher - option to select teacher or free text (Select+Text)
 - daily - group subteacher select
-- daily - order: missingTeacher-red existingTeacher-blue event-green
+v- daily - order: missingTeacher-red existingTeacher-blue event-green
 - daily - delete button - bin icon
 - daily - hour column need to stay fixed
 - daily - smaller width

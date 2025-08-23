@@ -47,7 +47,6 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId }) => 
                 options={createSelectOptions(teachers)}
                 value={selectedTeacherData?.id || ""}
                 onChange={handleTeacherChange}
-                backgroundColor="transparent"
                 placeholder="מורה"
                 isSearchable
                 isDisabled={isLoading}

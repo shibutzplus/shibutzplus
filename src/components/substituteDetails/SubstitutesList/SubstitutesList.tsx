@@ -6,8 +6,8 @@ import { TeacherType } from "@/models/types/teachers";
 import TableList from "../../core/TableList/TableList";
 import { sortByHebrewName } from "@/utils/format";
 import { successToast } from "@/lib/toast";
-import { MdOutlineContentCopy } from "react-icons/md";
 import { generateTeacherUrl } from "@/utils";
+import Icons from "@/style/icons";
 
 
 type SubstitutesListProps = {
@@ -45,7 +45,7 @@ const SubstitutesList: React.FC<SubstitutesListProps> = ({ substitutes }) => {
                                 onClick={() => handleCopyUrl(substitute.id, substitute.name)}
                                 title="העתק קישור"
                             >
-                                <MdOutlineContentCopy size={16}/>
+                                <Icons.copy size={16}/>
                             </button>
                         </td>
                     </tr>

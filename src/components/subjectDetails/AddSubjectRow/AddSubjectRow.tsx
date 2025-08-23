@@ -7,7 +7,8 @@ import InputText from "@/components/ui/InputText/InputText";
 import { errorToast, successToast } from "@/lib/toast";
 import { subjectSchema } from "@/models/validation/subject";
 import Btn from "@/components/ui/buttons/Btn/Btn";
-import { FaPlus } from "react-icons/fa6";
+import Icons from "@/style/icons";
+
 
 const AddSubjectRow: React.FC = () => {
     const { school, addNewSubject } = useMainContext();
@@ -77,7 +78,7 @@ const AddSubjectRow: React.FC = () => {
                     text="הוספת מקצוע"
                     onClick={handleSubmitAdd}
                     isLoading={isLoading}
-                    Icon={<FaPlus />}
+                    Icon={<Icons.plus />}
                 />
             </td>
         </tr>

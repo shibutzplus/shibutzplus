@@ -6,7 +6,8 @@ import { useDailyTableContext } from "@/context/DailyTableContext";
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { TeacherRow } from "@/models/types/table";
 import { TableRows } from "@/models/constant/table";
-import { MdOutlineImageNotSupported } from "react-icons/md";
+import Icons from "@/style/icons";
+
 
 
 const DailyTable: React.FC = () => {
@@ -35,7 +36,7 @@ const DailyTable: React.FC = () => {
             header: () => <span className={styles.templateHeaderText}>עמודות יתווספו כאן לפי הפעלות שתבחר</span>,
             cell: () => (
                 <div className={styles.templateCell}>
-                    <MdOutlineImageNotSupported className={styles.templateIcon} size={18} />
+                    <Icons.empty className={styles.templateIcon} size={18} />
                     <div className={styles.templateText}>אין נתונים להצגה</div>
                 </div>
             ),

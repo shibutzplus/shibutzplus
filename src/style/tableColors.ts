@@ -12,8 +12,8 @@ export const DailyTableColors = {
         headerColor: "#f2fcf1"
     },
     missingTeacher: {
-        borderLeft: "4px solid #aeac27",
-        color: "#aeac27",
+        borderLeft: "4px solid #ae2b27",
+        color: "#ae2b27",
         headerColor: "#f9fcf1"
     },
     publish: {

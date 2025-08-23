@@ -7,7 +7,7 @@ import messages from "@/resources/messages";
 import { useMainContext } from "@/context/MainContext";
 import { classSchema } from "@/models/validation/class";
 import Btn from "@/components/ui/buttons/Btn/Btn";
-import { RiEdit2Fill, RiDeleteBin6Line } from "react-icons/ri";
+import Icons from "@/style/icons";
 
 type ClassRowProps = {
     classItem: ClassType;
@@ -95,13 +95,13 @@ const ClassRow: React.FC<ClassRowProps> = ({ classItem, handleDeleteClass }) => 
                     text={isEdit ? "שמירה" : "עריכה"}
                     onClick={(e) => handleUpdate(e, classItem)}
                     isLoading={isEditLoading}
-                    Icon={<RiEdit2Fill />}
+                    Icon={<Icons.edit />}
                 />
                 <Btn
                     text="מחיקה"
                     onClick={(e) => handleDeleteClass(e, classItem)}
                     isLoading={false}
-                    Icon={<RiDeleteBin6Line />}
+                    Icon={<Icons.delete />}
                 />
             </td>
         </tr>

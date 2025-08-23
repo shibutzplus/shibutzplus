@@ -5,7 +5,7 @@ import InputText from "@/components/ui/InputText/InputText";
 import { errorToast, successToast } from "@/lib/toast";
 import { classSchema } from "@/models/validation/class";
 import Btn from "@/components/ui/buttons/Btn/Btn";
-import { FaPlus } from "react-icons/fa6";
+import Icons from "@/style/icons";
 
 const AddClassRow: React.FC = () => {
     const { school, addNewClass } = useMainContext();
@@ -74,7 +74,7 @@ const AddClassRow: React.FC = () => {
                     text="הוספת כיתה"
                     onClick={handleSubmitAdd}
                     isLoading={isLoading}
-                    Icon={<FaPlus />}
+                    Icon={<Icons.plus />}
                 />
             </td>
         </tr>

@@ -5,10 +5,10 @@ import Image from "next/image";
 import Link from "next/link";
 import styles from "./forget.module.css";
 import Logo from "@/components/core/Logo/Logo";
-import { IoArrowForward } from "react-icons/io5";
 import { EmailLink, OurEmail } from "@/models/constant";
 import routePath from "../../../routes";
 import { NextPage } from "next";
+import Icons from "@/style/icons";
 
 const ForgetPasswordPage: NextPage = () => {
     return (
@@ -16,7 +16,7 @@ const ForgetPasswordPage: NextPage = () => {
             <div className={styles.contentWrapper}>
                 <div className={styles.backLinkContainer}>
                     <Link href={routePath.signIn.p} className={styles.backLink}>
-                        <IoArrowForward className={styles.backIcon} />
+                        <Icons.arrowForward className={styles.backIcon} />
                         <span>חזרה לדף התחברות</span>
                     </Link>
                 </div>

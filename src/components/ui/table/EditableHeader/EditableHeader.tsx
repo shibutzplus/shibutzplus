@@ -5,8 +5,7 @@ import { PopupAction } from "@/context/PopupContext";
 import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { useDailyTableContext } from "@/context/DailyTableContext";
-import { IoMdCloseCircle } from "react-icons/io";
-
+import Icons from "@/style/icons";
 
 
 type EditableHeaderProps = {
@@ -31,14 +30,14 @@ const EditableHeader: React.FC<EditableHeaderProps> = ({ children, columnId }) =
         e.stopPropagation();
         handleOpenPopup(
             PopupAction.deleteDailyCol,
-            `האם אתה בטוח שברצונך למחוק את השורה`,
+            `האם אתה בטוח שברצונך למחוק את העמודה?`,
             deleteCol,
         );
     };
 
     return (
         <div className={styles.columnHeader}>
-            <IoMdCloseCircle className={styles.clearButton} onClick={handleDeleteColumn} />
+            <Icons.delete className={styles.clearButton} onClick={handleDeleteColumn} />
             {children}
         </div>
     );

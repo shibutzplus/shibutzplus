@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./EmptyTable.module.css";
-import { FaList } from "react-icons/fa6";
+import Icons from "@/style/icons";
 
 type EmptyTableProps = {
     text: string;
@@ -11,7 +11,7 @@ const EmptyTable: React.FC<EmptyTableProps> = ({ text }) => {
         <tr className={styles.noTeachers}>
             <td>
                 {text}
-                <FaList size={24} />
+                <Icons.emptyList size={24} />
             </td>
         </tr>
     );

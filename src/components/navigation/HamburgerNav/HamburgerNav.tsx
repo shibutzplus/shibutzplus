@@ -6,21 +6,9 @@ import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import routePath from "../../../routes";
 import { useAccessibility } from "../../../hooks/useAccessibility";
-import { PiChairLight } from "react-icons/pi";
 import { clearStorage } from "@/utils/localStorage";
-import { GoHistory } from "react-icons/go";
-import {
-    IoHomeOutline,
-    IoCalendarOutline,
-    IoPersonCircleOutline,
-    IoLogOutOutline,
-    IoSchoolOutline,
-    IoPeopleOutline,
-    IoMenuOutline,
-    IoCloseOutline,
-    IoMailOutline,
-} from "react-icons/io5";
 import { STATUS_AUTH } from "@/models/constant/session";
+import Icons from "@/style/icons";
 
 type HamburgerNavProps = {
     isOpen: boolean;
@@ -37,47 +25,42 @@ const links: ILink[] = [
     {
         name: routePath.dashboard.title,
         p: routePath.dashboard.p,
-        Icon: <IoHomeOutline size={24} />,
+        Icon: <Icons.home size={24} />,
     },
     {
         name: routePath.annualSchedule.title,
         p: routePath.annualSchedule.p,
-        Icon: <IoCalendarOutline size={24} />,
+        Icon: <Icons.calendar size={24} />,
     },
     {
         name: routePath.dailySchedule.title,
         p: routePath.dailySchedule.p,
-        Icon: <IoCalendarOutline size={24} />,
+        Icon: <Icons.calendar size={24} />,
     },
     {
         name: routePath.teachers.title,
         p: routePath.teachers.p,
-        Icon: <IoSchoolOutline size={24} />,
+        Icon: <Icons.school size={24} />,
     },
     {
         name: routePath.substitute.title,
         p: routePath.substitute.p,
-        Icon: <IoSchoolOutline size={24} />,
+        Icon: <Icons.school size={24} />,
     },
     {
         name: routePath.subjects.title,
         p: routePath.subjects.p,
-        Icon: <IoPeopleOutline size={24} />,
+        Icon: <Icons.people size={24} />,
     },
     {
         name: routePath.classes.title,
         p: routePath.classes.p,
-        Icon: <PiChairLight size={24} />,
+        Icon: <Icons.chair size={24} />,
     },
-    // {
-    //     name: routePath.connect.title,
-    //     p: routePath.connect.p,
-    //     Icon: <IoMailOutline size={24} />,
-    // },
     {
         name: routePath.history.title,
         p: routePath.history.p,
-        Icon: <GoHistory size={24} />,
+        Icon: <Icons.history size={24} />,
     }
 ];
 
@@ -119,7 +102,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose }) => {
                 aria-label="Navigation menu"
             >
                 <button className={styles.closeButton} onClick={onClose} aria-label="Close menu">
-                    <IoCloseOutline size={24} />
+                    <Icons.close size={24} />
                 </button>
 
                 <section className={styles.menuSection}>
@@ -138,7 +121,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose }) => {
                             link={{
                                 name: routePath.profile.title,
                                 p: routePath.profile.p,
-                                Icon: <IoPersonCircleOutline size={24} />,
+                                Icon: <Icons.personCircle size={24} />,
                             }}
                             onClose={onClose}
                         />
@@ -157,7 +140,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose }) => {
                             className={styles.navLink}
                             aria-label="Logout"
                         >
-                            <IoLogOutOutline size={24} />
+                            <Icons.logOut size={24} />
                             <span>התנתקות</span>
                         </Link>
                     </section>
@@ -179,7 +162,7 @@ export const HamburgerButton: React.FC<{ onClick: () => void; isOpen: boolean }>
             aria-expanded={isOpen}
             aria-controls="mobile-menu"
         >
-            <IoMenuOutline size={24} />
+            <Icons.menu size={24} />
         </button>
     );
 };

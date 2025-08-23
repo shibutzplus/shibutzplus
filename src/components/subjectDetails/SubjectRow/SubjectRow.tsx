@@ -7,7 +7,7 @@ import messages from "@/resources/messages";
 import { useMainContext } from "@/context/MainContext";
 import { subjectSchema } from "@/models/validation/subject";
 import Btn from "@/components/ui/buttons/Btn/Btn";
-import { RiEdit2Fill, RiDeleteBin6Line } from "react-icons/ri";
+import Icons from "@/style/icons";
 
 
 
@@ -98,13 +98,13 @@ const SubjectRow: React.FC<SubjectRowProps> = ({ subject, handleDeleteSubject })
                     text={isEdit ? "שמירה" : "עריכה"}
                     onClick={(e) => handleUpdate(e, subject)}
                     isLoading={isEditLoading}
-                    Icon={<RiEdit2Fill/>}
+                    Icon={<Icons.edit/>}
                 />
                 <Btn
                     text="מחיקה"
                     onClick={(e) => handleDeleteSubject(e, subject)}
                     isLoading={false}
-                    Icon={<RiDeleteBin6Line/>}
+                    Icon={<Icons.delete/>}
                 />
             </td>
         </tr>

@@ -7,9 +7,9 @@ import InputText from "@/components/ui/InputText/InputText";
 import { errorToast, successToast } from "@/lib/toast";
 import { subjectSchema } from "@/models/validation/subject";
 import Btn from "@/components/ui/buttons/Btn/Btn";
-import { FaPlus } from "react-icons/fa6";
 import { TeacherRequest, TeacherRole, TeacherRoleValues } from "@/models/types/teachers";
 import RadioGroup from "@/components/ui/RadioGroup/RadioGroup";
+import Icons from "@/style/icons";
 
 const AddTeacherRow: React.FC = () => {
     const { school, addNewTeacher } = useMainContext();
@@ -98,7 +98,7 @@ const AddTeacherRow: React.FC = () => {
                     text="הוספת מורה"
                     onClick={handleSubmitAdd}
                     isLoading={isLoading}
-                    Icon={<FaPlus />}
+                    Icon={<Icons.plus />}
                 />
             </td>
         </tr>
