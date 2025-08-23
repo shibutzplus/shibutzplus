@@ -41,13 +41,13 @@ const AnnualTable: React.FC<AnnualTableProps> = ({
     const { setIsLoading, setIsSaving, isSaving } = useAnnualTable();
 
     const isDisabled =
-        isSaving || !schedule || !selectedClassId || !subjects || !teachers || !classes;
+        isSaving || !schedule || !selectedClassId || !subjects || !classes;
 
     useEffect(() => {
         setIsLoading(
-            !schedule || !selectedClassId || !subjects || !teachers || !classes ? true : false,
+            !schedule || !selectedClassId || !subjects || !classes ? true : false,
         );
-    }, [schedule, selectedClassId, subjects, teachers, classes]);
+    }, [schedule, selectedClassId, subjects, classes]);
 
     const handleTeacherChange = async (day: string, hour: number, value: string) => {
         await addNewRow("teacher", value, day, hour);

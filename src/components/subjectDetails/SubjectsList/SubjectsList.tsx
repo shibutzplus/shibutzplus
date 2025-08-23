@@ -32,8 +32,7 @@ const SubjectsList: React.FC = () => {
         await handleSubmitDelete(schoolId, subjectId, deleteSubject);
     };
 
-    const handleDeleteSubject = (e: React.MouseEvent, subject: SubjectType) => {
-        e.stopPropagation(); // Prevent row click when clicking delete
+    const handleDeleteSubject = (subject: SubjectType) => {
         handleOpenPopup(
             PopupAction.deleteSubject,
             `האם אתה בטוח שברצונך למחוק את המקצוע ${subject.name}`,

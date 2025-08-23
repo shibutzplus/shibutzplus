@@ -31,8 +31,7 @@ const ClassesList: React.FC = () => {
         await handleSubmitDelete(schoolId, classId, deleteClass);
     };
 
-    const handleDeleteClass = (e: React.MouseEvent, classItem: ClassType) => {
-        e.stopPropagation(); // Prevent row click when clicking delete
+    const handleDeleteClass = (classItem: ClassType) => {
         handleOpenPopup(
             PopupAction.deleteClass,
             `האם אתה בטוח שברצונך למחוק את הכיתה ${classItem.name}`,

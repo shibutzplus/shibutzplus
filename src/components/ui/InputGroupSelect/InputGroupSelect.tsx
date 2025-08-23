@@ -121,7 +121,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
                 menuPlacement="auto"
                 formatGroupLabel={formatGroupLabel}
                 noOptionsMessage={({ inputValue }) =>
-                    allowAddNew ? (
+                    allowAddNew && inputValue.trim() !== "" ? (
                         <AddToSelectBtn
                             onClick={() => handleOnCreate(inputValue)}
                             label={inputValue}
@@ -138,6 +138,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
                         'value' in e.target
                     ) {
                         const inputValue = (e.target as HTMLInputElement).value;
+                        if(inputValue.trim() === "") return;
                         const allOptions = options.flatMap((group) => group.options);
                         const exists = allOptions.some(opt => opt.label.toLowerCase() === inputValue.toLowerCase());
                         if (!exists && inputValue.trim().length > 0) {

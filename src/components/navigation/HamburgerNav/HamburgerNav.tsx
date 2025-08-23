@@ -28,14 +28,14 @@ const links: ILink[] = [
         Icon: <Icons.calendar size={24} />,
     },
     {
-        name: routePath.history.title,
-        p: routePath.history.p,
-        Icon: <Icons.history size={24} />,
-    },
-    {
         name: routePath.annualSchedule.title,
         p: routePath.annualSchedule.p,
         Icon: <Icons.calendar size={24} />,
+    },
+    {
+        name: routePath.substitute.title,
+        p: routePath.substitute.p,
+        Icon: <Icons.school size={24} />,
     },
     {
         name: routePath.teachers.title,
@@ -53,11 +53,10 @@ const links: ILink[] = [
         Icon: <Icons.chair size={24} />,
     },
     {
-        name: routePath.substitute.title,
-        p: routePath.substitute.p,
-        Icon: <Icons.school size={24} />,
+        name: routePath.history.title,
+        p: routePath.history.p,
+        Icon: <Icons.history size={24} />,
     },
-    
 ];
 
 const LinkComponent = ({ link, onClose }: { link: ILink; onClose: () => void }) => {
@@ -86,10 +85,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose }) => {
     }, [isOpen]);
 
     return (
-        <div
-            ref={overlayRef}
-            className={`${styles.overlay} ${isOpen ? styles.open : ""}`}
-        >
+        <div ref={overlayRef} className={`${styles.overlay} ${isOpen ? styles.open : ""}`}>
             <div
                 ref={navRef}
                 className={`${styles.nav} ${isOpen ? styles.open : ""}`}

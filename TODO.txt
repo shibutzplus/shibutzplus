@@ -61,6 +61,7 @@ v- change toast position
 class, subTeacher, subject, study material, instructions, links
 -- leave empty hours that has no information (gray + small height)
 
+- role teacher not allow to enter the big system, need alert on that
 
 - replacement - mobile screen for the replacements + url id
 - replacement - you can only see what you need to teach, where and what

@@ -1,55 +1,67 @@
 "use client";
 
 import React from "react";
-import styles from "./SubstitutesList.module.css";
-import { TeacherType } from "@/models/types/teachers";
 import TableList from "../../core/TableList/TableList";
-import { sortByHebrewName } from "@/utils/format";
-import { successToast } from "@/lib/toast";
-import { generateTeacherUrl } from "@/utils";
-import Icons from "@/style/icons";
+import { useMainContext } from "@/context/MainContext";
+import messages from "@/resources/messages";
+import { getStorageSchoolId } from "@/utils/localStorage";
+import useDeletePopup from "@/hooks/useDeletePopup";
+import { PopupAction } from "@/context/PopupContext";
+import { filterTeachersByRole, sortByHebrewName } from "@/utils/format";
+import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
+import useSubmit from "@/hooks/useSubmit";
+import EmptyTable from "@/components/ui/table/EmptyTable/EmptyTable";
+import SubstituteRow from "../SubstituteRow/SubstituteRow";
+import AddSubstituteRow from "../AddSubstituteRow/AddSubstituteRow";
 
+const SubstitutesList: React.FC = () => {
+    const { handleOpenPopup } = useDeletePopup();
+    const { teachers, deleteTeacher } = useMainContext();
 
-type SubstitutesListProps = {
-    substitutes: TeacherType[];
-};
+    const { handleSubmitDelete } = useSubmit(
+        () => {},
+        messages.teachers.deleteSuccess,
+        messages.teachers.deleteError,
+        messages.teachers.invalid,
+    );
 
-const SubstitutesList: React.FC<SubstitutesListProps> = ({ substitutes }) => {
-
-    const handleCopyUrl = async (teacherId: string, teacherName: string) => {
-        try {
-            const url = generateTeacherUrl(teacherId);
-            await navigator.clipboard.writeText(url);
-            successToast(`הקישור של ${teacherName} הועתק בהצלחה`);
-        } catch (error) {
-            console.error("Failed to copy URL:", error);
-        }
+    const handleDeleteTeacherFromState = async (teacherId: string) => {
+        const schoolId = getStorageSchoolId();
+        if (!schoolId) return;
+        await handleSubmitDelete(schoolId, teacherId, deleteTeacher);
     };
 
-    const sortedSubstitutes = sortByHebrewName(substitutes);
+    const handleDeleteTeacher = (teacher: TeacherType) => {
+        handleOpenPopup(
+            PopupAction.deleteTeacher,
+            `האם אתה בטוח שברצונך למחוק את המורה ${teacher.name}`,
+            () => handleDeleteTeacherFromState(teacher.id),
+        );
+    };
+
+    const sortedTeachers = React.useMemo(
+        () =>
+            teachers !== undefined
+                ? filterTeachersByRole(sortByHebrewName(teachers), TeacherRoleValues.SUBSTITUTE)
+                : undefined,
+        [teachers],
+    );
 
     return (
-        <TableList headThs={["שם מורה מחליף", "קישור אישי", ""]}>
+        <TableList headThs={["שם המורה", "פעולות"]}>
             <tbody>
-                {sortedSubstitutes.map((substitute) => (
-                    <tr key={substitute.id} className={styles.substituteRow}>
-                        <td className={styles.nameCell}>{substitute.name}</td>
-                        <td className={styles.urlCell}>
-                            <span className={styles.url}>
-                                {generateTeacherUrl(substitute.id)}
-                            </span>
-                        </td>
-                        <td className={styles.actionCell}>
-                            <button
-                                className={styles.copyBtn}
-                                onClick={() => handleCopyUrl(substitute.id, substitute.name)}
-                                title="העתק קישור"
-                            >
-                                <Icons.copy size={16}/>
-                            </button>
-                        </td>
-                    </tr>
-                ))}
+                <AddSubstituteRow />
+                {sortedTeachers?.length === 0 ? (
+                    <EmptyTable text="עדיין לא נוספו מורים לרשימה" />
+                ) : (
+                    sortedTeachers?.map((teacher: TeacherType) => (
+                        <SubstituteRow
+                            key={teacher.id}
+                            teacher={teacher}
+                            handleDeleteTeacher={handleDeleteTeacher}
+                        />
+                    ))
+                )}
             </tbody>
         </TableList>
     );

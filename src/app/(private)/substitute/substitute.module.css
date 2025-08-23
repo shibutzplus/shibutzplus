@@ -1,0 +1,18 @@
+/* Mobile 320px - 767px -- 812px */
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.substituteList{
+    min-width: 60vw;
+    width: 95%;
+}
+
+/* Tablet 768px - 1279px -- 800px*/
+@media screen and (min-width: 768px) {
+    .substituteList{
+        width: 70%;
+    }
+}

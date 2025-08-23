@@ -9,6 +9,7 @@ import { FaPlus } from "react-icons/fa6";
 import { FaList } from "react-icons/fa6";
 import { PiChairLight } from "react-icons/pi";
 import { GoHistory } from "react-icons/go";
+import { FaSave } from "react-icons/fa";
 import {
     IoHomeOutline,
     IoCalendarOutline,
@@ -41,6 +42,7 @@ const Icons = {
     people: IoPeopleOutline,
     menu: IoMenuOutline,
     close: IoCloseOutline,
+    save: FaSave,
 }
 
 export default Icons;

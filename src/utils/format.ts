@@ -1,4 +1,5 @@
 import { SelectOption } from "@/models/types";
+import { TeacherRole, TeacherType } from "@/models/types/teachers";
 import routePath from "@/routes";
 
 export const createSelectOptions = <T extends { id: string; name: string }>(
@@ -10,6 +11,10 @@ export const createSelectOptions = <T extends { id: string; name: string }>(
         label: item.name,
     }));
     return options;
+};
+
+export const filterTeachersByRole = (teachers: TeacherType[], role: TeacherRole) => {
+    return teachers.filter((teacher) => teacher.role === role);
 };
 
 /**

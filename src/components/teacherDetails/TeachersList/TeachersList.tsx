@@ -7,12 +7,12 @@ import messages from "@/resources/messages";
 import { getStorageSchoolId } from "@/utils/localStorage";
 import useDeletePopup from "@/hooks/useDeletePopup";
 import { PopupAction } from "@/context/PopupContext";
-import { sortByHebrewName } from "@/utils/format";
-import { TeacherType } from "@/models/types/teachers";
+import { filterTeachersByRole, sortByHebrewName } from "@/utils/format";
+import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import useSubmit from "@/hooks/useSubmit";
 import AddTeacherRow from "../AddTeacherRow/AddTeacherRow";
-import TeacherRow from "../teacherRow/teacherRow";
 import EmptyTable from "@/components/ui/table/EmptyTable/EmptyTable";
+import TeacherRow from "../TeacherRow/TeacherRow";
 
 const TeachersList: React.FC = () => {
     const { handleOpenPopup } = useDeletePopup();
@@ -31,8 +31,7 @@ const TeachersList: React.FC = () => {
         await handleSubmitDelete(schoolId, teacherId, deleteTeacher);
     };
 
-    const handleDeleteTeacher = (e: React.MouseEvent, teacher: TeacherType) => {
-        e.stopPropagation(); // Prevent row click when clicking delete
+    const handleDeleteTeacher = (teacher: TeacherType) => {
         handleOpenPopup(
             PopupAction.deleteTeacher,
             `האם אתה בטוח שברצונך למחוק את המורה ${teacher.name}`,
@@ -41,12 +40,15 @@ const TeachersList: React.FC = () => {
     };
 
     const sortedTeachers = React.useMemo(
-        () => (teachers !== undefined ? sortByHebrewName(teachers) : undefined),
+        () =>
+            teachers !== undefined
+                ? filterTeachersByRole(sortByHebrewName(teachers), TeacherRoleValues.REGULAR)
+                : undefined,
         [teachers],
     );
 
     return (
-        <TableList headThs={["שם המורה", "תפקיד", "פעולות"]}>
+        <TableList headThs={["שם המורה", "פעולות"]}>
             <tbody>
                 <AddTeacherRow />
                 {sortedTeachers?.length === 0 ? (

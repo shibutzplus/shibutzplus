@@ -9,8 +9,10 @@
 }
 
 .actions {
+    width: 100%;
     display: flex;
-    gap: 5px;
+    justify-content: space-evenly;
+    align-items: center;
 }
 
 /* Tablet 768px - 1279px -- 800px*/

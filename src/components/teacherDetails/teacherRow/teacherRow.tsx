@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from "react";
-import styles from "./teacherRow.module.css";
+import styles from "./TeacherRow.module.css";
 import InputText from "@/components/ui/InputText/InputText";
-import { errorToast, successToast } from "@/lib/toast";
+import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { useMainContext } from "@/context/MainContext";
-import Btn from "@/components/ui/buttons/Btn/Btn";
-import { TeacherRole, TeacherRoleValues, TeacherType } from "@/models/types/teachers";
+import { TeacherType } from "@/models/types/teachers";
 import { teacherSchema } from "@/models/validation/teacher";
-import RadioGroup from "@/components/ui/RadioGroup/RadioGroup";
 import Icons from "@/style/icons";
+import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
 
 type TeacherRowProps = {
     teacher: TeacherType;
-    handleDeleteTeacher: (e: React.MouseEvent, teacher: TeacherType) => void;
+    handleDeleteTeacher: (teacher: TeacherType) => void;
 };
 
 const TeacherRow: React.FC<TeacherRowProps> = ({ teacher, handleDeleteTeacher }) => {
@@ -20,22 +19,18 @@ const TeacherRow: React.FC<TeacherRowProps> = ({ teacher, handleDeleteTeacher })
     const [isEdit, setIsEdit] = useState<boolean>(false);
     const [isEditLoading, setIsEditLoading] = useState<boolean>(false);
     const [teacherValue, setTeacherValue] = useState<string>(teacher.name);
-    const [roleValue, setRoleValue] = useState<TeacherRole>(teacher.role);
     const [validationErrors, setValidationErrors] = useState<{
         name?: string;
-        role?: string;
         schoolId?: string;
     }>({});
 
-    useEffect(()=> {
-        if(teacher){
+    useEffect(() => {
+        if (teacher) {
             setTeacherValue(teacher.name);
-            setRoleValue(teacher.role);
         }
-    },[teacher])
+    }, [teacher]);
 
-    const handleUpdate = async (e: React.MouseEvent, teacher: TeacherType) => {
-        e.stopPropagation();
+    const handleUpdate = async (teacher: TeacherType) => {
         if (!isEdit) {
             setIsEdit((prev) => !prev);
             return;
@@ -46,16 +41,15 @@ const TeacherRow: React.FC<TeacherRowProps> = ({ teacher, handleDeleteTeacher })
 
         try {
             const validationResult = teacherSchema.safeParse({
-                name: teacher.name,
-                role: teacher.role,
+                name: teacherValue,
                 schoolId: teacher.schoolId,
             });
 
             if (!validationResult.success) {
-                const fieldErrors: { name?: string; role?: string; schoolId?: string } = {};
+                const fieldErrors: { name?: string; schoolId?: string } = {};
                 validationResult.error.issues.forEach((issue) => {
                     const field = issue.path[0] as keyof typeof fieldErrors;
-                    if (field === "name" || field === "role" || field === "schoolId") {
+                    if (field === "name" || field === "schoolId") {
                         fieldErrors[field] = issue.message;
                     }
                 });
@@ -64,30 +58,21 @@ const TeacherRow: React.FC<TeacherRowProps> = ({ teacher, handleDeleteTeacher })
                 return;
             }
 
-            const res = await updateTeacher(teacher.id, {
+            const response = await updateTeacher(teacher.id, {
                 name: teacherValue,
-                role: roleValue,
+                role: "regular",
                 schoolId: teacher.schoolId,
             });
-            successToast(res ? messages.teachers.updateSuccess : messages.teachers.updateError);
+            if (!response) {
+                errorToast(messages.teachers.updateError);
+            }
             setTeacherValue(teacher.name);
         } catch (error) {
             console.error(error);
-            errorToast(messages.subjects.updateError);
+            errorToast(messages.teachers.updateError);
         } finally {
             setIsEditLoading(false);
             setIsEdit((prev) => !prev);
-        }
-    };
-
-    const displayRole = (role: string): React.ReactNode => {
-        switch (role) {
-            case "regular":
-                return <span className={styles.roleCellGreen}>מורה</span>;
-            case "substitute":
-                return <span className={styles.roleCellBlue}>מחליף/ה</span>;
-            default:
-                return <span className={styles.roleCell}>-</span>;
         }
     };
 
@@ -108,33 +93,14 @@ const TeacherRow: React.FC<TeacherRowProps> = ({ teacher, handleDeleteTeacher })
                     readonly={!isEdit}
                 />
             </td>
-            <td>
-                {isEdit ? (
-                    <RadioGroup
-                        name="role"
-                        value={roleValue}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                            setRoleValue(e.target.value as TeacherRole);
-                        }}
-                        options={[
-                            { value: TeacherRoleValues.REGULAR, label: "מורה" },
-                            { value: TeacherRoleValues.SUBSTITUTE, label: "מורה מחליף/ה" },
-                        ]}
-                    />
-                ) : (
-                    displayRole(teacher.role)
-                )}
-            </td>
             <td className={styles.actions}>
-                <Btn
-                    text={isEdit ? "שמירה" : "עריכה"}
-                    onClick={(e) => handleUpdate(e, teacher)}
+                <IconBtn
+                    onClick={() => handleUpdate(teacher)}
                     isLoading={isEditLoading}
-                    Icon={<Icons.edit />}
+                    Icon={isEdit ? <Icons.save /> : <Icons.edit />}
                 />
-                <Btn
-                    text="מחיקה"
-                    onClick={(e) => handleDeleteTeacher(e, teacher)}
+                <IconBtn
+                    onClick={() => handleDeleteTeacher(teacher)}
                     isLoading={false}
                     Icon={<Icons.delete />}
                 />

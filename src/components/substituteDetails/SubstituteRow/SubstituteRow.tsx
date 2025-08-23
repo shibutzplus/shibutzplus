@@ -1,37 +1,36 @@
 import React, { useEffect, useState } from "react";
-import styles from "./SubjectRow.module.css";
+import styles from "./SubstituteRow.module.css";
 import InputText from "@/components/ui/InputText/InputText";
-import { SubjectType } from "@/models/types/subjects";
-import { errorToast, successToast } from "@/lib/toast";
+import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { useMainContext } from "@/context/MainContext";
-import { subjectSchema } from "@/models/validation/subject";
-import Btn from "@/components/ui/buttons/Btn/Btn";
+import { TeacherType } from "@/models/types/teachers";
+import { teacherSchema } from "@/models/validation/teacher";
 import Icons from "@/style/icons";
 import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
 
-type SubjectRowProps = {
-    subject: SubjectType;
-    handleDeleteSubject: (subject: SubjectType) => void;
+type SubstituteRowProps = {
+    teacher: TeacherType;
+    handleDeleteTeacher: (teacher: TeacherType) => void;
 };
 
-const SubjectRow: React.FC<SubjectRowProps> = ({ subject, handleDeleteSubject }) => {
-    const { updateSubject } = useMainContext();
+const SubstituteRow: React.FC<SubstituteRowProps> = ({ teacher, handleDeleteTeacher }) => {
+    const { updateTeacher } = useMainContext();
     const [isEdit, setIsEdit] = useState<boolean>(false);
     const [isEditLoading, setIsEditLoading] = useState<boolean>(false);
-    const [subjectValue, setSubjectValue] = useState<string>(subject.name);
+    const [teacherValue, setTeacherValue] = useState<string>(teacher.name);
     const [validationErrors, setValidationErrors] = useState<{
         name?: string;
         schoolId?: string;
     }>({});
 
     useEffect(() => {
-        if (subject) {
-            setSubjectValue(subject.name);
+        if (teacher) {
+            setTeacherValue(teacher.name);
         }
-    }, [subject]);
+    }, [teacher]);
 
-    const handleUpdate = async (subject: SubjectType) => {
+    const handleUpdate = async (teacher: TeacherType) => {
         if (!isEdit) {
             setIsEdit((prev) => !prev);
             return;
@@ -41,9 +40,9 @@ const SubjectRow: React.FC<SubjectRowProps> = ({ subject, handleDeleteSubject })
         setValidationErrors({});
 
         try {
-            const validationResult = subjectSchema.safeParse({
-                name: subject.name,
-                schoolId: subject.schoolId,
+            const validationResult = teacherSchema.safeParse({
+                name: teacherValue,
+                schoolId: teacher.schoolId,
             });
 
             if (!validationResult.success) {
@@ -59,15 +58,18 @@ const SubjectRow: React.FC<SubjectRowProps> = ({ subject, handleDeleteSubject })
                 return;
             }
 
-            const res = await updateSubject(subject.id, {
-                name: subjectValue,
-                schoolId: subject.schoolId,
+            const response = await updateTeacher(teacher.id, {
+                name: teacherValue,
+                role: "regular",
+                schoolId: teacher.schoolId,
             });
-            successToast(res ? messages.subjects.updateSuccess : messages.subjects.updateError);
-            setSubjectValue(subject.name);
+            if (!response) {
+                errorToast(messages.teachers.updateError);
+            }
+            setTeacherValue(teacher.name);
         } catch (error) {
             console.error(error);
-            errorToast(messages.subjects.updateError);
+            errorToast(messages.teachers.updateError);
         } finally {
             setIsEditLoading(false);
             setIsEdit((prev) => !prev);
@@ -75,30 +77,30 @@ const SubjectRow: React.FC<SubjectRowProps> = ({ subject, handleDeleteSubject })
     };
 
     return (
-        <tr className={styles.subjectRow}>
+        <tr className={styles.teacherRow}>
             <td>
                 <span className={styles.dot} />
                 <InputText
                     key="editName"
                     id="name"
                     name="name"
-                    value={subjectValue}
+                    value={teacherValue}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        setSubjectValue(e.target.value);
+                        setTeacherValue(e.target.value);
                     }}
-                    placeholder="לדוגמה: מתמטיקה"
+                    placeholder="לדוגמא: ישראל ישראלי"
                     error={validationErrors.name}
                     readonly={!isEdit}
                 />
             </td>
             <td className={styles.actions}>
                 <IconBtn
-                    onClick={() => handleUpdate(subject)}
+                    onClick={() => handleUpdate(teacher)}
                     isLoading={isEditLoading}
                     Icon={isEdit ? <Icons.save /> : <Icons.edit />}
                 />
                 <IconBtn
-                    onClick={() => handleDeleteSubject(subject)}
+                    onClick={() => handleDeleteTeacher(teacher)}
                     isLoading={false}
                     Icon={<Icons.delete />}
                 />
@@ -107,4 +109,19 @@ const SubjectRow: React.FC<SubjectRowProps> = ({ subject, handleDeleteSubject })
     );
 };
 
-export default SubjectRow;
+export default SubstituteRow;
+
+
+// const handleCopyUrl = async (teacherId: string, teacherName: string) => {
+//     try {
+//         const url = generateTeacherUrl(teacherId);
+//         await navigator.clipboard.writeText(url);
+//         successToast(`הקישור של ${teacherName} הועתק בהצלחה`);
+//     } catch (error) {
+//         console.error("Failed to copy URL:", error);
+//     }
+// };
+
+// const sortedSubstitutes = sortByHebrewName(substitutes);
+
+// {generateTeacherUrl(substitute.id)}

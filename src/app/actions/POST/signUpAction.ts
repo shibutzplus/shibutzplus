@@ -61,6 +61,21 @@ const signUp = async (params: RegisterRequest): Promise<RegisterResponse> => {
                 .returning({ id: schema.schools.id });
 
             schoolId = newSchool.id;
+
+            // Create classes and subjects
+            const classes = initClasses(level as SchoolLevel);
+            const subjects = initSubjects(level as SchoolLevel);
+
+            for (const className of classes) {
+                await db.insert(schema.classes).values({ name: className, schoolId }).returning();
+            }
+
+            for (const subject of subjects) {
+                await db.insert(schema.subjects).values({
+                    name: subject,
+                    schoolId,
+                });
+            }
         }
         await db.insert(schema.users).values({
             name,
@@ -71,21 +86,6 @@ const signUp = async (params: RegisterRequest): Promise<RegisterResponse> => {
             authType: "google",
             schoolId,
         });
-
-        // Create classes and subjects
-        const classes = initClasses(level as SchoolLevel);
-        const subjects = initSubjects(level as SchoolLevel);
-
-        for (const className of classes) {
-            await db.insert(schema.classes).values({ name: className, schoolId }).returning();
-        }
-
-        for (const subject of subjects) {
-            await db.insert(schema.subjects).values({
-                name: subject,
-                schoolId,
-            });
-        }
 
         return { success: true, message: msg.auth.register.success };
     } catch (error) {

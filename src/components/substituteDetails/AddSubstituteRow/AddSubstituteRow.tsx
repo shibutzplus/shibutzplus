@@ -10,7 +10,7 @@ import Btn from "@/components/ui/buttons/Btn/Btn";
 import { TeacherRequest } from "@/models/types/teachers";
 import Icons from "@/style/icons";
 
-const AddTeacherRow: React.FC = () => {
+const AddSubstituteRow: React.FC = () => {
     const { school, addNewTeacher } = useMainContext();
     const [teacherValue, setTeacherValue] = useState<string>("");
 
@@ -46,7 +46,7 @@ const AddTeacherRow: React.FC = () => {
 
             const response = await addNewTeacher({
                 name: teacherValue,
-                role: "regular",
+                role: "substitute",
                 schoolId: school?.id || "",
                 userId: null,
             } as TeacherRequest);
@@ -89,4 +89,4 @@ const AddTeacherRow: React.FC = () => {
     );
 };
 
-export default AddTeacherRow;
+export default AddSubstituteRow;

@@ -8,10 +8,11 @@ import { useMainContext } from "@/context/MainContext";
 import { classSchema } from "@/models/validation/class";
 import Btn from "@/components/ui/buttons/Btn/Btn";
 import Icons from "@/style/icons";
+import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
 
 type ClassRowProps = {
     classItem: ClassType;
-    handleDeleteClass: (e: React.MouseEvent, classItem: ClassType) => void;
+    handleDeleteClass: (classItem: ClassType) => void;
 };
 
 const ClassRow: React.FC<ClassRowProps> = ({ classItem, handleDeleteClass }) => {
@@ -30,8 +31,7 @@ const ClassRow: React.FC<ClassRowProps> = ({ classItem, handleDeleteClass }) => 
         }
     }, [classItem]);
 
-    const handleUpdate = async (e: React.MouseEvent, classItem: ClassType) => {
-        e.stopPropagation();
+    const handleUpdate = async (classItem: ClassType) => {
         if (!isEdit) {
             setIsEdit((prev) => !prev);
             return;
@@ -91,15 +91,13 @@ const ClassRow: React.FC<ClassRowProps> = ({ classItem, handleDeleteClass }) => 
                 />
             </td>
             <td className={styles.actions}>
-                <Btn
-                    text={isEdit ? "שמירה" : "עריכה"}
-                    onClick={(e) => handleUpdate(e, classItem)}
+                <IconBtn
+                    onClick={() => handleUpdate(classItem)}
                     isLoading={isEditLoading}
-                    Icon={<Icons.edit />}
+                    Icon={isEdit ? <Icons.save /> : <Icons.edit />}
                 />
-                <Btn
-                    text="מחיקה"
-                    onClick={(e) => handleDeleteClass(e, classItem)}
+                <IconBtn
+                    onClick={() => handleDeleteClass(classItem)}
                     isLoading={false}
                     Icon={<Icons.delete />}
                 />

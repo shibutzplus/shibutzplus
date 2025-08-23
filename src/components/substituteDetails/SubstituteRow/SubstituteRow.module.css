@@ -1,5 +1,5 @@
 /* Mobile 320px - 767px -- 812px */
-.classRow {
+.teacherRow {
     position: relative;
     align-items: flex-start;
 }
@@ -9,10 +9,29 @@
 }
 
 .actions {
-    width: 100%;
     display: flex;
-    justify-content: space-evenly;
-    align-items: center;
+    gap: 5px;
+}
+
+.roleCell,
+.roleCellBlue,
+.roleCellGreen {
+    display: inline-block;
+    width: 70px;
+    padding: 5px;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 12px;
+}
+
+.roleCellGreen {
+    border: 1px solid #18a16850;
+    color: #18a168;
+}
+
+.roleCellBlue {
+    border: 1px solid #436dce50;
+    color: #436dce;
 }
 
 /* Tablet 768px - 1279px -- 800px*/
@@ -32,4 +51,12 @@
     .actions {
         gap: 35px;
     }
+
+    .roleCell,
+.roleCellBlue,
+.roleCellGreen {
+    width: 190px;
+    padding: 5px 25px;
+    font-size: 16px;
+}
 }
