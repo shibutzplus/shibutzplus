@@ -7,7 +7,7 @@ v- daily - DB take the day and convert it to date
 - daily - responsive table
 - daily - style the table
 - daily - loading skeleton
-- daily - publish proccess 
+v- daily - publish proccess 
 - daily - on select subTeacher - option to select teacher or free text (Select+Text)
 - daily - group subteacher select
 v- daily - order: missingTeacher-red existingTeacher-blue event-green

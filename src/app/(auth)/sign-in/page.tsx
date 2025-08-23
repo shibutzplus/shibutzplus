@@ -18,7 +18,9 @@ import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import Loading from "@/components/core/Loading/Loading";
 
-const SignInPage: NextPage = () => {
+import { Suspense } from "react";
+
+const SignInContent: React.FC = () => {
     const { data: session, status } = useSession();
     const searchParams = useSearchParams();
     const googleError = searchParams.get("error");
@@ -101,6 +103,14 @@ const SignInPage: NextPage = () => {
                 />
             </div>
         </main>
+    );
+};
+
+const SignInPage: NextPage = () => {
+    return (
+        <Suspense fallback={<Loading />}>
+            <SignInContent />
+        </Suspense>
     );
 };
 

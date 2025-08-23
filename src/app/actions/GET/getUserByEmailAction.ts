@@ -43,7 +43,7 @@ export async function getUserByEmailAction(
     } catch (error) {
         return {
             success: false,
-            message: messages.auth.serverError,
+            message: messages.common.serverError,
         };
     }
 }

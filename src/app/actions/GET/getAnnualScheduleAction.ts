@@ -42,14 +42,14 @@ export async function getAnnualScheduleAction(
 
         return {
             success: true,
-            message: messages.annualSchedule.retrieveSuccess,
+            message: messages.annualSchedule.success,
             data: annualSchedule,
         };
     } catch (error) {
         console.error("Error fetching annual schedule:", error);
         return {
             success: false,
-            message: messages.annualSchedule.retrieveError,
+            message: messages.common.serverError,
         };
     }
 }

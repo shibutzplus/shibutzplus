@@ -21,20 +21,20 @@ export async function getClassesAction(schoolId: string): Promise<GetClassesResp
         if (!classes || classes.length === 0) {
             return {
                 success: false,
-                message: messages.classes.retrieveError,
+                message: messages.classes.error,
             };
         }
 
         return {
             success: true,
-            message: messages.classes.retrieveSuccess,
+            message: messages.classes.success,
             data: classes,
         };
     } catch (error) {
         console.error("Error fetching classes:", error);
         return {
             success: false,
-            message: messages.classes.retrieveError,
+            message: messages.common.serverError,
         };
     }
 }
