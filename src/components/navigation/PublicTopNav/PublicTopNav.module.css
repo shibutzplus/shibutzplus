@@ -1,0 +1,64 @@
+/* Mobile 320px - 767px -- 812px */
+.contentHeader {
+    background-color: var(--background-inner);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: var(--header-height);
+    box-sizing: border-box;
+    padding: 0 3vw;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    width: 100%;
+}
+
+.headerRight {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0;
+    width: 100%;
+    max-width: 80vw;
+}
+
+.headerTitle {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+}
+
+.headerTitle div {
+    font-size: 14px;
+    color: var(--description-text);
+}
+
+.headerLeft {
+    width: fit-content;
+    max-width: 20vw;
+}
+
+.routeTitle {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text-primary);
+    position: relative;
+    max-width: fit-content;
+    width: 100%;
+}
+
+/* Tablet 768px - 1279px -- 800px*/
+@media screen and (min-width: 768px) {
+    .headerRight {
+        gap: 1em;
+    }
+
+    .routeTitle {
+        font-size: 18px;
+    }
+}

@@ -1,6 +1,5 @@
 /* Mobile 320px - 767px -- 812px */
 .container {
-    margin-top: calc(var(--header-height) + 2rem);
     display: flex;
     align-items: center;
     justify-content: center;

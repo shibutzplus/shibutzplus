@@ -1,4 +1,5 @@
 import { SelectOption } from "@/models/types";
+import routePath from "@/routes";
 
 export const createSelectOptions = <T extends { id: string; name: string }>(
     data: T[] | undefined,
@@ -19,11 +20,22 @@ export const createSelectOptions = <T extends { id: string; name: string }>(
  */
 export const sortByHebrewName = <T extends Record<string, any>>(
     items: T[],
-    nameKey: keyof T = 'name' as keyof T
+    nameKey: keyof T = "name" as keyof T,
 ): T[] => {
     return [...items].sort((a, b) => {
         const nameA = String(a[nameKey]);
         const nameB = String(b[nameKey]);
-        return nameA.localeCompare(nameB, 'he', { numeric: true });
+        return nameA.localeCompare(nameB, "he", { numeric: true });
     });
+};
+
+export const getPageTitleFromUrl = (pathname: string) => {
+    const currentPath = pathname.split("/").filter(Boolean)[0] || "";
+    const routeKey = Object.keys(routePath).find(
+        (key) =>
+            routePath[key].p === `/${currentPath}` ||
+            (currentPath === "" && routePath[key].p === "/"),
+    );
+    if (routeKey) return routePath[routeKey].title;
+    return;
 };

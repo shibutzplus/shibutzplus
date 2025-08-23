@@ -1,11 +1,5 @@
-import React from 'react'
-
-const TeacherPortalPage = () => {
-    return (
-        <div>
-            <h1>Teacher Portal</h1>
-        </div>
-    )
+import router from "@/routes";
+import { redirect } from "next/navigation";
+export default function Page() {
+  redirect(router.teacherSignIn.p);
 }
-
-export default TeacherPortalPage

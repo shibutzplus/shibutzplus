@@ -1,14 +1,15 @@
 "use server";
 
 import { GetSchoolResponse } from "@/models/types/school";
-import { checkAuthAndParams } from "@/utils/authUtils";
+import { publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema } from "@/db";
 import { eq } from "drizzle-orm";
 
+// TODO: public action, risk, no session check
 export async function getSchoolAction(schoolId: string): Promise<GetSchoolResponse> {
     try {
-        const authError = await checkAuthAndParams({ schoolId });
+        const authError = await publicAuthAndParams({ schoolId });
         if (authError) {
             return authError as GetSchoolResponse;
         }

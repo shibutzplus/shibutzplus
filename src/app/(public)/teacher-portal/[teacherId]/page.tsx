@@ -1,124 +1,70 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import Link from "next/link";
-import InputSelect from "@/components/ui/InputSelect/InputSelect";
-import { SelectOption } from "@/models/types";
-import { getDayOptions, getTodayOption } from "@/resources/dayOptions";
-import { getSubstituteTeachersAction } from "@/app/actions/GET/getSubstituteTeachersAction";
+import React, { useEffect, useRef } from "react";
+import { usePublicPortal } from "@/context/PublicPortalContext";
+import { errorToast } from "@/lib/toast";
+import messages from "@/resources/messages";
 import { DailyScheduleType } from "@/models/types/dailySchedule";
-import styles from "./teacherPortal.module.css";
 
 const TeacherPortalPage = () => {
     const params = useParams();
     const teacherId = params.teacherId as string;
-    
-    const [selectedDay, setSelectedDay] = useState(getTodayOption());
-    const [substitutes, setSubstitutes] = useState<DailyScheduleType[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string>("");
+    const { teacher, populateTeacherTable } = usePublicPortal();
 
-    const dayOptions: SelectOption[] = getDayOptions();
-
+    const blockRef = useRef<boolean>(true);
     useEffect(() => {
-        if (teacherId && selectedDay) {
-            fetchSubstitutes();
-        }
-    }, [teacherId, selectedDay]);
-
-    const fetchSubstitutes = async () => {
-        setIsLoading(true);
-        setError("");
-        
-        try {
-            const response = await getSubstituteTeachersAction(teacherId, selectedDay);
-            if (response.success && response.data) {
-                setSubstitutes(response.data);
-            } else {
-                setError(response.message || "שגיאה בטעינת נתוני המחליפים");
-                setSubstitutes([]);
+        const setTeacher = async () => {
+            if (blockRef.current) {
+                const response = await populateTeacherTable(teacherId);
+                if (response) {
+                    blockRef.current = false;
+                } else {
+                    errorToast(messages.dailySchedule.error);
+                }
             }
-        } catch (error) {
-            console.error("Error fetching substitutes:", error);
-            setError("שגיאה בטעינת נתוני המחליפים");
-            setSubstitutes([]);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+        };
+        setTeacher();
+    }, [teacherId]);
 
-    const handleDayChange = (value: string) => {
-        setSelectedDay(value);
-    };
+    const { teacherTableData } = usePublicPortal();
+
+    // Map hour to row
+    const hourRows: { [hour: number]: DailyScheduleType | undefined } = {};
+    teacherTableData.forEach((row: DailyScheduleType) => {
+        hourRows[row.hour] = row;
+    });
 
     return (
-        <div className={styles.container}>
-            <div className={styles.header}>
-                <h1 className={styles.title}>פורטל המורה</h1>
-                <p className={styles.subtitle}>מורים מחליפים ליום שנבחר</p>
-                <div className={styles.navigation}>
-                    <Link href="/daily-schedule-readonly" className={styles.navLink}>
-                        צפייה במערכת השעות היומית
-                    </Link>
-                </div>
-            </div>
-
-            <div className={styles.controls}>
-                <div className={styles.daySelector}>
-                    <InputSelect
-                        id="day-select"
-                        label="בחר יום"
-                        options={dayOptions}
-                        value={selectedDay}
-                        onChange={handleDayChange}
-                        placeholder="בחר יום"
-                        isSearchable={false}
-                        error=""
-                    />
-                </div>
-            </div>
-
-            {error && (
-                <div className={styles.error}>
-                    {error}
-                </div>
-            )}
-
-            {isLoading ? (
-                <div className={styles.loading}>
-                    טוען נתונים...
-                </div>
-            ) : (
-                <div className={styles.tableContainer}>
-                    {substitutes.length > 0 ? (
-                        <table className={styles.table}>
-                            <thead>
-                                <tr>
-                                    <th>שעה</th>
-                                    <th>כיתה</th>
-                                    <th>מקצוע</th>
-                                    <th>מורה מחליף</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {substitutes.map((substitute) => (
-                                    <tr key={substitute.id}>
-                                        <td>{substitute.hour}</td>
-                                        <td>{substitute.class?.name || ""}</td>
-                                        <td>{substitute.subject?.name || ""}</td>
-                                        <td>{substitute.subTeacher?.name || ""}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    ) : (
-                        <div className={styles.noData}>
-                            אין מורים מחליפים ליום שנבחר
-                        </div>
-                    )}
-                </div>
-            )}
+        <div>
+            <h1>מערכת שעות יומית</h1>
+            <table style={{ width: '100%', borderCollapse: 'collapse', direction: 'rtl' }}>
+                <thead>
+                    <tr>
+                        <th style={{ border: '1px solid #ccc', padding: '8px' }}>שעה</th>
+                        <th style={{ border: '1px solid #ccc', padding: '8px' }}>כיתה</th>
+                        <th style={{ border: '1px solid #ccc', padding: '8px' }}>מקצוע</th>
+                        <th style={{ border: '1px solid #ccc', padding: '8px' }}>אירוע</th>
+                        <th style={{ border: '1px solid #ccc', padding: '8px' }}>חומרי לימוד</th>
+                        <th style={{ border: '1px solid #ccc', padding: '8px' }}>קישורים</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {[1,2,3,4,5,6,7].map(hour => {
+                        const row = hourRows[hour];
+                        return (
+                            <tr key={hour}>
+                                <td style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>{hour}</td>
+                                <td style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>{row?.class?.name || ''}</td>
+                                <td style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>{row?.subject?.name || ''}</td>
+                                <td style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>{row?.eventTitle || row?.event || ''}</td>
+                                <td style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}></td>
+                                <td style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}></td>
+                            </tr>
+                        );
+                    })}
+                </tbody>
+            </table>
         </div>
     );
 };

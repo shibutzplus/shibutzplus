@@ -7,10 +7,9 @@ import SubmitBtn from "@/components/ui/buttons/SubmitBtn/SubmitBtn";
 import styles from "./TeacherAuthForm.module.css";
 import { SelectOption } from "@/models/types";
 import { getAllTeachersAction } from "@/app/actions/GET/getAllTeachersAction";
-import Cookies from "js-cookie";
 import router from "@/routes";
-import { COOKIES_KEYS } from "@/resources/storage";
 import messages from "@/resources/messages";
+import { getTeacherCookie } from "@/utils/cookies";
 
 const TeacherAuthForm: React.FC = () => {
     const route = useRouter();
@@ -22,7 +21,7 @@ const TeacherAuthForm: React.FC = () => {
 
     useEffect(() => {
         // Check for remembered teacher first
-        const rememberedTeacherId = Cookies.get(COOKIES_KEYS.REMEMBERED_TEACHER);
+        const rememberedTeacherId = getTeacherCookie()
         if (rememberedTeacherId) {
             route.push(`${router.teacherPortal.p}/${rememberedTeacherId}`);
             return;
@@ -61,34 +60,35 @@ const TeacherAuthForm: React.FC = () => {
             setIsLoading(false);
             return;
         }
-
-        // Cookies.set(COOKIES_KEYS.REMEMBERED_TEACHER, selectedTeacher, {
-        //     expires: COOKIES_EXPIRE_TIME,
-        // });
-
+        
+        // setTeacherCookie(selectedTeacher);
         route.push(`${router.teacherPortal.p}/${selectedTeacher}`);
         setIsLoading(false);
     };
 
     return (
         <div className={styles.formContainer}>
-            <form className={styles.form}>
+            <form className={styles.form} onSubmit={handleSubmit}>
                 <div className={styles.inputGroup}>
-                    <label htmlFor="teacher" className={styles.formLabel}>
-                        שלום, נא לבחור את שמך מהרשימה:
-                    </label>
                     <DynamicInputSelect
+                        label="שלום, נא לבחור את שמך מהרשימה:"
                         id="teacher"
-                        label={undefined}
                         options={teachers}
                         value={selectedTeacher}
                         onChange={setSelectedTeacher}
-                        placeholder={isLoadingTeachers ? "טוען רשימת מורים..." : "בחירת מורה..."}
+                        placeholder={isLoadingTeachers ? "טוען רשימת מורים..." : "מהו שמך?"}
                         isSearchable={true}
                         isDisabled={isLoadingTeachers}
-                        error={error}
+                        hasBorder
                     />
                 </div>
+                <SubmitBtn
+                    type="submit"
+                    buttonText="כניסה"
+                    error={error}
+                    isLoading={isLoading}
+                    disabled={isLoadingTeachers || !selectedTeacher}
+                />
             </form>
         </div>
     );

@@ -1,5 +1,4 @@
 .container {
-    margin-top: var(--header-height);
     width: 100%;
     display: flex;
     justify-content: center;

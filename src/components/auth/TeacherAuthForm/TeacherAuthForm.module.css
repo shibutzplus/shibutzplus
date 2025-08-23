@@ -31,11 +31,7 @@
   max-width: 400px;
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
-  margin: 0;
-  padding: 0;
-  background: transparent;
-  box-shadow: none;
+  gap: 2em;
 }
 
 .inputGroup {
@@ -44,53 +40,4 @@
   gap: 0.2rem;
   margin-bottom: 0;
   align-items: flex-end;
-}
-
-/* Responsive Design */
-@media (max-width: 1200px) {
-  .formContainer {
-    padding: 3rem 3rem;
-  }
-}
-
-.formLabel {
-  font-weight: 700;
-  color: #222;
-  text-align: right;
-  margin-bottom: 0.5rem;
-  font-size: 1rem;
-  display: block;
-  width: 100%;
-  direction: rtl;
-}
-
-@media (max-width: 992px) {
-  .formContainer {
-    padding: 3rem 2rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .formContainer {
-    padding: 3rem 2rem;
-    min-height: 50vh;
-  }
-  
-  .title {
-    font-size: 2rem;
-  }
-  
-  .subtitle {
-    font-size: 1rem;
-  }
-}
-
-@media (max-width: 576px) {
-  .formContainer {
-    padding: 2rem 1.5rem;
-  }
-  
-  .title {
-    font-size: 1.75rem;
-  }
 }

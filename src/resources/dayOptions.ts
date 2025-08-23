@@ -115,6 +115,21 @@ export function getIsraeliDateOptions(): SelectOption[] {
     return filteredOptions;
 }
 
+
+export function gePublishedDatesOptions(dates: string[]): SelectOption[] {
+    return dates.map(dateStr => {
+        // Format: DD-MM-YYYY using util
+        const formatted = formatTMDintoDMY(dateStr);
+        // Get day of week using util (0 = Sunday, 6 = Saturday)
+        const dayOfWeek = new Date(dateStr).getDay();
+        return {
+            value: dateStr,
+            label: `${formatted} | ${DAYS_OF_WEEK_FORMAT[dayOfWeek]}`
+        };
+    });
+}
+
+
 export const getTodayOption = () => {
     const today = new Date(getTodayDateString());
     if (today.getDay() === SATURDAY_NUMBER) {

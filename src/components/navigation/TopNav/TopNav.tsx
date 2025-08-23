@@ -4,8 +4,8 @@ import React, { useEffect, useState } from "react";
 import styles from "./TopNav.module.css";
 import HamburgerNav, { HamburgerButton } from "../HamburgerNav/HamburgerNav";
 import Logo from "../../core/Logo/Logo";
-import routePath from "../../../routes";
 import { usePathname } from "next/navigation";
+import { getPageTitleFromUrl } from "@/utils/format";
 
 type TopNavProps = {
     Actions?: React.ReactNode;
@@ -17,16 +17,8 @@ const TopNav: React.FC<TopNavProps> = ({ Actions }) => {
     const [pageTitle, setPageTitle] = useState<string>("");
 
     useEffect(() => {
-        const currentPath = pathname.split("/").filter(Boolean)[0] || "";
-        const routeKey = Object.keys(routePath).find(
-            (key) =>
-                routePath[key].p === `/${currentPath}` ||
-                (currentPath === "" && routePath[key].p === "/"),
-        );
-
-        if (routeKey) {
-            setPageTitle(routePath[routeKey].title);
-        }
+        const routeKey = getPageTitleFromUrl(pathname);
+        if (routeKey) setPageTitle(routeKey);
     }, [pathname]);
 
     const toggleMenu = () => {

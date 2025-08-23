@@ -36,6 +36,28 @@ export async function checkAuthAndParams(
     return null;
 }
 
+/**
+ * Public access to get data
+ * @param requiredParams Object containing parameters to validate with their names
+ * @returns An ActionResponse object with success status and message
+ */
+export async function publicAuthAndParams(
+    requiredParams: Record<string, any>,
+): Promise<ActionResponse | null> {
+    // Check if all required parameters are provided
+    for (const [paramName, paramValue] of Object.entries(requiredParams)) {
+        if (paramValue === null || paramValue === undefined || paramValue === "") {
+            return {
+                success: false,
+                message: `${paramName} ${messages.auth.paramRequired}`,
+            };
+        }
+    }
+
+    // If all checks pass, return null (indicating no error)
+    return null;
+}
+
 export const authUser = async (
     response: any,
     credentialsPass: string,

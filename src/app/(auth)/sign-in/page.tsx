@@ -19,6 +19,7 @@ import messages from "@/resources/messages";
 import Loading from "@/components/core/Loading/Loading";
 
 import { Suspense } from "react";
+import HeroSection from "@/components/layout/HeroSection/HeroSection";
 
 const SignInContent: React.FC = () => {
     const { data: session, status } = useSession();
@@ -58,17 +59,10 @@ const SignInContent: React.FC = () => {
     return (
         <main className={styles.container}>
             <section className={styles.mainSection}>
-                <div className={styles.heroSection}>
-                    <div className={styles.schoolIcon}>
-                        <Logo />
-                    </div>
-                    <h2 className={styles.schoolTitle}>שיבוץ +</h2>
-
-                    <div className={styles.schoolDescription}>
-                        <h3>מערכת לניהול בית הספר</h3>
-                        <p>בניית מערכת שעות, בצורה קלה ומהירה</p>
-                    </div>
-                </div>
+                <HeroSection
+                    title="מערכת לניהול בית הספר"
+                    description="בניית מערכת שעות, בצורה קלה ומהירה"
+                />
                 <div className={styles.formContainer}>
                     <button
                         type="button"
