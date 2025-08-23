@@ -11,6 +11,8 @@
   --subtitle-color: #666;
   --feature-icon-bg: #f0f0f0;
   --description-text: #666;
+  --description-hover-text: #7d7c7c;
+
 
   /* Form elements */
   --input-color: #171717;
@@ -48,6 +50,9 @@
   /* Size */
   --header-height: 50px;
   --nav-width: 240px;
+
+  --annual-table-width: 200px;
+  --annual-template-width: 70px;
 
   --table-header-min-height: 70px;
   --table-header-height: 8vh;

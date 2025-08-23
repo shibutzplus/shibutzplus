@@ -1,9 +1,7 @@
-"use client";
-
 import React from "react";
 import styles from "./AnnualRow.module.css";
 import { DAYS_OF_WORK_WEEK } from "@/utils/time";
-import AnnualScheduleCell from "../AnnualCell/AnnualCell";
+import AnnualCell from "../AnnualCell/AnnualCell";
 import { WeeklySchedule } from "@/models/types/annualSchedule";
 import { SubjectType } from "@/models/types/subjects";
 import { TeacherType } from "@/models/types/teachers";
@@ -16,42 +14,19 @@ type AnnualRowProps = {
     subjects: SubjectType[];
     teachers: TeacherType[];
     classes: ClassType[];
+    isDisabled: boolean;
     onSubjectChange: (day: string, hour: number, value: string) => Promise<void>;
     onTeacherChange: (day: string, hour: number, value: string) => Promise<void>;
     onCreateSubject: (day: string, hour: number, value: string) => Promise<string | undefined>;
     onCreateTeacher: (day: string, hour: number, value: string) => Promise<string | undefined>;
 };
 
-const AnnualRow: React.FC<AnnualRowProps> = ({
-    hour,
-    schedule,
-    selectedClassId,
-    subjects,
-    teachers,
-    classes,
-    onSubjectChange,
-    onTeacherChange,
-    onCreateSubject,
-    onCreateTeacher,
-}) => {
+const AnnualRow: React.FC<AnnualRowProps> = (props) => {
     return (
         <tr>
-            <td className={styles.hourCell}>{hour}</td>
+            <td className={styles.hourCell}>{props.hour}</td>
             {DAYS_OF_WORK_WEEK.map((day) => (
-                <AnnualScheduleCell
-                    key={`${day}-${hour}`}
-                    day={day}
-                    hour={hour}
-                    schedule={schedule}
-                    selectedClassId={selectedClassId}
-                    subjects={subjects}
-                    teachers={teachers}
-                    classes={classes}
-                    onSubjectChange={onSubjectChange}
-                    onTeacherChange={onTeacherChange}
-                    onCreateSubject={onCreateSubject}
-                    onCreateTeacher={onCreateTeacher}
-                />
+                <AnnualCell key={`${day}-${props.hour}`} day={day} {...props} />
             ))}
         </tr>
     );

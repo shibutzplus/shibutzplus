@@ -7,11 +7,11 @@
     gap: 0;
 }
 
-.selectContainer{
+.selectContainer {
     width: 100%;
 }
 
-.loading{
+.loading {
     position: fixed;
     bottom: 10;
     left: 11;
@@ -21,6 +21,10 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.link {
+    display: none;
+}
+
 /* Tablet 768px - 1279px -- 800px*/
 @media screen and (min-width: 768px) {
     .actionsContainer {
@@ -28,12 +32,23 @@
         gap: 3em;
     }
 
-    .selectContainer{
+    .selectContainer {
         min-width: fit-content;
         width: 25%;
     }
 
-    .loading{
+    .link {
+        display: block;
+        text-decoration: underline;
+        color: var(--description-text);
+        cursor: pointer;
+    }
+
+    .link:hover {
+        color: var(--description-hover-text);
+    }
+
+    .loading {
         position: relative;
         top: 0;
         left: 0;

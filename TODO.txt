@@ -9,11 +9,15 @@ v- daily - DB take the day and convert it to date
 - daily - publish proccess 
 - daily - on select subTeacher - option to select teacher or free text (Select+Text)
 - daily - group subteacher select
+- daily - order: missingTeacher-red existingTeacher-blue event-green
+- daily - delete button - bin icon
+- daily - hour column need to stay fixed
+- daily - smaller width
 
 - annual - for each select (subject or teacher) there is also "remove" option to clear the cell
-- annual - responsive table
+v- annual - responsive table
 - annual - loading skeleton
-- annual - select group does not allow to add new teachers
+v- annual - select group does not allow to add new teachers
 
 v- lists - for all lists pages, improve design
 v- lists - responsive
@@ -30,6 +34,9 @@ v- onboarding - new design
 - history - new design
 - history - responsive
 - history - loading skeleton
+
+- date format - 21-08-2025
+- change toast position
 
 - improve preformance by converting the teachers classes and subjects array to Dictionary
 - helper/guide box for the user to understand the system

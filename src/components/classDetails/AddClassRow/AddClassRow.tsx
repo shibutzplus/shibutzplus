@@ -4,7 +4,7 @@ import messages from "@/resources/messages";
 import InputText from "@/components/ui/InputText/InputText";
 import { errorToast, successToast } from "@/lib/toast";
 import { classSchema } from "@/models/validation/class";
-import Btn from "@/components/ui/Btn/Btn";
+import Btn from "@/components/ui/buttons/Btn/Btn";
 import { FaPlus } from "react-icons/fa6";
 
 const AddClassRow: React.FC = () => {

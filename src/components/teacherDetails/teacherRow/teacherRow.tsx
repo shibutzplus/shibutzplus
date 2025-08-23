@@ -4,7 +4,7 @@ import InputText from "@/components/ui/InputText/InputText";
 import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { useMainContext } from "@/context/MainContext";
-import Btn from "@/components/ui/Btn/Btn";
+import Btn from "@/components/ui/buttons/Btn/Btn";
 import { RiEdit2Fill, RiDeleteBin6Line } from "react-icons/ri";
 import { TeacherRole, TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import { teacherSchema } from "@/models/validation/teacher";

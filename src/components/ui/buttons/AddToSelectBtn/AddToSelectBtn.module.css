@@ -1,0 +1,9 @@
+.addBtn {
+    border: 1px solid var(--input-border);
+    background-color: transparent;
+    color: var(--input-color);
+    border-radius: 5px;
+    padding: 10px;
+    width: 100%;
+    cursor: pointer;
+}

@@ -6,7 +6,7 @@ import messages from "@/resources/messages";
 import InputText from "@/components/ui/InputText/InputText";
 import { errorToast, successToast } from "@/lib/toast";
 import { subjectSchema } from "@/models/validation/subject";
-import Btn from "@/components/ui/Btn/Btn";
+import Btn from "@/components/ui/buttons/Btn/Btn";
 import { FaPlus } from "react-icons/fa6";
 
 const AddSubjectRow: React.FC = () => {

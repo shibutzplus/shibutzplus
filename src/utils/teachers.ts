@@ -61,7 +61,7 @@ export const sortTeachersForSchedule = (
 
     // Check all classes except the currently selected one
     classes.forEach((cls) => {
-        if (cls.id !== selectedClassId) {
+        if (cls.id != selectedClassId) {
             const teacherId = schedule[cls.id]?.[day]?.[hour]?.teacher;
             if (teacherId) {
                 busyTeacherIds.add(teacherId);

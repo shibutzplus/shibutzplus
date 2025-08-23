@@ -1,7 +1,5 @@
 .selectContainer {
   width: 100%;
-  min-width: 180px;
-  margin-bottom: 8px;
 }
 
 .label {
@@ -20,7 +18,15 @@
   font-weight: 500;
 }
 
-
+.addBtn{
+  background-color: var(--button-bg);
+  color: var(--button-color);
+  padding: 5px 0;
+  border-radius: var(--btn-border-radius);
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
 
 
 

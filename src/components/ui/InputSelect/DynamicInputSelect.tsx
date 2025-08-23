@@ -1,76 +1,46 @@
 import dynamic from "next/dynamic";
+import styles from "./InputSelect.module.css";
 
 const DynamicInputSelect = dynamic(() => import("./InputSelect"), {
     ssr: false,
     loading: () => (
         <div
+            className={styles.selectContainer}
             style={{
-                minHeight: "42px",
-                borderColor: "#d7d6d6",
-                borderRadius: "4px",
-                borderWidth: "1px",
-                borderStyle: "solid",
-                fontSize: "16px",
-                backgroundColor: "white",
-                color: "#999",
-                transition: "all 0.2s ease",
-                display: "flex",
-                alignItems: "center",
-                position: "relative",
-                cursor: "default",
-                opacity: 0.6,
+                background: '#fff',
+                border: '1px solid #e0e0e0',
+                borderRadius: '4px',
+                minHeight: '38px',
+                boxShadow: 'none',
+                padding: '4px 8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative',
+                width: '100%',
+                opacity: 0.7,
             }}
         >
-            {/* Value container with placeholder */}
-            <div
-                style={{
-                    padding: "2px 8px",
-                    fontSize: "16px",
-                    color: "#999",
-                    flex: 1,
-                }}
-            >
-                בחר אופציה...
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ color: '#aaa', fontSize: 15 }}>טוען...</span>
+                {/* <span style={{ display: 'inline-block', width: 18, height: 18 }}>
+                    <span style={{
+                        display: 'block',
+                        width: 18,
+                        height: 18,
+                        border: '3px solid #e0e0e0',
+                        borderTop: '3px solid #aaa',
+                        borderRadius: '50%',
+                        animation: 'spin 1s linear infinite',
+                    }} />
+                </span> */}
             </div>
-
-            {/* Indicators container */}
-            <div
-                style={{
-                    display: "flex",
-                    alignItems: "center",
-                    height: "100%",
-                }}
-            >
-                {/* Indicator separator */}
-                <div
-                    style={{
-                        width: "1px",
-                        height: "20px",
-                        backgroundColor: "#ccc",
-                        marginRight: "8px",
-                    }}
-                />
-
-                {/* Dropdown indicator */}
-                <div
-                    style={{
-                        padding: "8px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                    }}
-                >
-                    <div
-                        style={{
-                            width: "0",
-                            height: "0",
-                            borderLeft: "4px solid transparent",
-                            borderRight: "4px solid transparent",
-                            borderTop: "4px solid #999",
-                        }}
-                    />
-                </div>
-            </div>
+            {/* <style>{`
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            `}</style> */}
         </div>
     ),
 });

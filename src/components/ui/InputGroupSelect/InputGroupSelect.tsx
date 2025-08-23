@@ -4,96 +4,154 @@ import React, { useId, useState, useEffect } from "react";
 import Select from "react-select";
 import styles from "./InputGroupSelect.module.css";
 import { customStyles } from "@/style/selectStyle";
+import { SelectOption } from "@/models/types";
+import AddToSelectBtn from "../buttons/AddToSelectBtn/AddToSelectBtn";
 
 export interface GroupOption {
-  readonly label: string;
-  readonly options: { value: string; label: string }[];
+    readonly label: string;
+    readonly options: { value: string; label: string }[];
 }
 
 export interface InputGroupSelectProps {
-  label?: string;
-  options: GroupOption[];
-  error?: string;
-  id?: string;
-  value?: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  isSearchable?: boolean;
-  isDisabled?: boolean;
-  hasBorder?: boolean;
-  backgroundColor?: "white" | "transparent";
-  isClearable?: boolean;
+    label?: string;
+    options: GroupOption[];
+    error?: string;
+    id?: string;
+    value?: string;
+    onChange: (value: string) => void;
+    placeholder?: string;
+    isSearchable?: boolean;
+    allowAddNew?: boolean;
+    isDisabled?: boolean;
+    hasBorder?: boolean;
+    backgroundColor?: "white" | "transparent";
+    isClearable?: boolean;
+    onCreate?: (value: string) => Promise<string | undefined>;
 }
 
 const formatGroupLabel = (data: GroupOption) => (
-  <div className={styles.groupStyles}>
-    <span>{data.label}</span>
-    <span className={styles.groupBadgeStyles}>{data.options.length}</span>
-  </div>
+    <div className={styles.groupStyles}>
+        <span>{data.label}</span>
+        <span className={styles.groupBadgeStyles}>{data.options.length}</span>
+    </div>
 );
 
 const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
-  label,
-  options,
-  error,
-  id,
-  value,
-  onChange,
-  placeholder = "בחר אופציה...",
-  isSearchable = true,
-  isDisabled = false,
-  hasBorder = false,
-  backgroundColor = "white",
-  isClearable = false,
+    label,
+    options,
+    error,
+    id,
+    value,
+    onChange,
+    placeholder = "בחר אופציה...",
+    isSearchable = true,
+    allowAddNew = false,
+    isDisabled = false,
+    hasBorder = false,
+    backgroundColor = "white",
+    isClearable = false,
+    onCreate,
 }) => {
-  const [selectedOption, setSelectedOption] = useState<{ value: string; label: string } | null>(null);
-  const [isMounted, setIsMounted] = useState(false);
-  const selectInstanceId = useId();
+    const [selectedOption, setSelectedOption] = useState<{ value: string; label: string } | null>(
+        null,
+    );
+    const [isMounted, setIsMounted] = useState(false);
+    const selectInstanceId = useId();
 
-  // Flatten all options to find selected
-  useEffect(() => {
-    if (value) {
-      const allOptions = options.flatMap(group => group.options);
-      const found = allOptions.find(opt => opt.value === value);
-      setSelectedOption(found || null);
-    } else {
-      setSelectedOption(null);
-    }
-  }, [value, options]);
+    // Flatten all options to find selected
+    useEffect(() => {
+        if (value) {
+            const allOptions = options.flatMap((group) => group.options);
+            const found = allOptions.find((opt) => opt.value === value);
+            setSelectedOption(found || null);
+        } else {
+            setSelectedOption(null);
+        }
+    }, [value, options]);
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
-  return (
-    <div className={styles.selectContainer}>
-      {label && (
-        <label htmlFor={id} className={styles.label}>
-          {label}
-        </label>
-      )}
-      <Select
-        instanceId={selectInstanceId}
-        id={id}
-        value={selectedOption}
-        onChange={option => {
-          setSelectedOption(option as any);
-          onChange(option ? (option as any).value : "");
-        }}
-        options={options}
-        isSearchable={isSearchable}
-        isClearable={isClearable}
-        isDisabled={isDisabled}
-        placeholder={placeholder}
-        menuPortalTarget={isMounted ? document.body : null}
-        menuPlacement="auto"
-        formatGroupLabel={formatGroupLabel}
-        styles={customStyles(error || "", hasBorder, true, backgroundColor)}
-        classNamePrefix="react-select"
-      />
-      {error && <p className={styles.errorText}>{error}</p>}
-    </div>
-  );
+    const handleOnCreate = async (inputValue: string) => {
+        // Check if the option already exists
+        const exists = options.some(
+            (option) => option.label.toLowerCase() === inputValue.toLowerCase(),
+        );
+
+        if (!exists && allowAddNew && onCreate) {
+            const valueId = await onCreate(inputValue);
+            if (valueId) {
+                const newOption: SelectOption = {
+                    value: valueId,
+                    label: inputValue,
+                };
+                setSelectedOption(newOption);
+            }
+        }
+    };
+
+    const handleChange = (option: SelectOption | null) => {
+        setSelectedOption(option);
+        onChange(option ? option.value : "");
+    };
+
+    // Add a ref to the Select input
+    const selectRef = React.useRef<any>(null);
+
+    return (
+        <div className={styles.selectContainer}>
+            {label && (
+                <label htmlFor={id} className={styles.label}>
+                    {label}
+                </label>
+            )}
+            <Select
+                ref={selectRef}
+                instanceId={selectInstanceId}
+                id={id}
+                value={selectedOption}
+                onChange={handleChange}
+                options={options}
+                isSearchable={isSearchable}
+                isClearable={isClearable}
+                isDisabled={isDisabled}
+                placeholder={placeholder}
+                menuPortalTarget={isMounted ? document.body : null}
+                menuPlacement="auto"
+                formatGroupLabel={formatGroupLabel}
+                noOptionsMessage={({ inputValue }) =>
+                    allowAddNew ? (
+                        <AddToSelectBtn
+                            onClick={() => handleOnCreate(inputValue)}
+                            label={inputValue}
+                        />
+                    ) : (
+                        <div>לא נמצאו אפשרויות</div>
+                    )
+                }
+                onKeyDown={(e: React.KeyboardEvent) => {
+                    if (
+                        allowAddNew &&
+                        e.key === 'Enter' &&
+                        typeof e.target === 'object' &&
+                        'value' in e.target
+                    ) {
+                        const inputValue = (e.target as HTMLInputElement).value;
+                        const allOptions = options.flatMap((group) => group.options);
+                        const exists = allOptions.some(opt => opt.label.toLowerCase() === inputValue.toLowerCase());
+                        if (!exists && inputValue.trim().length > 0) {
+                            e.preventDefault();
+                            handleOnCreate(inputValue);
+                        }
+                    }
+                }}
+                styles={customStyles(error || "", hasBorder, true, backgroundColor)}
+                classNamePrefix="react-select"
+            />
+            {error && <p className={styles.errorText}>{error}</p>}
+        </div>
+    );
 };
 
 export default InputGroupSelect;

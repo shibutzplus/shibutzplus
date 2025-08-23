@@ -5,6 +5,7 @@ import Select from "react-select";
 import styles from "./InputSelect.module.css";
 import { SelectOption } from "@/models/types";
 import { customStyles } from "@/style/selectStyle";
+import AddToSelectBtn from "../buttons/AddToSelectBtn/AddToSelectBtn";
 
 type InputSelectProps = {
     label?: string;
@@ -21,7 +22,7 @@ type InputSelectProps = {
     backgroundColor?: "white" | "transparent";
     isClearable?: boolean;
     onCreate?: (value: string) => Promise<string | undefined>;
-}
+};
 
 const InputSelect: React.FC<InputSelectProps> = ({
     label,
@@ -111,13 +112,29 @@ const InputSelect: React.FC<InputSelectProps> = ({
                 menuPlacement="auto"
                 noOptionsMessage={({ inputValue }) =>
                     allowAddNew ? (
-                        <div className={styles.addBtn} onClick={() => handleOnCreate(inputValue)}>
-                            הוסף את: "{inputValue}" לרשימה
-                        </div>
+                        <AddToSelectBtn
+                            onClick={() => handleOnCreate(inputValue)}
+                            label={inputValue}
+                        />
                     ) : (
                         <div>לא נמצאו אפשרויות</div>
                     )
                 }
+                onKeyDown={(e: React.KeyboardEvent) => {
+                    if (
+                        allowAddNew &&
+                        e.key === 'Enter' &&
+                        typeof e.target === 'object' &&
+                        'value' in e.target
+                    ) {
+                        const inputValue = (e.target as HTMLInputElement).value;
+                        const exists = options.some(opt => opt.label.toLowerCase() === inputValue.toLowerCase());
+                        if (!exists && inputValue.trim().length > 0) {
+                            e.preventDefault();
+                            handleOnCreate(inputValue);
+                        }
+                    }
+                }}
                 styles={customStyles(error || "", hasBorder, true, backgroundColor)}
                 classNamePrefix="react-select"
             />

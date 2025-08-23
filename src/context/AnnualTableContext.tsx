@@ -11,6 +11,8 @@ interface AnnualTableContextType {
     getSelectedClass: () => ClassType | undefined;
     classesSelectOptions: () => SelectOption[];
     handleClassChange: (value: string) => void;
+    setIsSaving: React.Dispatch<React.SetStateAction<boolean>>;
+    isSaving: boolean;
     setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
     isLoading: boolean;
 }
@@ -28,6 +30,7 @@ export const useAnnualTable = () => {
 export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const { classes } = useMainContext();
     const [selectedClassId, setSelectedClassId] = useState<string>(classes?.[0]?.id || "");
+    const [isSaving, setIsSaving] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     useEffect(() => {
@@ -53,6 +56,8 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
         getSelectedClass,
         classesSelectOptions,
         handleClassChange,
+        setIsSaving,
+        isSaving,
         setIsLoading,
         isLoading,
     };

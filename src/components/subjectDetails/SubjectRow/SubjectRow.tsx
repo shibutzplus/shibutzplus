@@ -6,7 +6,7 @@ import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { useMainContext } from "@/context/MainContext";
 import { subjectSchema } from "@/models/validation/subject";
-import Btn from "@/components/ui/Btn/Btn";
+import Btn from "@/components/ui/buttons/Btn/Btn";
 import { RiEdit2Fill, RiDeleteBin6Line } from "react-icons/ri";
 
 

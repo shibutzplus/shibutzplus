@@ -1,15 +1,44 @@
+/* Mobile 320px - 767px -- 812px */
 .container {
     margin-top: var(--header-height);
-    padding: 1rem;
+    padding: 0;
     width: 100%;
+    min-height: 100vh;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color:var(--school-section-bg);
 }
 
 .whiteBox {
     background-color: var(--background-inner);
-    border-radius: var(--box-border-radius);
+    border-radius: 0;
     width: 100%;
     height: auto;
-    min-height: 80vh;
+    min-height: 100vh;
     overflow: hidden;
     border: 0.1px solid #ccc;
+    margin-top: -2px;
+}
+
+/* Tablet 768px - 1279px -- 800px*/
+@media screen and (min-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .whiteBox {
+        border-radius: var(--box-border-radius);
+        width: 100%;
+        min-height: 80vh;
+        margin-top: 0;
+    }
+}
+
+/* Desktop Full HD 1920px - 2559px -- 1080px*/
+@media screen and (min-width: 1920px) {
+    .container {
+        margin-top: unset;
+    }
 }

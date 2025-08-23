@@ -90,7 +90,7 @@ function buildColumn(colType: ActionColumnType, columnId: string): ColumnDef<Tea
             id: columnId,
             header: () => <DailyTeacherHeader columnId={columnId} type="missingTeacher" />,
             cell: (props) => <DailyTeacherCell cell={props} type="missingTeacher" />,
-            meta: { bgColor: DailyTableColors.missingTeacher.headerColor },
+            meta: { bgColor: DailyTableColors.missingTeacher.color },
         };
     }
     if (colType === "existingTeacher") {
@@ -98,14 +98,14 @@ function buildColumn(colType: ActionColumnType, columnId: string): ColumnDef<Tea
             id: columnId,
             header: () => <DailyTeacherHeader columnId={columnId} type="existingTeacher" />,
             cell: (props) => <DailyTeacherCell cell={props} type="existingTeacher" />,
-            meta: { bgColor: DailyTableColors.existingTeacher.headerColor },
+            meta: { bgColor: DailyTableColors.existingTeacher.color },
         };
     }
     return {
         id: columnId,
         header: () => <EventHeader columnId={columnId} />,
         cell: (props) => <EventCell cell={props} />,
-        meta: { bgColor: DailyTableColors.event.headerColor },
+        meta: { bgColor: DailyTableColors.event.color },
     };
 }
 

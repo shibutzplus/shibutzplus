@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styles from "./annualSchedule.module.css";
 import { NextPage } from "next";
 import { useMainContext } from "@/context/MainContext";
@@ -17,7 +17,7 @@ import {
 } from "@/services/ annualScheduleService";
 import { populateAnnualSchedule } from "@/utils/schedule";
 import { initializeEmptyAnnualSchedule } from "@/utils/Initialize";
-import AnnualScheduleTable from "@/components/annualScheduleTable/AnnualTable/AnnualTable";
+import AnnualTable from "@/components/annualScheduleTable/AnnualTable/AnnualTable";
 import { useAnnualTable } from "@/context/AnnualTableContext";
 
 const AnnualSchedulePage: NextPage = () => {
@@ -35,18 +35,19 @@ const AnnualSchedulePage: NextPage = () => {
 
     const [schedule, setSchedule] = useState<WeeklySchedule>({});
 
-    // TODO: add loading in the cell
-
-    // Initialize schedule for the selected class
-    // If annualScheduleTable has data, populate the schedule with it
+    // Initialize and populate schedule for all classes on first render
+    const blockRef = useRef<boolean>(true);
     useEffect(() => {
-        if (!schedule[selectedClassId]) {
-            let newSchedule = { ...schedule };
-            newSchedule = initializeEmptyAnnualSchedule(newSchedule, selectedClassId);
-            newSchedule = populateAnnualSchedule(annualScheduleTable, selectedClassId, newSchedule);
+        if (blockRef.current && classes && classes.length > 0 && Object.keys(schedule).length === 0) {
+            let newSchedule = {};
+            classes.forEach(cls => {
+                newSchedule = initializeEmptyAnnualSchedule(newSchedule, cls.id);
+                newSchedule = populateAnnualSchedule(annualScheduleTable, cls.id, newSchedule);
+            });
             setSchedule(newSchedule);
+            blockRef.current = false;
         }
-    }, [selectedClassId, schedule, annualScheduleTable]);
+    }, [classes, annualScheduleTable]);
 
     const addNewRow = async (
         type: "teacher" | "subject",
@@ -57,7 +58,6 @@ const AnnualSchedulePage: NextPage = () => {
     ) => {
         if (!school?.id) return;
         let newSchedule = { ...schedule };
-        // setIsLoading(true);
 
         try {
             newSchedule = setNewScheduleTemplate(newSchedule, selectedClassId, day, hour);
@@ -114,20 +114,18 @@ const AnnualSchedulePage: NextPage = () => {
         } catch (err) {
             errorToast(messages.annualSchedule.createError);
             console.error("Error adding schedule item:", err);
-        } finally {
-            // setIsLoading(false);
         }
     };
 
     return (
         <div className={styles.container}>
             <div className={styles.whiteBox}>
-                <AnnualScheduleTable
+                <AnnualTable
                     schedule={schedule}
                     selectedClassId={selectedClassId}
-                    subjects={subjects || []}
-                    teachers={teachers || []}
-                    classes={classes || []}
+                    subjects={subjects}
+                    teachers={teachers}
+                    classes={classes}
                     addNewRow={addNewRow}
                 />
             </div>

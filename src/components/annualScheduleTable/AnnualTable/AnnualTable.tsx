@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import styles from "./AnnualTable.module.css";
-import AnnualScheduleHeader from "../AnnualHeader/AnnualHeader";
-import AnnualScheduleRow from "../AnnualRow/AnnualRow";
+import AnnualHeader from "../AnnualHeader/AnnualHeader";
+import AnnualRow from "../AnnualRow/AnnualRow";
 import { WeeklySchedule } from "@/models/types/annualSchedule";
 import { SubjectRequest, SubjectType } from "@/models/types/subjects";
 import { TeacherRequest, TeacherRoleValues, TeacherType } from "@/models/types/teachers";
@@ -17,9 +17,9 @@ import { useAnnualTable } from "@/context/AnnualTableContext";
 type AnnualTableProps = {
     schedule: WeeklySchedule;
     selectedClassId: string;
-    subjects: SubjectType[];
-    teachers: TeacherType[];
-    classes: ClassType[];
+    subjects: SubjectType[] | undefined;
+    teachers: TeacherType[] | undefined;
+    classes: ClassType[] | undefined;
     addNewRow: (
         type: "teacher" | "subject",
         elementId: string,
@@ -29,10 +29,25 @@ type AnnualTableProps = {
     ) => Promise<void>;
 };
 
-const AnnualTable: React.FC<AnnualTableProps> = (props) => {
+const AnnualTable: React.FC<AnnualTableProps> = ({
+    schedule,
+    selectedClassId,
+    subjects,
+    teachers,
+    classes,
+    addNewRow,
+}) => {
     const { school, addNewTeacher, addNewSubject } = useMainContext();
-    const { setIsLoading } = useAnnualTable();
-    const { addNewRow } = props;
+    const { setIsLoading, setIsSaving, isSaving } = useAnnualTable();
+
+    const isDisabled =
+        isSaving || !schedule || !selectedClassId || !subjects || !teachers || !classes;
+
+    useEffect(() => {
+        setIsLoading(
+            !schedule || !selectedClassId || !subjects || !teachers || !classes ? true : false,
+        );
+    }, [schedule, selectedClassId, subjects, teachers, classes]);
 
     const handleTeacherChange = async (day: string, hour: number, value: string) => {
         await addNewRow("teacher", value, day, hour);
@@ -44,7 +59,7 @@ const AnnualTable: React.FC<AnnualTableProps> = (props) => {
 
     const handleCreateTeacher = async (day: string, hour: number, value: string) => {
         if (!school?.id) return;
-        setIsLoading(true);
+        setIsSaving(true);
 
         try {
             const newTeacher: TeacherRequest = {
@@ -65,13 +80,13 @@ const AnnualTable: React.FC<AnnualTableProps> = (props) => {
             console.error(error);
             errorToast(messages.teachers.createError);
         } finally {
-            setIsLoading(false);
+            setIsSaving(false);
         }
     };
 
     const handleCreateSubject = async (day: string, hour: number, value: string) => {
         if (!school?.id) return;
-        setIsLoading(true);
+        setIsSaving(true);
 
         try {
             const newSubject: SubjectRequest = {
@@ -90,24 +105,29 @@ const AnnualTable: React.FC<AnnualTableProps> = (props) => {
             console.error(error);
             errorToast(messages.subjects.createError);
         } finally {
-            setIsLoading(false);
+            setIsSaving(false);
         }
     };
 
     return (
         <div className={styles.tableContainer}>
             <table className={styles.scheduleTable}>
-                <AnnualScheduleHeader />
+                <AnnualHeader />
                 <tbody>
                     {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => (
-                        <AnnualScheduleRow
+                        <AnnualRow
                             key={hour}
                             hour={hour}
+                            isDisabled={isDisabled}
+                            schedule={schedule}
+                            selectedClassId={selectedClassId}
+                            subjects={subjects || []}
+                            teachers={teachers || []}
+                            classes={classes || []}
                             onSubjectChange={handleSubjectChange}
                             onTeacherChange={handleTeacherChange}
                             onCreateSubject={handleCreateSubject}
                             onCreateTeacher={handleCreateTeacher}
-                            {...props}
                         />
                     ))}
                 </tbody>

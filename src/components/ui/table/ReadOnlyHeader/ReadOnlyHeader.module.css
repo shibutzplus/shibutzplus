@@ -3,12 +3,12 @@
     border: 1px solid #e0e0e0;
     padding: 12px;
     text-align: center;
-    width: 60px;
+    width: var(--annual-template-width);
 }
 
 .trHeader {
     padding: 12px;
     text-align: center;
-    min-width: 200px;
+    min-width: var(--annual-table-width);
     font-weight: 600;
 }

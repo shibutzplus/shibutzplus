@@ -1,7 +1,8 @@
+/* Mobile 320px - 767px -- 812px */
 .tableContainer {
     width: 100%;
     overflow-x: auto;
-    border-radius: 8px;
+    border-radius: 0;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -10,4 +11,11 @@
     border-collapse: collapse;
     background-color: white;
     min-width: 800px;
+}
+
+/* Tablet 768px - 1279px -- 800px*/
+@media screen and (min-width: 768px) {
+    .tableContainer {
+        border-radius: 8px;
+    }
 }

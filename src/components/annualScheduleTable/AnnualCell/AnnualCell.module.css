@@ -1,8 +1,9 @@
 .scheduleCell {
+    position: relative;
     padding: 8px;
     border: 1px solid #e0e0e0;
     vertical-align: top;
-    min-width: 200px;
+    min-width: var(--annual-table-width);
     height: 80px;
 }
 
@@ -11,4 +12,20 @@
     flex-direction: column;
     gap: 4px;
     height: 100%;
+}
+
+.deleteBtn{
+    position: absolute;
+    top: 0;
+    right: 150px;
+    z-index: 2;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #ededed;
+    color: #bbbbbb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
