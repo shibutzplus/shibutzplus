@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import DynamicInputSelect from "@/components/ui/InputSelect/InputSelect";
-import SubmitBtn from "@/components/ui/SubmitBtn/SubmitBtn";
+import SubmitBtn from "@/components/ui/buttons/SubmitBtn/SubmitBtn";
 import styles from "./TeacherAuthForm.module.css";
 import { SelectOption } from "@/models/types";
 import { getAllTeachersAction } from "@/app/actions/GET/getAllTeachersAction";

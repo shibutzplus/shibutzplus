@@ -23,11 +23,6 @@ interface ILink {
 
 const links: ILink[] = [
     {
-        name: routePath.dashboard.title,
-        p: routePath.dashboard.p,
-        Icon: <Icons.home size={24} />,
-    },
-    {
         name: routePath.annualSchedule.title,
         p: routePath.annualSchedule.p,
         Icon: <Icons.calendar size={24} />,

@@ -23,9 +23,6 @@ const messages = {
 
 
 
-    connect: {
-        error: "שגיאה"
-    },
     addTeacher: {
         error: "שגיאה",
         success: "Teacher added successfully",

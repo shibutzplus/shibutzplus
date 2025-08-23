@@ -53,6 +53,8 @@ v- onboarding - new design
 - replacement - mobile screen for the replacements + url id
 - replacement - you can only see what you need to teach, where and what
 
+- better icons for the hamburger menu
+
 v- how does new user register? (maybe on first login he register)
 - why it takes so much time to page to load on the first time
 
@@ -67,6 +69,11 @@ DB addition
 
 - daily - select header colors
 - annual - populate the table from an excel file
+
+- connect page
+- settings page
+- profile page
+
 
 
 
