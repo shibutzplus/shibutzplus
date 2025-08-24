@@ -12,8 +12,8 @@ export const initializeEmptyAnnualSchedule = (
 
         for (let hour = 1; hour <= HOURS_IN_DAY; hour++) {
             newSchedule[selectedClassId][day][hour] = {
-                teacher: "",
-                subject: "",
+                teachers: [],
+                subjects: [],
             };
         }
     });

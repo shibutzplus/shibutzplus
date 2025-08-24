@@ -21,11 +21,18 @@ type AnnualTableProps = {
     teachers: TeacherType[] | undefined;
     classes: ClassType[] | undefined;
     addNewRow: (
-        type: "teacher" | "subject",
-        elementId: string,
+        type: "teachers" | "subjects",
+        elementIds: string[],
         day: string,
         hour: number,
         isNew?: TeacherType | SubjectType,
+    ) => Promise<void>;
+    removeRow: (
+        type: "teachers" | "subjects",
+        elementIds: string[],
+        removedValue: string,
+        day: string,
+        hour: number,
     ) => Promise<void>;
 };
 
@@ -36,25 +43,41 @@ const AnnualTable: React.FC<AnnualTableProps> = ({
     teachers,
     classes,
     addNewRow,
+    removeRow,
 }) => {
     const { school, addNewTeacher, addNewSubject } = useMainContext();
     const { setIsLoading, setIsSaving, isSaving } = useAnnualTable();
 
-    const isDisabled =
-        isSaving || !schedule || !selectedClassId || !subjects || !classes;
+    const isDisabled = isSaving || !schedule || !selectedClassId || !subjects || !classes;
 
     useEffect(() => {
-        setIsLoading(
-            !schedule || !selectedClassId || !subjects || !classes ? true : false,
-        );
+        setIsLoading(!schedule || !selectedClassId || !subjects || !classes ? true : false);
     }, [schedule, selectedClassId, subjects, classes]);
 
-    const handleTeacherChange = async (day: string, hour: number, value: string) => {
-        await addNewRow("teacher", value, day, hour);
+    const handleTeacherChange = async (
+        day: string,
+        hour: number,
+        value: string[],
+        removed?: string,
+    ) => {
+        if (removed) {
+            await removeRow("teachers", value, removed, day, hour);
+        } else {
+            await addNewRow("teachers", value, day, hour);
+        }
     };
 
-    const handleSubjectChange = async (day: string, hour: number, value: string) => {
-        await addNewRow("subject", value, day, hour);
+    const handleSubjectChange = async (
+        day: string,
+        hour: number,
+        value: string[],
+        removed?: string,
+    ) => {
+        if (removed) {
+            await removeRow("subjects", value, removed, day, hour);
+        } else {
+            await addNewRow("subjects", value, day, hour);
+        }
     };
 
     const handleCreateTeacher = async (day: string, hour: number, value: string) => {
@@ -71,7 +94,7 @@ const AnnualTable: React.FC<AnnualTableProps> = ({
 
             const res = await addNewTeacher(newTeacher);
             if (res) {
-                await addNewRow("teacher", res.id, day, hour, res);
+                await addNewRow("teachers", [res.id], day, hour, res);
                 successToast(messages.teachers.createSuccess);
                 return res.id;
             }
@@ -96,7 +119,7 @@ const AnnualTable: React.FC<AnnualTableProps> = ({
 
             const res = await addNewSubject(newSubject);
             if (res) {
-                await addNewRow("subject", res.id, day, hour, res);
+                await addNewRow("subjects", [res.id], day, hour, res);
                 successToast(messages.subjects.createSuccess);
                 return res.id;
             }

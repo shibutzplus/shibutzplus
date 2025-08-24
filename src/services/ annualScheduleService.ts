@@ -4,26 +4,43 @@ import { SubjectType } from "@/models/types/subjects";
 import { TeacherType } from "@/models/types/teachers";
 import { DAYS_OF_WEEK } from "@/utils/time";
 
-export const getRowId = (
+export const getRowIds = (
     annualScheduleTable: AnnualScheduleType[] | undefined,
+    type: "teachers" | "subjects",
     selectedClassId: string,
+    elementId: string,
     day: string,
     hour: number,
-) => {
-    const id =
-        annualScheduleTable?.find(
-            (entry) =>
-                entry.class.id === selectedClassId &&
-                entry.day === Number(DAYS_OF_WEEK.indexOf(day) + 1) &&
-                entry.hour === hour,
-        )?.id || "";
-    return id;
+): string[] => {
+    if (type === "teachers") {
+        const id =
+            annualScheduleTable?.find(
+                (entry) =>
+                    entry.class.id === selectedClassId &&
+                    entry.day === Number(DAYS_OF_WEEK.indexOf(day) + 1) &&
+                    entry.hour === hour &&
+                    entry.teacher.id === elementId,
+            )?.id || "";
+        return [id];
+    } else {
+        const ids =
+            annualScheduleTable
+                ?.filter(
+                    (entry) =>
+                        entry.class.id === selectedClassId &&
+                        entry.day === Number(DAYS_OF_WEEK.indexOf(day) + 1) &&
+                        entry.hour === hour &&
+                        entry.subject.id === elementId,
+                )
+                .map((entry) => entry.id) || [];
+        return ids;
+    }
 };
 
 export const getSelectedElements = (
     teacherId: string,
     subjectId: string,
-    type: "teacher" | "subject",
+    type: "teachers" | "subjects",
     isNew: TeacherType | SubjectType | undefined,
     subjects: SubjectType[] | undefined,
     teachers: TeacherType[] | undefined,
@@ -32,10 +49,10 @@ export const getSelectedElements = (
     let selectedTeacher: TeacherType | undefined;
     let selectedSubject: SubjectType | undefined;
     if (isNew) {
-        if (type === "teacher") {
+        if (type === "teachers") {
             selectedTeacher = isNew as TeacherType;
             selectedSubject = subjects?.find((s) => s.id === subjectId);
-        } else if (type === "subject") {
+        } else if (type === "subjects") {
             selectedSubject = isNew as SubjectType;
             selectedTeacher = teachers?.find((t) => t.id === teacherId);
         }
@@ -58,8 +75,7 @@ export const setNewScheduleTemplate = (
 ) => {
     // If there is no cell, create template one
     if (!newSchedule[selectedClassId][day][hour]) {
-        newSchedule[selectedClassId][day][hour] = { teacher: "", subject: "" };
+        newSchedule[selectedClassId][day][hour] = { teachers: [], subjects: [] };
     }
     return newSchedule;
 };
-

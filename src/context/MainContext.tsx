@@ -19,6 +19,7 @@ import { setStorageClasses, setStorageSubjects, setStorageTeachers } from "@/uti
 import { deleteClassAction } from "@/app/actions/DELETE/deleteClassAction";
 import { deleteTeacherAction } from "@/app/actions/DELETE/deleteTeacherAction";
 import { deleteSubjectAction } from "@/app/actions/DELETE/deleteSubjectAction";
+import { deleteAnnualScheduleAction } from "@/app/actions/DELETE/deleteAnnualScheduleAction";
 
 interface MainContextType {
     school: SchoolType | undefined;
@@ -48,6 +49,7 @@ interface MainContextType {
         id: string,
         updatedScheduleItem: AnnualScheduleRequest,
     ) => Promise<string | undefined>;
+    deleteAnnualScheduleItem: (id: string) => Promise<string | undefined>;
 }
 
 const MainContext = createContext<MainContextType | undefined>(undefined);
@@ -222,6 +224,20 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         return undefined;
     };
 
+    const deleteAnnualScheduleItem = async (id: string) => {
+        if (!school?.id) return;
+        const response = await deleteAnnualScheduleAction(id, school?.id);
+        if (response.success && response.deleted) {
+            setAnnualScheduleTable((prev) => {
+                if (!response.deleted) return prev;
+                const updatedSchedule = prev?.filter((item) => item.id !== response.deleted?.id);
+                return updatedSchedule;
+            });
+            return response.deleted.id;
+        }
+        return undefined;
+    };
+
     const value: MainContextType = {
         school,
         teachers,
@@ -239,6 +255,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         deleteSubject,
         addNewAnnualScheduleItem,
         updateExistingAnnualScheduleItem,
+        deleteAnnualScheduleItem,
     };
 
     return <MainContext.Provider value={value}>{children}</MainContext.Provider>;

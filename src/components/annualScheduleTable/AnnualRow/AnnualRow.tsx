@@ -15,8 +15,8 @@ type AnnualRowProps = {
     teachers: TeacherType[];
     classes: ClassType[];
     isDisabled: boolean;
-    onSubjectChange: (day: string, hour: number, value: string) => Promise<void>;
-    onTeacherChange: (day: string, hour: number, value: string) => Promise<void>;
+    onSubjectChange: (day: string, hour: number, value: string[], removed?: string) => Promise<void>;
+    onTeacherChange: (day: string, hour: number, value: string[], removed?: string) => Promise<void>;
     onCreateSubject: (day: string, hour: number, value: string) => Promise<string | undefined>;
     onCreateTeacher: (day: string, hour: number, value: string) => Promise<string | undefined>;
 };
