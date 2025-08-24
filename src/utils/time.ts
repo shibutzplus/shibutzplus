@@ -11,7 +11,7 @@ export const ONE_WEEK = 7;
 export const THREE_DAYS = 3;
 
 // Number of hours in a day
-export const HOURS_IN_DAY = 7;
+export const HOURS_IN_DAY = 9;
 
 // YYYY-MM-DD format
 export const getDateReturnString = (date: Date) => {

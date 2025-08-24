@@ -1,1 +1,3 @@
-export const TableRows = 7;
+import { HOURS_IN_DAY } from "@/utils/time";
+
+export const TableRows = HOURS_IN_DAY;

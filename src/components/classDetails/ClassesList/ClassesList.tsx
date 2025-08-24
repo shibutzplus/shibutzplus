@@ -2,7 +2,7 @@
 
 import React from "react";
 import { ClassType } from "@/models/types/classes";
-import TableList from "../../core/TableList/TableList";
+import TableList from "../../ui/list/TableList/TableList";
 import { useMainContext } from "@/context/MainContext";
 import useSubmit from "@/hooks/useSubmit";
 import messages from "@/resources/messages";

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import TableList from "../../core/TableList/TableList";
+import TableList from "../../ui/list/TableList/TableList";
 import { useMainContext } from "@/context/MainContext";
 import messages from "@/resources/messages";
 import { getStorageSchoolId } from "@/utils/localStorage";

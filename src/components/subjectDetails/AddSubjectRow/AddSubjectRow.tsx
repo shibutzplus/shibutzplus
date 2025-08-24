@@ -1,86 +1,28 @@
-"use client";
-
-import React, { useState } from "react";
+import React from "react";
 import { useMainContext } from "@/context/MainContext";
 import messages from "@/resources/messages";
-import InputText from "@/components/ui/InputText/InputText";
-import { errorToast, successToast } from "@/lib/toast";
 import { subjectSchema } from "@/models/validation/subject";
-import Btn from "@/components/ui/buttons/Btn/Btn";
-import Icons from "@/style/icons";
-
+import AddListRow from "@/components/ui/list/AddListRow/AddListRow";
 
 const AddSubjectRow: React.FC = () => {
     const { school, addNewSubject } = useMainContext();
-    const [subjectValue, setSubjectValue] = useState<string>("");
-
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [validationErrors, setValidationErrors] = useState<{
-        name?: string;
-        schoolId?: string;
-    }>({});
-
-    const handleSubmitAdd = async (e: React.MouseEvent) => {
-        e.stopPropagation();
-        setIsLoading(true);
-        setValidationErrors({});
-
-        try {
-            const validationResult = subjectSchema.safeParse({
-                name: subjectValue,
-                schoolId: school?.id || "",
-            });
-
-            if (!validationResult.success) {
-                const fieldErrors: { name?: string; schoolId?: string } = {};
-                validationResult.error.issues.forEach((issue) => {
-                    const field = issue.path[0] as keyof typeof fieldErrors;
-                    if (field === "name" || field === "schoolId") {
-                        fieldErrors[field] = issue.message;
-                    }
-                });
-                setValidationErrors(fieldErrors);
-                setIsLoading(false);
-                return;
-            }
-
-            const res = await addNewSubject({
-                name: subjectValue,
-                schoolId: school?.id || "",
-            });
-            setSubjectValue("");
-        } catch (error) {
-            console.error(error);
-            errorToast(messages.subjects.createError);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
     return (
-        <tr>
-            <td>
-                <InputText
-                    key="addName"
-                    id="name"
-                    name="name"
-                    value={subjectValue}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        setSubjectValue(e.target.value);
-                    }}
-                    placeholder="לדוגמה: מתמטיקה"
-                    error={validationErrors.name}
-                />
-            </td>
-            <td>
-                <Btn
-                    text="הוספה"
-                    onClick={handleSubmitAdd}
-                    isLoading={isLoading}
-                    Icon={<Icons.plus />}
-                />
-            </td>
-        </tr>
+        <AddListRow
+            schema={subjectSchema}
+            addFunction={(values) =>
+                addNewSubject({
+                    ...values,
+                    schoolId: school?.id || "",
+                })
+            }
+            field={{
+                key: "name",
+                placeholder: "לדוגמה: מתמטיקה",
+            }}
+            initialValues={{ name: "" }}
+            errorMessages={{ name: messages.subjects.createError }}
+            buttonLabel="הוספה"
+        />
     );
 };
 
