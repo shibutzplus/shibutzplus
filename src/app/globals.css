@@ -40,6 +40,7 @@
 
   /* Cell colors */
   --empty-cell-color: #f8f4f4;
+  --header-cell-color: #E1E8F9;
 
   /* Box shadows */
   --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -52,6 +53,7 @@
   --nav-width: 240px;
 
   --annual-table-width: 200px;
+  --annual-table-max-width: 300px;
   --annual-template-width: 70px;
 
   --table-header-min-height: 70px;

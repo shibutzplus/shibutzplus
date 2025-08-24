@@ -8,39 +8,31 @@ import { TeacherType } from "@/models/types/teachers";
 import { SubjectType } from "@/models/types/subjects";
 import { WeeklySchedule, AnnualScheduleRequest } from "@/models/types/annualSchedule";
 import { dayToNumber } from "@/utils/time";
-import messages from "@/resources/messages";
-import { errorToast, successToast } from "@/lib/toast";
-import {
-    getRowId,
-    getSelectedElements,
-    setNewScheduleTemplate,
-} from "@/services/ annualScheduleService";
+import { errorToast } from "@/lib/toast";
+import { createPairs, createRequests, setNewScheduleTemplate } from "@/services/ annualScheduleService";
 import { populateAnnualSchedule } from "@/utils/schedule";
 import { initializeEmptyAnnualSchedule } from "@/utils/Initialize";
 import AnnualTable from "@/components/annualScheduleTable/AnnualTable/AnnualTable";
 import { useAnnualTable } from "@/context/AnnualTableContext";
+import { Pair } from "@/models/types";
 
 const AnnualSchedulePage: NextPage = () => {
-    const {
-        classes,
-        teachers,
-        subjects,
-        annualScheduleTable,
-        school,
-        addNewAnnualScheduleItem,
-        updateExistingAnnualScheduleItem,
-    } = useMainContext();
-
-    const { selectedClassId, getSelectedClass } = useAnnualTable();
+    const { classes, teachers, subjects, annualScheduleTable, school } = useMainContext();
+    const { selectedClassId, getSelectedClass, addToQueue } = useAnnualTable();
 
     const [schedule, setSchedule] = useState<WeeklySchedule>({});
 
     // Initialize and populate schedule for all classes on first render
     const blockRef = useRef<boolean>(true);
     useEffect(() => {
-        if (blockRef.current && classes && classes.length > 0 && Object.keys(schedule).length === 0) {
+        if (
+            blockRef.current &&
+            classes &&
+            classes.length > 0 &&
+            Object.keys(schedule).length === 0
+        ) {
             let newSchedule = {};
-            classes.forEach(cls => {
+            classes.forEach((cls) => {
                 newSchedule = initializeEmptyAnnualSchedule(newSchedule, cls.id);
                 newSchedule = populateAnnualSchedule(annualScheduleTable, cls.id, newSchedule);
             });
@@ -50,71 +42,39 @@ const AnnualSchedulePage: NextPage = () => {
     }, [classes, annualScheduleTable]);
 
     const addNewRow = async (
-        type: "teacher" | "subject",
-        elementId: string,
+        type: "teachers" | "subjects",
+        elementIds: string[],
         day: string,
         hour: number,
-        isNew?: TeacherType | SubjectType,
     ) => {
         if (!school?.id) return;
         let newSchedule = { ...schedule };
+        newSchedule = setNewScheduleTemplate(newSchedule, selectedClassId, day, hour);
 
-        try {
-            newSchedule = setNewScheduleTemplate(newSchedule, selectedClassId, day, hour);
-            // Check if the type selected is already filled
-            const isAlreadyFilled = newSchedule[selectedClassId][day][hour][type];
+        // If not already filled, fill it and get the IDs
+        newSchedule[selectedClassId][day][hour][type] = elementIds;
+        const teacherIds = schedule[selectedClassId][day][hour].teachers;
+        const subjectIds = schedule[selectedClassId][day][hour].subjects;
+        setSchedule(newSchedule);
 
-            // If not already filled, fill it and get the IDs
-            newSchedule[selectedClassId][day][hour][type] = elementId;
-            const teacherId = schedule[selectedClassId][day][hour].teacher;
-            const subjectId = schedule[selectedClassId][day][hour].subject;
-            setSchedule(newSchedule);
-
-            const selectedClassObj = getSelectedClass();
-            const { selectedTeacher, selectedSubject } = getSelectedElements(
-                teacherId,
-                subjectId,
-                type,
-                isNew,
-                subjects,
-                teachers,
-            );
-
-            let response: any;
-            if (selectedClassObj && selectedTeacher && selectedSubject) {
-                const scheduleRequest: AnnualScheduleRequest = {
-                    day: dayToNumber(day),
-                    hour: hour,
-                    school: school,
-                    class: selectedClassObj,
-                    teacher: selectedTeacher,
-                    subject: selectedSubject,
-                };
-
-                if (isAlreadyFilled) {
-                    // Check if the other type select is filled
-                    if ((type === "teacher" && subjectId) || (type === "subject" && teacherId)) {
-                        // If both already filled -> Update the cell function
-                        const id = getRowId(annualScheduleTable, selectedClassId, day, hour);
-                        response = await updateExistingAnnualScheduleItem(id, scheduleRequest);
-                    }
-                } else {
-                    // Check if the other type select is filled
-                    if (teacherId && subjectId) {
-                        // If both fresh filled -> Create new cell function
-                        response = await addNewAnnualScheduleItem(scheduleRequest);
-                    }
-                }
-                if (response) {
-                    successToast(messages.annualSchedule.createSuccess);
-                } else {
-                    errorToast(messages.annualSchedule.createError);
-                }
-            }
-        } catch (err) {
-            errorToast(messages.annualSchedule.createError);
-            console.error("Error adding schedule item:", err);
+        // You need both elements for creating new records
+        if (subjectIds.length === 0 || teacherIds.length === 0) return;
+        if (subjectIds.length > teacherIds.length) {
+            errorToast("מספר המקצועות לא יעלה על מספר המורים");
+            return;
         }
+        const pairs: Pair[] = createPairs(teacherIds, subjectIds);
+        const selectedClassObj = getSelectedClass();
+        const requests: AnnualScheduleRequest[] = createRequests(
+            selectedClassObj,
+            school,
+            teachers,
+            subjects,
+            pairs,
+            day,
+            hour,
+        );
+        addToQueue(requests);
     };
 
     return (

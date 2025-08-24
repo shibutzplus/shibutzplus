@@ -7,6 +7,7 @@
     padding: 0 3vw;
     display: flex;
     justify-content: space-between;
+    gap: 5px;
     align-items: center;
     position: fixed;
     top: 0;
@@ -22,7 +23,6 @@
     justify-content: flex-start;
     gap: 0;
     width: 100%;
-    max-width: 80vw;
 }
 
 .headerLeft {
@@ -42,6 +42,10 @@
 
 /* Tablet 768px - 1279px -- 800px*/
 @media screen and (min-width: 768px) {
+    .contentHeader {
+        gap: 3em;
+    }
+
     .headerRight {
         gap: 1em;
     }

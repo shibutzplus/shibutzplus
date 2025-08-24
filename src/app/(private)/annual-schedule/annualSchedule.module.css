@@ -23,12 +23,7 @@
 
 /* Tablet 768px - 1279px -- 800px*/
 @media screen and (min-width: 768px) {
-    .container {
-        padding: 1rem;
-    }
-
     .whiteBox {
-        border-radius: var(--box-border-radius);
         width: 100%;
         min-height: 80vh;
         margin-top: 0;

@@ -19,6 +19,7 @@ import { setStorageClasses, setStorageSubjects, setStorageTeachers } from "@/uti
 import { deleteClassAction } from "@/app/actions/DELETE/deleteClassAction";
 import { deleteTeacherAction } from "@/app/actions/DELETE/deleteTeacherAction";
 import { deleteSubjectAction } from "@/app/actions/DELETE/deleteSubjectAction";
+import { deleteAnnualScheduleAction } from "@/app/actions/DELETE/deleteAnnualScheduleAction";
 
 interface MainContextType {
     school: SchoolType | undefined;
@@ -48,6 +49,12 @@ interface MainContextType {
         id: string,
         updatedScheduleItem: AnnualScheduleRequest,
     ) => Promise<string | undefined>;
+    deleteAnnualScheduleItem: (
+        day: number,
+        hour: number,
+        classId: string,
+        schoolId: string,
+    ) => Promise<AnnualScheduleType[] | undefined>;
 }
 
 const MainContext = createContext<MainContextType | undefined>(undefined);
@@ -191,6 +198,8 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         return false;
     };
 
+    // TODO: move to AnnualScheduleContext
+    // problem is the setAnnualScheduleTable(response.annualSchedules); in the delete elements
     const addNewAnnualScheduleItem = async (newScheduleItem: AnnualScheduleRequest) => {
         const response = await addAnnualScheduleAction(newScheduleItem);
         if (response.success && response.data) {
@@ -222,6 +231,25 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         return undefined;
     };
 
+    const deleteAnnualScheduleItem = async (
+        day: number,
+        hour: number,
+        classId: string,
+        schoolId: string,
+    ) => {
+        if (!school?.id) return;
+        const response = await deleteAnnualScheduleAction(day, hour, classId, schoolId);
+        if (response.success && response.deleted) {
+            const deletedIds = response.deleted.map((item) => item.id);
+            setAnnualScheduleTable((prev) => {
+                const updatedSchedule = prev?.filter((item) => !deletedIds.includes(item.id));
+                return updatedSchedule;
+            });
+            return response.deleted;
+        }
+        return undefined;
+    };
+
     const value: MainContextType = {
         school,
         teachers,
@@ -239,6 +267,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         deleteSubject,
         addNewAnnualScheduleItem,
         updateExistingAnnualScheduleItem,
+        deleteAnnualScheduleItem,
     };
 
     return <MainContext.Provider value={value}>{children}</MainContext.Provider>;

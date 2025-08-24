@@ -5,6 +5,7 @@
     vertical-align: top;
     min-width: var(--annual-table-width);
     height: 80px;
+    max-width: var(--annual-table-max-width);
 }
 
 .cellContent {

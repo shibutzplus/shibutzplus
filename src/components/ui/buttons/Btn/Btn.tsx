@@ -13,7 +13,10 @@ const Btn: React.FC<BtnProps> = ({ text, onClick, isLoading, Icon }) => {
     return (
         <button onClick={onClick} disabled={isLoading} aria-label={text} className={styles.btn}>
             {isLoading ? (
-                <Loading size="S" />
+                <span className={styles.btnText}>
+                    <Loading size="S" />
+                    <span>{text}</span>
+                </span>
             ) : (
                 <span className={styles.btnText}>
                     {Icon ? Icon : null}

@@ -107,7 +107,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose }) => {
                     </ul>
                 </section>
 
-                {session?.user && (
+                {/* {session?.user && (
                     <section className={styles.userSection}>
                         <LinkComponent
                             link={{
@@ -118,7 +118,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose }) => {
                             onClose={onClose}
                         />
                     </section>
-                )}
+                )} */}
 
                 {status === STATUS_AUTH && (
                     <section className={styles.logoutSection}>

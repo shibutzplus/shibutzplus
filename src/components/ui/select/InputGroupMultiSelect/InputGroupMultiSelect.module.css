@@ -1,0 +1,39 @@
+.selectContainer {
+    width: 100%;
+}
+
+.label {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    display: block;
+    color: var(--text-primary, #333);
+}
+
+.errorText {
+    color: #e53935;
+    font-size: 13px;
+    margin-top: 4px;
+    margin-right: 2px;
+    font-weight: 500;
+}
+
+
+.groupStyles {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.groupBadgeStyles {
+    background-color: #EBECF0;
+    border-radius: 2em;
+    color: #172B4D;
+    display: inline-block;
+    font-size: 12px;
+    font-weight: normal;
+    line-height: 1;
+    min-width: 1;
+    padding: 0.1 0.5em;
+    text-align: center;
+}

@@ -4,10 +4,18 @@ import React from "react";
 import styles from "./AnnualTopActions.module.css";
 import DynamicInputSelect from "@/components/ui/InputSelect/DynamicInputSelect";
 import { useAnnualTable } from "@/context/AnnualTableContext";
+import Btn from "@/components/ui/buttons/Btn/Btn";
+import Icons from "@/style/icons";
 
 const AnnualTopActions: React.FC = () => {
-    const { classesSelectOptions, selectedClassId, handleClassChange, isSaving, isLoading } =
-        useAnnualTable();
+    const {
+        classesSelectOptions,
+        selectedClassId,
+        handleClassChange,
+        isSaving,
+        isLoading,
+        handleSave,
+    } = useAnnualTable();
 
     return (
         <section className={styles.actionsContainer}>
@@ -23,8 +31,14 @@ const AnnualTopActions: React.FC = () => {
                 />
             </div>
             <br />
-            {isSaving ? <div className={styles.loading}>שומר...</div> : null}
-            {isLoading ? <div className={styles.loading}>טוען...</div> : null}
+            <div className={styles.btnContainer}>
+                <Btn
+                    Icon={<Icons.save />}
+                    text={isLoading ? "טוען..." : isSaving ? "שומר..." : "שמור"}
+                    isLoading={isSaving || isLoading ? true : false}
+                    onClick={handleSave}
+                />
+            </div>
         </section>
     );
 };

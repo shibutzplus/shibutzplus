@@ -1,4 +1,5 @@
-export const AnnualTableColors = ["#E1E8F9", "#F5F9E1", "#E1E1F9", "#ECF9E1" , "#EEE1F9", "#F9EFE1"];
+// export const AnnualTableColors = ["#E1E8F9", "#F5F9E1", "#E1E1F9", "#ECF9E1" , "#EEE1F9", "#F9EFE1"];
+export const AnnualTableColors = ["#E1E8F9", "#E1E8F9", "#E1E8F9", "#E1E8F9" , "#E1E8F9", "#E1E8F9"];
 
 export const DailyTableColors = {
     existingTeacher: {
@@ -21,3 +22,6 @@ export const DailyTableColors = {
         color: "#6d27ae",
     }
 }
+
+export const TeacherSelectOptionColor = "#e8f6fc";
+export const SubjectSelectOptionColor = "#ede8fc";

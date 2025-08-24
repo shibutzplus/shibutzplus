@@ -8,7 +8,8 @@ import { WeeklySchedule } from "@/models/types/annualSchedule";
 import { sortTeachersForSchedule } from "@/utils/teachers";
 import DynamicInputGroupSelect from "@/components/ui/InputGroupSelect/DynamicInputGroupSelect";
 import { ClassType } from "@/models/types/classes";
-
+import DynamicInputGroupMultiSelect from "@/components/ui/select/InputGroupMultiSelect/DynamicInputGroupMultiSelect";
+import DynamicInputMultiSelect from "@/components/ui/select/InputMultiSelect/DynamicInputSelect";
 
 type AnnualCellProps = {
     day: string;
@@ -19,8 +20,8 @@ type AnnualCellProps = {
     teachers: TeacherType[];
     classes: ClassType[];
     isDisabled: boolean;
-    onSubjectChange: (day: string, hour: number, value: string) => Promise<void>;
-    onTeacherChange: (day: string, hour: number, value: string) => Promise<void>;
+    onSubjectChange: (day: string, hour: number, value: string[]) => Promise<void>;
+    onTeacherChange: (day: string, hour: number, value: string[]) => Promise<void>;
     onCreateSubject: (day: string, hour: number, value: string) => Promise<string | undefined>;
     onCreateTeacher: (day: string, hour: number, value: string) => Promise<string | undefined>;
 };
@@ -51,27 +52,33 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
             ),
         [teachers, classes, schedule, selectedClassId, day, hour],
     );
+
+    const handleSubjectChange = (values: string[]) => {
+        onSubjectChange(day, hour, values);
+    };
+
+    const handleTeacherChange = (values: string[]) => {
+        onTeacherChange(day, hour, values);
+    };
+
     return (
         <td className={styles.scheduleCell}>
-            {/* <div className={styles.deleteBtn}>
-                <RiDeleteBin6Line size={12} />
-            </div> */}
             <div className={styles.cellContent}>
-                <DynamicInputSelect
+                <DynamicInputMultiSelect
                     placeholder="מקצוע"
                     options={createSelectOptions<SubjectType>(sortByHebrewName(subjects || []))}
-                    value={schedule[selectedClassId]?.[day]?.[hour]?.subject || ""}
-                    onChange={(value: string) => onSubjectChange(day, hour, value)}
+                    value={schedule[selectedClassId]?.[day]?.[hour]?.subjects ?? []}
+                    onChange={handleSubjectChange}
                     onCreate={(value: string) => onCreateSubject(day, hour, value)}
                     isSearchable
                     allowAddNew
                     isDisabled={isDisabled}
                 />
-                <DynamicInputGroupSelect
+                <DynamicInputGroupMultiSelect
                     placeholder="מורה"
                     options={sortedTeacherOptions}
-                    value={schedule[selectedClassId]?.[day]?.[hour]?.teacher || ""}
-                    onChange={(value: string) => onTeacherChange(day, hour, value)}
+                    value={schedule[selectedClassId]?.[day]?.[hour]?.teachers ?? []}
+                    onChange={handleTeacherChange}
                     isSearchable
                     allowAddNew
                     onCreate={(v: string) => {
