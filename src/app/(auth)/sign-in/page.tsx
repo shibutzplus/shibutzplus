@@ -3,31 +3,31 @@
 import Image from "next/image";
 import styles from "./signIn.module.css";
 import { NextPage } from "next";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { STATUS_AUTH } from "@/models/constant/session";
 import { DEFAULT_REDIRECT } from "@/routes/protectedAuth";
-import router from "@/routes";
 import GoogleIcon from "@/components/ui/assets/googleIcon";
 import Link from "next/link";
 import { signInWithGoogle } from "@/app/actions/POST/signInAction";
 import { EmailLink } from "@/models/constant";
-import Logo from "@/components/core/Logo/Logo";
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import Loading from "@/components/core/Loading/Loading";
-
+import routes from "@/routes";
 import { Suspense } from "react";
 import HeroSection from "@/components/layout/HeroSection/HeroSection";
+import { STATUS_AUTH, STATUS_LOADING, STATUS_UNAUTH } from "@/models/constant/session";
+import SignInLoadingPage from "@/components/layout/loading/SignInLoadingPage/SignInLoadingPage";
 
 const SignInContent: React.FC = () => {
     const { data: session, status } = useSession();
     const searchParams = useSearchParams();
     const googleError = searchParams.get("error");
-    const route = useRouter();
+    const router = useRouter();
     const [error, setError] = useState<string>("");
     const [isLoading, setIsLoading] = useState(false);
+    const hasNavigatedRef = useRef(false);
 
     useEffect(() => {
         if (googleError === "AccessDenied") {
@@ -36,15 +36,29 @@ const SignInContent: React.FC = () => {
     }, [googleError]);
 
     useEffect(() => {
-        if (status === STATUS_AUTH && session.user) {
+        // Show Loader during the OAuth bounce while NextAuth resolves the session
+        if (status === STATUS_LOADING) setIsLoading(true);
+    }, [status]);
+
+    useEffect(() => {
+        // Stop loader if auth failed and we are back unauthenticated
+        if (status === STATUS_UNAUTH && !hasNavigatedRef.current) {
             setIsLoading(false);
-            if (session.user.status === "annual") {
-                route.push(DEFAULT_REDIRECT);
-            } else {
-                route.push(router.dailySchedule.p);
-            }
         }
-    }, [status, router, session]);
+    }, [status]);
+
+    // Navigate once authenticated; keep loader visible until push completes
+    useEffect(() => {
+        if (status === STATUS_AUTH && session?.user && !hasNavigatedRef.current) {
+            hasNavigatedRef.current = true;
+            setIsLoading(true);
+            const target =
+                (session.user as any).status === "annual"
+                    ? DEFAULT_REDIRECT
+                    : routes.dailySchedule.p;
+            router.push(target);
+        }
+    }, [status, session, router]);
 
     const handleGoogleSignIn = async () => {
         setIsLoading(true);
@@ -52,16 +66,23 @@ const SignInContent: React.FC = () => {
         if (!res.success) {
             setError(res.message);
             setIsLoading(false);
-            return;
         }
     };
+
+    if (
+        isLoading ||
+        status === STATUS_LOADING ||
+        (status === STATUS_AUTH && !hasNavigatedRef.current)
+    ) {
+        return <SignInLoadingPage />;
+    }
 
     return (
         <main className={styles.container}>
             <section className={styles.mainSection}>
                 <HeroSection
-                    title="מערכת לניהול בית הספר"
-                    description="בניית מערכת שעות, בצורה קלה ומהירה"
+                    title="ניהול מערכת השעות"
+                    description="מערכת שעות יומית ושיבוץ מורים — פשוט, חכם, יעיל"
                 />
                 <div className={styles.formContainer}>
                     <button
@@ -74,7 +95,6 @@ const SignInContent: React.FC = () => {
                         <GoogleIcon /> התחברות בעזרת Google
                     </button>
                     {error && <p className={styles.error}>{error}</p>}
-
                     <div className={styles.registerLink}>
                         <p>
                             בעיה בהתחברות?{" "}

@@ -1,9 +1,12 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import { schema } from "@/db";
-import { getSessionMaxAge, mathFloorNow, TWENTY_FOUR_HOURS } from "@/utils/time";
+import { getSessionMaxAge, TWENTY_FOUR_HOURS } from "@/utils/time";
 import Google from "next-auth/providers/google";
 import { registerNewGoogleUserAction } from "@/app/actions/POST/registerNewGoogleUserAction";
 import { getUserByEmailAction } from "@/app/actions/GET/getUserByEmailAction";
+
+// Always take the current time, so each login gets a fresh session timer.
+const nowInSec = () => Math.floor(Date.now() / 1000);
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -47,10 +50,10 @@ export const authOptions: NextAuthOptions = {
                 token.name = user?.name || profile?.name;
                 token.image = user?.image || profile?.image;
                 token.maxAge = getSessionMaxAge(true);
-                token.exp = mathFloorNow + Number(token.maxAge);
+                token.exp = nowInSec() + Number(token.maxAge);
             }
-            if (token.maxAge && (!token.exp || Number(token.exp) < mathFloorNow)) {
-                token.exp = mathFloorNow + Number(token.maxAge);
+            if (token.maxAge && (!token.exp || Number(token.exp) < nowInSec())) {
+                token.exp = nowInSec() + Number(token.maxAge);
             }
             return token;
         },

@@ -30,7 +30,7 @@ const EditableHeader: React.FC<EditableHeaderProps> = ({ children, columnId }) =
         e.stopPropagation();
         handleOpenPopup(
             PopupAction.deleteDailyCol,
-            `האם אתה בטוח שברצונך למחוק את העמודה?`,
+            `האם למחוק את העמודה?`,
             deleteCol,
         );
     };
