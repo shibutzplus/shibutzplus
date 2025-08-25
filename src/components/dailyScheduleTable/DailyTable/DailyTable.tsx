@@ -39,7 +39,7 @@ const DailyTable: React.FC = () => {
     const baseEmpty = (id: string) => {
         return {
             id: id,
-            header: () => <span className={styles.templateHeaderText}>עמודות יתווספו כאן לפי הפעלות שתבחר</span>,
+            header: () => <span className={styles.templateHeaderText}>לחצו על הכפתורים למעלה כדי להוסיף את השעות לפי מורה או נושא</span>,
             cell: () => (
                 <div className={styles.templateCell}>
                     <Icons.empty className={styles.templateIcon} size={18} />
