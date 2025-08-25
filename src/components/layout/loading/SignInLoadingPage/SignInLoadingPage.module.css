@@ -1,0 +1,11 @@
+.container {
+    display: grid;
+    place-items: center;
+    min-height: 60vh;
+    gap: 12px;
+}
+
+.loading {
+    font-size: 22px;
+    opacity: 0.8;
+}

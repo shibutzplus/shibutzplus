@@ -122,7 +122,6 @@ export const isCacheFresh = (cacheTimestamp: string | null) =>
     cacheTimestamp && Date.now() - parseInt(cacheTimestamp) < CACHE_EXPIRATION;
 
 // -- Session -- //
-
 export const mathFloorNow = Math.floor(Date.now() / 1000);
 
 export const TWENTY_FOUR_HOURS = 24 * 60 * 60;
