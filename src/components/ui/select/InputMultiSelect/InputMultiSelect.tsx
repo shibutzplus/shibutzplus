@@ -2,11 +2,11 @@ import React, { useEffect, useId, useState } from "react";
 import Select from "react-select";
 import styles from "./InputMultiSelect.module.css";
 import { SelectOption } from "@/models/types";
-import { customStyles } from "@/style/selectStyle";
 import AddToSelectBtn from "../../buttons/AddToSelectBtn/AddToSelectBtn";
 import type { ActionMeta, OnChangeValue } from "react-select";
 import { customStylesMulti } from "@/style/selectMultiStyle";
 import { SubjectSelectOptionColor } from "@/style/tableColors";
+import { SelectMethod } from "@/models/types/actions";
 
 export type InputMultiSelectProps = {
     label?: string;
@@ -15,7 +15,7 @@ export type InputMultiSelectProps = {
     id?: string;
     /** Selected values */
     value?: string[];
-    onChange: (value: string[]) => void;
+    onChange: (value: string[], method: SelectMethod) => void;
     placeholder?: string;
     isSearchable?: boolean;
     allowAddNew?: boolean;
@@ -82,7 +82,7 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
     ) => {
         const next = Array.isArray(opts) ? [...opts] : [];
         setSelectedOptions(next);
-        onChange(next.map((o) => o.value));
+        onChange(next.map((o) => o.value), meta.action);
     };
 
     const handleOnCreate = async (inputValue: string) => {
@@ -103,7 +103,7 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
                 // Add to selection set
                 const nextSelected = [...selectedOptions, newOption];
                 setSelectedOptions(nextSelected);
-                onChange(nextSelected.map((o) => o.value));
+                onChange(nextSelected.map((o) => o.value), "create-option");
             }
         }
     };

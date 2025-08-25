@@ -23,7 +23,7 @@ export const setNewScheduleTemplate = (
     return newSchedule;
 };
 
-export const createRequests = (
+export const createAnnualRequests = (
     selectedClassObj: ClassType | undefined,
     school: SchoolType | undefined,
     teachers: TeacherType[] | undefined,
@@ -61,13 +61,14 @@ export const createPairs = (teacherIds: string[], subjectIds: string[]) => {
     return res;
 };
 
+// TODO: not in use
 export const getUniqueCells = (rows: AnnualScheduleRequest[] | undefined | null) => {
-    console.log("rows", rows)
+    console.log("rows", rows);
     if (!Array.isArray(rows)) return [];
     const uniqueKeys = new Set<string>();
     const uniqueCells: { day: number; hour: number }[] = [];
     for (const row of rows) {
-        if (!row || typeof row.day !== 'number' || typeof row.hour !== 'number') continue;
+        if (!row || typeof row.day !== "number" || typeof row.hour !== "number") continue;
         const key = `${row.day}:${row.hour}`;
         if (!uniqueKeys.has(key)) {
             uniqueKeys.add(key);
@@ -75,4 +76,16 @@ export const getUniqueCells = (rows: AnnualScheduleRequest[] | undefined | null)
         }
     }
     return uniqueCells;
-}
+};
+
+export const getUniqueCellsFromQueue = (queueRows: AnnualScheduleRequest[]) => {
+    const cells = queueRows.map((row) => ({
+        day: row.day,
+        hour: row.hour,
+    }));
+    const uniqueCells = cells.filter(
+        (cell, index) =>
+            cells.findIndex((c) => c.day === cell.day && c.hour === cell.hour) === index,
+    );
+    return uniqueCells;
+};

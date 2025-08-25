@@ -4,23 +4,46 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 import { useMainContext } from "./MainContext";
 import { createSelectOptions, sortByHebrewName } from "@/utils/format";
 import { ClassType } from "@/models/types/classes";
-import { SelectOption } from "@/models/types";
-import { AnnualScheduleRequest } from "@/models/types/annualSchedule";
+import { Pair, SelectOption } from "@/models/types";
+import {
+    AnnualScheduleRequest,
+    AnnualScheduleType,
+    WeeklySchedule,
+} from "@/models/types/annualSchedule";
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
-import { getUniqueCells } from "@/services/ annualScheduleService";
+import { addAnnualScheduleAction } from "@/app/actions/POST/addAnnualScheduleAction";
+import { deleteAnnualScheduleAction } from "@/app/actions/DELETE/deleteAnnualScheduleAction";
+import useInitAnnualData from "@/hooks/useInitAnnualData";
+import { SelectMethod } from "@/models/types/actions";
+import {
+    createPairs,
+    createAnnualRequests,
+    setNewScheduleTemplate,
+    getUniqueCellsFromQueue,
+    getSelectedClass,
+} from "@/services/ annualScheduleService";
+import { dayToNumber } from "@/utils/time";
 
 interface AnnualTableContextType {
+    annualScheduleTable: AnnualScheduleType[] | undefined;
     selectedClassId: string;
-    getSelectedClass: () => ClassType | undefined;
+    isLoading: boolean;
+    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
     classesSelectOptions: () => SelectOption[];
-    addToQueue: (rows: AnnualScheduleRequest[]) => void;
     handleClassChange: (value: string) => void;
     setIsSaving: React.Dispatch<React.SetStateAction<boolean>>;
     handleSave: () => Promise<void>;
     isSaving: boolean;
-    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-    isLoading: boolean;
+    schedule: WeeklySchedule;
+    setSchedule: React.Dispatch<React.SetStateAction<WeeklySchedule>>;
+    handleAddNewRow: (
+        type: "teachers" | "subjects",
+        elementIds: string[],
+        day: string,
+        hour: number,
+        method: SelectMethod,
+    ) => Promise<void>;
 }
 
 const AnnualTableContext = createContext<AnnualTableContextType | undefined>(undefined);
@@ -34,13 +57,21 @@ export const useAnnualTable = () => {
 };
 
 export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const { classes, school, deleteAnnualScheduleItem, addNewAnnualScheduleItem } =
-        useMainContext();
+    const { classes, school, teachers, subjects, annualAfterDelete } = useMainContext();
     const [selectedClassId, setSelectedClassId] = useState<string>(classes?.[0]?.id || "");
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [annualScheduleTable, setAnnualScheduleTable] = useState<
+        AnnualScheduleType[] | undefined
+    >(undefined);
 
     const [queueRows, setQueueRows] = useState<AnnualScheduleRequest[]>([]);
+    const [schedule, setSchedule] = useState<WeeklySchedule>({});
+
+    useInitAnnualData({
+        annualScheduleTable,
+        setAnnualScheduleTable,
+    });
 
     useEffect(() => {
         if (classes && classes?.length > 0 && selectedClassId === "") {
@@ -48,12 +79,53 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
         }
     }, [classes]);
 
-    const getSelectedClass = () => {
-        return classes?.find((c) => c.id === selectedClassId);
-    };
+    useEffect(() => {
+        if (annualAfterDelete) {
+            setAnnualScheduleTable(annualAfterDelete);
+        }
+    }, [annualAfterDelete]);
+
+    useEffect(()=> {
+        if(queueRows.length > 0) {
+            handleSave();
+        }
+    }, [queueRows])
+    
 
     const classesSelectOptions = () => {
         return createSelectOptions<ClassType>(sortByHebrewName(classes || []));
+    };
+
+    const addNewAnnualScheduleItem = async (newScheduleItem: AnnualScheduleRequest) => {
+        const response = await addAnnualScheduleAction(newScheduleItem);
+        if (response.success && response.data) {
+            setAnnualScheduleTable((prev) => {
+                if (!response.data) return prev;
+                const updatedSchedule = prev ? [...prev, response.data] : [response.data];
+                return updatedSchedule;
+            });
+            return response.data;
+        }
+        return undefined;
+    };
+
+    const deleteAnnualScheduleItem = async (
+        day: number,
+        hour: number,
+        classId: string,
+        schoolId: string,
+    ) => {
+        if (!school?.id) return;
+        const response = await deleteAnnualScheduleAction(day, hour, classId, schoolId);
+        if (response.success && response.deleted) {
+            const deletedIds = response.deleted.map((item) => item.id);
+            setAnnualScheduleTable((prev) => {
+                const updatedSchedule = prev?.filter((item) => !deletedIds.includes(item.id));
+                return updatedSchedule;
+            });
+            return response.deleted;
+        }
+        return undefined;
     };
 
     const handleClassChange = (value: string) => {
@@ -61,29 +133,19 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
     };
 
     const addToQueue = (rows: AnnualScheduleRequest[]) => {
-        // TODO: edge case -> 1 subject, 1 teacher -> delete one or both not updated in the DB
-        setQueueRows((prev) => Array.isArray(prev) ? [...prev, ...rows] : [...rows]);
+        setQueueRows((prev) => (Array.isArray(prev) ? [...prev, ...rows] : [...rows]));
     };
 
-
     const handleSave = async () => {
+        console.log("1");
         setIsSaving(true);
-        console.log("queueRows", queueRows);
         if (queueRows.length === 0 || !school?.id) {
             setIsSaving(false);
             return;
         }
 
         try {
-            const cells = queueRows.map((row) => ({
-                day: row.day,
-                hour: row.hour,
-            }));
-            const uniqueCells = cells.filter(
-                (cell, index) =>
-                    cells.findIndex((c) => c.day === cell.day && c.hour === cell.hour) === index,
-            );
-
+            const uniqueCells = getUniqueCellsFromQueue(queueRows);
             for (const cell of uniqueCells) {
                 await deleteAnnualScheduleItem(cell.day, cell.hour, selectedClassId, school.id);
             }
@@ -99,17 +161,63 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
         }
     };
 
+    const handleAddNewRow = async (
+        type: "teachers" | "subjects",
+        elementIds: string[],
+        day: string,
+        hour: number,
+        method: SelectMethod,
+    ) => {
+        if (!school?.id) return;
+        let newSchedule = { ...schedule };
+        newSchedule = setNewScheduleTemplate(newSchedule, selectedClassId, day, hour);
+
+        // If not already filled, fill it and get the IDs
+        newSchedule[selectedClassId][day][hour][type] = elementIds;
+        const teacherIds = schedule[selectedClassId][day][hour].teachers;
+        const subjectIds = schedule[selectedClassId][day][hour].subjects;
+        setSchedule(newSchedule);
+
+        if (subjectIds.length === 0 && teacherIds.length === 0) return;
+        if (subjectIds.length === 0 || teacherIds.length === 0) {
+            if (method === "remove-value") {
+                const dayNum = dayToNumber(day);
+                await deleteAnnualScheduleItem(dayNum, hour, selectedClassId, school.id);
+            }
+            return;
+        }
+        if (subjectIds.length > teacherIds.length) {
+            errorToast("מספר המקצועות לא יעלה על מספר המורים");
+            return;
+        }
+
+        const pairs: Pair[] = createPairs(teacherIds, subjectIds);
+        const selectedClassObj = getSelectedClass(classes, selectedClassId);
+        const requests: AnnualScheduleRequest[] = createAnnualRequests(
+            selectedClassObj,
+            school,
+            teachers,
+            subjects,
+            pairs,
+            day,
+            hour,
+        );
+        addToQueue(requests);
+    };
+
     const value: AnnualTableContextType = {
+        annualScheduleTable,
         selectedClassId,
-        getSelectedClass,
         classesSelectOptions,
         handleClassChange,
-        addToQueue,
         handleSave,
         setIsSaving,
         isSaving,
         setIsLoading,
         isLoading,
+        schedule,
+        setSchedule,
+        handleAddNewRow,
     };
 
     return <AnnualTableContext.Provider value={value}>{children}</AnnualTableContext.Provider>;

@@ -1,6 +1,5 @@
 "use client";
 
-import { AnnualScheduleType } from "@/models/types/annualSchedule";
 import { GetSchoolResponse, SchoolType } from "@/models/types/school";
 import { GetSubjectsResponse, SubjectType } from "@/models/types/subjects";
 import { GetTeachersResponse, TeacherType } from "@/models/types/teachers";
@@ -25,7 +24,6 @@ import { getSchoolAction as getSchoolFromDB } from "@/app/actions/GET/getSchoolA
 import { getTeachersAction as getTeachersFromDB } from "@/app/actions/GET/getTeachersAction";
 import { getSubjectsAction as getSubjectsFromDB } from "@/app/actions/GET/getSubjectsAction";
 import { getClassesAction as getClassesFromDB } from "@/app/actions/GET/getClassesAction";
-import { getAnnualScheduleAction as getAnnualScheduleFromDB } from "@/app/actions/GET/getAnnualScheduleAction";
 import { isCacheFresh } from "@/utils/time";
 import { STATUS_AUTH } from "@/models/constant/session";
 
@@ -38,8 +36,6 @@ interface useInitDataProps {
     setSubjects: (subjects: SubjectType[] | undefined) => void;
     classes: ClassType[] | undefined;
     setClasses: (classes: ClassType[] | undefined) => void;
-    annualScheduleTable: AnnualScheduleType[] | undefined;
-    setAnnualScheduleTable: (annualSchedule: AnnualScheduleType[] | undefined) => void;
 }
 
 /**
@@ -55,8 +51,6 @@ const useInitData = ({
     setSubjects,
     classes,
     setClasses,
-    annualScheduleTable,
-    setAnnualScheduleTable,
 }: useInitDataProps) => {
     const { data: session, status } = useSession();
 
@@ -108,19 +102,12 @@ const useInitData = ({
                     );
                 }
 
-                // No cache for annual schedule
-                if (!annualScheduleTable) {
-                    annualPromise = getAnnualScheduleFromDB(schoolId);
-                }
-
-                const [schoolRes, classesRes, teachersRes, subjectsRes, annualRes] =
-                    await Promise.all([
-                        schoolPromise || Promise.resolve(null),
-                        classesPromise || Promise.resolve(null),
-                        teachersPromise || Promise.resolve(null),
-                        subjectsPromise || Promise.resolve(null),
-                        annualPromise || Promise.resolve(null),
-                    ]);
+                const [schoolRes, classesRes, teachersRes, subjectsRes] = await Promise.all([
+                    schoolPromise || Promise.resolve(null),
+                    classesPromise || Promise.resolve(null),
+                    teachersPromise || Promise.resolve(null),
+                    subjectsPromise || Promise.resolve(null),
+                ]);
 
                 if (schoolRes && schoolRes.success && schoolRes.data) {
                     setSchool(schoolRes.data);
@@ -138,18 +125,9 @@ const useInitData = ({
                     setClasses(classesRes.data);
                     setStorageClasses(classesRes.data);
                 }
-                if (annualRes && annualRes.success && annualRes.data) {
-                    setAnnualScheduleTable(annualRes.data);
-                }
 
                 // Update cache timestamp if any data was fetched
-                if (
-                    schoolPromise ||
-                    classesPromise ||
-                    teachersPromise ||
-                    subjectsPromise ||
-                    annualPromise
-                ) {
+                if (schoolPromise || classesPromise || teachersPromise || subjectsPromise) {
                     setCacheTimestamp(Date.now().toString());
                 }
             } catch (error) {
@@ -157,17 +135,13 @@ const useInitData = ({
             }
         };
 
-        if (
-            status === STATUS_AUTH &&
-            typeof window !== "undefined" &&
-            session?.user?.schoolId
-        ) {
+        if (status === STATUS_AUTH && typeof window !== "undefined" && session?.user?.schoolId) {
             // Initialize school ID from user session if available
             const storedSchoolId = getStorageSchoolId();
             if (!storedSchoolId) setStorageSchoolId(session.user.schoolId);
             fetchData(session.user.schoolId);
         }
-    }, [session, status, school, teachers, subjects, classes, annualScheduleTable]);
+    }, [session, status, school, teachers, subjects, classes]);
 };
 
 export default useInitData;

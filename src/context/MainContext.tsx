@@ -5,28 +5,25 @@ import { SchoolType } from "@/models/types/school";
 import { TeacherRequest, TeacherType } from "@/models/types/teachers";
 import { SubjectRequest, SubjectType } from "@/models/types/subjects";
 import { ClassRequest, ClassType } from "@/models/types/classes";
-import { AnnualScheduleRequest, AnnualScheduleType } from "@/models/types/annualSchedule";
+import { AnnualScheduleType } from "@/models/types/annualSchedule";
 import { addClassAction } from "@/app/actions/POST/addClassAction";
 import { addTeacherAction } from "@/app/actions/POST/addTeacherAction";
 import { updateTeacherAction } from "@/app/actions/PUT/updateTeacherAction";
 import { addSubjectAction } from "@/app/actions/POST/addSubjectAction";
 import { updateSubjectAction } from "@/app/actions/PUT/updateSubjectAction";
 import { updateClassAction } from "@/app/actions/PUT/updateClassAction";
-import { updateAnnualScheduleAction } from "@/app/actions/PUT/updateAnnualScheduleAction";
-import { addAnnualScheduleAction } from "@/app/actions/POST/addAnnualScheduleAction";
 import useInitData from "@/hooks/useInitData";
 import { setStorageClasses, setStorageSubjects, setStorageTeachers } from "@/utils/localStorage";
 import { deleteClassAction } from "@/app/actions/DELETE/deleteClassAction";
 import { deleteTeacherAction } from "@/app/actions/DELETE/deleteTeacherAction";
 import { deleteSubjectAction } from "@/app/actions/DELETE/deleteSubjectAction";
-import { deleteAnnualScheduleAction } from "@/app/actions/DELETE/deleteAnnualScheduleAction";
 
 interface MainContextType {
     school: SchoolType | undefined;
     teachers: TeacherType[] | undefined;
     subjects: SubjectType[] | undefined;
     classes: ClassType[] | undefined;
-    annualScheduleTable: AnnualScheduleType[] | undefined;
+    annualAfterDelete: AnnualScheduleType[] | undefined;
     addNewClass: (newClass: ClassRequest) => Promise<ClassType | undefined>;
     updateClass: (classId: string, classData: ClassRequest) => Promise<ClassType[] | undefined>;
     deleteClass: (schoolId: string, classId: string) => Promise<boolean>;
@@ -42,19 +39,6 @@ interface MainContextType {
         subjectData: SubjectRequest,
     ) => Promise<SubjectType[] | undefined>;
     deleteSubject: (schoolId: string, subjectId: string) => Promise<boolean>;
-    addNewAnnualScheduleItem: (
-        newScheduleItem: AnnualScheduleRequest,
-    ) => Promise<AnnualScheduleType | undefined>;
-    updateExistingAnnualScheduleItem: (
-        id: string,
-        updatedScheduleItem: AnnualScheduleRequest,
-    ) => Promise<string | undefined>;
-    deleteAnnualScheduleItem: (
-        day: number,
-        hour: number,
-        classId: string,
-        schoolId: string,
-    ) => Promise<AnnualScheduleType[] | undefined>;
 }
 
 const MainContext = createContext<MainContextType | undefined>(undefined);
@@ -76,9 +60,9 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
     const [teachers, setTeachers] = useState<TeacherType[] | undefined>(undefined);
     const [subjects, setSubjects] = useState<SubjectType[] | undefined>(undefined);
     const [classes, setClasses] = useState<ClassType[] | undefined>(undefined);
-    const [annualScheduleTable, setAnnualScheduleTable] = useState<
-        AnnualScheduleType[] | undefined
-    >(undefined);
+    const [annualAfterDelete, setAnnualAfterDelete] = useState<AnnualScheduleType[] | undefined>(
+        undefined,
+    );
 
     useInitData({
         school,
@@ -89,8 +73,6 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         setSubjects,
         classes,
         setClasses,
-        annualScheduleTable,
-        setAnnualScheduleTable,
     });
 
     const addNewClass = async (newClass: ClassRequest) => {
@@ -122,7 +104,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         if (response.success && response.classes && response.annualSchedules) {
             setClasses(response.classes);
             setStorageClasses(response.classes);
-            setAnnualScheduleTable(response.annualSchedules);
+            setAnnualAfterDelete(response.annualSchedules);
             return true;
         }
         return false;
@@ -157,7 +139,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         if (response.success && response.teachers && response.annualSchedules) {
             setTeachers(response.teachers);
             setStorageTeachers(response.teachers);
-            setAnnualScheduleTable(response.annualSchedules);
+            setAnnualAfterDelete(response.annualSchedules);
             return true;
         }
         return false;
@@ -192,62 +174,10 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         if (response.success && response.subjects && response.annualSchedules) {
             setSubjects(response.subjects);
             setStorageSubjects(response.subjects);
-            setAnnualScheduleTable(response.annualSchedules);
+            setAnnualAfterDelete(response.annualSchedules);
             return true;
         }
         return false;
-    };
-
-    // TODO: move to AnnualScheduleContext
-    // problem is the setAnnualScheduleTable(response.annualSchedules); in the delete elements
-    const addNewAnnualScheduleItem = async (newScheduleItem: AnnualScheduleRequest) => {
-        const response = await addAnnualScheduleAction(newScheduleItem);
-        if (response.success && response.data) {
-            setAnnualScheduleTable((prev) => {
-                if (!response.data) return prev;
-                const updatedSchedule = prev ? [...prev, response.data] : [response.data];
-                return updatedSchedule;
-            });
-            return response.data;
-        }
-        return undefined;
-    };
-
-    const updateExistingAnnualScheduleItem = async (
-        id: string,
-        updatedScheduleItem: AnnualScheduleRequest,
-    ) => {
-        const response = await updateAnnualScheduleAction(id, updatedScheduleItem);
-        if (response.success && response.data) {
-            setAnnualScheduleTable((prev) => {
-                if (!response.data) return prev;
-                const updatedSchedule = prev?.map((item) =>
-                    item.id === response.data?.id ? response.data : item,
-                );
-                return updatedSchedule;
-            });
-            return response.data.id;
-        }
-        return undefined;
-    };
-
-    const deleteAnnualScheduleItem = async (
-        day: number,
-        hour: number,
-        classId: string,
-        schoolId: string,
-    ) => {
-        if (!school?.id) return;
-        const response = await deleteAnnualScheduleAction(day, hour, classId, schoolId);
-        if (response.success && response.deleted) {
-            const deletedIds = response.deleted.map((item) => item.id);
-            setAnnualScheduleTable((prev) => {
-                const updatedSchedule = prev?.filter((item) => !deletedIds.includes(item.id));
-                return updatedSchedule;
-            });
-            return response.deleted;
-        }
-        return undefined;
     };
 
     const value: MainContextType = {
@@ -255,7 +185,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         teachers,
         subjects,
         classes,
-        annualScheduleTable,
+        annualAfterDelete,
         addNewClass,
         updateClass,
         deleteClass,
@@ -265,9 +195,6 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         addNewSubject,
         updateSubject,
         deleteSubject,
-        addNewAnnualScheduleItem,
-        updateExistingAnnualScheduleItem,
-        deleteAnnualScheduleItem,
     };
 
     return <MainContext.Provider value={value}>{children}</MainContext.Provider>;

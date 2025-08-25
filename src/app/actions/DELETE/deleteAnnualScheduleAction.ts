@@ -37,14 +37,12 @@ export async function deleteAnnualScheduleAction(
                 subject: true,
             },
         });
-
         if (!toDeleteRows || toDeleteRows.length === 0) {
             return {
                 success: false,
                 message: "Annual schedule entries not found.",
             };
         }
-
         // Delete all matching rows
         await db.delete(schema.annualSchedule).where(
             and(

@@ -3,4 +3,10 @@ export type SelectOption<T = string> = {
     label: string;
 };
 
+export type GroupOption = {
+    readonly label: string;
+    readonly options: { value: string; label: string }[];
+}
+
+
 export type Pair = [string, string];

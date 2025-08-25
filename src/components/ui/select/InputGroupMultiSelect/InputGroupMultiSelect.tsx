@@ -3,17 +3,12 @@
 import React, { useEffect, useId, useMemo, useRef, useState } from "react";
 import Select from "react-select";
 import styles from "./InputGroupMultiSelect.module.css";
-import { customStyles } from "@/style/selectStyle";
-import { SelectOption } from "@/models/types";
+import { GroupOption, SelectOption } from "@/models/types";
 import AddToSelectBtn from "../../buttons/AddToSelectBtn/AddToSelectBtn";
 import type { ActionMeta, OnChangeValue } from "react-select";
 import { customStylesMulti } from "@/style/selectMultiStyle";
 import { TeacherSelectOptionColor } from "@/style/tableColors";
-
-export interface GroupOption {
-    readonly label: string;
-    readonly options: { value: string; label: string }[];
-}
+import { SelectMethod } from "@/models/types/actions";
 
 export interface InputGroupMultiSelectProps {
     label?: string;
@@ -22,7 +17,7 @@ export interface InputGroupMultiSelectProps {
     id?: string;
     /** Selected values */
     value?: string[];
-    onChange: (value: string[]) => void;
+    onChange: (value: string[], method: SelectMethod) => void;
     placeholder?: string;
     isSearchable?: boolean;
     allowAddNew?: boolean;
@@ -111,7 +106,7 @@ const InputGroupMultiSelect: React.FC<InputGroupMultiSelectProps> = ({
     ) => {
         const next = Array.isArray(opts) ? [...opts] : [];
         setSelectedOptions(next);
-        onChange(next.map((o) => o.value));
+        onChange(next.map((o) => o.value), meta.action);
     };
 
     const ensureCreatedGroup = () => {
@@ -152,7 +147,7 @@ const InputGroupMultiSelect: React.FC<InputGroupMultiSelectProps> = ({
                 // Add to current selection as well
                 const nextSelected = [...selectedOptions, newOption];
                 setSelectedOptions(nextSelected);
-                onChange(nextSelected.map((o) => o.value));
+                onChange(nextSelected.map((o) => o.value), "create-option");
             }
         }
     };

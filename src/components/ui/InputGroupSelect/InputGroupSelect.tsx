@@ -4,13 +4,8 @@ import React, { useId, useState, useEffect } from "react";
 import Select from "react-select";
 import styles from "./InputGroupSelect.module.css";
 import { customStyles } from "@/style/selectStyle";
-import { SelectOption } from "@/models/types";
+import { GroupOption, SelectOption } from "@/models/types";
 import AddToSelectBtn from "../buttons/AddToSelectBtn/AddToSelectBtn";
-
-export interface GroupOption {
-    readonly label: string;
-    readonly options: { value: string; label: string }[];
-}
 
 export interface InputGroupSelectProps {
     label?: string;

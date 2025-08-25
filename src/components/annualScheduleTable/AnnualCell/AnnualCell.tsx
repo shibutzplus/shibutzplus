@@ -1,15 +1,15 @@
 import React, { useMemo } from "react";
 import styles from "./AnnualCell.module.css";
-import DynamicInputSelect from "@/components/ui/InputSelect/DynamicInputSelect";
 import { createSelectOptions, sortByHebrewName } from "@/utils/format";
 import { SubjectType } from "@/models/types/subjects";
 import { TeacherType } from "@/models/types/teachers";
 import { WeeklySchedule } from "@/models/types/annualSchedule";
 import { sortTeachersForSchedule } from "@/utils/teachers";
-import DynamicInputGroupSelect from "@/components/ui/InputGroupSelect/DynamicInputGroupSelect";
 import { ClassType } from "@/models/types/classes";
 import DynamicInputGroupMultiSelect from "@/components/ui/select/InputGroupMultiSelect/DynamicInputGroupMultiSelect";
 import DynamicInputMultiSelect from "@/components/ui/select/InputMultiSelect/DynamicInputSelect";
+import { SelectMethod } from "@/models/types/actions";
+import { useAnnualTable } from "@/context/AnnualTableContext";
 
 type AnnualCellProps = {
     day: string;
@@ -20,8 +20,6 @@ type AnnualCellProps = {
     teachers: TeacherType[];
     classes: ClassType[];
     isDisabled: boolean;
-    onSubjectChange: (day: string, hour: number, value: string[]) => Promise<void>;
-    onTeacherChange: (day: string, hour: number, value: string[]) => Promise<void>;
     onCreateSubject: (day: string, hour: number, value: string) => Promise<string | undefined>;
     onCreateTeacher: (day: string, hour: number, value: string) => Promise<string | undefined>;
 };
@@ -35,11 +33,11 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
     teachers,
     classes,
     isDisabled,
-    onSubjectChange,
-    onTeacherChange,
     onCreateSubject,
     onCreateTeacher,
 }) => {
+
+    const { handleAddNewRow } = useAnnualTable();
     const sortedTeacherOptions = useMemo(
         () =>
             sortTeachersForSchedule(
@@ -53,12 +51,12 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
         [teachers, classes, schedule, selectedClassId, day, hour],
     );
 
-    const handleSubjectChange = (values: string[]) => {
-        onSubjectChange(day, hour, values);
+    const handleSubjectChange = (values: string[], method: SelectMethod) => {
+        handleAddNewRow("subjects", values, day, hour, method);
     };
 
-    const handleTeacherChange = (values: string[]) => {
-        onTeacherChange(day, hour, values);
+    const handleTeacherChange = (values: string[], method: SelectMethod) => {
+        handleAddNewRow("teachers", values, day, hour, method);
     };
 
     return (
