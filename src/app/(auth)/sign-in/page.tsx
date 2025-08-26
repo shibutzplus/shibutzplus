@@ -1,3 +1,4 @@
+//lior to fix preloader
 "use client";
 
 import Image from "next/image";
