@@ -3,6 +3,7 @@ import { DAYS_OF_WEEK } from "./time";
 import { ClassType } from "@/models/types/classes";
 import { WeeklySchedule } from "@/models/types/annualSchedule";
 import { sortByHebrewName } from "./format";
+import { GroupOption } from "@/models/types";
 
 // Filter out from the list teachers that already teach on other classes
 export const filterExistingTeachers = (
@@ -25,9 +26,11 @@ export const filterExistingTeachers = (
             // Check all classes except the currently selected one
             classes.forEach((cls) => {
                 if (cls.id !== selectedClassId) {
-                    const teacherId = schedule[cls.id]?.[day]?.[hour]?.teacher;
-                    if (teacherId) {
-                        busyTeacherIds.add(teacherId);
+                    const teacherIds = schedule[cls.id]?.[day]?.[hour]?.teachers;
+                    if (teacherIds) {
+                        teacherIds.forEach((id) => {
+                            busyTeacherIds.add(id);
+                        });
                     }
                 }
             });
@@ -46,7 +49,6 @@ export const filterExistingTeachers = (
  * 2. Regular teachers - available only
  * 3. All other teachers - alphabetically sorted
  */
-import type { GroupOption } from "@/components/ui/InputGroupSelect/InputGroupSelect";
 
 export const sortTeachersForSchedule = (
     allTeachers: TeacherType[],
@@ -62,9 +64,11 @@ export const sortTeachersForSchedule = (
     // Check all classes except the currently selected one
     classes.forEach((cls) => {
         if (cls.id != selectedClassId) {
-            const teacherId = schedule[cls.id]?.[day]?.[hour]?.teacher;
-            if (teacherId) {
-                busyTeacherIds.add(teacherId);
+            const teacherIds = schedule[cls.id]?.[day]?.[hour]?.teachers;
+            if (teacherIds) {
+                teacherIds.forEach((id) => {
+                    busyTeacherIds.add(id);
+                });
             }
         }
     });

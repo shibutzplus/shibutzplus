@@ -9,7 +9,7 @@ export const populateAnnualSchedule = (
     // If annualScheduleTable has data for this class, populate the schedule
     if (annualScheduleTable && annualScheduleTable.length > 0) {
         const classEntries = annualScheduleTable.filter(
-            (entry) => entry.class.id === selectedClassId,
+            (entry) => entry.class?.id === selectedClassId,
         );
 
         classEntries.forEach((entry) => {

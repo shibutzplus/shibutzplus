@@ -6,6 +6,7 @@ import { WeeklySchedule } from "@/models/types/annualSchedule";
 import { SubjectType } from "@/models/types/subjects";
 import { TeacherType } from "@/models/types/teachers";
 import { ClassType } from "@/models/types/classes";
+import { HourRowColor } from "@/style/tableColors";
 
 type AnnualRowProps = {
     hour: number;
@@ -22,7 +23,7 @@ type AnnualRowProps = {
 const AnnualRow: React.FC<AnnualRowProps> = (props) => {
     return (
         <tr>
-            <td className={styles.hourCell}>{props.hour}</td>
+            <td className={styles.hourCell} style={{ backgroundColor: HourRowColor }}>{props.hour}</td>
             {DAYS_OF_WORK_WEEK.map((day) => (
                 <AnnualCell key={`${day}-${props.hour}`} day={day} {...props} />
             ))}

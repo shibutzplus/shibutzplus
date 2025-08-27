@@ -13,7 +13,6 @@ import { useMainContext } from "@/context/MainContext";
 import messages from "@/resources/messages";
 import { errorToast, successToast } from "@/lib/toast";
 import { useAnnualTable } from "@/context/AnnualTableContext";
-import { SelectMethod } from "@/models/types/actions";
 
 type AnnualTableProps = {
     schedule: WeeklySchedule;
