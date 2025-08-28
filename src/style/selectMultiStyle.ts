@@ -5,6 +5,7 @@ export const customStylesMulti = (
     backgroundColor: string = "white",
     backgroundOptionColor: string = "white",
     noOptionsMsgColor: string = "#aaa",
+    fontWeight: number | string = "normal",
 ) => {
     return {
         control: (provided: any, state: any) => ({
@@ -18,7 +19,7 @@ export const customStylesMulti = (
             backgroundColor: backgroundColor,
             color: "#aaa",
             transition: "all 0.2s ease",
-            fontWeight: "normal",
+            fontWeight: fontWeight,
             "&:hover": {
                 borderColor: error ? "#e53935" : "#ccc",
             },
@@ -41,8 +42,8 @@ export const customStylesMulti = (
             backgroundColor: state.isSelected
                 ? "#4a90e2"
                 : state.isFocused
-                  ? "rgba(74, 144, 226, 0.1)"
-                  : "white",
+                    ? "rgba(74, 144, 226, 0.1)"
+                    : "white",
             color: state.isSelected ? "white" : "#333",
             padding: "10px 12px",
             fontSize: "16px",
@@ -67,7 +68,7 @@ export const customStylesMulti = (
         }),
         valueContainer: (provided: any) => ({
             ...provided,
-            padding: "2px 8px",
+            padding: "0px 0px",
         }),
         indicatorSeparator: (provided: any) => ({
             ...provided,

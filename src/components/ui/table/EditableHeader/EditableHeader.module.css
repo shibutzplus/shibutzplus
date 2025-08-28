@@ -10,7 +10,6 @@
 
 .clearButton {
     cursor: pointer;
-    color: var(--input-border);
     font-size: 16px;
     transition: all 0.2s ease;
     padding: 5px;
@@ -19,11 +18,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--input-focus-shadow);
 }
 
 .clearButton:hover {
-    color: var(--background);
+    color: gray;
 }
 
 .clearButton:active {

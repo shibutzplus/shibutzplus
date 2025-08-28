@@ -4,7 +4,7 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     height: var(--header-height);
     box-sizing: border-box;
-    padding: 0 3vw;
+    padding: 0 0.5vw;
     display: flex;
     justify-content: space-between;
     gap: 5px;

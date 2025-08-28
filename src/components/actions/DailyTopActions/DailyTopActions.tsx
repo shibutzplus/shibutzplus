@@ -36,7 +36,7 @@ const DailyTopActions: React.FC = () => {
                 <ActionBtn
                     type="missingTeacher"
                     Icon={<Icons.addTeacher size={16} />}
-                    label="מורה חסר"
+                    label="שיבוץ למורה חסר"
                     isDisabled={isLoading}
                     style={{
                         borderLeft: DailyTableColors.missingTeacher.borderLeft,
@@ -48,7 +48,7 @@ const DailyTopActions: React.FC = () => {
                 <ActionBtn
                     type="existingTeacher"
                     Icon={<Icons.addTeacher size={16} />}
-                    label="מורה קיים"
+                    label="שינוי למורה נוכח"
                     isDisabled={isLoading}
                     style={{
                         borderLeft: DailyTableColors.existingTeacher.borderLeft,
@@ -60,7 +60,7 @@ const DailyTopActions: React.FC = () => {
                 <ActionBtn
                     type="event"
                     Icon={<Icons.event size={16} />}
-                    label="מידע"
+                    label="עדכון ארועים"
                     isDisabled={isLoading}
                     style={{
                         borderLeft: DailyTableColors.event.borderLeft,
@@ -74,7 +74,7 @@ const DailyTopActions: React.FC = () => {
                 <ActionBtn
                     type="publish"
                     Icon={<Icons.publish size={16} />}
-                    label="פרסום"
+                    label="פרסום מערכת"
                     isDisabled={isLoading}
                     style={{
                         borderLeft: DailyTableColors.publish.borderLeft,

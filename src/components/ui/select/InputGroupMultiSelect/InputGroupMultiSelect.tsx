@@ -7,7 +7,6 @@ import { GroupOption, SelectOption } from "@/models/types";
 import AddToSelectBtn from "../../buttons/AddToSelectBtn/AddToSelectBtn";
 import type { ActionMeta, OnChangeValue } from "react-select";
 import { customStylesMulti } from "@/style/selectMultiStyle";
-import { TeacherSelectOptionColor } from "@/style/tableColors";
 import { SelectMethod } from "@/models/types/actions";
 
 export interface InputGroupMultiSelectProps {
@@ -212,7 +211,6 @@ const InputGroupMultiSelect: React.FC<InputGroupMultiSelectProps> = ({
                     hasBorder,
                     true,
                     backgroundColor,
-                    TeacherSelectOptionColor,
                 )}
                 classNamePrefix="react-select"
             />

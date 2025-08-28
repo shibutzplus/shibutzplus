@@ -5,7 +5,6 @@ import { SelectOption } from "@/models/types";
 import AddToSelectBtn from "../../buttons/AddToSelectBtn/AddToSelectBtn";
 import type { ActionMeta, OnChangeValue } from "react-select";
 import { customStylesMulti } from "@/style/selectMultiStyle";
-import { SubjectSelectOptionColor } from "@/style/tableColors";
 import { SelectMethod } from "@/models/types/actions";
 
 export type InputMultiSelectProps = {
@@ -165,8 +164,9 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
                     hasBorder,
                     true,
                     backgroundColor,
-                    SubjectSelectOptionColor,
-                )}
+                    "white",
+                    "#aaa",
+                    600,)}
                 classNamePrefix="react-select"
             />
 
