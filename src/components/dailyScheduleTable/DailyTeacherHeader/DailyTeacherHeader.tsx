@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import DynamicInputSelect from "../../ui/InputSelect/DynamicInputSelect";
+import DynamicInputSelect from "../../ui/select/InputSelect/DynamicInputSelect";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import { ColumnType } from "@/models/types/dailySchedule";
 import { getDayNumberByDateString } from "@/utils/time";

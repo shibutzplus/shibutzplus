@@ -4,7 +4,7 @@ import React from "react";
 import styles from "./PublicTopNav.module.css";
 import Logo from "../../core/Logo/Logo";
 import { usePublicPortal } from "@/context/PublicPortalContext";
-import DynamicInputSelect from "@/components/ui/InputSelect/DynamicInputSelect";
+import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 
 const PublicTopNav: React.FC = () => {
     const { teacher, selectedDate, isLoading, publishDatesOptions, handleDayChange } =

@@ -2,7 +2,7 @@
 
 import React from "react";
 import styles from "./HistoryTopActions.module.css";
-import DynamicInputSelect from "@/components/ui/InputSelect/DynamicInputSelect";
+import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import { useHistoryTable } from "@/context/HistoryTableContext";
 
 const HistoryTopActions: React.FC = () => {

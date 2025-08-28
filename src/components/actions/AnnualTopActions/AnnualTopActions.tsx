@@ -2,7 +2,7 @@
 
 import React from "react";
 import styles from "./AnnualTopActions.module.css";
-import DynamicInputSelect from "@/components/ui/InputSelect/DynamicInputSelect";
+import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import { useAnnualTable } from "@/context/AnnualTableContext";
 
 const AnnualTopActions: React.FC = () => {

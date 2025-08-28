@@ -5,7 +5,7 @@ import Select from "react-select";
 import styles from "./InputGroupSelect.module.css";
 import { customStyles } from "@/style/selectStyle";
 import { GroupOption, SelectOption } from "@/models/types";
-import AddToSelectBtn from "../buttons/AddToSelectBtn/AddToSelectBtn";
+import AddToSelectBtn from "../../buttons/AddToSelectBtn/AddToSelectBtn";
 
 export interface InputGroupSelectProps {
     label?: string;

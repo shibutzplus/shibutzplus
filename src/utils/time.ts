@@ -59,6 +59,12 @@ export const getDayNumberByDateString = (date: string) => {
     return new Date(date).getDay() + 1;
 };
 
+// Returns the day of week in Hebrew (e.g., "א", "ב", etc.) for a given date string (YYYY-MM-DD)
+export const getDayNameByDateString = (date: string) => {
+    const dayIdx = new Date(date).getDay(); // 0 = Sunday
+    return DAYS_OF_WEEK[dayIdx];
+};
+
 export const dayToNumber = (day: string) => {
     //Convert day name to number (1-7)
     return DAYS_OF_WEEK.indexOf(day) + 1;

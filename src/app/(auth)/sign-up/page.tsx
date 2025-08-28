@@ -10,7 +10,7 @@ import routePath from "../../../routes";
 import { NextPage } from "next";
 import { RegisterRequest, UserGender, UserRole } from "@/models/types/auth";
 import signUp from "@/app/actions/POST/signUpAction";
-import DynamicInputSelect from "@/components/ui/InputSelect/DynamicInputSelect";
+import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import { SchoolLevel } from "@/db/schema";
 import { genderOptions, roleOptions, schoolLevelOptions } from "@/resources/onboarding";
 import { registerSchema } from "@/models/validation/register";

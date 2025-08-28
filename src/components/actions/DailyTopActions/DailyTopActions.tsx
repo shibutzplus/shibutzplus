@@ -2,7 +2,7 @@
 
 import React from "react";
 import styles from "./DailyTopActions.module.css";
-import DynamicInputSelect from "@/components/ui/InputSelect/DynamicInputSelect";
+import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import { DailyTableColors } from "@/style/tableColors";
 import Icons from "@/style/icons";

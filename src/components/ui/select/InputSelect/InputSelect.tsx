@@ -5,7 +5,7 @@ import Select from "react-select";
 import styles from "./InputSelect.module.css";
 import { SelectOption } from "@/models/types";
 import { customStyles } from "@/style/selectStyle";
-import AddToSelectBtn from "../buttons/AddToSelectBtn/AddToSelectBtn";
+import AddToSelectBtn from "../../buttons/AddToSelectBtn/AddToSelectBtn";
 
 type Props = {
     label?: string;
