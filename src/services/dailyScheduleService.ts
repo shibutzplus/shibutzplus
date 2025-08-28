@@ -116,12 +116,13 @@ export const setEmptyTeacherColumn = (
     selectedDate: string,
     headerTeacher: TeacherType,
     columnId: string,
+    type: ColumnType,
 ) => {
     dailySchedule = initDailySchedule(dailySchedule, selectedDate, columnId);
 
     for (let hour = 1; hour <= HOURS_IN_DAY; hour++) {
         dailySchedule[selectedDate][columnId][`${hour}`] = {
-            headerCol: { headerTeacher },
+            headerCol: { headerTeacher, type },
             hour: hour,
         };
     }
@@ -138,7 +139,7 @@ export const setEmptyEventColumn = (
 
     for (let hour = 1; hour <= HOURS_IN_DAY; hour++) {
         dailySchedule[selectedDate][columnId][`${hour}`] = {
-            headerCol: { headerEvent: eventTitle },
+            headerCol: { headerEvent: eventTitle, type: "event" },
             hour: hour,
         };
     }
@@ -151,12 +152,9 @@ export const initTeacherCellData = (entry: DailyScheduleType) => {
         hour: entry.hour,
         class: entry.class,
         subject: entry.subject,
+        headerCol: { headerTeacher: entry.issueTeacher, type: entry.issueTeacherType },
         subTeacher: entry.subTeacher,
     };
-
-    if (entry.absentTeacher) cellData.headerCol = { headerTeacher: entry.absentTeacher };
-    else if (entry.presentTeacher) cellData.headerCol = { headerTeacher: entry.presentTeacher };
-
     return cellData;
 };
 
@@ -164,7 +162,7 @@ export const initEventCellData = (entry: DailyScheduleType) => {
     const cellData: DailyScheduleCell = {
         hour: entry.hour,
         event: entry.event,
-        headerCol: { headerEvent: entry.eventTitle },
+        headerCol: { headerEvent: entry.eventTitle, type: "event" },
     };
 
     return cellData;
@@ -185,21 +183,16 @@ export const createNewTeacherCellData = (
     const cellData: DailyScheduleRequest = {
         date: getStringReturnDate(selectedDate),
         day: getDayNumberByDateString(selectedDate).toString(),
+        issueTeacherType: type,
+        issueTeacher: headerTeacher,
+        subTeacher,
         columnId,
         hour,
         school,
         class: classData,
         subject,
-        subTeacher,
         position,
     };
-
-    if (type === "existingTeacher") {
-        cellData.presentTeacher = headerTeacher;
-    } else if (type === "missingTeacher") {
-        cellData.absentTeacher = headerTeacher;
-    }
-
     return cellData;
 };
 
@@ -215,6 +208,7 @@ export const createNewEventCellData = (
     const cellData: DailyScheduleRequest = {
         date: getStringReturnDate(selectedDate),
         day: getDayNumberByDateString(selectedDate).toString(),
+        issueTeacherType: "event",
         columnId,
         hour,
         school,
@@ -235,11 +229,9 @@ export const addNewEventCell = (
     position: number,
 ) => {
     const { hour, headerCol } = cellData;
-
-    if (!school || !event || !headerCol?.headerEvent) {
+    if (!school || event === undefined || !headerCol?.headerEvent) {
         return;
     }
-
     const dailyCellData: DailyScheduleRequest = createNewEventCellData(
         selectedDate,
         columnId,

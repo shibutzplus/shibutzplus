@@ -5,7 +5,6 @@ import Link from "next/link";
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
 import { DailyScheduleType } from "@/models/types/dailySchedule";
 import { useMainContext } from "@/context/MainContext";
-import ReadOnlyDailyTable from "@/components/teacherPortalTable/ReadOnlyDailyTable/ReadOnlyDailyTable";
 import styles from "./page.module.css";
 import router from "@/routes";
 import { getToday } from "@/utils/time";
@@ -97,14 +96,14 @@ const DailyScheduleReadOnlyPage = () => {
                     {error}
                 </div>
             )}
-
+{/* 
             {loading ? (
                 <div className={styles.loading}>
                     טוען נתונים...
                 </div>
             ) : (
                 <ReadOnlyDailyTable scheduleData={scheduleData} />
-            )}
+            )} */}
         </div>
     );
 };

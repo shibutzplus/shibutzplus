@@ -19,13 +19,12 @@ export async function getSubstituteTeachersAction(
         const schedules = await db.query.dailySchedule.findMany({
             where: and(
                 eq(schema.dailySchedule.date, date),
-                eq(schema.dailySchedule.absentTeacherId, teacherId)
+                eq(schema.dailySchedule.issueTeacherId, teacherId)
             ),
             with: {
                 class: true,
                 subject: true,
-                absentTeacher: true,
-                presentTeacher: true,
+                issueTeacher: true,
                 subTeacher: true,
             },
             orderBy: schema.dailySchedule.hour,
@@ -44,8 +43,8 @@ export async function getSubstituteTeachersAction(
                     school: schedule.school,
                     class: schedule.class,
                     subject: schedule.subject,
-                    absentTeacher: schedule.absentTeacher,
-                    presentTeacher: schedule.presentTeacher,
+                    issueTeacher: schedule.issueTeacher,
+                    issueTeacherType: schedule.issueTeacherType,
                     subTeacher: schedule.subTeacher,
                     createdAt: schedule.createdAt,
                     updatedAt: schedule.updatedAt,

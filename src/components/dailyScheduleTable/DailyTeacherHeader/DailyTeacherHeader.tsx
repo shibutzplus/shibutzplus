@@ -14,7 +14,7 @@ type DailyTeacherHeaderProps = {
     type: Exclude<ColumnType, "event">;
 };
 
-const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId }) => {
+const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId, type }) => {
     const { teachers } = useMainContext();
     const { dailySchedule, selectedDate, populateTeacherColumn } = useDailyTableContext();
     const [isLoading, setIsLoading] = useState(false);
@@ -27,7 +27,7 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId }) => 
         if (teacherId) {
             setIsLoading(true);
             const dayNumber = getDayNumberByDateString(selectedDate);
-            const response = await populateTeacherColumn(columnId, dayNumber, teacherId);
+            const response = await populateTeacherColumn(columnId, dayNumber, teacherId, type);
             if (response) {
                 if (response.length === 0) {
                     successToast(messages.dailySchedule.noScheduleFound);

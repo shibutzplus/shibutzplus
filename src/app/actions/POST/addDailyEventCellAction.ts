@@ -7,6 +7,7 @@ import { db, schema } from "../../../db";
 import { ActionResponse } from "@/models/types/actions";
 import { NewDailyScheduleSchema } from "@/db/schema";
 import { getDateReturnString } from "@/utils/time";
+import { eventPlaceholder } from "@/models/constant/table";
 
 export async function addDailyEventCellAction(
     scheduleCellData: DailyScheduleRequest,
@@ -36,6 +37,7 @@ export async function addDailyEventCellAction(
             return authError as ActionResponse;
         }
 
+        const resEvent = event === eventPlaceholder ? "" : event
         const newRow: NewDailyScheduleSchema = {
             date: getDateReturnString(date),
             day: day,
@@ -44,11 +46,11 @@ export async function addDailyEventCellAction(
             schoolId: school.id,
             classId: null,
             subjectId: null,
-            absentTeacherId: null,
-            presentTeacherId: null,
+            issueTeacherId: null,
+            issueTeacherType: "event",
             subTeacherId: null,
             eventTitle: eventTitle,
-            event: event,
+            event: resEvent,
             position: position
         };
 
@@ -76,12 +78,12 @@ export async function addDailyEventCellAction(
                 updatedAt: newDailySchedule.updatedAt,
                 school,
                 class: undefined,
-                absentTeacher: undefined,
-                presentTeacher: undefined,
+                issueTeacher: undefined,
+                issueTeacherType: "event",
                 subTeacher: undefined,
                 subject: undefined,
                 eventTitle,
-                event,
+                event: resEvent,
                 position,
             } as DailyScheduleType,
         };

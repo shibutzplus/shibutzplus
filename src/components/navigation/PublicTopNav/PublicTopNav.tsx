@@ -1,34 +1,14 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 import styles from "./PublicTopNav.module.css";
 import Logo from "../../core/Logo/Logo";
-import { usePathname } from "next/navigation";
 import { usePublicPortal } from "@/context/PublicPortalContext";
 import DynamicInputSelect from "@/components/ui/InputSelect/DynamicInputSelect";
-import { SelectOption } from "@/models/types";
 
 const PublicTopNav: React.FC = () => {
-    const pathname = usePathname();
-    const [pageTitle, setPageTitle] = useState<string>("");
-    const { teacher, selectedDate, isLoading, getPublishDateOptions, handleDayChange } =
+    const { teacher, selectedDate, isLoading, publishDatesOptions, handleDayChange } =
         usePublicPortal();
-    const [options, setOptions] = useState<SelectOption[]>([]);
-
-    const blockRef = useRef<boolean>(true);
-    useEffect(() => {
-        const fetchOptions = async () => {
-            if (teacher) {
-                const options = await getPublishDateOptions(teacher.schoolId);
-                console.log("options", options)
-                setOptions(options || []);
-                blockRef.current = false;
-            } else {
-                setOptions([]);
-            }
-        };
-        blockRef.current && fetchOptions();
-    }, [teacher]);
 
     return (
         <header className={styles.contentHeader}>
@@ -45,7 +25,7 @@ const PublicTopNav: React.FC = () => {
                     <div>כאן אפשר לראות מי מחליף אותך ולהשאיר לו החומרי לימוד</div>
                 </div>
                 <DynamicInputSelect
-                    options={options}
+                    options={publishDatesOptions}
                     value={selectedDate}
                     isDisabled={isLoading}
                     onChange={handleDayChange}

@@ -45,6 +45,8 @@ v- change toast position
 - hamburger open by default and responsive to the screen
 - side nav split into sections with title
 
+- not sure I need the split the daily into existingTeacher and missingTeacher, maybe I should only need to have header teacher and the type
+
 - text per gender (he / she) 
 
 - teacher - mobile screen for the teachers

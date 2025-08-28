@@ -3,7 +3,7 @@
 import { DailyScheduleType, GetDailyScheduleResponse } from "@/models/types/dailySchedule";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
-import { and, or, eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db, schema } from "../../../db";
 
 export async function getDailyByTeacherAction(
@@ -19,16 +19,12 @@ export async function getDailyByTeacherAction(
         const schedules = await db.query.dailySchedule.findMany({
             where: and(
                 eq(schema.dailySchedule.date, date),
-                or(
-                    eq(schema.dailySchedule.absentTeacherId, teacherId),
-                    eq(schema.dailySchedule.presentTeacherId, teacherId),
-                ),
+                eq(schema.dailySchedule.issueTeacherId, teacherId),
             ),
             with: {
                 class: true,
                 subject: true,
-                absentTeacher: true,
-                presentTeacher: true,
+                issueTeacher: true,
                 subTeacher: true,
                 school: true,
             },
@@ -54,8 +50,8 @@ export async function getDailyByTeacherAction(
                     school: schedule.school,
                     class: schedule.class,
                     subject: schedule.subject,
-                    absentTeacher: schedule.absentTeacher,
-                    presentTeacher: schedule.presentTeacher,
+                    issueTeacher: schedule.issueTeacher,
+                    issueTeacherType: schedule.issueTeacherType,
                     subTeacher: schedule.subTeacher,
                     createdAt: schedule.createdAt,
                     updatedAt: schedule.updatedAt,

@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState, useEffect, useId } from "react";
+import React, { useEffect, useId, useMemo, useState } from "react";
 import Select from "react-select";
 import styles from "./InputSelect.module.css";
 import { SelectOption } from "@/models/types";
 import { customStyles } from "@/style/selectStyle";
 import AddToSelectBtn from "../buttons/AddToSelectBtn/AddToSelectBtn";
 
-type InputSelectProps = {
+type Props = {
     label?: string;
     options: SelectOption[];
     error?: string;
@@ -24,120 +24,131 @@ type InputSelectProps = {
     onCreate?: (value: string) => Promise<string | undefined>;
 };
 
-const InputSelect: React.FC<InputSelectProps> = ({
-    label,
-    options: initialOptions,
-    error,
-    id,
-    value,
-    onChange,
-    placeholder = "בחר אופציה...",
-    isSearchable = true,
-    allowAddNew = false,
-    isDisabled = false,
-    hasBorder = false,
-    backgroundColor = "white",
-    isClearable = false,
-    onCreate,
-}) => {
+const InputSelect: React.FC<Props> = (props) => {
+    const {
+        label,
+        options: initialOptions,
+        error,
+        id,
+        value,
+        onChange,
+        placeholder = "בחר אופציה...",
+        isSearchable = true,
+        allowAddNew = false,
+        isDisabled = false,
+        hasBorder = false,
+        backgroundColor = "white",
+        isClearable = false,
+        onCreate,
+    } = props;
+
     const [options, setOptions] = useState<SelectOption[]>(initialOptions);
     const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
     const [isMounted, setIsMounted] = useState(false);
 
-    // Generate a unique instanceId for SSR consistency
-    const selectInstanceId = useId();
+    const uid = useId();
+    const resolvedId = useMemo(() => id ?? `select-${uid}`, [id, uid]);
+    const inputId = `react-select-${resolvedId}-input`;
+
+    useEffect(() => setIsMounted(true), []);
+
+    useEffect(() => setOptions(initialOptions), [initialOptions]);
 
     useEffect(() => {
         if (value) {
-            const option = options.find((opt) => opt.value === value);
-            setSelectedOption(option || null);
+            const opt = options.find((o) => o.value === value);
+            setSelectedOption(opt ?? null);
         } else {
             setSelectedOption(null);
         }
     }, [value, options]);
 
-    useEffect(() => {
-        setOptions(initialOptions);
-    }, [initialOptions]);
-
     const handleOnCreate = async (inputValue: string) => {
-        // Check if the option already exists
-        const exists = options.some(
-            (option) => option.label.toLowerCase() === inputValue.toLowerCase(),
-        );
-
+        const exists = options.some((o) => o.label.toLowerCase() === inputValue.toLowerCase());
         if (!exists && allowAddNew && onCreate) {
             const valueId = await onCreate(inputValue);
             if (valueId) {
-                const newOption: SelectOption = {
-                    value: valueId,
-                    label: inputValue,
-                };
-                const updatedOptions = [...options, newOption];
-                setOptions(updatedOptions);
+                const newOption = { value: valueId, label: inputValue };
+                const updated = [...options, newOption];
+                setOptions(updated);
                 setSelectedOption(newOption);
+                onChange(valueId); // אופציונלי: לסנכרן כלפי מעלה
             }
         }
     };
 
-    const handleChange = (option: SelectOption | null) => {
-        setSelectedOption(option);
-        onChange(option ? option.value : "");
+    const handleChange = (opt: SelectOption | null) => {
+        setSelectedOption(opt);
+        onChange(opt ? opt.value : "");
     };
 
-    useEffect(() => {
-        // Set mounted state to true after component mounts on client
-        setIsMounted(true);
-    }, []);
-
     return (
-        <div className={styles.selectContainer}>
+        <div className={styles.selectContainer /* אפשר גם suppressHydrationWarning */}>
             {label && (
-                <label htmlFor={id} className={styles.label}>
+                <label htmlFor={resolvedId} className={styles.label}>
                     {label}
                 </label>
             )}
 
-            <Select
-                instanceId={selectInstanceId}
-                id={id}
-                value={selectedOption}
-                onChange={handleChange}
-                options={options}
-                isSearchable={isSearchable}
-                isClearable={isClearable}
-                isDisabled={isDisabled}
-                placeholder={placeholder}
-                menuPortalTarget={isMounted ? document.body : null}
-                menuPlacement="auto"
-                noOptionsMessage={({ inputValue }) =>
-                    allowAddNew ? (
-                        <AddToSelectBtn
-                            onClick={() => handleOnCreate(inputValue)}
-                            label={inputValue}
-                        />
-                    ) : (
-                        <div>לא נמצאו אפשרויות</div>
-                    )
-                }
-                onKeyDown={(e: React.KeyboardEvent) => {
-                    if (
-                        allowAddNew &&
-                        e.key === 'Enter' &&
-                        typeof e.target === 'object' &&
-                        'value' in e.target
-                    ) {
-                        const inputValue = (e.target as HTMLInputElement).value;
-                        const exists = options.some(opt => opt.label.toLowerCase() === inputValue.toLowerCase());
-                        if (!exists && inputValue.trim().length > 0) {
-                            e.preventDefault();
-                            handleOnCreate(inputValue);
-                        }
+            {!isMounted ? (
+                // שלד יציב ל-SSR
+                <div
+                    className={styles.skeleton}
+                    style={{
+                        minHeight: 38,
+                        border: "1px solid #e0e0e0",
+                        borderRadius: 4,
+                        opacity: 0.7,
+                    }}
+                >
+                    טוען...
+                </div>
+            ) : (
+                <Select
+                    id={resolvedId}
+                    inputId={inputId}
+                    instanceId={resolvedId}
+                    value={selectedOption}
+                    onChange={handleChange}
+                    options={options}
+                    isSearchable={isSearchable}
+                    isClearable={isClearable}
+                    isDisabled={isDisabled}
+                    placeholder={placeholder}
+                    // רק אחרי mount יש לנו document
+                    menuPortalTarget={document.body}
+                    menuPlacement="auto"
+                    noOptionsMessage={({ inputValue }) =>
+                        allowAddNew ? (
+                            <AddToSelectBtn
+                                onClick={() => handleOnCreate(inputValue)}
+                                label={inputValue}
+                            />
+                        ) : (
+                            <div>לא נמצאו אפשרויות</div>
+                        )
                     }
-                }}
-                styles={customStyles(error || "", hasBorder, true, backgroundColor)}
-                classNamePrefix="react-select"
-            />
+                    onKeyDown={(e) => {
+                        if (
+                            allowAddNew &&
+                            e.key === "Enter" &&
+                            typeof e.target === "object" &&
+                            "value" in e.target
+                        ) {
+                            const inputValue = (e.target as HTMLInputElement).value;
+                            const exists = options.some(
+                                (opt) => opt.label.toLowerCase() === inputValue.toLowerCase(),
+                            );
+                            if (!exists && inputValue.trim().length > 0) {
+                                e.preventDefault();
+                                handleOnCreate(inputValue);
+                            }
+                        }
+                    }}
+                    styles={customStyles(error || "", hasBorder, true, backgroundColor)}
+                    classNamePrefix="react-select"
+                />
+            )}
 
             {error && <p className={styles.errorText}>{error}</p>}
         </div>

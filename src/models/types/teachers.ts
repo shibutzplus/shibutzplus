@@ -1,6 +1,4 @@
 import { ActionResponse } from "./actions";
-import { ClassType } from "./classes";
-import { SubjectType } from "./subjects";
 
 export type TeacherType = {
     id: string;
