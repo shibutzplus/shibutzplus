@@ -1,4 +1,4 @@
-[23.08, 23.08, 23.08, 23.08, 23.08, 26.08]
+[23.08, 23.08, 23.08, 23.08, 23.08, 26.08, 27.08]
 
 - daily - delete column still not working good
 - daily - open the date select on ..?
