@@ -16,6 +16,7 @@ export const dailySchedule = pgTable('daily_schedule', {
   presentTeacherId: text('present_teacher_id'),
   subTeacherId: text('sub_teacher_id'),
   instructions: text('instructions'),
+  links: text('links'),
   position: integer('position').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),

@@ -29,7 +29,7 @@
 .scheduleTable td {
   border: 1px solid #ccc;
   text-align: center;
-  background-color: var(--empty-cell-color);
+  /* background-color: var(--empty-cell-color); */
 }
 
 .scheduleCell {
@@ -39,6 +39,7 @@
 .cellContent {
   display: flex;
   flex-direction: column;
+  height: 100%;
   background-color: var(--background-inner);
 }
 

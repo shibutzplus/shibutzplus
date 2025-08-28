@@ -1,0 +1,31 @@
+.hourCell {
+    border: 1px solid #e0e0e0;
+    padding: 12px;
+    font-weight: bold;
+    text-align: center;
+    width: 60px;
+    vertical-align: middle;
+}
+
+.scheduleCell,
+.scheduleCellInput {
+    position: relative;
+    padding: 8px;
+    border: 1px solid #e0e0e0;
+    vertical-align: top;
+    height: 60px;
+}
+
+.scheduleCellInput {
+    min-width: 500px;
+    min-width: 25vw;
+}
+
+.cellContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    height: 100%;
+}

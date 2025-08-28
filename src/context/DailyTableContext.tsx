@@ -43,6 +43,7 @@ import { DailyTableColors } from "@/style/tableColors";
 import { publishDailyScheduleAction } from "@/app/actions/POST/publishDailyScheduleAction";
 import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
+import { eventPlaceholder } from "@/models/constant/table";
 
 interface DailyTableContextType {
     tableColumns: ColumnDef<TeacherRow>[];
@@ -358,13 +359,14 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         let response;
         if (!school) return;
 
-        if (type === "event" && data.event) {
+        if (type === "event") {
+            const eventTitle = data.event || eventPlaceholder;
             const dailyCellData = addNewEventCell(
                 school,
                 cellData,
                 columnId,
                 selectedDate,
-                data.event,
+                eventTitle,
                 0,
             );
             if (dailyCellData) response = await addDailyEventCellAction(dailyCellData);

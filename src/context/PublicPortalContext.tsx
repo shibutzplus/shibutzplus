@@ -1,23 +1,28 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import React, { createContext, useContext, useState, ReactNode, useEffect, useRef } from "react";
 import { useMainContext } from "./MainContext";
 import { gePublishedDatesOptions, getTomorrowOption } from "@/resources/dayOptions";
 import { SelectOption } from "@/models/types";
 import { TeacherType } from "@/models/types/teachers";
 import { getTeacherByIdAction } from "@/app/actions/GET/getTeacherByIdAction";
 import { getDailyByTeacherAction } from "@/app/actions/GET/getDailyByTeacherAction";
-import { DailySchedule, DailyScheduleType } from "@/models/types/dailySchedule";
 import { getSchoolAction } from "@/app/actions/GET/getSchoolAction";
-import { tr } from "zod/v4/locales";
+import { DailyScheduleRequest, DailyScheduleType } from "@/models/types/dailySchedule";
+import { PortalScheduleType } from "@/models/types/portalSchedule";
+import { createNewTeacherCellData } from "@/services/dailyScheduleService";
+import { addDailyTeacherCellAction } from "@/app/actions/POST/addDailyTeacherCellAction";
+import { getDayNumberByDateString, getStringReturnDate } from "@/utils/time";
+import { updateDailyTeacherCellAction } from "@/app/actions/PUT/updateDailyTeacherCellAction";
 
 interface PublicPortalContextType {
     selectedDate: string;
     handleDayChange: (value: string) => void;
     teacher: TeacherType | undefined;
-    populateTeacherTable: (teacherId: string | undefined) => Promise<TeacherType | undefined>;
     teacherTableData: DailyScheduleType[];
+    setTeacherById: (teacherId: string | undefined) => Promise<boolean>;
     getPublishDateOptions: (schoolId: string) => Promise<SelectOption[] | undefined>;
+    publishDatesOptions: SelectOption[];
     isLoading: boolean;
 }
 
@@ -33,9 +38,39 @@ export const usePublicPortal = () => {
 
 export const PublicPortalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [selectedDate, setSelectedDayId] = useState<string>(getTomorrowOption());
+    const [publishDatesOptions, setPublishDatesOptions] = useState<SelectOption[]>([]);
     const [teacher, setTeacher] = useState<TeacherType | undefined>();
     const [teacherTableData, setTeacherTableData] = useState<DailyScheduleType[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    const blockRef = useRef<boolean>(true);
+    useEffect(() => {
+        const fetchOptions = async () => {
+            if (teacher) {
+                const options = await getPublishDateOptions(teacher.schoolId);
+                setPublishDatesOptions(options || []);
+                handleDayChange(options?.[0].value || getTomorrowOption());
+                blockRef.current = false;
+            } else {
+                handleDayChange(getTomorrowOption());
+                setPublishDatesOptions([]);
+            }
+        };
+        blockRef.current && fetchOptions();
+    }, [teacher]);
+
+    useEffect(() => {
+        const fetchTeacherTableData = async () => {
+            if (!teacher || !selectedDate) return;
+            const response = await getDailyByTeacherAction(teacher.id, selectedDate);
+            if (response.success && response.data) {
+                setTeacherTableData(response.data);
+            } else {
+                setTeacherTableData([]);
+            }
+        };
+        fetchTeacherTableData();
+    }, [selectedDate, teacher]);
 
     const getPublishDateOptions = async (schoolId: string) => {
         setIsLoading(true);
@@ -56,38 +91,84 @@ export const PublicPortalProvider: React.FC<{ children: ReactNode }> = ({ childr
         setSelectedDayId(value);
     };
 
-    const populateTeacherTable = async (teacherId: string | undefined) => {
+    const setTeacherById = async (teacherId: string | undefined) => {
         try {
-            let teacherObj = teacher;
-            if (teacherId && (!teacher || teacher?.id !== teacherId)) {
-                const response = await getTeacherByIdAction(teacherId);
-                if (response.success && response.data) {
-                    setTeacher(response.data);
-                    teacherObj = response.data;
-                }
+            if (!teacherId) return false;
+            const response = await getTeacherByIdAction(teacherId);
+            if (response.success && response.data) {
+                setTeacher(response.data);
+                return true;
             }
-
-            if (teacherId && selectedDate) {
-                const response = await getDailyByTeacherAction(teacherId, selectedDate);
-                if (response.success && response.data) {
-                    setTeacherTableData(response.data);
-                } else {
-                    setTeacherTableData([]);
-                }
-            }
-            return teacherObj;
+            return false;
         } catch (error) {
             console.error("Error fetching teacher by ID:", error);
+            return false;
         }
     };
 
-    const value: PublicPortalContextType & { teacherTableData: DailyScheduleType[] } = {
+    const addNewCell = async (cellData: DailyScheduleType, details: PortalScheduleType) => {
+        const dailyCellData: DailyScheduleRequest = {
+            date: getStringReturnDate(selectedDate),
+            day: getDayNumberByDateString(selectedDate).toString(),
+            columnId: cellData.id,
+            hour: details.hour,
+            school: cellData.school,
+            class: cellData.class,
+            subject: cellData.subject,
+            subTeacher: cellData.subTeacher,
+            position: cellData.position,
+            instructions: details.instructions,
+            links: details.links,
+        };
+        if (cellData.absentTeacher) {
+            dailyCellData.absentTeacher = cellData.absentTeacher;
+        } else if (cellData.presentTeacher) {
+            dailyCellData.presentTeacher = cellData.presentTeacher;
+        }
+        if (dailyCellData) {
+            const response = await addDailyTeacherCellAction(dailyCellData);
+            if (response?.success && response.data) {
+                return response.data;
+            }
+        }
+        return undefined;
+    };
+
+    const updateCell = async (cellData: DailyScheduleType, details: PortalScheduleType) => {
+        const dailyCellData: DailyScheduleRequest = {
+            date: getStringReturnDate(selectedDate),
+            day: getDayNumberByDateString(selectedDate).toString(),
+            columnId: cellData.id,
+            hour: details.hour,
+            school: cellData.school,
+            class: cellData.class,
+            subject: cellData.subject,
+            subTeacher: cellData.subTeacher,
+            position: cellData.position,
+            instructions: details.instructions,
+            links: details.links,
+        };
+        if (cellData.absentTeacher) {
+            dailyCellData.absentTeacher = cellData.absentTeacher;
+        } else if (cellData.presentTeacher) {
+            dailyCellData.presentTeacher = cellData.presentTeacher;
+        }
+        const response = await updateDailyTeacherCellAction(cellData.id, dailyCellData);
+
+        if (response?.success && response.data) {
+            return response.data;
+        }
+        return undefined;
+    };
+
+    const value: PublicPortalContextType = {
         selectedDate,
         handleDayChange,
         teacher,
-        populateTeacherTable,
         teacherTableData,
+        setTeacherById,
         getPublishDateOptions,
+        publishDatesOptions,
         isLoading,
     };
 

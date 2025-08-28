@@ -235,11 +235,9 @@ export const addNewEventCell = (
     position: number,
 ) => {
     const { hour, headerCol } = cellData;
-
-    if (!school || !event || !headerCol?.headerEvent) {
+    if (!school || event === undefined || !headerCol?.headerEvent) {
         return;
     }
-
     const dailyCellData: DailyScheduleRequest = createNewEventCellData(
         selectedDate,
         columnId,

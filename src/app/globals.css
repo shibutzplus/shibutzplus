@@ -41,7 +41,7 @@
   /* Table colors */
   --header-cell-color: #E1E8F9;
   --row-cell-color: #f7faff;
-  --empty-cell-color: #f6efef;
+  --empty-cell-color: #eeeeee;
 
   /* Box shadows */
   --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);

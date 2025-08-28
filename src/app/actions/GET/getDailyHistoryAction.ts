@@ -74,6 +74,7 @@ export async function getDailyHistoryAction(schoolId: string): Promise<GetDailyH
                 presentTeacher: schedule.presentTeacher,
                 subTeacher: schedule.subTeacher,
                 instructions: schedule.instructions,
+                links: schedule.links,
                 position: schedule.position,
                 createdAt: schedule.createdAt,
                 updatedAt: schedule.updatedAt,
