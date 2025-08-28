@@ -43,8 +43,7 @@ export const teachersRelations = relations(teachers, ({ one, many }) => ({
     references: [users.id],
   }),
   taughtAnnualSchedules: many(annualSchedule),
-  absentSchedules: many(dailySchedule, { relationName: 'absentTeacher' }),
-  presentSchedules: many(dailySchedule, { relationName: 'presentTeacher' }),
+  issueSchedules: many(dailySchedule, { relationName: 'issueTeacher' }),
   subSchedules: many(dailySchedule, { relationName: 'subTeacher' }),
 }));
 
@@ -103,20 +102,15 @@ export const dailyScheduleRelations = relations(dailySchedule, ({ one }) => ({
     references: [subjects.id],
     relationName: 'subject',
   }),
-  absentTeacher: one(teachers, {
-    fields: [dailySchedule.absentTeacherId],
-    references: [teachers.id],
-    relationName: 'absentTeacher',
-  }),
-  presentTeacher: one(teachers, {
-    fields: [dailySchedule.presentTeacherId],
-    references: [teachers.id],
-    relationName: 'presentTeacher',
-  }),
   subTeacher: one(teachers, {
     fields: [dailySchedule.subTeacherId],
     references: [teachers.id],
     relationName: 'subTeacher',
+  }),
+  issueTeacher: one(teachers, {
+    fields: [dailySchedule.issueTeacherId],
+    references: [teachers.id],
+    relationName: 'issueTeacher',
   }),
 }));
 

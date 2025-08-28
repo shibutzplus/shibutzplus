@@ -116,15 +116,12 @@ export const PublicPortalProvider: React.FC<{ children: ReactNode }> = ({ childr
             class: cellData.class,
             subject: cellData.subject,
             subTeacher: cellData.subTeacher,
+            issueTeacher: cellData.issueTeacher,
+            issueTeacherType: cellData.issueTeacherType,
             position: cellData.position,
             instructions: details.instructions,
             links: details.links,
         };
-        if (cellData.absentTeacher) {
-            dailyCellData.absentTeacher = cellData.absentTeacher;
-        } else if (cellData.presentTeacher) {
-            dailyCellData.presentTeacher = cellData.presentTeacher;
-        }
         if (dailyCellData) {
             const response = await addDailyTeacherCellAction(dailyCellData);
             if (response?.success && response.data) {
@@ -144,15 +141,12 @@ export const PublicPortalProvider: React.FC<{ children: ReactNode }> = ({ childr
             class: cellData.class,
             subject: cellData.subject,
             subTeacher: cellData.subTeacher,
+            issueTeacher: cellData.issueTeacher,
+            issueTeacherType: cellData.issueTeacherType,
             position: cellData.position,
             instructions: details.instructions,
             links: details.links,
         };
-        if (cellData.absentTeacher) {
-            dailyCellData.absentTeacher = cellData.absentTeacher;
-        } else if (cellData.presentTeacher) {
-            dailyCellData.presentTeacher = cellData.presentTeacher;
-        }
         const response = await updateDailyTeacherCellAction(cellData.id, dailyCellData);
 
         if (response?.success && response.data) {

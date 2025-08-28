@@ -19,7 +19,7 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ scheduleData }) => {
     // Group schedule data by column ID
     const scheduleByColumn = React.useMemo(() => {
         const grouped: { [columnId: string]: { [hour: number]: DailyScheduleType } } = {};
-        scheduleData.forEach(item => {
+        scheduleData.forEach((item) => {
             if (!grouped[item.columnId]) {
                 grouped[item.columnId] = {};
             }
@@ -31,12 +31,9 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ scheduleData }) => {
     // Create columns based on schedule data
     const dynamicColumns = React.useMemo(() => {
         const columnIds = Object.keys(scheduleByColumn);
-        return columnIds.map(columnId => {
+        return columnIds.map((columnId) => {
             const firstItem = Object.values(scheduleByColumn[columnId])[0];
-            const headerTitle = firstItem?.eventTitle || 
-                               firstItem?.absentTeacher?.name || 
-                               firstItem?.presentTeacher?.name || 
-                               'Unknown';
+            const headerTitle = firstItem?.eventTitle || firstItem?.issueTeacher?.name || "Unknown";
 
             return {
                 accessorKey: columnId,
@@ -44,9 +41,9 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ scheduleData }) => {
                 cell: (info: any) => {
                     const hour = info.row.original.hour;
                     const cellData = scheduleByColumn[columnId][hour];
-                    
+
                     if (!cellData) return <div className={styles.emptyCell}></div>;
-                    
+
                     if (cellData.event) {
                         return (
                             <div className={styles.eventCell}>
@@ -54,7 +51,7 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ scheduleData }) => {
                             </div>
                         );
                     }
-                    
+
                     return (
                         <div className={styles.teacherCell}>
                             {cellData.class && (
@@ -64,7 +61,9 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ scheduleData }) => {
                                 <div className={styles.subjectName}>{cellData.subject.name}</div>
                             )}
                             {cellData.subTeacher && (
-                                <div className={styles.subTeacherName}>{cellData.subTeacher.name}</div>
+                                <div className={styles.subTeacherName}>
+                                    {cellData.subTeacher.name}
+                                </div>
                             )}
                         </div>
                     );

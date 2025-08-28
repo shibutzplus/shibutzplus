@@ -5,6 +5,13 @@
     gap: 12px;
 }
 
+.loadingSection{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
 .loading {
     font-size: 22px;
     opacity: 0.8;

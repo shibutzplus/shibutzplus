@@ -15,8 +15,8 @@ export type DailyScheduleType = {
     school: SchoolType;
     class?: ClassType;
     subject?: SubjectType;
-    absentTeacher?: TeacherType;
-    presentTeacher?: TeacherType;
+    issueTeacher?: TeacherType;
+    issueTeacherType: ColumnType;
     subTeacher?: TeacherType;
     instructions?: string;
     links?: string;
@@ -35,8 +35,8 @@ export type DailyScheduleRequest = {
     school: SchoolType;
     class?: ClassType;
     subject?: SubjectType;
-    absentTeacher?: TeacherType;
-    presentTeacher?: TeacherType;
+    issueTeacher?: TeacherType;
+    issueTeacherType: ColumnType;
     subTeacher?: TeacherType;
     position: number;
     instructions?: string;
@@ -58,6 +58,7 @@ export interface ScheduleColumn {
 export type HeaderCol = {
     headerTeacher?: TeacherType;
     headerEvent?: string;
+    type: ColumnType;
 }
 
 export type DailyScheduleCell = {
