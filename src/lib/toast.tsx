@@ -9,7 +9,7 @@ export const successToast = (message: string) => {
 
 export const errorToast = (message: string) => {
     toast.error(message, {
-        duration: 5000,
+        duration: 7000,
         position: "bottom-left",
     });
 }
