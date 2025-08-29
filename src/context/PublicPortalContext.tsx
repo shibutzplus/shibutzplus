@@ -11,6 +11,8 @@ import { DailyScheduleRequest, DailyScheduleType } from "@/models/types/dailySch
 import { PortalScheduleType } from "@/models/types/portalSchedule";
 import { getDayNumberByDateString, getStringReturnDate } from "@/utils/time";
 import { updateDailyTeacherCellAction } from "@/app/actions/PUT/updateDailyTeacherCellAction";
+import { errorToast } from "@/lib/toast";
+import messages from "@/resources/messages";
 
 interface PublicPortalContextType {
     selectedDate: string;
@@ -21,12 +23,17 @@ interface PublicPortalContextType {
     getPublishDateOptions: (schoolId: string) => Promise<SelectOption[] | undefined>;
     updateRowDetails: (
         cellData: DailyScheduleType,
-        details: PortalScheduleType,
-    ) => Promise<DailyScheduleType | undefined>;
+        change: {
+            instructions: string;
+            links: string;
+        },
+    ) => Promise<void>;
     switchReadAndWrite: () => void;
+    handleSave: () => Promise<DailyScheduleType | undefined>;
     publishDatesOptions: SelectOption[];
     isLoading: boolean;
     onReadTable: boolean;
+    isSaving: boolean;
 }
 
 const PublicPortalContext = createContext<PublicPortalContextType | undefined>(undefined);
@@ -45,7 +52,9 @@ export const PublicPortalProvider: React.FC<{ children: ReactNode }> = ({ childr
     const [teacher, setTeacher] = useState<TeacherType | undefined>();
     const [teacherTableData, setTeacherTableData] = useState<DailyScheduleType[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isSaving, setIsSaving] = useState<boolean>(false);
     const [onReadTable, setOnReadTable] = useState<boolean>(false);
+    const [queueRows, setQueueRows] = useState<{ id: string; data: DailyScheduleRequest }[]>([]);
 
     const blockRef = useRef<boolean>(true);
     useEffect(() => {
@@ -115,12 +124,18 @@ export const PublicPortalProvider: React.FC<{ children: ReactNode }> = ({ childr
         }
     };
 
-    const updateRowDetails = async (cellData: DailyScheduleType, details: PortalScheduleType) => {
+    const updateRowDetails = async (
+        cellData: DailyScheduleType,
+        change: {
+            instructions: string;
+            links: string;
+        },
+    ) => {
         const dailyCellData: DailyScheduleRequest = {
             date: getStringReturnDate(selectedDate),
             day: getDayNumberByDateString(selectedDate).toString(),
             columnId: cellData.columnId,
-            hour: details.hour,
+            hour: cellData.hour,
             school: cellData.school,
             class: cellData.class,
             subject: cellData.subject,
@@ -128,15 +143,28 @@ export const PublicPortalProvider: React.FC<{ children: ReactNode }> = ({ childr
             issueTeacher: cellData.issueTeacher,
             issueTeacherType: cellData.issueTeacherType,
             position: cellData.position,
-            instructions: details.instructions,
-            links: details.links,
+            instructions: change.instructions,
+            links: change.links,
         };
-        const response = await updateDailyTeacherCellAction(cellData.id, dailyCellData);
+        setQueueRows((prev) => [...prev, { id: cellData.id, data: dailyCellData }]);
+    };
 
-        if (response?.success && response.data) {
-            return response.data;
+    const handleSave = async () => {
+        try {
+            setIsSaving(true);
+            for (const row of queueRows) {
+                const response = await updateDailyTeacherCellAction(row.id, row.data);
+                if (response?.success && response.data) {
+                    return response.data;
+                }
+            }
+        } catch (error) {
+            console.error("Error updating daily schedule entry:", error);
+            errorToast(messages.dailySchedule.error);
+        } finally {
+            setIsSaving(false);
+            setQueueRows([]);
         }
-        return undefined;
     };
 
     const value: PublicPortalContextType = {
@@ -150,7 +178,9 @@ export const PublicPortalProvider: React.FC<{ children: ReactNode }> = ({ childr
         isLoading,
         updateRowDetails,
         switchReadAndWrite,
+        handleSave,
         onReadTable,
+        isSaving,
     };
 
     return <PublicPortalContext.Provider value={value}>{children}</PublicPortalContext.Provider>;

@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styles from "./PortalRow.module.css";
 import InputText from "@/components/ui/InputText/InputText";
 import { DailyScheduleType } from "@/models/types/dailySchedule";
 import { HourRowColor } from "@/style/tableColors";
-import { PortalScheduleType } from "@/models/types/portalSchedule";
 import { usePublicPortal } from "@/context/PublicPortalContext";
 
 type PortalRowProps = {
@@ -18,19 +17,15 @@ const PortalRow: React.FC<PortalRowProps> = ({ hour, row }) => {
 
     const handleChange = (type: "instructions" | "links", value: string) => {
         if (value.trim() && row && !onReadTable) {
-            const rowData: PortalScheduleType = {
-                hour,
-                school: row?.school,
-                class: row?.class,
-                subject: row?.subject,
-                subTeacher: row?.subTeacher,
+            const change = {
                 instructions: type === "instructions" ? value : instructions,
                 links: type === "links" ? value : links,
-            };
-            updateRowDetails(row, rowData);
+            }
+            updateRowDetails(row, change);
         }
     };
-console.log("onReadTable", onReadTable)
+
+
     return (
         <tr key={hour}>
             <td className={styles.hourCell} style={{ backgroundColor: HourRowColor }}>

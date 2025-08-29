@@ -1,0 +1,41 @@
+/* Mobile 320px - 767px -- 812px */
+.actionsContainer {
+    margin-right: 10px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0;
+}
+
+.selectContainer {
+    width: 100%;
+}
+
+.topButtonsContainer {
+    display: none;
+}
+
+/* Tablet 768px - 1279px -- 800px*/
+@media screen and (min-width: 768px) {
+
+    .actionsContainer {
+        margin-right: 0;
+        gap: 3em;
+    }
+
+    .selectContainer {
+        min-width: fit-content;
+        width: 25%;
+    }
+
+    .topButtonsContainer {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        height: 40px;
+        min-width: fit-content;
+        width: fit-content;
+    }
+}

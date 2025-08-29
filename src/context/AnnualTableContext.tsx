@@ -137,7 +137,6 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
     };
 
     const handleSave = async () => {
-        console.log("1");
         setIsSaving(true);
         if (queueRows.length === 0 || !school?.id) {
             setIsSaving(false);

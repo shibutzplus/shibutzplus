@@ -7,6 +7,7 @@ import { usePublicPortal } from "@/context/PublicPortalContext";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import { usePathname } from "next/navigation";
 import { getPageTitleFromUrl } from "@/utils/format";
+import PortalTopActions from "@/components/actions/PortalTopActions/PortalTopActions";
 
 const PublicTopNav: React.FC = () => {
     const pathname = usePathname();
@@ -16,8 +17,14 @@ const PublicTopNav: React.FC = () => {
         const routeKey = getPageTitleFromUrl(pathname);
         if (routeKey) setPageTitle(routeKey);
     }, [pathname]);
-    const { switchReadAndWrite, onReadTable, selectedDate, isLoading, publishDatesOptions, handleDayChange } =
-        usePublicPortal();
+    const {
+        switchReadAndWrite,
+        onReadTable,
+        selectedDate,
+        isLoading,
+        publishDatesOptions,
+        handleDayChange,
+    } = usePublicPortal();
 
     const handleSwitchReadAndWrite = () => {
         switchReadAndWrite();
@@ -27,24 +34,7 @@ const PublicTopNav: React.FC = () => {
         <header className={styles.contentHeader}>
             <div className={styles.headerRight}>
                 <h2 className={styles.routeTitle}>{pageTitle}</h2>
-                <section className={styles.actionsContainer}>
-                    <div className={styles.selectContainer}>
-                        <DynamicInputSelect
-                            options={publishDatesOptions}
-                            value={selectedDate}
-                            isDisabled={isLoading}
-                            onChange={handleDayChange}
-                            isSearchable={false}
-                            placeholder="בחר יום..."
-                            hasBorder
-                        />
-                    </div>
-                    <div className={styles.topButtonsContainer}>
-                        <div onClick={handleSwitchReadAndWrite}>
-                            {onReadTable ? "מי מחליף אותי" : "את מי אני מחליף"}
-                        </div>
-                    </div>
-                </section>
+                <PortalTopActions />
             </div>
             <div className={styles.headerLeft}>
                 <Logo size="S" />
