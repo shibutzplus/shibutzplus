@@ -17,6 +17,7 @@ const InputText: React.FC<InputTextProps> = ({
     readonly = false,
     ...props
 }) => {
+    console.log("readonly", readonly)
     return (
         <div className={styles.inputContainer}>
             {label && (

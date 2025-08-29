@@ -2,18 +2,22 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import DynamicInputSelect from "@/components/ui/InputSelect/InputSelect";
+import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import SubmitBtn from "@/components/ui/buttons/SubmitBtn/SubmitBtn";
 import styles from "./TeacherAuthForm.module.css";
 import { SelectOption } from "@/models/types";
-import { getAllTeachersAction } from "@/app/actions/GET/getAllTeachersAction";
 import router from "@/routes";
 import messages from "@/resources/messages";
 import { getTeacherCookie } from "@/utils/cookies";
+import { getTeachersAction } from "@/app/actions/GET/getTeachersAction";
 
-const TeacherAuthForm: React.FC = () => {
+type TeacherAuthFormProps = {
+    schoolId: string;
+};
+
+const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({ schoolId }) => {
     const route = useRouter();
-    const [selectedTeacher, setSelectedTeacher] = useState("");
+    const [selectedTeacher, setSelectedTeacher] = useState<string>("");
     const [teachers, setTeachers] = useState<SelectOption[]>([]);
     const [error, setError] = useState<string>("");
     const [isLoading, setIsLoading] = useState(false);
@@ -21,7 +25,7 @@ const TeacherAuthForm: React.FC = () => {
 
     useEffect(() => {
         // Check for remembered teacher first
-        const rememberedTeacherId = getTeacherCookie()
+        const rememberedTeacherId = getTeacherCookie();
         if (rememberedTeacherId) {
             route.push(`${router.teacherPortal.p}/${rememberedTeacherId}`);
             return;
@@ -29,7 +33,7 @@ const TeacherAuthForm: React.FC = () => {
 
         const fetchTeachers = async () => {
             try {
-                const response = await getAllTeachersAction();
+                const response = await getTeachersAction(schoolId);
                 if (response.success && response.data) {
                     const teacherOptions: SelectOption[] = response.data.map((teacher) => ({
                         value: teacher.id,
@@ -60,10 +64,9 @@ const TeacherAuthForm: React.FC = () => {
             setIsLoading(false);
             return;
         }
-        
+
         // setTeacherCookie(selectedTeacher);
         route.push(`${router.teacherPortal.p}/${selectedTeacher}`);
-        setIsLoading(false);
     };
 
     return (

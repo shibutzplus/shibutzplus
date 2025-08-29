@@ -28,15 +28,14 @@ export async function deleteTeacherAction(
                 ),
             );
 
-        // Delete all daily schedule records where this teacher is absent, present, or substitute
+        // Delete all daily schedule records where this teacher is issue or substitute
         await db
             .delete(schema.dailySchedule)
             .where(
                 and(
                     eq(schema.dailySchedule.schoolId, schoolId),
                     (
-                        eq(schema.dailySchedule.absentTeacherId, teacherId) ||
-                        eq(schema.dailySchedule.presentTeacherId, teacherId) ||
+                        eq(schema.dailySchedule.issueTeacherId, teacherId) ||
                         eq(schema.dailySchedule.subTeacherId, teacherId)
                     )
                 ),

@@ -1,7 +1,7 @@
 "use server";
 
 import { DailyScheduleType, DailyScheduleRequest } from "@/models/types/dailySchedule";
-import { checkAuthAndParams } from "@/utils/authUtils";
+import { publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { eq } from "drizzle-orm";
 import { db, schema } from "../../../db";
@@ -23,10 +23,12 @@ export async function updateDailyTeacherCellAction(
             subTeacher,
             eventTitle,
             event,
-            position
+            position,
+            instructions,
+            links
         } = scheduleData;
 
-        const authError = await checkAuthAndParams({
+        const authError = await publicAuthAndParams({
             id,
             date: scheduleData.date,
             day: scheduleData.day,
@@ -56,6 +58,8 @@ export async function updateDailyTeacherCellAction(
                 eventTitle: eventTitle,
                 event: event,
                 position: position,
+                instructions: instructions,
+                links: links,
             } as Partial<NewDailyScheduleSchema>)
             .where(eq(schema.dailySchedule.id, id))
             .returning();
@@ -88,6 +92,8 @@ export async function updateDailyTeacherCellAction(
                 eventTitle,
                 event,
                 position,
+                instructions,
+                links,
             } as DailyScheduleType,
         };
     } catch (error) {

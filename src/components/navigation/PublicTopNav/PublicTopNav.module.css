@@ -7,6 +7,7 @@
     padding: 0 3vw;
     display: flex;
     justify-content: space-between;
+    gap: 5px;
     align-items: center;
     position: fixed;
     top: 0;
@@ -22,19 +23,6 @@
     justify-content: flex-start;
     gap: 0;
     width: 100%;
-    max-width: 80vw;
-}
-
-.headerTitle {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0;
-}
-
-.headerTitle div {
-    font-size: 14px;
-    color: var(--description-text);
 }
 
 .headerLeft {
@@ -52,13 +40,54 @@
     width: 100%;
 }
 
+.actionsContainer {
+    margin-right: 10px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0;
+}
+
+.selectContainer {
+    width: 100%;
+}
+
+.topButtonsContainer {
+    display: none;
+}
+
 /* Tablet 768px - 1279px -- 800px*/
 @media screen and (min-width: 768px) {
+    .contentHeader {
+        gap: 3em;
+    }
+
     .headerRight {
         gap: 1em;
     }
 
     .routeTitle {
         font-size: 18px;
+    }
+
+    .actionsContainer {
+        margin-right: 0;
+        gap: 3em;
+    }
+
+    .selectContainer {
+        min-width: fit-content;
+        width: 25%;
+    }
+
+    .topButtonsContainer {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        height: 40px;
+        min-width: fit-content;
+        width: fit-content;
     }
 }

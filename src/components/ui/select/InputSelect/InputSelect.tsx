@@ -83,73 +83,55 @@ const InputSelect: React.FC<Props> = (props) => {
     };
 
     return (
-        <div className={styles.selectContainer /* אפשר גם suppressHydrationWarning */}>
+        <div className={styles.selectContainer}>
             {label && (
                 <label htmlFor={resolvedId} className={styles.label}>
                     {label}
                 </label>
             )}
-
-            {!isMounted ? (
-                // שלד יציב ל-SSR
-                <div
-                    className={styles.skeleton}
-                    style={{
-                        minHeight: 38,
-                        border: "1px solid #e0e0e0",
-                        borderRadius: 4,
-                        opacity: 0.7,
-                    }}
-                >
-                    טוען...
-                </div>
-            ) : (
-                <Select
-                    id={resolvedId}
-                    inputId={inputId}
-                    instanceId={resolvedId}
-                    value={selectedOption}
-                    onChange={handleChange}
-                    options={options}
-                    isSearchable={isSearchable}
-                    isClearable={isClearable}
-                    isDisabled={isDisabled}
-                    placeholder={placeholder}
-                    // רק אחרי mount יש לנו document
-                    menuPortalTarget={document.body}
-                    menuPlacement="auto"
-                    noOptionsMessage={({ inputValue }) =>
-                        allowAddNew ? (
-                            <AddToSelectBtn
-                                onClick={() => handleOnCreate(inputValue)}
-                                label={inputValue}
-                            />
-                        ) : (
-                            <div>לא נמצאו אפשרויות</div>
-                        )
-                    }
-                    onKeyDown={(e) => {
-                        if (
-                            allowAddNew &&
-                            e.key === "Enter" &&
-                            typeof e.target === "object" &&
-                            "value" in e.target
-                        ) {
-                            const inputValue = (e.target as HTMLInputElement).value;
-                            const exists = options.some(
-                                (opt) => opt.label.toLowerCase() === inputValue.toLowerCase(),
-                            );
-                            if (!exists && inputValue.trim().length > 0) {
-                                e.preventDefault();
-                                handleOnCreate(inputValue);
-                            }
+            <Select
+                id={resolvedId}
+                inputId={inputId}
+                instanceId={resolvedId}
+                value={selectedOption}
+                onChange={handleChange}
+                options={options}
+                isSearchable={isSearchable}
+                isClearable={isClearable}
+                isDisabled={isDisabled}
+                placeholder={placeholder}
+                menuPortalTarget={typeof window !== "undefined" ? document.body : undefined}
+                menuPlacement="auto"
+                noOptionsMessage={({ inputValue }) =>
+                    allowAddNew && onCreate ? (
+                        <AddToSelectBtn
+                            onClick={() => handleOnCreate(inputValue)}
+                            label={inputValue}
+                        />
+                    ) : (
+                        <div>לא נמצאו אפשרויות</div>
+                    )
+                }
+                onKeyDown={(e) => {
+                    if (
+                        allowAddNew &&
+                        e.key === "Enter" &&
+                        typeof e.target === "object" &&
+                        "value" in e.target
+                    ) {
+                        const inputValue = (e.target as HTMLInputElement).value;
+                        const exists = options.some(
+                            (opt) => opt.label.toLowerCase() === inputValue.toLowerCase(),
+                        );
+                        if (!exists && inputValue.trim().length > 0) {
+                            e.preventDefault();
+                            handleOnCreate(inputValue);
                         }
-                    }}
-                    styles={customStyles(error || "", hasBorder, true, backgroundColor)}
-                    classNamePrefix="react-select"
-                />
-            )}
-
+                    }
+                }}
+                styles={customStyles(error || "", hasBorder, true, backgroundColor)}
+                classNamePrefix="react-select"
+            />
             {error && <p className={styles.errorText}>{error}</p>}
         </div>
     );
