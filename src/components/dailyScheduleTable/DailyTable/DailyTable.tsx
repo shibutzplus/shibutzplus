@@ -40,7 +40,7 @@ const DailyTable: React.FC = () => {
             id: id,
             header: () => (
                 <span className={styles.templateHeaderText}>
-                    לחצו על הכפתורים למעלה כדי להוסיף את השעות לפי מורה או מקצוע
+                    לחצו על הכפתורים למעלה כדי להוסיף את המערכת של המורה
                 </span>
             ),
             cell: () => (

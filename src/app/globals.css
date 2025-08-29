@@ -39,9 +39,10 @@
   --error-color-hover: #9d3130;
 
   /* Table colors */
-  --header-cell-color: #E1E8F9;
+  --header-cell-color: #f2f2f2;
   --row-cell-color: #f7faff;
-  --empty-cell-color: #eeeeee;
+  --empty-cell-color: #ffffff;
+
 
   /* Box shadows */
   --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);

@@ -106,7 +106,7 @@ EMAIL_PASS=your-email-password
 # Company Information
 COMPANY_NAME=שיבוץ+
 WEBSITE_URL=https://shibutzplus.com
-LOGO_URL=https://shibutzplus.com/logo.png
+LOGO_URL=https://shibutzplus.com/logo.webp
 ```
 
 ## Getting Started
