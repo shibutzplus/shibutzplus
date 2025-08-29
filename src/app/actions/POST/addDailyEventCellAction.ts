@@ -3,7 +3,7 @@
 import { DailyScheduleType, DailyScheduleRequest } from "@/models/types/dailySchedule";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
-import { db, schema } from "../../../db";
+import { db, schema, executeQuery } from "../../../db";
 import { ActionResponse } from "@/models/types/actions";
 import { NewDailyScheduleSchema } from "@/db/schema";
 import { getDateReturnString } from "@/utils/time";
@@ -54,9 +54,9 @@ export async function addDailyEventCellAction(
             position: position
         };
 
-        const newDailySchedule = (
-            await db.insert(schema.dailySchedule).values(newRow).returning()
-        )[0];
+        const newDailySchedule = await executeQuery(async () => {
+            return (await db.insert(schema.dailySchedule).values(newRow).returning())[0];
+        });
 
         if (!newDailySchedule) {
             return {

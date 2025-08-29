@@ -1,6 +1,6 @@
 "use server";
 
-import { db, schema } from "@/db";
+import { db, schema, executeQuery } from "@/db";
 import { ClassType, ClassRequest } from "@/models/types/classes";
 import { ActionResponse } from "@/models/types/actions";
 import { checkAuthAndParams } from "@/utils/authUtils";
@@ -21,7 +21,9 @@ export async function addClassAction(
         }
 
         // Create the class in the database
-        const newClass = (await db.insert(schema.classes).values(classData).returning())[0];
+        const newClass = await executeQuery(async () => {
+            return (await db.insert(schema.classes).values(classData).returning())[0];
+        });
 
         if (!newClass) {
             return {

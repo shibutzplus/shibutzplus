@@ -3,7 +3,7 @@
 import { GetSchoolResponse } from "@/models/types/school";
 import { publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
-import { db, schema } from "@/db";
+import { db, schema, executeQuery } from "@/db";
 import { eq } from "drizzle-orm";
 
 // TODO: public action, risk, no session check
@@ -14,9 +14,9 @@ export async function getSchoolAction(schoolId: string): Promise<GetSchoolRespon
             return authError as GetSchoolResponse;
         }
 
-        const school = (
-            await db.select().from(schema.schools).where(eq(schema.schools.id, schoolId))
-        )[0];
+        const school = await executeQuery(async () => {
+            return (await db.select().from(schema.schools).where(eq(schema.schools.id, schoolId)))[0];
+        });
 
         if (!school) {
             return {

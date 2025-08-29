@@ -4,7 +4,7 @@ import { SubjectType, SubjectRequest } from "@/models/types/subjects";
 import { ActionResponse } from "@/models/types/actions";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
-import { db, schema } from "@/db";
+import { db, schema, executeQuery } from "@/db";
 import { eq } from "drizzle-orm";
 import { getSubjectsAction } from "@/app/actions/GET/getSubjectsAction";
 
@@ -23,14 +23,16 @@ export async function updateSubjectAction(
             return authError as ActionResponse;
         }
 
-        const updatedSubject = (await db
-            .update(schema.subjects)
-            .set({
-                name: subjectData.name,
-                updatedAt: new Date(),
-            })
-            .where(eq(schema.subjects.id, subjectId))
-            .returning())[0];
+        const updatedSubject = await executeQuery(async () => {
+            return (await db
+                .update(schema.subjects)
+                .set({
+                    name: subjectData.name,
+                    updatedAt: new Date(),
+                })
+                .where(eq(schema.subjects.id, subjectId))
+                .returning())[0];
+        });
 
         if (!updatedSubject) {
             return {

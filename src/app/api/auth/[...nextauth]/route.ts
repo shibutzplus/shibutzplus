@@ -1,7 +1,9 @@
-import NextAuth, { NextAuthOptions } from "next-auth";
-import { schema } from "@/db";
-import { getSessionMaxAge, TWENTY_FOUR_HOURS } from "@/utils/time";
+import "server-only";
+export const runtime = "nodejs";
+import NextAuth, { type NextAuthOptions } from "next-auth";
 import Google from "next-auth/providers/google";
+import { getSessionMaxAge, TWENTY_FOUR_HOURS } from "@/utils/time";
+import type { UserRole, UserGender } from "@/models/types/auth";
 import { registerNewGoogleUserAction } from "@/app/actions/POST/registerNewGoogleUserAction";
 import { getUserByEmailAction } from "@/app/actions/GET/getUserByEmailAction";
 
@@ -59,10 +61,10 @@ export const authOptions: NextAuthOptions = {
         },
         async session({ session, token }) {
             if (token) {
-                session.user = session.user || {};
+                session.user = session.user || ({} as any);
                 session.user.token = token.id as string;
-                session.user.role = token.role as schema.UserRole;
-                session.user.gender = token.gender as schema.UserGender;
+                session.user.role = token.role as UserRole;
+                session.user.gender = token.gender as UserGender;
                 session.user.schoolId = token.schoolId as string;
                 session.user.status = token.status as string;
                 session.user.maxAge = token.maxAge as number;

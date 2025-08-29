@@ -1,6 +1,6 @@
 "use server";
 
-import { db, schema } from "@/db";
+import { db, schema, executeQuery } from "@/db";
 import { AnnualScheduleType, AnnualScheduleRequest } from "@/models/types/annualSchedule";
 import { ActionResponse } from "@/models/types/actions";
 import { checkAuthAndParams } from "@/utils/authUtils";
@@ -34,9 +34,9 @@ export async function addAnnualScheduleAction(
             subjectId: subject.id,
         };
 
-        const newScheduleEntry = (
-            await db.insert(schema.annualSchedule).values(newRow).returning()
-        )[0];
+        const newScheduleEntry = await executeQuery(async () => {
+            return (await db.insert(schema.annualSchedule).values(newRow).returning())[0];
+        });
 
         if (!newScheduleEntry) {
             return {

@@ -4,7 +4,7 @@ import { TeacherType, TeacherRequest } from "@/models/types/teachers";
 import { ActionResponse } from "@/models/types/actions";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
-import { db, schema } from "@/db";
+import { db, schema, executeQuery } from "@/db";
 import { eq } from "drizzle-orm";
 import { getTeachersAction } from "../GET/getTeachersAction";
 
@@ -24,8 +24,8 @@ export async function updateTeacherAction(
             return authError as ActionResponse;
         }
 
-        const updatedTeacher = (
-            await db
+        const updatedTeacher = await executeQuery(async () => {
+            return (await db
                 .update(schema.teachers)
                 .set({
                     name: teacherData.name,
@@ -34,8 +34,8 @@ export async function updateTeacherAction(
                     updatedAt: new Date(),
                 })
                 .where(eq(schema.teachers.id, teacherId))
-                .returning()
-        )[0];
+                .returning())[0];
+        });
 
         if (!updatedTeacher) {
             return {

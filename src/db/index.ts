@@ -1,19 +1,34 @@
-import { neon } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-http';
-import * as schema from './schema';
+import { drizzle, type NeonHttpDatabase } from "drizzle-orm/neon-http";
+import { neonConfig } from "@neondatabase/serverless";
+import * as schema from "./schema";
+import { sql, executeQuery } from "./connectionPool";
 
-// Get database connection string from environment variables
-const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://user:password@localhost:5432/shibutzplus';
+// Configure Neon for better connection management
+neonConfig.fetchConnectionCache = true;
+neonConfig.useSecureWebSocket = false;
+neonConfig.pipelineConnect = false;
+neonConfig.pipelineTLS = false;
 
-// Create a Neon connection
-const sql = neon(DATABASE_URL);
+// Narrow, stable DB type that doesn't encode $client generics
+type DB = NeonHttpDatabase<typeof schema>;
 
-// Create a Drizzle ORM instance with our schema
-export const db = drizzle(sql, { schema });
-
-// Export a function to get the database connection
-export function getDb() {
-  return db;
+declare global {
+  // eslint-disable-next-line no-var
+  var __db: DB | undefined;
 }
 
-export { schema };
+// Create (or reuse in dev) a single Drizzle instance with optimized configuration
+export const db: DB =
+  global.__db ?? drizzle({ 
+    client: sql, 
+    schema, 
+    logger: process.env.NODE_ENV === "development"
+  });
+
+// Dev hot-reload friendly caching
+if (process.env.NODE_ENV !== "production") {
+  global.__db = db;
+}
+
+// Re-export schema and utilities
+export { schema, executeQuery };

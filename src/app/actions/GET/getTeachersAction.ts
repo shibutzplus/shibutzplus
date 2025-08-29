@@ -3,7 +3,7 @@
 import { GetTeachersResponse } from "@/models/types/teachers";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
-import { db, schema } from "@/db";
+import { db, schema, executeQuery } from "@/db";
 import { eq } from "drizzle-orm";
 
 export async function getTeachersAction(schoolId: string): Promise<GetTeachersResponse> {
@@ -13,10 +13,12 @@ export async function getTeachersAction(schoolId: string): Promise<GetTeachersRe
             return authError as GetTeachersResponse;
         }
 
-        const teachers = await db
-            .select()
-            .from(schema.teachers)
-            .where(eq(schema.teachers.schoolId, schoolId));
+        const teachers = await executeQuery(async () => {
+            return await db
+                .select()
+                .from(schema.teachers)
+                .where(eq(schema.teachers.schoolId, schoolId));
+        });
 
         if (!teachers || teachers.length === 0) {
             return {

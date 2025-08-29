@@ -4,7 +4,7 @@ import { DailyScheduleType, GetDailyScheduleResponse } from "@/models/types/dail
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { and, eq } from "drizzle-orm";
-import { db, schema } from "../../../db";
+import { db, schema, executeQuery } from "../../../db";
 
 export async function getDailyScheduleAction(schoolId: string, date: string): Promise<GetDailyScheduleResponse> {
     try {
@@ -14,40 +14,42 @@ export async function getDailyScheduleAction(schoolId: string, date: string): Pr
         }
 
 
-        const schedules = await db.query.dailySchedule.findMany({
-            where: and(
-                eq(schema.dailySchedule.schoolId, schoolId),
-                eq(schema.dailySchedule.date, date)
-            ),
-            with: {
-                class: true,
-                subject: true,
-                issueTeacher: true,
-                subTeacher: true,
-                school: true,
-            },
-        });
+        const dailySchedule = await executeQuery(async () => {
+            const schedules = await db.query.dailySchedule.findMany({
+                where: and(
+                    eq(schema.dailySchedule.schoolId, schoolId),
+                    eq(schema.dailySchedule.date, date)
+                ),
+                with: {
+                    class: true,
+                    subject: true,
+                    issueTeacher: true,
+                    subTeacher: true,
+                    school: true,
+                },
+            });
 
-        const dailySchedule = schedules.map(
-            (schedule: any) =>
-                ({
-                    id: schedule.id,
-                    date: schedule.date,
-                    day: schedule.day,
-                    hour: schedule.hour,
-                    columnId: schedule.columnId,
-                    eventTitle: schedule.eventTitle,
-                    event: schedule.event,
-                    school: schedule.school,
-                    class: schedule.class,
-                    subject: schedule.subject,
-                    issueTeacher: schedule.issueTeacher,
-                    issueTeacherType: schedule.issueTeacherType,
-                    subTeacher: schedule.subTeacher,
-                    createdAt: schedule.createdAt,
-                    updatedAt: schedule.updatedAt,
-                }) as DailyScheduleType,
-        );
+            return schedules.map(
+                (schedule: any) =>
+                    ({
+                        id: schedule.id,
+                        date: schedule.date,
+                        day: schedule.day,
+                        hour: schedule.hour,
+                        columnId: schedule.columnId,
+                        eventTitle: schedule.eventTitle,
+                        event: schedule.event,
+                        school: schedule.school,
+                        class: schedule.class,
+                        subject: schedule.subject,
+                        issueTeacher: schedule.issueTeacher,
+                        issueTeacherType: schedule.issueTeacherType,
+                        subTeacher: schedule.subTeacher,
+                        createdAt: schedule.createdAt,
+                        updatedAt: schedule.updatedAt,
+                    }) as DailyScheduleType,
+            );
+        });
 
         return {
             success: true,

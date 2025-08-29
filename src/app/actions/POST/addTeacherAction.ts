@@ -4,7 +4,7 @@ import { TeacherType, TeacherRequest } from "@/models/types/teachers";
 import { ActionResponse } from "@/models/types/actions";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
-import { db, schema } from "@/db";
+import { db, schema, executeQuery } from "@/db";
 import { NewTeacherSchema } from "@/db/schema";
 
 export async function addTeacherAction(
@@ -21,12 +21,12 @@ export async function addTeacherAction(
             return authError as ActionResponse;
         }
 
-        const newTeacher = (
-            await db
+        const newTeacher = await executeQuery(async () => {
+            return (await db
                 .insert(schema.teachers)
                 .values(teacherData as NewTeacherSchema)
-                .returning()
-        )[0];
+                .returning())[0];
+        });
 
         if (!newTeacher) {
             return {

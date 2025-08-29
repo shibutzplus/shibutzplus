@@ -2,7 +2,7 @@
 
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
-import { db, schema } from "@/db";
+import { db, schema, executeQuery } from "@/db";
 import { and, asc, eq } from "drizzle-orm";
 import {
     GetTeacherScheduleResponse,
@@ -19,36 +19,45 @@ export async function getTeacherScheduleByDayAction(
         if (authError) {
             return authError as GetTeacherScheduleResponse;
         }
-        const schedules = await db.query.annualSchedule.findMany({
-            where: and(
-                eq(schema.annualSchedule.teacherId, teacherId),
-                eq(schema.annualSchedule.day, day),
-            ),
-            with: {
-                class: true,
-                subject: true,
-                teacher: true,
-            },
-            orderBy: [asc(schema.annualSchedule.hour)],
+        const teacherSchedule = await executeQuery(async () => {
+            const schedules = await db.query.annualSchedule.findMany({
+                where: and(
+                    eq(schema.annualSchedule.teacherId, teacherId),
+                    eq(schema.annualSchedule.day, day),
+                ),
+                with: {
+                    class: true,
+                    subject: true,
+                    teacher: true,
+                },
+                orderBy: [asc(schema.annualSchedule.hour)],
+            });
+
+            if (!schedules || schedules.length === 0) {
+                return [];
+            }
+
+            return schedules.map(
+                (schedule) =>
+                    ({
+                        hour: schedule.hour,
+                        class: schedule.class,
+                        subject: schedule.subject,
+                        headerCol: {
+                            headerTeacher: schedule.teacher,
+                            type: "existingTeacher" as const
+                        }
+                    }) as TeacherHourlyScheduleItem,
+            );
         });
 
-        if (!schedules || schedules.length === 0) {
+        if (!teacherSchedule || teacherSchedule.length === 0) {
             return {
                 success: true,
                 message: messages.dailySchedule.success,
                 data: [],
             };
         }
-
-        const teacherSchedule = schedules.map(
-            (schedule) =>
-                ({
-                    hour: schedule.hour,
-                    class: schedule.class,
-                    subject: schedule.subject,
-                    headerCol: {headerTeacher: schedule.teacher}
-                }) as TeacherHourlyScheduleItem,
-        );
 
         return {
             success: true,

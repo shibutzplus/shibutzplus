@@ -4,7 +4,7 @@ import { SubjectType, SubjectRequest } from "@/models/types/subjects";
 import { ActionResponse } from "@/models/types/actions";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
-import { db, schema } from "@/db";
+import { db, schema, executeQuery } from "@/db";
 import { NewSubjectSchema } from "@/db/schema";
 
 export async function addSubjectAction(
@@ -20,12 +20,12 @@ export async function addSubjectAction(
             return authError as ActionResponse;
         }
 
-        const newSubject = (
-            await db
+        const newSubject = await executeQuery(async () => {
+            return (await db
                 .insert(schema.subjects)
                 .values(subjectData as NewSubjectSchema)
-                .returning()
-        )[0];
+                .returning())[0];
+        });
 
         if (!newSubject) {
             return {

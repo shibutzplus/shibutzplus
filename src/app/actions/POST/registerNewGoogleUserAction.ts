@@ -1,9 +1,12 @@
-import { db } from "@/db";
+"use server";
+import "server-only";
+
+import { db, executeQuery } from "@/db";
 import { users } from "@/db/schema/users";
 import { eq } from "drizzle-orm";
-import { ActionResponse } from "@/models/types/actions";
+import type { ActionResponse } from "@/models/types/actions";
 import messages from "@/resources/messages";
-import { UserSchema } from "@/db/schema/users";
+import type { UserSchema } from "@/db/schema/users";
 
 export interface RegisterGoogleUserInput {
     email: string;
@@ -17,7 +20,9 @@ export async function registerNewGoogleUserAction({
     email,
 }: RegisterGoogleUserInput): Promise<RegisterGoogleUserResponse> {
     try {
-        const existing = await db.query.users.findFirst({ where: eq(users.email, email) });
+        const existing = await executeQuery(async () => {
+            return await db.query.users.findFirst({ where: eq(users.email, email) });
+        });
 
         if (existing) {
             return {

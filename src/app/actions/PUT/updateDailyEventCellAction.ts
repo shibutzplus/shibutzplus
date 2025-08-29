@@ -4,7 +4,7 @@ import { DailyScheduleType, DailyScheduleRequest } from "@/models/types/dailySch
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { eq } from "drizzle-orm";
-import { db, schema } from "../../../db";
+import { db, schema, executeQuery } from "../../../db";
 import { ActionResponse } from "@/models/types/actions";
 import { NewDailyScheduleSchema } from "@/db/schema";
 import { getDateReturnString, getStringReturnDate } from "@/utils/time";
@@ -40,25 +40,27 @@ export async function updateDailyEventCellAction(
             return authError as ActionResponse;
         }
 
-        const updatedEntry = await db
-            .update(schema.dailySchedule)
-            .set({
-                date: getDateReturnString(date),
-                day: day,
-                hour: hour,
-                columnId: columnId,
-                schoolId: school.id,
-                classId: null,
-                subjectId: null,
-                issueTeacherId: null,
-                issueTeacherType: "event",
-                subTeacherId: null,
-                eventTitle: eventTitle,
-                event: event,
-                position: position,
-            } as Partial<NewDailyScheduleSchema>)
-            .where(eq(schema.dailySchedule.id, id))
-            .returning();
+        const updatedEntry = await executeQuery(async () => {
+            return await db
+                .update(schema.dailySchedule)
+                .set({
+                    date: getDateReturnString(date),
+                    day: day,
+                    hour: hour,
+                    columnId: columnId,
+                    schoolId: school.id,
+                    classId: null,
+                    subjectId: null,
+                    issueTeacherId: null,
+                    issueTeacherType: "event",
+                    subTeacherId: null,
+                    eventTitle: eventTitle,
+                    event: event,
+                    position: position,
+                } as Partial<NewDailyScheduleSchema>)
+                .where(eq(schema.dailySchedule.id, id))
+                .returning();
+        });
 
         if (!updatedEntry[0]) {
             return {

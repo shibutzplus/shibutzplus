@@ -1,49 +1,61 @@
 "use server";
+import "server-only";
 
-import { SchoolStatus } from "@/models/types/school";
-import { UserSchema } from "@/db/schema/users";
-import messages from "@/resources/messages";
-import { db, schema } from "@/db";
+import { db, schema, executeQuery } from "@/db";
 import { eq } from "drizzle-orm";
+import type { UserSchema } from "@/db/schema/users";
+import type { SchoolStatus } from "@/models/types/school";
+import messages from "@/resources/messages";
 
 type GetUserWithSchoolStatusResponse = {
     success: boolean;
     message: string;
-    data?: UserSchema & { status: SchoolStatus };
+    data?: Omit<UserSchema, "password"> & { status: SchoolStatus };
 };
 
 export async function getUserByEmailAction(
     email: string,
 ): Promise<GetUserWithSchoolStatusResponse> {
     try {
-        const user = (await db.select().from(schema.users).where(eq(schema.users.email, email)))[0];
+        const [row] = await executeQuery(async () => {
+            return await db
+                .select({
+                    id: schema.users.id,
+                    name: schema.users.name,
+                    email: schema.users.email,
+                    role: schema.users.role,
+                    gender: schema.users.gender,
+                    authType: schema.users.authType,
+                    schoolId: schema.users.schoolId,
+                    createdAt: schema.users.createdAt,
+                    updatedAt: schema.users.updatedAt,
+                    status: schema.schools.status,
+                })
+                .from(schema.users)
+                .leftJoin(schema.schools, eq(schema.schools.id, schema.users.schoolId))
+                .where(eq(schema.users.email, email))
+                .limit(1);
+        });
 
-        if (!user) {
-            return {
-                success: false,
-                message: messages.auth.unauthorized,
-            };
-        }
+        if (!row) return { success: false, message: messages.auth.unauthorized };
 
-        let status = "onboarding" as SchoolStatus;
-        if (user.schoolId) {
-            const school = (
-                await db.select().from(schema.schools).where(eq(schema.schools.id, user.schoolId))
-            )[0];
-            if (school && school.status) {
-                status = school.status as SchoolStatus;
-            }
-        }
+        const status = (row.status ?? "onboarding") as SchoolStatus;
 
-        return {
-            success: true,
-            message: messages.auth.login.success,
-            data: { ...user, status },
+        const user: Omit<UserSchema, "password"> = {
+            id: row.id,
+            name: row.name,
+            email: row.email,
+            role: row.role,
+            gender: row.gender,
+            authType: row.authType,
+            schoolId: row.schoolId,
+            createdAt: row.createdAt,
+            updatedAt: row.updatedAt,
         };
-    } catch (error) {
-        return {
-            success: false,
-            message: messages.common.serverError,
-        };
+
+        return { success: true, message: messages.auth.login.success, data: { ...user, status } };
+    } catch (err) {
+        console.error("Error getUserByEmailAction:", err);
+        return { success: false, message: messages.common.serverError };
     }
 }

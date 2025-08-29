@@ -1,6 +1,6 @@
 "use server"
 
-import { db } from "@/db";
+import { db, executeQuery } from "@/db";
 import { teachers } from "@/db/schema/teachers";
 import { eq } from "drizzle-orm";
 import { TeacherType } from "@/models/types/teachers";
@@ -20,8 +20,10 @@ export async function getTeacherByIdAction(teacherId: string): Promise<GetTeache
                 message: messages.teachers.invalid,
             };
         }
-        const teacher = await db.query.teachers.findFirst({
-            where: eq(teachers.id, teacherId),
+        const teacher = await executeQuery(async () => {
+            return await db.query.teachers.findFirst({
+                where: eq(teachers.id, teacherId),
+            });
         });
         if (!teacher) {
             return {

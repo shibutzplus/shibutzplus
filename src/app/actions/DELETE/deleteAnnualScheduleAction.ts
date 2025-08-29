@@ -4,7 +4,7 @@ import { ActionResponse } from "@/models/types/actions";
 import { AnnualScheduleType } from "@/models/types/annualSchedule";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
-import { db, schema } from "@/db";
+import { db, schema, executeQuery } from "@/db";
 import { and, eq } from "drizzle-orm";
 
 export async function deleteAnnualScheduleAction(
@@ -22,36 +22,46 @@ export async function deleteAnnualScheduleAction(
             return authError as ActionResponse;
         }
 
-        // Fetch all rows matching the criteria (before deletion)
-        const toDeleteRows = await db.query.annualSchedule.findMany({
-            where: and(
-                eq(schema.annualSchedule.day, day),
-                eq(schema.annualSchedule.hour, hour),
-                eq(schema.annualSchedule.classId, classId),
-                eq(schema.annualSchedule.schoolId, schoolId)
-            ),
-            with: {
-                school: true,
-                class: true,
-                teacher: true,
-                subject: true,
-            },
+        const toDeleteRows = await executeQuery(async () => {
+            // Fetch all rows matching the criteria (before deletion)
+            const rows = await db.query.annualSchedule.findMany({
+                where: and(
+                    eq(schema.annualSchedule.day, day),
+                    eq(schema.annualSchedule.hour, hour),
+                    eq(schema.annualSchedule.classId, classId),
+                    eq(schema.annualSchedule.schoolId, schoolId)
+                ),
+                with: {
+                    school: true,
+                    class: true,
+                    teacher: true,
+                    subject: true,
+                },
+            });
+            
+            if (!rows || rows.length === 0) {
+                return null;
+            }
+            
+            // Delete all matching rows
+            await db.delete(schema.annualSchedule).where(
+                and(
+                    eq(schema.annualSchedule.day, day),
+                    eq(schema.annualSchedule.hour, hour),
+                    eq(schema.annualSchedule.classId, classId),
+                    eq(schema.annualSchedule.schoolId, schoolId)
+                )
+            );
+            
+            return rows;
         });
-        if (!toDeleteRows || toDeleteRows.length === 0) {
+        
+        if (!toDeleteRows) {
             return {
                 success: false,
                 message: "Annual schedule entries not found.",
             };
         }
-        // Delete all matching rows
-        await db.delete(schema.annualSchedule).where(
-            and(
-                eq(schema.annualSchedule.day, day),
-                eq(schema.annualSchedule.hour, hour),
-                eq(schema.annualSchedule.classId, classId),
-                eq(schema.annualSchedule.schoolId, schoolId)
-            )
-        );
 
         const deleted: AnnualScheduleType[] = toDeleteRows.map((row) => ({
             id: row.id,

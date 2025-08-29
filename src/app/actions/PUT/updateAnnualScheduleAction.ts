@@ -1,6 +1,6 @@
 "use server";
 
-import { db, schema } from "@/db";
+import { db, schema, executeQuery } from "@/db";
 import { AnnualScheduleType, AnnualScheduleRequest } from "@/models/types/annualSchedule";
 import { ActionResponse } from "@/models/types/actions";
 import { checkAuthAndParams } from "@/utils/authUtils";
@@ -29,18 +29,20 @@ export async function updateAnnualScheduleAction(
             return authError as ActionResponse;
         }
 
-        const updatedEntry = await db
-            .update(schema.annualSchedule)
-            .set({
-                day: scheduleData.day,
-                hour: scheduleData.hour,
-                schoolId: school.id,
-                classId: classData.id,
-                teacherId: teacher.id,
-                subjectId: subject.id,
-            } as Partial<NewAnnualScheduleSchema>)
-            .where(eq(schema.annualSchedule.id, id))
-            .returning();
+        const updatedEntry = await executeQuery(async () => {
+            return await db
+                .update(schema.annualSchedule)
+                .set({
+                    day: scheduleData.day,
+                    hour: scheduleData.hour,
+                    schoolId: school.id,
+                    classId: classData.id,
+                    teacherId: teacher.id,
+                    subjectId: subject.id,
+                } as Partial<NewAnnualScheduleSchema>)
+                .where(eq(schema.annualSchedule.id, id))
+                .returning();
+        });
 
         if (!updatedEntry[0]) {
             return {

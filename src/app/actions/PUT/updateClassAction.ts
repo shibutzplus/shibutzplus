@@ -4,7 +4,7 @@ import { ClassType, ClassRequest } from "@/models/types/classes";
 import { ActionResponse } from "@/models/types/actions";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
-import { db, schema } from "@/db";
+import { db, schema, executeQuery } from "@/db";
 import { eq } from "drizzle-orm";
 import { getClassesAction } from "../GET/getClassesAction";
 
@@ -23,16 +23,16 @@ export async function updateClassAction(
             return authError as ActionResponse;
         }
 
-        const updatedClass = (
-            await db
+        const updatedClass = await executeQuery(async () => {
+            return (await db
                 .update(schema.classes)
                 .set({
                     name: classData.name,
                     updatedAt: new Date(),
                 })
                 .where(eq(schema.classes.id, classId))
-                .returning()
-        )[0];
+                .returning())[0];
+        });
 
         if (!updatedClass) {
             return {

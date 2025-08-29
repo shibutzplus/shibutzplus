@@ -4,7 +4,7 @@ import { ActionResponse } from "@/models/types/actions";
 import { AnnualScheduleType } from "@/models/types/annualSchedule";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
-import { db, schema } from "@/db";
+import { db, schema, executeQuery } from "@/db";
 import { and, eq } from "drizzle-orm";
 import { SubjectType } from "@/models/types/subjects";
 
@@ -18,61 +18,65 @@ export async function deleteSubjectAction(
             return authError as ActionResponse;
         }
 
-        // Delete all annual schedule records for this subject
-        await db
-            .delete(schema.annualSchedule)
-            .where(
-                and(
-                    eq(schema.annualSchedule.schoolId, schoolId),
-                    eq(schema.annualSchedule.subjectId, subjectId),
-                ),
+        const { annualSchedule, remainingSubjects } = await executeQuery(async () => {
+            // Delete all annual schedule records for this subject
+            await db
+                .delete(schema.annualSchedule)
+                .where(
+                    and(
+                        eq(schema.annualSchedule.schoolId, schoolId),
+                        eq(schema.annualSchedule.subjectId, subjectId),
+                    ),
+                );
+
+            // Delete all daily schedule records for this class
+            await db
+                .delete(schema.dailySchedule)
+                .where(
+                    and(
+                        eq(schema.dailySchedule.schoolId, schoolId),
+                        eq(schema.dailySchedule.subjectId, subjectId),
+                    ),
+                );
+
+            const schedules = await db.query.annualSchedule.findMany({
+                where: eq(schema.annualSchedule.schoolId, schoolId),
+                with: {
+                    school: true,
+                    class: true,
+                    teacher: true,
+                    subject: true,
+                },
+            });
+
+            const annualSchedule = schedules.map(
+                (schedule: any) =>
+                    ({
+                        id: schedule.id,
+                        day: schedule.day,
+                        hour: schedule.hour,
+                        school: schedule.school,
+                        class: schedule.class,
+                        teacher: schedule.teacher,
+                        subject: schedule.subject,
+                        createdAt: schedule.createdAt,
+                        updatedAt: schedule.updatedAt,
+                    }) as AnnualScheduleType,
             );
 
-        // Delete all daily schedule records for this class
-        await db
-            .delete(schema.dailySchedule)
-            .where(
-                and(
-                    eq(schema.dailySchedule.schoolId, schoolId),
-                    eq(schema.dailySchedule.subjectId, subjectId),
-                ),
-            );
+            // Delete the subject
+            await db
+                .delete(schema.subjects)
+                .where(and(eq(schema.subjects.schoolId, schoolId), eq(schema.subjects.id, subjectId)));
 
-        const schedules = await db.query.annualSchedule.findMany({
-            where: eq(schema.annualSchedule.schoolId, schoolId),
-            with: {
-                school: true,
-                class: true,
-                teacher: true,
-                subject: true,
-            },
+            // Get the remaining subjects for this school
+            const remainingSubjects = await db
+                .select()
+                .from(schema.subjects)
+                .where(eq(schema.subjects.schoolId, schoolId));
+
+            return { annualSchedule, remainingSubjects };
         });
-
-        const annualSchedule = schedules.map(
-            (schedule: any) =>
-                ({
-                    id: schedule.id,
-                    day: schedule.day,
-                    hour: schedule.hour,
-                    school: schedule.school,
-                    class: schedule.class,
-                    teacher: schedule.teacher,
-                    subject: schedule.subject,
-                    createdAt: schedule.createdAt,
-                    updatedAt: schedule.updatedAt,
-                }) as AnnualScheduleType,
-        );
-
-        // Delete the subject
-        await db
-            .delete(schema.subjects)
-            .where(and(eq(schema.subjects.schoolId, schoolId), eq(schema.subjects.id, subjectId)));
-
-        // Get the remaining subjects for this school
-        const remainingSubjects = await db
-            .select()
-            .from(schema.subjects)
-            .where(eq(schema.subjects.schoolId, schoolId));
 
         return {
             success: true,

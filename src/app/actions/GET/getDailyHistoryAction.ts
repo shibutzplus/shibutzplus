@@ -5,7 +5,7 @@ import { ActionResponse } from "@/models/types/actions";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { and, eq, gte, lte } from "drizzle-orm";
-import { db, schema } from "../../../db";
+import { db, schema, executeQuery } from "../../../db";
 import { generateDateRange, getCurrentMonth, getCurrentYear, getDateReturnString } from "@/utils/time";
 
 export type DailyHistoryMatrix = {
@@ -35,54 +35,60 @@ export async function getDailyHistoryAction(schoolId: string): Promise<GetDailyH
         const allDates = generateDateRange(startDate, endDate);
         
         // Query database for all schedules in the date range
-        const schedules = await db.query.dailySchedule.findMany({
-            where: and(
-                eq(schema.dailySchedule.schoolId, schoolId),
-                gte(schema.dailySchedule.date, getDateReturnString(startDate)),
-                lte(schema.dailySchedule.date, getDateReturnString(endDate))
-            ),
-            with: {
-                class: true,
-                subject: true,
-                issueTeacher: true,
-                subTeacher: true,
-                school: true,
-            },
-        });
-        // Group schedules by date
-        const schedulesByDate: { [date: string]: DailyScheduleType[] } = {};
-        
-        schedules.forEach((schedule: any) => {
-            const dateKey = schedule.date;
-            if (!schedulesByDate[dateKey]) {
-                schedulesByDate[dateKey] = [];
-            }
+        const orderedResult = await executeQuery(async () => {
+            const schedules = await db.query.dailySchedule.findMany({
+                where: and(
+                    eq(schema.dailySchedule.schoolId, schoolId),
+                    gte(schema.dailySchedule.date, getDateReturnString(startDate)),
+                    lte(schema.dailySchedule.date, getDateReturnString(endDate))
+                ),
+                with: {
+                    class: true,
+                    subject: true,
+                    issueTeacher: true,
+                    subTeacher: true,
+                    school: true,
+                },
+            });
             
-            schedulesByDate[dateKey].push({
-                id: schedule.id,
-                date: schedule.date,
-                day: schedule.day,
-                hour: schedule.hour,
-                columnId: schedule.columnId,
-                eventTitle: schedule.eventTitle,
-                event: schedule.event,
-                school: schedule.school,
-                class: schedule.class,
-                subject: schedule.subject,
-                issueTeacher: schedule.issueTeacher,
-                issueTeacherType: schedule.issueTeacherType,
-                subTeacher: schedule.subTeacher,
-                instructions: schedule.instructions,
-                links: schedule.links,
-                position: schedule.position,
-                createdAt: schedule.createdAt,
-                updatedAt: schedule.updatedAt,
-            } as DailyScheduleType);
-        });
-        // Create ordered result by iterating through dates in chronological order
-        const orderedResult: { [date: string]: DailyScheduleType[] } = {};
-        allDates.forEach(date => {
-            orderedResult[date] = schedulesByDate[date] || [];
+            // Group schedules by date
+            const schedulesByDate: { [date: string]: DailyScheduleType[] } = {};
+            
+            schedules.forEach((schedule: any) => {
+                const dateKey = schedule.date;
+                if (!schedulesByDate[dateKey]) {
+                    schedulesByDate[dateKey] = [];
+                }
+                
+                schedulesByDate[dateKey].push({
+                    id: schedule.id,
+                    date: schedule.date,
+                    day: schedule.day,
+                    hour: schedule.hour,
+                    columnId: schedule.columnId,
+                    eventTitle: schedule.eventTitle,
+                    event: schedule.event,
+                    school: schedule.school,
+                    class: schedule.class,
+                    subject: schedule.subject,
+                    issueTeacher: schedule.issueTeacher,
+                    issueTeacherType: schedule.issueTeacherType,
+                    subTeacher: schedule.subTeacher,
+                    instructions: schedule.instructions,
+                    links: schedule.links,
+                    position: schedule.position,
+                    createdAt: schedule.createdAt,
+                    updatedAt: schedule.updatedAt,
+                } as DailyScheduleType);
+            });
+            
+            // Create ordered result by iterating through dates in chronological order
+            const result: { [date: string]: DailyScheduleType[] } = {};
+            allDates.forEach(date => {
+                result[date] = schedulesByDate[date] || [];
+            });
+            
+            return result;
         });
 
         return {

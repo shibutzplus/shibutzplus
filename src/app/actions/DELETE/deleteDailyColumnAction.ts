@@ -4,7 +4,7 @@ import { ActionResponse } from "@/models/types/actions";
 import { DailyScheduleType } from "@/models/types/dailySchedule";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
-import { db, schema } from "@/db";
+import { db, schema, executeQuery } from "@/db";
 import { and, eq } from "drizzle-orm";
 
 export async function deleteDailyColumnAction(
@@ -18,27 +18,29 @@ export async function deleteDailyColumnAction(
             return authError as ActionResponse;
         }
 
-        await db
-            .delete(schema.dailySchedule)
-            .where(
-                and(
-                    eq(schema.dailySchedule.schoolId, schoolId),
-                    eq(schema.dailySchedule.columnId, columnId),
-                ),
-            );
+        const schedules = await executeQuery(async () => {
+            await db
+                .delete(schema.dailySchedule)
+                .where(
+                    and(
+                        eq(schema.dailySchedule.schoolId, schoolId),
+                        eq(schema.dailySchedule.columnId, columnId),
+                    ),
+                );
 
-        const schedules = await db.query.dailySchedule.findMany({
-            where: and(
-                eq(schema.dailySchedule.schoolId, schoolId),
-                eq(schema.dailySchedule.date, date)
-            ),
-            with: {
-                school: true,
-                class: true,
-                subject: true,
-                issueTeacher: true,
-                subTeacher: true,
-            },
+            return await db.query.dailySchedule.findMany({
+                where: and(
+                    eq(schema.dailySchedule.schoolId, schoolId),
+                    eq(schema.dailySchedule.date, date)
+                ),
+                with: {
+                    school: true,
+                    class: true,
+                    subject: true,
+                    issueTeacher: true,
+                    subTeacher: true,
+                },
+            });
         });
 
         const dailySchedules = schedules.map((schedule) => ({
