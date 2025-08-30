@@ -1,57 +1,56 @@
-.tableContainer {
-  width: 100%;
-  overflow-x: auto; 
-  position: relative;
-}
-
 .scheduleTable {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed;
+  table-layout: auto;
   background: #fff;
 }
 
+.scheduleTable th,
 .scheduleTable td {
-  padding: 8px 10px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  vertical-align: middle;
-  border-bottom: 1px solid #f1f1f1;
+  width: auto;
 }
 
-.scheduleTable th {
-  padding: 0; 
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  vertical-align: middle;
-  border-bottom: 1px solid #f1f1f1;
+/* עמודת "שיעור" מקבלת מינימום רוחב */
+.scheduleTable th:nth-child(2),
+.scheduleTable td:nth-child(2) {
+  min-width: 80px;
 }
 
-
-.scheduleTable thead th:first-child {
-  position: sticky;
-  inset-inline-start: 0;
-  background: #f9f9f9; 
-  z-index: 3; 
-  box-shadow: 2px 0 0 #e5e5e5;
+/* ===== דסקטופ (ברירת מחדל) ===== */
+/* יחס 60% לחומר לימוד, 40% לקישורים */
+.scheduleTable th:nth-child(3),
+.scheduleTable td:nth-child(3) {
+  width: 60%;
 }
 
-.scheduleTable tbody td:first-child {
-  position: sticky;
-  inset-inline-start: 0;
-  background: #fff;
-  z-index: 2;
-  box-shadow: 2px 0 0 #e5e5e5;
+.scheduleTable th:nth-child(4),
+.scheduleTable td:nth-child(4) {
+  width: 40%;
+  min-width: 120px;
 }
 
+/* ===== מובייל ===== */
+@media screen and (max-width: 768px) {
+  /* יחס 70% לחומר לימוד, 30% לקישורים */
+  .scheduleTable th:nth-child(3),
+  .scheduleTable td:nth-child(3) {
+    width: 70%;
+  }
 
-.scheduleTable th + th,
-.scheduleTable td + td {
-  border-inline-start: 1px solid #e5e5e5;
+  .scheduleTable th:nth-child(4),
+  .scheduleTable td:nth-child(4) {
+    width: 30%;
+    min-width: 100px;
+  }
 }
 
 .scheduleTable thead th {
-  background: #f9f9f9
+  background: #f5f5f5;
+  font-weight: 600;
+  border-bottom: 1px solid #ddd;
+  border-inline-start: 1px solid #e5e5e5;
+}
+
+.scheduleTable thead th:first-child {
+  border-inline-start: none;
 }

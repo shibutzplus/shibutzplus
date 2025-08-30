@@ -5,7 +5,7 @@ import { DailyScheduleType } from "@/models/types/dailySchedule";
 import { HourRowColor } from "@/style/tableColors";
 import { usePublicPortal } from "@/context/PublicPortalContext";
 
-type PortalRowProps = { hour: number; row: DailyScheduleType | undefined; };
+type PortalRowProps = { hour: number; row: DailyScheduleType | undefined };
 
 const PortalRow: React.FC<PortalRowProps> = ({ hour, row }) => {
   const { updateRowDetails, onReadTable } = usePublicPortal();
@@ -13,7 +13,7 @@ const PortalRow: React.FC<PortalRowProps> = ({ hour, row }) => {
   const [links, setLinks] = useState<string>(row?.links || "");
 
   const handleChange = (type: "instructions" | "links", value: string) => {
-    if (value.trim() && row && !onReadTable) {
+    if (row && !onReadTable) {
       updateRowDetails(row, {
         instructions: type === "instructions" ? value : instructions,
         links: type === "links" ? value : links,
@@ -22,22 +22,32 @@ const PortalRow: React.FC<PortalRowProps> = ({ hour, row }) => {
   };
 
   return (
-    <tr key={hour}>
-      <td className={styles.hourCell} style={{ backgroundColor: HourRowColor }}>{hour}</td>
+    <tr>
+      {/* שעה */}
+      <td className={styles.hourCell} style={{ backgroundColor: HourRowColor }}>
+        {hour}
+      </td>
 
-      <td className={styles.scheduleCell}><div className={styles.cellContent}>{row?.class?.name || ""}</div></td>
-      <td className={styles.scheduleCell}><div className={styles.cellContent}>{row?.subTeacher?.name || ""}</div></td>
-      <td className={styles.scheduleCell}><div className={styles.cellContent}>{row?.subject?.name || ""}</div></td>
+      {/* שיעור: 3 שורות */}
+      <td className={styles.scheduleCell}>
+        <div className={styles.cellContent}>
+          <div className={styles.className}>{row?.class?.name ?? ""}</div>       {/* כיתה */}
+          <div className={styles.subjectName}>{row?.subject?.name ?? ""}</div>   {/* מקצוע */}
+          <div style={{ height: "6px" }}></div>                                 {/* מפריד */}
+          <div className={styles.subTeacher}>{row?.subTeacher?.name ?? ""}</div> {/* מורה */}
+        </div>
+      </td>
 
+      {/* חומר לימוד */}
       <td className={styles.scheduleCellInput}>
         {row && (
           <InputTextArea
-            id="instructions"
+            id={`instructions-${hour}`}
             name="instructions"
             value={instructions}
             onChange={(e) => setInstructions(e.target.value)}
             onBlur={(e) => handleChange("instructions", e.target.value)}
-            placeholder={onReadTable ? "עדיין לא נוספו חומרי לימוד" : "הוספת חומרי לימוד והנחיות"}
+            placeholder={onReadTable ? "לא נוספו חומרי לימוד" : "חומר לימוד"}
             disabled={onReadTable}
             rows={1}
             autoGrow
@@ -45,15 +55,16 @@ const PortalRow: React.FC<PortalRowProps> = ({ hour, row }) => {
         )}
       </td>
 
+      {/* קישורים */}
       <td className={styles.scheduleCellInput}>
         {row && (
           <InputTextArea
-            id="links"
+            id={`links-${hour}`}
             name="links"
             value={links}
             onChange={(e) => setLinks(e.target.value)}
             onBlur={(e) => handleChange("links", e.target.value)}
-            placeholder={onReadTable ? "לא נוספו קישורים" : "הוספת קישורים רלוונטים"}
+            placeholder={onReadTable ? "לא נוספו קישורים" : "קישורים"}
             disabled={onReadTable}
             rows={1}
             autoGrow

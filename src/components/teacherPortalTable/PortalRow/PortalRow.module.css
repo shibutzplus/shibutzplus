@@ -44,3 +44,11 @@
   border: none;
   background: transparent;
 }
+
+.className {
+  font-weight: bold;
+}
+
+.subTeacher {
+  font-weight: bold;
+}
