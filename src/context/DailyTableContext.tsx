@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useState, useContext, ReactNode, useEffect } from "react";
-import { TeacherRow, ActionColumnType } from "@/models/types/table";
+import { TeacherRow } from "@/models/types/table";
 import { ColumnDef } from "@tanstack/react-table";
 import {
     ColumnType,
@@ -51,7 +51,7 @@ interface DailyTableContextType {
     dailyDbRows: DailyScheduleType[] | undefined;
     isLoading: boolean;
     selectedDate: string;
-    addNewColumn: (colType: ActionColumnType) => void;
+    addNewColumn: (colType: ColumnType) => void;
     deleteColumn: (columnId: string) => Promise<boolean>;
     populateTeacherColumn: (
         id: string,
@@ -85,7 +85,7 @@ export const useDailyTableContext = () => {
     return context;
 };
 
-function buildColumn(colType: ActionColumnType, columnId: string): ColumnDef<TeacherRow> {
+function buildColumn(colType: ColumnType, columnId: string): ColumnDef<TeacherRow> {
     if (colType === "missingTeacher") {
         return {
             id: columnId,
@@ -340,6 +340,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
             });
 
             const updatedSchedule = updateAddCell(
+                response.data.id,
                 mainDailyTable,
                 selectedDate,
                 cellData,
@@ -362,7 +363,6 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     ) => {
         let response;
         if (!school) return;
-
         if (type === "event" && data.event) {
             const dailyCellData = addNewEventCell(
                 school,
@@ -387,7 +387,6 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
             if (dailyCellData)
                 response = await updateDailyTeacherCellAction(dailyScheduleId, dailyCellData);
         }
-
         if (response?.success && response.data) {
             setDailyDbRows((prev) => {
                 if (!response.data || !prev) return prev;
@@ -398,6 +397,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
             });
 
             const updatedSchedule = updateAddCell(
+                response.data.id,
                 mainDailyTable,
                 selectedDate,
                 cellData,
@@ -413,7 +413,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
 
     // -- Table Actions -- //
 
-    const addNewColumn = (colType: ActionColumnType) => {
+    const addNewColumn = (colType: ColumnType) => {
         const columnId = `${colType}-${generateId()}`;
         const newCol = buildColumn(colType, columnId);
         setActionCols([...tableColumns, newCol]);

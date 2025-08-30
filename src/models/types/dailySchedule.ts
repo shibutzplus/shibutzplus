@@ -62,6 +62,7 @@ export type HeaderCol = {
 }
 
 export type DailyScheduleCell = {
+    DBid?: string;
     headerCol?: HeaderCol;
     subTeacher?: TeacherType;
     subject?: SubjectType;

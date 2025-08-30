@@ -85,6 +85,17 @@ const messages = {
         success: "הנתונים יומיים פורסמו בהצלחה",
         error: "שגיאה בפרסום יומי",
         alreadyPublished: "יום זה כבר פורסם",
+    },
+    //TODO
+    share: {
+        teacher: {
+            title: "",
+            text: "",
+        },
+        daily: {
+            title: "",
+            text: "",
+        }
     }
 }
 

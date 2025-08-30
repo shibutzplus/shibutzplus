@@ -1,11 +1,13 @@
-[23.08, 23.08, 23.08, 23.08, 23.08, 26.08, 27.08]
+
 
 -- daily page
 v- scroll hours column 
 v- table design and colors
 - remove the selected issue teachers from the select
 - sub teacher can also be text, not only select
-- when publish, show the published link
+- sort the columns to be group by type (color)
+- react motion for change position
+v- when publish, show the published link
 v- render table and preformence 
 - does the select group is ok (need to check if that correct)
 - option to select multiple sub teachers (do we need?)

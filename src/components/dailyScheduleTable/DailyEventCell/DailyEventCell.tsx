@@ -31,11 +31,9 @@ const DailyEventCell: React.FC<DailyEventCellProps> = ({ cell }) => {
 
       let response;
       if (eventData) {
-        const existing = dailyDbRows?.find(
-          (e) => e.columnId === columnId && e.hour === Number(hour) && e.event === eventData,
-        );
-        if (existing) {
-          response = await updateCell("event", cellData, columnId, existing.id, { event: info });
+        const existingId = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.DBid;
+        if (existingId) {
+          response = await updateCell("event", cellData, columnId, existingId, { event: info });
         }
       } else {
         response = await addNewCell("event", cellData, columnId, { event: info });

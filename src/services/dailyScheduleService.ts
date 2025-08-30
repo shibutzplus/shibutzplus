@@ -9,7 +9,6 @@ import {
 } from "@/models/types/dailySchedule";
 import { SchoolType } from "@/models/types/school";
 import { SubjectType } from "@/models/types/subjects";
-import { ActionColumnType } from "@/models/types/table";
 import { TeacherType } from "@/models/types/teachers";
 import { getDayNumberByDateString, HOURS_IN_DAY, getStringReturnDate } from "@/utils/time";
 
@@ -64,6 +63,7 @@ export const setTeacherColumn = (
                 hour: existingData.hour,
                 subTeacher: existingData.subTeacher,
                 headerCol: existingData.headerCol,
+                DBid: existingData.DBid,
             };
         } else {
             // Empty cell
@@ -93,12 +93,12 @@ export const setEventColumn = (
 
     for (let hour = 1; hour <= HOURS_IN_DAY; hour++) {
         const existingData = hourDataMap.get(hour);
-
         if (existingData) {
             dailySchedule[selectedDate][columnId][`${hour}`] = {
                 event: existingData.event,
                 hour: existingData.hour,
                 headerCol: existingData.headerCol,
+                DBid: existingData.DBid,
             };
         } else {
             // Empty cell with header info only
@@ -108,6 +108,7 @@ export const setEventColumn = (
             };
         }
     }
+
 
     return dailySchedule;
 };
@@ -150,6 +151,7 @@ export const setEmptyEventColumn = (
 
 export const initTeacherCellData = (entry: DailyScheduleType) => {
     const cellData: DailyScheduleCell = {
+        DBid: entry.id,
         hour: entry.hour,
         class: entry.class,
         subject: entry.subject,
@@ -161,6 +163,7 @@ export const initTeacherCellData = (entry: DailyScheduleType) => {
 
 export const initEventCellData = (entry: DailyScheduleType) => {
     const cellData: DailyScheduleCell = {
+        DBid: entry.id,
         hour: entry.hour,
         event: entry.event,
         headerCol: { headerEvent: entry.eventTitle, type: "event" },
@@ -197,30 +200,6 @@ export const createNewTeacherCellData = (
     return cellData;
 };
 
-export const createNewEventCellData = (
-    selectedDate: string,
-    columnId: string,
-    hour: number,
-    school: SchoolType,
-    eventTitle: string,
-    event: string,
-    position: number,
-) => {
-    const cellData: DailyScheduleRequest = {
-        date: getStringReturnDate(selectedDate),
-        day: getDayNumberByDateString(selectedDate).toString(),
-        issueTeacherType: "event",
-        columnId,
-        hour,
-        school,
-        eventTitle,
-        event,
-        position,
-    };
-
-    return cellData;
-};
-
 export const addNewEventCell = (
     school: SchoolType,
     cellData: DailyScheduleCell,
@@ -233,15 +212,18 @@ export const addNewEventCell = (
     if (!school || event === undefined || !headerCol?.headerEvent) {
         return;
     }
-    const dailyCellData: DailyScheduleRequest = createNewEventCellData(
-        selectedDate,
+    const dailyCellData: DailyScheduleRequest = {
+        date: getStringReturnDate(selectedDate),
+        day: getDayNumberByDateString(selectedDate).toString(),
+        eventTitle: headerCol.headerEvent,
+        issueTeacherType: "event",
         columnId,
         hour,
         school,
-        headerCol.headerEvent,
         event,
         position,
-    );
+    };
+
     return dailyCellData;
 };
 
@@ -292,7 +274,7 @@ export const getColumnsFromStorage = (storageData: {
         [hour: string]: DailyScheduleCell;
     };
 }) => {
-    const columnsToCreate: { id: string; type: ActionColumnType }[] = [];
+    const columnsToCreate: { id: string; type: ColumnType }[] = [];
     const seenColumnIds = new Set<string>();
 
     // Extract column information from storage
@@ -312,6 +294,7 @@ export const getColumnsFromStorage = (storageData: {
 };
 
 export const updateAddCell = (
+    responseId: string,
     mainDailyTable: DailySchedule,
     selectedDate: string,
     cellData: DailyScheduleCell,
@@ -333,8 +316,10 @@ export const updateAddCell = (
     };
 
     if (data.event) {
+        existingCell.DBid = responseId;
         existingCell.event = data.event || eventPlaceholder;
     } else if (data.subTeacher) {
+        existingCell.DBid = responseId;
         existingCell.subTeacher = data.subTeacher;
     }
 
@@ -344,7 +329,7 @@ export const updateAddCell = (
 
 export const populateTable = (dataColumns: DailyScheduleType[], selectedDate: string) => {
     const entriesByDayAndHeader: Record<string, Record<string, DailyScheduleCell[]>> = {};
-    const columnsToCreate: { id: string; type: ActionColumnType }[] = [];
+    const columnsToCreate: { id: string; type: ColumnType }[] = [];
     const seenColumnIds = new Set<string>();
     let existingCells: { teacherId: string; hours: number[] }[] = [];
 
