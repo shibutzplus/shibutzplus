@@ -16,10 +16,9 @@ const PortalTable: React.FC<PortalTableProps> = ({ tableData }) => {
     }
   }
 
-  // 4 columns total: hour + שיעור + חומר לימוד + קישורים
   const { tableRef, ColGroup, handleProps } = useResizableColumns({
     count: 4,
-    initial: [56, 260, 320, 160], // hour, שיעור, חומר לימוד, קישורים
+    initial: [56, 260, 320, 160],
     min: 48,
     max: 600,
   });

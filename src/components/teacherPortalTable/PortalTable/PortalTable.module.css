@@ -10,14 +10,11 @@
   width: auto;
 }
 
-/* עמודת "שיעור" מקבלת מינימום רוחב */
 .scheduleTable th:nth-child(2),
 .scheduleTable td:nth-child(2) {
   min-width: 80px;
 }
 
-/* ===== דסקטופ (ברירת מחדל) ===== */
-/* יחס 60% לחומר לימוד, 40% לקישורים */
 .scheduleTable th:nth-child(3),
 .scheduleTable td:nth-child(3) {
   width: 60%;
@@ -29,9 +26,7 @@
   min-width: 120px;
 }
 
-/* ===== מובייל ===== */
 @media screen and (max-width: 768px) {
-  /* יחס 70% לחומר לימוד, 30% לקישורים */
   .scheduleTable th:nth-child(3),
   .scheduleTable td:nth-child(3) {
     width: 70%;

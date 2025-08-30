@@ -23,22 +23,19 @@ const PortalRow: React.FC<PortalRowProps> = ({ hour, row }) => {
 
   return (
     <tr>
-      {/* שעה */}
       <td className={styles.hourCell} style={{ backgroundColor: HourRowColor }}>
         {hour}
       </td>
 
-      {/* שיעור: 3 שורות */}
       <td className={styles.scheduleCell}>
         <div className={styles.cellContent}>
-          <div className={styles.className}>{row?.class?.name ?? ""}</div>       {/* כיתה */}
-          <div className={styles.subjectName}>{row?.subject?.name ?? ""}</div>   {/* מקצוע */}
-          <div style={{ height: "6px" }}></div>                                 {/* מפריד */}
-          <div className={styles.subTeacher}>{row?.subTeacher?.name ?? ""}</div> {/* מורה */}
+          <div className={styles.className}>{row?.class?.name ?? ""}</div>
+          <div className={styles.subjectName}>{row?.subject?.name ?? ""}</div>
+          <div style={{ height: "6px" }}></div>
+          <div className={styles.subTeacher}>{row?.subTeacher?.name ?? ""}</div>
         </div>
       </td>
 
-      {/* חומר לימוד */}
       <td className={styles.scheduleCellInput}>
         {row && (
           <InputTextArea
@@ -55,7 +52,6 @@ const PortalRow: React.FC<PortalRowProps> = ({ hour, row }) => {
         )}
       </td>
 
-      {/* קישורים */}
       <td className={styles.scheduleCellInput}>
         {row && (
           <InputTextArea
