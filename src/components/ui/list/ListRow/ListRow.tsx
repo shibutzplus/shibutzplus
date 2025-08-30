@@ -4,6 +4,8 @@ import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
 import Icons from "@/style/icons";
 import styles from "./ListRow.module.css";
 import { successToast } from "@/lib/toast";
+import { useShareTextOrLink } from "@/hooks/useShareTextOrLink";
+import messages from "@/resources/messages";
 
 // Generic type for row data
 export type ListRowProps<T> = {
@@ -37,6 +39,7 @@ function ListRow<T extends Record<string, any>>({
     const [isEditLoading, setIsEditLoading] = useState(false);
     const [value, setValue] = useState<string>(getInitialValue(item));
     const [validationErrors, setValidationErrors] = useState<{ [K in keyof T]?: string }>({});
+    const share = useShareTextOrLink();
 
     useEffect(() => {
         setValue(getInitialValue(item));
@@ -76,13 +79,8 @@ function ListRow<T extends Record<string, any>>({
     };
 
     const handleCopyUrl = async () => {
-        try {
-            if(!link) return;
-            await navigator.clipboard.writeText(link);
-            successToast('הקישור הועתק בהצלחה');
-        } catch (error) {
-            console.error("Failed to copy URL:", error);
-        }
+        if (!link) return;
+        share(messages.share.teacher.title, messages.share.teacher.text, link);
     };
 
     return (

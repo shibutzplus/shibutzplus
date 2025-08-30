@@ -26,15 +26,7 @@
 }
 
 .copyLink span {
-    width: fit-content;
-    max-width: 170px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.copyLink:hover{
-    color: var(--description-hover-text);
+    display: none;
 }
 
 .actions {
@@ -61,5 +53,38 @@
 
     .actions {
         gap: 35px;
+    }
+
+    .copyLink{
+        direction: ltr;
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--description-text);
+        cursor: pointer;
+    }
+    
+    .copyLink span {
+        display: block;
+        width: fit-content;
+        max-width: 170px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    
+    .copyLink:hover{
+        color: var(--description-hover-text);
+    }
+}
+
+/* Laptop HD 1280px - 1439px -- 720px*/
+@media screen and (min-width: 1280px) {
+    .copyLink span {
+        max-width: 220px;
     }
 }

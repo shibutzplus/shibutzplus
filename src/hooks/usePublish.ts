@@ -5,11 +5,14 @@ import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { generateSchoolUrl } from "@/utils";
 import { useState } from "react";
+import { useShareTextOrLink } from "./useShareTextOrLink";
 
 const usePublish = () => {
     const { school } = useMainContext();
     const { selectedDate } = useDailyTableContext();
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const share = useShareTextOrLink()
+
     const publishDailySchedule = async () => {
         try {
             setIsLoading(true);
@@ -27,13 +30,8 @@ const usePublish = () => {
     };
 
     const onCopyLink = async () => {
-        try {
-            if (!school) return;
-            await navigator.clipboard.writeText(generateSchoolUrl(school.id));
-            successToast("הקישור הועתק בהצלחה");
-        } catch (error) {
-            console.error("Failed to copy URL:", error);
-        }
+        if(!school) return;
+        share(messages.share.daily.title, messages.share.daily.text, generateSchoolUrl(school.id));
     };
 
     return { publishDailySchedule, isLoading, onCopyLink };

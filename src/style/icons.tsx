@@ -10,7 +10,7 @@ import { FaPlus } from "react-icons/fa6";
 import { FaList } from "react-icons/fa6";
 import { PiChairLight } from "react-icons/pi";
 import { GoHistory } from "react-icons/go";
-import { FaSave, FaLink } from "react-icons/fa";
+import { FaSave, FaLink, FaShareAlt } from "react-icons/fa";
 import {
     IoHomeOutline,
     IoCalendarOutline,
@@ -46,6 +46,7 @@ const Icons = {
     close: IoCloseOutline,
     save: FaSave,
     link: FaLink,
+    share: FaShareAlt,
 }
 
 export default Icons;

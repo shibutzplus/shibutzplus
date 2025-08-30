@@ -63,7 +63,6 @@ export const createPairs = (teacherIds: string[], subjectIds: string[]) => {
 
 // TODO: not in use
 export const getUniqueCells = (rows: AnnualScheduleRequest[] | undefined | null) => {
-    console.log("rows", rows);
     if (!Array.isArray(rows)) return [];
     const uniqueKeys = new Set<string>();
     const uniqueCells: { day: number; hour: number }[] = [];

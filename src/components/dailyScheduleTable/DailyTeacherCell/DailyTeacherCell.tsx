@@ -18,7 +18,7 @@ type DailyTeacherCellProps = {
 
 const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
     const { teachers, classes } = useMainContext();
-    const { mainDailyTable, addNewCell, dailyDbRows, selectedDate, updateCell } =
+    const { mainDailyTable, addNewCell, selectedDate, updateCell } =
         useDailyTableContext();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -61,14 +61,9 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
 
             let response;
             if (subTeacherData) {
-                const existingDailyEntry = dailyDbRows?.find(
-                    (entry) =>
-                        entry.columnId === columnId &&
-                        entry.hour === Number(hour) &&
-                        entry.subTeacher?.id === subTeacherData.id,
-                );
-                if (existingDailyEntry) {
-                    response = await updateCell(type, cellData, columnId, existingDailyEntry.id, {
+                const existingDailyId = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.DBid;
+                if (existingDailyId) {
+                    response = await updateCell(type, cellData, columnId, existingDailyId, {
                         subTeacher: newSubTeacherData,
                     });
                 }
