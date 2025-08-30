@@ -1,0 +1,17 @@
+.mobileNav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background-color: var(--background-inner);
+    height: var(--header-height);
+    box-sizing: border-box;
+    padding: 0 1em;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+}

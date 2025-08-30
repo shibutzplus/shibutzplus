@@ -16,11 +16,11 @@ type DailyTeacherHeaderProps = {
 
 const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId, type }) => {
     const { teachers } = useMainContext();
-    const { dailySchedule, selectedDate, populateTeacherColumn } = useDailyTableContext();
+    const { mainDailyTable, selectedDate, populateTeacherColumn } = useDailyTableContext();
     const [isLoading, setIsLoading] = useState(false);
 
     const selectedTeacherData =
-        dailySchedule[selectedDate]?.[columnId]?.["1"]?.headerCol?.headerTeacher;
+        mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.headerTeacher;
 
     const handleTeacherChange = async (value: string) => {
         const teacherId = value;
@@ -50,6 +50,7 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId, type 
                 placeholder="מורה"
                 isSearchable
                 isDisabled={isLoading}
+                backgroundColor="transparent"
                 hasBorder
             />
         </EditableHeader>

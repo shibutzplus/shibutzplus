@@ -15,7 +15,7 @@
     display: none;
 }
 
-.spacer {
+.leftSide{
     display: none;
 }
 
@@ -34,7 +34,7 @@
 
     .topButtonsContainer {
         display: flex;
-        gap: 1rem;
+        gap: 2rem;
         justify-content: center;
         align-items: center;
         flex-wrap: wrap;
@@ -43,11 +43,9 @@
         width: fit-content;
     }
 
-    .spacer {
+    .leftSide{
         display: flex;
-        width: 1px;
-        height: 70%;
-        background-color: var(--input-border);
-        margin: 0 1em;
+        width: 100%;
+        justify-content: flex-end;
     }
 }

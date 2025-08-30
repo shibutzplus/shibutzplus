@@ -7,16 +7,12 @@ import { useDailyTableContext } from "@/context/DailyTableContext";
 import { DailyTableColors } from "@/style/tableColors";
 import Icons from "@/style/icons";
 import ActionBtn from "@/components/ui/buttons/ActionBtn/ActionBtn";
+import usePublish from "@/hooks/usePublish";
 
 const DailyTopActions: React.FC = () => {
-    const {
-        isLoading,
-        addNewColumn,
-        daysSelectOptions,
-        selectedDate,
-        handleDayChange,
-        publishDailySchedule,
-    } = useDailyTableContext();
+    const { isLoading, addNewColumn, daysSelectOptions, selectedDate, handleDayChange } =
+        useDailyTableContext();
+    const { publishDailySchedule, isLoading: publishLoading } = usePublish();
 
     return (
         <section className={styles.actionsContainer}>
@@ -68,19 +64,18 @@ const DailyTopActions: React.FC = () => {
                     }}
                     func={() => addNewColumn("event")}
                 />
-
-                <div className={styles.spacer} />
-
+            </div>
+            <div className={styles.leftSide}>
                 <ActionBtn
                     type="publish"
                     Icon={<Icons.publish size={16} />}
                     label="פרסום מערכת"
-                    isDisabled={isLoading}
+                    isDisabled={publishLoading}
+                    func={publishDailySchedule}
                     style={{
                         borderLeft: DailyTableColors.publish.borderLeft,
                         color: DailyTableColors.publish.color,
                     }}
-                    func={() => publishDailySchedule()}
                 />
             </div>
         </section>

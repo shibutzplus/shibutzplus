@@ -4,14 +4,14 @@ import { ActionColumnType } from "@/models/types/table";
 
 const ActionBtn: React.FC<{
     type: ActionColumnType;
-    Icon: React.ReactNode;
+    Icon?: React.ReactNode;
     label: string;
     style: React.CSSProperties;
     func: () => void;
     isDisabled?: boolean;
 }> = ({ type, Icon, label, style, func, isDisabled = false }) => (
     <button key={type} style={style} className={styles.topButton} title={label} onClick={func} disabled={isDisabled}>
-        {Icon}
+        {Icon ? Icon : null}
         <span>{label}</span>
     </button>
 );

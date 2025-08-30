@@ -8,10 +8,10 @@ type DailyEventHeaderProps = {
 };
 
 const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId }) => {
-    const { populateEventColumn, dailySchedule, selectedDate } = useDailyTableContext();
+    const { populateEventColumn, mainDailyTable, selectedDate } = useDailyTableContext();
 
     const selectedEventData =
-        dailySchedule[selectedDate]?.[columnId]?.["1"]?.headerCol?.headerEvent;
+        mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.headerEvent;
 
     const handleChange = (value: string) => {
         if (value.trim()) {
@@ -25,6 +25,7 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId }) => {
                 placeholder="מידע"
                 onBlur={(e) => handleChange(e.target.value)}
                 defaultValue={selectedEventData || ""}
+                backgroundColor="transparent"
             />
         </EditableHeader>
     );

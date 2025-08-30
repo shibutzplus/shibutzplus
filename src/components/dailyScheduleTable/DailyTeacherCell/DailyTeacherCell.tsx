@@ -1,15 +1,13 @@
 import React, { useMemo, useState } from "react";
-import { useAnnualTable } from "@/context/AnnualTableContext";
 import { getDayNameByDateString } from "@/utils/time";
 import styles from "./DailyTeacherCell.module.css";
 import { useMainContext } from "@/context/MainContext";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import { CellContext } from "@tanstack/react-table";
 import { TeacherRow } from "@/models/types/table";
-import { createSelectOptions } from "@/utils/format";
 import DynamicInputGroupSelect from "@/components/ui/select/InputGroupSelect/DynamicInputGroupSelect";
 import { ColumnType } from "@/models/types/dailySchedule";
-import { errorToast, successToast } from "@/lib/toast";
+import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { sortTeachersForSchedule } from "@/utils/teachers";
 
@@ -20,17 +18,17 @@ type DailyTeacherCellProps = {
 
 const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
     const { teachers, classes } = useMainContext();
-    const { dailySchedule, addNewCell, dailyScheduleRawData, selectedDate, updateCell } =
+    const { mainDailyTable, addNewCell, dailyDbRows, selectedDate, updateCell } =
         useDailyTableContext();
     const [isLoading, setIsLoading] = useState(false);
 
     // Get the current hour, class, subject, subTeacher and headerCol from the row data
     const columnId = cell?.column?.id;
     const hour = cell?.row?.original?.hour.toString();
-    const classData = dailySchedule[selectedDate]?.[columnId]?.[hour]?.class;
-    const subjectData = dailySchedule[selectedDate]?.[columnId]?.[hour]?.subject;
-    const subTeacherData = dailySchedule[selectedDate]?.[columnId]?.[hour]?.subTeacher;
-    const headerData = dailySchedule[selectedDate]?.[columnId]?.[hour]?.headerCol;
+    const classData = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.class;
+    const subjectData = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.subject;
+    const subTeacherData = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.subTeacher;
+    const headerData = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.headerCol;
 
     const [selectedSubTeacher, setSelectedSubTeacher] = useState<string>(subTeacherData?.id || "");
 
@@ -58,12 +56,12 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
             const newSubTeacherData = teachers?.find((t) => t.id === teacherId);
             if (!newSubTeacherData) return;
 
-            const cellData = dailySchedule[selectedDate]?.[columnId]?.[hour];
+            const cellData = mainDailyTable[selectedDate]?.[columnId]?.[hour];
             if (!cellData) return;
 
             let response;
             if (subTeacherData) {
-                const existingDailyEntry = dailyScheduleRawData?.find(
+                const existingDailyEntry = dailyDbRows?.find(
                     (entry) =>
                         entry.columnId === columnId &&
                         entry.hour === Number(hour) &&
@@ -79,20 +77,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
                     subTeacher: newSubTeacherData,
                 });
             }
-            if (response) {
-                successToast(
-                    subTeacherData
-                        ? messages.dailySchedule.updateSuccess
-                        : messages.dailySchedule.createSuccess,
-                );
-            } else {
-                errorToast(
-                    subTeacherData
-                        ? messages.dailySchedule.updateError
-                        : messages.dailySchedule.createError,
-                );
-                setSelectedSubTeacher("");
-            }
+            if (!response) throw new Error();
         } catch (error) {
             errorToast(
                 subTeacherData

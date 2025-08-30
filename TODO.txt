@@ -1,15 +1,15 @@
 [23.08, 23.08, 23.08, 23.08, 23.08, 26.08, 27.08]
 
 -- daily page
-- scroll hours column 
-- table design and colors
+v- scroll hours column 
+v- table design and colors
+- remove the selected issue teachers from the select
 - sub teacher can also be text, not only select
 - when publish, show the published link
-- render table and preformence 
+v- render table and preformence 
 - does the select group is ok (need to check if that correct)
 - option to select multiple sub teachers (do we need?)
 - option to clear sub teacher cell
-- remove the selected issue teachers from the select
 - responsive page
 - skeleton page
 

@@ -12,14 +12,14 @@ type DailyEventCellProps = {
 };
 
 const DailyEventCell: React.FC<DailyEventCellProps> = ({ cell }) => {
-    const { dailySchedule, addNewCell, updateCell, dailyScheduleRawData, selectedDate } = useDailyTableContext();
+    const { mainDailyTable, addNewCell, updateCell, dailyDbRows, selectedDate } = useDailyTableContext();
     const [isLoading, setIsLoading] = useState(false);
 
     // Get the current hour, event and headerCol from the row data
     const columnId = cell?.column?.id;
     const hour = cell?.row?.original?.hour.toString();
-    const eventData = dailySchedule[selectedDate]?.[columnId]?.[hour]?.event;
-    const headerData = dailySchedule[selectedDate]?.[columnId]?.[hour]?.headerCol;
+    const eventData = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.event;
+    const headerData = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.headerCol;
 
     const [info, setInfo] = useState<string>(eventData || "");
 
@@ -29,12 +29,12 @@ const DailyEventCell: React.FC<DailyEventCellProps> = ({ cell }) => {
         setInfo(value);
 
         try {
-            const cellData = dailySchedule[selectedDate]?.[columnId]?.[hour];
+            const cellData = mainDailyTable[selectedDate]?.[columnId]?.[hour];
             if (!cellData) return;
 
             let response;
             if (eventData) {
-                const existingDailyEntry = dailyScheduleRawData?.find(
+                const existingDailyEntry = dailyDbRows?.find(
                     (entry) =>
                         entry.columnId === columnId &&
                         entry.hour === Number(hour) &&
