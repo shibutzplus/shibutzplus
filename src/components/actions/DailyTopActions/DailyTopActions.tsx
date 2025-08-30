@@ -8,11 +8,12 @@ import { DailyTableColors } from "@/style/tableColors";
 import Icons from "@/style/icons";
 import ActionBtn from "@/components/ui/buttons/ActionBtn/ActionBtn";
 import usePublish from "@/hooks/usePublish";
+import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
 
 const DailyTopActions: React.FC = () => {
     const { isLoading, addNewColumn, daysSelectOptions, selectedDate, handleDayChange } =
         useDailyTableContext();
-    const { publishDailySchedule, isLoading: publishLoading } = usePublish();
+    const { publishDailySchedule, isLoading: publishLoading, onCopyLink } = usePublish();
 
     return (
         <section className={styles.actionsContainer}>
@@ -66,6 +67,12 @@ const DailyTopActions: React.FC = () => {
                 />
             </div>
             <div className={styles.leftSide}>
+                <IconBtn
+                    Icon={<Icons.link size={16} />}
+                    onClick={onCopyLink}
+                    disabled={publishLoading}
+                    hasBorder
+                />
                 <ActionBtn
                     type="publish"
                     Icon={<Icons.publish size={16} />}

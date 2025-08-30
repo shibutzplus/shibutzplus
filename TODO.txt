@@ -79,7 +79,7 @@ class, subTeacher, subject, study material, instructions, links
 - replacement - mobile screen for the replacements + url id
 - replacement - you can only see what you need to teach, where and what
 
-- better icons for the hamburger menu
+v- better icons for the hamburger menu
 
 v- how does new user register? (maybe on first login he register)
 v- why it takes so much time to page to load on the first time
@@ -87,10 +87,10 @@ v- why it takes so much time to page to load on the first time
 v- add clerity
 v- add domain
 v- setup google auth for prod
-- new logo
+v- new logo
 
 DB addition
-- school - hours: int (7)
+- school - hours: int (9)
 - school - days: int (6)
 
 - daily - select header colors

@@ -17,10 +17,10 @@ const router: Record<string, IRoute> = {
     dailySchedule: { id: "dailySchedule", p: "/daily-schedule", private: true, title: "שיבוץ יומי" },
     profile: { id: "profile", p: "/profile", private: true, title: "המשתמש שלי" },
     history: { id: "history", p: "/history", private: true, title: "היסטוריה" },
-    substituteAuth: { id: "substituteAuth", p: "/substitute-auth", private: false, title: "כניסה למורים ממלאי מקום" },
     teacherSignIn: { id: "teacherSignIn", p: "/teacher-sign-in", private: false, title: "כניסה למורים" },
     teacherPortal: { id: "teacherPortal", p: "/teacher-portal", private: false, title: "מי מחליף אותי" },
     dailyScheduleReadonly: { id: "dailyScheduleReadonly", p: "/daily-schedule-readonly", private: false, title: "מערכת יומית" },
+    substitutePortal: { id: "substitutePortal", p: "/substitute-portal", private: false, title: "מסך מורה מחליף" },
 };
 
 export default router;

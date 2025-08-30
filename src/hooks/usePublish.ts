@@ -3,6 +3,7 @@ import { useDailyTableContext } from "@/context/DailyTableContext";
 import { useMainContext } from "@/context/MainContext";
 import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
+import { generateSchoolUrl } from "@/utils";
 import { useState } from "react";
 
 const usePublish = () => {
@@ -25,7 +26,17 @@ const usePublish = () => {
         }
     };
 
-    return { publishDailySchedule, isLoading };
+    const onCopyLink = async () => {
+        try {
+            if (!school) return;
+            await navigator.clipboard.writeText(generateSchoolUrl(school.id));
+            successToast("הקישור הועתק בהצלחה");
+        } catch (error) {
+            console.error("Failed to copy URL:", error);
+        }
+    };
+
+    return { publishDailySchedule, isLoading, onCopyLink };
 };
 
 export default usePublish;
