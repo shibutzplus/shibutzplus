@@ -5,6 +5,7 @@ import { BsMegaphoneFill, BsCalendar4Event } from "react-icons/bs";
 import { MdOutlineImageNotSupported } from "react-icons/md";
 import { MdOutlineContentCopy } from "react-icons/md";
 import { MdPersonAdd } from "react-icons/md";
+import { MdPerson } from "react-icons/md";
 import { FaPlus } from "react-icons/fa6";
 import { FaList } from "react-icons/fa6";
 import { PiChairLight } from "react-icons/pi";
@@ -28,6 +29,7 @@ const Icons = {
     publish: BsMegaphoneFill,
     event: BsCalendar4Event,
     addTeacher: MdPersonAdd,
+    Teacher: MdPerson,
     plus: FaPlus,
     empty: MdOutlineImageNotSupported,
     emptyList: FaList,

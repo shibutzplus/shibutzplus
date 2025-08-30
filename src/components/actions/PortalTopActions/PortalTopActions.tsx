@@ -27,17 +27,28 @@ const PortalTopActions: React.FC = () => {
         publishDatesOptions,
         handleDayChange,
         isSaving,
-        handleSave
+        handleSave,
     } = usePublicPortal();
 
-    const handleSwitchReadAndWrite = () => {
-        switchReadAndWrite();
+    // Force-write mode (for entering materials)
+    const goWriteMode = () => {
+        if (onReadTable) switchReadAndWrite();
+    };
+
+    // Force-read mode (my daily schedule)
+    const goMySchedule = () => {
+        if (!onReadTable) switchReadAndWrite();
+    };
+
+    // Temporary alert for school-wide view
+    const goSchoolView = () => {
+        alert("תצוגת מערכת בית ספרית תתווסף בהמשך");
     };
 
     const onSave = (e: React.MouseEvent) => {
         e.preventDefault();
-        handleSave()
-    }
+        handleSave();
+    };
 
     return (
         <section className={styles.actionsContainer}>
@@ -52,12 +63,42 @@ const PortalTopActions: React.FC = () => {
                     hasBorder
                 />
             </div>
+
             <div className={styles.topButtonsContainer}>
-                <div onClick={handleSwitchReadAndWrite}>
-                    {onReadTable ? "מי מחליף אותי" : "את מי אני מחליף"}
-                </div>
+                <button
+                    type="button"
+                    onClick={goWriteMode}
+                    className={`${styles.topBtn} ${!onReadTable ? styles.active : ""}`}
+                >
+                    <Icons.plus size={16} style={{ marginInlineEnd: "4px" }} />
+                    הזנת חומרי לימוד
+                </button>
+
+                <span className={styles.separator}>|</span>
+
+                <button
+                    type="button"
+                    onClick={goMySchedule}
+                    className={`${styles.topBtn} ${onReadTable ? styles.active : ""}`}
+                >
+                    <Icons.Teacher size={16} style={{ marginInlineEnd: "4px" }} />
+                    המערכת שלי
+                </button>
+
+                <span className={styles.separator}>|</span>
+
+                <button
+                    type="button"
+                    onClick={goSchoolView}
+                    className={styles.topBtn}
+                >
+                    <Icons.calendar size={16} style={{ marginInlineEnd: "4px" }} />
+                    מערכת בית ספרית
+                </button>
             </div>
+
             <br />
+
             <div className={styles.btnContainer}>
                 <Btn
                     Icon={<Icons.save />}

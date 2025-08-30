@@ -1,31 +1,46 @@
 .hourCell {
-    border: 1px solid #e0e0e0;
-    padding: 12px;
-    font-weight: bold;
-    text-align: center;
-    width: 60px;
-    vertical-align: middle;
+  border: 1px solid #e0e0e0;
+  padding: 12px;
+  font-weight: bold;
+  text-align: center;
+  width: 60px;
+  vertical-align: middle;
 }
 
 .scheduleCell,
 .scheduleCellInput {
-    position: relative;
-    padding: 8px;
-    border: 1px solid #e0e0e0;
-    vertical-align: top;
-    height: 60px;
+  position: relative;
+  padding: 8px;
+  border: 1px solid #e0e0e0;
+  vertical-align: top;
+  height: auto;
+  min-height: 36px;
 }
 
 .scheduleCellInput {
-    min-width: 500px;
-    min-width: 25vw;
+  min-width: 25vw;
 }
 
 .cellContent {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 4px;
+  height: auto;
+}
+
+.scheduleCellInput :global(textarea#instructions),
+.scheduleCellInput :global(textarea#links) {
+  width: 100%;
+  box-sizing: border-box;
+  line-height: 1.35;
+  padding: 2px 6px;
+  min-height: 1.35em;
+  height: auto;
+  max-height: none;
+  resize: none;
+  overflow: hidden;
+  border: none;
+  background: transparent;
 }

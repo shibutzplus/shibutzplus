@@ -7,91 +7,67 @@ import { TeacherRow } from "@/models/types/table";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import { errorToast, successToast } from "@/lib/toast";
 
-type DailyEventCellProps = {
-    cell: CellContext<TeacherRow, unknown>;
-};
+type DailyEventCellProps = { cell: CellContext<TeacherRow, unknown> };
 
 const DailyEventCell: React.FC<DailyEventCellProps> = ({ cell }) => {
-    const { mainDailyTable, addNewCell, updateCell, dailyDbRows, selectedDate } = useDailyTableContext();
-    const [isLoading, setIsLoading] = useState(false);
+  const { mainDailyTable, addNewCell, updateCell, dailyDbRows, selectedDate } =
+    useDailyTableContext();
+  const [isLoading, setIsLoading] = useState(false);
 
-    // Get the current hour, event and headerCol from the row data
-    const columnId = cell?.column?.id;
-    const hour = cell?.row?.original?.hour.toString();
-    const eventData = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.event;
-    const headerData = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.headerCol;
+  const columnId = cell?.column?.id;
+  const hour = cell?.row?.original?.hour.toString();
+  const eventData = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.event;
+  const headerData = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.headerCol;
 
-    const [info, setInfo] = useState<string>(eventData || "");
+  const [info, setInfo] = useState<string>(eventData || "");
 
-    const handleChange = async (value: string) => {
-        if (!hour || !columnId || !selectedDate || !headerData) return;
-        setIsLoading(true);
-        setInfo(value);
+  const handleChange = async (value: string) => {
+    if (!hour || !columnId || !selectedDate || !headerData) return;
+    setIsLoading(true);
+    setInfo(value);
+    try {
+      const cellData = mainDailyTable[selectedDate]?.[columnId]?.[hour];
+      if (!cellData) return;
 
-        try {
-            const cellData = mainDailyTable[selectedDate]?.[columnId]?.[hour];
-            if (!cellData) return;
-
-            let response;
-            if (eventData) {
-                const existingDailyEntry = dailyDbRows?.find(
-                    (entry) =>
-                        entry.columnId === columnId &&
-                        entry.hour === Number(hour) &&
-                        entry.event === eventData,
-                );
-                if (existingDailyEntry) {
-                    response = await updateCell(
-                        "event",
-                        cellData,
-                        columnId,
-                        existingDailyEntry.id,
-                        { event: info },
-                    );
-                }
-            } else {
-                response = await addNewCell("event", cellData, columnId, {
-                    event: info,
-                });
-            }
-
-            if (response) {
-                successToast(
-                    eventData
-                        ? messages.dailySchedule.updateSuccess
-                        : messages.dailySchedule.createSuccess,
-                );
-            } else {
-                errorToast(
-                    eventData
-                        ? messages.dailySchedule.updateError
-                        : messages.dailySchedule.createError,
-                );
-                setInfo("");
-            }
-        } catch (error) {
-            console.error("Error handling daily schedule entry:", error);
-            errorToast(
-                eventData ? messages.dailySchedule.updateError : messages.dailySchedule.createError,
-            );
-            setInfo("");
-        } finally {
-            setIsLoading(false);
+      let response;
+      if (eventData) {
+        const existing = dailyDbRows?.find(
+          (e) => e.columnId === columnId && e.hour === Number(hour) && e.event === eventData,
+        );
+        if (existing) {
+          response = await updateCell("event", cellData, columnId, existing.id, { event: info });
         }
-    };
+      } else {
+        response = await addNewCell("event", cellData, columnId, { event: info });
+      }
 
-    return (
-        <div className={styles.cellContent}>
-            <InputTextArea
-                value={info}
-                onChange={(e) => setInfo(e.target.value)}
-                onBlur={(e) => handleChange(e.target.value)}
-                placeholder="מה הולך לקרות בשעה זו?"
-                disabled={isLoading}
-                rows={3}
-            />
-        </div>
-    );
+      if (response) {
+        successToast(eventData ? messages.dailySchedule.updateSuccess : messages.dailySchedule.createSuccess);
+      } else {
+        errorToast(eventData ? messages.dailySchedule.updateError : messages.dailySchedule.createError);
+        setInfo("");
+      }
+    } catch {
+      errorToast(eventData ? messages.dailySchedule.updateError : messages.dailySchedule.createError);
+      setInfo("");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className={styles.cellContent}>
+      <InputTextArea
+        value={info}
+        onChange={(e) => setInfo(e.target.value)}
+        onBlur={(e) => handleChange(e.target.value)}
+        placeholder="מה הולך לקרות בשעה זו?"
+        disabled={isLoading}
+        rows={1}
+        autoGrow
+      />
+    </div>
+  );
 };
 
 export default DailyEventCell;
