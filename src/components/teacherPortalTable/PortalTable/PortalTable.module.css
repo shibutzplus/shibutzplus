@@ -1,21 +1,57 @@
-/* Mobile 320px - 767px -- 812px */
 .tableContainer {
-    width: 100%;
-    overflow-x: auto;
-    border-radius: 0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  overflow-x: auto; 
+  position: relative;
 }
 
 .scheduleTable {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: white;
-    min-width: 800px;
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  background: #fff;
 }
 
-/* Tablet 768px - 1279px -- 800px*/
-@media screen and (min-width: 768px) {
-    .tableContainer {
-        border-radius: 8px;
-    }
+.scheduleTable td {
+  padding: 8px 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.scheduleTable th {
+  padding: 0; 
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+
+.scheduleTable thead th:first-child {
+  position: sticky;
+  inset-inline-start: 0;
+  background: #f9f9f9; 
+  z-index: 3; 
+  box-shadow: 2px 0 0 #e5e5e5;
+}
+
+.scheduleTable tbody td:first-child {
+  position: sticky;
+  inset-inline-start: 0;
+  background: #fff;
+  z-index: 2;
+  box-shadow: 2px 0 0 #e5e5e5;
+}
+
+
+.scheduleTable th + th,
+.scheduleTable td + td {
+  border-inline-start: 1px solid #e5e5e5;
+}
+
+.scheduleTable thead th {
+  background: #f9f9f9
 }

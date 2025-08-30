@@ -1,17 +1,73 @@
 .mobileNav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    width: 100%;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 100;
-    background-color: var(--background-inner);
-    height: var(--header-height);
-    box-sizing: border-box;
-    padding: 0 1em;
-    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 1000;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: stretch;
+
+  background: var(--background-inner);
+  height: 64px;
+  padding-bottom: env(safe-area-inset-bottom);
+  box-shadow: 0 -6px 16px rgba(0, 0, 0, 0.08);
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+
+  /* show only on small screens */
+}
+@media (min-width: 768px) {
+  .mobileNav { display: none; }
+}
+
+.item {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  padding: 6px 8px 8px;
+  cursor: pointer;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+
+  transition: color 0.15s ease, transform 0.1s ease;
+}
+.item:active {
+  transform: translateY(1px);
+}
+
+.label {
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.item svg {
+  /* inherit current color from item */
+  color: currentColor;
+}
+
+.active {
+  color: var(--primary);
+}
+
+.active .label {
+  font-weight: bold;
+}
+
+
+/* optional hover state for desktop emulators */
+.item:hover {
+  color: var(--text);
+}
+
+/* ensure it sits above page content */
+:global(body) {
+  padding-bottom: calc(64px + env(safe-area-inset-bottom));
 }
