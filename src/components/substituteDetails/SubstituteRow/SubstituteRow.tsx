@@ -3,6 +3,7 @@ import { useMainContext } from "@/context/MainContext";
 import { TeacherType } from "@/models/types/teachers";
 import { teacherSchema } from "@/models/validation/teacher";
 import ListRow from "@/components/ui/list/ListRow/ListRow";
+import { generateTeacherUrl } from "@/utils";
 
 type SubstituteRowProps = {
     teacher: TeacherType;
@@ -30,22 +31,9 @@ const SubstituteRow: React.FC<SubstituteRowProps> = ({ teacher, handleDeleteTeac
                 role: "regular" as import("@/models/types/teachers").TeacherRole,
                 schoolId: teacher.schoolId,
             })}
+            link={generateTeacherUrl(teacher.id)}
         />
     );
 };
 
 export default SubstituteRow;
-
-// const handleCopyUrl = async (teacherId: string, teacherName: string) => {
-//     try {
-//         const url = generateTeacherUrl(teacherId);
-//         await navigator.clipboard.writeText(url);
-//         successToast(`הקישור של ${teacherName} הועתק בהצלחה`);
-//     } catch (error) {
-//         console.error("Failed to copy URL:", error);
-//     }
-// };
-
-// const sortedSubstitutes = sortByHebrewName(substitutes);
-
-// {generateTeacherUrl(substitute.id)}

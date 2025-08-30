@@ -4,6 +4,7 @@ export type TeacherRow = {
     hour: number;
 };
 
+// TODO: no need all
 export type ActionColumnType =
     | "publish"
     | "history"

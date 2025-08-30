@@ -3,6 +3,7 @@ import { SubjectType } from "@/models/types/subjects";
 import { TeacherType } from "@/models/types/teachers";
 import { STORAGE_KEYS } from "@/resources/storage";
 import { ClassType } from "@/models/types/classes";
+import { DailySchedule } from "@/models/types/dailySchedule";
 
 export const getStorage = <T>(key: string) => {
     const storage: string | null = localStorage.getItem(key);
@@ -71,6 +72,19 @@ export const getStorageClasses = () => {
 export const setStorageClasses = (classes: ClassType[]) => {
     return setStorage(STORAGE_KEYS.CLASSES_DATA, classes);
 };
+
+export const getStorageDailyTable = () => {
+    return getStorage<DailySchedule>(STORAGE_KEYS.DAILY_TABLE_DATA);
+}
+
+export const setStorageDailyTable = (dailyTable: DailySchedule, selectedDate: string) => {
+    const existingStorage = getStorageDailyTable() || {};
+    const updatedStorage = {
+        ...existingStorage,
+        [selectedDate]: dailyTable[selectedDate]
+    };
+    return setStorage(STORAGE_KEYS.DAILY_TABLE_DATA, updatedStorage);
+}
 
 export const clearStorage = () => {
     localStorage.clear();

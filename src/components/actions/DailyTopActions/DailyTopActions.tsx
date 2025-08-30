@@ -1,22 +1,19 @@
 "use client"
 
-import React from "react"
-import styles from "./DailyTopActions.module.css"
-import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect"
-import { useDailyTableContext } from "@/context/DailyTableContext"
-import { DailyTableColors } from "@/style/tableColors"
-import Icons from "@/style/icons"
-import ActionBtn from "@/components/ui/buttons/ActionBtn/ActionBtn"
+import React from "react";
+import styles from "./DailyTopActions.module.css";
+import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
+import { useDailyTableContext } from "@/context/DailyTableContext";
+import { DailyTableColors } from "@/style/tableColors";
+import Icons from "@/style/icons";
+import ActionBtn from "@/components/ui/buttons/ActionBtn/ActionBtn";
+import usePublish from "@/hooks/usePublish";
+import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
 
 const DailyTopActions: React.FC = () => {
-  const {
-    isLoading,
-    addNewColumn,
-    daysSelectOptions,
-    selectedDate,
-    handleDayChange,
-    publishDailySchedule,
-  } = useDailyTableContext()
+  const { isLoading, addNewColumn, daysSelectOptions, selectedDate, handleDayChange } =
+    useDailyTableContext();
+  const { publishDailySchedule, isLoading: publishLoading, onCopyLink } = usePublish();
 
   return (
     <section className={styles.actionsContainer}>
@@ -48,17 +45,6 @@ const DailyTopActions: React.FC = () => {
           func={() => addNewColumn("missingTeacher")}
         />
 
-        <ActionBtn
-          type="existingTeacher"
-          Icon={<Icons.addTeacher size={16} />}
-          label="שינוי למורה נוכח"
-          isDisabled={isLoading}
-          style={{
-            borderLeft: DailyTableColors.existingTeacher.borderLeft,
-            color: DailyTableColors.existingTeacher.color,
-          }}
-          func={() => addNewColumn("existingTeacher")}
-        />
 
         <ActionBtn
           type="event"
@@ -71,64 +57,28 @@ const DailyTopActions: React.FC = () => {
           }}
           func={() => addNewColumn("event")}
         />
-
+      </div>
+      <div className={styles.leftSide}>
+        <IconBtn
+          Icon={<Icons.link size={16} />}
+          onClick={onCopyLink}
+          disabled={publishLoading}
+          hasBorder
+        />
         <ActionBtn
           type="publish"
           Icon={<Icons.publish size={16} />}
           label="פרסום מערכת"
-          isDisabled={isLoading}
+          isDisabled={publishLoading}
+          func={publishDailySchedule}
           style={{
             borderLeft: DailyTableColors.publish.borderLeft,
             color: DailyTableColors.publish.color,
           }}
-          func={() => publishDailySchedule()}
         />
       </div>
-
-      {/* Mobile: icon-only buttons */}
-      <div className={styles.topButtonsMobile} aria-label="פעולות מהירות">
-        <button
-          className={styles.iconBtn}
-          title="שיבוץ למורה חסר"
-          onClick={() => addNewColumn("missingTeacher")}
-          disabled={isLoading}
-          style={{ color: DailyTableColors.missingTeacher.color, }}
-        >
-          <Icons.addTeacher size={18} />
-        </button>
-
-        <button
-          className={styles.iconBtn}
-          title="שינוי למורה נוכח"
-          onClick={() => addNewColumn("existingTeacher")}
-          disabled={isLoading}
-          style={{ color: DailyTableColors.existingTeacher.color, }}
-        >
-          <Icons.addTeacher size={18} />
-        </button>
-
-        <button
-          className={styles.iconBtn}
-          title="עדכון ארועים"
-          onClick={() => addNewColumn("event")}
-          disabled={isLoading}
-          style={{ color: DailyTableColors.event.color, }}
-        >
-          <Icons.event size={18} />
-        </button>
-
-        <button
-          className={styles.iconBtnPrimary}
-          title="פרסום מערכת"
-          onClick={() => publishDailySchedule()}
-          disabled={isLoading}
-          style={{ color: DailyTableColors.publish.color, }}
-        >
-          <Icons.publish size={18} />
-        </button>
-      </div>
     </section>
-  )
-}
+  );
+};
 
 export default DailyTopActions

@@ -16,10 +16,9 @@
     display: none;
 }
 
-.topButtonsMobile {
-    display: flex;
-    gap: .5rem;
-    margin-inline-start: auto;
+
+.leftSide{
+    display: none;
 }
 
 .iconBtn,
@@ -59,6 +58,7 @@
     .topButtonsContainer {
         display: flex;
         gap: 2rem;
+        justify-content: center;
         align-items: center;
         flex-wrap: nowrap;
         height: 40px;
@@ -67,8 +67,12 @@
         justify-content: flex-start;
     }
 
-    .topButtonsContainer > :last-child {
-        margin-inline-start: auto;
+    .leftSide{
+        display: flex;
+        width: 100%;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 20px;
     }
 
     .topButtonsMobile {

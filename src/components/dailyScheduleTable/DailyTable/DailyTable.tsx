@@ -7,7 +7,7 @@ import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-tabl
 import { TeacherRow } from "@/models/types/table";
 import { TableRows } from "@/models/constant/table";
 import Icons from "@/style/icons";
-import { HeaderColor, HourRowColor } from "@/style/tableColors";
+import { HeaderColor } from "@/style/tableColors";
 
 const DailyTable: React.FC = () => {
     const { tableColumns } = useDailyTableContext();
@@ -15,25 +15,6 @@ const DailyTable: React.FC = () => {
         Array.from({ length: TableRows }, (_, i) => ({ hour: i + 1 })),
     );
 
-    const baseCols = React.useMemo(
-        () => [
-            {
-                accessorKey: "hour",
-                header: "שעה",
-                cell: (info: any) => <span className={styles.hourCell}>{info.getValue()}</span>,
-                meta: { bgColor: HourRowColor },
-            },
-            {
-                // Allow me to position fixed the hour col (use as a size under the hour column)
-                accessorKey: "empty",
-                header: "",
-                cell: () => <span className={styles.empty}></span>,
-            },
-        ],
-        [],
-    );
-
-    // If no columns except baseCols, add a single wide template column
     const hasExtraCols = tableColumns.length > 0;
     const baseEmpty = (id: string) => {
         return {
@@ -53,67 +34,72 @@ const DailyTable: React.FC = () => {
         };
     };
     const columns = React.useMemo(
-        () => (hasExtraCols ? [...baseCols, ...tableColumns] : [...baseCols, baseEmpty("cell1")]),
-        [baseCols, tableColumns],
+        () => (hasExtraCols ? [...tableColumns] : [baseEmpty("cell1")]),
+        [tableColumns],
     );
     const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() });
 
     return (
         <section className={styles.tableContainer}>
-            <table className={styles.scheduleTable}>
-                <thead>
-                    {table.getHeaderGroups().map((hg) => (
-                        <tr key={hg.id}>
-                            {hg.headers.map((header) => (
-                                <th
-                                    key={header.id}
-                                    className={
-                                        header.column.id === "hour"
-                                            ? styles.hourHeader
-                                            : styles.dayHeader
-                                    }
-                                    style={
-                                        header.column.id === "hour"
-                                            ? { backgroundColor: HeaderColor }
-                                            : {
-                                                  background: (header.column.columnDef.meta as any)
-                                                      ?.bgColor,
-                                              }
-                                    }
-                                >
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext(),
-                                    )}
-                                </th>
-                            ))}
-                        </tr>
-                    ))}
-                </thead>
-                <tbody>
-                    {table.getRowModel().rows.map((row, i) => (
-                        <tr key={row.id} style={{ position: "relative" }}>
-                            {row.getVisibleCells().map((cell) => (
-                                <td
-                                    key={cell.id}
-                                    className={
-                                        cell.column.id === "hour"
-                                            ? styles.hourCell
-                                            : cell.column.id === "empty"
-                                              ? styles.empty
-                                              : styles.scheduleCell
-                                    }
-                                    style={{ top: i*49 }}
-                                >
-                                    <div className={styles.cellContent}>
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                    </div>
-                                </td>
-                            ))}
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+            <div className={styles.fixedHourColumn}>
+                <div className={styles.hourHeader} style={{ backgroundColor: HeaderColor }}>
+                    שעה
+                </div>
+                {data.map((_, i) => (
+                    <div key={i} className={styles.hourCell}>
+                        {i + 1}
+                    </div>
+                ))}
+            </div>
+
+            <div className={styles.scrollableContent}>
+                <table className={styles.scheduleTable}>
+                    <thead>
+                        {table.getHeaderGroups().map((hg) => (
+                            <tr key={hg.id}>
+                                {hg.headers.map((header) => (
+                                    <th
+                                        key={header.id}
+                                        className={styles.dayHeader}
+                                        style={{
+                                            background: (header.column.columnDef.meta as any)
+                                                ?.bgColor,
+                                        }}
+                                    >
+                                        {flexRender(
+                                            header.column.columnDef.header,
+                                            header.getContext(),
+                                        )}
+                                    </th>
+                                ))}
+                            </tr>
+                        ))}
+                    </thead>
+                    <tbody>
+                        {table.getRowModel().rows.map((row) => (
+                            <tr key={row.id}>
+                                {row.getVisibleCells().map((cell) => (
+                                    <td
+                                        key={cell.id}
+                                        className={
+                                            cell.column.id === "empty"
+                                                ? styles.empty
+                                                : styles.scheduleCell
+                                        }
+                                    >
+                                        <div className={styles.cellContent}>
+                                            {flexRender(
+                                                cell.column.columnDef.cell,
+                                                cell.getContext(),
+                                            )}
+                                        </div>
+                                    </td>
+                                ))}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </section>
     );
 };

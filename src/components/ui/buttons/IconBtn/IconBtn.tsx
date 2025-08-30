@@ -7,11 +7,22 @@ type IconBtnProps = {
     onClick: () => void;
     disabled?: boolean;
     isLoading?: boolean;
+    hasBorder?: boolean;
 };
 
-const IconBtn: React.FC<IconBtnProps> = ({ Icon, onClick, disabled, isLoading }) => {
+const IconBtn: React.FC<IconBtnProps> = ({
+    Icon,
+    onClick,
+    disabled,
+    isLoading,
+    hasBorder = false,
+}) => {
     return (
-        <button className={styles.iconBtn} onClick={onClick} disabled={disabled}>
+        <button
+            className={styles.iconBtn + (hasBorder ? " " + styles.hasBorder : "")}
+            onClick={onClick}
+            disabled={disabled}
+        >
             {isLoading ? <Loading size="S" /> : Icon}
         </button>
     );

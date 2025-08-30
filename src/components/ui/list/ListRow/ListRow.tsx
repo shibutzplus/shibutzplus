@@ -3,6 +3,7 @@ import InputText from "@/components/ui/InputText/InputText";
 import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
 import Icons from "@/style/icons";
 import styles from "./ListRow.module.css";
+import { successToast } from "@/lib/toast";
 
 // Generic type for row data
 export type ListRowProps<T> = {
@@ -17,9 +18,8 @@ export type ListRowProps<T> = {
     };
     getId: (item: T) => string;
     getInitialValue: (item: T) => string;
-    errorMessages?: { [field in keyof T]?: string };
     updateExtraFields?: (item: T) => Partial<T>; // for fields like role, schoolId, etc.
-    rowClassName?: string;
+    link?: string;
 };
 
 function ListRow<T extends Record<string, any>>({
@@ -30,9 +30,8 @@ function ListRow<T extends Record<string, any>>({
     field,
     getId,
     getInitialValue,
-    errorMessages = {},
     updateExtraFields,
-    rowClassName = "",
+    link,
 }: ListRowProps<T>) {
     const [isEdit, setIsEdit] = useState(false);
     const [isEditLoading, setIsEditLoading] = useState(false);
@@ -76,9 +75,19 @@ function ListRow<T extends Record<string, any>>({
         }
     };
 
+    const handleCopyUrl = async () => {
+        try {
+            if(!link) return;
+            await navigator.clipboard.writeText(link);
+            successToast('הקישור הועתק בהצלחה');
+        } catch (error) {
+            console.error("Failed to copy URL:", error);
+        }
+    };
+
     return (
         <tr className={styles.listRow}>
-            <td>
+            <td className={styles.nameCell}>
                 <span className={styles.dot} />
                 <InputText
                     key="editName"
@@ -91,6 +100,12 @@ function ListRow<T extends Record<string, any>>({
                     readonly={!isEdit}
                     type={field.inputType || "text"}
                 />
+                {link ? (
+                    <div className={styles.copyLink} onClick={handleCopyUrl}>
+                        <Icons.copy />
+                        <span>{link}</span>
+                    </div>
+                ) : null}
             </td>
             <td className={styles.actions}>
                 <IconBtn
@@ -98,11 +113,7 @@ function ListRow<T extends Record<string, any>>({
                     isLoading={isEditLoading}
                     Icon={isEdit ? <Icons.save /> : <Icons.edit />}
                 />
-                <IconBtn
-                    onClick={() => onDelete(item)}
-                    isLoading={false}
-                    Icon={<Icons.delete />}
-                />
+                <IconBtn onClick={() => onDelete(item)} isLoading={false} Icon={<Icons.delete />} />
             </td>
         </tr>
     );

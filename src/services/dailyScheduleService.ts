@@ -1,4 +1,4 @@
-import { getDailyEmptyCellsAction } from "@/app/actions/GET/getDailyEmptyCellsAction";
+import { eventPlaceholder } from "@/models/constant/table";
 import { ClassType } from "@/models/types/classes";
 import {
     ColumnType,
@@ -9,6 +9,7 @@ import {
 } from "@/models/types/dailySchedule";
 import { SchoolType } from "@/models/types/school";
 import { SubjectType } from "@/models/types/subjects";
+import { ActionColumnType } from "@/models/types/table";
 import { TeacherType } from "@/models/types/teachers";
 import { getDayNumberByDateString, HOURS_IN_DAY, getStringReturnDate } from "@/utils/time";
 
@@ -284,4 +285,104 @@ export const addTeacherToExistingCells = (
     } else {
         existingCells.push({ teacherId, hours: [hour] });
     }
+};
+
+export const getColumnsFromStorage = (storageData: {
+    [header: string]: {
+        [hour: string]: DailyScheduleCell;
+    };
+}) => {
+    const columnsToCreate: { id: string; type: ActionColumnType }[] = [];
+    const seenColumnIds = new Set<string>();
+
+    // Extract column information from storage
+    Object.entries(storageData).forEach(([columnId, hourData]) => {
+        if (!seenColumnIds.has(columnId)) {
+            seenColumnIds.add(columnId);
+            const firstHour = Object.values(hourData)[0] as DailyScheduleCell;
+            if (firstHour?.headerCol) {
+                columnsToCreate.push({
+                    id: columnId,
+                    type: firstHour.headerCol.type,
+                });
+            }
+        }
+    });
+    return columnsToCreate;
+};
+
+export const updateAddCell = (
+    mainDailyTable: DailySchedule,
+    selectedDate: string,
+    cellData: DailyScheduleCell,
+    columnId: string,
+    data: { event?: string; subTeacher?: TeacherType },
+) => {
+    // Update mainDailyTable with the new cell data
+    const updatedSchedule = { ...mainDailyTable };
+    if (!updatedSchedule[selectedDate]) {
+        updatedSchedule[selectedDate] = {};
+    }
+    if (!updatedSchedule[selectedDate][columnId]) {
+        updatedSchedule[selectedDate][columnId] = {};
+    }
+
+    const hourStr = cellData.hour.toString();
+    const existingCell = updatedSchedule[selectedDate][columnId][hourStr] || {
+        ...cellData,
+    };
+
+    if (data.event) {
+        existingCell.event = data.event || eventPlaceholder;
+    } else if (data.subTeacher) {
+        existingCell.subTeacher = data.subTeacher;
+    }
+
+    updatedSchedule[selectedDate][columnId][hourStr] = existingCell;
+    return updatedSchedule;
+};
+
+export const populateTable = (dataColumns: DailyScheduleType[], selectedDate: string) => {
+    const entriesByDayAndHeader: Record<string, Record<string, DailyScheduleCell[]>> = {};
+    const columnsToCreate: { id: string; type: ActionColumnType }[] = [];
+    const seenColumnIds = new Set<string>();
+    let existingCells: { teacherId: string; hours: number[] }[] = [];
+
+    for (const columnCell of dataColumns) {
+        const columnId = columnCell.columnId;
+
+        const { issueTeacher, issueTeacherType, hour } = columnCell;
+
+        let cellData: DailyScheduleCell;
+        if (issueTeacher) {
+            addTeacherToExistingCells(existingCells, issueTeacher.id, hour);
+            cellData = initTeacherCellData(columnCell);
+        } else {
+            cellData = initEventCellData(columnCell);
+        }
+
+        // If the column is not already in the columnsToCreate array, add it
+        if (!seenColumnIds.has(columnId)) {
+            columnsToCreate.push({
+                id: columnId,
+                type: issueTeacherType,
+            });
+            seenColumnIds.add(columnId);
+        }
+
+        if (!entriesByDayAndHeader[selectedDate]) {
+            entriesByDayAndHeader[selectedDate] = {};
+        }
+        if (!entriesByDayAndHeader[selectedDate][columnId]) {
+            entriesByDayAndHeader[selectedDate][columnId] = [];
+        }
+
+        entriesByDayAndHeader[selectedDate][columnId].push(cellData);
+    }
+
+    return {
+        entriesByDayAndHeader,
+        columnsToCreate,
+        existingCells,
+    };
 };

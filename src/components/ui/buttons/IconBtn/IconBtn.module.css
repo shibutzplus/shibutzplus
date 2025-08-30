@@ -12,6 +12,10 @@
     color: var(--description-text);
 }
 
+.hasBorder{
+    border: 1px solid var(--input-border);
+}
+
 .iconBtn:hover{
     background-color: var(--feature-icon-bg);
 }

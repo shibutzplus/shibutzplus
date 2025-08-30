@@ -1,47 +1,8 @@
 import { TeacherType } from "@/models/types/teachers";
-import { DAYS_OF_WEEK } from "./time";
 import { ClassType } from "@/models/types/classes";
 import { WeeklySchedule } from "@/models/types/annualSchedule";
 import { sortByHebrewName } from "./format";
 import { GroupOption } from "@/models/types";
-
-// Filter out from the list teachers that already teach on other classes
-export const filterExistingTeachers = (
-    classes: ClassType[],
-    schedule: WeeklySchedule,
-    selectedClassId: string,
-    teachers: TeacherType[],
-) => {
-    const newFilteredTeachersMap: Record<string, Record<number, TeacherType[]>> = {};
-
-    // Pre-calculate filtered teachers for all days and hours
-    DAYS_OF_WEEK.forEach((day) => {
-        newFilteredTeachersMap[day] = {};
-
-        // Assuming hours are from 1 to 10 (adjust as needed)
-        for (let hour = 1; hour <= 10; hour++) {
-            // Create a Set of teacher IDs that are already scheduled for this day and hour in other classes
-            const busyTeacherIds = new Set<string>();
-
-            // Check all classes except the currently selected one
-            classes.forEach((cls) => {
-                if (cls.id !== selectedClassId) {
-                    const teacherIds = schedule[cls.id]?.[day]?.[hour]?.teachers;
-                    if (teacherIds) {
-                        teacherIds.forEach((id) => {
-                            busyTeacherIds.add(id);
-                        });
-                    }
-                }
-            });
-
-            // Filter out teachers who are already scheduled
-            newFilteredTeachersMap[day][hour] =
-                teachers?.filter((teacher) => !busyTeacherIds.has(teacher.id)) || [];
-        }
-    });
-    return newFilteredTeachersMap;
-};
 
 /**
  * Sorts teachers for annual schedule with priority order:
@@ -49,7 +10,6 @@ export const filterExistingTeachers = (
  * 2. Regular teachers - available only
  * 3. All other teachers - alphabetically sorted
  */
-
 export const sortTeachersForSchedule = (
     allTeachers: TeacherType[],
     classes: ClassType[],
