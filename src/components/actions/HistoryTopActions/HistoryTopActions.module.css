@@ -1,4 +1,4 @@
-/* Mobile 320px - 767px -- 812px */
+/* Mobile */
 .actionsContainer {
     margin-right: 10px;
     width: 100%;
@@ -11,7 +11,7 @@
     width: 100%;
 }
 
-/* Tablet 768px - 1279px -- 800px*/
+/* Desktop */
 @media screen and (min-width: 768px) {
     .actionsContainer {
         margin-right: 0;

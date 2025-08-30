@@ -74,12 +74,11 @@ const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({ schoolId }) => {
             <form className={styles.form} onSubmit={handleSubmit}>
                 <div className={styles.inputGroup}>
                     <DynamicInputSelect
-                        label="שלום, נא לבחור את שמך מהרשימה:"
                         id="teacher"
                         options={teachers}
                         value={selectedTeacher}
                         onChange={setSelectedTeacher}
-                        placeholder={isLoadingTeachers ? "טוען רשימת מורים..." : "מהו שמך?"}
+                        placeholder={isLoadingTeachers ? "טוען רשימת מורים..." : "בחרו את השם שלכם כדי שנוכל להמשיך"}
                         isSearchable={true}
                         isDisabled={isLoadingTeachers}
                         hasBorder

@@ -12,8 +12,8 @@ export default function TeacherSignInPage() {
         <main className={styles.container}>
             <div className={styles.mainSection}>
                 <HeroSection
-                    title="מערכת לניהול בית הספר"
-                    description="בניית מערכת שעות, בצורה קלה ומהירה"
+                    title="פתרון חכם לשיבוץ מורים ושעות"
+                    description=""
                 />
                 <div className={styles.formContainer}>
                     <TeacherAuthForm schoolId={schoolId} />
