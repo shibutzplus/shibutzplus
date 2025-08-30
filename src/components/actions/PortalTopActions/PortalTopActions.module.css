@@ -1,4 +1,4 @@
-/* Mobile 320px - 767px -- 812px */
+/* Mobile */
 .actionsContainer {
     margin-right: 10px;
     width: 100%;
@@ -15,7 +15,7 @@
     display: none;
 }
 
-/* Tablet 768px - 1279px -- 800px*/
+/* Desktop */
 @media screen and (min-width: 768px) {
 
     .actionsContainer {
@@ -24,8 +24,7 @@
     }
 
     .selectContainer {
-        min-width: fit-content;
-        width: 25%;
+        width: 200px;
     }
 
     .topButtonsContainer {

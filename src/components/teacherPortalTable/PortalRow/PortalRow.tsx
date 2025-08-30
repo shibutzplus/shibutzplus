@@ -51,7 +51,7 @@ const PortalRow: React.FC<PortalRowProps> = ({ hour, row }) => {
                             setInstructions(e.target.value)
                         }
                         onBlur={(e) => handleChange("instructions", e.target.value)}
-                        placeholder={onReadTable ? "עדיין לא נוספו חומרי עזר" : "הוספת חומרי לימוד והוראות"}
+                        placeholder={onReadTable ? "עדיין לא נוספו חומרי לימוד" : "הוספת חומרי לימוד והנחיות"}
                         type="text"
                         readonly={onReadTable}
                     />
@@ -68,7 +68,7 @@ const PortalRow: React.FC<PortalRowProps> = ({ hour, row }) => {
                             setLinks(e.target.value)
                         }
                         onBlur={(e) => handleChange("links", e.target.value)}
-                        placeholder={onReadTable ? "עדיין לא נוספו קישורים" : "הוספת קישורים רלוונטים"}
+                        placeholder={onReadTable ? "לא נוספו קישורים" : "הוספת קישורים רלוונטים"}
                         type="text"
                         readonly={onReadTable}
                     />
