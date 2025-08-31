@@ -24,6 +24,8 @@ import {
     getSelectedClass,
 } from "@/services/ annualScheduleService";
 import { dayToNumber } from "@/utils/time";
+import { TeacherType } from "@/models/types/teachers";
+import { SubjectType } from "@/models/types/subjects";
 
 interface AnnualTableContextType {
     annualScheduleTable: AnnualScheduleType[] | undefined;
@@ -43,6 +45,7 @@ interface AnnualTableContextType {
         day: string,
         hour: number,
         method: SelectMethod,
+        newElementObj?: TeacherType | SubjectType,
     ) => Promise<void>;
 }
 
@@ -85,12 +88,12 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
         }
     }, [annualAfterDelete]);
 
-    useEffect(()=> {
-        if(queueRows.length > 0) {
+    useEffect(() => {
+        console.log("queueRows", queueRows);
+        if (queueRows.length > 0) {
             handleSave();
         }
-    }, [queueRows])
-    
+    }, [queueRows]);
 
     const classesSelectOptions = () => {
         return createSelectOptions<ClassType>(sortByHebrewName(classes || []));
@@ -166,6 +169,7 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
         day: string,
         hour: number,
         method: SelectMethod,
+        newElementObj?: TeacherType | SubjectType,
     ) => {
         if (!school?.id) return;
         let newSchedule = { ...schedule };
@@ -190,13 +194,19 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
             return;
         }
 
+        let teachersList = [...teachers || []];
+        let subjectsList = [...subjects || []];
+        if (method === "create-option" && newElementObj) {
+            teachersList = type === "teachers" ? [newElementObj as TeacherType] : teachers || [];
+            subjectsList = type === "subjects" ? [newElementObj as SubjectType] : subjects || [];
+        }
         const pairs: Pair[] = createPairs(teacherIds, subjectIds);
         const selectedClassObj = getSelectedClass(classes, selectedClassId);
         const requests: AnnualScheduleRequest[] = createAnnualRequests(
             selectedClassObj,
             school,
-            teachers,
-            subjects,
+            teachersList,
+            subjectsList,
             pairs,
             day,
             hour,
