@@ -21,7 +21,7 @@ const DailyTable: React.FC = () => {
             id: id,
             header: () => (
                 <span className={styles.templateHeaderText}>
-                    לחצו על הכפתורים למעלה כדי להוסיף את המערכת של המורה
+                    לחצו על הכפתורים כדי להוסיף את המערכות
                 </span>
             ),
             cell: () => (

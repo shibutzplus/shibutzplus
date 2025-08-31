@@ -1,18 +1,20 @@
-/* Mobile 320px - 767px -- 812px */
 .container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: block; /* המסך נשאר 100% */
 }
 
-.subjectsList{
-    min-width: 60vw;
-    width: 95%;
+/* שליטה ברוחב הטבלה במסך מקצועות */
+.subjectsList {
+  --table-width: 60%;
+  --table-max-width: 1200px;
+  --table-margin: 0 auto;
+  padding-inline: 2px;
 }
 
-/* Tablet 768px - 1279px -- 800px*/
-@media screen and (min-width: 768px) {
-    .subjectsList{
-        width: 70%;
-    }
+/* במסכים צרים נפרוס ל־100% */
+@media (max-width: 767px) {
+  .subjectsList {
+    --table-width: 100%;
+    --table-max-width: none;
+    --table-margin: 0;
+  }
 }

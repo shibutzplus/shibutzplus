@@ -11,27 +11,42 @@ import PublicMobileNav from "@/components/navigation/PublicMobileNav/PublicMobil
 import { useMobileSize } from "@/hooks/useMobileSize";
 
 const TeacherPortalPage = () => {
-    const params = useParams();
-    const teacherId = params.teacherId as string;
-    const { teacherTableData, setTeacherById } = usePublicPortal();
-    const isMobile = useMobileSize();
+  const params = useParams();
+  const teacherId = params.teacherId as string;
+  const { teacherTableData, setTeacherById } = usePublicPortal();
+  const isMobile = useMobileSize();
 
-    useEffect(() => {
-        const setTeacher = async () => {
-            const response = await setTeacherById(teacherId);
-            if (!response) errorToast(messages.dailySchedule.error);
-        };
-        setTeacher();
-    }, [teacherId]);
+  useEffect(() => {
+    const setTeacher = async () => {
+      const response = await setTeacherById(teacherId);
+      if (!response) errorToast(messages.dailySchedule.error);
+    };
+    setTeacher();
+  }, [teacherId]);
 
-    return (
-        <div className={styles.container}>
-            <div className={styles.whiteBox}>
-                <PortalTable tableData={teacherTableData} />
-            </div>
-            {isMobile ? <PublicMobileNav /> : null}
+  // Disable page (html/body) scrolling only on this route
+  useEffect(() => {
+    const prevHtml = document.documentElement.style.overflow;
+    const prevBody = document.body.style.overflow;
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.documentElement.style.overflow = prevHtml;
+      document.body.style.overflow = prevBody;
+    };
+  }, []);
+
+  return (
+    <div className={styles.container}>
+      <header className={styles.header} />
+      <main className={`${styles.content} ${isMobile ? styles.withBottomPadding : ""}`}>
+        <div className={styles.whiteBox}>
+          <PortalTable tableData={teacherTableData} />
         </div>
-    );
+      </main>
+      {isMobile ? <PublicMobileNav /> : <footer className={styles.footer} />}
+    </div>
+  );
 };
 
 export default TeacherPortalPage;

@@ -6,10 +6,13 @@
     background-color: var(--background-inner);
     border-radius: var(--box-border-radius) var(--box-border-radius) 0 0;
     padding: 0;
+    direction: ltr; /* הסקרול יהיה בצד ימין */
 }
 
 .tableList {
-    width: 100%;
+    width: var(--table-width, 100%);
+    max-width: var(--table-max-width, none);
+    margin: var(--table-margin, 0);
     border-collapse: separate;
     border-spacing: 0;
 }

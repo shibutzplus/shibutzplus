@@ -1,6 +1,11 @@
 .container {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* מוסיף מקום בתחתית רק במובייל עבור ה-MobileNav הקבוע */
+.withBottomPadding {
+  padding-bottom: calc(var(--header-height) + env(safe-area-inset-bottom));
 }

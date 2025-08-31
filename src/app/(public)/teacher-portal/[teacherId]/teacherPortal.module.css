@@ -1,38 +1,29 @@
-/* Mobile 320px - 767px -- 812px */
-.container {
-  padding: 0;
+:root { --mobile-nav-height: 64px; }
+
+.container{
   width: 100%;
-  min-height: 100vh;
-  height: 100%;
+  height: 100%;               /* חשוב: לא min-height */
   display: flex;
-  align-items: flex-start;
-  justify-content: center;
+  flex-direction: column;
   background-color: var(--school-section-bg);
+  overflow: visible;          /* אין גלילה ברמת העמוד */
 }
 
-.whiteBox {
-  background-color: var(--background-inner);
-  border-radius: 0;
-  width: 100%;
-  height: auto;
-  min-height: 100vh;
-  overflow: hidden;
+.content{
+  flex: 1 1 auto;
+  min-height: 0;              /* מאפשר לילד להחליט על גלילה */
+  display: flex;
+  justify-content: center;
+  /* אין overflow כאן – הגלילה נמצאת ב-PrivatePageLayout.contentMain */
+}
+
+.withBottomPadding{
+  padding-bottom: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom));
+}
+
+.whiteBox{
+  background: var(--background-inner);
   border: 0.1px solid #ccc;
-  margin-top: -2px;
-}
-
-/* Tablet 768px - 1279px -- 800px*/
-@media screen and (min-width: 768px) {
-  .whiteBox {
-    width: 100%;
-    min-height: unset;
-    margin-top: 0;
-  }
-}
-
-/* Desktop Full HD 1920px - 2559px -- 1080px*/
-@media screen and (min-width: 1920px) {
-  .container {
-    margin-top: unset;
-  }
+  width: 100%;
+  border-radius: 0;
 }

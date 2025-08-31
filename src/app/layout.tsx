@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
     title: "שיבוץ+",
-    description: "מערכת ניהול בתי ספר לסגנית",
+    description: "ניהול מערכת שעות יומית ושיבוץ מורים",
 };
 
 export default function RootLayout({

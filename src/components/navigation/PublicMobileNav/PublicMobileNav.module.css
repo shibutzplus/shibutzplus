@@ -12,11 +12,8 @@
   height: 64px;
   padding-bottom: env(safe-area-inset-bottom);
   box-shadow: 0 -6px 16px rgba(0, 0, 0, 0.08);
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
-
-  /* show only on small screens */
 }
+
 @media (min-width: 768px) {
   .mobileNav { display: none; }
 }
