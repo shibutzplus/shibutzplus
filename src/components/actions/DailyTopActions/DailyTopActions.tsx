@@ -44,7 +44,7 @@ const DailyTopActions: React.FC = () => {
                 <ActionBtn
                     type="existingTeacher"
                     Icon={<Icons.addTeacher size={16} />}
-                    label="שינוי למורה נוכח"
+                    label="שיבוץ למורה נוכח"
                     isDisabled={isLoading}
                     style={{
                         borderLeft: DailyTableColors.existingTeacher.borderLeft,
@@ -66,14 +66,7 @@ const DailyTopActions: React.FC = () => {
                 />
             </div>
             <div className={styles.leftSide}>
-                <IconBtn
-                    Icon={<Icons.share size={16} />}
-                    onClick={onCopyLink}
-                    disabled={publishLoading}
-                    hasBorder
-                />
                 <ActionBtn
-                    type="publish"
                     Icon={<Icons.publish size={16} />}
                     label="פרסום מערכת"
                     isDisabled={publishLoading}
@@ -82,6 +75,12 @@ const DailyTopActions: React.FC = () => {
                         borderLeft: DailyTableColors.publish.borderLeft,
                         color: DailyTableColors.publish.color,
                     }}
+                />
+                <IconBtn
+                    Icon={<Icons.share size={16} />}
+                    onClick={onCopyLink}
+                    disabled={publishLoading}
+                    hasBorder
                 />
             </div>
         </section>
