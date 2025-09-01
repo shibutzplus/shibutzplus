@@ -19,7 +19,7 @@ export interface InputGroupMultiSelectProps {
     onChange: (value: string[], method: SelectMethod) => void;
     placeholder?: string;
     isSearchable?: boolean;
-    allowAddNew?: boolean;
+    isAllowAddNew?: boolean;
     isDisabled?: boolean;
     hasBorder?: boolean;
     backgroundColor?: "white" | "transparent";
@@ -47,7 +47,7 @@ const InputGroupMultiSelect: React.FC<InputGroupMultiSelectProps> = ({
     onChange,
     placeholder = "בחר אופציה...",
     isSearchable = true,
-    allowAddNew = false,
+    isAllowAddNew = false,
     isDisabled = false,
     hasBorder = false,
     backgroundColor = "white",
@@ -126,7 +126,7 @@ const InputGroupMultiSelect: React.FC<InputGroupMultiSelectProps> = ({
             (option) => option.label.toLowerCase() === labelTrimmed.toLowerCase(),
         );
 
-        if (!exists && allowAddNew && onCreate) {
+        if (!exists && isAllowAddNew && onCreate) {
             const valueId = await onCreate(labelTrimmed);
             if (valueId) {
                 const newOption: SelectOption = { value: valueId, label: labelTrimmed };
@@ -178,7 +178,7 @@ const InputGroupMultiSelect: React.FC<InputGroupMultiSelectProps> = ({
                 menuPlacement="auto"
                 formatGroupLabel={formatGroupLabel}
                 noOptionsMessage={({ inputValue }) =>
-                    allowAddNew && inputValue.trim() !== "" ? (
+                    isAllowAddNew && inputValue.trim() !== "" ? (
                         <AddToSelectBtn
                             onClick={() => handleOnCreate(inputValue)}
                             label={inputValue}
@@ -189,7 +189,7 @@ const InputGroupMultiSelect: React.FC<InputGroupMultiSelectProps> = ({
                 }
                 onKeyDown={(e: React.KeyboardEvent) => {
                     if (
-                        allowAddNew &&
+                        isAllowAddNew &&
                         e.key === "Enter" &&
                         typeof e.target === "object" &&
                         e.target &&

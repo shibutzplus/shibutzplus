@@ -1,5 +1,5 @@
 import { eventPlaceholder } from "@/models/constant/table";
-import { ClassType } from "@/models/types/classes";
+import { getDayNumberByDateString, HOURS_IN_DAY, getStringReturnDate } from "@/utils/time";
 import {
     ColumnType,
     DailySchedule,
@@ -8,9 +8,8 @@ import {
     DailyScheduleType,
 } from "@/models/types/dailySchedule";
 import { SchoolType } from "@/models/types/school";
-import { SubjectType } from "@/models/types/subjects";
 import { TeacherType } from "@/models/types/teachers";
-import { getDayNumberByDateString, HOURS_IN_DAY, getStringReturnDate } from "@/utils/time";
+import { initDailyEventCellData, initDailyTeacherCellData } from "@/utils/Initialize";
 
 export const initDailySchedule = (dailySchedule: DailySchedule, date: string, columnId: string) => {
     // Initialize date if it doesn't exist
@@ -28,13 +27,16 @@ export const setColumn = (
     columnId: string,
     date: string,
 ) => {
-    // Check if this is an event column by looking at the first cell
-    const isEventColumn = cells.length > 0 && cells[0].event !== undefined;
+    // Check if this is an teacher column by looking at the first cell
+    const isTeacherColumn =
+        cells.length > 0 &&
+        cells[0].headerCol?.headerTeacher !== undefined &&
+        (cells[0].subTeacher !== undefined || cells[0].event !== undefined);
 
-    if (isEventColumn) {
-        setEventColumn(newSchedule, date, cells, columnId);
-    } else {
+    if (isTeacherColumn) {
         setTeacherColumn(newSchedule, date, cells, columnId);
+    } else {
+        setEventColumn(newSchedule, date, cells, columnId);
     }
     return newSchedule;
 };
@@ -62,6 +64,7 @@ export const setTeacherColumn = (
                 subject: existingData.subject,
                 hour: existingData.hour,
                 subTeacher: existingData.subTeacher,
+                event: existingData.event,
                 headerCol: existingData.headerCol,
                 DBid: existingData.DBid,
             };
@@ -109,7 +112,6 @@ export const setEventColumn = (
         }
     }
 
-
     return dailySchedule;
 };
 
@@ -149,57 +151,6 @@ export const setEmptyEventColumn = (
     return dailySchedule;
 };
 
-export const initTeacherCellData = (entry: DailyScheduleType) => {
-    const cellData: DailyScheduleCell = {
-        DBid: entry.id,
-        hour: entry.hour,
-        class: entry.class,
-        subject: entry.subject,
-        headerCol: { headerTeacher: entry.issueTeacher, type: entry.issueTeacherType },
-        subTeacher: entry.subTeacher,
-    };
-    return cellData;
-};
-
-export const initEventCellData = (entry: DailyScheduleType) => {
-    const cellData: DailyScheduleCell = {
-        DBid: entry.id,
-        hour: entry.hour,
-        event: entry.event,
-        headerCol: { headerEvent: entry.eventTitle, type: "event" },
-    };
-
-    return cellData;
-};
-
-export const createNewTeacherCellData = (
-    type: ColumnType,
-    selectedDate: string,
-    columnId: string,
-    hour: number,
-    school: SchoolType,
-    classData: ClassType,
-    subject: SubjectType,
-    subTeacher: TeacherType,
-    headerTeacher: TeacherType,
-    position: number,
-) => {
-    const cellData: DailyScheduleRequest = {
-        date: getStringReturnDate(selectedDate),
-        day: getDayNumberByDateString(selectedDate).toString(),
-        issueTeacherType: type,
-        issueTeacher: headerTeacher,
-        subTeacher,
-        columnId,
-        hour,
-        school,
-        class: classData,
-        subject,
-        position,
-    };
-    return cellData;
-};
-
 export const addNewEventCell = (
     school: SchoolType,
     cellData: DailyScheduleCell,
@@ -227,32 +178,36 @@ export const addNewEventCell = (
     return dailyCellData;
 };
 
-export const addNewSubTeacherCell = (
+export const addNewTeacherValueCell = (
     school: SchoolType,
     cellData: DailyScheduleCell,
     columnId: string,
     selectedDate: string,
-    subTeacher: TeacherType,
     type: ColumnType,
     position: number,
+    subTeacher?: TeacherType,
+    text?: string,
 ) => {
     const { hour, class: classData, subject, headerCol } = cellData;
-    if (!school || !classData || !subject || !subTeacher || !headerCol?.headerTeacher) {
-        return;
-    }
+    if (!school || !classData || !subject || !headerCol?.headerTeacher) return;
+    if (!subTeacher && !text) return;
 
-    const dailyCellData: DailyScheduleRequest = createNewTeacherCellData(
-        type,
-        selectedDate,
+    const dailyCellData: DailyScheduleRequest = {
+        date: getStringReturnDate(selectedDate),
+        day: getDayNumberByDateString(selectedDate).toString(),
+        issueTeacher: headerCol.headerTeacher,
+        issueTeacherType: type,
+        eventTitle: undefined,
+        event: text,
+        subTeacher,
         columnId,
         hour,
         school,
-        classData,
+        class: classData,
         subject,
-        subTeacher,
-        headerCol.headerTeacher,
         position,
-    );
+    };
+
     return dailyCellData;
 };
 
@@ -318,9 +273,11 @@ export const updateAddCell = (
     if (data.event) {
         existingCell.DBid = responseId;
         existingCell.event = data.event || eventPlaceholder;
+        delete existingCell.subTeacher;
     } else if (data.subTeacher) {
         existingCell.DBid = responseId;
         existingCell.subTeacher = data.subTeacher;
+        delete existingCell.event;
     }
 
     updatedSchedule[selectedDate][columnId][hourStr] = existingCell;
@@ -341,11 +298,10 @@ export const populateTable = (dataColumns: DailyScheduleType[], selectedDate: st
         let cellData: DailyScheduleCell;
         if (issueTeacher) {
             addTeacherToExistingCells(existingCells, issueTeacher.id, hour);
-            cellData = initTeacherCellData(columnCell);
+            cellData = initDailyTeacherCellData(columnCell);
         } else {
-            cellData = initEventCellData(columnCell);
+            cellData = initDailyEventCellData(columnCell);
         }
-
         // If the column is not already in the columnsToCreate array, add it
         if (!seenColumnIds.has(columnId)) {
             columnsToCreate.push({

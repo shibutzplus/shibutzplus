@@ -23,7 +23,7 @@ import { deleteDailyColumnAction } from "@/app/actions/DELETE/deleteDailyColumnA
 import { useMainContext } from "./MainContext";
 import {
     addNewEventCell,
-    addNewSubTeacherCell,
+    addNewTeacherValueCell,
     setEmptyTeacherColumn,
     setTeacherColumn,
     setEmptyEventColumn,
@@ -72,6 +72,12 @@ interface DailyTableContextType {
         columnId: string,
         dailyScheduleId: string,
         data: { event?: string; subTeacher?: TeacherType },
+    ) => Promise<DailyScheduleType | undefined>;
+    createNewText: (
+        type: ColumnType,
+        cellData: DailyScheduleCell,
+        columnId: string,
+        value: string,
     ) => Promise<DailyScheduleType | undefined>;
     daysSelectOptions: () => SelectOption[];
     handleDayChange: (value: string) => void;
@@ -306,8 +312,9 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         columnId: string,
         data: { event?: string; subTeacher?: TeacherType },
     ) => {
-        let response;
         if (!school) return;
+        let response;
+        const position = 0;
 
         if (type === "event") {
             const eventTitle = data.event || eventPlaceholder;
@@ -317,41 +324,80 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 columnId,
                 selectedDate,
                 eventTitle,
-                0,
+                position,
             );
             if (dailyCellData) response = await addDailyEventCellAction(dailyCellData);
         } else if ((type === "existingTeacher" || type === "missingTeacher") && data.subTeacher) {
-            const dailyCellData = addNewSubTeacherCell(
+            const dailyCellData = addNewTeacherValueCell(
                 school,
                 cellData,
                 columnId,
                 selectedDate,
-                data.subTeacher,
                 type,
-                0,
+                position,
+                data.subTeacher,
+                undefined,
             );
             if (dailyCellData) response = await addDailyTeacherCellAction(dailyCellData);
         }
         if (response?.success && response.data) {
-            setDailyDbRows((prev) => {
-                if (!response.data) return prev;
-                const updatedSchedule = prev ? [...prev, response.data] : [response.data];
-                return updatedSchedule;
-            });
-
-            const updatedSchedule = updateAddCell(
-                response.data.id,
-                mainDailyTable,
-                selectedDate,
-                cellData,
-                columnId,
-                data,
-            );
-            setMainAndStorageTable(updatedSchedule);
-
+            addTeacherResponse(response.data, cellData, columnId, data);
             return response.data;
         }
         return undefined;
+    };
+
+    const createNewText = async (
+        type: ColumnType,
+        cellData: DailyScheduleCell,
+        columnId: string,
+        value: string,
+    ): Promise<DailyScheduleType | undefined> => {
+        if (!school) return;
+
+        const position = 0;
+        const newDailyRow = addNewTeacherValueCell(
+            school,
+            cellData,
+            columnId,
+            selectedDate,
+            type,
+            position,
+            undefined,
+            value,
+        );
+        if (newDailyRow) {
+            const response = await addDailyTeacherCellAction(newDailyRow);
+            if (response.success && response.data) {
+                addTeacherResponse(response.data, cellData, columnId, { event: value });
+                return response.data;
+            }
+        }
+
+        return undefined;
+    };
+
+    const addTeacherResponse = (
+        response: DailyScheduleType,
+        cellData: DailyScheduleCell,
+        columnId: string,
+        data: { event?: string; subTeacher?: TeacherType },
+    ) => {
+        setDailyDbRows((prev) => {
+            if (!response) return prev;
+            const updatedSchedule = prev ? [...prev, response] : [response];
+            return updatedSchedule;
+        });
+
+        const updatedSchedule = updateAddCell(
+            response.id,
+            mainDailyTable,
+            selectedDate,
+            cellData,
+            columnId,
+            data,
+        );
+        setMainAndStorageTable(updatedSchedule);
     };
 
     const updateCell = async (
@@ -362,6 +408,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         data: { event?: string; subTeacher?: TeacherType },
     ) => {
         let response;
+        const position = 0;
         if (!school) return;
         if (type === "event" && data.event) {
             const dailyCellData = addNewEventCell(
@@ -370,19 +417,20 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 columnId,
                 selectedDate,
                 data.event,
-                0,
+                position,
             );
             if (dailyCellData)
                 response = await updateDailyEventCellAction(dailyScheduleId, dailyCellData);
-        } else if ((type === "existingTeacher" || type === "missingTeacher") && data.subTeacher) {
-            const dailyCellData = addNewSubTeacherCell(
+        } else if (type === "existingTeacher" || type === "missingTeacher") {
+            const dailyCellData = addNewTeacherValueCell(
                 school,
                 cellData,
                 columnId,
                 selectedDate,
-                data.subTeacher,
                 type,
-                0,
+                position,
+                data.subTeacher,
+                data.event,
             );
             if (dailyCellData)
                 response = await updateDailyTeacherCellAction(dailyScheduleId, dailyCellData);
@@ -473,6 +521,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 populateEventColumn,
                 addNewCell,
                 updateCell,
+                createNewText,
                 daysSelectOptions,
                 handleDayChange,
             }}

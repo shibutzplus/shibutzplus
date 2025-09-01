@@ -18,19 +18,20 @@ type DailyTeacherCellProps = {
 
 const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
     const { teachers, classes } = useMainContext();
-    const { mainDailyTable, addNewCell, selectedDate, updateCell } =
+    const { mainDailyTable, addNewCell, selectedDate, updateCell, createNewText } =
         useDailyTableContext();
     const [isLoading, setIsLoading] = useState(false);
 
-    // Get the current hour, class, subject, subTeacher and headerCol from the row data
+    // Get data from the row data
     const columnId = cell?.column?.id;
     const hour = cell?.row?.original?.hour.toString();
     const classData = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.class;
     const subjectData = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.subject;
     const subTeacherData = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.subTeacher;
+    const teacherText = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.event;
     const headerData = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.headerCol;
 
-    const [selectedSubTeacher, setSelectedSubTeacher] = useState<string>(subTeacherData?.id || "");
+    const [selectedSubTeacher, setSelectedSubTeacher] = useState<string>(subTeacherData?.id || teacherText || "");
 
     const selectedClassId = classData?.id || "";
     const day = getDayNameByDateString(selectedDate);
@@ -47,38 +48,47 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
         [teachers, classes, selectedClassId, day, hour],
     );
 
-    const handleTeacherChange = async (teacherId: string) => {
+    const handleTeacherChange = async (methodType: "teacher" | "text", value: string) => {
         if (!hour || !columnId || !selectedDate || !headerData) return;
         setIsLoading(true);
-        setSelectedSubTeacher(teacherId);
 
         try {
-            const newSubTeacherData = teachers?.find((t) => t.id === teacherId);
-            if (!newSubTeacherData) return;
-
             const cellData = mainDailyTable[selectedDate]?.[columnId]?.[hour];
             if (!cellData) return;
+            setSelectedSubTeacher(value);
+
+            let newSubTeacherData;
+            if(methodType === "teacher") {
+                newSubTeacherData = teachers?.find((t) => t.id === value);
+                if (!newSubTeacherData) return;
+            }
 
             let response;
-            if (subTeacherData) {
+            const isUpdate = subTeacherData || teacherText;
+            if (isUpdate) {
                 const existingDailyId = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.DBid;
-                if (existingDailyId) {
-                    response = await updateCell(type, cellData, columnId, existingDailyId, {
-                        subTeacher: newSubTeacherData,
-                    });
+                if (existingDailyId){
+                    let data = {};
+                    if (methodType === "teacher") {
+                        data = { subTeacher: newSubTeacherData };
+                    }
+                    else if (methodType === "text") {
+                        data = { event: value.trim() };
+                    }
+                    response = await updateCell(type, cellData, columnId, existingDailyId, data);
                 }
             } else {
-                response = await addNewCell(type, cellData, columnId, {
-                    subTeacher: newSubTeacherData,
-                });
+                if (methodType === "teacher") {
+                    response = await addNewCell(type, cellData, columnId, {
+                        subTeacher: newSubTeacherData,
+                    });
+                } else if (methodType === "text") {
+                    response = await createNewText(type, cellData, columnId, value.trim());
+                }
             }
             if (!response) throw new Error();
         } catch (error) {
-            errorToast(
-                subTeacherData
-                    ? messages.dailySchedule.updateError
-                    : messages.dailySchedule.createError,
-            );
+            errorToast(messages.dailySchedule.createError);
             setSelectedSubTeacher("");
         } finally {
             setIsLoading(false);
@@ -96,9 +106,11 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
                         <DynamicInputGroupSelect
                             options={sortedTeacherOptions}
                             value={selectedSubTeacher}
-                            onChange={handleTeacherChange}
+                            onChange={(value: string) => handleTeacherChange("teacher", value)}
+                            onCreate={(value: string) => handleTeacherChange("text", value)}
                             placeholder="בחירת מורה מחליף"
                             isSearchable
+                            isAllowAddNew
                             hasBorder
                             isDisabled={isLoading}
                         />

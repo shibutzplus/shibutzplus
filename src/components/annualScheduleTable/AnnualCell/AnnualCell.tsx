@@ -69,7 +69,7 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
                     onChange={handleSubjectChange}
                     onCreate={(value: string) => onCreateSubject(day, hour, value)}
                     isSearchable
-                    allowAddNew
+                    isAllowAddNew
                     isDisabled={isDisabled}
                 />
                 <DynamicInputGroupMultiSelect
@@ -78,7 +78,7 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
                     value={schedule[selectedClassId]?.[day]?.[hour]?.teachers ?? []}
                     onChange={handleTeacherChange}
                     isSearchable
-                    allowAddNew
+                    isAllowAddNew
                     onCreate={(v: string) => {
                         return onCreateTeacher(day, hour, v);
                     }}
