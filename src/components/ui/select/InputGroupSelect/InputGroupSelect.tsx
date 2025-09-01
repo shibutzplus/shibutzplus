@@ -16,12 +16,12 @@ export interface InputGroupSelectProps {
     onChange: (value: string) => void;
     placeholder?: string;
     isSearchable?: boolean;
-    allowAddNew?: boolean;
+    isAllowAddNew?: boolean;
     isDisabled?: boolean;
     hasBorder?: boolean;
     backgroundColor?: "white" | "transparent";
     isClearable?: boolean;
-    onCreate?: (value: string) => Promise<string | undefined>;
+    onCreate?: (value: string) => Promise<void>;
 }
 
 const formatGroupLabel = (data: GroupOption) => (
@@ -40,7 +40,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     onChange,
     placeholder = "בחר אופציה...",
     isSearchable = true,
-    allowAddNew = false,
+    isAllowAddNew = false,
     isDisabled = false,
     hasBorder = false,
     backgroundColor = "white",
@@ -58,7 +58,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
         if (value) {
             const allOptions = options.flatMap((group) => group.options);
             const found = allOptions.find((opt) => opt.value === value);
-            setSelectedOption(found || null);
+            setSelectedOption(found || { value: value, label: value });
         } else {
             setSelectedOption(null);
         }
@@ -74,15 +74,13 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
             (option) => option.label.toLowerCase() === inputValue.toLowerCase(),
         );
 
-        if (!exists && allowAddNew && onCreate) {
-            const valueId = await onCreate(inputValue);
-            if (valueId) {
-                const newOption: SelectOption = {
-                    value: valueId,
-                    label: inputValue,
-                };
-                setSelectedOption(newOption);
-            }
+        if (!exists && isAllowAddNew && onCreate) {
+            await onCreate(inputValue);
+            const newOption: SelectOption = {
+                value: inputValue,
+                label: inputValue,
+            };
+            setSelectedOption(newOption);
         }
     };
 
@@ -116,7 +114,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
                 menuPlacement="auto"
                 formatGroupLabel={formatGroupLabel}
                 noOptionsMessage={({ inputValue }) =>
-                    allowAddNew && inputValue.trim() !== "" ? (
+                    isAllowAddNew && inputValue.trim() !== "" ? (
                         <AddToSelectBtn
                             onClick={() => handleOnCreate(inputValue)}
                             label={inputValue}
@@ -127,7 +125,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
                 }
                 onKeyDown={(e: React.KeyboardEvent) => {
                     if (
-                        allowAddNew &&
+                        isAllowAddNew &&
                         e.key === 'Enter' &&
                         typeof e.target === 'object' &&
                         'value' in e.target

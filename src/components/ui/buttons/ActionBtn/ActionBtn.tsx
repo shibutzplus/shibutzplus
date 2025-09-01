@@ -3,7 +3,7 @@ import styles from "./ActionBtn.module.css";
 import { ColumnType } from "@/models/types/dailySchedule";
 
 const ActionBtn: React.FC<{
-    type?: ColumnType;
+    type: string;
     Icon?: React.ReactNode;
     label: string;
     style: React.CSSProperties;
