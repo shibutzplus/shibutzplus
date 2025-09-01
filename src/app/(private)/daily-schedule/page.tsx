@@ -10,6 +10,7 @@ import { useMobileSize } from "@/hooks/useMobileSize";
 const DailySchedulePage: NextPage = () => {
   const isMobile = useMobileSize();
 
+  // Lior Todo: Move to a hook
   useEffect(() => {
     const inner = document.querySelector<HTMLElement>('[class*="scrollableContent"]');
     const bar = document.getElementById("bottomScroller") as HTMLElement | null;
