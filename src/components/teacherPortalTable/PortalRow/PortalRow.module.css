@@ -26,7 +26,6 @@
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  gap: 4px;
   height: auto;
 }
 
@@ -46,9 +45,5 @@
 }
 
 .className {
-  font-weight: bold;
-}
-
-.subTeacher {
   font-weight: bold;
 }

@@ -31,7 +31,6 @@ const PortalRow: React.FC<PortalRowProps> = ({ hour, row }) => {
         <div className={styles.cellContent}>
           <div className={styles.className}>{row?.class?.name ?? ""}</div>
           <div className={styles.subjectName}>{row?.subject?.name ?? ""}</div>
-          <div style={{ height: "6px" }}></div>
           <div className={styles.subTeacher}>{row?.subTeacher?.name ?? ""}</div>
         </div>
       </td>
