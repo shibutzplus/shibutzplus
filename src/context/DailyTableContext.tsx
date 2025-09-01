@@ -44,7 +44,7 @@ import { SelectOption } from "@/models/types";
 import { DailyTableColors } from "@/style/tableColors";
 import { eventPlaceholder } from "@/models/constant/table";
 import { getStorageDailyTable, setStorageDailyTable } from "@/utils/localStorage";
-import { getStorageDailyColumnsOrder, setStorageDailyColumnsOrder } from "@/utils/localStorage";
+import { getStorageDailyColumnsOrder, setStorageDailyColumnsOrder, cleanupDailyColumnsOrder } from "@/utils/localStorage";
 
 interface DailyTableContextType {
     tableColumns: ColumnDef<TeacherRow>[];
@@ -158,6 +158,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         const fetchDataForDate = async () => {
             if (!school?.id || !selectedDate) return;
             setIsLoading(true);
+            cleanupDailyColumnsOrder();
             let dataColumns: DailyScheduleType[] | undefined = [];
             const populateFromStorage = populateTableFromStorage();
             if (populateFromStorage) return;
