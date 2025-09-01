@@ -72,7 +72,7 @@ const InputSelect: React.FC<Props> = (props) => {
                 const updated = [...options, newOption];
                 setOptions(updated);
                 setSelectedOption(newOption);
-                onChange(valueId); // אופציונלי: לסנכרן כלפי מעלה
+                onChange(valueId);
             }
         }
     };

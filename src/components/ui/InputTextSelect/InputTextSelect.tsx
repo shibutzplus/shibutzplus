@@ -31,11 +31,7 @@ const InputTextSelect: React.FC<InputTextSelectProps> = ({
 }) => {
     const [options, setOptions] = useState<SelectOption[]>(initialOptions);
     const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
-
-    // Reference to the select component
     const selectRef = useRef<SelectInstance<SelectOption> | null>(null);
-
-    // Generate a unique instanceId for SSR consistency
     const selectInstanceId = useId();
 
     useEffect(() => {

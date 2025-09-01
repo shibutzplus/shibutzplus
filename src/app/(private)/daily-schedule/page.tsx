@@ -10,7 +10,6 @@ import { useMobileSize } from "@/hooks/useMobileSize";
 const DailySchedulePage: NextPage = () => {
   const isMobile = useMobileSize();
 
-  // replace your whole useEffect with this one (English-only comments)
   useEffect(() => {
     const inner = document.querySelector<HTMLElement>('[class*="scrollableContent"]');
     const bar = document.getElementById("bottomScroller") as HTMLElement | null;
@@ -23,7 +22,7 @@ const DailySchedulePage: NextPage = () => {
     const clamp = (v: number, lo: number, hi: number) => Math.min(Math.max(v, lo), hi);
 
     let ratio = 1;
-    let lock = false;        // prevents feedback loops
+    let lock = false; 
     let rafId: number | null = null;
 
     const recalc = () => {
@@ -31,7 +30,6 @@ const DailySchedulePage: NextPage = () => {
       rafId = requestAnimationFrame(() => {
         lock = true;
 
-        // keep relative position before we mutate widths
         const mInnerBefore = max(inner) || 1;
         const relInner = inner.scrollLeft / mInnerBefore;
 
@@ -44,7 +42,6 @@ const DailySchedulePage: NextPage = () => {
         const mInner = max(inner);
         ratio = mInner ? mBar / mInner : 1;
 
-        // restore by relative position (stable even if ranges changed)
         const innerX = clamp(Math.round(relInner * (mInner || 0)), 0, mInner);
         const barX = clamp(Math.round(innerX * ratio), 0, mBar);
 
@@ -69,7 +66,6 @@ const DailySchedulePage: NextPage = () => {
       lock = false;
     };
 
-    // listen to true size changes only (typing won't trigger this)
     const ro1 = new ResizeObserver(() => recalc());
     const ro2 = new ResizeObserver(() => recalc());
     ro1.observe(measured);
@@ -79,7 +75,6 @@ const DailySchedulePage: NextPage = () => {
     bar.addEventListener("scroll", onBar, { passive: true });
     inner.addEventListener("scroll", onInner, { passive: true });
 
-    // initial alignment
     recalc();
 
     return () => {

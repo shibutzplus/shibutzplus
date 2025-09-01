@@ -7,7 +7,6 @@ import PortalRow from "../PortalRow/PortalRow";
 type PortalTableProps = { tableData: DailyScheduleType[] };
 
 const PortalTable: React.FC<PortalTableProps> = ({ tableData }) => {
-  // Map rows by hour for O(1) access
   const byHour: Record<number, DailyScheduleType | undefined> = {};
   if (Array.isArray(tableData)) {
     for (const item of tableData) {

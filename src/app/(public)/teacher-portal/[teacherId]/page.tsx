@@ -24,7 +24,6 @@ const TeacherPortalPage = () => {
     setTeacher();
   }, [teacherId]);
 
-  // Disable page (html/body) scrolling only on this route
   useEffect(() => {
     const prevHtml = document.documentElement.style.overflow;
     const prevBody = document.body.style.overflow;
