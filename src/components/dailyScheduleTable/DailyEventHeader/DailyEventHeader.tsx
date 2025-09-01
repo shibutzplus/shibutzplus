@@ -22,7 +22,7 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId }) => {
     return (
         <EditableHeader columnId={columnId}>
             <InputText
-                placeholder="ארועים"
+                placeholder="כותרת האירוע"
                 onBlur={(e) => handleChange(e.target.value)}
                 defaultValue={selectedEventData || ""}
                 backgroundColor="transparent"

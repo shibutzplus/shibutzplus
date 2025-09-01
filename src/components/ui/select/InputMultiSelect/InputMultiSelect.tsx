@@ -17,7 +17,7 @@ export type InputMultiSelectProps = {
     onChange: (value: string[], method: SelectMethod) => void;
     placeholder?: string;
     isSearchable?: boolean;
-    allowAddNew?: boolean;
+    isAllowAddNew?: boolean;
     isDisabled?: boolean;
     hasBorder?: boolean;
     backgroundColor?: "white" | "transparent";
@@ -38,7 +38,7 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
     onChange,
     placeholder = "בחר אופציה...",
     isSearchable = true,
-    allowAddNew = false,
+    isAllowAddNew = false,
     isDisabled = false,
     hasBorder = false,
     backgroundColor = "white",
@@ -93,7 +93,7 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
             (option) => option.label.toLowerCase() === labelTrimmed.toLowerCase(),
         );
 
-        if (!exists && allowAddNew && onCreate) {
+        if (!exists && isAllowAddNew && onCreate) {
             const valueId = await onCreate(labelTrimmed);
             if (valueId) {
                 const newOption: SelectOption = { value: valueId, label: labelTrimmed };
@@ -132,7 +132,7 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
                 menuPortalTarget={isMounted ? document.body : null}
                 menuPlacement="auto"
                 noOptionsMessage={({ inputValue }) =>
-                    allowAddNew ? (
+                    isAllowAddNew ? (
                         <AddToSelectBtn
                             onClick={() => handleOnCreate(inputValue)}
                             label={inputValue}
@@ -143,7 +143,7 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
                 }
                 onKeyDown={(e: React.KeyboardEvent) => {
                     if (
-                        allowAddNew &&
+                        isAllowAddNew &&
                         e.key === "Enter" &&
                         typeof e.target === "object" &&
                         e.target &&

@@ -16,7 +16,7 @@ type Props = {
     onChange: (value: string) => void;
     placeholder?: string;
     isSearchable?: boolean;
-    allowAddNew?: boolean;
+    isAllowAddNew?: boolean;
     isDisabled?: boolean;
     hasBorder?: boolean;
     backgroundColor?: "white" | "transparent";
@@ -34,7 +34,7 @@ const InputSelect: React.FC<Props> = (props) => {
         onChange,
         placeholder = "בחר אופציה...",
         isSearchable = true,
-        allowAddNew = false,
+        isAllowAddNew = false,
         isDisabled = false,
         hasBorder = false,
         backgroundColor = "white",
@@ -65,7 +65,7 @@ const InputSelect: React.FC<Props> = (props) => {
 
     const handleOnCreate = async (inputValue: string) => {
         const exists = options.some((o) => o.label.toLowerCase() === inputValue.toLowerCase());
-        if (!exists && allowAddNew && onCreate) {
+        if (!exists && isAllowAddNew && onCreate) {
             const valueId = await onCreate(inputValue);
             if (valueId) {
                 const newOption = { value: valueId, label: inputValue };
@@ -103,7 +103,7 @@ const InputSelect: React.FC<Props> = (props) => {
                 menuPortalTarget={typeof window !== "undefined" ? document.body : undefined}
                 menuPlacement="auto"
                 noOptionsMessage={({ inputValue }) =>
-                    allowAddNew && onCreate ? (
+                    isAllowAddNew && onCreate ? (
                         <AddToSelectBtn
                             onClick={() => handleOnCreate(inputValue)}
                             label={inputValue}
@@ -114,7 +114,7 @@ const InputSelect: React.FC<Props> = (props) => {
                 }
                 onKeyDown={(e) => {
                     if (
-                        allowAddNew &&
+                        isAllowAddNew &&
                         e.key === "Enter" &&
                         typeof e.target === "object" &&
                         "value" in e.target
