@@ -73,7 +73,6 @@ const DailyTopActions: React.FC = () => {
                     func={publishDailySchedule}
                     style={{
                         borderLeft: DailyTableColors.publish.borderLeft,
-                        color: DailyTableColors.publish.color,
                     }}
                 />
                 <IconBtn
