@@ -44,6 +44,7 @@ import { SelectOption } from "@/models/types";
 import { DailyTableColors } from "@/style/tableColors";
 import { eventPlaceholder } from "@/models/constant/table";
 import { getStorageDailyTable, setStorageDailyTable } from "@/utils/localStorage";
+import { getStorageDailyColumnsOrder, setStorageDailyColumnsOrder } from "@/utils/localStorage";
 
 interface DailyTableContextType {
     tableColumns: ColumnDef<TeacherRow>[];
@@ -91,7 +92,7 @@ function buildColumn(colType: ColumnType, columnId: string): ColumnDef<TeacherRo
             id: columnId,
             header: () => <DailyTeacherHeader columnId={columnId} type="missingTeacher" />,
             cell: (props) => <DailyTeacherCell cell={props} type="missingTeacher" />,
-            meta: { bgColor: DailyTableColors.missingTeacher.headerColor },
+            meta: { bgColor: DailyTableColors.missingTeacher.headerColor, type: "missingTeacher" },
         };
     }
     if (colType === "existingTeacher") {
@@ -99,14 +100,14 @@ function buildColumn(colType: ColumnType, columnId: string): ColumnDef<TeacherRo
             id: columnId,
             header: () => <DailyTeacherHeader columnId={columnId} type="existingTeacher" />,
             cell: (props) => <DailyTeacherCell cell={props} type="existingTeacher" />,
-            meta: { bgColor: DailyTableColors.existingTeacher.headerColor },
+            meta: { bgColor: DailyTableColors.existingTeacher.headerColor, type: "existingTeacher" },
         };
     }
     return {
         id: columnId,
         header: () => <EventHeader columnId={columnId} />,
         cell: (props) => <EventCell cell={props} />,
-        meta: { bgColor: DailyTableColors.event.headerColor },
+        meta: { bgColor: DailyTableColors.event.headerColor, type: "event" },
     };
 }
 
@@ -118,7 +119,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     const { school, teachers } = useMainContext();
 
     const [tableColumns, setActionCols] = useState<ColumnDef<TeacherRow>[]>([]);
-    const [mainDailyTable, setMainDailyTable] = useState<DailySchedule>({}); // main one for keep in the storage
+    const [mainDailyTable, setMainDailyTable] = useState<DailySchedule>({});
     const [dailyDbRows, setDailyDbRows] = useState<DailyScheduleType[] | undefined>(undefined);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -129,6 +130,25 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     };
     const handleDayChange = (value: string) => {
         setSelectedDayId(value);
+    };
+
+    // --- Order helpers (Step 2) ---
+    // Persist the current columns order for the selected date
+    const persistColumnsOrder = (cols: ColumnDef<TeacherRow>[]) => {
+        const ids = cols.map((c) => String(c.id));
+        setStorageDailyColumnsOrder(selectedDate, ids);
+    };
+
+    // Restore columns order by saved ids for the selected date
+    const restoreColumnsOrder = (cols: ColumnDef<TeacherRow>[]) => {
+        const saved = getStorageDailyColumnsOrder()[selectedDate];
+        if (!saved || saved.length === 0) return cols;
+        const idx = new Map(saved.map((id, i) => [id, i]));
+        return [...cols].sort((a, b) => {
+            const ia = idx.has(String(a.id)) ? (idx.get(String(a.id)) as number) : Number.MAX_SAFE_INTEGER;
+            const ib = idx.has(String(b.id)) ? (idx.get(String(b.id)) as number) : Number.MAX_SAFE_INTEGER;
+            return ia - ib;
+        });
     };
 
     /**
@@ -173,14 +193,14 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         const tableStorage = getStorageDailyTable();
         if (tableStorage && tableStorage[selectedDate]) {
             setMainDailyTable({ [selectedDate]: tableStorage[selectedDate] });
-            // Populate table columns from storage data
+            // Rebuild columns from storage and restore saved order
             const storageData = tableStorage[selectedDate];
             if (storageData && teachers) {
                 const columnsToCreate = getColumnsFromStorage(storageData);
-                const newColumns = columnsToCreate.map(({ id, type }) => {
-                    return buildColumn(type, id);
-                });
+                let newColumns = columnsToCreate.map(({ id, type }) => buildColumn(type, id));
+                newColumns = restoreColumnsOrder(newColumns);
                 setActionCols(newColumns);
+                persistColumnsOrder(newColumns);
                 setIsLoading(false);
             }
             return true;
@@ -213,10 +233,12 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 }
             }
 
-            // Add new columns to the table
+            // Build columns and apply saved order
             if (columnsToCreate.length > 0) {
-                const newColumnDefs = columnsToCreate.map((col) => buildColumn(col.type, col.id));
+                let newColumnDefs = columnsToCreate.map((col) => buildColumn(col.type, col.id));
+                newColumnDefs = restoreColumnsOrder(newColumnDefs);
                 setActionCols(newColumnDefs);
+                persistColumnsOrder(newColumnDefs);
             }
 
             // Populate all schedule data at once
@@ -257,7 +279,6 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                             }) as DailyScheduleCell,
                     );
 
-                    // Update the context with the teacher's schedule
                     updatedSchedule = setTeacherColumn(
                         { ...mainDailyTable },
                         selectedDate,
@@ -311,14 +332,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
 
         if (type === "event") {
             const eventTitle = data.event || eventPlaceholder;
-            const dailyCellData = addNewEventCell(
-                school,
-                cellData,
-                columnId,
-                selectedDate,
-                eventTitle,
-                0,
-            );
+            const dailyCellData = addNewEventCell(school, cellData, columnId, selectedDate, eventTitle, 0);
             if (dailyCellData) response = await addDailyEventCellAction(dailyCellData);
         } else if ((type === "existingTeacher" || type === "missingTeacher") && data.subTeacher) {
             const dailyCellData = addNewSubTeacherCell(
@@ -364,16 +378,8 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         let response;
         if (!school) return;
         if (type === "event" && data.event) {
-            const dailyCellData = addNewEventCell(
-                school,
-                cellData,
-                columnId,
-                selectedDate,
-                data.event,
-                0,
-            );
-            if (dailyCellData)
-                response = await updateDailyEventCellAction(dailyScheduleId, dailyCellData);
+            const dailyCellData = addNewEventCell(school, cellData, columnId, selectedDate, data.event, 0);
+            if (dailyCellData) response = await updateDailyEventCellAction(dailyScheduleId, dailyCellData);
         } else if ((type === "existingTeacher" || type === "missingTeacher") && data.subTeacher) {
             const dailyCellData = addNewSubTeacherCell(
                 school,
@@ -413,19 +419,37 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
 
     // -- Table Actions -- //
 
+    // addNewColumn — insert next to same-type block + persist order
     const addNewColumn = (colType: ColumnType) => {
         const columnId = `${colType}-${generateId()}`;
         const newCol = buildColumn(colType, columnId);
-        setActionCols([...tableColumns, newCol]);
+
+        const cols = [...tableColumns];
+
+        let insertAt = -1;
+        for (let i = cols.length - 1; i >= 0; i--) {
+            const metaType = (cols[i].meta as any)?.type ?? String(cols[i].id ?? "").split("-")[0];
+            if (metaType === colType) { insertAt = i + 1; break; }
+        }
+
+        let next: ColumnDef<TeacherRow>[];
+        if (insertAt === -1) next = [...cols, newCol];
+        else { cols.splice(insertAt, 0, newCol); next = cols; }
+
+        setActionCols(next);
+        persistColumnsOrder(next);
     };
 
+
+    // deleteColumn — persist order after removal
     const deleteColumn = async (columnId: string) => {
         if (!school?.id) return false;
         const filteredCols = tableColumns.filter((col) => col.id !== columnId);
         if (filteredCols.length === tableColumns.length) return false;
 
-        // Update UI immediately
         setActionCols(filteredCols);
+        persistColumnsOrder(filteredCols);
+
         const updatedSchedule = { ...mainDailyTable };
         delete updatedSchedule[selectedDate]?.[columnId];
         setMainAndStorageTable(updatedSchedule);
@@ -442,22 +466,24 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         return false;
     };
 
+
     const clearColumn = (day: string, columnId: string) => {
         const updatedSchedule = { ...mainDailyTable };
 
-        // Check if the day and header exist before trying to clear
         if (updatedSchedule[day] && updatedSchedule[day][columnId]) {
-            // Clear all schedule data for this header on this day
             updatedSchedule[day][columnId] = {};
         }
 
         setMainAndStorageTable(updatedSchedule);
     };
 
+    // clearDailySchedule — also clear saved order for this date
     const clearDailySchedule = () => {
         setMainAndStorageTable({});
         setActionCols([]);
+        setStorageDailyColumnsOrder(selectedDate, []);
     };
+
 
     return (
         <DailyTableContext.Provider

@@ -89,3 +89,19 @@ export const setStorageDailyTable = (dailyTable: DailySchedule, selectedDate: st
 export const clearStorage = () => {
     localStorage.clear();
 };
+
+// Store and retrieve the order of daily schedule columns
+export const getStorageDailyColumnsOrder = (): Record<string, string[]> => {
+  try {
+    const raw = localStorage.getItem("shibutzplus_daily_table_order");
+    return raw ? (JSON.parse(raw) as Record<string, string[]>) : {};
+  } catch {
+    return {};
+  }
+};
+
+export const setStorageDailyColumnsOrder = (date: string, ids: string[]) => {
+  const all = getStorageDailyColumnsOrder();
+  all[date] = ids;
+  localStorage.setItem("shibutzplus_daily_table_order", JSON.stringify(all));
+};
