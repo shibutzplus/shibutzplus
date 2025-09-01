@@ -109,7 +109,7 @@ export const setStorageDailyColumnsOrder = (date: string, ids: string[]) => {
 // Clean up shibutzplus_daily_table_order: remove keys older than `maxAgeDays`, then keep only `maxKeep` most recent date keys.
 // Works with current schema: Record<string, string[]>, where keys are ISO dates (YYYY-MM-DD).
 export const cleanupDailyColumnsOrder = (maxAgeDays = 7, maxKeep = 7) => {
-    const raw = localStorage.getItem("DAILY_COLUMNS_ORDER");
+    const raw = localStorage.getItem("shibutzplus_daily_table_order");
     if (!raw) return;
 
     let map: Record<string, string[]>;
