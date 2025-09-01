@@ -23,12 +23,12 @@ export const DailyTableColors = {
         headerColor: "#64af380d",
     },
     missingTeacher: {
-        borderLeft: "4px solid #ae2b27",
-        color: "#ae2b27",
+        borderLeft: "4px solid #ae2b27af",
+        color: "#ae2b27af",
         headerColor: "#af3c3811",
     },
     publish: {
-        borderLeft: "4px solid #6827ae",
-        color: "#6d27ae",
+        borderLeft: "4px solid #6827ae98",
+        color: "#808080",
     },
 };

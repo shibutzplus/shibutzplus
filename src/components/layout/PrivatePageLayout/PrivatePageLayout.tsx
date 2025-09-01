@@ -1,19 +1,25 @@
+"use client";
+
 import React from "react";
 import styles from "./PrivatePageLayout.module.css";
 import TopNav from "@/components/navigation/TopNav/TopNav";
 
 type PrivatePageLayoutProps = {
-    CustomTopNav?: React.ReactNode;
-    children: React.ReactNode;
+  CustomTopNav?: React.ReactNode;
+  children: React.ReactNode;
 };
 
-const PrivatePageLayout = ({ CustomTopNav, children }: PrivatePageLayoutProps) => {
-    return (
-        <div className={styles.privatePageLayout} dir="rtl">
-            {CustomTopNav ? CustomTopNav : <TopNav />}
-            <main className={styles.contentMain}>{children}</main>
+export default function PrivatePageLayout({ CustomTopNav, children }: PrivatePageLayoutProps) {
+  return (
+    <div className={styles.privatePageLayout} dir="rtl">
+      <header className={styles.contentHeader}>
+        {CustomTopNav ?? <TopNav />}
+      </header>
+      <main className={styles.contentMain}>
+        <div className={styles.scrollInner}>
+          {children}
         </div>
-    );
-};
-
-export default PrivatePageLayout;
+      </main>
+    </div>
+  );
+}

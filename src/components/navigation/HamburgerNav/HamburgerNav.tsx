@@ -52,11 +52,11 @@ const links: ILink[] = [
         p: routePath.classes.p,
         Icon: <Icons.chair size={24} />,
     },
-    {
-        name: routePath.history.title,
-        p: routePath.history.p,
-        Icon: <Icons.history size={24} />,
-    },
+//    {
+//        name: routePath.history.title,
+//        p: routePath.history.p,
+//        Icon: <Icons.history size={24} />,
+//    },
 ];
 
 const LinkComponent = ({ link, onClose }: { link: ILink; onClose: () => void }) => {

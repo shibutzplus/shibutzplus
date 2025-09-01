@@ -1,6 +1,36 @@
 .container {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  width: 100%;
+  min-height: 100dvh;
+  position: relative;
+  padding-bottom: 28px; /* space for fixed bottom bar */
+}
+
+.bottomScroller {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.08);
+  z-index: 1000;
+}
+
+.bottomInner {
+  height: 1px;
+}
+
+/* keep scrolling contained and disable anchoring */
+:global([class*="scrollableContent"]) {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+:global([class*="scrollableContent"]::-webkit-scrollbar) {
+  display: none;
+}
+
+.scheduleCellInput,
+.scheduleCell {
+  overflow: hidden;
+  overflow-anchor: none;
 }

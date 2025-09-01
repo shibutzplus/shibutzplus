@@ -27,13 +27,12 @@ const InputTextArea: React.FC<InputTextAreaProps> = ({
     el.style.height = `${el.scrollHeight}px`;
   };
 
-  // grow on mount and whenever controlled value changes
   useLayoutEffect(() => {
     if (autoGrow) resize(ref.current);
   }, [value, autoGrow]);
 
   const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    if (autoGrow) resize(e.currentTarget); // typing/paste
+    if (autoGrow) resize(e.currentTarget); 
     onInput?.(e);
   };
 

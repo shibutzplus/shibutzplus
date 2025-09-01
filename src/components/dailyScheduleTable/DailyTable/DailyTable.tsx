@@ -21,7 +21,7 @@ const DailyTable: React.FC = () => {
             id: id,
             header: () => (
                 <span className={styles.templateHeaderText}>
-                    לחצו על הכפתורים למעלה כדי להוסיף את המערכת של המורה
+                    לחצו על הכפתורים כדי להוסיף את המערכות
                 </span>
             ),
             cell: () => (
@@ -43,7 +43,7 @@ const DailyTable: React.FC = () => {
         <section className={styles.tableContainer}>
             <div className={styles.fixedHourColumn}>
                 <div className={styles.hourHeader} style={{ backgroundColor: HeaderColor }}>
-                    שעה
+                    {/* שעה header */}
                 </div>
                 {data.map((_, i) => (
                     <div key={i} className={styles.hourCell}>

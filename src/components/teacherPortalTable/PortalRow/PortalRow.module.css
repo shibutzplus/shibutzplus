@@ -26,7 +26,6 @@
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  gap: 4px;
   height: auto;
 }
 
@@ -43,4 +42,8 @@
   overflow: hidden;
   border: none;
   background: transparent;
+}
+
+.className {
+  font-weight: bold;
 }

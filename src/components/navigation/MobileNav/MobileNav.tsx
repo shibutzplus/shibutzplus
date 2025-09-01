@@ -15,7 +15,7 @@ const MobileNav: React.FC = () => {
         <nav className={styles.mobileNav}>
             <ActionBtn
                 type="missingTeacher"
-                label="שיבוץ למורה חסר"
+                label="מורה חסר"
                 isDisabled={isLoading}
                 style={{
                     color: DailyTableColors.missingTeacher.color,
@@ -26,7 +26,7 @@ const MobileNav: React.FC = () => {
 
             <ActionBtn
                 type="existingTeacher"
-                label="שינוי למורה נוכח"
+                label="מורה נוכח"
                 isDisabled={isLoading}
                 style={{
                     color: DailyTableColors.existingTeacher.color,
@@ -37,7 +37,7 @@ const MobileNav: React.FC = () => {
 
             <ActionBtn
                 type="event"
-                label="עדכון ארועים"
+                label="ארועים"
                 isDisabled={isLoading}
                 style={{
                     color: DailyTableColors.event.color,
@@ -47,8 +47,7 @@ const MobileNav: React.FC = () => {
             />
 
             <ActionBtn
-                type="publish"
-                label="פרסום מערכת"
+                label="פרסום"
                 isDisabled={publishLoading}
                 func={publishDailySchedule}
                 style={{

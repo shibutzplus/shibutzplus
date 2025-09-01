@@ -1,21 +1,106 @@
-/* Mobile 320px - 767px -- 812px */
-.tableContainer {
-    width: 100%;
-    overflow-x: auto;
-    border-radius: 0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
 .scheduleTable {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: white;
-    min-width: 800px;
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed; /* Required so fixed column widths are respected */
+  background: #fff;
 }
 
-/* Tablet 768px - 1279px -- 800px*/
-@media screen and (min-width: 768px) {
-    .tableContainer {
-        border-radius: 8px;
-    }
+/* Table header cells */
+.scheduleTable thead th {
+  background: #f5f5f5;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 44px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #ddd;
+  border-inline-start: 1px solid #e5e5e5;
+  white-space: nowrap;
+}
+
+.scheduleTable thead th:first-child {
+  border-inline-start: none;
+}
+
+/* Table body cells */
+.scheduleTable td {
+  font-size: 14px;
+  line-height: 40px;
+  padding: 1px 8px;
+  overflow-wrap: anywhere;
+}
+
+/* Column 1 – Hour (fixed width) */
+.scheduleTable th:nth-child(1),
+.scheduleTable td:nth-child(1) {
+  width: 50px;
+  min-width: 50px;
+  max-width: 50px;
+  text-align: center;
+}
+
+/* Column 2 – Lesson (fixed width) */
+.scheduleTable th:nth-child(2),
+.scheduleTable td:nth-child(2) {
+  width: 100px;
+  min-width: 100px;
+  max-width: 100px;
+}
+
+/* Column 4 – Links (fixed width) */
+.scheduleTable th:nth-child(4),
+.scheduleTable td:nth-child(4) {
+  width: 300px;
+  min-width: 140px;
+  max-width: 300px;
+}
+
+/* Column 3 – Content (fills the remaining space) */
+.scheduleTable th:nth-child(3),
+.scheduleTable td:nth-child(3) {
+  width: calc(100% - 50px - 100px - 140px);
+}
+
+/* Mobile breakpoint */
+@media screen and (max-width: 768px) {
+  .scheduleTable thead th {
+    font-size: 15px;
+    line-height: 40px;
+    padding: 6px 10px;
+  }
+
+  .scheduleTable td {
+    font-size: 13.5px;
+    line-height: 36px;
+    padding: 2px 4px;
+  }
+
+  /* Column 1 – Hour (smaller width on mobile) */
+  .scheduleTable th:nth-child(1),
+  .scheduleTable td:nth-child(1) {
+    width: 30px;
+    min-width: 30px;
+    max-width: 40px;
+  }
+
+  /* Column 2 – Lesson (smaller width on mobile) */
+  .scheduleTable th:nth-child(2),
+  .scheduleTable td:nth-child(2) {
+    width: 80px;
+    min-width: 80px;
+    max-width: 80px;
+  }
+
+  /* Column 4 – Links (smaller width on mobile) */
+  .scheduleTable th:nth-child(4),
+  .scheduleTable td:nth-child(4) {
+    width: 80px;
+    min-width: 80px;
+    max-width: 100px;
+  }
+
+  /* Column 3 – Content (fills remaining space on mobile) */
+  .scheduleTable th:nth-child(3),
+  .scheduleTable td:nth-child(3) {
+    width: calc(100% - 44px - 80px - 100px);
+  }
 }

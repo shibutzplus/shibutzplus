@@ -1,4 +1,3 @@
-//lior to fix preloader
 "use client";
 
 import Image from "next/image";
@@ -37,12 +36,10 @@ const SignInContent: React.FC = () => {
     }, [googleError]);
 
     useEffect(() => {
-        // Show Loader during the OAuth bounce while NextAuth resolves the session
         if (status === STATUS_LOADING) setIsLoading(true);
     }, [status]);
 
     useEffect(() => {
-        // Stop loader if auth failed and we are back unauthenticated
         if (status === STATUS_UNAUTH && !hasNavigatedRef.current) {
             setIsLoading(false);
         }

@@ -89,3 +89,58 @@ export const setStorageDailyTable = (dailyTable: DailySchedule, selectedDate: st
 export const clearStorage = () => {
     localStorage.clear();
 };
+
+// Store and retrieve the order of daily schedule columns
+export const getStorageDailyColumnsOrder = (): Record<string, string[]> => {
+    try {
+        const raw = localStorage.getItem("shibutzplus_daily_table_order");
+        return raw ? (JSON.parse(raw) as Record<string, string[]>) : {};
+    } catch {
+        return {};
+    }
+};
+
+export const setStorageDailyColumnsOrder = (date: string, ids: string[]) => {
+    const all = getStorageDailyColumnsOrder();
+    all[date] = ids;
+    localStorage.setItem("shibutzplus_daily_table_order", JSON.stringify(all));
+};
+
+// Clean up shibutzplus_daily_table_order: remove keys older than `maxAgeDays`, then keep only `maxKeep` most recent date keys.
+// Works with current schema: Record<string, string[]>, where keys are ISO dates (YYYY-MM-DD).
+export const cleanupDailyColumnsOrder = (maxAgeDays = 7, maxKeep = 7) => {
+    const raw = localStorage.getItem("shibutzplus_daily_table_order");
+    if (!raw) return;
+
+    let map: Record<string, string[]>;
+    try {
+        map = JSON.parse(raw) as Record<string, string[]>;
+    } catch {
+        return;
+    }
+
+    const today = new Date();
+    const cutoff = new Date(today);
+    cutoff.setDate(today.getDate() - maxAgeDays);
+
+    // 1) time-based purge: drop keys older than cutoff
+    const kept: Array<{ key: string; date: Date }> = [];
+    for (const key of Object.keys(map)) {
+        // Expecting keys like "YYYY-MM-DD"
+        const d = new Date(key);
+        if (!isNaN(d.getTime()) && d >= cutoff) {
+            kept.push({ key, date: d });
+        } else {
+            delete map[key];
+        }
+    }
+
+    // 2) count-based cap: keep only `maxKeep` most recent keys
+    kept.sort((a, b) => b.date.getTime() - a.date.getTime());
+    const toKeep = new Set(kept.slice(0, maxKeep).map(k => k.key));
+    for (const k of Object.keys(map)) {
+        if (!toKeep.has(k)) delete map[k];
+    }
+
+    localStorage.setItem("shibutzplus_daily_table_order", JSON.stringify(map));
+};

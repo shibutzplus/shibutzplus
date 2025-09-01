@@ -1,18 +1,19 @@
-/* Mobile 320px - 767px -- 812px */
-.container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* הקונטיינר נשאר ב־100% */
+.container { display: block; }
+
+/* מגדירים משתנים שישפיעו רק בטווח המסך הזה */
+.teachersList {
+  --table-width: 60%;
+  --table-max-width: 1200px;
+  --table-margin: 0 auto;
+  padding-inline: 2px;
 }
 
-.teachersList{
-    min-width: 60vw;
-    width: 95%;
-}
-
-/* Tablet 768px - 1279px -- 800px*/
-@media screen and (min-width: 768px) {
-    .teachersList{
-        width: 70%;
-    }
+/* מובייל: שהטבלה תתפרש */
+@media (max-width: 767px) {
+  .teachersList {
+    --table-width: 100%;
+    --table-max-width: none;
+    --table-margin: 0;
+  }
 }
