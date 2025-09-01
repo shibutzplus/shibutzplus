@@ -1,4 +1,29 @@
 
+- roy - daily - sub teacher can also be text, not only select
+- roy - daily - remove save details alerts
+- roy -teachers - save button need to remove
+- roy - daily - fix publish
+- roy - teachers - save
+- roy - daily - remove the selected issue teachers from the select
+- roy+iris - teacher page "my schadule" show both the ragular hours I teache and in color the new one I replace
+
+- lior - daily - move the share button after the publish button
+- lior - teachers - fix table layout 
+- lior - all tables - fix scroll page layout
+- lior - teachers - fix ui bottom bar
+- lior - teachers - teacher page write the teacher name insted of the title
+- lior - teachers - validation - zod
+- lior - hamburger - history page - to remove
+- lior - all tables - colors 
+
+- how we want to show that the page is published?
+- need to save everything on the tables
+- if there was a new value, it wont reflact on the publish page
+- teachers page will be also for the sub teachers with hidden elements 
+- teachers page check for url teacher id
+
+
+
 
 -- daily page
 v- scroll hours column 
@@ -14,8 +39,6 @@ v- render table and preformence
 - option to clear sub teacher cell
 - responsive page
 - skeleton page
-
-
 
 v- daily - delete column still not working good
 v- daily - group subteacher select

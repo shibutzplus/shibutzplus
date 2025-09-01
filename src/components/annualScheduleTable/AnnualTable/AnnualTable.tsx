@@ -49,10 +49,9 @@ const AnnualTable: React.FC<AnnualTableProps> = ({
                 schoolId: school.id,
                 userId: null,
             };
-
             const res = await addNewTeacher(newTeacher);
             if (res) {
-                await handleAddNewRow("teachers", [res.id], day, hour, "create-option");
+                await handleAddNewRow("teachers", [res.id], day, hour, "create-option", res);
                 successToast(messages.teachers.createSuccess);
                 return res.id;
             }
@@ -77,7 +76,7 @@ const AnnualTable: React.FC<AnnualTableProps> = ({
 
             const res = await addNewSubject(newSubject);
             if (res) {
-                await handleAddNewRow("subjects", [res.id], day, hour, "create-option");
+                await handleAddNewRow("subjects", [res.id], day, hour, "create-option", res);
                 successToast(messages.subjects.createSuccess);
                 return res.id;
             }
