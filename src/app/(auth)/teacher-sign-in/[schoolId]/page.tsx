@@ -12,7 +12,7 @@ export default function TeacherSignInPage() {
         <main className={styles.container}>
             <div className={styles.mainSection}>
                 <HeroSection
-                    title="פתרון חכם לשיבוץ מורים ושעות"
+                    title="מערכת השעות האישית שלכם"
                     description=""
                 />
                 <div className={styles.formContainer}>

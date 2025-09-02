@@ -8,7 +8,7 @@ import styles from "./TeacherAuthForm.module.css";
 import { SelectOption } from "@/models/types";
 import router from "@/routes";
 import messages from "@/resources/messages";
-import { getTeacherCookie } from "@/utils/cookies";
+import { getTeacherCookie, setTeacherCookie } from "@/utils/cookies";
 import { getTeachersAction } from "@/app/actions/GET/getTeachersAction";
 
 type TeacherAuthFormProps = {
@@ -65,7 +65,8 @@ const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({ schoolId }) => {
             return;
         }
 
-        // setTeacherCookie(selectedTeacher);
+        const t = teachers.find(o => o.value === selectedTeacher)
+        if (t) setTeacherCookie(t.value, t.label)
         route.push(`${router.teacherPortal.p}/${selectedTeacher}`);
     };
 

@@ -11,5 +11,5 @@ export const STORAGE_KEYS = {
 
 // Cookies keys
 export const COOKIES_KEYS = {
-    REMEMBERED_TEACHER: "remembered_teacher",
+    REMEMBERED_TEACHER: "teacher",
 }

@@ -34,10 +34,7 @@
     font-size: 16px;
     font-weight: 600;
     margin: 0;
-    background: linear-gradient(90deg, #000000, #007a16);
-    -webkit-background-clip: text; /* Safari/Chrome */
     background-clip: text;
-    -webkit-text-fill-color: transparent;
 }
 
 .actionsContainer {
@@ -55,6 +52,11 @@
 .topButtonsContainer {
     display: none;
 }
+
+.teacherName {
+  white-space: nowrap;
+}
+
 
 /* Desktop */
 @media screen and (min-width: 768px) {
