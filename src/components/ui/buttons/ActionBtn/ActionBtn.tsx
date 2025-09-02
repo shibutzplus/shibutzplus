@@ -1,9 +1,8 @@
 import React from "react";
 import styles from "./ActionBtn.module.css";
-import { ColumnType } from "@/models/types/dailySchedule";
 
 const ActionBtn: React.FC<{
-    type: string;
+    type?: string;
     Icon?: React.ReactNode;
     label: string;
     style: React.CSSProperties;

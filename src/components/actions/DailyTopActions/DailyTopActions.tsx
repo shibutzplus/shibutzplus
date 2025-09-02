@@ -69,7 +69,7 @@ const DailyTopActions: React.FC = () => {
                 <ActionBtn
                     type="publish"
                     Icon={<Icons.publish size={16} />}
-                    label="פרסום מערכת"
+                    label="פרסום המערכת"
                     isDisabled={publishLoading}
                     func={publishDailySchedule}
                     style={{

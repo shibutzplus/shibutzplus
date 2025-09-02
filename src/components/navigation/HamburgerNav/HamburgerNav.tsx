@@ -25,7 +25,7 @@ const links: ILink[] = [
     {
         name: routePath.dailySchedule.title,
         p: routePath.dailySchedule.p,
-        Icon: <Icons.calendar size={24} />,
+        Icon: <Icons.dailyCalendar size={24} />,
     },
     {
         name: routePath.annualSchedule.title,
@@ -35,28 +35,28 @@ const links: ILink[] = [
     {
         name: routePath.substitute.title,
         p: routePath.substitute.p,
-        Icon: <Icons.school size={24} />,
+        Icon: <Icons.substituteTeacher size={24} />,
     },
     {
         name: routePath.teachers.title,
         p: routePath.teachers.p,
-        Icon: <Icons.school size={24} />,
+        Icon: <Icons.teacher2 size={24} />,
     },
     {
         name: routePath.subjects.title,
         p: routePath.subjects.p,
-        Icon: <Icons.people size={24} />,
+        Icon: <Icons.book size={24} />,
     },
     {
         name: routePath.classes.title,
         p: routePath.classes.p,
         Icon: <Icons.chair size={24} />,
     },
-//    {
-//        name: routePath.history.title,
-//        p: routePath.history.p,
-//        Icon: <Icons.history size={24} />,
-//    },
+    //    {
+    //        name: routePath.history.title,
+    //        p: routePath.history.p,
+    //        Icon: <Icons.history size={24} />,
+    //    },
 ];
 
 const LinkComponent = ({ link, onClose }: { link: ILink; onClose: () => void }) => {
@@ -133,7 +133,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose }) => {
                             aria-label="Logout"
                         >
                             <Icons.logOut size={24} />
-                            <span>התנתקות</span>
+                            <span>יציאה מהמערכת</span>
                         </Link>
                     </section>
                 )}

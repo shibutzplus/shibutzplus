@@ -3,6 +3,7 @@ import Btn from "@/components/ui/buttons/Btn/Btn";
 import InputText from "@/components/ui/InputText/InputText";
 import Icons from "@/style/icons";
 import { errorToast } from "@/lib/toast";
+import styles from "./AddListRow.module.css";
 
 // T is the shape of the data to add (e.g., { name: string, schoolId: string })
 export type AddListRowProps<T> = {
@@ -97,6 +98,7 @@ function AddListRow<T extends Record<string, any>>({
                     onClick={handleSubmitAdd}
                     isLoading={isLoading}
                     Icon={buttonIcon}
+                    className={styles.smallBtn}
                 />
             </td>
         </tr>

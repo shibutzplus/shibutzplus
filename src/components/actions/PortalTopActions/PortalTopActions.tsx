@@ -54,7 +54,7 @@ const PortalTopActions: React.FC = () => {
                     onClick={() => switchReadAndWrite("read")}
                     className={`${styles.topBtn} ${pageMode === "read" ? styles.active : ""}`}
                 >
-                    <Icons.Teacher size={16} style={{ marginInlineEnd: "4px" }} />
+                    <Icons.teacher1 size={16} style={{ marginInlineEnd: "4px" }} />
                     המערכת שלי
                 </button>
 

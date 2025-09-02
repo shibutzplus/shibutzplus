@@ -6,16 +6,16 @@ import Icons from "@/style/icons";
 import { usePublicPortal } from "@/context/PublicPortalContext";
 
 const PublicMobileNav: React.FC = () => {
-  const { onReadTable, switchReadAndWrite } = usePublicPortal();
+  const { switchReadAndWrite, pageMode } = usePublicPortal();
 
   // force-write mode
   const goWriteMode = () => {
-    if (onReadTable) switchReadAndWrite();
+    if (pageMode === "read") switchReadAndWrite("write");
   };
 
   // force-read mode
   const goMySchedule = () => {
-    if (!onReadTable) switchReadAndWrite();
+    if (pageMode === "write") switchReadAndWrite("read");
   };
 
   const goSchoolView = () => {
@@ -26,7 +26,7 @@ const PublicMobileNav: React.FC = () => {
     <nav className={styles.mobileNav} role="navigation" aria-label="Bottom navigation">
       <button
         type="button"
-        className={`${styles.item} ${!onReadTable ? styles.active : ""}`}
+        className={`${styles.item} ${pageMode === "write" ? styles.active : ""}`}
         onClick={goWriteMode}
         aria-label="הזנת חומרי לימוד"
       >
@@ -36,11 +36,11 @@ const PublicMobileNav: React.FC = () => {
 
       <button
         type="button"
-        className={`${styles.item} ${onReadTable ? styles.active : ""}`}
+        className={`${styles.item} ${pageMode === "read" ? styles.active : ""}`}
         onClick={goMySchedule}
         aria-label="המערכת שלי"
       >
-        <Icons.Teacher size={20} />
+        <Icons.teacher1 size={20} />
         <span className={styles.label}>המערכת שלי</span>
       </button>
 

@@ -4,7 +4,7 @@ import { createSelectOptions } from "@/utils/format";
 import { SubjectType } from "@/models/types/subjects";
 import { TeacherType } from "@/models/types/teachers";
 import { WeeklySchedule } from "@/models/types/annualSchedule";
-import { sortTeachersForSchedule } from "@/utils/teachers";
+import { sortTeachersForAnnualNoSubs } from "@/utils/teachers";
 import { ClassType } from "@/models/types/classes";
 import DynamicInputGroupMultiSelect from "@/components/ui/select/InputGroupMultiSelect/DynamicInputGroupMultiSelect";
 import DynamicInputMultiSelect from "@/components/ui/select/InputMultiSelect/DynamicInputSelect";
@@ -41,7 +41,7 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
     const { handleAddNewRow } = useAnnualTable();
     const sortedTeacherOptions = useMemo(
         () =>
-            sortTeachersForSchedule(
+            sortTeachersForAnnualNoSubs(
                 teachers || [],
                 classes || [],
                 schedule,

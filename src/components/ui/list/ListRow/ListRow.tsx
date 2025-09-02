@@ -99,9 +99,13 @@ function ListRow<T extends Record<string, any>>({
                     type={field.inputType || "text"}
                 />
                 {link ? (
-                    <div className={styles.copyLink} onClick={handleCopyUrl}>
+                    <div
+                        className={styles.copyLink}
+                        onClick={handleCopyUrl}
+                        title="העתק קישור המאפשר למורה לצפות במערכת"
+                    >
                         <Icons.copy />
-                        <span>{link}</span>
+                        {/* <span>{link}</span> */}
                     </div>
                 ) : null}
             </td>

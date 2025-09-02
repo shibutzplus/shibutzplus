@@ -5,7 +5,7 @@ import { sortByHebrewName } from "./sort";
 import { GroupOption } from "@/models/types";
 
 /**
- * Sorts teachers for annual schedule with priority order:
+ * Build teacher list for Daily schedule with priority order:
  * 1. Substitute teachers (with "מחליף" label) - available first
  * 2. Regular teachers - available only
  * 3. All other teachers - alphabetically sorted
@@ -16,7 +16,7 @@ export const sortTeachersForSchedule = (
     schedule: WeeklySchedule,
     selectedClassId: string,
     day: string,
-    hour: number
+    hour: number,
 ): GroupOption[] => {
     // Calculate available teachers for this specific day and hour
     const busyTeacherIds = new Set<string>();
@@ -34,21 +34,19 @@ export const sortTeachersForSchedule = (
     });
 
     // Filter available teachers (not busy at this time)
-    const availableTeachers = allTeachers.filter(teacher => !busyTeacherIds.has(teacher.id));
-    const availableTeacherIds = new Set(availableTeachers.map(t => t.id));
+    const availableTeachers = allTeachers.filter((teacher) => !busyTeacherIds.has(teacher.id));
+    const availableTeacherIds = new Set(availableTeachers.map((t) => t.id));
 
     // Separate teachers by role and availability
     const availableSubstitutes = allTeachers.filter(
-        teacher => teacher.role === 'substitute' && availableTeacherIds.has(teacher.id)
+        (teacher) => teacher.role === "substitute" && availableTeacherIds.has(teacher.id),
     );
 
     const availableRegular = allTeachers.filter(
-        teacher => teacher.role === 'regular' && availableTeacherIds.has(teacher.id)
+        (teacher) => teacher.role === "regular" && availableTeacherIds.has(teacher.id),
     );
 
-    const unavailableTeachers = allTeachers.filter(
-        teacher => busyTeacherIds.has(teacher.id)
-    );
+    const unavailableTeachers = allTeachers.filter((teacher) => busyTeacherIds.has(teacher.id));
 
     // Sort each group alphabetically in Hebrew
     const sortedAvailableSubstitutes = sortByHebrewName(availableSubstitutes);
@@ -59,26 +57,47 @@ export const sortTeachersForSchedule = (
     const groups: GroupOption[] = [
         {
             label: "מורים ממלאי מקום", // Substitute
-            options: sortedAvailableSubstitutes.map(teacher => ({
+            options: sortedAvailableSubstitutes.map((teacher) => ({
                 value: teacher.id,
-                label: teacher.name
-            }))
+                label: teacher.name,
+            })),
         },
         {
             label: "מורים פנויים", // Available
-            options: sortedAvailableRegular.map(teacher => ({
+            options: sortedAvailableRegular.map((teacher) => ({
                 value: teacher.id,
-                label: teacher.name
-            }))
+                label: teacher.name,
+            })),
         },
         {
             label: "מורים לא פנויים", // Unavailable
-            options: sortedUnavailableTeachers.map(teacher => ({
+            options: sortedUnavailableTeachers.map((teacher) => ({
                 value: teacher.id,
-                label: teacher.name
-            }))
-        }
+                label: teacher.name,
+            })),
+        },
     ];
 
     return groups;
-}
+};
+
+// return same grouped list without the substitutes section
+export const sortTeachersForAnnualNoSubs = (
+    allTeachers: TeacherType[],
+    classes: ClassType[],
+    schedule: WeeklySchedule,
+    selectedClassId: string,
+    day: string,
+    hour: number,
+): GroupOption[] => {
+    const groups = sortTeachersForSchedule(
+        allTeachers,
+        classes,
+        schedule,
+        selectedClassId,
+        day,
+        hour,
+    );
+    // assumes documented order: [substitutes, available, unavailable]
+    return groups.slice(1).filter((g) => g.options.length > 0);
+};
