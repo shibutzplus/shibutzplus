@@ -4,11 +4,13 @@ import { createSelectOptions, sortByHebrewName } from "@/utils/format";
 import { SubjectType } from "@/models/types/subjects";
 import { TeacherType } from "@/models/types/teachers";
 import { WeeklySchedule } from "@/models/types/annualSchedule";
-import { toTeacherOptions } from "@/utils/teachers";
+import { sortTeachersForSchedule } from "@/utils/teachers";
 import { ClassType } from "@/models/types/classes";
+import DynamicInputGroupMultiSelect from "@/components/ui/select/InputGroupMultiSelect/DynamicInputGroupMultiSelect";
 import DynamicInputMultiSelect from "@/components/ui/select/InputMultiSelect/DynamicInputSelect";
 import { SelectMethod } from "@/models/types/actions";
 import { useAnnualTable } from "@/context/AnnualTableContext";
+import { sortTeachersForAnnualNoSubs } from "@/utils/teachers";
 
 type AnnualCellProps = {
     day: string;
@@ -35,9 +37,21 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
     onCreateSubject,
     onCreateTeacher,
 }) => {
-    const { handleAddNewRow } = useAnnualTable();
 
-    const teacherOptions = useMemo(() => toTeacherOptions(teachers), [teachers]);
+    const { handleAddNewRow } = useAnnualTable();
+    const sortedTeacherOptions = useMemo(
+        () =>
+            sortTeachersForAnnualNoSubs(
+                teachers || [],
+                classes || [],
+                schedule,
+                selectedClassId,
+                day,
+                hour
+            ),
+        [teachers, classes, schedule, selectedClassId, day, hour]
+    );
+
 
     const handleSubjectChange = (values: string[], method: SelectMethod) => {
         handleAddNewRow("subjects", values, day, hour, method);
@@ -60,14 +74,16 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
                     isAllowAddNew
                     isDisabled={isDisabled}
                 />
-                <DynamicInputMultiSelect
+                <DynamicInputGroupMultiSelect
                     placeholder="מורה"
-                    options={teacherOptions}
+                    options={sortedTeacherOptions}
                     value={schedule[selectedClassId]?.[day]?.[hour]?.teachers ?? []}
                     onChange={handleTeacherChange}
                     isSearchable
                     isAllowAddNew
-                    onCreate={(v: string) => onCreateTeacher(day, hour, v)}
+                    onCreate={(v: string) => {
+                        return onCreateTeacher(day, hour, v);
+                    }}
                     isDisabled={isDisabled}
                 />
             </div>

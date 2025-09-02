@@ -83,8 +83,24 @@ export const sortTeachersForSchedule = (
     return groups;
 }
 
-//
-// Get list of all regular teachers for use in annual schedule
-// 
-export const toTeacherOptions = (list: TeacherType[] | undefined) =>
-  (list || []).map(t => ({ value: t.id, label: t.name }));
+
+// return same grouped list without the substitutes section
+export const sortTeachersForAnnualNoSubs = (
+    allTeachers: TeacherType[],
+    classes: ClassType[],
+    schedule: WeeklySchedule,
+    selectedClassId: string,
+    day: string,
+    hour: number
+): GroupOption[] => {
+    const groups = sortTeachersForSchedule(
+        allTeachers,
+        classes,
+        schedule,
+        selectedClassId,
+        day,
+        hour
+    );
+    // assumes documented order: [substitutes, available, unavailable]
+    return groups.slice(1).filter(g => g.options.length > 0);
+};
