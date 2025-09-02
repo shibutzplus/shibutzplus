@@ -31,10 +31,10 @@
 }
 
 .routeTitle {
-    font-size: 12px;
+    font-size: 16px;
     font-weight: 600;
     margin: 0;
-    background: linear-gradient(90deg, #243b55, #3a3a3a);
+    background: linear-gradient(90deg, #000000, #007a16);
     -webkit-background-clip: text; /* Safari/Chrome */
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -48,9 +48,5 @@
 
     .headerRight {
         gap: 1em;
-    }
-
-    .routeTitle {
-        font-size: 18px;
     }
 }

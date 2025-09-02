@@ -40,7 +40,7 @@ const PublicMobileNav: React.FC = () => {
         onClick={goMySchedule}
         aria-label="המערכת שלי"
       >
-        <Icons.Teacher size={20} />
+        <Icons.teacher1 size={20} />
         <span className={styles.label}>המערכת שלי</span>
       </button>
 

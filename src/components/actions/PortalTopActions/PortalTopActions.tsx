@@ -81,7 +81,7 @@ const PortalTopActions: React.FC = () => {
                     onClick={goMySchedule}
                     className={`${styles.topBtn} ${onReadTable ? styles.active : ""}`}
                 >
-                    <Icons.Teacher size={16} style={{ marginInlineEnd: "4px" }} />
+                    <Icons.teacher1 size={16} style={{ marginInlineEnd: "4px" }} />
                     המערכת שלי
                 </button>
 

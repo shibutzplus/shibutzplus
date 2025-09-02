@@ -28,7 +28,7 @@ export const DailyTableColors = {
         headerColor: "#6827ae13",
     },
     publish: {
-        borderLeft: "4px solid #27ae60",
+        borderLeft: "4px solid #00EC21",
         color: "#606060",
     },
 };

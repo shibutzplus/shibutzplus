@@ -13,7 +13,8 @@ const ReadOnlyHeader: React.FC<ReadOnlyHeaderProps> = ({ trs, emptyTrs = 0, text
     return (
         <thead>
             <tr>
-                {hasHour ? <th className={styles.emptyTrHeader}></th> : null}   {/* add "Hour" column */}
+                {/* add "Hour" column */}
+                {hasHour ? <th className={styles.emptyTrHeader}></th> : null}   
                 {Array.from({ length: emptyTrs }, (_, i) => i).map((i) => (
                     <th key={i} className={styles.emptyTrHeader}></th>
                 ))}
