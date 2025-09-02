@@ -106,9 +106,9 @@ const SignInContent: React.FC = () => {
 
             <div className={styles.illustrationContainer}>
                 <Image
-                    src="/undraw_workspace_s6wf.svg"
-                    alt="Workspace Illustration"
-                    width={140}
+                    src="/LoginImage.png"
+                    alt="Welcome"
+                    width={540}
                     height={40}
                     className={styles.illustration}
                     priority

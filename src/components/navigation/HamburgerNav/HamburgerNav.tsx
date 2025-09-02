@@ -133,7 +133,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose }) => {
                             aria-label="Logout"
                         >
                             <Icons.logOut size={24} />
-                            <span>התנתקות</span>
+                            <span>יציאה מהמערכת</span>
                         </Link>
                     </section>
                 )}
