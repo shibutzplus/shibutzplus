@@ -1,5 +1,5 @@
-export const HeaderColor = "#f5f5f5";
-export const HourRowColor = "#f5f5f5";
+export const HeaderColor = "#f7faff";
+export const HourRowColor = "#f7faff";
 
 // export const AnnualTableColors = ["#f2f2f2", "#f2f2f2", "#f2f2f2", "#ECF9E1" , "#EEE1F9", "#F9EFE1"];
 export const AnnualTableColors = [
@@ -12,23 +12,23 @@ export const AnnualTableColors = [
 ];
 
 export const DailyTableColors = {
+    missingTeacher: {
+        borderLeft: "4px solid #ae2b27af",
+        color: "#606060",
+        headerColor: "#af3c3815",
+    },
     existingTeacher: {
         borderLeft: "4px solid #3498db",
-        color: "#3498db",
+        color: "#606060",
         headerColor: "#3883af17",
     },
     event: {
-        borderLeft: "4px solid #27ae60",
-        color: "#27ae60",
-        headerColor: "#64af380d",
-    },
-    missingTeacher: {
-        borderLeft: "4px solid #ae2b27af",
-        color: "#ae2b27af",
-        headerColor: "#af3c3811",
+        borderLeft: "4px solid #6827ae98",
+        color: "#606060",
+        headerColor: "#6827ae13",
     },
     publish: {
-        borderLeft: "4px solid #6827ae98",
-        color: "#808080",
+        borderLeft: "4px solid #27ae60",
+        color: "#606060",
     },
 };

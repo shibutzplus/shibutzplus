@@ -7,11 +7,19 @@ interface BtnProps {
     onClick?: (e: React.MouseEvent) => void;
     isLoading: boolean;
     Icon?: React.ReactNode;
+    className?: string;
+    style?: React.CSSProperties;
 }
 
-const Btn: React.FC<BtnProps> = ({ text, onClick, isLoading, Icon }) => {
+const Btn: React.FC<BtnProps> = ({ text, onClick, isLoading, Icon, className, style }) => {
     return (
-        <button onClick={onClick} disabled={isLoading} aria-label={text} className={styles.btn}>
+        <button
+            onClick={onClick}
+            disabled={isLoading}
+            aria-label={text}
+            className={`${styles.btn}${className ? " " + className : ""}`}
+            style={style}
+        >
             {isLoading ? (
                 <span className={styles.btnText}>
                     <Loading size="S" />
