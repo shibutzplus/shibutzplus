@@ -5,7 +5,7 @@ import { sortByHebrewName } from "./format";
 import { GroupOption } from "@/models/types";
 
 /**
- * Sorts teachers for annual schedule with priority order:
+ * Build teacher list for Daily schedule with priority order:
  * 1. Substitute teachers (with "מחליף" label) - available first
  * 2. Regular teachers - available only
  * 3. All other teachers - alphabetically sorted
@@ -82,3 +82,9 @@ export const sortTeachersForSchedule = (
 
     return groups;
 }
+
+//
+// Get list of all regular teachers for use in annual schedule
+// 
+export const toTeacherOptions = (list: TeacherType[] | undefined) =>
+  (list || []).map(t => ({ value: t.id, label: t.name }));
