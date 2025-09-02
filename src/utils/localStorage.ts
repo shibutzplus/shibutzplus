@@ -90,34 +90,20 @@ export const clearStorage = () => {
     localStorage.clear();
 };
 
-// Store and retrieve the order of daily schedule columns
-export const getStorageDailyColumnsOrder = (): Record<string, string[]> => {
-    try {
-        const raw = localStorage.getItem("shibutzplus_daily_table_order");
-        return raw ? (JSON.parse(raw) as Record<string, string[]>) : {};
-    } catch {
-        return {};
-    }
+export const getStorageDailyTableOrder = () => {
+    return getStorage<Record<string, string[]>>(STORAGE_KEYS.DAILY_TABLE_DATA);
 };
 
-export const setStorageDailyColumnsOrder = (date: string, ids: string[]) => {
-    const all = getStorageDailyColumnsOrder();
+export const setStorageDailyTableOrder = (date: string, ids: string[]) => {
+    const all = getStorageDailyTableOrder();
+    if(!all) return
     all[date] = ids;
-    localStorage.setItem("shibutzplus_daily_table_order", JSON.stringify(all));
+    return setStorage(STORAGE_KEYS.DAILY_TABLE_DATA, all);
 };
 
-// Clean up shibutzplus_daily_table_order: remove keys older than `maxAgeDays`, then keep only `maxKeep` most recent date keys.
-// Works with current schema: Record<string, string[]>, where keys are ISO dates (YYYY-MM-DD).
 export const cleanupDailyColumnsOrder = (maxAgeDays = 7, maxKeep = 7) => {
-    const raw = localStorage.getItem("shibutzplus_daily_table_order");
-    if (!raw) return;
-
-    let map: Record<string, string[]>;
-    try {
-        map = JSON.parse(raw) as Record<string, string[]>;
-    } catch {
-        return;
-    }
+    const map = getStorage<Record<string, string[]>>(STORAGE_KEYS.DAILY_TABLE_ORDER);
+    if (!map) return;
 
     const today = new Date();
     const cutoff = new Date(today);
@@ -142,5 +128,5 @@ export const cleanupDailyColumnsOrder = (maxAgeDays = 7, maxKeep = 7) => {
         if (!toKeep.has(k)) delete map[k];
     }
 
-    localStorage.setItem("shibutzplus_daily_table_order", JSON.stringify(map));
+    return setStorage(STORAGE_KEYS.DAILY_TABLE_ORDER, map);
 };

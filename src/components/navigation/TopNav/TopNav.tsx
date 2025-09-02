@@ -7,6 +7,7 @@ import Logo from "../../core/Logo/Logo";
 import { usePathname } from "next/navigation";
 import { getPageTitleFromUrl } from "@/utils/format";
 
+
 type TopNavProps = {
     Actions?: React.ReactNode;
 };

@@ -29,6 +29,6 @@ export const DailyTableColors = {
     },
     publish: {
         borderLeft: "4px solid #6827ae98",
-        color: "#808080",
+        color: "#3b3b3b",
     },
 };

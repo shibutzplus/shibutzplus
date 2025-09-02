@@ -1,14 +1,10 @@
-/* Mobile 320px - 767px */
+/* Mobile 320px - 767px -- 812px */
 .container {
-  padding: 0;                    /* לפי הצורך אפשר 16px */
+  padding: 0;
   width: 100%;
-  /* אל תכפה גובהי מסך על תוכן פנימי */
   min-height: unset;
   height: auto;
-
-  /* אל תמרכז אנכית, כדי שהתוכן יתחיל מראש האזור מתחת ל־TopNav */
   display: block;
-
   background-color: var(--school-section-bg);
 }
 
@@ -17,23 +13,23 @@
   border-radius: 0;
   width: 100%;
   height: auto;
-  min-height: unset;             /* ביטול 100vh */
-  overflow: visible;             /* שלא יחתוך תוכן פנימי */
+  min-height: unset;
+  overflow: visible;
   border: 0.1px solid #ccc;
-  margin-top: 0;                 /* ביטול ה־-2px */
+  margin-top: 0;
 }
 
-/* Tablet 768px - 1279px */
+/* Tablet 768px - 1279px -- 800px*/
 @media screen and (min-width: 768px) {
   .whiteBox {
     width: 100%;
-    min-height: unset;           /* ביטול 80vh */
+    min-height: unset;
     margin-top: 0;
   }
 }
 
-/* Desktop Full HD 1920px - 2559px */
-@media screen and (min-width: 1920px) {
+/* Laptop HD 1280px - 1439px -- 720px*/
+@media screen and (min-width: 1280px) {
   .container {
     margin-top: 0;
   }

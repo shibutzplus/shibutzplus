@@ -7,7 +7,7 @@ import messages from "@/resources/messages";
 import { getStorageSchoolId } from "@/utils/localStorage";
 import useDeletePopup from "@/hooks/useDeletePopup";
 import { PopupAction } from "@/context/PopupContext";
-import { sortByHebrewName } from "@/utils/format";
+import { sortByHebrewName } from "@/utils/sort";
 import SubjectRow from "../SubjectRow/SubjectRow";
 import { SubjectType } from "@/models/types/subjects";
 import useSubmit from "@/hooks/useSubmit";

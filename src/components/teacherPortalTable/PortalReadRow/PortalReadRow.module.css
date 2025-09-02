@@ -1,0 +1,30 @@
+.hourCell {
+    border: 1px solid #e0e0e0;
+    padding: 12px;
+    font-weight: bold;
+    text-align: center;
+    width: 60px;
+    vertical-align: middle;
+}
+
+
+.scheduleCell {
+    position: relative;
+    padding: 8px;
+    border: 1px solid #e0e0e0;
+    vertical-align: top;
+    height: auto;
+    min-height: 36px;
+}
+
+.cellContent {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    height: auto;
+}
+
+.class {
+    font-weight: bold;
+}

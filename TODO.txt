@@ -24,6 +24,19 @@
 
 
 
+-- daily - the new annual rows do not update in the daily because of the cache. need to fetch the data from DB if comming from deffrent page
+-- daily - share button
+-- logo on dark mode
+-- portal - cahce and efficency 
+-- portal - query params 
+-- portal - ui
+-- portal - loading / skeleton
+-- portal - on "my schadule" minimze the instraction and only show on click (show only the hour class and subject)
+v-- portal - list of the raguler and the sub teachers
+v-- portal - url should be both school and teacher ids
+v-- portal - if I enter to the teacher-portal and I dont have the teacher object I check for the teacher by his Id and school
+-- daily - position columns need helper table and delete the 'position' from the daily-schadule table
+
 
 -- daily page
 v- scroll hours column 

@@ -10,7 +10,7 @@ import { errorToast, successToast } from "@/lib/toast";
 type DailyEventCellProps = { cell: CellContext<TeacherRow, unknown> };
 
 const DailyEventCell: React.FC<DailyEventCellProps> = ({ cell }) => {
-  const { mainDailyTable, addNewCell, updateCell, dailyDbRows, selectedDate } =
+  const { mainDailyTable, addNewCell, updateCell, selectedDate } =
     useDailyTableContext();
   const [isLoading, setIsLoading] = useState(false);
 

@@ -67,12 +67,14 @@ const DailyTopActions: React.FC = () => {
             </div>
             <div className={styles.leftSide}>
                 <ActionBtn
+                    type="publish"
                     Icon={<Icons.publish size={16} />}
                     label="פרסום מערכת"
                     isDisabled={publishLoading}
                     func={publishDailySchedule}
                     style={{
                         borderLeft: DailyTableColors.publish.borderLeft,
+                        color: DailyTableColors.publish.color,
                     }}
                 />
                 <IconBtn

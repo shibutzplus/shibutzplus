@@ -7,12 +7,13 @@ import messages from "@/resources/messages";
 import { getStorageSchoolId } from "@/utils/localStorage";
 import useDeletePopup from "@/hooks/useDeletePopup";
 import { PopupAction } from "@/context/PopupContext";
-import { filterTeachersByRole, sortByHebrewName } from "@/utils/format";
+import { filterTeachersByRole } from "@/utils/format";
 import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import useSubmit from "@/hooks/useSubmit";
 import EmptyTable from "@/components/ui/table/EmptyTable/EmptyTable";
 import SubstituteRow from "../SubstituteRow/SubstituteRow";
 import AddSubstituteRow from "../AddSubstituteRow/AddSubstituteRow";
+import { sortByHebrewName } from "@/utils/sort";
 
 const SubstitutesList: React.FC = () => {
     const { handleOpenPopup } = useDeletePopup();

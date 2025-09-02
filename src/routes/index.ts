@@ -20,7 +20,6 @@ const router: Record<string, IRoute> = {
     teacherSignIn: { id: "teacherSignIn", p: "/teacher-sign-in", private: false, title: "כניסה למורים" },
     teacherPortal: { id: "teacherPortal", p: "/teacher-portal", private: false, title: "חומרי לימוד" },
     dailyScheduleReadonly: { id: "dailyScheduleReadonly", p: "/daily-schedule-readonly", private: false, title: "מערכת יומית" },
-    substitutePortal: { id: "substitutePortal", p: "/substitute-portal", private: false, title: "מסך מורה מחליף" },
 };
 
 export default router;

@@ -12,3 +12,5 @@ export type PortalScheduleType = {
     instructions?: string;
     links?: string;
 };
+
+export type PortalPageType = "read" | "write";

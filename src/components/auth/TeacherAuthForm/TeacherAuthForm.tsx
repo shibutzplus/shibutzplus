@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { useRouter } from "next/navigation";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import SubmitBtn from "@/components/ui/buttons/SubmitBtn/SubmitBtn";
@@ -8,55 +8,22 @@ import styles from "./TeacherAuthForm.module.css";
 import { SelectOption } from "@/models/types";
 import router from "@/routes";
 import messages from "@/resources/messages";
-import { getTeacherCookie } from "@/utils/cookies";
-import { getTeachersAction } from "@/app/actions/GET/getTeachersAction";
+import { setTeacherCookie } from "@/utils/cookies";
 
 type TeacherAuthFormProps = {
     schoolId: string;
+    teachers: SelectOption[];
+    isLoadingTeachers: boolean;
 };
 
-const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({ schoolId }) => {
+const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({ schoolId, teachers, isLoadingTeachers }) => {
     const route = useRouter();
     const [selectedTeacher, setSelectedTeacher] = useState<string>("");
-    const [teachers, setTeachers] = useState<SelectOption[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
-    const [isLoading, setIsLoading] = useState(false);
-    const [isLoadingTeachers, setIsLoadingTeachers] = useState(true);
-
-    useEffect(() => {
-        // Check for remembered teacher first
-        const rememberedTeacherId = getTeacherCookie();
-        if (rememberedTeacherId) {
-            route.push(`${router.teacherPortal.p}/${rememberedTeacherId}`);
-            return;
-        }
-
-        const fetchTeachers = async () => {
-            try {
-                const response = await getTeachersAction(schoolId);
-                if (response.success && response.data) {
-                    const teacherOptions: SelectOption[] = response.data.map((teacher) => ({
-                        value: teacher.id,
-                        label: teacher.name,
-                    }));
-                    setTeachers(teacherOptions);
-                } else {
-                    setError(messages.teachers.error);
-                }
-            } catch (error) {
-                console.error("Error fetching teachers:", error);
-                setError(messages.teachers.error);
-            } finally {
-                setIsLoadingTeachers(false);
-            }
-        };
-
-        fetchTeachers();
-    }, [route]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError("");
         setIsLoading(true);
 
         if (!selectedTeacher) {
@@ -65,8 +32,9 @@ const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({ schoolId }) => {
             return;
         }
 
-        // setTeacherCookie(selectedTeacher);
-        route.push(`${router.teacherPortal.p}/${selectedTeacher}`);
+        setError("");
+        setTeacherCookie(selectedTeacher);
+        route.push(`${router.teacherPortal.p}/${schoolId}/${selectedTeacher}`);
     };
 
     return (
@@ -78,7 +46,11 @@ const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({ schoolId }) => {
                         options={teachers}
                         value={selectedTeacher}
                         onChange={setSelectedTeacher}
-                        placeholder={isLoadingTeachers ? "טוען רשימת מורים..." : "בחרו את השם שלכם כדי שנוכל להמשיך"}
+                        placeholder={
+                            isLoadingTeachers
+                                ? "טוען רשימת מורים..."
+                                : "בחרו את השם שלכם כדי שנוכל להמשיך"
+                        }
                         isSearchable={true}
                         isDisabled={isLoadingTeachers}
                         hasBorder

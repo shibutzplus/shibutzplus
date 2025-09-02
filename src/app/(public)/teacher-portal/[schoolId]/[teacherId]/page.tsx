@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { usePublicPortal } from "@/context/PublicPortalContext";
 import { errorToast } from "@/lib/toast";
@@ -9,41 +9,37 @@ import PortalTable from "@/components/teacherPortalTable/PortalTable/PortalTable
 import styles from "./teacherPortal.module.css";
 import PublicMobileNav from "@/components/navigation/PublicMobileNav/PublicMobileNav";
 import { useMobileSize } from "@/hooks/useMobileSize";
+import { useDisablePageScroll } from "@/hooks/useDisablePageScroll";
+import router from "@/routes";
 
 const TeacherPortalPage = () => {
   const params = useParams();
+  const route = useRouter();
+  const schoolId = params.schoolId as string;
   const teacherId = params.teacherId as string;
   const { teacherTableData, setTeacherById } = usePublicPortal();
   const isMobile = useMobileSize();
 
+  useDisablePageScroll();
+
   useEffect(() => {
+    if(!teacherId) route.push(`${router.teacherSignIn.p}/${schoolId}`);
+
     const setTeacher = async () => {
       const response = await setTeacherById(teacherId);
       if (!response) errorToast(messages.dailySchedule.error);
     };
     setTeacher();
-  }, [teacherId]);
-
-  useEffect(() => {
-    const prevHtml = document.documentElement.style.overflow;
-    const prevBody = document.body.style.overflow;
-    document.documentElement.style.overflow = "hidden";
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.documentElement.style.overflow = prevHtml;
-      document.body.style.overflow = prevBody;
-    };
-  }, []);
+  }, [teacherId, schoolId]);
 
   return (
     <div className={styles.container}>
-      <header className={styles.header} />
-      <main className={`${styles.content} ${isMobile ? styles.withBottomPadding : ""}`}>
+      <section className={`${styles.content} ${isMobile ? styles.withBottomPadding : ""}`}>
         <div className={styles.whiteBox}>
           <PortalTable tableData={teacherTableData} />
         </div>
-      </main>
-      {isMobile ? <PublicMobileNav /> : <footer className={styles.footer} />}
+      </section>
+      {isMobile ? <PublicMobileNav /> : null}
     </div>
   );
 };

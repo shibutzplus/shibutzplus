@@ -7,12 +7,13 @@ import messages from "@/resources/messages";
 import { getStorageSchoolId } from "@/utils/localStorage";
 import useDeletePopup from "@/hooks/useDeletePopup";
 import { PopupAction } from "@/context/PopupContext";
-import { filterTeachersByRole, sortByHebrewName } from "@/utils/format";
+import { filterTeachersByRole } from "@/utils/format";
 import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import useSubmit from "@/hooks/useSubmit";
 import AddTeacherRow from "../AddTeacherRow/AddTeacherRow";
 import EmptyTable from "@/components/ui/table/EmptyTable/EmptyTable";
 import TeacherRow from "../TeacherRow/TeacherRow";
+import { sortByHebrewName } from "@/utils/sort";
 
 const TeachersList: React.FC = () => {
     const { handleOpenPopup } = useDeletePopup();

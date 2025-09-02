@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { useMainContext } from "./MainContext";
-import { createSelectOptions, sortByHebrewName } from "@/utils/format";
+import { createSelectOptions } from "@/utils/format";
 import { ClassType } from "@/models/types/classes";
 import { Pair, SelectOption } from "@/models/types";
 import {
@@ -26,6 +26,7 @@ import {
 import { dayToNumber } from "@/utils/time";
 import { TeacherType } from "@/models/types/teachers";
 import { SubjectType } from "@/models/types/subjects";
+import { sortByHebrewName } from "@/utils/sort";
 
 interface AnnualTableContextType {
     annualScheduleTable: AnnualScheduleType[] | undefined;
@@ -35,7 +36,6 @@ interface AnnualTableContextType {
     classesSelectOptions: () => SelectOption[];
     handleClassChange: (value: string) => void;
     setIsSaving: React.Dispatch<React.SetStateAction<boolean>>;
-    handleSave: () => Promise<void>;
     isSaving: boolean;
     schedule: WeeklySchedule;
     setSchedule: React.Dispatch<React.SetStateAction<WeeklySchedule>>;
@@ -89,7 +89,6 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
     }, [annualAfterDelete]);
 
     useEffect(() => {
-        console.log("queueRows", queueRows);
         if (queueRows.length > 0) {
             handleSave();
         }
@@ -219,7 +218,6 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
         selectedClassId,
         classesSelectOptions,
         handleClassChange,
-        handleSave,
         setIsSaving,
         isSaving,
         setIsLoading,

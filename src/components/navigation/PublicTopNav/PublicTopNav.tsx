@@ -1,39 +1,18 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styles from "./PublicTopNav.module.css";
 import Logo from "../../core/Logo/Logo";
-import { usePublicPortal } from "@/context/PublicPortalContext";
-import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
-import { usePathname } from "next/navigation";
-import { getPageTitleFromUrl } from "@/utils/format";
 import PortalTopActions from "@/components/actions/PortalTopActions/PortalTopActions";
+import { usePublicPortal } from "@/context/PublicPortalContext";
 
 const PublicTopNav: React.FC = () => {
-    const pathname = usePathname();
-    const [pageTitle, setPageTitle] = useState<string>("");
-
-    useEffect(() => {
-        const routeKey = getPageTitleFromUrl(pathname);
-        if (routeKey) setPageTitle(routeKey);
-    }, [pathname]);
-    const {
-        switchReadAndWrite,
-        onReadTable,
-        selectedDate,
-        isLoading,
-        publishDatesOptions,
-        handleDayChange,
-    } = usePublicPortal();
-
-    const handleSwitchReadAndWrite = () => {
-        switchReadAndWrite();
-    };
+    const { teacher } = usePublicPortal();
 
     return (
         <header className={styles.contentHeader}>
             <div className={styles.headerRight}>
-                <h2 className={styles.routeTitle}>{pageTitle}</h2>
+                <h2 className={styles.routeTitle}>{teacher ? `שלום ${teacher.name}` : null}</h2>
                 <PortalTopActions />
             </div>
             <div className={styles.headerLeft}>

@@ -7,6 +7,7 @@ export const STORAGE_KEYS = {
     SUBJECTS_DATA: "shibutzplus_subjects_data",
     DAILY_TABLE_DATA: "shibutzplus_daily_table_data",
     CACHE_TIMESTAMP: "shibutzplus_cache_timestamp",
+    DAILY_TABLE_ORDER: "shibutzplus_daily_table_order"
 };
 
 // Cookies keys

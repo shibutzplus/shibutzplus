@@ -1,7 +1,7 @@
 import { TeacherType } from "@/models/types/teachers";
 import { ClassType } from "@/models/types/classes";
 import { WeeklySchedule } from "@/models/types/annualSchedule";
-import { sortByHebrewName } from "./format";
+import { sortByHebrewName } from "./sort";
 import { GroupOption } from "@/models/types";
 
 /**

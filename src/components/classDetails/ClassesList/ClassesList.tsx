@@ -9,10 +9,10 @@ import messages from "@/resources/messages";
 import { getStorageSchoolId } from "@/utils/localStorage";
 import useDeletePopup from "@/hooks/useDeletePopup";
 import { PopupAction } from "@/context/PopupContext";
-import { sortByHebrewName } from "@/utils/format";
 import AddClassRow from "../AddClassRow/AddClassRow";
 import ClassRow from "../ClassRow/ClassRow";
 import EmptyTable from "@/components/ui/table/EmptyTable/EmptyTable";
+import { sortByHebrewName } from "@/utils/sort";
 
 const ClassesList: React.FC = () => {
     const { classes, deleteClass } = useMainContext();

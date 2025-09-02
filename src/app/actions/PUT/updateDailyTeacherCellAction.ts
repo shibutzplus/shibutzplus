@@ -8,6 +8,7 @@ import { db, schema, executeQuery } from "../../../db";
 import { ActionResponse } from "@/models/types/actions";
 import { NewDailyScheduleSchema } from "@/db/schema";
 import { getDateReturnString, getStringReturnDate } from "@/utils/time";
+import { TeacherType } from "@/models/types/teachers";
 
 export async function updateDailyTeacherCellAction(
     id: string,
@@ -42,6 +43,8 @@ export async function updateDailyTeacherCellAction(
             return authError as ActionResponse;
         }
 
+        // TODO: validation that only teacher with raguler role can update thier data
+
         const updatedEntry = await executeQuery(async () => {
             return await db
                 .update(schema.dailySchedule)
@@ -59,8 +62,8 @@ export async function updateDailyTeacherCellAction(
                     eventTitle: eventTitle,
                     event: event || null,
                     position: position,
-                    instructions: instructions,
-                    links: links,
+                    instructions: instructions || null,
+                    links: links || null,
                 } as Partial<NewDailyScheduleSchema>)
                 .where(eq(schema.dailySchedule.id, id))
                 .returning();

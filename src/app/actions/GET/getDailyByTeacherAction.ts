@@ -7,7 +7,6 @@ import { and, eq } from "drizzle-orm";
 import { db, schema, executeQuery } from "../../../db";
 
 export async function getDailyByTeacherAction(
-    type: "issue" | "sub",
     teacherId: string,
     date: string,
 ): Promise<GetDailyScheduleResponse> {
@@ -21,9 +20,7 @@ export async function getDailyByTeacherAction(
             const schedules = await db.query.dailySchedule.findMany({
                 where: and(
                     eq(schema.dailySchedule.date, date),
-                    type === "issue"
-                        ? eq(schema.dailySchedule.issueTeacherId, teacherId)
-                        : eq(schema.dailySchedule.subTeacherId, teacherId),
+                    eq(schema.dailySchedule.issueTeacherId, teacherId)
                 ),
                 with: {
                     class: true,
@@ -54,6 +51,8 @@ export async function getDailyByTeacherAction(
                         issueTeacher: schedule.issueTeacher,
                         issueTeacherType: schedule.issueTeacherType,
                         subTeacher: schedule.subTeacher,
+                        instructions: schedule.instructions,
+                        links: schedule.links,
                         createdAt: schedule.createdAt,
                         updatedAt: schedule.updatedAt,
                     }) as DailyScheduleType,

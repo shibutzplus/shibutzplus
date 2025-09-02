@@ -43,7 +43,7 @@ const DailyTable: React.FC = () => {
         <section className={styles.tableContainer}>
             <div className={styles.fixedHourColumn}>
                 <div className={styles.hourHeader} style={{ backgroundColor: HeaderColor }}>
-                    {/* שעה header */}
+                    {/* שעה */}
                 </div>
                 {data.map((_, i) => (
                     <div key={i} className={styles.hourCell}>

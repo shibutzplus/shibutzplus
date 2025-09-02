@@ -1,6 +1,10 @@
 import { WeeklySchedule } from "@/models/types/annualSchedule";
-import { DAYS_OF_WEEK, HOURS_IN_DAY } from "./time";
-import { DailyScheduleCell, DailyScheduleType } from "@/models/types/dailySchedule";
+import { DAYS_OF_WEEK, getDayNumberByDateString, getStringReturnDate, HOURS_IN_DAY } from "./time";
+import {
+    DailyScheduleCell,
+    DailyScheduleRequest,
+    DailyScheduleType,
+} from "@/models/types/dailySchedule";
 
 export const initializeEmptyAnnualSchedule = (
     newSchedule: WeeklySchedule,
@@ -49,4 +53,29 @@ export const initDailyEventCellData = (entry: DailyScheduleType) => {
     };
 
     return cellData;
+};
+
+export const initDailyCellData = (
+    row: DailyScheduleType,
+    selectedDate: string,
+    instructions?: string,
+    links?: string,
+) => {
+    const dailyCellData: DailyScheduleRequest = {
+        date: getStringReturnDate(selectedDate),
+        day: getDayNumberByDateString(selectedDate).toString(),
+        columnId: row.columnId,
+        hour: row.hour,
+        school: row.school,
+        class: row.class,
+        subject: row.subject,
+        subTeacher: row.subTeacher,
+        issueTeacher: row.issueTeacher,
+        issueTeacherType: row.issueTeacherType,
+        position: row.position,
+        instructions,
+        links,
+    };
+
+    return dailyCellData;
 };

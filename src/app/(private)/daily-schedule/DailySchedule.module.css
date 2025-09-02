@@ -2,7 +2,7 @@
   width: 100%;
   min-height: 100dvh;
   position: relative;
-  padding-bottom: 28px; /* space for fixed bottom bar */
+  padding-bottom: 28px;
 }
 
 .bottomScroller {

@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import styles from "./AnnualCell.module.css";
-import { createSelectOptions, sortByHebrewName } from "@/utils/format";
+import { createSelectOptions } from "@/utils/format";
 import { SubjectType } from "@/models/types/subjects";
 import { TeacherType } from "@/models/types/teachers";
 import { WeeklySchedule } from "@/models/types/annualSchedule";
@@ -10,6 +10,7 @@ import DynamicInputGroupMultiSelect from "@/components/ui/select/InputGroupMulti
 import DynamicInputMultiSelect from "@/components/ui/select/InputMultiSelect/DynamicInputSelect";
 import { SelectMethod } from "@/models/types/actions";
 import { useAnnualTable } from "@/context/AnnualTableContext";
+import { sortByHebrewName } from "@/utils/sort";
 
 type AnnualCellProps = {
     day: string;

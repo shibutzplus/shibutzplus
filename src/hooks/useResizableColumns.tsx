@@ -7,9 +7,7 @@ type UseResizableOpts = {
   max?: number;                   // max width per column
 };
 
-//
-//  Currently Unused
-//
+// TODO: not in use
 export function useResizableColumns({ count, initial, min = 60, max = 640 }: UseResizableOpts) {
   const [widths, setWidths] = React.useState<number[]>(
     () => Array.from({ length: count }, (_, i) => initial?.[i] ?? 120)

@@ -34,10 +34,9 @@
     font-size: 12px;
     font-weight: 600;
     margin: 0;
-    background: linear-gradient(90deg, #243b55, #3a3a3a);
-    -webkit-background-clip: text; /* Safari/Chrome */
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--text-primary);
+    min-width: fit-content;
+    width: fit-content;
 }
 
 /* Tablet 768px - 1279px -- 800px*/

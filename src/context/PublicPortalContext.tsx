@@ -7,32 +7,32 @@ import { TeacherType } from "@/models/types/teachers";
 import { getTeacherByIdAction } from "@/app/actions/GET/getTeacherByIdAction";
 import { getDailyByTeacherAction } from "@/app/actions/GET/getDailyByTeacherAction";
 import { getSchoolAction } from "@/app/actions/GET/getSchoolAction";
-import { DailyScheduleRequest, DailyScheduleType } from "@/models/types/dailySchedule";
-import { PortalScheduleType } from "@/models/types/portalSchedule";
-import { getDayNumberByDateString, getStringReturnDate } from "@/utils/time";
+import {
+    DailyScheduleRequest,
+    DailyScheduleType,
+    GetDailyScheduleResponse,
+} from "@/models/types/dailySchedule";
+import { PortalPageType } from "@/models/types/portalSchedule";
 import { updateDailyTeacherCellAction } from "@/app/actions/PUT/updateDailyTeacherCellAction";
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
+import getTeacherFullScheduleAction from "@/app/actions/GET/getTeacherFullScheduleAction";
 
 interface PublicPortalContextType {
     selectedDate: string;
     handleDayChange: (value: string) => void;
     teacher: TeacherType | undefined;
-    teacherTableData: DailyScheduleType[];
+    teacherTableData: DailyScheduleType[] | undefined;
     setTeacherById: (teacherId: string | undefined) => Promise<boolean>;
     getPublishDateOptions: (schoolId: string) => Promise<SelectOption[] | undefined>;
-    updateRowDetails: (
-        cellData: DailyScheduleType,
-        change: {
-            instructions: string;
-            links: string;
-        },
-    ) => Promise<void>;
-    switchReadAndWrite: () => void;
-    handleSave: () => Promise<DailyScheduleType | undefined>;
+    switchReadAndWrite: (mode: PortalPageType) => void;
+    handleSave: (
+        dataId: string,
+        data: DailyScheduleRequest,
+    ) => Promise<DailyScheduleType | undefined>;
     publishDatesOptions: SelectOption[];
     isLoading: boolean;
-    onReadTable: boolean;
+    pageMode: PortalPageType;
     isSaving: boolean;
 }
 
@@ -50,11 +50,10 @@ export const PublicPortalProvider: React.FC<{ children: ReactNode }> = ({ childr
     const [selectedDate, setSelectedDayId] = useState<string>(getTomorrowOption());
     const [publishDatesOptions, setPublishDatesOptions] = useState<SelectOption[]>([]);
     const [teacher, setTeacher] = useState<TeacherType | undefined>();
-    const [teacherTableData, setTeacherTableData] = useState<DailyScheduleType[]>([]);
+    const [teacherTableData, setTeacherTableData] = useState<DailyScheduleType[] | undefined>();
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isSaving, setIsSaving] = useState<boolean>(false);
-    const [onReadTable, setOnReadTable] = useState<boolean>(false);
-    const [queueRows, setQueueRows] = useState<{ id: string; data: DailyScheduleRequest }[]>([]);
+    const [pageMode, setPageMode] = useState<PortalPageType>("read");
 
     const blockRef = useRef<boolean>(true);
     useEffect(() => {
@@ -73,21 +72,39 @@ export const PublicPortalProvider: React.FC<{ children: ReactNode }> = ({ childr
     }, [teacher]);
 
     useEffect(() => {
-        const fetchTeacherTableData = async () => {
-            if (!teacher || !selectedDate) return;
-            const type = onReadTable ? "sub" : "issue";
-            const response = await getDailyByTeacherAction(type, teacher.id, selectedDate);
-            if (response.success && response.data) {
+        // TODO: add cache
+        getTeacherTableData(pageMode);
+    }, [selectedDate, pageMode]);
+
+    const switchReadAndWrite = async (mode: PortalPageType) => {
+        setPageMode(mode);
+    };
+
+    const getTeacherTableData = async (mode: PortalPageType) => {
+        if (!teacher || !selectedDate) return;
+        let response: GetDailyScheduleResponse | undefined;
+        setIsLoading(true);
+        try {
+            if (mode === "read") {
+                response = await getTeacherFullScheduleAction(
+                    teacher.schoolId,
+                    teacher.id,
+                    selectedDate,
+                );
+            } else if (mode === "write") {
+                response = await getDailyByTeacherAction(teacher.id, selectedDate);
+            }
+    
+            if (response && response.success && response.data) {
                 setTeacherTableData(response.data);
             } else {
                 setTeacherTableData([]);
             }
-        };
-        fetchTeacherTableData();
-    }, [selectedDate, teacher, onReadTable]);
-
-    const switchReadAndWrite = () => {
-        setOnReadTable((prev) => !prev);
+        } catch (error) {
+            console.error("Error fetching teacher table data:", error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const getPublishDateOptions = async (schoolId: string) => {
@@ -124,46 +141,18 @@ export const PublicPortalProvider: React.FC<{ children: ReactNode }> = ({ childr
         }
     };
 
-    const updateRowDetails = async (
-        cellData: DailyScheduleType,
-        change: {
-            instructions: string;
-            links: string;
-        },
-    ) => {
-        const dailyCellData: DailyScheduleRequest = {
-            date: getStringReturnDate(selectedDate),
-            day: getDayNumberByDateString(selectedDate).toString(),
-            columnId: cellData.columnId,
-            hour: cellData.hour,
-            school: cellData.school,
-            class: cellData.class,
-            subject: cellData.subject,
-            subTeacher: cellData.subTeacher,
-            issueTeacher: cellData.issueTeacher,
-            issueTeacherType: cellData.issueTeacherType,
-            position: cellData.position,
-            instructions: change.instructions,
-            links: change.links,
-        };
-        setQueueRows((prev) => [...prev, { id: cellData.id, data: dailyCellData }]);
-    };
-
-    const handleSave = async () => {
+    const handleSave = async (dataId: string, data: DailyScheduleRequest) => {
         try {
             setIsSaving(true);
-            for (const row of queueRows) {
-                const response = await updateDailyTeacherCellAction(row.id, row.data);
-                if (response?.success && response.data) {
-                    return response.data;
-                }
+            const response = await updateDailyTeacherCellAction(dataId, data);
+            if (response?.success && response.data) {
+                return response.data;
             }
         } catch (error) {
             console.error("Error updating daily schedule entry:", error);
             errorToast(messages.dailySchedule.error);
         } finally {
             setIsSaving(false);
-            setQueueRows([]);
         }
     };
 
@@ -176,10 +165,9 @@ export const PublicPortalProvider: React.FC<{ children: ReactNode }> = ({ childr
         getPublishDateOptions,
         publishDatesOptions,
         isLoading,
-        updateRowDetails,
         switchReadAndWrite,
         handleSave,
-        onReadTable,
+        pageMode,
         isSaving,
     };
 
