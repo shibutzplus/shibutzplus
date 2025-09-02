@@ -6,7 +6,7 @@ import { NextPage } from "next";
 import { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { DEFAULT_REDIRECT } from "@/routes/protectedAuth";
+import { getDefaultRedirect  } from "@/routes/protectedAuth";
 import GoogleIcon from "@/components/ui/assets/googleIcon";
 import Link from "next/link";
 import { signInWithGoogle } from "@/app/actions/POST/signInAction";
@@ -50,10 +50,11 @@ const SignInContent: React.FC = () => {
         if (status === STATUS_AUTH && session?.user && !hasNavigatedRef.current) {
             hasNavigatedRef.current = true;
             setIsLoading(true);
-            const target =
-                (session.user as any).status === "annual"
-                    ? DEFAULT_REDIRECT
-                    : routes.dailySchedule.p;
+            const target = getDefaultRedirect();
+            //const target =
+            //    (session.user as any).status === "annual"
+            //        ? routes.annualSchedule.p
+            //        : getDefaultRedirect();
             router.push(target);
         }
     }, [status, session, router]);

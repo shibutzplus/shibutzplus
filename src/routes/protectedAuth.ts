@@ -62,3 +62,8 @@ export const configMatcher = getConfigMatcher();
 export const apiAuthPrefix = "/api/auth";
 export const DEFAULT_REDIRECT = router.dailySchedule.p;
 export const DEFAULT_ERROR_REDIRECT = router.signIn.p;
+
+// Decide default route: August -> annual, otherwise -> daily
+// Note: #7 because its starts from 0
+export const getDefaultRedirect = (d: Date = new Date()) =>
+  d.getMonth() === 7 ? router.annualSchedule.p : router.dailySchedule.p;
