@@ -17,7 +17,8 @@ export async function getTeachersAction(schoolId: string): Promise<GetTeachersRe
             return await db
                 .select()
                 .from(schema.teachers)
-                .where(eq(schema.teachers.schoolId, schoolId));
+                .where(eq(schema.teachers.schoolId, schoolId))
+                .orderBy(schema.teachers.name);
         });
 
         if (!teachers || teachers.length === 0) {
