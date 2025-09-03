@@ -88,7 +88,6 @@ function ListRow<T extends Record<string, any>>({
     return (
         <tr className={styles.listRow}>
             <td className={styles.nameCell}>
-                <span className={styles.dot} />
                 <InputText
                     key="editName"
                     id={String(field.key)}
@@ -104,7 +103,7 @@ function ListRow<T extends Record<string, any>>({
                     <div
                         className={styles.copyLink}
                         onClick={handleCopyUrl}
-                        title="העתק קישור המאפשר למורה לצפות במערכת"
+                        title="העתיקו קישור ושילחו למורה לצפות במערכת"
                     >
                         <Icons.copy />
                         {/* <span>{link}</span> */}
