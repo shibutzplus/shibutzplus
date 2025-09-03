@@ -1,15 +1,10 @@
 
-- roy - daily - sub teacher can also be text, not only select
 - roy - daily - remove save details alerts
-- roy -teachers - save button need to remove
 - roy - daily - fix publish
-- roy - teachers - save
 - roy - daily - remove the selected issue teachers from the select
-- roy+iris - teacher page "my schadule" show both the ragular hours I teache and in color the new one I replace
 
 - lior - daily - move the share button after the publish button
 - lior - teachers - fix table layout 
-- lior - all tables - fix scroll page layout
 - lior - teachers - fix ui bottom bar
 - lior - teachers - teacher page write the teacher name insted of the title
 - lior - teachers - validation - zod
@@ -24,7 +19,6 @@
 
 
 
--- daily - the new annual rows do not update in the daily because of the cache. need to fetch the data from DB if comming from deffrent page
 -- daily - share button
 -- logo on dark mode
 -- portal - cahce and efficency 
@@ -32,27 +26,68 @@
 -- portal - ui
 -- portal - loading / skeleton
 -- portal - on "my schadule" minimze the instraction and only show on click (show only the hour class and subject)
-v-- portal - list of the raguler and the sub teachers
-v-- portal - url should be both school and teacher ids
-v-- portal - if I enter to the teacher-portal and I dont have the teacher object I check for the teacher by his Id and school
 -- daily - position columns need helper table and delete the 'position' from the daily-schadule table
 
 
 -- daily page
-v- scroll hours column 
-v- table design and colors
 - remove the selected issue teachers from the select
 - sub teacher can also be text, not only select
 - sort the columns to be group by type (color)
 - react motion for change position
-v- when publish, show the published link
-v- render table and preformence 
 - does the select group is ok (need to check if that correct)
 - option to select multiple sub teachers (do we need?)
 - option to clear sub teacher cell
 - responsive page
 - skeleton page
 
+
+
+-- for specific teacher that is missing table has 
+class, subTeacher, subject, study material, instructions, links
+
+TODO
+- loading skeleton
+v- daily - after publish, show the published link
+- portal - query param of the selected date in the teacher page
+- history page
+- portal - leave empty hours that has no information (gray + small height)
+
+BUGs
+- role teacher not allow to enter the big system, need alert on that
+-- daily - the new annual rows do not update in the daily because of the cache. need to fetch the data from DB if comming from deffrent page
+
+TO CHECK
+- list of all the published days (new page)
+
+FOR LATER
+- lists - add search
+- improve preformance by converting the teachers classes and subjects array to Dictionary
+- helper/guide box for the user to understand the system
+- daily - select header colors
+- annual - populate the table from an excel file
+- DB addition - school - hours: int (9)
+- DB addition - school - days: int (6)
+- text per gender (he / she) 
+- connect page
+- settings page
+- profile page
+
+WONT DO
+- hamburger open by default and responsive to the screen
+- side nav split into sections with title
+
+v-- portal - list of the raguler and the sub teachers
+v-- portal - url should be both school and teacher ids
+v-- portal - if I enter to the teacher-portal and I dont have the teacher object I check for the teacher by his Id and school
+v- lior - all tables - fix scroll page layout
+v- roy - daily - sub teacher can also be text, not only select
+v- roy - portal - save button need to remove
+v- roy - portal - save
+v- roy+iris - teacher page "my schadule" show both the ragular hours I teache and in color the new one I replace
+v- scroll hours column 
+v- table design and colors
+v- when publish, show the published link
+v- render table and preformence 
 v- daily - delete column still not working good
 v- daily - group subteacher select
 v- daily - still not working 
@@ -63,86 +98,35 @@ v- daily - order: missingTeacher-red existingTeacher-blue event-green
 v- daily - delete button - bin icon
 v- daily - hour column need to stay fixed
 v- daily - smaller width
-
-- daily - after publish, show the published link
-- list of all the published days (new page)
-- query param of the selected date in the teacher page
-
 v- annual - for each select (subject or teacher) there is also "remove" option to clear the cell
 v- annual - responsive table
 v- annual - select group does not allow to add new teachers
-
 v- lists - for all lists pages, improve design
 v- lists - responsive
 v- lists - responsive - teacher table
 v- lists - update btn does not show the new update
 v- lists - when delete element, need to delete his references (delete class, remove his teachers from annual and daily)
-- lists - add search
-
 v- onboarding - not working 
 v- onboarding - new design 
-
-- loading skeleton
-
-- history - finish build
-- history - new design
-- history - responsive
-- history - loading skeleton
-
 v- date format - 21-08-2025
 v- change toast position
-
-- improve preformance by converting the teachers classes and subjects array to Dictionary
-- helper/guide box for the user to understand the system
-
 v- not sure I need the split the daily into existingTeacher and missingTeacher, maybe I should only need to have header teacher and the type
-
-- text per gender (he / she) 
-
-- teacher - mobile screen for the teachers
-- teacher - select the teacher name from a list
-- teacher - you can see your replacement or you can see the daily (all teachers)
-
-- teacher - page design:
--- top nav with logo, exsit, select data, switch between your data and the daily table
--- the table has two headers, first one with span of (מורים חסרים) (מורים קיימים) (אירועים)
--- the second headr show the actoul cloumn header     () () () ()    () () () ()   () () ()
-
--- for specific teacher that is missing table has 
-class, subTeacher, subject, study material, instructions, links
--- leave empty hours that has no information (gray + small height)
-
-- role teacher not allow to enter the big system, need alert on that
-
-- replacement - mobile screen for the replacements + url id
-- replacement - you can only see what you need to teach, where and what
-
+v- teacher - mobile screen for the teachers
+v- teacher - select the teacher name from a list
+v- teacher - you can see your replacement or you can see the daily (all teachers)
+v- teacher - page design:
+v-- top nav with logo, exsit, select data, switch between your data and the daily table
+v-- the table has two headers, first one with span of (מורים חסרים) (מורים קיימים) (אירועים)
+v-- the second headr show the actoul cloumn header     () () () ()    () () () ()   () () ()
+v- replacement - mobile screen for the replacements + url id
+v- replacement - you can only see what you need to teach, where and what
 v- better icons for the hamburger menu
-
 v- how does new user register? (maybe on first login he register)
 v- why it takes so much time to page to load on the first time
-
 v- add clerity
 v- add domain
 v- setup google auth for prod
 v- new logo
-
-DB addition
-- school - hours: int (9)
-- school - days: int (6)
-
-- daily - select header colors
-- annual - populate the table from an excel file
-
-- connect page
-- settings page
-- profile page
-
-
-
-- hamburger open by default and responsive to the screen
-- side nav split into sections with title
-
 v- daily - table headr style
 v- daily - handle info column
 v- daily - table cell has select that can be text (teacher or information)
@@ -156,32 +140,18 @@ v- daily - delete column if click remove
 v- daily - add info to DB
 v- daily - get from DB 7 day when current day is the middle of the week (even if getting next week) - need to check with mom
 v- daily - if I save one row from a teacher column, I only populate one row and not all the teacher rows. need to populate all the rows
-
 v- annual - error on adding new cell for deffrent class (except first in array)
 v- annual - if teacher teachs in a class, do not show him in the list of other classes in the same hour
 v- annual - add "שומר..." text on the top nav (loading) 
-
-
 v- annual - style the table
 v- annual - loading spinner
-
-
 v- each page has his own layout with his own provider
-
 v- auth - remember me
 v- auth - register via google
-
-
 v - teachers - fix the role in the DB
-
 v- annual - filter teachers in the select not working on first render
-
 v- annual - insted of filter teachers. show all the teachers but color the teachers that already selected in the same time
 v- daily - show week before, two week after in the day select (day of the week + date)
-
-
-
-DB addition
 v- school - publish_dates [01-01-1111, 02-02-2222]
 v- daily - class_ids possible null
 v- daily - instructions

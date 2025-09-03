@@ -17,6 +17,7 @@ import { updateDailyTeacherCellAction } from "@/app/actions/PUT/updateDailyTeach
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import getTeacherFullScheduleAction from "@/app/actions/GET/getTeacherFullScheduleAction";
+import { selectSelectedDate } from "@/services/portalTeacherService";
 
 interface PublicPortalContextType {
     selectedDate: string;
@@ -24,7 +25,6 @@ interface PublicPortalContextType {
     teacher: TeacherType | undefined;
     teacherTableData: DailyScheduleType[] | undefined;
     setTeacherById: (teacherId: string | undefined) => Promise<boolean>;
-    getPublishDateOptions: (schoolId: string) => Promise<SelectOption[] | undefined>;
     switchReadAndWrite: (mode: PortalPageType) => void;
     handleSave: (
         dataId: string,
@@ -59,10 +59,25 @@ export const PublicPortalProvider: React.FC<{ children: ReactNode }> = ({ childr
     useEffect(() => {
         const fetchDateOptions = async () => {
             if (teacher) {
-                const options = await getPublishDateOptions(teacher.schoolId);
-                setPublishDatesOptions(options || []);
-                handleDayChange(options?.[0].value || getTomorrowOption());
-                blockRef.current = false;
+                setIsLoading(true);
+                try {
+                    const response = await getSchoolAction(teacher.schoolId);
+                    if (response.success && response.data) {
+                        const res = gePublishedDatesOptions(response.data.publishDates);
+                        if(res.length === 0) {
+                            setPublishDatesOptions([]);
+                            return;
+                        }
+                        setPublishDatesOptions(res);
+                        handleDayChange(selectSelectedDate(res)?.value);
+                        blockRef.current = false;
+                    }
+                } catch (error) {
+                    console.error("Error fetching publish dates:", error);
+                    setPublishDatesOptions([]);
+                } finally {
+                    setIsLoading(false);
+                }
             } else {
                 handleDayChange(getTomorrowOption());
                 setPublishDatesOptions([]);
@@ -94,7 +109,7 @@ export const PublicPortalProvider: React.FC<{ children: ReactNode }> = ({ childr
             } else if (mode === "write") {
                 response = await getDailyByTeacherAction(teacher.id, selectedDate);
             }
-    
+
             if (response && response.success && response.data) {
                 setTeacherTableData(response.data);
             } else {
@@ -102,21 +117,6 @@ export const PublicPortalProvider: React.FC<{ children: ReactNode }> = ({ childr
             }
         } catch (error) {
             console.error("Error fetching teacher table data:", error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const getPublishDateOptions = async (schoolId: string) => {
-        setIsLoading(true);
-        try {
-            const response = await getSchoolAction(schoolId);
-            if (response.success && response.data) {
-                return gePublishedDatesOptions(response.data.publishDates);
-            }
-        } catch (error) {
-            console.error("Error fetching school:", error);
-            return [];
         } finally {
             setIsLoading(false);
         }
@@ -162,7 +162,6 @@ export const PublicPortalProvider: React.FC<{ children: ReactNode }> = ({ childr
         teacher,
         teacherTableData,
         setTeacherById,
-        getPublishDateOptions,
         publishDatesOptions,
         isLoading,
         switchReadAndWrite,

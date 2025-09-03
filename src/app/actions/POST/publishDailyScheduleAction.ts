@@ -23,7 +23,12 @@ export async function publishDailyScheduleAction(
         if (publishDates.includes(date)) {
             return { success: true, message: messages.publish.alreadyPublished };
         }
-        const updatedDates = [...publishDates, date];
+        
+        // queue (FIFO) maintain maximum 6 elements
+        let updatedDates = [...publishDates, date];
+        if (updatedDates.length > 6) {
+            updatedDates = updatedDates.slice(1);
+        }
         await executeQuery(async () => {
             return (
                 await db
