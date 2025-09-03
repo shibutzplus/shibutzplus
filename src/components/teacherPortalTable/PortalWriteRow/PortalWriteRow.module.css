@@ -17,6 +17,9 @@
   min-height: 36px;
 }
 
+.scheduleCellInput {
+  min-width: 25vw;
+}
 
 .cellContent {
   display: flex;
@@ -26,7 +29,8 @@
   height: auto;
 }
 
-.scheduleCellInput{
+.scheduleCellInput textarea#instructions,
+.scheduleCellInput textarea#links {
   width: 100%;
   box-sizing: border-box;
   line-height: 1.35;
@@ -38,7 +42,6 @@
   overflow: hidden;
   border: none;
   background: transparent;
-  min-width: 25vw;
 }
 
 .className {
