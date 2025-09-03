@@ -5,7 +5,6 @@ import InputText from "@/components/ui/InputText/InputText";
 import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
 import Icons from "@/style/icons";
 import styles from "./ListRow.module.css";
-import { successToast } from "@/lib/toast";
 import { useShareTextOrLink } from "@/hooks/useShareTextOrLink";
 import messages from "@/resources/messages";
 
@@ -80,10 +79,13 @@ function ListRow<T extends Record<string, any>>({
         }
     };
 
-    const handleCopyUrl = async () => {
+    const shareURL = async () => {
         if (!link) return;
-        share(messages.share.teacher.title, messages.share.teacher.text, link);
+        const text = `קישור לשיבוץ+ עם המערכת האישית\n${link}`;
+        const waUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+        window.open(waUrl, "_blank", "noopener,noreferrer");
     };
+
 
     return (
         <tr className={styles.listRow}>
@@ -102,10 +104,10 @@ function ListRow<T extends Record<string, any>>({
                 {link ? (
                     <div
                         className={styles.copyLink}
-                        onClick={handleCopyUrl}
-                        title="העתיקו קישור ושילחו למורה לצפות במערכת"
+                        onClick={shareURL}
+                        title="לחצו כדי לשתף את הקישור עם המורה"
                     >
-                        <Icons.copy />
+                        <Icons.share />
                         {/* <span>{link}</span> */}
                     </div>
                 ) : null}

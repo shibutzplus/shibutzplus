@@ -9,7 +9,7 @@ type AddToSelectBtnProps = {
 const AddToSelectBtn: React.FC<AddToSelectBtnProps> = ({ onClick, label }) => {
     return (
         <div className={styles.addBtn} onClick={() => onClick()}>
-            בחירה והוספה של "{label}" לרשימה
+            הוספה של "{label}"
         </div>
     );
 };

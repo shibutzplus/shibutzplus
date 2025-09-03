@@ -55,7 +55,7 @@ const PortalTopActions: React.FC = () => {
                     className={`${styles.topBtn} ${pageMode === "read" ? styles.active : ""}`}
                 >
                     <Icons.teacher1 size={16} style={{ marginInlineEnd: "4px" }} />
-                    המערכת שלי
+                    שינויים במערכת שלי
                 </button>
 
                 {/* <button type="button" onClick={goSchoolView} className={styles.topBtn}>
