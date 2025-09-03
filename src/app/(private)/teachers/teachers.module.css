@@ -1,15 +1,11 @@
-/* הקונטיינר נשאר ב־100% */
 .container { display: block; }
 
-/* מגדירים משתנים שישפיעו רק בטווח המסך הזה */
 .teachersList {
   --table-width: 60%;
   --table-max-width: 1200px;
   --table-margin: 0 auto;
-  padding-inline: 2px;
 }
 
-/* מובייל: שהטבלה תתפרש */
 @media (max-width: 767px) {
   .teachersList {
     --table-width: 100%;

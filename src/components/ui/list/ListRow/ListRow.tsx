@@ -1,3 +1,5 @@
+// NOTE: This component is reused by multiple pages:
+// ClassRow.tsx, SubjectRow.tsx, SubstituteRow.tsx, TeacherRow.tsx.
 import React, { useEffect, useState } from "react";
 import InputText from "@/components/ui/InputText/InputText";
 import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
