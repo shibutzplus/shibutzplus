@@ -1,9 +1,10 @@
+// NOTE: This component is reused by multiple pages:
+// ClassRow.tsx, SubjectRow.tsx, SubstituteRow.tsx, TeacherRow.tsx.
 import React, { useEffect, useState } from "react";
 import InputText from "@/components/ui/InputText/InputText";
 import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
 import Icons from "@/style/icons";
 import styles from "./ListRow.module.css";
-import { successToast } from "@/lib/toast";
 import { useShareTextOrLink } from "@/hooks/useShareTextOrLink";
 import messages from "@/resources/messages";
 
@@ -78,15 +79,17 @@ function ListRow<T extends Record<string, any>>({
         }
     };
 
-    const handleCopyUrl = async () => {
+    const shareURL = async () => {
         if (!link) return;
-        share(messages.share.teacher.title, messages.share.teacher.text, link);
+        const text = `קישור לשיבוץ+ עם המערכת האישית\n${link}`;
+        const waUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+        window.open(waUrl, "_blank", "noopener,noreferrer");
     };
+
 
     return (
         <tr className={styles.listRow}>
             <td className={styles.nameCell}>
-                <span className={styles.dot} />
                 <InputText
                     key="editName"
                     id={String(field.key)}
@@ -98,24 +101,27 @@ function ListRow<T extends Record<string, any>>({
                     readonly={!isEdit}
                     type={field.inputType || "text"}
                 />
-                {link ? (
-                    <div
-                        className={styles.copyLink}
-                        onClick={handleCopyUrl}
-                        title="העתק קישור המאפשר למורה לצפות במערכת"
-                    >
-                        <Icons.copy />
-                        {/* <span>{link}</span> */}
-                    </div>
-                ) : null}
             </td>
+
             <td className={styles.actions}>
+                {link && (
+                    <IconBtn
+                        onClick={shareURL}
+                        isLoading={false}
+                        Icon={<Icons.share />}
+                    />
+                )}
+
                 <IconBtn
                     onClick={handleUpdate}
                     isLoading={isEditLoading}
                     Icon={isEdit ? <Icons.save /> : <Icons.edit />}
                 />
-                <IconBtn onClick={() => onDelete(item)} isLoading={false} Icon={<Icons.delete />} />
+                <IconBtn
+                    onClick={() => onDelete(item)}
+                    isLoading={false}
+                    Icon={<Icons.delete />}
+                />
             </td>
         </tr>
     );

@@ -1,8 +1,6 @@
-/* Mobile 320px - 767px -- 812px */
 .container {
   padding: 0;
   width: 100%;
-  min-height: unset;
   height: auto;
   display: block;
   background-color: var(--school-section-bg);
@@ -10,25 +8,12 @@
 
 .whiteBox {
   background-color: var(--background-inner);
-  border-radius: 0;
   width: 100%;
   height: auto;
-  min-height: unset;
-  overflow: visible;
   border: 0.1px solid #ccc;
-  margin-top: 0;
 }
 
-/* Tablet 768px - 1279px -- 800px*/
-@media screen and (min-width: 768px) {
-  .whiteBox {
-    width: 100%;
-    min-height: unset;
-    margin-top: 0;
-  }
-}
-
-/* Laptop HD 1280px - 1439px -- 720px*/
+/* Desktop HD 1280px+ */
 @media screen and (min-width: 1280px) {
   .container {
     margin-top: 0;

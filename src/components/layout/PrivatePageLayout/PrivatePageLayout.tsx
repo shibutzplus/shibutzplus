@@ -2,7 +2,7 @@
 
 import React from "react";
 import styles from "./PrivatePageLayout.module.css";
-import TopNav from "@/components/navigation/TopNav/TopNav";
+import CommonTopNav from "@/components/navigation/CommonTopNav/CommonTopNav";
 
 type PrivatePageLayoutProps = {
   CustomTopNav?: React.ReactNode;
@@ -13,12 +13,10 @@ export default function PrivatePageLayout({ CustomTopNav, children }: PrivatePag
   return (
     <div className={styles.privatePageLayout} dir="rtl">
       <header className={styles.contentHeader}>
-        {CustomTopNav ?? <TopNav />}
+        {CustomTopNav ?? <CommonTopNav kind="list" />}
       </header>
       <main className={styles.contentMain}>
-        <div className={styles.scrollInner}>
-          {children}
-        </div>
+        <div className={styles.scrollInner}>{children}</div>
       </main>
     </div>
   );

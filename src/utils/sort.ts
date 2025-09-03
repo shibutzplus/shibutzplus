@@ -24,9 +24,9 @@ export const sortByHebrewName = <T extends Record<string, any>>(
 export const sortColumnsByIssueTeacherType = (filteredCols: ColumnDef<TeacherRow>[]) => {
     const getTypeOrder = (type: ColumnType) => {
         switch (type) {
-            case "existingTeacher":
-                return 1;
             case "missingTeacher":
+                return 1;
+            case "existingTeacher":
                 return 2;
             case "event":
                 return 3;
