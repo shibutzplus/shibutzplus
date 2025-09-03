@@ -6,6 +6,7 @@ import styles from "./InputSelect.module.css";
 import { SelectOption } from "@/models/types";
 import { customStyles } from "@/style/selectStyle";
 import AddToSelectBtn from "../../buttons/AddToSelectBtn/AddToSelectBtn";
+import { createNewSelectOption_btnText } from "@/utils/format";
 
 type Props = {
     label?: string;
@@ -22,6 +23,7 @@ type Props = {
     backgroundColor?: "white" | "transparent";
     isClearable?: boolean;
     onCreate?: (value: string) => Promise<string | undefined>;
+    createBtnText?: string;
 };
 
 const InputSelect: React.FC<Props> = (props) => {
@@ -40,6 +42,7 @@ const InputSelect: React.FC<Props> = (props) => {
         backgroundColor = "white",
         isClearable = false,
         onCreate,
+        createBtnText,
     } = props;
 
     const [options, setOptions] = useState<SelectOption[]>(initialOptions);
@@ -106,7 +109,7 @@ const InputSelect: React.FC<Props> = (props) => {
                     isAllowAddNew && onCreate ? (
                         <AddToSelectBtn
                             onClick={() => handleOnCreate(inputValue)}
-                            label={inputValue}
+                            text={createNewSelectOption_btnText(inputValue, createBtnText)}
                         />
                     ) : (
                         <div>לא נמצאו אפשרויות</div>

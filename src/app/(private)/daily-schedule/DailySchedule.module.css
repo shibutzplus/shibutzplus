@@ -21,13 +21,13 @@
 }
 
 /* keep scrolling contained and disable anchoring */
-:global([class*="scrollableContent"]) {
+/* :global([class*="scrollableContent"]) {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
 :global([class*="scrollableContent"]::-webkit-scrollbar) {
   display: none;
-}
+} */
 
 .scheduleCellInput,
 .scheduleCell {

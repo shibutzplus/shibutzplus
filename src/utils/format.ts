@@ -27,3 +27,13 @@ export const getPageTitleFromUrl = (pathname: string) => {
     if (routeKey) return routePath[routeKey].title;
     return;
 };
+
+/**
+ * Creates a button text for a new select option
+ * @param template - string with placeholder {0} for the input value
+ * @param inputValue - the value to insert into the template
+ * @returns 
+ */
+export const createNewSelectOption_btnText = (inputValue: string, template?: string) => {
+    return template?.replace('{0}', inputValue) || inputValue;
+}

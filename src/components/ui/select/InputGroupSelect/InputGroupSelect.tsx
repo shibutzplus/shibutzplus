@@ -6,6 +6,7 @@ import styles from "./InputGroupSelect.module.css";
 import { customStyles } from "@/style/selectStyle";
 import { GroupOption, SelectOption } from "@/models/types";
 import AddToSelectBtn from "../../buttons/AddToSelectBtn/AddToSelectBtn";
+import { createNewSelectOption_btnText } from "@/utils/format";
 
 export interface InputGroupSelectProps {
     label?: string;
@@ -22,6 +23,7 @@ export interface InputGroupSelectProps {
     backgroundColor?: "white" | "transparent";
     isClearable?: boolean;
     onCreate?: (value: string) => Promise<void>;
+    createBtnText?: string;
 }
 
 const formatGroupLabel = (data: GroupOption) => (
@@ -46,6 +48,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     backgroundColor = "white",
     isClearable = false,
     onCreate,
+    createBtnText
 }) => {
     const [selectedOption, setSelectedOption] = useState<{ value: string; label: string } | null>(
         null,
@@ -117,7 +120,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
                     isAllowAddNew && inputValue.trim() !== "" ? (
                         <AddToSelectBtn
                             onClick={() => handleOnCreate(inputValue)}
-                            label={inputValue}
+                            text={createNewSelectOption_btnText(inputValue, createBtnText)}
                         />
                     ) : (
                         <div>לא נמצאו אפשרויות</div>

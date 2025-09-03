@@ -8,6 +8,7 @@ import AddToSelectBtn from "../../buttons/AddToSelectBtn/AddToSelectBtn";
 import type { ActionMeta, OnChangeValue } from "react-select";
 import { customStylesMulti } from "@/style/selectMultiStyle";
 import { SelectMethod } from "@/models/types/actions";
+import { createNewSelectOption_btnText } from "@/utils/format";
 
 export interface InputGroupMultiSelectProps {
     label?: string;
@@ -25,6 +26,7 @@ export interface InputGroupMultiSelectProps {
     backgroundColor?: "white" | "transparent";
     isClearable?: boolean;
     onCreate?: (value: string) => Promise<string | undefined>;
+    createBtnText?: string;
     /** Keep menu open when selecting multiple (recommended) */
     closeMenuOnSelect?: boolean;
     /** Label for the dynamic group that holds user-created options */
@@ -53,6 +55,7 @@ const InputGroupMultiSelect: React.FC<InputGroupMultiSelectProps> = ({
     backgroundColor = "white",
     isClearable = false,
     onCreate,
+    createBtnText,
     closeMenuOnSelect = true,
     createdGroupLabel = "Custom",
 }) => {
@@ -181,7 +184,7 @@ const InputGroupMultiSelect: React.FC<InputGroupMultiSelectProps> = ({
                     isAllowAddNew && inputValue.trim() !== "" ? (
                         <AddToSelectBtn
                             onClick={() => handleOnCreate(inputValue)}
-                            label={inputValue}
+                            text={createNewSelectOption_btnText(inputValue, createBtnText)}
                         />
                     ) : (
                         <div>לא נמצאו אפשרויות</div>

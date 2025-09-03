@@ -13,11 +13,12 @@ export async function getTeachersAction(schoolId: string): Promise<GetTeachersRe
             return authError as GetTeachersResponse;
         }
 
+        // get the teachers withSub or withoutSub
         const teachers = await executeQuery(async () => {
             return await db
                 .select()
                 .from(schema.teachers)
-                .where(eq(schema.teachers.schoolId, schoolId))
+                .where(eq(schema.teachers.schoolId, schoolId)) 
                 .orderBy(schema.teachers.name);
         });
 

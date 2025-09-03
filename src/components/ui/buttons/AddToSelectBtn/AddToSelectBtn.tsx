@@ -3,13 +3,13 @@ import styles from "./AddToSelectBtn.module.css";
 
 type AddToSelectBtnProps = {
     onClick: () => void;
-    label: string;
+    text?: string;
 };
 
-const AddToSelectBtn: React.FC<AddToSelectBtnProps> = ({ onClick, label }) => {
+const AddToSelectBtn: React.FC<AddToSelectBtnProps> = ({ onClick, text }) => {
     return (
         <div className={styles.addBtn} onClick={() => onClick()}>
-            הוספה של "{label}"
+            {text || "לחץ Enter להוספה"}
         </div>
     );
 };

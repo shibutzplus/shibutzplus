@@ -6,6 +6,7 @@ import AddToSelectBtn from "../../buttons/AddToSelectBtn/AddToSelectBtn";
 import type { ActionMeta, OnChangeValue } from "react-select";
 import { customStylesMulti } from "@/style/selectMultiStyle";
 import { SelectMethod } from "@/models/types/actions";
+import { createNewSelectOption_btnText } from "@/utils/format";
 
 export type InputMultiSelectProps = {
     label?: string;
@@ -25,6 +26,7 @@ export type InputMultiSelectProps = {
     isClearable?: boolean;
     /** Create handler should return the new option id (value) */
     onCreate?: (value: string) => Promise<string | undefined>;
+    createBtnText?: string;
     /** Keep menu open when selecting multiple (recommended for multi) */
     closeMenuOnSelect?: boolean;
 };
@@ -44,6 +46,7 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
     backgroundColor = "white",
     isClearable = false,
     onCreate,
+    createBtnText,
     closeMenuOnSelect = true,
 }) => {
     const [options, setOptions] = useState<SelectOption[]>(initialOptions);
@@ -135,7 +138,7 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
                     isAllowAddNew ? (
                         <AddToSelectBtn
                             onClick={() => handleOnCreate(inputValue)}
-                            label={inputValue}
+                            text={createNewSelectOption_btnText(inputValue, createBtnText)}
                         />
                     ) : (
                         <div>לא נמצאו אפשרויות</div>
