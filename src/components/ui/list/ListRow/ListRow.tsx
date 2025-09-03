@@ -101,24 +101,27 @@ function ListRow<T extends Record<string, any>>({
                     readonly={!isEdit}
                     type={field.inputType || "text"}
                 />
-                {link ? (
-                    <div
-                        className={styles.copyLink}
-                        onClick={shareURL}
-                        title="לחצו כדי לשתף את הקישור עם המורה"
-                    >
-                        <Icons.share />
-                        {/* <span>{link}</span> */}
-                    </div>
-                ) : null}
             </td>
+
             <td className={styles.actions}>
+                {link && (
+                    <IconBtn
+                        onClick={shareURL}
+                        isLoading={false}
+                        Icon={<Icons.share />}
+                    />
+                )}
+
                 <IconBtn
                     onClick={handleUpdate}
                     isLoading={isEditLoading}
                     Icon={isEdit ? <Icons.save /> : <Icons.edit />}
                 />
-                <IconBtn onClick={() => onDelete(item)} isLoading={false} Icon={<Icons.delete />} />
+                <IconBtn
+                    onClick={() => onDelete(item)}
+                    isLoading={false}
+                    Icon={<Icons.delete />}
+                />
             </td>
         </tr>
     );

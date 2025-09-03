@@ -30,7 +30,7 @@ const PublicMobileNav: React.FC = () => {
         onClick={goWriteMode}
         aria-label="הזנת חומרי לימוד"
       >
-        <Icons.plus size={20} />
+        <Icons.book size={20} />
         <span className={styles.label}>הזנת חומרי לימוד</span>
       </button>
 
@@ -40,7 +40,7 @@ const PublicMobileNav: React.FC = () => {
         onClick={goMySchedule}
         aria-label="המערכת שלי"
       >
-        <Icons.teacher1 size={20} />
+        <Icons.dailyCalendar size={20} />
         <span className={styles.label}>המערכת שלי</span>
       </button>
 

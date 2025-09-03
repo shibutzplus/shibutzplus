@@ -1,0 +1,119 @@
+/* Base (Mobile first) */
+.contentHeader {
+    background-color: var(--background-inner);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: var(--header-height);
+    padding: 0 1vw;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 100;
+    width: 100%;
+}
+
+.sticky {
+    position: fixed;
+}
+
+.headerRight {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    width: 100%;
+    min-width: 0;
+}
+
+.headerLeft {
+    display: none;
+}
+
+.routeTitle {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text-primary);
+
+    min-width: 0;
+    max-width: 60px;
+    line-height: 1.15;
+    white-space: normal;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow-wrap: break-word;
+}
+
+.topActions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+    height: 40px;
+    flex: 1 1 auto;
+}
+
+.filters {
+    position: sticky;
+    top: var(--header-height);
+    background-color: var(--background-inner);
+    z-index: 99;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 3vw;
+    border-bottom: 1px solid #eee;
+}
+
+.filterItem {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.filterLabel {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.select {
+    height: 32px;
+    padding: 4px 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: var(--background-inner);
+    color: var(--text-primary);
+}
+
+/* Tablet and up */
+@media (min-width: 768px) {
+    .contentHeader {
+        gap: 3em;
+    }
+
+    .headerRight {
+        gap: 1em;
+    }
+
+    .headerLeft {
+        display: block;
+        width: max-content;
+        max-width: 20vw;
+    }
+
+    .routeTitle {
+        max-width: none;
+        -webkit-line-clamp: unset;
+        line-clamp: unset;
+    }
+}
+
+/* Mobile in case of no Dropdown */
+@media (max-width: 767px) {
+  .contentHeader:not(:has(.topActions)) .routeTitle {
+    max-width: calc(100vw - 56px);
+  }
+}

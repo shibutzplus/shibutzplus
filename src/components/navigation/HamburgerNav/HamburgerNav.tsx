@@ -13,6 +13,7 @@ import Icons from "@/style/icons";
 type HamburgerNavProps = {
     isOpen: boolean;
     onClose: () => void;
+    variant?: "admin" | "teacher"; // NEW: controls which items to show
 };
 
 interface ILink {
@@ -68,21 +69,23 @@ const LinkComponent = ({ link, onClose }: { link: ILink; onClose: () => void }) 
     );
 };
 
-const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose }) => {
+const HamburgerNav: React.FC<HamburgerNavProps> = ({
+    isOpen,
+    onClose,
+    variant = "admin",
+}) => {
     const { data: session, status } = useSession();
     const navRef = useRef<HTMLDivElement>(null);
     useAccessibility({ isOpen, navRef, onClose });
 
     const overlayRef = useRef<HTMLDivElement>(null);
     React.useEffect(() => {
-        if (overlayRef.current) {
-            if (!isOpen) {
-                overlayRef.current.setAttribute("inert", "");
-            } else {
-                overlayRef.current.removeAttribute("inert");
-            }
-        }
+        if (!overlayRef.current) return;
+        if (!isOpen) overlayRef.current.setAttribute("inert", "");
+        else overlayRef.current.removeAttribute("inert");
     }, [isOpen]);
+
+    const showAdminLinks = variant === "admin";
 
     return (
         <div ref={overlayRef} className={`${styles.overlay} ${isOpen ? styles.open : ""}`}>
@@ -97,28 +100,17 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose }) => {
                     <Icons.close size={24} />
                 </button>
 
-                <section className={styles.menuSection}>
-                    <ul>
-                        {links.map((link, index) => (
-                            <li key={index}>
-                                <LinkComponent link={link} onClose={onClose} />
-                            </li>
-                        ))}
-                    </ul>
-                </section>
-
-                {/* {session?.user && (
-                    <section className={styles.userSection}>
-                        <LinkComponent
-                            link={{
-                                name: routePath.profile.title,
-                                p: routePath.profile.p,
-                                Icon: <Icons.personCircle size={24} />,
-                            }}
-                            onClose={onClose}
-                        />
+                {showAdminLinks && (      /* <-- hide links for teacher */
+                    <section className={styles.menuSection}>
+                        <ul>
+                            {links.map((link, index) => (
+                                <li key={index}>
+                                    <LinkComponent link={link} onClose={onClose} />
+                                </li>
+                            ))}
+                        </ul>
                     </section>
-                )} */}
+                )}
 
                 {status === STATUS_AUTH && (
                     <section className={styles.logoutSection}>

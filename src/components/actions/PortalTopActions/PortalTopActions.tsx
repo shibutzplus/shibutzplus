@@ -43,18 +43,18 @@ const PortalTopActions: React.FC = () => {
                         onClick={() => switchReadAndWrite("write")}
                         className={`${styles.topBtn} ${pageMode === "write" ? styles.active : ""}`}
                     >
-                        <Icons.plus size={16} style={{ marginInlineEnd: "4px" }} />
+                        <Icons.book size={16} style={{ marginInlineEnd: "4px" }} />
                         הזנת חומרי לימוד
                     </button>
                 ) : null}
-                <span className={styles.separator}>|</span>
+                <span className={styles.separator}></span>
 
                 <button
                     type="button"
                     onClick={() => switchReadAndWrite("read")}
                     className={`${styles.topBtn} ${pageMode === "read" ? styles.active : ""}`}
                 >
-                    <Icons.teacher1 size={16} style={{ marginInlineEnd: "4px" }} />
+                    <Icons.dailyCalendar size={16} style={{ marginInlineEnd: "4px" }} />
                     שינויים במערכת שלי
                 </button>
 
