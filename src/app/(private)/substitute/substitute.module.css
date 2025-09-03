@@ -1,16 +1,14 @@
 .container {
-  display: block; /* המסך כולו ישאר 100% */
+  display: block;
 }
 
-/* שליטה ברוחב הטבלה */
 .substituteList {
   --table-width: 60%;
   --table-max-width: 1200px;
   --table-margin: 0 auto;
-  padding-inline: 2px;
 }
 
-/* במסכים צרים נפרוס ל־100% */
+/* Mobile Screens */
 @media (max-width: 767px) {
   .substituteList {
     --table-width: 100%;

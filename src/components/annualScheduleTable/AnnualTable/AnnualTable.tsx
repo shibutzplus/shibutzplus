@@ -90,7 +90,7 @@ const AnnualTable: React.FC<AnnualTableProps> = ({
     };
 
     return (
-        <div className={styles.tableContainer}>
+        <div>
             <table className={styles.scheduleTable}>
                 <AnnualHeader />
                 <tbody>

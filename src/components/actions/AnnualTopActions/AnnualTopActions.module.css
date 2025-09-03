@@ -41,7 +41,7 @@
 
     .selectContainer {
         min-width: fit-content;
-        width: 15%;
+        width: 200px;
     }
 
     .link {

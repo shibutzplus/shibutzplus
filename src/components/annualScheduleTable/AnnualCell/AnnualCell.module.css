@@ -4,8 +4,8 @@
     border: 1px solid #e0e0e0;
     vertical-align: top;
     min-width: var(--annual-table-width);
+    max-width: 0;
     height: 80px;
-    max-width: var(--annual-table-max-width);
 }
 
 .cellContent {
@@ -17,13 +17,10 @@
 
 .deleteBtn{
     position: absolute;
-    top: 0;
-    right: 150px;
     z-index: 2;
     cursor: pointer;
     width: 20px;
     height: 20px;
-    border-radius: 50%;
     background-color: #ededed;
     color: #bbbbbb;
     display: flex;

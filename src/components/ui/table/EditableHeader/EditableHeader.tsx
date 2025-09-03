@@ -19,10 +19,10 @@ const EditableHeader: React.FC<EditableHeaderProps> = ({ children, columnId }) =
 
     const deleteCol = async () => {
         const response = await deleteColumn(columnId);
-        if (response) {
-            successToast(messages.dailySchedule.deleteSuccess);
-        } else {
+        if (!response) {
             errorToast(messages.dailySchedule.deleteError);
+        //} else {
+        //    successToast(messages.dailySchedule.deleteSuccess);
         }
     };
 
