@@ -96,3 +96,8 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+/* Hide double scrollbars in DailySchedule Table. In Chrome/Safari/Edge (WebKit-based browsers) */
+[class*="scrollableContent"]::-webkit-scrollbar {
+  display: none;
+}
