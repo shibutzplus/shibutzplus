@@ -7,16 +7,13 @@ import CommonTopNav from "@/components/navigation/CommonTopNav/CommonTopNav";
 import AnnualTopActions from "@/components/actions/AnnualTopActions/AnnualTopActions";
 
 export default function AnnualScheduleLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <AnnualTableProvider>
-      <PrivatePageLayout
-        CustomTopNav={
-          // hamburger + page title + class selector + logo
-          <CommonTopNav kind="admin" actions={<AnnualTopActions />} />
-        }
-      >
-        {children}
-      </PrivatePageLayout>
-    </AnnualTableProvider>
-  );
+    return (
+        <AnnualTableProvider>
+            <PrivatePageLayout
+                CustomTopNav={<CommonTopNav type="admin" actions={<AnnualTopActions />} />}
+            >
+                {children}
+            </PrivatePageLayout>
+        </AnnualTableProvider>
+    );
 }

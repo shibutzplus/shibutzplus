@@ -63,8 +63,3 @@
 .item:hover {
   color: var(--text);
 }
-
-/* ensure it sits above page content */
-:global(body) {
-  padding-bottom: calc(64px + env(safe-area-inset-bottom));
-}

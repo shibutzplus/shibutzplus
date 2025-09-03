@@ -10,7 +10,7 @@ function TeacherTopNav() {
     const { teacher } = usePublicPortal();
     return (
         <CommonTopNav
-            kind="teacher"
+            type="portal"
             greetingName={teacher?.name ?? ""}
             actions={<PortalTopActions />}
         />
@@ -20,9 +20,7 @@ function TeacherTopNav() {
 export default function Layout({ children }: { children: React.ReactNode }) {
     return (
         <PublicPortalProvider>
-            <PrivatePageLayout CustomTopNav={<TeacherTopNav />}>
-                {children}
-            </PrivatePageLayout>
+            <PrivatePageLayout CustomTopNav={<TeacherTopNav />}>{children}</PrivatePageLayout>
         </PublicPortalProvider>
     );
 }

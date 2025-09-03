@@ -7,19 +7,19 @@ import { getPageTitleFromUrl } from "@/utils/format";
 import Logo from "@/components/core/Logo/Logo";
 import HamburgerNav, { HamburgerButton } from "@/components/navigation/HamburgerNav/HamburgerNav";
 
-export type TopKind = "list" | "admin" | "teacher";
+export type NavType = "list" | "admin" | "portal";
 
 type Props = {
-  kind: TopKind;
-  greetingName?: string | null;           // teacher only
-  actions?: React.ReactNode;              // optional actions area (desktop)
-  dropdowns?: React.ReactNode;            // optional filters strip under header
-  usePageTitle?: boolean;                 // default: true for admin/list
-  sticky?: boolean;                       // default: true
+  type: NavType;
+  greetingName?: string | null;
+  actions?: React.ReactNode;
+  dropdowns?: React.ReactNode;
+  usePageTitle?: boolean;
+  sticky?: boolean;
 };
 
 const CommonTopNav: React.FC<Props> = ({
-  kind,
+  type,
   greetingName = null,
   actions,
   dropdowns,
@@ -29,14 +29,14 @@ const CommonTopNav: React.FC<Props> = ({
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // default behavior per kind
-  const resolvedUsePageTitle = usePageTitle ?? (kind === "admin" || kind === "list");
+  // default behavior per type
+  const resolvedUsePageTitle = usePageTitle ?? (type === "admin" || type === "list");
 
   const title = useMemo(() => {
-    if (kind === "teacher" && greetingName) return `שלום ${greetingName}`;
+    if (type === "portal" && greetingName) return `שלום ${greetingName}`;
     if (resolvedUsePageTitle) return getPageTitleFromUrl(pathname) || "";
     return "";
-  }, [kind, greetingName, resolvedUsePageTitle, pathname]);
+  }, [type, greetingName, resolvedUsePageTitle, pathname]);
 
   const showHamburger = true;
 
@@ -55,16 +55,13 @@ const CommonTopNav: React.FC<Props> = ({
         </div>
       </header>
 
-      {/* Hamburger menu (same component you already use) */}
       {showHamburger && (
         <HamburgerNav
           isOpen={isMenuOpen}
           onClose={() => setIsMenuOpen(false)}
-          variant={kind === "teacher" ? "teacher" : "admin"}
+          variant={type === "portal" ? "portal" : "admin"}
         />
       )}
-
-      {/* dropdown/filters strip */}
       {dropdowns ? <section className={styles.filters}>{dropdowns}</section> : null}
     </>
   );

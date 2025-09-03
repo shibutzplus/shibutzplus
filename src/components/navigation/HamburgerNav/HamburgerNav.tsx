@@ -13,7 +13,7 @@ import Icons from "@/style/icons";
 type HamburgerNavProps = {
     isOpen: boolean;
     onClose: () => void;
-    variant?: "admin" | "teacher"; // NEW: controls which items to show
+    variant?: "admin" | "portal";
 };
 
 interface ILink {
@@ -100,7 +100,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                     <Icons.close size={24} />
                 </button>
 
-                {showAdminLinks && (      /* <-- hide links for teacher */
+                {showAdminLinks && (
                     <section className={styles.menuSection}>
                         <ul>
                             {links.map((link, index) => (

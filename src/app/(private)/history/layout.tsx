@@ -10,7 +10,7 @@ export default function HistoryLayout({ children }: { children: React.ReactNode 
   return (
     <HistoryTableProvider>
       <PrivatePageLayout
-        CustomTopNav={<CommonTopNav kind="admin" actions={<HistoryTopActions />} />}
+        CustomTopNav={<CommonTopNav type="admin" actions={<HistoryTopActions />} />}
       >
         {children}
       </PrivatePageLayout>
