@@ -21,7 +21,6 @@
 }
 
 .scheduleTable td {
-    font-size: 14px;
     line-height: 40px;
     padding: 1px 8px;
     overflow-wrap: anywhere;
@@ -29,58 +28,43 @@
 
 .scheduleTable th:nth-child(1),
 .scheduleTable td:nth-child(1) {
-    width: 50px;
-    min-width: 50px;
-    max-width: 50px;
+    width: 30px;
+    min-width: 30px;
+    max-width: 30px;
     text-align: center;
 }
 
 .scheduleTable th:nth-child(2),
 .scheduleTable td:nth-child(2) {
-    width: 150px;
-    min-width: 100px;
-    max-width: 150px;
-}
-
-.scheduleTable th:nth-child(4),
-.scheduleTable td:nth-child(4) {
-    width: 300px;
-    min-width: 140px;
-    max-width: 300px;
+    width: 90px;
+    min-width: 70px;
+    max-width: 100px;
 }
 
 /* Desktop */
 @media (min-width: 768px) {
     .scheduleTable thead th {
-        font-size: 15px;
         line-height: 40px;
         padding: 6px 10px;
     }
 
     .scheduleTable td {
-        font-size: 13.5px;
         line-height: 36px;
         padding: 2px 4px;
     }
 
     .scheduleTable th:nth-child(1),
     .scheduleTable td:nth-child(1) {
-        width: 30px;
-        min-width: 30px;
-        max-width: 40px;
+        width: 50px;
+        min-width: 50px;
+        max-width: 50px;
     }
 
     .scheduleTable th:nth-child(2),
     .scheduleTable td:nth-child(2) {
-        width: 80px;
-        min-width: 70px;
-        max-width: 80px;
+        width: 150px;
+        min-width: 150px;
+        max-width: 150px;
     }
 
-    .scheduleTable th:nth-child(4),
-    .scheduleTable td:nth-child(4) {
-        width: 80px;
-        min-width: 70px;
-        max-width: 100px;
-    }
 }

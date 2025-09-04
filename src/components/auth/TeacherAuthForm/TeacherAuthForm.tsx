@@ -49,7 +49,7 @@ const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({ schoolId, teachers, i
                         placeholder={
                             isLoadingTeachers
                                 ? "טוען רשימת מורים..."
-                                : "בחרו את השם שלכם כדי שנוכל להמשיך"
+                                : "בחרו את שמכם כדי שנוכל להמשיך"
                         }
                         isSearchable={true}
                         isDisabled={isLoadingTeachers}

@@ -59,7 +59,6 @@ export const initDailyCellData = (
     row: DailyScheduleType,
     selectedDate: string,
     instructions?: string,
-    links?: string,
 ) => {
     const dailyCellData: DailyScheduleRequest = {
         date: getStringReturnDate(selectedDate),
@@ -74,8 +73,8 @@ export const initDailyCellData = (
         issueTeacherType: row.issueTeacherType,
         position: row.position,
         instructions,
-        links,
-    };
+    }
 
-    return dailyCellData;
-};
+    return dailyCellData
+}
+

@@ -1,0 +1,28 @@
+.wrapper {
+    overflow: hidden;
+}
+
+.editor {
+    padding: 8px 10px;
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-y: auto;
+    direction: rtl;
+}
+
+.editor p.is-editor-empty::before {
+    content: attr(data-placeholder);
+    color: #aaa;
+    pointer-events: none;
+    float: right;
+    height: 0;
+}
+
+.editor a {
+    color: blue;
+    text-decoration: underline;
+}
+
+.editor:focus {
+    outline: none;
+}

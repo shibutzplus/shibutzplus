@@ -17,10 +17,9 @@ const PortalTopActions: React.FC = () => {
         pageMode,
     } = usePublicPortal();
 
-    // // Temporary alert for school-wide view
-    // const goSchoolView = () => {
-    //     alert("תצוגת מערכת בית ספרית תתווסף בהמשך");
-    // };
+    const goSchoolView = () => {
+        alert("תצוגת מערכת בית ספרית תתווסף בקרוב");
+    };
 
     return (
         <section className={styles.actionsContainer}>
@@ -58,10 +57,12 @@ const PortalTopActions: React.FC = () => {
                     שינויים במערכת שלי
                 </button>
 
-                {/* <button type="button" onClick={goSchoolView} className={styles.topBtn}>
+                <span className={styles.separator}></span>
+
+                <button type="button" onClick={goSchoolView} className={styles.topBtn}>
                     <Icons.calendar size={16} style={{ marginInlineEnd: "4px" }} />
                     מערכת בית ספרית
-                </button> */}
+                </button>
             </div>
         </section>
     );

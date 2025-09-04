@@ -56,7 +56,7 @@ export const sortTeachersForSchedule = (
     // Build grouped options (always three groups, even if empty)
     const groups: GroupOption[] = [
         {
-            label: "מורים ממלאי מקום", // Substitute
+            label: "מורים למילוי מקום", // Substitute
             options: sortedAvailableSubstitutes.map((teacher) => ({
                 value: teacher.id,
                 label: teacher.name,

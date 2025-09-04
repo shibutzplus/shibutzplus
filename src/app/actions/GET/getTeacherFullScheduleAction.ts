@@ -1,11 +1,11 @@
-"use server";
+"use server"
 
-import { DailyScheduleType, GetDailyScheduleResponse } from "@/models/types/dailySchedule";
-import { checkAuthAndParams } from "@/utils/authUtils";
-import messages from "@/resources/messages";
-import { and, eq } from "drizzle-orm";
-import { db, schema, executeQuery } from "../../../db";
-import { getDayNumberByDate } from "@/utils/time";
+import { DailyScheduleType, GetDailyScheduleResponse } from "@/models/types/dailySchedule"
+import { checkAuthAndParams } from "@/utils/authUtils"
+import messages from "@/resources/messages"
+import { and, eq } from "drizzle-orm"
+import { db, schema, executeQuery } from "../../../db"
+import { getDayNumberByDate } from "@/utils/time"
 
 const getTeacherFullScheduleAction = async (
     schoolId: string,
@@ -13,13 +13,13 @@ const getTeacherFullScheduleAction = async (
     date: string,
 ): Promise<GetDailyScheduleResponse> => {
     try {
-        const authError = await checkAuthAndParams({ teacherId, date });
+        const authError = await checkAuthAndParams({ teacherId, date })
         if (authError) {
-            return authError as GetDailyScheduleResponse;
+            return authError as GetDailyScheduleResponse
         }
 
         //TODO: should it have +1 ?
-        const day = getDayNumberByDate(new Date(date))+1
+        const day = getDayNumberByDate(new Date(date)) + 1
         const result = await executeQuery(async () => {
             // Get daily schedule entries for this teacher on this date
             const dailySchedules = await db.query.dailySchedule.findMany({
@@ -34,7 +34,7 @@ const getTeacherFullScheduleAction = async (
                     subTeacher: true,
                     school: true,
                 },
-            });
+            })
 
             // Get annual schedule entries for this teacher and day
             const annualSchedules = await db.query.annualSchedule.findMany({
@@ -49,13 +49,13 @@ const getTeacherFullScheduleAction = async (
                     teacher: true,
                     subject: true,
                 },
-            });
+            })
 
             // Create a map of daily schedules by hour for quick lookup
-            const dailyByHour = new Map<number, any>();
+            const dailyByHour = new Map<number, any>()
             dailySchedules.forEach((schedule) => {
-                dailyByHour.set(schedule.hour, schedule);
-            });
+                dailyByHour.set(schedule.hour, schedule)
+            })
 
             const dailyResults: DailyScheduleType[] = dailySchedules.map((schedule) => ({
                 id: schedule.id,
@@ -73,10 +73,9 @@ const getTeacherFullScheduleAction = async (
                 subTeacher: schedule.subTeacher || undefined,
                 position: schedule.position || 0,
                 instructions: schedule.instructions || undefined,
-                links: schedule.links || undefined,
                 createdAt: schedule.createdAt,
                 updatedAt: schedule.updatedAt,
-            }));
+            }))
 
             const annualResults: DailyScheduleType[] = annualSchedules
                 .filter((schedule) => !dailyByHour.has(schedule.hour))
@@ -96,30 +95,29 @@ const getTeacherFullScheduleAction = async (
                     subTeacher: schedule.teacher || undefined,
                     position: 0,
                     instructions: undefined,
-                    links: undefined,
                     createdAt: schedule.createdAt,
                     updatedAt: schedule.updatedAt,
-                }));
+                }))
 
             const combinedResults = [...dailyResults, ...annualResults].sort(
                 (a, b) => a.hour - b.hour,
-            );
+            )
 
-            return combinedResults;
-        });
+            return combinedResults
+        })
 
         return {
             success: true,
             message: messages.dailySchedule.success,
             data: result,
-        };
+        }
     } catch (error) {
-        console.error("Error fetching teacher full schedule:", error);
+        console.error("Error fetching teacher full schedule:", error)
         return {
             success: false,
             message: messages.common.serverError,
-        };
+        }
     }
-};
+}
 
-export default getTeacherFullScheduleAction;
+export default getTeacherFullScheduleAction
