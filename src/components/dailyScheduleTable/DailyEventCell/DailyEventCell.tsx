@@ -1,8 +1,3 @@
-//
-// Roy: There are some bugs here, need to review
-// לא קל לשחזר אבל לפעמים מקבלים שגיאה
-// בנוסף זה מבצע עדכון גם כשאני לא משנה כלום
-//
 import React, { useState } from "react";
 import styles from "./DailyEventCell.module.css";
 import InputTextArea from "../../ui/InputTextArea/InputTextArea";

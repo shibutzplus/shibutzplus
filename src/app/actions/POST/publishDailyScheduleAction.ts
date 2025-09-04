@@ -22,7 +22,6 @@ export async function publishDailyScheduleAction(
         const publishDates = Array.isArray(school.publishDates) ? school.publishDates : [];
         if (publishDates.includes(date)) {
             return { success: true, message: messages.publish.alreadyPublished };
-            // Roy: למה אי אפשר לפרסם כמה פעמים שרוצים ?
         }
         
         // queue (FIFO) maintain maximum 6 elements
