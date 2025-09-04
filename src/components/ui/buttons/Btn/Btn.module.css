@@ -32,8 +32,8 @@
     font-size: 14px;
 }
 
-/* Tablet 768px - 1279px -- 800px*/
-@media screen and (min-width: 768px) {
+/* Desktop */
+@media (min-width: 768px) {
     .btn {
         padding: 12px 20px;
     }

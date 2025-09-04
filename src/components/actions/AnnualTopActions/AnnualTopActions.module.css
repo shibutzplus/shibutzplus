@@ -32,8 +32,8 @@
     display: none;
 }
 
-/* Tablet 768px - 1279px -- 800px*/
-@media screen and (min-width: 768px) {
+/* Desktop */
+@media (min-width: 768px) {
     .actionsContainer {
         margin-right: 0;
         gap: 3em;

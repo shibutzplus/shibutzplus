@@ -4,12 +4,14 @@ import React from "react";
 import styles from "./MobileNav.module.css";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import ActionBtn from "@/components/ui/buttons/ActionBtn/ActionBtn";
+import Icons from "@/style/icons";
 import { DailyTableColors } from "@/style/tableColors";
 import usePublish from "@/hooks/usePublish";
+import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
 
 const MobileNav: React.FC = () => {
     const { isLoading, addNewColumn } = useDailyTableContext();
-    const { publishDailySchedule, isLoading: publishLoading } = usePublish();
+    const { publishDailySchedule, isLoading: publishLoading, onCopyLink } = usePublish();
 
     return (
         <nav className={styles.mobileNav}>
@@ -47,12 +49,18 @@ const MobileNav: React.FC = () => {
             />
 
             <ActionBtn
-                label="פרסום"
+                Icon={<Icons.publish size={16} />}
                 isDisabled={publishLoading}
                 func={publishDailySchedule}
                 style={{
                     color: DailyTableColors.publish.color,
                 }}
+            />
+
+            <IconBtn
+                Icon={<Icons.share size={16} />}
+                onClick={onCopyLink}
+                disabled={publishLoading}
             />
         </nav>
     );

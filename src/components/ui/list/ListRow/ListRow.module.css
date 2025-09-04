@@ -4,11 +4,11 @@
     align-items: flex-start;
 }
 
-.nameCell{
+.nameCell {
     position: relative;
 }
 
-.copyLink{
+.copyLink {
     direction: ltr;
     position: absolute;
     left: 0;
@@ -33,13 +33,13 @@
     gap: 15px;
 }
 
-/* Tablet 768px - 1279px -- 800px*/
-@media screen and (min-width: 768px) {
+/* Desktop */
+@media (min-width: 768px) {
     .actions {
         gap: 35px;
     }
 
-    .copyLink{
+    .copyLink {
         direction: ltr;
         position: absolute;
         left: 0;
@@ -50,7 +50,7 @@
         color: var(--description-text);
         cursor: pointer;
     }
-    
+
     .copyLink span {
         display: block;
         width: 200px;
@@ -59,8 +59,8 @@
         text-overflow: ellipsis;
         white-space: nowrap;
     }
-    
-    .copyLink:hover{
+
+    .copyLink:hover {
         color: var(--description-hover-text);
     }
 }

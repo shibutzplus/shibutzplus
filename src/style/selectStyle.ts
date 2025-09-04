@@ -40,8 +40,8 @@ export const customStyles = (
             backgroundColor: state.isSelected
                 ? "#4a90e2"
                 : state.isFocused
-                  ? "rgba(74, 144, 226, 0.1)"
-                  : "white",
+                    ? "rgba(74, 144, 226, 0.1)"
+                    : "white",
             color: state.isSelected ? "white" : "#333",
             padding: "10px 12px",
             fontSize: "16px",

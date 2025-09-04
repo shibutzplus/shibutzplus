@@ -81,7 +81,6 @@ const DailyTopActions: React.FC = () => {
                     Icon={<Icons.share size={16} />}
                     onClick={onCopyLink}
                     disabled={publishLoading}
-                    hasBorder
                 />
             </div>
         </section>

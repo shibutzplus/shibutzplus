@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useId, useState, useEffect } from "react";
-import Select from "react-select";
+import Select, { StylesConfig } from "react-select";
 import styles from "./InputGroupSelect.module.css";
 import { customStyles } from "@/style/selectStyle";
 import { GroupOption, SelectOption } from "@/models/types";
@@ -48,15 +48,14 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     backgroundColor = "white",
     isClearable = false,
     onCreate,
-    createBtnText
+    createBtnText,
 }) => {
     const [selectedOption, setSelectedOption] = useState<{ value: string; label: string } | null>(
-        null,
+        null
     );
     const [isMounted, setIsMounted] = useState(false);
     const selectInstanceId = useId();
 
-    // Flatten all options to find selected
     useEffect(() => {
         if (value) {
             const allOptions = options.flatMap((group) => group.options);
@@ -72,9 +71,8 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     }, []);
 
     const handleOnCreate = async (inputValue: string) => {
-        // Check if the option already exists
         const exists = options.some(
-            (option) => option.label.toLowerCase() === inputValue.toLowerCase(),
+            (option) => option.label.toLowerCase() === inputValue.toLowerCase()
         );
 
         if (!exists && isAllowAddNew && onCreate) {
@@ -92,8 +90,29 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
         onChange(option ? option.value : "");
     };
 
-    // Add a ref to the Select input
     const selectRef = React.useRef<any>(null);
+
+    const baseStyles = customStyles(error || "", hasBorder, true, backgroundColor);
+
+    const stylesOverride: StylesConfig<SelectOption, false, any> = {
+        // keep existing base styles
+        ...(baseStyles as StylesConfig<SelectOption, false, any>),
+        // override control to the chosen variant
+        control: (prov: any, state: any) => {
+            const b =
+                typeof baseStyles.control === "function" ? baseStyles.control(prov, state) : prov;
+            return {
+                ...b,
+                border: "none",
+                boxShadow: state.isFocused
+                    ? "0 0 0 1px #dbe1e7ff"
+                    : "0 1px 2px rgba(0,0,0,0.08)",
+                backgroundColor: "#ffffff",
+                borderRadius: 4,
+                minHeight: 32,
+            };
+        },
+    };
 
     return (
         <div className={styles.selectContainer}>
@@ -129,21 +148,23 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
                 onKeyDown={(e: React.KeyboardEvent) => {
                     if (
                         isAllowAddNew &&
-                        e.key === 'Enter' &&
-                        typeof e.target === 'object' &&
-                        'value' in e.target
+                        e.key === "Enter" &&
+                        typeof e.target === "object" &&
+                        "value" in e.target
                     ) {
                         const inputValue = (e.target as HTMLInputElement).value;
-                        if(inputValue.trim() === "") return;
+                        if (inputValue.trim() === "") return;
                         const allOptions = options.flatMap((group) => group.options);
-                        const exists = allOptions.some(opt => opt.label.toLowerCase() === inputValue.toLowerCase());
+                        const exists = allOptions.some(
+                            (opt) => opt.label.toLowerCase() === inputValue.toLowerCase()
+                        );
                         if (!exists && inputValue.trim().length > 0) {
                             e.preventDefault();
                             handleOnCreate(inputValue);
                         }
                     }
                 }}
-                styles={customStyles(error || "", hasBorder, true, backgroundColor)}
+                styles={stylesOverride}
                 classNamePrefix="react-select"
             />
             {error && <p className={styles.errorText}>{error}</p>}

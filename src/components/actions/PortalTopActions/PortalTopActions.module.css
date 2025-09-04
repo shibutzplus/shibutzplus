@@ -37,7 +37,7 @@
 }
 
 /* Desktop */
-@media screen and (min-width: 768px) {
+@media (min-width: 768px) {
     .actionsContainer {
         margin-right: 0;
         gap: 3em;

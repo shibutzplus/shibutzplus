@@ -21,12 +21,12 @@ const DailyTable: React.FC = () => {
             id: id,
             header: () => (
                 <span className={styles.templateHeaderText}>
-                    לחצו על הכפתורים כדי להוסיף את המערכות
+                    לחצו על כפתורי השיבוץ כדי להוסיף את המערכת היומית
                 </span>
             ),
             cell: () => (
                 <div className={styles.templateCell}>
-                    <Icons.empty className={styles.templateIcon} size={18} />
+                    {/* <Icons.empty className={styles.templateIcon} size={18} /> */}
                     <div className={styles.templateText}>אין נתונים להצגה</div>
                 </div>
             ),

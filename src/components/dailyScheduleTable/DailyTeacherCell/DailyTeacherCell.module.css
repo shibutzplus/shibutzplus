@@ -18,7 +18,9 @@
 
 .classAndSubject {
     max-width: 200px;
+    padding-inline: 10px;
     text-overflow: clip;
+    box-sizing: border-box;
 }
 
 .teacherSelect {
@@ -31,3 +33,4 @@
     height: 100%;
     background-color: var(--empty-cell-color);
 }
+

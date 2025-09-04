@@ -1,82 +1,81 @@
 /* Mobile */
 .actionsContainer {
-  margin-right: 10px;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 0;
+    margin-right: 10px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0;
 }
 
 .selectContainer {
-  width: auto;
-  min-width: 140px;
+    width: auto;
+    min-width: 140px;
 }
 
 .topButtonsContainer {
-  display: none;
+    display: none;
 }
 
 .leftSide {
-  display: none;
+    display: none;
 }
 
 .iconBtn,
 .iconBtnPrimary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  border: 1px solid var(--input-border);
-  background: #fff;
-  cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1px solid var(--input-border);
+    background: #fff;
+    cursor: pointer;
 }
 
 .iconBtnPrimary {
-  border-left: 3px solid var(--brand-purple, #6f2dbd);
-  box-shadow: 0 0 0 2px rgba(111,45,189,0.08);
+    border-left: 3px solid var(--brand-purple, #6f2dbd);
+    box-shadow: 0 0 0 2px rgba(111, 45, 189, 0.08);
 }
 
 /* Desktop */
-@media screen and (min-width: 768px) {
-  .actionsContainer {
-    margin-right: 0;
-    gap: 3em;
-    display: flex;
-    align-items: center;
-    width: 100%;
-  }
+@media (min-width: 768px) {
+    .actionsContainer {
+        margin-right: 0;
+        gap: 3em;
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
 
-  .pageTitle {
-    display: block;
-  }
+    .pageTitle {
+        display: block;
+    }
 
-  .selectContainer {
-    min-width: fit-content;
-    width: 200px;
-  }
+    .selectContainer {
+        min-width: fit-content;
+        width: 200px;
+    }
 
-  .topButtonsContainer {
-    display: flex;
-    gap: 1em;
-    align-items: center;
-    flex-wrap: nowrap;
-    height: 40px;
-    min-width: fit-content;
-    justify-content: flex-start;
-  }
+    .topButtonsContainer {
+        display: flex;
+        gap: 1em;
+        align-items: center;
+        flex-wrap: nowrap;
+        height: 40px;
+        min-width: fit-content;
+        justify-content: flex-start;
+    }
 
-  .leftSide {
-    display: flex;
-    align-items: center;
-    gap: 30px;
-    margin-inline-start: auto;
-  }
+    .leftSide {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        margin-inline-start: auto;
+    }
 
-  /* Optional: tighter spacing on very wide screens */
-  .topButtonsContainer {
-    gap: 2em;
-  }
+    /* Optional: tighter spacing on very wide screens */
+    .topButtonsContainer {
+        gap: 2em;
+    }
 }
-

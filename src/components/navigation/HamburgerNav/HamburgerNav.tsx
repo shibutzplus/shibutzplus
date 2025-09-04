@@ -6,9 +6,10 @@ import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import routePath from "../../../routes";
 import { useAccessibility } from "../../../hooks/useAccessibility";
-import { clearStorage } from "@/utils/localStorage";
 import { STATUS_AUTH } from "@/models/constant/session";
 import Icons from "@/style/icons";
+import { clearStorage, getStorageSchoolId, getStorageSchool } from "@/utils/localStorage";
+import { clearTeacherCookie } from "@/utils/cookies";
 
 type HamburgerNavProps = {
     isOpen: boolean;
@@ -20,6 +21,7 @@ interface ILink {
     name: string;
     p: string;
     Icon: React.ReactNode;
+    withDivider?: boolean;
 }
 
 const links: ILink[] = [
@@ -27,11 +29,7 @@ const links: ILink[] = [
         name: routePath.dailySchedule.title,
         p: routePath.dailySchedule.p,
         Icon: <Icons.dailyCalendar size={24} />,
-    },
-    {
-        name: routePath.annualSchedule.title,
-        p: routePath.annualSchedule.p,
-        Icon: <Icons.calendar size={24} />,
+        withDivider: true,
     },
     {
         name: routePath.substitute.title,
@@ -41,7 +39,7 @@ const links: ILink[] = [
     {
         name: routePath.teachers.title,
         p: routePath.teachers.p,
-        Icon: <Icons.teacher2 size={24} />,
+        Icon: <Icons.teacher size={24} />,
     },
     {
         name: routePath.subjects.title,
@@ -52,12 +50,18 @@ const links: ILink[] = [
         name: routePath.classes.title,
         p: routePath.classes.p,
         Icon: <Icons.chair size={24} />,
+        withDivider: true,
     },
-       {
-           name: routePath.history.title,
-           p: routePath.history.p,
-           Icon: <Icons.history size={24} />,
-       },
+    {
+        name: routePath.history.title,
+        p: routePath.history.p,
+        Icon: <Icons.history size={24} />,
+    },
+    {
+        name: routePath.annualSchedule.title,
+        p: routePath.annualSchedule.p,
+        Icon: <Icons.calendar size={24} />,
+    },
 ];
 
 const LinkComponent = ({ link, onClose }: { link: ILink; onClose: () => void }) => {
@@ -68,6 +72,9 @@ const LinkComponent = ({ link, onClose }: { link: ILink; onClose: () => void }) 
         </Link>
     );
 };
+
+const joinPath = (base: string, id?: string | null) =>
+    id ? `${base.replace(/\/$/, "")}/${id}` : base;
 
 const HamburgerNav: React.FC<HamburgerNavProps> = ({
     isOpen,
@@ -104,7 +111,10 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                     <section className={styles.menuSection}>
                         <ul>
                             {links.map((link, index) => (
-                                <li key={index}>
+                                <li
+                                    key={index}
+                                    className={link.withDivider ? styles.withDivider : undefined}
+                                >
                                     <LinkComponent link={link} onClose={onClose} />
                                 </li>
                             ))}
@@ -117,9 +127,16 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                         <Link
                             href="#"
                             onClick={() => {
+                                const schoolId = getStorageSchoolId() || getStorageSchool()?.id;
+                                const teacherUrl = joinPath(routePath.teacherSignIn.p, schoolId);
+                                const callbackUrl =
+                                    variant === "portal" ? teacherUrl : routePath.signIn.p;
+
                                 onClose();
+                                clearTeacherCookie();
                                 clearStorage();
-                                signOut({ callbackUrl: routePath.signIn.p });
+
+                                signOut({ callbackUrl });
                             }}
                             className={styles.navLink}
                             aria-label="Logout"

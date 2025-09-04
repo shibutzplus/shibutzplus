@@ -23,9 +23,9 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Tablet 768px - 1279px -- 800px*/
-@media screen and (min-width: 768px) {
-    .topButton{
+/* Desktop */
+@media (min-width: 768px) {
+    .topButton {
         width: 150px;
         padding-left: 5px;
         font-size: 14px;

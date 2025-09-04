@@ -75,3 +75,8 @@
   padding: 0 7px;
   box-sizing: border-box;
 }
+
+.noBorder {
+  border: none !important;
+  box-shadow: none !important;
+}
