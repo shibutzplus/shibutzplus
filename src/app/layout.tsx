@@ -17,7 +17,14 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
     title: "שיבוץ+",
     description: "ניהול מערכת שעות יומית ושיבוץ מורים",
+    manifest: "/manifest.json",
+    themeColor: "#ffffff",
+    icons: {
+        icon: "/favicon.png",
+        apple: "/logo192.png",
+    },
 };
+
 
 export default function RootLayout({
     children,
