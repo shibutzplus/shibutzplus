@@ -6,9 +6,10 @@ import HistoryTable from "@/components/historyTable/HistoryTable/HistoryTable";
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
 import { DailyScheduleType } from "@/models/types/dailySchedule";
 import { useMainContext } from "@/context/MainContext";
-import { errorToast, successToast } from "@/lib/toast";
+import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { useHistoryTable } from "@/context/HistoryTableContext";
+import ReadOnlyDailyTable from "@/components/readOnlyDailyTable/ReadOnlyDailyTable/ReadOnlyDailyTable";
 
 const History = () => {
     const { school } = useMainContext();
@@ -49,7 +50,7 @@ const History = () => {
     return (
         <div className={styles.content}>
             <div className={styles.tableWrapper}>
-                <HistoryTable scheduleData={currentDateData} />
+                <ReadOnlyDailyTable scheduleData={currentDateData} />
             </div>
         </div>
     );
