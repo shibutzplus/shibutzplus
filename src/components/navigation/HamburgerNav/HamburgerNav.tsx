@@ -29,11 +29,6 @@ const links: ILink[] = [
         Icon: <Icons.dailyCalendar size={24} />,
     },
     {
-        name: routePath.annualSchedule.title,
-        p: routePath.annualSchedule.p,
-        Icon: <Icons.calendar size={24} />,
-    },
-    {
         name: routePath.substitute.title,
         p: routePath.substitute.p,
         Icon: <Icons.substituteTeacher size={24} />,
@@ -41,7 +36,7 @@ const links: ILink[] = [
     {
         name: routePath.teachers.title,
         p: routePath.teachers.p,
-        Icon: <Icons.teacher2 size={24} />,
+        Icon: <Icons.teacher size={24} />,
     },
     {
         name: routePath.subjects.title,
@@ -53,11 +48,16 @@ const links: ILink[] = [
         p: routePath.classes.p,
         Icon: <Icons.chair size={24} />,
     },
-       {
-           name: routePath.history.title,
-           p: routePath.history.p,
-           Icon: <Icons.history size={24} />,
-       },
+    {
+        name: routePath.history.title,
+        p: routePath.history.p,
+        Icon: <Icons.history size={24} />,
+    },
+    {
+        name: routePath.annualSchedule.title,
+        p: routePath.annualSchedule.p,
+        Icon: <Icons.calendar size={24} />,
+    },
 ];
 
 const LinkComponent = ({ link, onClose }: { link: ILink; onClose: () => void }) => {

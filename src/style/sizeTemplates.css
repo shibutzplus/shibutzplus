@@ -1,11 +1,11 @@
 /* Mobile 320px - 767px -- 812px */
 
-/* Tablet 768px - 1279px -- 800px*/
-@media screen and (min-width: 768px) {
+/* Desktop */
+@media (min-width: 768px) {
 }
 
-/* Laptop HD 1280px - 1439px -- 720px*/
-@media screen and (min-width: 1280px) {
+/* Desktop */
+@media (min-width: 1280px) {
 }
 
 /*OPTIONAL*/

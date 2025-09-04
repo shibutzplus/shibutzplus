@@ -77,7 +77,7 @@ export const customStylesMulti = (
         dropdownIndicator: (provided: any) => ({
             ...provided,
             color: "#999",
-            padding: "8px",
+            padding: "0 4px",
             "&:hover": {
                 color: "#333",
             },
@@ -120,7 +120,6 @@ export const customStylesMulti = (
             color: "#125e89",
             cursor: "pointer",
             borderRadius: "50%",
-            marginLeft: 5,
             width: 20,
             height: 20,
             "&:hover": {

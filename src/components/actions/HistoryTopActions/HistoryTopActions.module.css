@@ -7,18 +7,18 @@
     gap: 0;
 }
 
-.selectContainer{
+.selectContainer {
     width: 100%;
 }
 
 /* Desktop */
-@media screen and (min-width: 768px) {
+@media (min-width: 768px) {
     .actionsContainer {
         margin-right: 0;
         gap: 3em;
     }
 
-    .selectContainer{
+    .selectContainer {
         min-width: fit-content;
         width: 25%;
     }

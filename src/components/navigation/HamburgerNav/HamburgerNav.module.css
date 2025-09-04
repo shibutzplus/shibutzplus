@@ -1,5 +1,4 @@
 /* Mobile 320px - 767px -- 812px */
-/* Overlay */
 .overlay {
     position: fixed;
     top: 0;
@@ -18,11 +17,10 @@
     visibility: visible;
 }
 
-/* Navigation Menu */
 .nav {
     position: fixed;
     top: 0;
-    right: -280px; /* Start off-screen for RTL layout */
+    right: -280px;
     width: 220px;
     height: 100%;
     background-color: #fff;
@@ -33,14 +31,13 @@
     transition: transform 0.3s ease;
     display: flex;
     flex-direction: column;
-    direction: rtl; /* For RTL layout */
+    direction: rtl;
 }
 
 .nav.open {
     transform: translateX(-280px);
 }
 
-/* Close Button */
 .closeButton {
     position: absolute;
     top: 1rem;
@@ -51,7 +48,6 @@
     font-size: 1.5rem;
     cursor: pointer;
     padding: 0.5rem;
-    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -67,7 +63,6 @@
     outline-offset: 2px;
 }
 
-/* Menu Section */
 .menuSection {
     margin-top: 3rem;
     flex: 1;
@@ -83,7 +78,6 @@
     margin-bottom: 0.75rem;
 }
 
-/* Navigation Links */
 .navLink {
     display: flex;
     align-items: center;
@@ -113,7 +107,6 @@
     outline-offset: -2px;
 }
 
-/* User Section */
 .userSection {
     margin-top: auto;
     padding-top: 1rem;
@@ -139,7 +132,6 @@
     border-top: 1px solid #eee;
 }
 
-/* Hamburger Button */
 .hamburgerButton {
     background: none;
     border: none;
@@ -163,16 +155,12 @@
     outline-offset: 2px;
 }
 
-/* Responsive adjustments */
+/* Desktop */
 @media (min-width: 768px) {
-    /* Keep hamburger button visible on all screen sizes */
     .hamburgerButton {
         display: flex;
     }
-}
 
-/* Tablet 768px - 1279px -- 800px*/
-@media screen and (min-width: 768px) {
     .nav {
         right: -280px;
         width: 280px;

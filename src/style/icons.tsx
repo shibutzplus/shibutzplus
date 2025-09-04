@@ -25,6 +25,9 @@ import { FaSave, FaLink, FaShareAlt } from "react-icons/fa";
 import { PiChairLight } from "react-icons/pi";
 import { GoHistory } from "react-icons/go";
 import { LiaChalkboardTeacherSolid } from "react-icons/lia";
+import { GiTeacher } from "react-icons/gi";
+import { IoMdPerson } from "react-icons/io";
+
 
 const Icons = {
     addTeacher: MdPersonAdd,
@@ -55,6 +58,8 @@ const Icons = {
     substituteTeacher: MdSwapHoriz,
     teacher1: MdPerson,
     teacher2: LiaChalkboardTeacherSolid,
+    teacher3: GiTeacher,
+    teacher: IoMdPerson,
 };
 
 export default Icons;

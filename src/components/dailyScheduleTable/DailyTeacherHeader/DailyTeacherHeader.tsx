@@ -51,7 +51,6 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId, type 
                 isSearchable
                 isDisabled={isLoading}
                 backgroundColor="transparent"
-                hasBorder
             />
         </EditableHeader>
     );

@@ -26,6 +26,7 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId }) => {
                 onBlur={(e) => handleChange(e.target.value)}
                 defaultValue={selectedEventData || ""}
                 backgroundColor="transparent"
+                hasBorder={false}
             />
         </EditableHeader>
     );

@@ -6,6 +6,7 @@ interface InputTextProps extends InputHTMLAttributes<HTMLInputElement> {
     error?: string;
     backgroundColor?: "white" | "transparent";
     readonly?: boolean;
+    hasBorder?: boolean;
 }
 
 const InputText: React.FC<InputTextProps> = ({
@@ -15,6 +16,7 @@ const InputText: React.FC<InputTextProps> = ({
     id,
     backgroundColor = "white",
     readonly = false,
+    hasBorder = true,
     ...props
 }) => {
     return (
@@ -26,7 +28,12 @@ const InputText: React.FC<InputTextProps> = ({
             )}
             <input
                 id={id}
-                className={`${readonly ? styles.readonly : styles.input} ${error ? styles.inputError : ""} ${className || ""}`}
+                className={`
+                    ${readonly ? styles.readonly : styles.input} 
+                    ${error ? styles.inputError : ""} 
+                    ${!hasBorder ? styles.noBorder : ""} 
+                    ${className || ""}
+                `}
                 style={{ backgroundColor }}
                 readOnly={readonly}
                 {...props}

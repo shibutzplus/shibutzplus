@@ -17,7 +17,7 @@
 
 .scrollableContent {
     flex: 1;
-    overflow-x: auto; /* keep horizontal scroll stable */
+    overflow-x: auto;
     overflow-y: hidden;
 }
 
@@ -25,14 +25,14 @@
     border-collapse: collapse;
     border-spacing: 0;
     table-layout: auto;
-    width: max-content; /* prevent shrinking */
+    width: max-content;
 }
 
 .scheduleTable th,
 .scheduleTable td,
 .hourHeader,
 .hourCell {
-    box-sizing: border-box; /* consistent sizing */
+    box-sizing: border-box;
     border: 1px solid #ccc;
     text-align: center;
 }
@@ -61,7 +61,17 @@
     vertical-align: top;
 }
 
-.hourHeader,
+.hourHeader {
+    font-weight: bold;
+    width: var(--table-template-cell-width);
+    min-height: unset;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-inline-end: none;
+    height: var(--table-header-height);
+}
+
 .hourCell {
     font-weight: bold;
     width: var(--table-template-cell-width);
@@ -70,16 +80,8 @@
     align-items: center;
     justify-content: center;
     border-inline-end: none;
-}
-
-.hourHeader {
-    height: var(--table-header-height);
-}
-
-.hourCell {
     height: var(--table-cell-height);
     background: var(--row-cell-color);
-    border-top: none;
 }
 
 .scheduleCell {
@@ -92,7 +94,6 @@
     flex-direction: column;
     justify-content: flex-start;
     height: 100%;
-    padding: 2px;
     gap: 6px;
     background: var(--background-inner);
 }
@@ -145,7 +146,7 @@
         font-size: 0.95rem;
     }
     .cellContent {
-        padding: 6px;
+        padding: 4px;
         gap: 6px;
     }
 }
