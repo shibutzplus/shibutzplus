@@ -9,6 +9,9 @@ import styles from "./page.module.css";
 import router from "@/routes";
 import { getToday } from "@/utils/time";
 
+// TODO: adjust the import path if your component lives elsewhere
+import ReadOnlyDailyTable from "@/components/readOnlyDailyTable/ReadOnlyDailyTable/ReadOnlyDailyTable";
+
 const DailyScheduleReadOnlyPage = () => {
     const { school } = useMainContext();
     const [selectedDate, setSelectedDate] = useState<string>("");
@@ -26,14 +29,15 @@ const DailyScheduleReadOnlyPage = () => {
         if (selectedDate && school?.id) {
             fetchScheduleData();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedDate, school?.id]);
 
     const fetchScheduleData = async () => {
         if (!school?.id || !selectedDate) return;
-        
+
         setLoading(true);
         setError("");
-        
+
         try {
             const response = await getDailyScheduleAction(school.id, selectedDate);
             if (response.success && response.data) {
@@ -42,7 +46,7 @@ const DailyScheduleReadOnlyPage = () => {
                 setError(response.message || "שגיאה בטעינת נתוני המערכת");
                 setScheduleData([]);
             }
-        } catch (err) {
+        } catch {
             setError("שגיאה בטעינת נתוני המערכת");
             setScheduleData([]);
         } finally {
@@ -57,9 +61,7 @@ const DailyScheduleReadOnlyPage = () => {
     if (!school) {
         return (
             <div className={styles.container}>
-                <div className={styles.error}>
-                    אין מידע על בית הספר. אנא התחבר מחדש.
-                </div>
+                <div className={styles.error}>אין מידע על בית הספר אנא התחבר מחדש</div>
             </div>
         );
     }
@@ -79,7 +81,7 @@ const DailyScheduleReadOnlyPage = () => {
             <div className={styles.controls}>
                 <div className={styles.dateSelector}>
                     <label htmlFor="date" className={styles.dateLabel}>
-                        בחר תאריך:
+                        בחר תאריך
                     </label>
                     <input
                         type="date"
@@ -91,19 +93,15 @@ const DailyScheduleReadOnlyPage = () => {
                 </div>
             </div>
 
-            {error && (
-                <div className={styles.error}>
-                    {error}
-                </div>
-            )}
-{/* 
+            {error && <div className={styles.error}>{error}</div>}
+
             {loading ? (
-                <div className={styles.loading}>
-                    טוען נתונים...
-                </div>
-            ) : (
+                <div className={styles.loading}>טוען נתונים</div>
+            ) : scheduleData && scheduleData.length > 0 ? (
                 <ReadOnlyDailyTable scheduleData={scheduleData} />
-            )} */}
+            ) : (
+                <div className={styles.empty}>אין נתונים להצגה לתאריך שנבחר</div>
+            )}
         </div>
     );
 };

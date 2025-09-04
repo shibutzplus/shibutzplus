@@ -12,4 +12,4 @@ export type PortalScheduleType = {
     instructions?: string
 }
 
-export type PortalPageType = "read" | "write"
+export type PortalPageType = "read" | "write" | "school"

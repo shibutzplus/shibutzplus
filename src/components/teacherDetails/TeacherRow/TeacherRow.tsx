@@ -4,6 +4,7 @@ import { TeacherType } from "@/models/types/teachers";
 import { teacherSchema } from "@/models/validation/teacher";
 import ListRow from "@/components/ui/list/ListRow/ListRow";
 import { generateSchoolUrl } from "@/utils";
+import { TeacherRoleValues } from "@/models/types/teachers";
 
 type TeacherRowProps = {
     teacher: TeacherType;
@@ -19,7 +20,7 @@ const TeacherRow: React.FC<TeacherRowProps> = ({ teacher, handleDeleteTeacher })
             onUpdate={(id, data) =>
                 updateTeacher(id, {
                     name: (data.name ?? teacher.name) as string,
-                    role: "regular",
+                    role: TeacherRoleValues.REGULAR,
                     schoolId: teacher.schoolId,
                 })
             }

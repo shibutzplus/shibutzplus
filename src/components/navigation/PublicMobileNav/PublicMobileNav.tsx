@@ -19,7 +19,7 @@ const PublicMobileNav: React.FC = () => {
   };
 
   const goSchoolView = () => {
-    alert("תצוגת מערכת בית ספרית תתווסף בהמשך");
+    if (pageMode === "school") switchReadAndWrite("school");
   };
 
   return (

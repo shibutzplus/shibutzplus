@@ -3,6 +3,7 @@ import { ClassType } from "@/models/types/classes";
 import { WeeklySchedule } from "@/models/types/annualSchedule";
 import { sortByHebrewName } from "./sort";
 import { GroupOption } from "@/models/types";
+import { TeacherRoleValues } from "@/models/types/teachers";
 
 /**
  * Build teacher list for Daily schedule with priority order:
@@ -39,11 +40,11 @@ export const sortTeachersForSchedule = (
 
     // Separate teachers by role and availability
     const availableSubstitutes = allTeachers.filter(
-        (teacher) => teacher.role === "substitute" && availableTeacherIds.has(teacher.id),
+        (teacher) => teacher.role === TeacherRoleValues.SUBSTITUTE && availableTeacherIds.has(teacher.id),
     );
 
     const availableRegular = allTeachers.filter(
-        (teacher) => teacher.role === "regular" && availableTeacherIds.has(teacher.id),
+        (teacher) => teacher.role === TeacherRoleValues.REGULAR && availableTeacherIds.has(teacher.id),
     );
 
     const unavailableTeachers = allTeachers.filter((teacher) => busyTeacherIds.has(teacher.id));

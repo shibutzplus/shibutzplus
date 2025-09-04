@@ -3,6 +3,7 @@ import { useMainContext } from "@/context/MainContext";
 import messages from "@/resources/messages";
 import AddListRow from "@/components/ui/list/AddListRow/AddListRow";
 import { teacherSchema } from "@/models/validation/teacher";
+import { TeacherRoleValues } from "@/models/types/teachers";
 
 const AddTeacherRow: React.FC = () => {
     const { school, addNewTeacher } = useMainContext();
@@ -14,7 +15,7 @@ const AddTeacherRow: React.FC = () => {
                 addNewTeacher({
                     ...values,
                     schoolId: school?.id || "",
-                    role: "regular",
+                    role: TeacherRoleValues.REGULAR,
                 })
             }
             field={{
