@@ -6,9 +6,10 @@ import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import routePath from "../../../routes";
 import { useAccessibility } from "../../../hooks/useAccessibility";
-import { clearStorage } from "@/utils/localStorage";
 import { STATUS_AUTH } from "@/models/constant/session";
 import Icons from "@/style/icons";
+import { clearStorage, getStorageSchoolId, getStorageSchool } from "@/utils/localStorage";
+import { clearTeacherCookie } from "@/utils/cookies";
 
 type HamburgerNavProps = {
     isOpen: boolean;
@@ -72,6 +73,9 @@ const LinkComponent = ({ link, onClose }: { link: ILink; onClose: () => void }) 
     );
 };
 
+const joinPath = (base: string, id?: string | null) =>
+    id ? `${base.replace(/\/$/, "")}/${id}` : base;
+
 const HamburgerNav: React.FC<HamburgerNavProps> = ({
     isOpen,
     onClose,
@@ -123,9 +127,16 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                         <Link
                             href="#"
                             onClick={() => {
+                                const schoolId = getStorageSchoolId() || getStorageSchool()?.id;
+                                const teacherUrl = joinPath(routePath.teacherSignIn.p, schoolId);
+                                const callbackUrl =
+                                    variant === "portal" ? teacherUrl : routePath.signIn.p;
+
                                 onClose();
+                                clearTeacherCookie();
                                 clearStorage();
-                                signOut({ callbackUrl: routePath.signIn.p });
+
+                                signOut({ callbackUrl });
                             }}
                             className={styles.navLink}
                             aria-label="Logout"

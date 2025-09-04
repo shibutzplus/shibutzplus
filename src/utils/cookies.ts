@@ -4,7 +4,7 @@ import { COOKIES_EXPIRE_TIME } from "@/utils/time";
 
 export const getTeacherCookie = () => {
     try {
-        return Cookies.get(COOKIES_KEYS.REMEMBERED_TEACHER) as string | undefined;
+        return Cookies.get(COOKIES_KEYS.SELECTED_TEACHER) as string | undefined;
     } catch (error) {
         console.error("Error getting teacher cookie:", error);
         return undefined;
@@ -13,10 +13,18 @@ export const getTeacherCookie = () => {
 
 export const setTeacherCookie = (teacherId: string) => {
     try {
-        Cookies.set(COOKIES_KEYS.REMEMBERED_TEACHER, teacherId, {
+        Cookies.set(COOKIES_KEYS.SELECTED_TEACHER, teacherId, {
             expires: COOKIES_EXPIRE_TIME,
         });
     } catch (error) {
         console.error("Error setting teacher cookie:", error);
+    }
+};
+
+export const clearTeacherCookie = () => {
+    try {
+        Cookies.remove(COOKIES_KEYS.SELECTED_TEACHER);
+    } catch (error) {
+        console.error("Error clearing teacher cookie:", error);
     }
 };

@@ -23,10 +23,10 @@ export default function TeacherSignInPage() {
     const [isLoadingTeachers, setIsLoadingTeachers] = useState(true);
 
     useEffect(() => {
-        // Check for remembered teacher first
-        const rememberedTeacherId = getTeacherCookie();
-        if (rememberedTeacherId) {
-            route.push(`${router.teacherPortal.p}/${schoolId}/${rememberedTeacherId}`);
+        // Check for selected teacher first
+        const selectedTeacherId = getTeacherCookie();
+        if (selectedTeacherId) {
+            route.push(`${router.teacherPortal.p}/${schoolId}/${selectedTeacherId}`);
             return;
         }
 
