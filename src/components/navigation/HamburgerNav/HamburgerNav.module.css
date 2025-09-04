@@ -74,10 +74,6 @@
     margin: 0;
 }
 
-.menuSection li {
-    margin-bottom: 0.75rem;
-}
-
 .navLink {
     display: flex;
     align-items: center;
@@ -153,6 +149,12 @@
 .hamburgerButton:focus {
     outline: 2px solid #4a90e2;
     outline-offset: 2px;
+}
+
+.menuSection li.withDivider {
+  border-bottom: 1px solid #eee;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
 }
 
 /* Desktop */

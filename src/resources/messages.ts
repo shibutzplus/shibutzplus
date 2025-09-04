@@ -82,8 +82,8 @@ const messages = {
         noScheduleFound: "לא נמצאו שעות לימוד למורה ביום זה",
     },
     publish: {
-        success: "המערכת היומית פורסמה",
-        error: "בעיה בפרסום המערכת",
+        success: "המערכת היומית פורסמה וזמינה למורים",
+        error: "בעיה בפרסום המערכת, אנא נסו שוב",
         alreadyPublished: "יום זה כבר פורסם",
     },
     //TODO

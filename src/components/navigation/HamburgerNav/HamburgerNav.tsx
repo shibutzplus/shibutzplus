@@ -20,6 +20,7 @@ interface ILink {
     name: string;
     p: string;
     Icon: React.ReactNode;
+    withDivider?: boolean;
 }
 
 const links: ILink[] = [
@@ -27,6 +28,7 @@ const links: ILink[] = [
         name: routePath.dailySchedule.title,
         p: routePath.dailySchedule.p,
         Icon: <Icons.dailyCalendar size={24} />,
+        withDivider: true,
     },
     {
         name: routePath.substitute.title,
@@ -47,6 +49,7 @@ const links: ILink[] = [
         name: routePath.classes.title,
         p: routePath.classes.p,
         Icon: <Icons.chair size={24} />,
+        withDivider: true,
     },
     {
         name: routePath.history.title,
@@ -104,7 +107,10 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                     <section className={styles.menuSection}>
                         <ul>
                             {links.map((link, index) => (
-                                <li key={index}>
+                                <li
+                                    key={index}
+                                    className={link.withDivider ? styles.withDivider : undefined}
+                                >
                                     <LinkComponent link={link} onClose={onClose} />
                                 </li>
                             ))}
