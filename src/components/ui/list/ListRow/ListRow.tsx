@@ -6,7 +6,6 @@ import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
 import Icons from "@/style/icons";
 import styles from "./ListRow.module.css";
 import { useShareTextOrLink } from "@/hooks/useShareTextOrLink";
-import messages from "@/resources/messages";
 
 // Generic type for row data
 export type ListRowProps<T> = {
@@ -79,13 +78,10 @@ function ListRow<T extends Record<string, any>>({
         }
     };
 
-    const shareURL = async () => {
+    const shareURL = () => {
         if (!link) return;
-        const text = `קישור לשיבוץ+ עם המערכת האישית\n${link}`;
-        const waUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
-        window.open(waUrl, "_blank", "noopener,noreferrer");
+        share("שיבוץ+", "קישור למערכת האישית", link);
     };
-
 
     return (
         <tr className={styles.listRow}>

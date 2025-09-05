@@ -13,7 +13,7 @@ import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
 const DailyTopActions: React.FC = () => {
     const { isLoading, addNewColumn, daysSelectOptions, selectedDate, handleDayChange } =
         useDailyTableContext();
-    const { publishDailySchedule, isLoading: publishLoading, onCopyLink } = usePublish();
+    const { publishDailySchedule, isLoading: publishLoading, onShareLink } = usePublish();
 
     return (
         <section className={styles.actionsContainer}>
@@ -79,7 +79,7 @@ const DailyTopActions: React.FC = () => {
                 />
                 <IconBtn
                     Icon={<Icons.share size={16} />}
-                    onClick={onCopyLink}
+                    onClick={onShareLink}
                     disabled={publishLoading}
                 />
             </div>

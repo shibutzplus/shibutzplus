@@ -11,7 +11,7 @@ import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
 
 const MobileNav: React.FC = () => {
     const { isLoading, addNewColumn } = useDailyTableContext();
-    const { publishDailySchedule, isLoading: publishLoading, onCopyLink } = usePublish();
+    const { publishDailySchedule, isLoading: publishLoading, onShareLink } = usePublish();
 
     return (
         <nav className={styles.mobileNav}>
@@ -59,7 +59,7 @@ const MobileNav: React.FC = () => {
 
             <IconBtn
                 Icon={<Icons.share size={16} />}
-                onClick={onCopyLink}
+                onClick={onShareLink}
                 disabled={publishLoading}
             />
         </nav>
