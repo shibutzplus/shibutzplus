@@ -8,7 +8,6 @@ import { usePublicPortal } from "@/context/PublicPortalContext";
 import { TeacherRoleValues } from "@/models/types/teachers";
 
 const PortalTopActions: React.FC = () => {
-
     const {
         teacher,
         selectedDate,
@@ -34,12 +33,12 @@ const PortalTopActions: React.FC = () => {
             </div>
 
             {teacher?.role === TeacherRoleValues.REGULAR && (
-
                 <div className={styles.topButtonsContainer}>
                     <button
                         type="button"
                         onClick={() => switchReadAndWrite("write")}
-                        className={`${styles.topBtn} ${pageMode === "write" ? styles.active : ""}`}>
+                        className={`${styles.topBtn} ${pageMode === "write" ? styles.active : ""}`}
+                    >
                         <Icons.book size={16} style={{ marginInlineEnd: "4px" }} />
                         הזנת חומרי לימוד
                     </button>
@@ -49,17 +48,15 @@ const PortalTopActions: React.FC = () => {
                     <button
                         type="button"
                         onClick={() => switchReadAndWrite("read")}
-                        className={`${styles.topBtn} ${pageMode === "read" ? styles.active : ""}`}>
+                        className={`${styles.topBtn} ${pageMode === "read" ? styles.active : ""}`}
+                    >
                         <Icons.dailyCalendar size={16} style={{ marginInlineEnd: "4px" }} />
                         שינויים במערכת שלי
                     </button>
 
                     <span className={styles.separator}>|</span>
 
-                    <button
-                        type="button"
-                        onClick={() => switchReadAndWrite("school")}
-                        className={styles.topBtn}>
+                    <button type="button" onClick={() => {}} className={styles.topBtn}>
                         <Icons.calendar size={16} style={{ marginInlineEnd: "4px" }} />
                         מערכת בית ספרית
                     </button>

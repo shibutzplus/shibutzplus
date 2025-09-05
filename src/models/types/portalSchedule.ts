@@ -1,15 +1,15 @@
-import { ClassType } from "./classes"
-import { SchoolType } from "./school"
-import { SubjectType } from "./subjects"
-import { TeacherType } from "./teachers"
+import { ClassType } from "./classes";
+import { SchoolType } from "./school";
+import { SubjectType } from "./subjects";
+import { TeacherType } from "./teachers";
 
 export type PortalScheduleType = {
-    hour: number // 1-7
-    school?: SchoolType
-    class?: ClassType
-    subject?: SubjectType
-    subTeacher?: TeacherType
-    instructions?: string
-}
+    hour: number; // 1-7
+    school?: SchoolType;
+    class?: ClassType;
+    subject?: SubjectType;
+    subTeacher?: TeacherType;
+    instructions?: string;
+};
 
-export type PortalPageType = "read" | "write" | "school"
+export type PortalPageType = "read" | "write";

@@ -67,7 +67,9 @@ export async function deleteSubjectAction(
             // Delete the subject
             await db
                 .delete(schema.subjects)
-                .where(and(eq(schema.subjects.schoolId, schoolId), eq(schema.subjects.id, subjectId)));
+                .where(
+                    and(eq(schema.subjects.schoolId, schoolId), eq(schema.subjects.id, subjectId)),
+                );
 
             // Get the remaining subjects for this school
             const remainingSubjects = await db

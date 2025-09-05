@@ -23,7 +23,7 @@ export async function publishDailyScheduleAction(
         if (publishDates.includes(date)) {
             return { success: true, message: messages.publish.alreadyPublished };
         }
-        
+
         // queue (FIFO) maintain maximum 6 elements
         let updatedDates = [...publishDates, date];
         if (updatedDates.length > 6) {

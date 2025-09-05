@@ -6,7 +6,7 @@ import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { eq } from "drizzle-orm";
-import { getAllTeachersAction } from "../GET/getAllTeachersAction";
+import { getTeachersAction } from "../GET/getTeachersAction";
 
 export async function updateTeacherAction(
     teacherId: string,
@@ -40,7 +40,7 @@ export async function updateTeacherAction(
             return { success: false, message: messages.teachers.updateError };
         }
 
-        const allTeachersResp = await getAllTeachersAction(teacherData.schoolId);
+        const allTeachersResp = await getTeachersAction(teacherData.schoolId);
         return {
             success: true,
             message: messages.teachers.updateSuccess,

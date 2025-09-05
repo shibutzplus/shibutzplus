@@ -7,10 +7,10 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getTeacherCookie, setTeacherCookie } from "@/lib/cookies";
 import router from "@/routes";
-import { getPublicTeachersAction } from "@/app/actions/GET/getPublicTeachersAction";
 import { SelectOption } from "@/models/types";
 import messages from "@/resources/messages";
 import { errorToast } from "@/lib/toast";
+import { getTeachersAction } from "@/app/actions/GET/getTeachersAction";
 
 export default function TeacherSignInPage() {
     const params = useParams();
@@ -23,7 +23,6 @@ export default function TeacherSignInPage() {
     const [isLoadingTeachers, setIsLoadingTeachers] = useState(true);
 
     useEffect(() => {
-
         // Check if teacher is already selected via cookie
         const selectedTeacherId = getTeacherCookie();
         if (selectedTeacherId) {
@@ -42,7 +41,7 @@ export default function TeacherSignInPage() {
         const fetchTeachers = async () => {
             try {
                 setIsLoadingTeachers(true);
-                const response = await getPublicTeachersAction(schoolId);
+                const response = await getTeachersAction(schoolId, { isPrivate: false });
                 if (response.success && response.data) {
                     const teacherOptions: SelectOption[] = response.data.map((teacher) => ({
                         value: teacher.id,

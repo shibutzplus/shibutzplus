@@ -2,18 +2,14 @@
 
 import React from "react";
 import { usePublicPortal } from "@/context/PublicPortalContext";
-import CommonTopNav from "@/components/navigation/CommonTopNav/CommonTopNav";
+import TopNav from "@/components/navigation/TopNav/TopNav";
 import PortalTopActions from "@/components/actions/PortalTopActions/PortalTopActions";
 import PublicPageLayout from "@/components/layout/PublicPageLayout/PublicPageLayout";
 
 function TeacherTopNav() {
     const { teacher } = usePublicPortal();
     return (
-        <CommonTopNav
-            type="portal"
-            greetingName={teacher?.name ?? ""}
-            actions={<PortalTopActions />}
-        />
+        <TopNav type="portal" greetingName={teacher?.name ?? ""} actions={<PortalTopActions />} />
     );
 }
 

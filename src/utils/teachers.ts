@@ -19,24 +19,20 @@ export const sortTeachersForSchedule = (
     day: string,
     hour: number,
 ): GroupOption[] => {
-    
     //      day: {
     //          hour: {
     //              teachersId: []
     //          }
     //      }
 
+    // teachers - 1,2,3,4,5
 
-// teachers - 1,2,3,4,5
-
-// day d
-// hour 1
-// teachersId: [1,2,3,5]
-// sub -> 1,2 (find 1,2 in teachers + role === "substitute")
-// rag -> 3,5 (find 3,5 in teachers + role === "regular")
-// not -> 4 (theachers that are not in the array)
-
-
+    // day d
+    // hour 1
+    // teachersId: [1,2,3,5]
+    // sub -> 1,2 (find 1,2 in teachers + role === "substitute")
+    // rag -> 3,5 (find 3,5 in teachers + role === "regular")
+    // not -> 4 (theachers that are not in the array)
 
     // we have the list of all the teachers
 
@@ -83,11 +79,13 @@ export const sortTeachersForSchedule = (
 
     // Separate teachers by role and availability
     const availableSubstitutes = allTeachers.filter(
-        (teacher) => teacher.role === TeacherRoleValues.SUBSTITUTE && availableTeacherIds.has(teacher.id),
+        (teacher) =>
+            teacher.role === TeacherRoleValues.SUBSTITUTE && availableTeacherIds.has(teacher.id),
     );
 
     const availableRegular = allTeachers.filter(
-        (teacher) => teacher.role === TeacherRoleValues.REGULAR && availableTeacherIds.has(teacher.id),
+        (teacher) =>
+            teacher.role === TeacherRoleValues.REGULAR && availableTeacherIds.has(teacher.id),
     );
 
     const unavailableTeachers = allTeachers.filter((teacher) => busyTeacherIds.has(teacher.id));

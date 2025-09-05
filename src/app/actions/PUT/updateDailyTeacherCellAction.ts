@@ -1,14 +1,14 @@
-"use server"
+"use server";
 
-import { DailyScheduleType, DailyScheduleRequest } from "@/models/types/dailySchedule"
-import { publicAuthAndParams } from "@/utils/authUtils"
-import messages from "@/resources/messages"
-import { eq } from "drizzle-orm"
-import { db, schema, executeQuery } from "../../../db"
-import { ActionResponse } from "@/models/types/actions"
-import { NewDailyScheduleSchema } from "@/db/schema"
-import { getDateReturnString, getStringReturnDate } from "@/utils/time"
-import { TeacherType } from "@/models/types/teachers"
+import { DailyScheduleType, DailyScheduleRequest } from "@/models/types/dailySchedule";
+import { publicAuthAndParams } from "@/utils/authUtils";
+import messages from "@/resources/messages";
+import { eq } from "drizzle-orm";
+import { db, schema, executeQuery } from "../../../db";
+import { ActionResponse } from "@/models/types/actions";
+import { NewDailyScheduleSchema } from "@/db/schema";
+import { getDateReturnString, getStringReturnDate } from "@/utils/time";
+import { TeacherType } from "@/models/types/teachers";
 
 export async function updateDailyTeacherCellAction(
     id: string,
@@ -26,7 +26,7 @@ export async function updateDailyTeacherCellAction(
             event,
             position,
             instructions,
-        } = scheduleData
+        } = scheduleData;
 
         const authError = await publicAuthAndParams({
             id,
@@ -37,9 +37,9 @@ export async function updateDailyTeacherCellAction(
             schoolId: school.id,
             classId: classData?.id,
             subjectId: subject?.id,
-        })
+        });
         if (authError || !classData || !subject) {
-            return authError as ActionResponse
+            return authError as ActionResponse;
         }
 
         // TODO: validation that only teacher with regular role can update their data
@@ -64,17 +64,17 @@ export async function updateDailyTeacherCellAction(
                     instructions: instructions || null,
                 } as Partial<NewDailyScheduleSchema>)
                 .where(eq(schema.dailySchedule.id, id))
-                .returning()
-        })
+                .returning();
+        });
 
         if (!updatedEntry[0]) {
             return {
                 success: false,
                 message: messages.dailySchedule.updateError,
-            }
+            };
         }
 
-        const updateSchedule = updatedEntry[0]
+        const updateSchedule = updatedEntry[0];
         return {
             success: true,
             message: messages.annualSchedule.updateSuccess,
@@ -97,12 +97,12 @@ export async function updateDailyTeacherCellAction(
                 position,
                 instructions,
             } as DailyScheduleType,
-        }
+        };
     } catch (error) {
-        console.error("Error updating daily schedule:", error)
+        console.error("Error updating daily schedule:", error);
         return {
             success: false,
             message: messages.common.serverError,
-        }
+        };
     }
 }

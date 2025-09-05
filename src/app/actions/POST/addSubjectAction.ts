@@ -21,10 +21,12 @@ export async function addSubjectAction(
         }
 
         const newSubject = await executeQuery(async () => {
-            return (await db
-                .insert(schema.subjects)
-                .values(subjectData as NewSubjectSchema)
-                .returning())[0];
+            return (
+                await db
+                    .insert(schema.subjects)
+                    .values(subjectData as NewSubjectSchema)
+                    .returning()
+            )[0];
         });
 
         if (!newSubject) {

@@ -3,14 +3,14 @@
 import React from "react";
 import PrivatePageLayout from "@/components/layout/PrivatePageLayout/PrivatePageLayout";
 import { HistoryTableProvider } from "@/context/HistoryTableContext";
-import CommonTopNav from "@/components/navigation/CommonTopNav/CommonTopNav";
+import TopNav from "@/components/navigation/TopNav/TopNav";
 import HistoryTopActions from "@/components/actions/HistoryTopActions/HistoryTopActions";
 
 export default function HistoryLayout({ children }: { children: React.ReactNode }) {
   return (
     <HistoryTableProvider>
       <PrivatePageLayout
-        CustomTopNav={<CommonTopNav type="admin" actions={<HistoryTopActions />} />}
+        CustomTopNav={<TopNav type="admin" actions={<HistoryTopActions />} />}
       >
         {children}
       </PrivatePageLayout>

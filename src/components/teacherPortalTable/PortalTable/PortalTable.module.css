@@ -23,7 +23,7 @@
 .scheduleTable td {
     line-height: 40px;
     padding: 1px 8px;
-    overflow-wrap: anywhere;
+    /* overflow-wrap: anywhere; */
 }
 
 .scheduleTable th:nth-child(1),

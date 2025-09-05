@@ -3,7 +3,13 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from "react";
 import { TeacherRow } from "@/models/types/table";
 import { ColumnDef } from "@tanstack/react-table";
-import { ColumnType, DailySchedule, DailyScheduleCell, DailyScheduleType, TeacherHourlyScheduleItem, } from "@/models/types/dailySchedule";
+import {
+    ColumnType,
+    DailySchedule,
+    DailyScheduleCell,
+    DailyScheduleType,
+    TeacherHourlyScheduleItem,
+} from "@/models/types/dailySchedule";
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
 import { getTeacherScheduleByDayAction } from "@/app/actions/GET/getTeacherScheduleByDayAction";
 import { getDailyEmptyCellsAction } from "@/app/actions/GET/getDailyEmptyCellsAction";
@@ -37,7 +43,7 @@ import { getIsraeliDateOptions, getTomorrowOption } from "@/resources/dayOptions
 import { SelectOption } from "@/models/types";
 import { DailyTableColors } from "@/style/tableColors";
 import { eventPlaceholder } from "@/models/constant/table";
-import { getStorageDailyTable, setStorageDailyTable } from "@/utils/localStorage";
+import { getStorageDailyTable, setStorageDailyTable } from "@/lib/localStorage";
 import { sortColumnsByIssueTeacherType } from "@/utils/sort";
 import { AvailableTeachers } from "@/models/types/annualSchedule";
 
@@ -490,13 +496,16 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         setActionCols(sortedCols);
     };
 
+    // TODO: check why lior did the change
     const deleteColumn = async (columnId: string) => {
         if (!school?.id) return false;
 
         const prevCols = tableColumns;
         const prevSchedule = mainDailyTable;
         const filteredCols = tableColumns.filter((col) => col.id !== columnId);
+
         setActionCols(filteredCols);
+
         const day = selectedDate;
         const nextDay = { ...(mainDailyTable[day] || {}) };
         delete nextDay[columnId];
@@ -510,13 +519,34 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 return true;
             }
             throw new Error(response.message || "delete failed");
-        } catch (error) { // Rollback
+        } catch (error) {
+            // Rollback
             setActionCols(prevCols);
             setMainAndStorageTable(prevSchedule);
             console.error("Error deleting daily column:", error);
             return false;
         }
     };
+
+    // const filteredCols = tableColumns.filter((col) => col.id !== columnId);
+    // if (filteredCols.length === tableColumns.length) return false;
+    // const sortedCols = sortColumnsByIssueTeacherType(filteredCols);
+
+    // // Update UI immediately
+    // setActionCols(sortedCols);
+
+    // const updatedSchedule = { ...mainDailyTable };
+    // delete updatedSchedule[selectedDate]?.[columnId];
+    // setMainAndStorageTable(updatedSchedule);
+    // try {
+    //     const response = await deleteDailyColumnAction(school.id, columnId, selectedDate);
+    //     if (response.success && response.dailySchedules) {
+    //         setDailyDbRows(response.dailySchedules);
+    //         return true;
+    //     }
+    // } catch (error) {
+    //     console.error("Error deleting daily column:", error);
+    // }
 
     const clearColumn = (day: string, columnId: string) => {
         const updatedSchedule = { ...mainDailyTable };

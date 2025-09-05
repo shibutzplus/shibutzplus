@@ -5,14 +5,24 @@ import { useMainContext } from "./MainContext";
 import { createSelectOptions } from "@/utils/format";
 import { ClassType } from "@/models/types/classes";
 import { Pair, SelectOption } from "@/models/types";
-import { AnnualScheduleRequest, AnnualScheduleType, WeeklySchedule, } from "@/models/types/annualSchedule";
+import {
+    AnnualScheduleRequest,
+    AnnualScheduleType,
+    WeeklySchedule,
+} from "@/models/types/annualSchedule";
 import { errorToast, infoToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { addAnnualScheduleAction } from "@/app/actions/POST/addAnnualScheduleAction";
 import { deleteAnnualScheduleAction } from "@/app/actions/DELETE/deleteAnnualScheduleAction";
 import useInitAnnualData from "@/hooks/useInitAnnualData";
 import { SelectMethod } from "@/models/types/actions";
-import { createPairs, createAnnualRequests, setNewScheduleTemplate, getUniqueCellsFromQueue, getSelectedClass, } from "@/services/ annualScheduleService";
+import {
+    createPairs,
+    createAnnualRequests,
+    setNewScheduleTemplate,
+    getUniqueCellsFromQueue,
+    getSelectedClass,
+} from "@/services/ annualScheduleService";
 import { dayToNumber } from "@/utils/time";
 import { TeacherType } from "@/models/types/teachers";
 import { SubjectType } from "@/models/types/subjects";
@@ -183,8 +193,8 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
             return;
         }
 
-        let teachersList = [...teachers || []];
-        let subjectsList = [...subjects || []];
+        let teachersList = [...(teachers || [])];
+        let subjectsList = [...(subjects || [])];
         if (method === "create-option" && newElementObj) {
             teachersList = type === "teachers" ? [newElementObj as TeacherType] : teachers || [];
             subjectsList = type === "subjects" ? [newElementObj as SubjectType] : subjects || [];

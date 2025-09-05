@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import styles from "./CommonTopNav.module.css";
+import styles from "./TopNav.module.css";
 import { usePathname } from "next/navigation";
 import { getPageTitleFromUrl } from "@/utils/format";
 import Logo from "@/components/core/Logo/Logo";
@@ -18,7 +18,7 @@ type Props = {
   sticky?: boolean;
 };
 
-const CommonTopNav: React.FC<Props> = ({
+const TopNav: React.FC<Props> = ({
   type,
   greetingName = null,
   actions,
@@ -67,4 +67,4 @@ const CommonTopNav: React.FC<Props> = ({
   );
 };
 
-export default CommonTopNav;
+export default TopNav;

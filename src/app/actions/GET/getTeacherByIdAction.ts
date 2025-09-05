@@ -1,4 +1,4 @@
-"use server"
+"use server";
 
 import { db, executeQuery } from "@/db";
 import { teachers } from "@/db/schema/teachers";

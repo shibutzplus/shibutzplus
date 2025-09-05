@@ -5,41 +5,41 @@ import { SubjectType } from "./subjects";
 import { ActionResponse } from "./actions";
 
 export type DailyScheduleType = {
-    id: string
-    date: Date
-    day: string // 1-7
-    hour: number // 1-7
-    columnId: string
-    eventTitle?: string
-    event?: string
-    school: SchoolType
-    class?: ClassType
-    subject?: SubjectType
-    issueTeacher?: TeacherType
-    issueTeacherType: ColumnType
-    subTeacher?: TeacherType
-    instructions?: string
-    position: number
-    createdAt?: Date
-    updatedAt?: Date
-}
+    id: string;
+    date: Date;
+    day: string; // 1-7
+    hour: number; // 1-7
+    columnId: string;
+    eventTitle?: string;
+    event?: string;
+    school: SchoolType;
+    class?: ClassType;
+    subject?: SubjectType;
+    issueTeacher?: TeacherType;
+    issueTeacherType: ColumnType;
+    subTeacher?: TeacherType;
+    instructions?: string;
+    position: number;
+    createdAt?: Date;
+    updatedAt?: Date;
+};
 
 export type DailyScheduleRequest = {
-    date: Date
-    day: string // 1-7
-    hour: number
-    columnId: string
-    eventTitle?: string
-    event?: string
-    school: SchoolType
-    class?: ClassType
-    subject?: SubjectType
-    issueTeacher?: TeacherType
-    issueTeacherType: ColumnType
-    subTeacher?: TeacherType
-    position: number
-    instructions?: string
-}
+    date: Date;
+    day: string; // 1-7
+    hour: number;
+    columnId: string;
+    eventTitle?: string;
+    event?: string;
+    school: SchoolType;
+    class?: ClassType;
+    subject?: SubjectType;
+    issueTeacher?: TeacherType;
+    issueTeacherType: ColumnType;
+    subTeacher?: TeacherType;
+    position: number;
+    instructions?: string;
+};
 
 export type GetDailyScheduleResponse = ActionResponse & {
     data?: DailyScheduleType[];
@@ -57,7 +57,7 @@ export type HeaderCol = {
     headerTeacher?: TeacherType;
     headerEvent?: string;
     type: ColumnType;
-}
+};
 
 export type DailyScheduleCell = {
     DBid?: string;

@@ -1,23 +1,23 @@
-import React from "react"
-import InputText from "../../ui/InputText/InputText"
-import { useDailyTableContext } from "@/context/DailyTableContext"
-import EditableHeader from "../../ui/table/EditableHeader/EditableHeader"
+import React from "react";
+import InputText from "../../ui/InputText/InputText";
+import { useDailyTableContext } from "@/context/DailyTableContext";
+import EditableHeader from "../../ui/table/EditableHeader/EditableHeader";
 
 type DailyEventHeaderProps = {
-    columnId: string
-}
+    columnId: string;
+};
 
 const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId }) => {
-    const { populateEventColumn, mainDailyTable, selectedDate } = useDailyTableContext()
+    const { populateEventColumn, mainDailyTable, selectedDate } = useDailyTableContext();
 
     const selectedEventData =
-        mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.headerEvent
+        mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.headerEvent;
 
     const handleChange = (value: string) => {
         if (value.trim()) {
-            populateEventColumn(columnId, value)
+            populateEventColumn(columnId, value);
         }
-    }
+    };
 
     return (
         <EditableHeader columnId={columnId} deleteLabel={selectedEventData || "האירוע"}>
@@ -29,7 +29,7 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId }) => {
                 hasBorder={false}
             />
         </EditableHeader>
-    )
-}
+    );
+};
 
-export default DailyEventHeader
+export default DailyEventHeader;
