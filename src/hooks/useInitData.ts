@@ -19,7 +19,7 @@ import {
     setStorageSchoolId,
     setStorageSubjects,
     setStorageTeachers,
-} from "@/utils/localStorage";
+} from "@/lib/localStorage";
 import { getSchoolAction as getSchoolFromDB } from "@/app/actions/GET/getSchoolAction";
 import { getAllTeachersAction as getTeachersFromDB } from "@/app/actions/GET/getAllTeachersAction";
 import { getSubjectsAction as getSubjectsFromDB } from "@/app/actions/GET/getSubjectsAction";

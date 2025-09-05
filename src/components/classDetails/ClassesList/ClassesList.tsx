@@ -6,7 +6,7 @@ import TableList from "../../ui/list/TableList/TableList";
 import { useMainContext } from "@/context/MainContext";
 import useSubmit from "@/hooks/useSubmit";
 import messages from "@/resources/messages";
-import { getStorageSchoolId } from "@/utils/localStorage";
+import { getStorageSchoolId } from "@/lib/localStorage";
 import useDeletePopup from "@/hooks/useDeletePopup";
 import { PopupAction } from "@/context/PopupContext";
 import AddClassRow from "../AddClassRow/AddClassRow";

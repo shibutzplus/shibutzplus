@@ -1,28 +1,10 @@
 import React from "react";
 import styles from "./ManagementLayout.module.css";
 
-type ManagementLayoutProps = {
-    formTitle: string;
-    listTitle: string;
-    listInfo: string;
-    children: [React.ReactNode, React.ReactNode];
-};
-
-const ManagementLayout: React.FC<ManagementLayoutProps> = ({
-    formTitle,
-    listTitle,
-    listInfo,
-    children,
-}) => {
+const ManagementLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return (
         <main className={styles.container}>
-            <section className={styles.teachersListSection}>
-                {children[0]}
-            </section>
-            <section className={styles.formSection}>
-                <h2 className={styles.formTitle}>{formTitle}</h2>
-                {children[1]}
-            </section>
+            <section className={styles.pageList}>{children}</section>
         </main>
     );
 };

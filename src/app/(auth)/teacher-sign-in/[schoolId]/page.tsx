@@ -5,7 +5,7 @@ import HeroSection from "@/components/layout/HeroSection/HeroSection";
 import TeacherAuthForm from "@/components/auth/TeacherAuthForm/TeacherAuthForm";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getTeacherCookie, setTeacherCookie } from "@/utils/cookies";
+import { getTeacherCookie, setTeacherCookie } from "@/lib/cookies";
 import router from "@/routes";
 import { getPublicTeachersAction } from "@/app/actions/GET/getPublicTeachersAction";
 import { SelectOption } from "@/models/types";

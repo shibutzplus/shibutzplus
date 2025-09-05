@@ -8,8 +8,8 @@ import routePath from "../../../routes";
 import { useAccessibility } from "../../../hooks/useAccessibility";
 import { STATUS_AUTH } from "@/models/constant/session";
 import Icons from "@/style/icons";
-import { clearStorage, getStorageSchoolId, getStorageSchool } from "@/utils/localStorage";
-import { clearTeacherCookie } from "@/utils/cookies";
+import { clearStorage, getStorageSchoolId, getStorageSchool } from "@/lib/localStorage";
+import { clearTeacherCookie } from "@/lib/cookies";
 
 type HamburgerNavProps = {
     isOpen: boolean;

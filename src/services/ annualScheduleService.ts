@@ -61,22 +61,6 @@ export const createPairs = (teacherIds: string[], subjectIds: string[]) => {
     return res;
 };
 
-// TODO: not in use
-export const getUniqueCells = (rows: AnnualScheduleRequest[] | undefined | null) => {
-    if (!Array.isArray(rows)) return [];
-    const uniqueKeys = new Set<string>();
-    const uniqueCells: { day: number; hour: number }[] = [];
-    for (const row of rows) {
-        if (!row || typeof row.day !== "number" || typeof row.hour !== "number") continue;
-        const key = `${row.day}:${row.hour}`;
-        if (!uniqueKeys.has(key)) {
-            uniqueKeys.add(key);
-            uniqueCells.push({ day: row.day, hour: row.hour });
-        }
-    }
-    return uniqueCells;
-};
-
 export const getUniqueCellsFromQueue = (queueRows: AnnualScheduleRequest[]) => {
     const cells = queueRows.map((row) => ({
         day: row.day,

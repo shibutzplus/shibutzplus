@@ -10,6 +10,7 @@ import {
 import { SchoolType } from "@/models/types/school";
 import { TeacherType } from "@/models/types/teachers";
 import { initDailyEventCellData, initDailyTeacherCellData } from "@/utils/Initialize";
+import { AnnualScheduleType, AvailableTeachers } from "@/models/types/annualSchedule";
 
 export const initDailySchedule = (dailySchedule: DailySchedule, date: string, columnId: string) => {
     // Initialize date if it doesn't exist
@@ -326,4 +327,26 @@ export const populateTable = (dataColumns: DailyScheduleType[], selectedDate: st
         columnsToCreate,
         existingCells,
     };
+};
+
+export const mapAnnualTeachers = (data: AnnualScheduleType[]) => {
+    const teacherMapping: AvailableTeachers = {};
+
+    data.forEach((schedule) => {
+        const day = schedule.day.toString();
+        const hour = schedule.hour.toString();
+        const teacherId = schedule.teacher?.id;
+
+        if (!teacherMapping[day]) {
+            teacherMapping[day] = {};
+        }
+        if (!teacherMapping[day][hour]) {
+            teacherMapping[day][hour] = [];
+        }
+        if (teacherId && !teacherMapping[day][hour].includes(teacherId)) {
+            teacherMapping[day][hour].push(teacherId);
+        }
+    });
+
+    return teacherMapping;
 };

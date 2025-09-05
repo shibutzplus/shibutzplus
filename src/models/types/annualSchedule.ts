@@ -41,3 +41,9 @@ export type WeeklySchedule = {
         };
     };
 };
+
+export type AvailableTeachers = {
+    [day: string]: {
+        [hour: string]: string[];
+    };
+};

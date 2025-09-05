@@ -1,14 +1,10 @@
 
-- roy - daily - remove save details alerts
-- roy - daily - fix publish
-- roy - daily - remove the selected issue teachers from the select
+- daily-schadule-readonly --> daily-schadule-portal
 
-- lior - daily - move the share button after the publish button
-- lior - teachers - fix table layout 
-- lior - teachers - fix ui bottom bar
-- lior - teachers - teacher page write the teacher name insted of the title
+
+- roy - daily - remove save details alerts
+- roy - daily - remove the selected issue teachers from the select
 - lior - teachers - validation - zod
-- lior - hamburger - history page - to remove
 - lior - all tables - colors 
 
 - how we want to show that the page is published?
@@ -20,13 +16,10 @@
 
 
 -- daily - share button
--- logo on dark mode
 -- portal - cahce and efficency 
--- portal - query params 
 -- portal - ui
 -- portal - loading / skeleton
 -- portal - on "my schadule" minimze the instraction and only show on click (show only the hour class and subject)
--- daily - position columns need helper table and delete the 'position' from the daily-schadule table
 
 
 -- daily page
@@ -47,7 +40,6 @@ class, subTeacher, subject, study material, instructions
 
 TODO
 - loading skeleton
-v- daily - after publish, show the published link
 - portal - query param of the selected date in the teacher page
 - history page
 - portal - leave empty hours that has no information (gray + small height)
@@ -60,6 +52,7 @@ TO CHECK
 - list of all the published days (new page)
 
 FOR LATER
+- daily - position columns need helper table and delete the 'position' from the daily-schadule table
 - lists - add search
 - improve preformance by converting the teachers classes and subjects array to Dictionary
 - helper/guide box for the user to understand the system
@@ -76,6 +69,15 @@ WONT DO
 - hamburger open by default and responsive to the screen
 - side nav split into sections with title
 
+
+v-- logo on dark mode
+v- daily - after publish, show the published link
+v- roy - daily - fix publish
+v- lior - daily - move the share button after the publish button
+v- lior - teachers - fix table layout 
+v- lior - teachers - fix ui bottom bar
+v- lior - teachers - teacher page write the teacher name insted of the title
+v- lior - hamburger - history page - to remove
 v-- portal - list of the raguler and the sub teachers
 v-- portal - url should be both school and teacher ids
 v-- portal - if I enter to the teacher-portal and I dont have the teacher object I check for the teacher by his Id and school

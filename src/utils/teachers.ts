@@ -19,6 +19,49 @@ export const sortTeachersForSchedule = (
     day: string,
     hour: number,
 ): GroupOption[] => {
+    
+    //      day: {
+    //          hour: {
+    //              teachersId: []
+    //          }
+    //      }
+
+
+// teachers - 1,2,3,4,5
+
+// day d
+// hour 1
+// teachersId: [1,2,3,5]
+// sub -> 1,2 (find 1,2 in teachers + role === "substitute")
+// rag -> 3,5 (find 3,5 in teachers + role === "regular")
+// not -> 4 (theachers that are not in the array)
+
+
+
+    // we have the list of all the teachers
+
+    // מורים מחליפים
+    //// teacher.role === "substitute"
+    //// get anuual for teacher by day
+    //// if empty - do not show
+
+    // מורים פנויים
+    //// regular teacher + teach on that day (annual) + not teaching in this hour (annual)
+
+    //// teacher.role === "regular"
+    //// get anuual for teacher by day
+    //// if empty - לא פנוי
+    //// cehck if teacher teach in the same hour
+    //// if teach - לא פנוי
+
+    // מורים לא פנויים
+    //// regular teacher + not teach on that day (annual) || not teaching in this hour (annual)
+
+    // אפשרויות אחרות
+    //// ללא מורה
+    //// ללא החלפה
+    //// חסר
+
     // Calculate available teachers for this specific day and hour
     const busyTeacherIds = new Set<string>();
 

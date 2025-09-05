@@ -8,12 +8,10 @@ import { PopupProvider } from "@/context/PopupContext";
 export default function Providers({ children }: { children: React.ReactNode }) {
     return (
         <SessionProvider>
-            <MainContextProvider>
-                <PopupProvider>
-                    {children}
-                    <Toaster />
-                </PopupProvider>
-            </MainContextProvider>
+            <PopupProvider>
+                {children}
+                <Toaster />
+            </PopupProvider>
         </SessionProvider>
     );
 }

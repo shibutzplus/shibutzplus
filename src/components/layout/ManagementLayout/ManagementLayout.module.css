@@ -1,65 +1,15 @@
 .container {
-    margin-top: var(--header-height);
-    display: flex;
-    align-items: flex-start;
-    gap: 2em;
+    display: block;
 }
 
-.formSection {
-    width: 50%;
-    max-width: 25vw;
-    padding: 2rem;
-    background-color: var(--background-inner);
-    height: 80vh;
-    border-radius: var(--box-border-radius);
+/* Desktop Screens */
+.pageList {
+    --table-margin: 0 auto;
 }
 
-.formTitle {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 2.5rem;
-    text-align: right;
-}
-
-.teachersListSection {
-    width: 100%;
-    padding: 2rem;
-    background-color: var(--background-inner);
-    border-radius: var(--box-border-radius);
-    height: 80vh;
-}
-
-.title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    text-align: right;
-}
-
-.teachersCount {
-    color: #666;
-    margin-bottom: 2rem;
-    font-size: 0.9rem;
-}
-
-/* Responsive styles */
-@media (max-width: 992px) {
-    .container {
-        flex-direction: column-reverse;
-    }
-
-    .formSection {
-        width: 100%;
-        border-right: none;
-        border-bottom: 1px solid #eee;
-        padding: 1.5rem;
-        max-height: none;
-    }
-}
-
-@media (max-width: 576px) {
-
-    .formSection {
-        padding: 1rem;
+/* Mobile Screens */
+@media (max-width: 767px) {
+    .pageList {
+        --table-margin: 10px;
     }
 }

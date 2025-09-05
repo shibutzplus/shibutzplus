@@ -13,7 +13,7 @@ import { addSubjectAction } from "@/app/actions/POST/addSubjectAction";
 import { updateSubjectAction } from "@/app/actions/PUT/updateSubjectAction";
 import { updateClassAction } from "@/app/actions/PUT/updateClassAction";
 import useInitData from "@/hooks/useInitData";
-import { setStorageClasses, setStorageSubjects, setStorageTeachers } from "@/utils/localStorage";
+import { setStorageClasses, setStorageSubjects, setStorageTeachers } from "@/lib/localStorage";
 import { deleteClassAction } from "@/app/actions/DELETE/deleteClassAction";
 import { deleteTeacherAction } from "@/app/actions/DELETE/deleteTeacherAction";
 import { deleteSubjectAction } from "@/app/actions/DELETE/deleteSubjectAction";

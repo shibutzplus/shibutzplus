@@ -4,7 +4,7 @@ import React from "react";
 import TableList from "../../ui/list/TableList/TableList";
 import { useMainContext } from "@/context/MainContext";
 import messages from "@/resources/messages";
-import { getStorageSchoolId } from "@/utils/localStorage";
+import { getStorageSchoolId } from "@/lib/localStorage";
 import useDeletePopup from "@/hooks/useDeletePopup";
 import { PopupAction } from "@/context/PopupContext";
 import { filterTeachersByRole } from "@/utils/format";

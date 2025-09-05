@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import styles from "./PrivatePageLayout.module.css";
 import CommonTopNav from "@/components/navigation/CommonTopNav/CommonTopNav";
