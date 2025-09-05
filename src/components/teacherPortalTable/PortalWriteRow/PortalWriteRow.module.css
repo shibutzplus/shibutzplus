@@ -29,8 +29,7 @@
   height: auto;
 }
 
-.scheduleCellInput textarea#instructions,
-.scheduleCellInput textarea#links {
+.scheduleCellInput textarea#instructions {
   width: 100%;
   box-sizing: border-box;
   line-height: 1.35;

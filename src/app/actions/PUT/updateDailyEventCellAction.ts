@@ -14,16 +14,7 @@ export async function updateDailyEventCellAction(
     scheduleData: DailyScheduleRequest,
 ): Promise<ActionResponse & { data?: DailyScheduleType }> {
     try {
-        const {
-            date,
-            day,
-            hour,
-            columnId,
-            school,
-            eventTitle,
-            event,
-            position
-        } = scheduleData;
+        const { date, day, hour, columnId, school, eventTitle, event, position } = scheduleData;
 
         const authError = await checkAuthAndParams({
             id,
@@ -34,7 +25,7 @@ export async function updateDailyEventCellAction(
             schoolId: school.id,
             eventTitle: eventTitle,
             event: event,
-            position: position
+            position: position,
         });
         if (authError) {
             return authError as ActionResponse;

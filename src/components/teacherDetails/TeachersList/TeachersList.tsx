@@ -33,10 +33,8 @@ const TeachersList: React.FC = () => {
     };
 
     const handleDeleteTeacher = (teacher: TeacherType) => {
-        handleOpenPopup(
-            PopupAction.deleteTeacher,
-            `האם למחוק את המורה ${teacher.name}`,
-            () => handleDeleteTeacherFromState(teacher.id),
+        handleOpenPopup(PopupAction.deleteTeacher, `האם למחוק את המורה ${teacher.name}`, () =>
+            handleDeleteTeacherFromState(teacher.id),
         );
     };
 

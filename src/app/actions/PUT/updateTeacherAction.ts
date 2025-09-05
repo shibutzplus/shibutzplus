@@ -19,32 +19,27 @@ export async function updateTeacherAction(
             role: teacherData.role,
             schoolId: teacherData.schoolId,
         });
-
-        if (authError) {
-            return authError as ActionResponse;
-        }
+        if (authError) return authError as ActionResponse;
 
         const updatedTeacher = await executeQuery(async () => {
-            return (await db
-                .update(schema.teachers)
-                .set({
-                    name: teacherData.name,
-                    role: teacherData.role,
-                    userId: teacherData.userId,
-                    updatedAt: new Date(),
-                })
-                .where(eq(schema.teachers.id, teacherId))
-                .returning())[0];
+            return (
+                await db
+                    .update(schema.teachers)
+                    .set({
+                        name: teacherData.name,
+                        role: teacherData.role,
+                        userId: teacherData.userId,
+                        updatedAt: new Date(),
+                    })
+                    .where(eq(schema.teachers.id, teacherId))
+                    .returning()
+            )[0];
         });
 
         if (!updatedTeacher) {
-            return {
-                success: false,
-                message: messages.teachers.updateError,
-            };
+            return { success: false, message: messages.teachers.updateError };
         }
 
-        // Fetch all teachers for the updated teacher's school
         const allTeachersResp = await getTeachersAction(teacherData.schoolId);
         return {
             success: true,
@@ -53,9 +48,6 @@ export async function updateTeacherAction(
         };
     } catch (error) {
         console.error("Error updating teacher:", error);
-        return {
-            success: false,
-            message: messages.common.serverError,
-        };
+        return { success: false, message: messages.common.serverError };
     }
 }

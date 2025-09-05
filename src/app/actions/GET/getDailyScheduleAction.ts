@@ -6,19 +6,21 @@ import messages from "@/resources/messages";
 import { and, eq } from "drizzle-orm";
 import { db, schema, executeQuery } from "../../../db";
 
-export async function getDailyScheduleAction(schoolId: string, date: string): Promise<GetDailyScheduleResponse> {
+export async function getDailyScheduleAction(
+    schoolId: string,
+    date: string,
+): Promise<GetDailyScheduleResponse> {
     try {
         const authError = await checkAuthAndParams({ schoolId, date });
         if (authError) {
             return authError as GetDailyScheduleResponse;
         }
 
-
         const dailySchedule = await executeQuery(async () => {
             const schedules = await db.query.dailySchedule.findMany({
                 where: and(
                     eq(schema.dailySchedule.schoolId, schoolId),
-                    eq(schema.dailySchedule.date, date)
+                    eq(schema.dailySchedule.date, date),
                 ),
                 with: {
                     class: true,

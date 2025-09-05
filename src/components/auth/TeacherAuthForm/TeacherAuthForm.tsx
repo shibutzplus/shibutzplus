@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import SubmitBtn from "@/components/ui/buttons/SubmitBtn/SubmitBtn";
@@ -16,7 +16,11 @@ type TeacherAuthFormProps = {
     isLoadingTeachers: boolean;
 };
 
-const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({ schoolId, teachers, isLoadingTeachers }) => {
+const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({
+    schoolId,
+    teachers,
+    isLoadingTeachers,
+}) => {
     const route = useRouter();
     const [selectedTeacher, setSelectedTeacher] = useState<string>("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -49,7 +53,7 @@ const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({ schoolId, teachers, i
                         placeholder={
                             isLoadingTeachers
                                 ? "טוען רשימת מורים..."
-                                : "בחרו את השם שלכם כדי שנוכל להמשיך"
+                                : "בחרו את שמכם כדי שנוכל להמשיך"
                         }
                         isSearchable={true}
                         isDisabled={isLoadingTeachers}

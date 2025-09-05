@@ -26,7 +26,6 @@ export async function updateDailyTeacherCellAction(
             event,
             position,
             instructions,
-            links
         } = scheduleData;
 
         const authError = await publicAuthAndParams({
@@ -43,7 +42,7 @@ export async function updateDailyTeacherCellAction(
             return authError as ActionResponse;
         }
 
-        // TODO: validation that only teacher with raguler role can update thier data
+        // TODO: validation that only teacher with regular role can update their data
 
         const updatedEntry = await executeQuery(async () => {
             return await db
@@ -63,7 +62,6 @@ export async function updateDailyTeacherCellAction(
                     event: event || null,
                     position: position,
                     instructions: instructions || null,
-                    links: links || null,
                 } as Partial<NewDailyScheduleSchema>)
                 .where(eq(schema.dailySchedule.id, id))
                 .returning();
@@ -98,7 +96,6 @@ export async function updateDailyTeacherCellAction(
                 event,
                 position,
                 instructions,
-                links,
             } as DailyScheduleType,
         };
     } catch (error) {

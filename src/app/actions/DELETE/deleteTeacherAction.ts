@@ -35,10 +35,8 @@ export async function deleteTeacherAction(
                 .where(
                     and(
                         eq(schema.dailySchedule.schoolId, schoolId),
-                        (
-                            eq(schema.dailySchedule.issueTeacherId, teacherId) ||
-                            eq(schema.dailySchedule.subTeacherId, teacherId)
-                        )
+                        eq(schema.dailySchedule.issueTeacherId, teacherId) ||
+                            eq(schema.dailySchedule.subTeacherId, teacherId),
                     ),
                 );
 
@@ -70,7 +68,9 @@ export async function deleteTeacherAction(
             // Delete the teacher
             await db
                 .delete(schema.teachers)
-                .where(and(eq(schema.teachers.schoolId, schoolId), eq(schema.teachers.id, teacherId)));
+                .where(
+                    and(eq(schema.teachers.schoolId, schoolId), eq(schema.teachers.id, teacherId)),
+                );
 
             // Get the remaining teachers for this school
             const remainingTeachers = await db

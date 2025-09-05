@@ -36,7 +36,7 @@
 
 
 -- for specific teacher that is missing table has 
-class, subTeacher, subject, study material, instructions, links
+class, subTeacher, subject, study material, instructions
 
 TODO
 - loading skeleton

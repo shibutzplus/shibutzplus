@@ -13,3 +13,10 @@ export const errorToast = (message: string) => {
         position: "bottom-right",
     });
 }
+
+export const infoToast = (message: string) => {
+    toast(message, {
+        duration: 7000,
+        position: "bottom-right",
+    });
+};

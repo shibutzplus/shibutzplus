@@ -10,7 +10,7 @@ import {
     AnnualScheduleType,
     WeeklySchedule,
 } from "@/models/types/annualSchedule";
-import { errorToast } from "@/lib/toast";
+import { errorToast, infoToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { addAnnualScheduleAction } from "@/app/actions/POST/addAnnualScheduleAction";
 import { deleteAnnualScheduleAction } from "@/app/actions/DELETE/deleteAnnualScheduleAction";
@@ -189,12 +189,12 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
             return;
         }
         if (subjectIds.length > teacherIds.length) {
-            errorToast("מספר המקצועות לא יעלה על מספר המורים");
+            infoToast("שימו ❤️, יש יותר מקצועות ממורים בשיעור אחד.");
             return;
         }
 
-        let teachersList = [...teachers || []];
-        let subjectsList = [...subjects || []];
+        let teachersList = [...(teachers || [])];
+        let subjectsList = [...(subjects || [])];
         if (method === "create-option" && newElementObj) {
             teachersList = type === "teachers" ? [newElementObj as TeacherType] : teachers || [];
             subjectsList = type === "subjects" ? [newElementObj as SubjectType] : subjects || [];

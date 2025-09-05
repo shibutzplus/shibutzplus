@@ -19,7 +19,6 @@ export type DailyScheduleType = {
     issueTeacherType: ColumnType;
     subTeacher?: TeacherType;
     instructions?: string;
-    links?: string;
     position: number;
     createdAt?: Date;
     updatedAt?: Date;
@@ -40,7 +39,6 @@ export type DailyScheduleRequest = {
     subTeacher?: TeacherType;
     position: number;
     instructions?: string;
-    links?: string;
 };
 
 export type GetDailyScheduleResponse = ActionResponse & {
@@ -59,7 +57,7 @@ export type HeaderCol = {
     headerTeacher?: TeacherType;
     headerEvent?: string;
     type: ColumnType;
-}
+};
 
 export type DailyScheduleCell = {
     DBid?: string;

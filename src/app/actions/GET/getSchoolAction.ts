@@ -15,7 +15,9 @@ export async function getSchoolAction(schoolId: string): Promise<GetSchoolRespon
         }
 
         const school = await executeQuery(async () => {
-            return (await db.select().from(schema.schools).where(eq(schema.schools.id, schoolId)))[0];
+            return (
+                await db.select().from(schema.schools).where(eq(schema.schools.id, schoolId))
+            )[0];
         });
 
         if (!school) {

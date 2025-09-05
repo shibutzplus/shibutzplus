@@ -29,12 +29,12 @@ const usePublish = () => {
         }
     };
 
-    const onCopyLink = async () => {
+    const onShareLink = async () => {
         if(!school) return;
         share(messages.share.daily.title, messages.share.daily.text, generateSchoolUrl(school.id));
     };
 
-    return { publishDailySchedule, isLoading, onCopyLink };
+    return { publishDailySchedule, isLoading, onShareLink: onShareLink };
 };
 
 export default usePublish;

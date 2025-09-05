@@ -23,8 +23,8 @@ export async function getDailyEmptyCellsAction(
         }
 
         // Extract all teacher IDs from the existing array
-        const teacherIds = existing.map(item => item.teacherId);
-        
+        const teacherIds = existing.map((item) => item.teacherId);
+
         if (teacherIds.length === 0) {
             return {
                 success: true,
@@ -54,23 +54,23 @@ export async function getDailyEmptyCellsAction(
 
             // Create a map of occupied hours for each teacher
             const occupiedHoursMap = new Map<string, Set<number>>();
-            existing.forEach(item => {
+            existing.forEach((item) => {
                 occupiedHoursMap.set(item.teacherId, new Set(item.hours));
             });
 
             // Filter out the occupied hours and convert to DailyScheduleCell
             return schedules
-                .filter(schedule => {
+                .filter((schedule) => {
                     const occupiedHours = occupiedHoursMap.get(schedule.teacherId);
                     return !occupiedHours?.has(schedule.hour);
                 })
-                .map(schedule => ({
+                .map((schedule) => ({
                     hour: schedule.hour,
                     class: schedule.class,
                     subject: schedule.subject,
-                    headerCol: { 
+                    headerCol: {
                         headerTeacher: schedule.teacher,
-                        type: "existingTeacher" as const
+                        type: "existingTeacher" as const,
                     },
                 }));
         });

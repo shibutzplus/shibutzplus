@@ -29,7 +29,7 @@ export async function deleteAnnualScheduleAction(
                     eq(schema.annualSchedule.day, day),
                     eq(schema.annualSchedule.hour, hour),
                     eq(schema.annualSchedule.classId, classId),
-                    eq(schema.annualSchedule.schoolId, schoolId)
+                    eq(schema.annualSchedule.schoolId, schoolId),
                 ),
                 with: {
                     school: true,
@@ -38,24 +38,26 @@ export async function deleteAnnualScheduleAction(
                     subject: true,
                 },
             });
-            
+
             if (!rows || rows.length === 0) {
                 return null;
             }
-            
+
             // Delete all matching rows
-            await db.delete(schema.annualSchedule).where(
-                and(
-                    eq(schema.annualSchedule.day, day),
-                    eq(schema.annualSchedule.hour, hour),
-                    eq(schema.annualSchedule.classId, classId),
-                    eq(schema.annualSchedule.schoolId, schoolId)
-                )
-            );
-            
+            await db
+                .delete(schema.annualSchedule)
+                .where(
+                    and(
+                        eq(schema.annualSchedule.day, day),
+                        eq(schema.annualSchedule.hour, hour),
+                        eq(schema.annualSchedule.classId, classId),
+                        eq(schema.annualSchedule.schoolId, schoolId),
+                    ),
+                );
+
             return rows;
         });
-        
+
         if (!toDeleteRows) {
             return {
                 success: false,
@@ -80,7 +82,6 @@ export async function deleteAnnualScheduleAction(
             message: messages.annualSchedule.deleteSuccess,
             deleted,
         };
-
     } catch (error) {
         console.error("Error deleting annual schedule entry:", error);
         return {

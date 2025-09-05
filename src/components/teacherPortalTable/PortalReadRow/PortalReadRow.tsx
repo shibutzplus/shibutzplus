@@ -20,10 +20,6 @@ const PortalReadRow: React.FC<PortalReadRowProps> = ({ hour, row }) => {
             </td>
 
             <td className={styles.scheduleCell}>{row ? row.instructions : ""}</td>
-
-            <td className={styles.scheduleCell}>
-                <a href={row ? row.links : ""}>{row ? row.links : ""}</a>
-            </td>
         </tr>
     );
 };

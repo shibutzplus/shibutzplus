@@ -10,7 +10,6 @@ export type PortalScheduleType = {
     subject?: SubjectType;
     subTeacher?: TeacherType;
     instructions?: string;
-    links?: string;
 };
 
 export type PortalPageType = "read" | "write";

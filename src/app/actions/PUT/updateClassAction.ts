@@ -24,14 +24,16 @@ export async function updateClassAction(
         }
 
         const updatedClass = await executeQuery(async () => {
-            return (await db
-                .update(schema.classes)
-                .set({
-                    name: classData.name,
-                    updatedAt: new Date(),
-                })
-                .where(eq(schema.classes.id, classId))
-                .returning())[0];
+            return (
+                await db
+                    .update(schema.classes)
+                    .set({
+                        name: classData.name,
+                        updatedAt: new Date(),
+                    })
+                    .where(eq(schema.classes.id, classId))
+                    .returning()
+            )[0];
         });
 
         if (!updatedClass) {

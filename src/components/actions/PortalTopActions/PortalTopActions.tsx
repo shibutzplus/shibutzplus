@@ -5,6 +5,7 @@ import styles from "./PortalTopActions.module.css";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import Icons from "@/style/icons";
 import { usePublicPortal } from "@/context/PublicPortalContext";
+import { TeacherRoleValues } from "@/models/types/teachers";
 
 const PortalTopActions: React.FC = () => {
     const {
@@ -16,11 +17,6 @@ const PortalTopActions: React.FC = () => {
         switchReadAndWrite,
         pageMode,
     } = usePublicPortal();
-
-    // // Temporary alert for school-wide view
-    // const goSchoolView = () => {
-    //     alert("תצוגת מערכת בית ספרית תתווסף בהמשך");
-    // };
 
     return (
         <section className={styles.actionsContainer}>
@@ -36,8 +32,8 @@ const PortalTopActions: React.FC = () => {
                 />
             </div>
 
-            <div className={styles.topButtonsContainer}>
-                {teacher?.role === "regular" ? (
+            {teacher?.role === TeacherRoleValues.REGULAR && (
+                <div className={styles.topButtonsContainer}>
                     <button
                         type="button"
                         onClick={() => switchReadAndWrite("write")}
@@ -46,23 +42,26 @@ const PortalTopActions: React.FC = () => {
                         <Icons.book size={16} style={{ marginInlineEnd: "4px" }} />
                         הזנת חומרי לימוד
                     </button>
-                ) : null}
-                <span className={styles.separator}></span>
 
-                <button
-                    type="button"
-                    onClick={() => switchReadAndWrite("read")}
-                    className={`${styles.topBtn} ${pageMode === "read" ? styles.active : ""}`}
-                >
-                    <Icons.dailyCalendar size={16} style={{ marginInlineEnd: "4px" }} />
-                    שינויים במערכת שלי
-                </button>
+                    <span className={styles.separator}>|</span>
 
-                {/* <button type="button" onClick={goSchoolView} className={styles.topBtn}>
-                    <Icons.calendar size={16} style={{ marginInlineEnd: "4px" }} />
-                    מערכת בית ספרית
-                </button> */}
-            </div>
+                    <button
+                        type="button"
+                        onClick={() => switchReadAndWrite("read")}
+                        className={`${styles.topBtn} ${pageMode === "read" ? styles.active : ""}`}
+                    >
+                        <Icons.dailyCalendar size={16} style={{ marginInlineEnd: "4px" }} />
+                        שינויים במערכת שלי
+                    </button>
+
+                    <span className={styles.separator}>|</span>
+
+                    <button type="button" onClick={() => {}} className={styles.topBtn}>
+                        <Icons.calendar size={16} style={{ marginInlineEnd: "4px" }} />
+                        מערכת בית ספרית
+                    </button>
+                </div>
+            )}
         </section>
     );
 };

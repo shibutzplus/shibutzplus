@@ -7,10 +7,10 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getTeacherCookie, setTeacherCookie } from "@/lib/cookies";
 import router from "@/routes";
-import { getTeachersAction } from "@/app/actions/GET/getTeachersAction";
 import { SelectOption } from "@/models/types";
 import messages from "@/resources/messages";
 import { errorToast } from "@/lib/toast";
+import { getTeachersAction } from "@/app/actions/GET/getTeachersAction";
 
 export default function TeacherSignInPage() {
     const params = useParams();
@@ -23,22 +23,25 @@ export default function TeacherSignInPage() {
     const [isLoadingTeachers, setIsLoadingTeachers] = useState(true);
 
     useEffect(() => {
-        // Check for selected teacher first
+        // Check if teacher is already selected via cookie
         const selectedTeacherId = getTeacherCookie();
         if (selectedTeacherId) {
             route.push(`${router.teacherPortal.p}/${schoolId}/${selectedTeacherId}`);
             return;
         }
 
+        // Check if teacherId is provided in URL query params
+        if (teacherId) {
+            setTeacherCookie(teacherId);
+            route.push(`${router.teacherPortal.p}/${schoolId}/${teacherId}`);
+            return;
+        }
+
+        // Fetch teachers for the given schoolId
         const fetchTeachers = async () => {
             try {
-                if (teacherId) {
-                    setTeacherCookie(teacherId);
-                    route.push(`${router.teacherPortal.p}/${schoolId}/${teacherId}`);
-                    return;
-                }
                 setIsLoadingTeachers(true);
-                const response = await getTeachersAction(schoolId);
+                const response = await getTeachersAction(schoolId, { isPrivate: false });
                 if (response.success && response.data) {
                     const teacherOptions: SelectOption[] = response.data.map((teacher) => ({
                         value: teacher.id,
@@ -46,7 +49,7 @@ export default function TeacherSignInPage() {
                     }));
                     setTeachers(teacherOptions);
                 } else {
-                    errorToast(messages.teachers.error);
+                    errorToast(response.message || messages.teachers.error);
                 }
             } catch (error) {
                 console.error("Error fetching teachers:", error);

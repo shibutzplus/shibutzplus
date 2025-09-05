@@ -24,14 +24,16 @@ export async function updateSubjectAction(
         }
 
         const updatedSubject = await executeQuery(async () => {
-            return (await db
-                .update(schema.subjects)
-                .set({
-                    name: subjectData.name,
-                    updatedAt: new Date(),
-                })
-                .where(eq(schema.subjects.id, subjectId))
-                .returning())[0];
+            return (
+                await db
+                    .update(schema.subjects)
+                    .set({
+                        name: subjectData.name,
+                        updatedAt: new Date(),
+                    })
+                    .where(eq(schema.subjects.id, subjectId))
+                    .returning()
+            )[0];
         });
 
         if (!updatedSubject) {
@@ -48,7 +50,6 @@ export async function updateSubjectAction(
             message: messages.subjects.updateSuccess,
             data: allSubjectsResp.data || [],
         };
-
     } catch (error) {
         console.error("Error updating subject:", error);
         return {

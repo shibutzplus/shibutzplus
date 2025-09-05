@@ -31,7 +31,7 @@ export async function deleteDailyColumnAction(
             return await db.query.dailySchedule.findMany({
                 where: and(
                     eq(schema.dailySchedule.schoolId, schoolId),
-                    eq(schema.dailySchedule.date, date)
+                    eq(schema.dailySchedule.date, date),
                 ),
                 with: {
                     school: true,
@@ -43,22 +43,25 @@ export async function deleteDailyColumnAction(
             });
         });
 
-        const dailySchedules = schedules.map((schedule) => ({
-            id: schedule.id,
-            date: new Date(schedule.date),
-            day: schedule.day,
-            hour: schedule.hour,
-            columnId: schedule.columnId,
-            school: schedule.school,
-            class: schedule.class,
-            subject: schedule.subject,
-            issueTeacher: schedule.issueTeacher,
-            issueTeacherType: schedule.issueTeacherType,
-            subTeacher: schedule.subTeacher,
-            createdAt: schedule.createdAt,
-            updatedAt: schedule.updatedAt,
-            position: schedule.position,
-        } as DailyScheduleType));
+        const dailySchedules = schedules.map(
+            (schedule) =>
+                ({
+                    id: schedule.id,
+                    date: new Date(schedule.date),
+                    day: schedule.day,
+                    hour: schedule.hour,
+                    columnId: schedule.columnId,
+                    school: schedule.school,
+                    class: schedule.class,
+                    subject: schedule.subject,
+                    issueTeacher: schedule.issueTeacher,
+                    issueTeacherType: schedule.issueTeacherType,
+                    subTeacher: schedule.subTeacher,
+                    createdAt: schedule.createdAt,
+                    updatedAt: schedule.updatedAt,
+                    position: schedule.position,
+                }) as DailyScheduleType,
+        );
 
         return {
             success: true,

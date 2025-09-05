@@ -2,7 +2,7 @@
 
 import React from "react";
 import styles from "./PublicPageLayout.module.css";
-import CommonTopNav from "@/components/navigation/CommonTopNav/CommonTopNav";
+import TopNav from "@/components/navigation/TopNav/TopNav";
 import { PublicPortalProvider } from "@/context/PublicPortalContext";
 
 type PublicPageLayoutProps = {
@@ -15,7 +15,7 @@ export default function PublicPageLayout({ CustomTopNav, children }: PublicPageL
         <PublicPortalProvider>
             <div className={styles.publicPageLayout} dir="rtl">
                 <header className={styles.contentHeader}>
-                    {CustomTopNav ?? <CommonTopNav type="list" />}
+                    {CustomTopNav ?? <TopNav type="list" />}
                 </header>
                 <main className={styles.contentMain}>
                     <div className={styles.scrollInner}>{children}</div>

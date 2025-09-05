@@ -9,7 +9,9 @@
     z-index: 1000;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
+    transition:
+        opacity 0.3s ease,
+        visibility 0.3s ease;
 }
 
 .overlay.open {
@@ -152,13 +154,34 @@
 }
 
 .menuSection li.withDivider {
-  border-bottom: 1px solid #eee;
-  margin-bottom: 0.5rem;
-  padding-bottom: 0.5rem;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.nav {
+    gap: 1rem;
+}
+
+.menuSection ul {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.navLink {
+    padding: 0.75rem 0.4rem 0.75rem 0;
 }
 
 /* Desktop */
 @media (min-width: 768px) {
+    .menuSection ul {
+        gap: 8px;
+    }
+    .navLink {
+        padding: 0.75rem 1rem 0.75rem 0;
+    }
+
     .hamburgerButton {
         display: flex;
     }
@@ -175,4 +198,3 @@
         font-size: 16px;
     }
 }
-

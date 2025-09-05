@@ -20,7 +20,7 @@ export async function getDailyByTeacherAction(
             const schedules = await db.query.dailySchedule.findMany({
                 where: and(
                     eq(schema.dailySchedule.date, date),
-                    eq(schema.dailySchedule.issueTeacherId, teacherId)
+                    eq(schema.dailySchedule.issueTeacherId, teacherId),
                 ),
                 with: {
                     class: true,
@@ -52,7 +52,6 @@ export async function getDailyByTeacherAction(
                         issueTeacherType: schedule.issueTeacherType,
                         subTeacher: schedule.subTeacher,
                         instructions: schedule.instructions,
-                        links: schedule.links,
                         createdAt: schedule.createdAt,
                         updatedAt: schedule.updatedAt,
                     }) as DailyScheduleType,

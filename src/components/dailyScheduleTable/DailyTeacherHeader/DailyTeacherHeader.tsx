@@ -22,27 +22,27 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId, type 
     const selectedTeacherData =
         mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.headerTeacher;
 
+    // Always use the teacher name for delete popup
+    const deleteLabel = selectedTeacherData?.name || "המורה";
+
     const handleTeacherChange = async (value: string) => {
         const teacherId = value;
-        if (teacherId) {
-            setIsLoading(true);
-            const dayNumber = getDayNumberByDateString(selectedDate);
-            const response = await populateTeacherColumn(columnId, dayNumber, teacherId, type);
-            if (response) {
-                if (response.length === 0) {
-                    successToast(messages.dailySchedule.noScheduleFound);
-                //} else {
-                //    successToast(messages.dailySchedule.success);
-                }
-            } else {
-                errorToast(messages.dailySchedule.error);
+        if (!teacherId) return;
+        setIsLoading(true);
+        const dayNumber = getDayNumberByDateString(selectedDate);
+        const response = await populateTeacherColumn(columnId, dayNumber, teacherId, type);
+        if (response) {
+            if (response.length === 0) {
+                successToast(messages.dailySchedule.noScheduleFound);
             }
-            setIsLoading(false);
+        } else {
+            errorToast(messages.dailySchedule.error);
         }
+        setIsLoading(false);
     };
 
     return (
-        <EditableHeader columnId={columnId}>
+        <EditableHeader columnId={columnId} deleteLabel={deleteLabel}>
             <DynamicInputSelect
                 options={createSelectOptions(teachers)}
                 value={selectedTeacherData?.id || ""}

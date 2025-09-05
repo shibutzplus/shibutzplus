@@ -22,10 +22,12 @@ export async function addTeacherAction(
         }
 
         const newTeacher = await executeQuery(async () => {
-            return (await db
-                .insert(schema.teachers)
-                .values(teacherData as NewTeacherSchema)
-                .returning())[0];
+            return (
+                await db
+                    .insert(schema.teachers)
+                    .values(teacherData as NewTeacherSchema)
+                    .returning()
+            )[0];
         });
 
         if (!newTeacher) {

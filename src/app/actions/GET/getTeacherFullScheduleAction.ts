@@ -19,7 +19,7 @@ const getTeacherFullScheduleAction = async (
         }
 
         //TODO: should it have +1 ?
-        const day = getDayNumberByDate(new Date(date))+1
+        const day = getDayNumberByDate(new Date(date)) + 1;
         const result = await executeQuery(async () => {
             // Get daily schedule entries for this teacher on this date
             const dailySchedules = await db.query.dailySchedule.findMany({
@@ -73,7 +73,6 @@ const getTeacherFullScheduleAction = async (
                 subTeacher: schedule.subTeacher || undefined,
                 position: schedule.position || 0,
                 instructions: schedule.instructions || undefined,
-                links: schedule.links || undefined,
                 createdAt: schedule.createdAt,
                 updatedAt: schedule.updatedAt,
             }));
@@ -96,7 +95,6 @@ const getTeacherFullScheduleAction = async (
                     subTeacher: schedule.teacher || undefined,
                     position: 0,
                     instructions: undefined,
-                    links: undefined,
                     createdAt: schedule.createdAt,
                     updatedAt: schedule.updatedAt,
                 }));

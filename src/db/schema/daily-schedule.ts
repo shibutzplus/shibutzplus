@@ -17,7 +17,7 @@ export const dailySchedule = pgTable('daily_schedule', {
   issueTeacherId: text('issue_teacher_id'),
   issueTeacherType: varchar('issue_teacher_type', { length: 20 }).notNull().$type<ColumnType>().default('missingTeacher'),
   instructions: text('instructions'),
-  links: text('links'),
+  links: text('links'), // Todo: Remove from DB
   position: integer('position').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),

@@ -76,11 +76,7 @@ const LinkComponent = ({ link, onClose }: { link: ILink; onClose: () => void }) 
 const joinPath = (base: string, id?: string | null) =>
     id ? `${base.replace(/\/$/, "")}/${id}` : base;
 
-const HamburgerNav: React.FC<HamburgerNavProps> = ({
-    isOpen,
-    onClose,
-    variant = "admin",
-}) => {
+const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose, variant = "admin" }) => {
     const { data: session, status } = useSession();
     const navRef = useRef<HTMLDivElement>(null);
     useAccessibility({ isOpen, navRef, onClose });

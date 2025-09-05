@@ -30,7 +30,6 @@ const PortalTable: React.FC<PortalTableProps> = ({ tableData = [] }) => {
                         <th></th>
                         <th>שיעור</th>
                         <th>חומר לימוד</th>
-                        <th>קישורים</th>
                     </tr>
                 </thead>
                 <tbody>

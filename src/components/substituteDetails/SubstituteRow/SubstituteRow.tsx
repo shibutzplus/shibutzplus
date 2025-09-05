@@ -4,6 +4,7 @@ import { TeacherType } from "@/models/types/teachers";
 import { teacherSchema } from "@/models/validation/teacher";
 import ListRow from "@/components/ui/list/ListRow/ListRow";
 import { generateSchoolUrl } from "@/utils";
+import { TeacherRoleValues } from "@/models/types/teachers";
 
 type SubstituteRowProps = {
     teacher: TeacherType;
@@ -19,7 +20,7 @@ const SubstituteRow: React.FC<SubstituteRowProps> = ({ teacher, handleDeleteTeac
             onUpdate={(id, data) =>
                 updateTeacher(id, {
                     name: (data.name ?? teacher.name) as string,
-                    role: "regular" as import("@/models/types/teachers").TeacherRole,
+                    role: TeacherRoleValues.REGULAR as import("@/models/types/teachers").TeacherRole,
                     schoolId: teacher.schoolId,
                 })
             }
@@ -28,7 +29,7 @@ const SubstituteRow: React.FC<SubstituteRowProps> = ({ teacher, handleDeleteTeac
             getId={(t) => t.id}
             getInitialValue={(t) => t.name}
             updateExtraFields={() => ({
-                role: "regular" as import("@/models/types/teachers").TeacherRole,
+                role: TeacherRoleValues.REGULAR as import("@/models/types/teachers").TeacherRole,
                 schoolId: teacher.schoolId,
             })}
             link={generateSchoolUrl(teacher.schoolId, teacher.id)}

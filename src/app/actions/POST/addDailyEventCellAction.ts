@@ -13,16 +13,7 @@ export async function addDailyEventCellAction(
     scheduleCellData: DailyScheduleRequest,
 ): Promise<ActionResponse & { data?: DailyScheduleType }> {
     try {
-        const {
-            date,
-            day,
-            hour,
-            columnId,
-            school,
-            eventTitle,
-            event,
-            position
-        } = scheduleCellData;
+        const { date, day, hour, columnId, school, eventTitle, event, position } = scheduleCellData;
 
         const authError = await checkAuthAndParams({
             date: date,
@@ -31,13 +22,13 @@ export async function addDailyEventCellAction(
             schoolId: school.id,
             eventTitle: eventTitle,
             event: event,
-            position: position
+            position: position,
         });
         if (authError) {
             return authError as ActionResponse;
         }
 
-        const resEvent = event === eventPlaceholder ? "" : event
+        const resEvent = event === eventPlaceholder ? "" : event;
         const newRow: NewDailyScheduleSchema = {
             date: getDateReturnString(date),
             day: day,
@@ -51,7 +42,7 @@ export async function addDailyEventCellAction(
             subTeacherId: null,
             eventTitle: eventTitle,
             event: resEvent,
-            position: position
+            position: position,
         };
 
         const newDailySchedule = await executeQuery(async () => {
