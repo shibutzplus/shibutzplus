@@ -44,7 +44,7 @@ const PortalTopActions: React.FC = () => {
                         הזנת חומרי לימוד
                     </button>
 
-                    <span className={styles.separator}></span>
+                    <span className={styles.separator}>|</span>
 
                     <button
                         type="button"
@@ -54,7 +54,7 @@ const PortalTopActions: React.FC = () => {
                         שינויים במערכת שלי
                     </button>
 
-                    <span className={styles.separator}></span>
+                    <span className={styles.separator}>|</span>
 
                     <button
                         type="button"

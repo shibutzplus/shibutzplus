@@ -54,7 +54,7 @@ export function getIsraeliDateOptions(): SelectOption[] {
     startDate.setDate(israelToday.getDate() - THREE_DAYS);
 
     const endDate = new Date(israelToday);
-    endDate.setDate(israelToday.getDate() + (ONE_WEEK*2));
+    endDate.setDate(israelToday.getDate() + (ONE_WEEK * 2));
 
     // Generate all dates in the range
     const currentDate = new Date(startDate);
@@ -70,18 +70,22 @@ export function getIsraeliDateOptions(): SelectOption[] {
 }
 
 
-export function gePublishedDatesOptions(dates: string[]): SelectOption[] {
-    return dates.map(dateStr => {
-        // Format: DD-MM-YYYY using util
-        const formatted = formatTMDintoDMY(dateStr);
-        // Get day of week using util (0 = Sunday, 6 = Saturday)
-        const dayOfWeek = new Date(dateStr).getDay();
-        return {
-            value: dateStr,
-            label: `${formatted} | ${DAYS_OF_WEEK_FORMAT[dayOfWeek]}`
-        };
-    });
+export function getPublishedDatesOptions(dates: string[]): SelectOption[] {
+    const todayStr = new Date().toISOString().slice(0, 10);
+
+    return dates
+        .filter(d => d >= todayStr)                 // keep today and future only
+        .sort()
+        .map(dateStr => {
+            const formatted = formatTMDintoDMY(dateStr); // DD-MM-YYYY for display
+            const dayOfWeek = new Date(dateStr).getDay();
+            return {
+                value: dateStr,
+                label: `${formatted} | ${DAYS_OF_WEEK_FORMAT[dayOfWeek]}`
+            };
+        });
 }
+
 
 
 export const getTodayOption = () => {

@@ -8,8 +8,6 @@ import { useMainContext } from "@/context/MainContext";
 import styles from "./page.module.css";
 import router from "@/routes";
 import { getToday } from "@/utils/time";
-
-// TODO: adjust the import path if your component lives elsewhere
 import ReadOnlyDailyTable from "@/components/readOnlyDailyTable/ReadOnlyDailyTable/ReadOnlyDailyTable";
 
 const DailyScheduleReadOnlyPage = () => {
