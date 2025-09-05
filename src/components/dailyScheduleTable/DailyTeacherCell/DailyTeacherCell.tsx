@@ -9,7 +9,7 @@ import DynamicInputGroupSelect from "@/components/ui/select/InputGroupSelect/Dyn
 import { ColumnType } from "@/models/types/dailySchedule";
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
-import { sortTeachersForSchedule } from "@/utils/teachers";
+import { sortDailyTeachers } from "@/utils/sort";
 
 type DailyTeacherCellProps = {
     cell: CellContext<TeacherRow, unknown>;
@@ -18,7 +18,7 @@ type DailyTeacherCellProps = {
 
 const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
     const { teachers, classes } = useMainContext();
-    const { mainDailyTable, addNewCell, selectedDate, updateCell, createNewText } =
+    const { mainDailyTable, mapAvailableTeachers, addNewCell, selectedDate, updateCell, addNewCellText } =
         useDailyTableContext();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -37,11 +37,9 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
     const day = getDayNameByDateString(selectedDate);
     const sortedTeacherOptions = useMemo(
         () =>
-            sortTeachersForSchedule(
+            sortDailyTeachers(
                 teachers || [],
-                classes || [],
-                {},
-                selectedClassId,
+                mapAvailableTeachers,
                 day,
                 Number(hour),
             ),
@@ -83,7 +81,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
                         subTeacher: newSubTeacherData,
                     });
                 } else if (methodType === "text") {
-                    response = await createNewText(type, cellData, columnId, value.trim());
+                    response = await addNewCellText(type, cellData, columnId, value.trim());
                 }
             }
             if (!response) throw new Error();

@@ -14,6 +14,7 @@ import {
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
 import { getTeacherScheduleByDayAction } from "@/app/actions/GET/getTeacherScheduleByDayAction";
 import { getDailyEmptyCellsAction } from "@/app/actions/GET/getDailyEmptyCellsAction";
+import { getAnnualScheduleAction } from "@/app/actions/GET/getAnnualScheduleAction";
 import { addDailyTeacherCellAction } from "@/app/actions/POST/addDailyTeacherCellAction";
 import { updateDailyTeacherCellAction } from "@/app/actions/PUT/updateDailyTeacherCellAction";
 import { addDailyEventCellAction } from "@/app/actions/POST/addDailyEventCellAction";
@@ -31,6 +32,7 @@ import {
     getColumnsFromStorage,
     updateAddCell,
     populateTable,
+    mapAnnualTeachers,
 } from "@/services/dailyScheduleService";
 import { generateId } from "@/utils";
 import DailyTeacherCell from "@/components/dailyScheduleTable/DailyTeacherCell/DailyTeacherCell";
@@ -43,14 +45,15 @@ import { getIsraeliDateOptions, getTomorrowOption } from "@/resources/dayOptions
 import { SelectOption } from "@/models/types";
 import { DailyTableColors } from "@/style/tableColors";
 import { eventPlaceholder } from "@/models/constant/table";
-import { getStorageDailyTable, setStorageDailyTable } from "@/utils/localStorage";
-import { getStorageDailyTableOrder, setStorageDailyTableOrder, cleanupDailyColumnsOrder } from "@/utils/localStorage";
+import { getStorageDailyTable, setStorageDailyTable } from "@/lib/localStorage";
 import { sortColumnsByIssueTeacherType } from "@/utils/sort";
+import { AvailableTeachers } from "@/models/types/annualSchedule";
 
 interface DailyTableContextType {
     tableColumns: ColumnDef<TeacherRow>[];
     mainDailyTable: DailySchedule;
     dailyDbRows: DailyScheduleType[] | undefined;
+    mapAvailableTeachers: AvailableTeachers;
     isLoading: boolean;
     selectedDate: string;
     addNewColumn: (colType: ColumnType) => void;
@@ -75,7 +78,7 @@ interface DailyTableContextType {
         dailyScheduleId: string,
         data: { event?: string; subTeacher?: TeacherType },
     ) => Promise<DailyScheduleType | undefined>;
-    createNewText: (
+    addNewCellText: (
         type: ColumnType,
         cellData: DailyScheduleCell,
         columnId: string,
@@ -107,7 +110,10 @@ function buildColumn(colType: ColumnType, columnId: string): ColumnDef<TeacherRo
             id: columnId,
             header: () => <DailyTeacherHeader columnId={columnId} type="existingTeacher" />,
             cell: (props) => <DailyTeacherCell cell={props} type="existingTeacher" />,
-            meta: { bgColor: DailyTableColors.existingTeacher.headerColor, type: "existingTeacher" },
+            meta: {
+                bgColor: DailyTableColors.existingTeacher.headerColor,
+                type: "existingTeacher",
+            },
         };
     }
     return {
@@ -129,6 +135,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     const [mainDailyTable, setMainDailyTable] = useState<DailySchedule>({});
     const [dailyDbRows, setDailyDbRows] = useState<DailyScheduleType[] | undefined>(undefined);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [mapAvailableTeachers, setMapAvailableTeachers] = useState<AvailableTeachers>({});
 
     // -- Select Date -- //
     const [selectedDate, setSelectedDayId] = useState<string>(getTomorrowOption());
@@ -138,6 +145,26 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     const handleDayChange = (value: string) => {
         setSelectedDayId(value);
     };
+
+    /**
+     * Fetch annual schedule and map available teachers for each day and hour
+     */
+    useEffect(() => {
+        const fetchAnnualSchedule = async () => {
+            try {
+                if (!school?.id) return;
+                const response = await getAnnualScheduleAction(school.id);
+                if (response.success && response.data) {
+                    const teacherMapping: AvailableTeachers = mapAnnualTeachers(response.data);
+                    setMapAvailableTeachers(teacherMapping);
+                }
+            } catch (error) {
+                console.error("Error fetching annual schedule:", error);
+            }
+        };
+
+        fetchAnnualSchedule();
+    }, [school?.id]);
 
     /**
      * Get Daily rows by selected date and populate the table
@@ -350,7 +377,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         return undefined;
     };
 
-    const createNewText = async (
+    const addNewCellText = async (
         type: ColumnType,
         cellData: DailyScheduleCell,
         columnId: string,
@@ -471,7 +498,6 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         setActionCols(sortedCols);
     };
 
-
     const deleteColumn = async (columnId: string) => {
         if (!school?.id) return false;
         const filteredCols = tableColumns.filter((col) => col.id !== columnId);
@@ -497,7 +523,6 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         return false;
     };
 
-
     const clearColumn = (day: string, columnId: string) => {
         const updatedSchedule = { ...mainDailyTable };
 
@@ -513,12 +538,12 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         setActionCols([]);
     };
 
-
     return (
         <DailyTableContext.Provider
             value={{
                 tableColumns,
                 mainDailyTable,
+                mapAvailableTeachers,
                 dailyDbRows,
                 isLoading,
                 selectedDate,
@@ -528,7 +553,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 populateEventColumn,
                 addNewCell,
                 updateCell,
-                createNewText,
+                addNewCellText,
                 daysSelectOptions,
                 handleDayChange,
             }}

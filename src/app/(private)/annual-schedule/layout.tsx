@@ -1,5 +1,3 @@
-// app/(private)/annual/layout.tsx
-// comments: English only
 import React from "react";
 import PrivatePageLayout from "@/components/layout/PrivatePageLayout/PrivatePageLayout";
 import { AnnualTableProvider } from "@/context/AnnualTableContext";

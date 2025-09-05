@@ -20,6 +20,7 @@ export const customStylesMulti = (
             color: "#aaa",
             transition: "all 0.2s ease",
             fontWeight: fontWeight,
+            cursor: "pointer",
             "&:hover": {
                 borderColor: error ? "#e53935" : "#ccc",
             },
@@ -47,6 +48,7 @@ export const customStylesMulti = (
             color: state.isSelected ? "white" : "#333",
             padding: "10px 12px",
             fontSize: "16px",
+            cursor: "pointer",
             "&:hover": {
                 backgroundColor: state.isSelected ? "#4a90e2" : "rgba(74, 144, 226, 0.1)",
             },

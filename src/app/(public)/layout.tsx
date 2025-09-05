@@ -1,10 +1,10 @@
 "use client";
 
 import React from "react";
-import PrivatePageLayout from "@/components/layout/PrivatePageLayout/PrivatePageLayout";
-import { PublicPortalProvider, usePublicPortal } from "@/context/PublicPortalContext";
+import { usePublicPortal } from "@/context/PublicPortalContext";
 import CommonTopNav from "@/components/navigation/CommonTopNav/CommonTopNav";
 import PortalTopActions from "@/components/actions/PortalTopActions/PortalTopActions";
+import PublicPageLayout from "@/components/layout/PublicPageLayout/PublicPageLayout";
 
 function TeacherTopNav() {
     const { teacher } = usePublicPortal();
@@ -18,9 +18,5 @@ function TeacherTopNav() {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-    return (
-        <PublicPortalProvider>
-            <PrivatePageLayout CustomTopNav={<TeacherTopNav />}>{children}</PrivatePageLayout>
-        </PublicPortalProvider>
-    );
+    return <PublicPageLayout CustomTopNav={<TeacherTopNav />}>{children}</PublicPageLayout>;
 }

@@ -8,7 +8,7 @@ import styles from "./TeacherAuthForm.module.css";
 import { SelectOption } from "@/models/types";
 import router from "@/routes";
 import messages from "@/resources/messages";
-import { setTeacherCookie } from "@/utils/cookies";
+import { setTeacherCookie } from "@/lib/cookies";
 
 type TeacherAuthFormProps = {
     schoolId: string;

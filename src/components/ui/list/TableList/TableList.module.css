@@ -1,11 +1,12 @@
-/* Desktop Screens */
+/* Mobile 320px - 767px -- 812px */
 .tableListSection {
     overflow-y: auto;
     background-color: var(--background-inner);
 }
 
 .tableList {
-    width: 600px;
+    width: 100%;
+    max-width: none;
     margin: var(--table-margin, 0);
     border-collapse: separate;
     border-spacing: 0;
@@ -33,11 +34,10 @@
     border-bottom: 1px solid #eee;
 }
 
-/* Mobile Screens */
-@media (max-width: 767px) {
+/* Desktop */
+@media (min-width: 768px) {
     .tableList {
-        width: 100%;
-        max-width: none;
+        width: 600px;
     }
 }
 

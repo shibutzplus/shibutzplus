@@ -65,6 +65,7 @@ export const getDayNameByDateString = (date: string) => {
     return DAYS_OF_WEEK[dayIdx];
 };
 
+// Returns the day number of week for a given day name (e.g., "א", "ב", etc.)
 export const dayToNumber = (day: string) => {
     //Convert day name to number (1-7)
     return DAYS_OF_WEEK.indexOf(day) + 1;

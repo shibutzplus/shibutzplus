@@ -3,7 +3,7 @@
 import { AnnualScheduleType } from "@/models/types/annualSchedule";
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
-import { getStorageSchoolId, setCacheTimestamp, setStorageSchoolId } from "@/utils/localStorage";
+import { getStorageSchoolId, setCacheTimestamp, setStorageSchoolId } from "@/lib/localStorage";
 import { getAnnualScheduleAction as getAnnualScheduleFromDB } from "@/app/actions/GET/getAnnualScheduleAction";
 import { STATUS_AUTH } from "@/models/constant/session";
 

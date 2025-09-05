@@ -1,17 +1,13 @@
-"use client";
-
 import React from "react";
 import { NextPage } from "next";
 import SubstitutesList from "@/components/substituteDetails/SubstitutesList/SubstitutesList";
-import styles from "../lists.module.css";
+import ManagementLayout from "@/components/layout/ManagementLayout/ManagementLayout";
 
 const SubstitutePage: NextPage = () => {
     return (
-        <main className={styles.container}>
-            <section className={styles.pageList}>
-                <SubstitutesList />
-            </section>
-        </main>
+        <ManagementLayout>
+            <SubstitutesList />
+        </ManagementLayout>
     );
 };
 
