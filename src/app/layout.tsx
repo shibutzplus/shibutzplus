@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
@@ -18,11 +18,17 @@ export const metadata: Metadata = {
     title: "שיבוץ+",
     description: "ניהול מערכת שעות יומית ושיבוץ מורים",
     manifest: "/manifest.json",
-    themeColor: "#ffffff",
     icons: {
         icon: "/favicon.png",
         apple: "/logo192.png",
     },
+};
+
+export const viewport: Viewport = {
+    themeColor: [
+        { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+        { media: "(prefers-color-scheme: dark)", color: "#000000" },
+    ],
 };
 
 

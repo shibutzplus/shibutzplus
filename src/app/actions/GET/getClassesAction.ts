@@ -4,7 +4,7 @@ import { GetClassesResponse } from "@/models/types/classes";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
-import { eq } from "drizzle-orm";
+import { eq, asc } from "drizzle-orm";
 
 export async function getClassesAction(schoolId: string): Promise<GetClassesResponse> {
     try {
@@ -17,7 +17,8 @@ export async function getClassesAction(schoolId: string): Promise<GetClassesResp
             return await db
                 .select()
                 .from(schema.classes)
-                .where(eq(schema.classes.schoolId, schoolId));
+                .where(eq(schema.classes.schoolId, schoolId))
+                .orderBy(asc(schema.classes.name));
         });
 
         if (!classes || classes.length === 0) {
