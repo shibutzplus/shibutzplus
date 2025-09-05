@@ -1,32 +1,46 @@
 "use server";
 
-import { GetTeachersResponse } from "@/models/types/teachers";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { eq } from "drizzle-orm";
 
-export async function getTeachersAction(schoolId: string): Promise<GetTeachersResponse> {
+export type PublicTeacher = {
+    id: string;
+    name: string;
+};
+
+export type GetTeachersResponse = {
+    success: boolean;
+    message: string;
+    data?: PublicTeacher[];
+};
+
+export async function getTeachersAction(
+    schoolId: string,
+    opts?: { allowUnauthedPortal?: boolean }
+): Promise<GetTeachersResponse> {
     try {
-        const authError = await checkAuthAndParams({ schoolId });
-        if (authError) {
-            return authError as GetTeachersResponse;
+        if (!opts?.allowUnauthedPortal) {
+            const authError = await checkAuthAndParams({ schoolId });
+            if (authError) {
+                return authError as GetTeachersResponse;
+            }
         }
 
-        // get the teachers withSub or withoutSub
         const teachers = await executeQuery(async () => {
             return await db
-                .select()
+                .select({
+                    id: schema.teachers.id,
+                    name: schema.teachers.name,
+                })
                 .from(schema.teachers)
-                .where(eq(schema.teachers.schoolId, schoolId)) 
+                .where(eq(schema.teachers.schoolId, schoolId))
                 .orderBy(schema.teachers.name);
         });
 
         if (!teachers || teachers.length === 0) {
-            return {
-                success: false,
-                message: messages.teachers.error,
-            };
+            return { success: false, message: messages.teachers.error };
         }
 
         return {
@@ -35,10 +49,7 @@ export async function getTeachersAction(schoolId: string): Promise<GetTeachersRe
             data: teachers,
         };
     } catch (error) {
-        console.error("Error fetching teachers:", error);
-        return {
-            success: false,
-            message: messages.common.serverError,
-        };
+        console.error("Error fetching teachers ID+Name:", error);
+        return { success: false, message: messages.common.serverError };
     }
 }
