@@ -3,14 +3,7 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from "react";
 import { TeacherRow } from "@/models/types/table";
 import { ColumnDef } from "@tanstack/react-table";
-import {
-    ColumnType,
-    DailySchedule,
-    DailyScheduleCell,
-    DailyScheduleType,
-    TeacherHourlyScheduleItem,
-} from "@/models/types/dailySchedule";
-
+import { ColumnType, DailySchedule, DailyScheduleCell, DailyScheduleType, TeacherHourlyScheduleItem, } from "@/models/types/dailySchedule";
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
 import { getTeacherScheduleByDayAction } from "@/app/actions/GET/getTeacherScheduleByDayAction";
 import { getDailyEmptyCellsAction } from "@/app/actions/GET/getDailyEmptyCellsAction";
@@ -19,18 +12,11 @@ import { updateDailyTeacherCellAction } from "@/app/actions/PUT/updateDailyTeach
 import { addDailyEventCellAction } from "@/app/actions/POST/addDailyEventCellAction";
 import { updateDailyEventCellAction } from "@/app/actions/PUT/updateDailyEventCellAction";
 import { deleteDailyColumnAction } from "@/app/actions/DELETE/deleteDailyColumnAction";
-
 import { useMainContext } from "./MainContext";
 import {
-    addNewEventCell,
-    addNewTeacherValueCell,
-    setEmptyTeacherColumn,
-    setTeacherColumn,
-    setEmptyEventColumn,
-    setColumn,
-    getColumnsFromStorage,
-    updateAddCell,
-    populateTable,
+    addNewEventCell, addNewTeacherValueCell, setEmptyTeacherColumn,
+    setTeacherColumn, setEmptyEventColumn, setColumn,
+    getColumnsFromStorage, updateAddCell, populateTable,
 } from "@/services/dailyScheduleService";
 import { generateId } from "@/utils";
 import DailyTeacherCell from "@/components/dailyScheduleTable/DailyTeacherCell/DailyTeacherCell";
@@ -44,7 +30,6 @@ import { SelectOption } from "@/models/types";
 import { DailyTableColors } from "@/style/tableColors";
 import { eventPlaceholder } from "@/models/constant/table";
 import { getStorageDailyTable, setStorageDailyTable } from "@/utils/localStorage";
-import { getStorageDailyTableOrder, setStorageDailyTableOrder, cleanupDailyColumnsOrder } from "@/utils/localStorage";
 import { sortColumnsByIssueTeacherType } from "@/utils/sort";
 
 interface DailyTableContextType {
@@ -474,28 +459,32 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
 
     const deleteColumn = async (columnId: string) => {
         if (!school?.id) return false;
+
+        const prevCols = tableColumns;
+        const prevSchedule = mainDailyTable;
         const filteredCols = tableColumns.filter((col) => col.id !== columnId);
-        if (filteredCols.length === tableColumns.length) return false;
-        const sortedCols = sortColumnsByIssueTeacherType(filteredCols);
-
-        // Update UI immediately
-        setActionCols(sortedCols);
-
-        const updatedSchedule = { ...mainDailyTable };
-        delete updatedSchedule[selectedDate]?.[columnId];
-        setMainAndStorageTable(updatedSchedule);
+        setActionCols(filteredCols);
+        const day = selectedDate;
+        const nextDay = { ...(mainDailyTable[day] || {}) };
+        delete nextDay[columnId];
+        const nextSchedule = { ...mainDailyTable, [day]: nextDay };
+        setMainAndStorageTable(nextSchedule);
 
         try {
-            const response = await deleteDailyColumnAction(school.id, columnId, selectedDate);
+            const response = await deleteDailyColumnAction(school.id, columnId, day);
             if (response.success && response.dailySchedules) {
                 setDailyDbRows(response.dailySchedules);
                 return true;
             }
-        } catch (error) {
+            throw new Error(response.message || "delete failed");
+        } catch (error) { // Rollback
+            setActionCols(prevCols);
+            setMainAndStorageTable(prevSchedule);
             console.error("Error deleting daily column:", error);
+            return false;
         }
-        return false;
     };
+
 
 
     const clearColumn = (day: string, columnId: string) => {
