@@ -8,55 +8,58 @@ import {
 import { SelectOption } from "@/models/types";
 import { TeacherType } from "@/models/types/teachers";
 import { getTeacherByIdAction } from "@/app/actions/GET/getTeacherByIdAction";
-import { getDailyByTeacherAction } from "@/app/actions/GET/getDailyByTeacherAction";
 import { getSchoolAction } from "@/app/actions/GET/getSchoolAction";
-import {
-    DailyScheduleRequest,
-    DailyScheduleType,
-    GetDailyScheduleResponse,
-} from "@/models/types/dailySchedule";
-import { PortalPageType } from "@/models/types/portalSchedule";
+import { DailyScheduleRequest, DailyScheduleType } from "@/models/types/dailySchedule";
 import { updateDailyTeacherCellAction } from "@/app/actions/PUT/updateDailyTeacherCellAction";
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
-import getTeacherFullScheduleAction from "@/app/actions/GET/getTeacherFullScheduleAction";
 import { selectSelectedDate } from "@/services/portalTeacherService";
+import { getSessionTeacher } from "@/lib/sessionStorage";
+import { getSchoolCookie } from "@/lib/cookies";
 
-interface PublicPortalContextType {
+interface PortalContextType {
     selectedDate: string;
     handleDayChange: (value: string) => void;
     teacher: TeacherType | undefined;
-    teacherTableData: DailyScheduleType[] | undefined;
-    setTeacherById: (teacherId: string | undefined) => Promise<boolean>;
-    switchReadAndWrite: (mode: PortalPageType) => void;
+    schoolId: string | undefined;
+    setTeacherAndSchool: (schoolId?: string, teacherId?: string) => Promise<boolean>;
     handleSave: (
         dataId: string,
         data: DailyScheduleRequest,
     ) => Promise<DailyScheduleType | undefined>;
     publishDatesOptions: SelectOption[];
     isLoading: boolean;
-    pageMode: PortalPageType;
     isSaving: boolean;
 }
 
-const PublicPortalContext = createContext<PublicPortalContextType | undefined>(undefined);
+const PortalContext = createContext<PortalContextType | undefined>(undefined);
 
-export const usePublicPortal = () => {
-    const context = useContext(PublicPortalContext);
+export const usePortal = () => {
+    const context = useContext(PortalContext);
     if (context === undefined) {
-        throw new Error("usePublicPortal must be used within an PublicPortalProvider");
+        throw new Error("usePortal must be used within an PortalProvider");
     }
     return context;
 };
 
-export const PublicPortalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [selectedDate, setSelectedDayId] = useState<string>(getTomorrowOption());
     const [publishDatesOptions, setPublishDatesOptions] = useState<SelectOption[]>([]);
     const [teacher, setTeacher] = useState<TeacherType | undefined>();
-    const [teacherTableData, setTeacherTableData] = useState<DailyScheduleType[] | undefined>();
+    const [schoolId, setSchoolId] = useState<string | undefined>();
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isSaving, setIsSaving] = useState<boolean>(false);
-    const [pageMode, setPageMode] = useState<PortalPageType>("read");
+
+    useEffect(() => {
+        if (!schoolId) {
+            const cookieTeacher = getSchoolCookie();
+            if (cookieTeacher) setSchoolId(cookieTeacher);
+        }
+        if (!teacher) {
+            const sessionTeacher = getSessionTeacher();
+            if (sessionTeacher) setTeacher(sessionTeacher);
+        }
+    }, []);
 
     const blockRef = useRef<boolean>(true);
     useEffect(() => {
@@ -89,52 +92,17 @@ export const PublicPortalProvider: React.FC<{ children: ReactNode }> = ({ childr
         blockRef.current && fetchDateOptions();
     }, [teacher]);
 
-    useEffect(() => {
-        // TODO: add cache
-        getTeacherTableData(pageMode);
-    }, [selectedDate, pageMode]);
-
-    const switchReadAndWrite = async (mode: PortalPageType) => {
-        setPageMode(mode);
-    };
-
-    const getTeacherTableData = async (mode: PortalPageType) => {
-        if (!teacher || !selectedDate) return;
-        let response: GetDailyScheduleResponse | undefined;
-        setIsLoading(true);
-        try {
-            if (mode === "read") {
-                response = await getTeacherFullScheduleAction(
-                    teacher.schoolId,
-                    teacher.id,
-                    selectedDate,
-                );
-            } else if (mode === "write") {
-                response = await getDailyByTeacherAction(teacher.id, selectedDate);
-            }
-
-            if (response && response.success && response.data) {
-                setTeacherTableData(response.data);
-            } else {
-                setTeacherTableData([]);
-            }
-        } catch (error) {
-            console.error("Error fetching teacher table data:", error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
     const handleDayChange = (value: string) => {
         setSelectedDayId(value);
     };
 
-    const setTeacherById = async (teacherId: string | undefined) => {
+    const setTeacherAndSchool = async (schoolId?: string, teacherId?: string) => {
         try {
-            if (!teacherId) return false;
+            if (!teacherId || !schoolId) return false;
             const response = await getTeacherByIdAction(teacherId);
             if (response.success && response.data) {
                 setTeacher(response.data);
+                setSchoolId(schoolId);
                 return true;
             }
             return false;
@@ -159,19 +127,17 @@ export const PublicPortalProvider: React.FC<{ children: ReactNode }> = ({ childr
         }
     };
 
-    const value: PublicPortalContextType = {
+    const value: PortalContextType = {
         selectedDate,
         handleDayChange,
         teacher,
-        teacherTableData,
-        setTeacherById,
+        schoolId,
+        setTeacherAndSchool,
         publishDatesOptions,
         isLoading,
-        switchReadAndWrite,
         handleSave,
-        pageMode,
         isSaving,
     };
 
-    return <PublicPortalContext.Provider value={value}>{children}</PublicPortalContext.Provider>;
+    return <PortalContext.Provider value={value}>{children}</PortalContext.Provider>;
 };

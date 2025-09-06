@@ -191,7 +191,8 @@ export const addNewTeacherValueCell = (
 ) => {
     const { hour, class: classData, subject, headerCol } = cellData;
     if (!school || !classData || !subject || !headerCol?.headerTeacher) return;
-    if (!subTeacher && !text) return;
+    //TODO: is it ok to remove this line for "empty cell"?
+    // if (!subTeacher && !text) return;
 
     const dailyCellData: DailyScheduleRequest = {
         date: getStringReturnDate(selectedDate),

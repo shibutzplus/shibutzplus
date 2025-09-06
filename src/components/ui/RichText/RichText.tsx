@@ -8,7 +8,7 @@ import Placeholder from "@tiptap/extension-placeholder";
 import styles from "./RichText.module.css";
 import { sanitizeHtml } from "@/utils/sanitize";
 
-type Props = {
+type RichTextProps = {
     value: string;
     placeholder?: string;
     onChangeHTML: (html: string) => void;
@@ -22,13 +22,14 @@ const normalize = (html: string) => {
     return sanitizeHtml(trimmed);
 };
 
-export default function RichText({
+const RichText: React.FC<RichTextProps> = ({
     value,
     placeholder,
     onChangeHTML,
     onBlurHTML,
     minHeight = 40,
-}: Props) {
+}) => {
+
     const editor = useEditor({
         immediatelyRender: false,
         extensions: [
@@ -82,4 +83,6 @@ export default function RichText({
             />
         </div>
     );
-}
+};
+
+export default RichText;

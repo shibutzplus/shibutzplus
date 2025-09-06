@@ -1,7 +1,7 @@
 "use server";
 
 import { GetTeachersResponse } from "@/models/types/teachers";
-import { checkAuthAndParams } from "@/utils/authUtils";
+import { checkAuthAndParams, publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { eq } from "drizzle-orm";
@@ -11,12 +11,13 @@ export async function getTeachersAction(
     options: { isPrivate: boolean } = { isPrivate: true },
 ): Promise<GetTeachersResponse> {
     try {
+        let authError;
         if (options.isPrivate) {
-            const authError = await checkAuthAndParams({ schoolId });
-            if (authError) {
-                return authError as GetTeachersResponse;
-            }
+            authError = await checkAuthAndParams({ schoolId });
+        } else {
+            authError = await publicAuthAndParams({ schoolId });
         }
+        if (authError) return authError as GetTeachersResponse;
 
         const teachers = await executeQuery(async () => {
             return await db

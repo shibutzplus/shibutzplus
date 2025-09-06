@@ -6,7 +6,7 @@ import { useDailyTableContext } from "@/context/DailyTableContext";
 import { CellContext } from "@tanstack/react-table";
 import { TeacherRow } from "@/models/types/table";
 import DynamicInputGroupSelect from "@/components/ui/select/InputGroupSelect/DynamicInputGroupSelect";
-import { ColumnType } from "@/models/types/dailySchedule";
+import { ColumnType, OtherTeacherValues } from "@/models/types/dailySchedule";
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { sortDailyTeachers } from "@/utils/sort";
@@ -18,8 +18,15 @@ type DailyTeacherCellProps = {
 
 const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
     const { teachers, classes } = useMainContext();
-    const { mainDailyTable, mapAvailableTeachers, addNewCell, selectedDate, updateCell, addNewCellText } =
-        useDailyTableContext();
+    const {
+        mainDailyTable,
+        mapAvailableTeachers,
+        addNewCell,
+        selectedDate,
+        updateCell,
+        addNewCellText,
+        addEmptyCell,
+    } = useDailyTableContext();
     const [isLoading, setIsLoading] = useState(false);
 
     // Get data from the row data
@@ -31,20 +38,19 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
     const teacherText = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.event;
     const headerData = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.headerCol;
 
-    const [selectedSubTeacher, setSelectedSubTeacher] = useState<string>(subTeacherData?.id || teacherText || "");
+    const [selectedSubTeacher, setSelectedSubTeacher] = useState<string>(
+        subTeacherData?.id || teacherText || "",
+    );
 
     const selectedClassId = classData?.id || "";
     const day = getDayNameByDateString(selectedDate);
     const sortedTeacherOptions = useMemo(
-        () =>
-            sortDailyTeachers(
-                teachers || [],
-                mapAvailableTeachers,
-                day,
-                Number(hour),
-            ),
+        () => sortDailyTeachers(teachers || [], mapAvailableTeachers, day, Number(hour)),
         [teachers, classes, selectedClassId, day, hour],
     );
+
+    const checkOneOfOtherOptions = (value: string) =>
+        Object.values(OtherTeacherValues).some((option) => option === value);
 
     const handleTeacherChange = async (methodType: "teacher" | "text", value: string) => {
         if (!hour || !columnId || !selectedDate || !headerData) return;
@@ -54,9 +60,10 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
             const cellData = mainDailyTable[selectedDate]?.[columnId]?.[hour];
             if (!cellData) return;
             setSelectedSubTeacher(value);
+            const isOneOfOtherOptions = checkOneOfOtherOptions(value) && methodType === "teacher";
 
             let newSubTeacherData;
-            if(methodType === "teacher") {
+            if (!isOneOfOtherOptions) {
                 newSubTeacherData = teachers?.find((t) => t.id === value);
                 if (!newSubTeacherData) return;
             }
@@ -65,23 +72,26 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
             const isUpdate = subTeacherData || teacherText;
             if (isUpdate) {
                 const existingDailyId = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.DBid;
-                if (existingDailyId){
+                if (existingDailyId) {
                     let data = {};
-                    if (methodType === "teacher") {
+                    if (!isOneOfOtherOptions && methodType === "teacher") {
                         data = { subTeacher: newSubTeacherData };
-                    }
-                    else if (methodType === "text") {
+                    } else if (methodType === "text") {
                         data = { event: value.trim() };
+                    } else if (isOneOfOtherOptions) {
+                        data = {};
                     }
                     response = await updateCell(type, cellData, columnId, existingDailyId, data);
                 }
             } else {
-                if (methodType === "teacher") {
+                if (!isOneOfOtherOptions && methodType === "teacher") {
                     response = await addNewCell(type, cellData, columnId, {
                         subTeacher: newSubTeacherData,
                     });
                 } else if (methodType === "text") {
                     response = await addNewCellText(type, cellData, columnId, value.trim());
+                } else if (isOneOfOtherOptions) {
+                    response = await addEmptyCell(type, cellData, columnId);
                 }
             }
             if (!response) throw new Error();
@@ -97,7 +107,16 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
         <div className={styles.cellContent}>
             {classData && subjectData ? (
                 <div className={styles.innerCellContent}>
-                    <div className={styles.classAndSubject}>
+                    <div
+                        className={styles.classAndSubject}
+                        style={{
+                            opacity:
+                                selectedSubTeacher === "noTeacher" ||
+                                selectedSubTeacher === "noSubstitute"
+                                    ? 0.3
+                                    : 1,
+                        }}
+                    >
                         {classData.name} | {subjectData.name}
                     </div>
                     <div className={styles.teacherSelect}>

@@ -8,10 +8,10 @@ import styles from "./TeacherAuthForm.module.css";
 import { SelectOption } from "@/models/types";
 import router from "@/routes";
 import messages from "@/resources/messages";
-import { setTeacherCookie } from "@/lib/cookies";
+import { setSchoolCookie, setTeacherCookie } from "@/lib/cookies";
 
 type TeacherAuthFormProps = {
-    schoolId: string;
+    schoolId: string | undefined;
     teachers: SelectOption[];
     isLoadingTeachers: boolean;
 };
@@ -28,6 +28,7 @@ const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!schoolId) return;
         setIsLoading(true);
 
         if (!selectedTeacher) {
@@ -37,8 +38,9 @@ const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({
         }
 
         setError("");
+        setSchoolCookie(schoolId);
         setTeacherCookie(selectedTeacher);
-        route.push(`${router.teacherPortal.p}/${schoolId}/${selectedTeacher}`);
+        route.push(`${router.teacherPortalRead.p}/${schoolId}/${selectedTeacher}`);
     };
 
     return (

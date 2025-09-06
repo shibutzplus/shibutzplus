@@ -87,3 +87,11 @@ export type TeacherHourlyScheduleItem = {
 export type GetTeacherScheduleResponse = ActionResponse & {
     data?: TeacherHourlyScheduleItem[];
 };
+
+export const OtherTeacherValues = {
+    home: "home" as const,
+    test: "test" as const,
+    noTeacher: "noTeacher" as const,
+    noSubstitute: "noSubstitute" as const,
+};
+export type OtherTeacherOptions = (typeof OtherTeacherValues)[keyof typeof OtherTeacherValues];

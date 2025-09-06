@@ -5,7 +5,7 @@ import styles from "./PortalWriteRow.module.css";
 import RichText from "@/components/ui/RichText/RichText";
 import { DailyScheduleRequest, DailyScheduleType } from "@/models/types/dailySchedule";
 import { HourRowColor } from "@/style/tableColors";
-import { usePublicPortal } from "@/context/PublicPortalContext";
+import { usePortal } from "@/context/PortalContext";
 import { initDailyCellData } from "@/utils/Initialize";
 
 type PortalWriteRowProps = {
@@ -14,7 +14,7 @@ type PortalWriteRowProps = {
 };
 
 const PortalWriteRow: React.FC<PortalWriteRowProps> = ({ hour, row }) => {
-    const { handleSave, selectedDate } = usePublicPortal();
+    const { handleSave, selectedDate } = usePortal();
 
     const [instructions, setInstructions] = useState<string>(row?.instructions || "");
 
@@ -25,7 +25,6 @@ const PortalWriteRow: React.FC<PortalWriteRowProps> = ({ hour, row }) => {
 
     const handleChange = async (html: string) => {
         if (!row) return;
-
         const value = html.trim() !== "" ? html.trim() : undefined;
         const dailyCellData: DailyScheduleRequest = initDailyCellData(row, selectedDate, value);
 

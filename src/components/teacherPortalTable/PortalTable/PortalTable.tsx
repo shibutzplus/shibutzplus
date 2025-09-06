@@ -3,16 +3,14 @@ import styles from "./PortalTable.module.css";
 import { TableRows } from "@/models/constant/table";
 import { DailyScheduleType } from "@/models/types/dailySchedule";
 import PortalWriteRow from "../PortalWriteRow/PortalWriteRow";
-import { usePublicPortal } from "@/context/PublicPortalContext";
 import PortalReadRow from "../PortalReadRow/PortalReadRow";
 
 type PortalTableProps = {
     tableData: DailyScheduleType[] | undefined;
+    mode: "read" | "write";
 };
 
-const PortalTable: React.FC<PortalTableProps> = ({ tableData = [] }) => {
-    const { pageMode } = usePublicPortal();
-
+const PortalTable: React.FC<PortalTableProps> = ({ tableData = [], mode }) => {
     const byHour = useMemo(() => {
         return tableData.reduce<Record<number, DailyScheduleType>>((acc, item) => {
             if (item?.hour && typeof item.hour === "number") {
@@ -35,7 +33,7 @@ const PortalTable: React.FC<PortalTableProps> = ({ tableData = [] }) => {
                 <tbody>
                     {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => {
                         const row = byHour[hour];
-                        return pageMode === "read" ? (
+                        return mode === "read" ? (
                             <PortalReadRow key={hour} hour={hour} row={row} />
                         ) : (
                             <PortalWriteRow key={hour} hour={hour} row={row} />

@@ -1,7 +1,7 @@
 "use server";
 
 import { DailyScheduleType, GetDailyScheduleResponse } from "@/models/types/dailySchedule";
-import { checkAuthAndParams } from "@/utils/authUtils";
+import { publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { and, eq } from "drizzle-orm";
 import { db, schema, executeQuery } from "../../../db";
@@ -13,7 +13,7 @@ const getTeacherFullScheduleAction = async (
     date: string,
 ): Promise<GetDailyScheduleResponse> => {
     try {
-        const authError = await checkAuthAndParams({ teacherId, date });
+        const authError = await publicAuthAndParams({ teacherId, date });
         if (authError) {
             return authError as GetDailyScheduleResponse;
         }

@@ -5,41 +5,51 @@ import HeroSection from "@/components/layout/HeroSection/HeroSection";
 import TeacherAuthForm from "@/components/auth/TeacherAuthForm/TeacherAuthForm";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getTeacherCookie, setTeacherCookie } from "@/lib/cookies";
+import { getTeacherCookie, setSchoolCookie, setTeacherCookie } from "@/lib/cookies";
 import router from "@/routes";
 import { SelectOption } from "@/models/types";
 import messages from "@/resources/messages";
 import { errorToast } from "@/lib/toast";
 import { getTeachersAction } from "@/app/actions/GET/getTeachersAction";
+import SignInLoadingPage from "@/components/layout/loading/SignInLoadingPage/SignInLoadingPage";
 
 export default function TeacherSignInPage() {
     const params = useParams();
     const route = useRouter();
     const searchParams = useSearchParams();
-    const schoolId = params.schoolId as string;
-    const teacherId = searchParams.get("teacher_id");
+    const schoolId = params.schoolId as string | undefined;
+    const teacherId = searchParams.get("teacher_id") as string | null;
 
     const [teachers, setTeachers] = useState<SelectOption[]>([]);
     const [isLoadingTeachers, setIsLoadingTeachers] = useState(true);
 
+    const [isLoading, setIsLoading] = useState(true);
+
     useEffect(() => {
-        // Check if teacher is already selected via cookie
-        const selectedTeacherId = getTeacherCookie();
-        if (selectedTeacherId) {
-            route.push(`${router.teacherPortal.p}/${schoolId}/${selectedTeacherId}`);
+        if (!schoolId) {
+            route.push(`${router.teacherSignIn.p}`);
             return;
         }
 
         // Check if teacherId is provided in URL query params
         if (teacherId) {
+            setSchoolCookie(schoolId);
             setTeacherCookie(teacherId);
-            route.push(`${router.teacherPortal.p}/${schoolId}/${teacherId}`);
+            route.push(`${router.teacherPortalRead.p}/${schoolId}/${teacherId}`);
+            return;
+        }
+
+        // Check if teacher is already selected via cookie
+        const selectedTeacherId = getTeacherCookie();
+        if (selectedTeacherId) {
+            route.push(`${router.teacherPortalRead.p}/${schoolId}/${selectedTeacherId}`);
             return;
         }
 
         // Fetch teachers for the given schoolId
         const fetchTeachers = async () => {
             try {
+                setIsLoading(false);
                 setIsLoadingTeachers(true);
                 const response = await getTeachersAction(schoolId, { isPrivate: false });
                 if (response.success && response.data) {
@@ -50,10 +60,12 @@ export default function TeacherSignInPage() {
                     setTeachers(teacherOptions);
                 } else {
                     errorToast(response.message || messages.teachers.error);
+                    route.push(`${router.teacherSignIn.p}`);
                 }
             } catch (error) {
                 console.error("Error fetching teachers:", error);
                 errorToast(messages.teachers.error);
+                route.push(`${router.teacherSignIn.p}`);
             } finally {
                 setIsLoadingTeachers(false);
             }
@@ -61,6 +73,10 @@ export default function TeacherSignInPage() {
 
         fetchTeachers();
     }, [route, schoolId, teacherId]);
+
+    if (isLoading) {
+        return <SignInLoadingPage />;
+    }
 
     return (
         <main className={styles.container}>

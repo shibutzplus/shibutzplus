@@ -8,8 +8,11 @@ import routePath from "../../../routes";
 import { useAccessibility } from "../../../hooks/useAccessibility";
 import { STATUS_AUTH } from "@/models/constant/session";
 import Icons from "@/style/icons";
-import { clearStorage, getStorageSchoolId, getStorageSchool } from "@/lib/localStorage";
-import { clearTeacherCookie } from "@/lib/cookies";
+import { clearStorage, getStorageSchoolId } from "@/lib/localStorage";
+import { clearSchoolCookie, clearTeacherCookie, getSchoolCookie } from "@/lib/cookies";
+import { useRouter } from "next/navigation";
+import router from "../../../routes";
+import { clearSessionStorage } from "@/lib/sessionStorage";
 
 type HamburgerNavProps = {
     isOpen: boolean;
@@ -73,12 +76,10 @@ const LinkComponent = ({ link, onClose }: { link: ILink; onClose: () => void }) 
     );
 };
 
-const joinPath = (base: string, id?: string | null) =>
-    id ? `${base.replace(/\/$/, "")}/${id}` : base;
-
 const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose, variant = "admin" }) => {
-    const { data: session, status } = useSession();
+    const { status } = useSession();
     const navRef = useRef<HTMLDivElement>(null);
+    const route = useRouter();
     useAccessibility({ isOpen, navRef, onClose });
 
     const overlayRef = useRef<HTMLDivElement>(null);
@@ -89,6 +90,21 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose, variant = 
     }, [isOpen]);
 
     const showAdminLinks = variant === "admin";
+
+    const handleLogout = () => {
+        if (variant === "admin") {
+            clearStorage();
+            signOut({ callbackUrl: routePath.signIn.p });
+        } else {
+            const schoolId = getSchoolCookie();
+            clearSchoolCookie();
+            clearTeacherCookie();
+            clearSessionStorage();
+            if (schoolId) route.push(`${router.teacherSignIn.p}/${schoolId}`);
+            else route.push(`${router.teacherSignIn.p}`);
+        }
+        onClose();
+    };
 
     return (
         <div ref={overlayRef} className={`${styles.overlay} ${isOpen ? styles.open : ""}`}>
@@ -103,43 +119,41 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose, variant = 
                     <Icons.close size={24} />
                 </button>
 
-                {showAdminLinks && (
-                    <section className={styles.menuSection}>
-                        <ul>
-                            {links.map((link, index) => (
-                                <li
-                                    key={index}
-                                    className={link.withDivider ? styles.withDivider : undefined}
+                {showAdminLinks ? (
+                    <>
+                        <section className={styles.menuSection}>
+                            <ul>
+                                {links.map((link, index) => (
+                                    <li
+                                        key={index}
+                                        className={
+                                            link.withDivider ? styles.withDivider : undefined
+                                        }
+                                    >
+                                        <LinkComponent link={link} onClose={onClose} />
+                                    </li>
+                                ))}
+                            </ul>
+                        </section>
+                        {status === STATUS_AUTH ? (
+                            <section className={styles.logoutSection}>
+                                <div
+                                    onClick={handleLogout}
+                                    className={styles.navLink}
+                                    aria-label="Logout"
                                 >
-                                    <LinkComponent link={link} onClose={onClose} />
-                                </li>
-                            ))}
-                        </ul>
-                    </section>
-                )}
-
-                {status === STATUS_AUTH && (
+                                    <Icons.logOut size={24} />
+                                    <span>יציאה מהמערכת</span>
+                                </div>
+                            </section>
+                        ) : null}
+                    </>
+                ) : (
                     <section className={styles.logoutSection}>
-                        <Link
-                            href="#"
-                            onClick={() => {
-                                const schoolId = getStorageSchoolId() || getStorageSchool()?.id;
-                                const teacherUrl = joinPath(routePath.teacherSignIn.p, schoolId);
-                                const callbackUrl =
-                                    variant === "portal" ? teacherUrl : routePath.signIn.p;
-
-                                onClose();
-                                clearTeacherCookie();
-                                clearStorage();
-
-                                signOut({ callbackUrl });
-                            }}
-                            className={styles.navLink}
-                            aria-label="Logout"
-                        >
+                        <div onClick={handleLogout} className={styles.navLink} aria-label="Logout">
                             <Icons.logOut size={24} />
                             <span>יציאה מהמערכת</span>
-                        </Link>
+                        </div>
                     </section>
                 )}
             </div>

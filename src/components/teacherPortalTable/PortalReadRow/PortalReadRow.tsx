@@ -2,6 +2,7 @@ import React from "react";
 import styles from "./PortalReadRow.module.css";
 import { DailyScheduleType } from "@/models/types/dailySchedule";
 import { HourRowColor } from "@/style/tableColors";
+import MarkDown from "@/components/ui/MarkDown/MarkDown";
 
 type PortalReadRowProps = { hour: number; row: DailyScheduleType | undefined };
 
@@ -19,7 +20,9 @@ const PortalReadRow: React.FC<PortalReadRowProps> = ({ hour, row }) => {
                 </div>
             </td>
 
-            <td className={styles.scheduleCell}>{row ? row.instructions : ""}</td>
+            <td className={styles.scheduleCell}>
+                <MarkDown instructions={row?.instructions || ""} />
+            </td>
         </tr>
     );
 };

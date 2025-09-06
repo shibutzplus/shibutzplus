@@ -1,38 +1,3 @@
-
-.dateInfo {
-  background-color: #f8f9fa;
-  padding: 15px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  border-left: 4px solid #007bff;
-}
-
-.dataCount {
-  font-size: 14px;
-  color: #28a745;
-  font-weight: 500;
-}
-
-.noData {
-  text-align: center;
-  color: #6c757d;
-  font-size: 16px;
-  padding: 40px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  border: 2px dashed #dee2e6;
-}
-
-.noDateSelected {
-  text-align: center;
-  color: #6c757d;
-  font-size: 18px;
-  padding: 60px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  border: 2px dashed #dee2e6;
-}
-
 .tableWrapper {
   margin-top: 20px;
   border-radius: 8px;

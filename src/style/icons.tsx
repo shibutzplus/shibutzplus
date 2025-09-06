@@ -1,8 +1,10 @@
 import {
     IoArrowForward,
     IoCalendarClearOutline,
+    IoCalendarClear,
     IoHomeOutline,
     IoCalendarOutline,
+    IoCalendarSharp,
     IoPersonCircleOutline,
     IoLogOutOutline,
     IoSchoolOutline,
@@ -10,6 +12,7 @@ import {
     IoMenuOutline,
     IoCloseOutline,
     IoBookOutline,
+    IoBook,
 } from "react-icons/io5";
 import { RiEdit2Fill, RiDeleteBin6Line } from "react-icons/ri";
 import { BsMegaphoneFill, BsCalendar4Event } from "react-icons/bs";
@@ -28,16 +31,18 @@ import { LiaChalkboardTeacherSolid } from "react-icons/lia";
 import { GiTeacher } from "react-icons/gi";
 import { IoMdPerson } from "react-icons/io";
 
-
 const Icons = {
     addTeacher: MdPersonAdd,
     arrowForward: IoArrowForward,
     book: IoBookOutline,
+    bookFill: IoBook,
     calendar: IoCalendarOutline,
+    calendarFill: IoCalendarClear,
     chair: PiChairLight,
     close: IoCloseOutline,
     copy: MdOutlineContentCopy,
     dailyCalendar: IoCalendarClearOutline,
+    dailyCalendarFill: IoCalendarSharp,
     delete: RiDeleteBin6Line,
     edit: RiEdit2Fill,
     empty: MdOutlineImageNotSupported,

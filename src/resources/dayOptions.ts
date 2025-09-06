@@ -69,17 +69,24 @@ export function getIsraeliDateOptions(): SelectOption[] {
 }
 
 export function getPublishedDatesOptions(dates: string[]): SelectOption[] {
-    const todayStr = new Date().toISOString().slice(0, 10);
+    // Calculate yesterday in Israel timezone
+    const yesterday = new Date(israelToday);
+    yesterday.setDate(israelToday.getDate() - 1);
+    const yesterdayStr = getDateReturnString(yesterday);
 
     return dates
-        .filter((d) => d >= todayStr) // keep today and future only
+        .filter((d) => d >= yesterdayStr) // keep yesterday, today and future
         .sort()
         .map((dateStr) => {
             const formatted = formatTMDintoDMY(dateStr); // DD-MM-YYYY for display
             const dayOfWeek = new Date(dateStr).getDay();
+            
+            // Add special labels for yesterday and today
+            let label = `${formatted} | ${DAYS_OF_WEEK_FORMAT[dayOfWeek]}`;
+            
             return {
                 value: dateStr,
-                label: `${formatted} | ${DAYS_OF_WEEK_FORMAT[dayOfWeek]}`,
+                label: label,
             };
         });
 }

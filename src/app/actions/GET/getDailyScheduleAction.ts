@@ -1,7 +1,7 @@
 "use server";
 
 import { DailyScheduleType, GetDailyScheduleResponse } from "@/models/types/dailySchedule";
-import { checkAuthAndParams } from "@/utils/authUtils";
+import { checkAuthAndParams, publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { and, eq } from "drizzle-orm";
 import { db, schema, executeQuery } from "../../../db";
@@ -9,12 +9,16 @@ import { db, schema, executeQuery } from "../../../db";
 export async function getDailyScheduleAction(
     schoolId: string,
     date: string,
+    options: { isPrivate: boolean } = { isPrivate: true },
 ): Promise<GetDailyScheduleResponse> {
     try {
-        const authError = await checkAuthAndParams({ schoolId, date });
-        if (authError) {
-            return authError as GetDailyScheduleResponse;
+        let authError;
+        if (options.isPrivate) {
+            authError = await checkAuthAndParams({ schoolId, date });
+        } else {
+            authError = await publicAuthAndParams({ schoolId, date });
         }
+        if (authError) return authError as GetDailyScheduleResponse;
 
         const dailySchedule = await executeQuery(async () => {
             const schedules = await db.query.dailySchedule.findMany({

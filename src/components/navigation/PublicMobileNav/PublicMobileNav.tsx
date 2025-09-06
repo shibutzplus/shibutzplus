@@ -3,50 +3,71 @@
 import React from "react";
 import styles from "./PublicMobileNav.module.css";
 import Icons from "@/style/icons";
-import { usePublicPortal } from "@/context/PublicPortalContext";
+import { usePortal } from "@/context/PortalContext";
+import { usePathname, useRouter } from "next/navigation";
+import router from "@/routes";
 
 const PublicMobileNav: React.FC = () => {
-    const { switchReadAndWrite, pageMode } = usePublicPortal();
+    const route = useRouter();
+    const pathname = usePathname();
+    const { teacher } = usePortal();
 
-    // force-write mode
-    const goWriteMode = () => {
-        if (pageMode === "read") switchReadAndWrite("write");
+    const pushToTeacherPortalWrite = () => {
+        if (teacher) route.push(`${router.teacherPortalWrite.p}/${teacher.schoolId}/${teacher.id}`);
+        return;
     };
 
-    // force-read mode
-    const goMySchedule = () => {
-        if (pageMode === "write") switchReadAndWrite("read");
+    const pushToTeacherPortalRead = () => {
+        if (teacher) route.push(`${router.teacherPortalRead.p}/${teacher.schoolId}/${teacher.id}`);
+        return;
+    };
+
+    const pushToDailySchedulePortal = () => {
+        route.push(`${router.dailySchedulePortal.p}`);
+        return;
     };
 
     return (
         <nav className={styles.mobileNav} role="navigation" aria-label="Bottom navigation">
             <button
                 type="button"
-                className={`${styles.item} ${pageMode === "write" ? styles.active : ""}`}
-                onClick={goWriteMode}
                 aria-label="הזנת חומרי לימוד"
+                onClick={pushToTeacherPortalWrite}
+                className={`${styles.item} ${pathname.includes(router.teacherPortalWrite.p) ? styles.active : ""}`}
             >
-                <Icons.book size={20} />
+                {pathname.includes(router.teacherPortalWrite.p) ? (
+                    <Icons.bookFill size={16} style={{ marginInlineEnd: "4px" }} />
+                ) : (
+                    <Icons.book size={16} style={{ marginInlineEnd: "4px" }} />
+                )}
                 <span className={styles.label}>הזנת חומרי לימוד</span>
             </button>
 
             <button
                 type="button"
-                className={`${styles.item} ${pageMode === "read" ? styles.active : ""}`}
-                onClick={goMySchedule}
                 aria-label="המערכת שלי"
+                onClick={pushToTeacherPortalRead}
+                className={`${styles.item} ${pathname.includes(router.teacherPortalRead.p) ? styles.active : ""}`}
             >
-                <Icons.dailyCalendar size={20} />
+                {pathname.includes(router.teacherPortalRead.p)? (
+                    <Icons.dailyCalendarFill size={16} style={{ marginInlineEnd: "4px" }} />
+                ) : (
+                    <Icons.dailyCalendar size={16} style={{ marginInlineEnd: "4px" }} />
+                )}
                 <span className={styles.label}>המערכת שלי</span>
             </button>
 
             <button
                 type="button"
-                className={styles.item}
-                onClick={() => {}}
                 aria-label="מערכת בית ספרית"
+                onClick={pushToDailySchedulePortal}
+                className={`${styles.item} ${pathname.includes(router.dailySchedulePortal.p) ? styles.active : ""}`}
             >
-                <Icons.calendar size={20} />
+                {pathname.includes(router.dailySchedulePortal.p) ? (
+                    <Icons.calendarFill size={16} style={{ marginInlineEnd: "4px" }} />
+                ) : (
+                    <Icons.calendar size={16} style={{ marginInlineEnd: "4px" }} />
+                )}
                 <span className={styles.label}>מערכת בית ספרית</span>
             </button>
         </nav>

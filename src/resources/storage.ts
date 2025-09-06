@@ -12,5 +12,11 @@ export const STORAGE_KEYS = {
 
 // Cookies keys
 export const COOKIES_KEYS = {
+    SELECTED_SCHOOL: "selected_school",
     SELECTED_TEACHER: "selected_teacher",
+}
+
+// Session keys
+export const SESSION_KEYS = {
+    TEACHERS_DATA: "shibutzplus_teachers_data",
 }

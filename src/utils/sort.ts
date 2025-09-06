@@ -1,11 +1,11 @@
 import { GroupOption } from "@/models/types";
-import { AvailableTeachers } from "@/models/types/annualSchedule";
+import { AvailableTeachers, WeeklySchedule } from "@/models/types/annualSchedule";
 import { ColumnType } from "@/models/types/dailySchedule";
 import { TeacherRow } from "@/models/types/table";
-import { TeacherType } from "@/models/types/teachers";
-import routePath from "@/routes";
+import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import { ColumnDef } from "@tanstack/react-table";
 import { dayToNumber } from "./time";
+import { ClassType } from "@/models/types/classes";
 
 /**
  * Sorts an array of objects by their Hebrew name property in alphabetical order (א-ב-ג...)
@@ -109,8 +109,10 @@ export const sortDailyTeachers = (
             })),
         },
         {
-            label: "אפשרויות אחרות",
+            label: "אפשרויות נוספות",
             options: [
+                { value: "home", label: "שחרור הביתה" },
+                { value: "test", label: "מבחן" },
                 { value: "noTeacher", label: "ללא מורה" },
                 { value: "noSubstitute", label: "ללא החלפה" },
             ],
@@ -123,5 +125,64 @@ export const sortDailyTeachers = (
             })),
         },
     ];
+    return groups;
+};
+
+export const sortAnnualTeachers = (
+    allTeachers: TeacherType[],
+    classes: ClassType[],
+    schedule: WeeklySchedule,
+    selectedClassId: string,
+    day: string,
+    hour: number,
+): GroupOption[] => {
+    // Calculate available teachers for this specific day and hour
+    const busyTeacherIds = new Set<string>();
+
+    // Check all classes except the currently selected one
+    classes.forEach((cls) => {
+        if (cls.id != selectedClassId) {
+            const teacherIds = schedule[cls.id]?.[day]?.[hour]?.teachers;
+            if (teacherIds) {
+                teacherIds.forEach((id) => {
+                    busyTeacherIds.add(id);
+                });
+            }
+        }
+    });
+
+    // Filter available teachers (not busy at this time)
+    const availableTeachers = allTeachers.filter((teacher) => !busyTeacherIds.has(teacher.id));
+    const availableTeacherIds = new Set(availableTeachers.map((t) => t.id));
+
+    const availableRegular = allTeachers.filter(
+        (teacher) =>
+            teacher.role === TeacherRoleValues.REGULAR && availableTeacherIds.has(teacher.id),
+    );
+
+    const unavailableTeachers = allTeachers.filter((teacher) => busyTeacherIds.has(teacher.id));
+
+    // Sort each group alphabetically in Hebrew
+    const sortedAvailableRegular = sortByHebrewName(availableRegular);
+    const sortedUnavailableTeachers = sortByHebrewName(unavailableTeachers);
+
+    // Build grouped options (always three groups, even if empty)
+    const groups: GroupOption[] = [
+        {
+            label: "מורים פנויים", // Available
+            options: sortedAvailableRegular.map((teacher) => ({
+                value: teacher.id,
+                label: teacher.name,
+            })),
+        },
+        {
+            label: "מורים לא פנויים", // Unavailable
+            options: sortedUnavailableTeachers.map((teacher) => ({
+                value: teacher.id,
+                label: teacher.name,
+            })),
+        },
+    ];
+
     return groups;
 };

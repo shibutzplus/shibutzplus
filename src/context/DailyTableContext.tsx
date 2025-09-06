@@ -82,6 +82,11 @@ interface DailyTableContextType {
         columnId: string,
         value: string,
     ) => Promise<DailyScheduleType | undefined>;
+    addEmptyCell: (
+        type: ColumnType,
+        cellData: DailyScheduleCell,
+        columnId: string,
+    ) => Promise<DailyScheduleType | undefined>;
     daysSelectOptions: () => SelectOption[];
     handleDayChange: (value: string) => void;
 }
@@ -405,6 +410,33 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         return undefined;
     };
 
+    const addEmptyCell = async (
+        type: ColumnType,
+        cellData: DailyScheduleCell,
+        columnId: string,
+    ): Promise<DailyScheduleType | undefined> => {
+        if (!school) return;
+
+        const position = 0;
+        const newDailyRow = addNewTeacherValueCell(
+            school,
+            cellData,
+            columnId,
+            selectedDate,
+            type,
+            position,
+        );
+        if (newDailyRow) {
+            const response = await addDailyTeacherCellAction(newDailyRow);
+            if (response.success && response.data) {
+                addTeacherResponse(response.data, cellData, columnId, {});
+                return response.data;
+            }
+        }
+
+        return undefined;
+    };
+
     const addTeacherResponse = (
         response: DailyScheduleType,
         cellData: DailyScheduleCell,
@@ -579,6 +611,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 addNewCell,
                 updateCell,
                 addNewCellText,
+                addEmptyCell,
                 daysSelectOptions,
                 handleDayChange,
             }}

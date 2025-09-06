@@ -1,5 +1,5 @@
-
-- daily-schadule-readonly --> daily-schadule-portal
+-- storage array of the dates that was published and disable the button if the day was published
+-- history page, find by day and month
 
 
 - roy - daily - remove save details alerts
@@ -70,6 +70,7 @@ WONT DO
 - side nav split into sections with title
 
 
+v- daily-schadule-readonly --> daily-schadule-portal
 v-- logo on dark mode
 v- daily - after publish, show the published link
 v- roy - daily - fix publish
