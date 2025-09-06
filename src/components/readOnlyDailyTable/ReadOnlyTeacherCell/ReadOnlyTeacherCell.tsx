@@ -11,8 +11,10 @@ const ReadOnlyTeacherCell: React.FC<ReadOnlyTeacherCellProps> = ({ cellData }) =
         <div className={styles.teacherCell}>
             {cellData.class && <div className={styles.className}>{cellData.class.name}</div>}
             {cellData.subject && <div className={styles.subjectName}>{cellData.subject.name}</div>}
-            {cellData.subTeacher && (
-                <div className={styles.subTeacherName}>{cellData.subTeacher.name}</div>
+            {cellData.subTeacher ? (
+                <div className={styles.subTeacherName}>{cellData.subTeacher?.name}</div>
+            ) : (
+                <div className={styles.subTeacherName}>{cellData.event}</div>
             )}
         </div>
     );

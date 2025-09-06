@@ -6,7 +6,6 @@ import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { eq } from "drizzle-orm";
-import { getTeachersAction } from "../GET/getTeachersAction";
 
 export async function updateTeacherAction(
     teacherId: string,
@@ -40,11 +39,18 @@ export async function updateTeacherAction(
             return { success: false, message: messages.teachers.updateError };
         }
 
-        const allTeachersResp = await getTeachersAction(teacherData.schoolId);
+        const allTeachersResp = await executeQuery(async () => {
+            return await db
+                .select()
+                .from(schema.teachers)
+                .where(eq(schema.teachers.schoolId, teacherData.schoolId))
+                .orderBy(schema.teachers.name);
+        });
+
         return {
             success: true,
             message: messages.teachers.updateSuccess,
-            data: allTeachersResp.data || [],
+            data: allTeachersResp || [],
         };
     } catch (error) {
         console.error("Error updating teacher:", error);

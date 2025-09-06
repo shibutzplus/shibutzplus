@@ -57,7 +57,7 @@ const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({
                                 ? "טוען רשימת מורים..."
                                 : "בחרו את שמכם כדי שנוכל להמשיך"
                         }
-                        isSearchable={true}
+                        isSearchable={false}
                         isDisabled={isLoadingTeachers}
                         hasBorder
                     />

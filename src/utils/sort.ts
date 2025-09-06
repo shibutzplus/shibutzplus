@@ -1,11 +1,13 @@
 import { GroupOption } from "@/models/types";
 import { AvailableTeachers, WeeklySchedule } from "@/models/types/annualSchedule";
-import { ColumnType } from "@/models/types/dailySchedule";
+import { ColumnType, DailySchedule, DailyScheduleCell } from "@/models/types/dailySchedule";
 import { TeacherRow } from "@/models/types/table";
 import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import { ColumnDef } from "@tanstack/react-table";
 import { dayToNumber } from "./time";
 import { ClassType } from "@/models/types/classes";
+import { createSelectOptions } from "./format";
+import { dailySelectActivity } from "@/resources/dailySelectActivities";
 
 /**
  * Sorts an array of objects by their Hebrew name property in alphabetical order (א-ב-ג...)
@@ -110,12 +112,7 @@ export const sortDailyTeachers = (
         },
         {
             label: "אפשרויות נוספות",
-            options: [
-                { value: "home", label: "שחרור הביתה" },
-                { value: "test", label: "מבחן" },
-                { value: "noTeacher", label: "ללא מורה" },
-                { value: "noSubstitute", label: "ללא החלפה" },
-            ],
+            options: dailySelectActivity,
         },
         {
             label: "מורים לא פנויים", // Unavailable
@@ -185,4 +182,28 @@ export const sortAnnualTeachers = (
     ];
 
     return groups;
+};
+
+export const filterDailyHeaderTeachers = (
+    teachers: TeacherType[] | undefined,
+    alreadySelectedTeachers: DailySchedule,
+    selectedTeacher?: TeacherType,
+) => {
+    const flatTeachersSet = new Set<string>();
+    if (teachers) {
+        Object.values(alreadySelectedTeachers).forEach((day) => {
+            Object.values(day).forEach((hour) => {
+                Object.values(hour).forEach((teacher) => {
+                    if (teacher.headerCol?.headerTeacher?.id) {
+                        flatTeachersSet.add(teacher.headerCol.headerTeacher.id);
+                    }
+                });
+            });
+        });
+        const filterdTeachers = teachers.filter(
+            (teacher) => teacher.id === selectedTeacher?.id || !flatTeachersSet.has(teacher.id),
+        );
+        return createSelectOptions(filterdTeachers);
+    }
+    return [];
 };

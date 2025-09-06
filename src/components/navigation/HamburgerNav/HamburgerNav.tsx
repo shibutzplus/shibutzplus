@@ -14,6 +14,7 @@ import { usePathname, useRouter } from "next/navigation"
 import router from "../../../routes"
 import { clearSessionStorage } from "@/lib/sessionStorage"
 
+
 type HamburgerNavProps = {
     isOpen: boolean
     onClose: () => void

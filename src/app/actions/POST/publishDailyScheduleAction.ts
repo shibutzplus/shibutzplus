@@ -21,6 +21,7 @@ export async function publishDailyScheduleAction(
         // Don't add duplicate dates
         const publishDates = Array.isArray(school.publishDates) ? school.publishDates : [];
         if (publishDates.includes(date)) {
+            // Wont show to the user
             return { success: true, message: messages.publish.alreadyPublished };
         }
 

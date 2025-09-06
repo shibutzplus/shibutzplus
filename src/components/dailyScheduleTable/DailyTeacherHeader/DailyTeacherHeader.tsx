@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
+import { filterDailyHeaderTeachers } from "@/utils/sort";
 import DynamicInputSelect from "../../ui/select/InputSelect/DynamicInputSelect";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import { ColumnType } from "@/models/types/dailySchedule";
 import { getDayNumberByDateString } from "@/utils/time";
 import { useMainContext } from "@/context/MainContext";
 import { errorToast, successToast } from "@/lib/toast";
-import { createSelectOptions } from "@/utils/format";
 import messages from "@/resources/messages";
 import EditableHeader from "../../ui/table/EditableHeader/EditableHeader";
 
@@ -19,11 +19,7 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId, type 
     const { mainDailyTable, selectedDate, populateTeacherColumn } = useDailyTableContext();
     const [isLoading, setIsLoading] = useState(false);
 
-    const selectedTeacherData =
-        mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.headerTeacher;
-
-    // Always use the teacher name for delete popup
-    const deleteLabel = selectedTeacherData?.name || "המורה";
+    const selectedTeacherData = mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.headerTeacher;
 
     const handleTeacherChange = async (value: string) => {
         const teacherId = value;
@@ -41,10 +37,16 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId, type 
         setIsLoading(false);
     };
 
+    // filtered out teacher options that already selected
+    // TODO: not efficient, need to check option to use session storage
+    const filteredTeacherOptions = useMemo(() => {
+        return filterDailyHeaderTeachers(teachers, mainDailyTable, selectedTeacherData);
+    }, [teachers, mainDailyTable, selectedTeacherData]);
+
     return (
-        <EditableHeader columnId={columnId} deleteLabel={deleteLabel}>
+        <EditableHeader columnId={columnId} deleteLabel={selectedTeacherData?.name || "המורה"}>
             <DynamicInputSelect
-                options={createSelectOptions(teachers)}
+                options={filteredTeacherOptions}
                 value={selectedTeacherData?.id || ""}
                 onChange={handleTeacherChange}
                 placeholder="בחירת מורה"

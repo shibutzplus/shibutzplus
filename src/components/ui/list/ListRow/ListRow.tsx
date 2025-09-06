@@ -1,5 +1,3 @@
-// NOTE: This component is reused by multiple pages:
-// ClassRow.tsx, SubjectRow.tsx, SubstituteRow.tsx, TeacherRow.tsx.
 import React, { useEffect, useState } from "react";
 import InputText from "@/components/ui/InputText/InputText";
 import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
@@ -7,10 +5,9 @@ import Icons from "@/style/icons";
 import styles from "./ListRow.module.css";
 import { useShareTextOrLink } from "@/hooks/useShareTextOrLink";
 
-// Generic type for row data
 export type ListRowProps<T> = {
     item: T;
-    schema: any; // Zod schema for validation
+    schema: any;
     onUpdate: (id: string, data: Partial<T>) => Promise<any>;
     onDelete: (item: T) => void;
     field: {
@@ -20,7 +17,7 @@ export type ListRowProps<T> = {
     };
     getId: (item: T) => string;
     getInitialValue: (item: T) => string;
-    updateExtraFields?: (item: T) => Partial<T>; // for fields like role, schoolId, etc.
+    updateExtraFields?: (item: T) => Partial<T>;
     link?: string;
 };
 
@@ -100,24 +97,14 @@ function ListRow<T extends Record<string, any>>({
             </td>
 
             <td className={styles.actions}>
-                {link && (
-                    <IconBtn
-                        onClick={shareURL}
-                        isLoading={false}
-                        Icon={<Icons.share />}
-                    />
-                )}
+                {link && <IconBtn onClick={shareURL} isLoading={false} Icon={<Icons.share />} />}
 
                 <IconBtn
                     onClick={handleUpdate}
                     isLoading={isEditLoading}
                     Icon={isEdit ? <Icons.save /> : <Icons.edit />}
                 />
-                <IconBtn
-                    onClick={() => onDelete(item)}
-                    isLoading={false}
-                    Icon={<Icons.delete />}
-                />
+                <IconBtn onClick={() => onDelete(item)} isLoading={false} Icon={<Icons.delete />} />
             </td>
         </tr>
     );
