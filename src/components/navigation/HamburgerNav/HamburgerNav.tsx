@@ -154,7 +154,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose, variant = 
                         ) : null}
                     </>
                 ) : (
-                    <section className={styles.logoutSection}>
+                    <section className={`${styles.logoutSection} ${styles.noDivider}`}>
                         <div onClick={handleLogout} className={styles.navLink} aria-label="Logout">
                             <Icons.logOut size={24} />
                             <span>יציאה מהמערכת</span>
