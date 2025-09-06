@@ -47,13 +47,10 @@ const InputSelect: React.FC<Props> = (props) => {
 
     const [options, setOptions] = useState<SelectOption[]>(initialOptions);
     const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
-    const [isMounted, setIsMounted] = useState(false);
 
     const uid = useId();
     const resolvedId = useMemo(() => id ?? `select-${uid}`, [id, uid]);
     const inputId = `react-select-${resolvedId}-input`;
-
-    useEffect(() => setIsMounted(true), []);
 
     useEffect(() => setOptions(initialOptions), [initialOptions]);
 
@@ -84,6 +81,40 @@ const InputSelect: React.FC<Props> = (props) => {
         setSelectedOption(opt);
         onChange(opt ? opt.value : "");
     };
+
+    // Merge base customStyles with RTL/overflow fixes
+    const mergedStyles = useMemo(() => {
+        const base = customStyles(error || "", hasBorder, true, backgroundColor) as any;
+        return {
+            ...base,
+            control: (provided: any, state: any) => ({
+                ...(base.control ? base.control(provided, state) : provided),
+                overflow: "visible",
+                direction: "rtl",
+            }),
+            valueContainer: (provided: any, state: any) => ({
+                ...(base.valueContainer ? base.valueContainer(provided, state) : provided),
+                overflow: "visible",
+                paddingRight: 10,
+                paddingLeft: 0,
+            }),
+            singleValue: (provided: any, state: any) => ({
+                ...(base.singleValue ? base.singleValue(provided, state) : provided),
+                direction: "rtl",
+                textAlign: "right",
+            }),
+            placeholder: (provided: any, state: any) => ({
+                ...(base.placeholder ? base.placeholder(provided, state) : provided),
+                direction: "rtl",
+                textAlign: "right",
+            }),
+            menu: (provided: any, state: any) => ({
+                ...(base.menu ? base.menu(provided, state) : provided),
+                direction: "rtl",
+                textAlign: "right",
+            }),
+        };
+    }, [error, hasBorder, backgroundColor]);
 
     return (
         <div className={styles.selectContainer}>
@@ -132,7 +163,7 @@ const InputSelect: React.FC<Props> = (props) => {
                         }
                     }
                 }}
-                styles={customStyles(error || "", hasBorder, true, backgroundColor)}
+                styles={mergedStyles}
                 classNamePrefix="react-select"
             />
             {error && <p className={styles.errorText}>{error}</p>}
