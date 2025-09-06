@@ -27,7 +27,7 @@ const PortalTable: React.FC<PortalTableProps> = ({ tableData = [], mode }) => {
                     <tr>
                         <th></th>
                         <th>שיעור</th>
-                        <th>חומר לימוד</th>
+                        <th>הזנת חומר לימוד</th>
                     </tr>
                 </thead>
                 <tbody>
