@@ -1,30 +1,30 @@
-"use client";
+"use client"
 
-import React, { useRef } from "react";
-import styles from "./HamburgerNav.module.css";
-import Link from "next/link";
-import { signOut, useSession } from "next-auth/react";
-import routePath from "../../../routes";
-import { useAccessibility } from "../../../hooks/useAccessibility";
-import { STATUS_AUTH } from "@/models/constant/session";
-import Icons from "@/style/icons";
-import { clearStorage, getStorageSchoolId } from "@/lib/localStorage";
-import { clearSchoolCookie, clearTeacherCookie, getSchoolCookie } from "@/lib/cookies";
-import { useRouter } from "next/navigation";
-import router from "../../../routes";
-import { clearSessionStorage } from "@/lib/sessionStorage";
+import React, { useRef, useEffect } from "react"
+import styles from "./HamburgerNav.module.css"
+import Link from "next/link"
+import { signOut, useSession } from "next-auth/react"
+import routePath from "../../../routes"
+import { useAccessibility } from "../../../hooks/useAccessibility"
+import { STATUS_AUTH } from "@/models/constant/session"
+import Icons from "@/style/icons"
+import { clearStorage, getStorageSchoolId } from "@/lib/localStorage"
+import { clearSchoolCookie, clearTeacherCookie, getSchoolCookie } from "@/lib/cookies"
+import { usePathname, useRouter } from "next/navigation"
+import router from "../../../routes"
+import { clearSessionStorage } from "@/lib/sessionStorage"
 
 type HamburgerNavProps = {
-    isOpen: boolean;
-    onClose: () => void;
-    variant?: "admin" | "portal";
-};
+    isOpen: boolean
+    onClose: () => void
+    variant?: "admin" | "portal"
+}
 
 interface ILink {
-    name: string;
-    p: string;
-    Icon: React.ReactNode;
-    withDivider?: boolean;
+    name: string
+    p: string
+    Icon: React.ReactNode
+    withDivider?: boolean
 }
 
 const links: ILink[] = [
@@ -65,46 +65,59 @@ const links: ILink[] = [
         p: routePath.annualSchedule.p,
         Icon: <Icons.calendar size={24} />,
     },
-];
+]
 
-const LinkComponent = ({ link, onClose }: { link: ILink; onClose: () => void }) => {
+type LinkComponentProps = {
+    link: ILink
+    onClose: () => void
+    currentPath: string
+}
+
+const LinkComponent: React.FC<LinkComponentProps> = ({ link, onClose, currentPath }) => {
+    const isActive = currentPath.startsWith(link.p) // include sub routes
     return (
-        <Link href={link.p} className={styles.navLink} onClick={onClose}>
+        <Link
+            href={link.p}
+            className={`${styles.navLink} ${isActive ? styles.active : ""}`}
+            onClick={onClose}
+        >
             {link.Icon}
             <span>{link.name}</span>
         </Link>
-    );
-};
+    )
+}
 
 const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose, variant = "admin" }) => {
-    const { status } = useSession();
-    const navRef = useRef<HTMLDivElement>(null);
-    const route = useRouter();
-    useAccessibility({ isOpen, navRef, onClose });
+    const { status } = useSession()
+    const pathname = usePathname()
+    const navRef = useRef<HTMLDivElement>(null)
+    const overlayRef = useRef<HTMLDivElement>(null)
+    const route = useRouter()
 
-    const overlayRef = useRef<HTMLDivElement>(null);
-    React.useEffect(() => {
-        if (!overlayRef.current) return;
-        if (!isOpen) overlayRef.current.setAttribute("inert", "");
-        else overlayRef.current.removeAttribute("inert");
-    }, [isOpen]);
+    useAccessibility({ isOpen, navRef, onClose })
 
-    const showAdminLinks = variant === "admin";
+    useEffect(() => {
+        if (!overlayRef.current) return
+        if (!isOpen) overlayRef.current.setAttribute("inert", "")
+        else overlayRef.current.removeAttribute("inert")
+    }, [isOpen])
+
+    const showAdminLinks = variant === "admin"
 
     const handleLogout = () => {
         if (variant === "admin") {
-            clearStorage();
-            signOut({ callbackUrl: routePath.signIn.p });
+            clearStorage()
+            signOut({ callbackUrl: routePath.signIn.p })
         } else {
-            const schoolId = getSchoolCookie();
-            clearSchoolCookie();
-            clearTeacherCookie();
-            clearSessionStorage();
-            if (schoolId) route.push(`${router.teacherSignIn.p}/${schoolId}`);
-            else route.push(`${router.teacherSignIn.p}`);
+            const schoolId = getSchoolCookie()
+            clearSchoolCookie()
+            clearTeacherCookie()
+            clearSessionStorage()
+            if (schoolId) route.push(`${router.teacherSignIn.p}/${schoolId}`)
+            else route.push(`${router.teacherSignIn.p}`)
         }
-        onClose();
-    };
+        onClose()
+    }
 
     return (
         <div ref={overlayRef} className={`${styles.overlay} ${isOpen ? styles.open : ""}`}>
@@ -124,24 +137,16 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose, variant = 
                         <section className={styles.menuSection}>
                             <ul>
                                 {links.map((link, index) => (
-                                    <li
-                                        key={index}
-                                        className={
-                                            link.withDivider ? styles.withDivider : undefined
-                                        }
-                                    >
-                                        <LinkComponent link={link} onClose={onClose} />
+                                    <li key={index} className={link.withDivider ? styles.withDivider : undefined}>
+                                        <LinkComponent link={link} onClose={onClose} currentPath={pathname} />
                                     </li>
                                 ))}
                             </ul>
                         </section>
+
                         {status === STATUS_AUTH ? (
                             <section className={styles.logoutSection}>
-                                <div
-                                    onClick={handleLogout}
-                                    className={styles.navLink}
-                                    aria-label="Logout"
-                                >
+                                <div onClick={handleLogout} className={styles.navLink} aria-label="Logout">
                                     <Icons.logOut size={24} />
                                     <span>יציאה מהמערכת</span>
                                 </div>
@@ -158,8 +163,8 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose, variant = 
                 )}
             </div>
         </div>
-    );
-};
+    )
+}
 
 export const HamburgerButton: React.FC<{ onClick: () => void; isOpen: boolean }> = ({
     onClick,
@@ -175,7 +180,7 @@ export const HamburgerButton: React.FC<{ onClick: () => void; isOpen: boolean }>
         >
             <Icons.menu size={24} />
         </button>
-    );
-};
+    )
+}
 
-export default HamburgerNav;
+export default HamburgerNav
