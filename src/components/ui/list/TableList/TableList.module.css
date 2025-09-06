@@ -1,6 +1,5 @@
 /* Mobile 320px - 767px -- 812px */
 .tableListSection {
-    overflow-y: auto;
     background-color: var(--background-inner);
 }
 
@@ -36,8 +35,11 @@
 
 /* Desktop */
 @media (min-width: 768px) {
+    .tableListSection {
+        overflow-y: auto;
+    }
+
     .tableList {
         width: 600px;
     }
 }
-

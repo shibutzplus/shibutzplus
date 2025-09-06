@@ -4,12 +4,11 @@ import styles from "./TableList.module.css";
 type TableListProps = {
     headThs: string[];
     children: React.ReactNode;
-    height?: string;
 };
 
-const TableList: React.FC<TableListProps> = ({ headThs, children, height = "90vh" }) => {
+const TableList: React.FC<TableListProps> = ({ headThs, children }) => {
     return (
-        <section className={styles.tableListSection} style={{ height }}>
+        <section className={styles.tableListSection}>
             <table className={styles.tableList}>
                 <thead>
                     <tr>

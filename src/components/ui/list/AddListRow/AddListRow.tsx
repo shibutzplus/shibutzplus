@@ -75,22 +75,22 @@ function AddListRow<T extends Record<string, any>>({
         <tr>
             <td key={String(field.key)}>
                 <InputText
-    key={String(field.key)}
-    id={String(field.key)}
-    name={String(field.key)}
-    value={values[field.key] || ""}
-    onChange={handleInputChange(field.key)}
-    placeholder={field.placeholder}
-    error={validationErrors[field.key]}
-    type={field.inputType || "text"}
-    onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            // Simulate a click event for the add button
-            handleSubmitAdd(e as any);
-        }
-    }}
-/>
+                    key={String(field.key)}
+                    id={String(field.key)}
+                    name={String(field.key)}
+                    value={values[field.key] || ""}
+                    onChange={handleInputChange(field.key)}
+                    placeholder={field.placeholder}
+                    error={validationErrors[field.key]}
+                    type={field.inputType || "text"}
+                    onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                        if (e.key === "Enter") {
+                            e.preventDefault();
+                            // Simulate a click event for the add button
+                            handleSubmitAdd(e as any);
+                        }
+                    }}
+                />
             </td>
             <td>
                 <Btn
