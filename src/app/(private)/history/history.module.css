@@ -1,6 +1,14 @@
-.tableWrapper {
-  margin-top: 20px;
-  border-radius: 8px;
+:root { --top-nav-h: 64px; }
+
+.content{
+  height: calc(100dvh - var(--top-nav-h));
   overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+}
+
+.tableWrapper{
+  flex: 1;
+  height: 100%;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,.1);
 }

@@ -1,0 +1,16 @@
+.eventCell {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  height: 100%;
+  width: 100%;
+}
+
+.eventText {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  line-height: 1.4;
+  text-align: right;
+  direction: rtl;
+}
