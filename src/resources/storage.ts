@@ -1,22 +1,21 @@
 // Local storage keys
 export const STORAGE_KEYS = {
-    SCHOOL_ID: "shibutzplus_school_id",
-    SCHOOL_DATA: "shibutzplus_school_data",
-    TEACHERS_DATA: "shibutzplus_teachers_data",
-    CLASSES_DATA: "shibutzplus_classes_data",
-    SUBJECTS_DATA: "shibutzplus_subjects_data",
-    DAILY_TABLE_DATA: "shibutzplus_daily_table_data",
-    CACHE_TIMESTAMP: "shibutzplus_cache_timestamp",
-    DAILY_TABLE_ORDER: "shibutzplus_daily_table_order"
+    CACHE_TIMESTAMP: "cache_timestamp",
+    CLASSES_DATA: "classes_data",
+    TEACHERS_DATA: "teachers_data",
+    SUBJECTS_DATA: "subjects_data",
+    SCHOOL_ID: "school_id",
+    SCHOOL_DATA: "school_data",
+    DAILY_TABLE_DATA: "daily_schedule_data",
 };
 
 // Cookies keys
 export const COOKIES_KEYS = {
-    SELECTED_SCHOOL: "selected_school",
-    SELECTED_TEACHER: "selected_teacher",
+    SELECTED_SCHOOL: "school_id",
+    SELECTED_TEACHER: "teacher_id",
 }
 
 // Session keys
 export const SESSION_KEYS = {
-    TEACHERS_DATA: "shibutzplus_teachers_data",
+    TEACHERS_DATA: "teachers_data",
 }
