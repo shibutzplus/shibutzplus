@@ -40,20 +40,6 @@ const PublicMobileNav: React.FC = () => {
                 ) : (
                     <Icons.book size={16} style={{ marginInlineEnd: "4px" }} />
                 )}
-                <span className={styles.label}>הזנת חומרי לימוד</span>
-            </button>
-
-            <button
-                type="button"
-                aria-label="המערכת שלי"
-                onClick={pushToTeacherPortalRead}
-                className={`${styles.item} ${pathname.includes(router.teacherPortalRead.p) ? styles.active : ""}`}
-            >
-                {pathname.includes(router.teacherPortalRead.p)? (
-                    <Icons.dailyCalendarFill size={16} style={{ marginInlineEnd: "4px" }} />
-                ) : (
-                    <Icons.dailyCalendar size={16} style={{ marginInlineEnd: "4px" }} />
-                )}
                 <span className={styles.label}>המערכת שלי</span>
             </button>
 

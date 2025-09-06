@@ -47,13 +47,10 @@ const InputSelect: React.FC<Props> = (props) => {
 
     const [options, setOptions] = useState<SelectOption[]>(initialOptions);
     const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
-    const [isMounted, setIsMounted] = useState(false);
 
     const uid = useId();
     const resolvedId = useMemo(() => id ?? `select-${uid}`, [id, uid]);
     const inputId = `react-select-${resolvedId}-input`;
-
-    useEffect(() => setIsMounted(true), []);
 
     useEffect(() => setOptions(initialOptions), [initialOptions]);
 
@@ -84,6 +81,7 @@ const InputSelect: React.FC<Props> = (props) => {
         setSelectedOption(opt);
         onChange(opt ? opt.value : "");
     };
+
 
     return (
         <div className={styles.selectContainer}>

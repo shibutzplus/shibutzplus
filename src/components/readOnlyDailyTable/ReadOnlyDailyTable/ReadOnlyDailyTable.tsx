@@ -10,92 +10,96 @@ import ReadOnlyDailyHeader from "../ReadOnlyDailyHeader/ReadOnlyDailyHeader";
 import ReadOnlyTeacherCell from "../ReadOnlyTeacherCell/ReadOnlyTeacherCell";
 import ReadOnlyEventCell from "../ReadOnlyEventCell/ReadOnlyEventCell";
 import ReadOnlyDailyCell from "../ReadOnlyDailyCell/ReadOnlyDailyCell";
+import { DailyTableColors } from "@/style/tableColors";
 
 interface ReadOnlyDailyTableProps {
     scheduleData: DailyScheduleType[];
 }
 
+const COLOR_BY_TYPE = {
+    missingTeacher: DailyTableColors.missingTeacher.headerColor,
+    existingTeacher: DailyTableColors.existingTeacher.headerColor,
+    event: DailyTableColors.event.headerColor,
+} as const;
+
 const ReadOnlyDailyTable: React.FC<ReadOnlyDailyTableProps> = ({ scheduleData }) => {
     const [data] = useState<TeacherRow[]>(
-        Array.from({ length: TableRows }, (_, i) => ({ hour: i + 1 })),
+        Array.from({ length: TableRows }, (_, i) => ({ hour: i + 1 }))
     );
 
-    // Sort scheduleData by issueTeacherType: [missingTeacher], [existingTeacher], [event]
-    const scheduleByColumn = React.useMemo(() => {
-        const typeOrder = {
-            missingTeacher: 0,
-            existingTeacher: 1,
-            event: 2,
-        };
-        const sortedData = [...scheduleData].sort((a, b) => {
-            return typeOrder[a.issueTeacherType] - typeOrder[b.issueTeacherType];
-        });
-        const grouped: { [columnId: string]: { [hour: number]: DailyScheduleType } } = {};
-        sortedData.forEach((item) => {
-            if (!grouped[item.columnId]) {
-                grouped[item.columnId] = {};
-            }
-            grouped[item.columnId][item.hour] = item;
-        });
-        return grouped;
-    }, [scheduleData]);
+    const hasData = Array.isArray(scheduleData) && scheduleData.length > 0;
 
-    const headers = React.useMemo(() => {
+    const scheduleByColumn = React.useMemo(() => {
+        if (!hasData) return {};
+        const order = { missingTeacher: 0, existingTeacher: 1, event: 2 } as const;
+        const sorted = [...scheduleData].sort((a, b) => order[a.issueTeacherType] - order[b.issueTeacherType]);
+        const grouped: Record<string, Record<number, DailyScheduleType>> = {};
+        for (const item of sorted) {
+            if (!grouped[item.columnId]) grouped[item.columnId] = {};
+            grouped[item.columnId][item.hour] = item;
+        }
+        return grouped;
+    }, [scheduleData, hasData]);
+
+    const headerItems = React.useMemo(() => {
         const columnIds = Object.keys(scheduleByColumn);
         return columnIds.map((columnId) => {
             const firstItem = Object.values(scheduleByColumn[columnId])[0];
-            const headerTitle = firstItem?.eventTitle || firstItem?.issueTeacher?.name || "";
-            return headerTitle;
+            const title = firstItem?.eventTitle || firstItem?.issueTeacher?.name || "";
+            const color = COLOR_BY_TYPE[firstItem!.issueTeacherType as keyof typeof COLOR_BY_TYPE];
+            return { title, color };
         });
     }, [scheduleByColumn]);
 
-    // Create columns based on schedule data
     const dynamicColumns = React.useMemo(() => {
         const columnIds = Object.keys(scheduleByColumn);
         return columnIds.map((columnId) => {
             return {
                 accessorKey: columnId,
                 cell: (info: any) => {
-                    const hour = info.row.original.hour;
+                    const hour = info.row.original.hour as number;
                     const cellData = scheduleByColumn[columnId][hour];
                     if (!cellData) return <div className={styles.emptyCell}></div>;
                     if (cellData.issueTeacherType === "event" && cellData.event) return <ReadOnlyEventCell cellData={cellData} />;
                     return <ReadOnlyTeacherCell cellData={cellData} />;
                 },
-                meta: { bgColor: "#ffffff" },
             } as ColumnDef<TeacherRow>;
         });
     }, [scheduleByColumn]);
 
     const baseCols = React.useMemo(
-        () => [
-            {
-                accessorKey: "hour",
-                header: "שעה",
-                cell: (info: any) => <span>{info.getValue()}</span>,
-                meta: { bgColor: "#f5f5f5" },
-            },
-        ],
-        [],
+        () =>
+            [
+                {
+                    accessorKey: "hour",
+                    header: "שעה",
+                    cell: (info: any) => <span>{info.getValue()}</span>,
+                },
+            ] as ColumnDef<TeacherRow>[],
+        []
     );
 
-    const columns = React.useMemo(() => [...baseCols, ...dynamicColumns], [dynamicColumns]);
+    const columns = React.useMemo(() => [...baseCols, ...dynamicColumns], [baseCols, dynamicColumns]);
     const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() });
 
     return (
         <section className={styles.tableContainer}>
-            <table className={styles.scheduleTable}>
-                <ReadOnlyDailyHeader titles={headers} />
-                <tbody>
-                    {table.getRowModel().rows.map((row) => (
-                        <tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <ReadOnlyDailyCell key={cell.id} cell={cell} />
-                            ))}
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+            {!hasData ? (
+                <div className={styles.noDataMessage}>אין נתונים להצגה <br /> לא פורסמה מערכת ליום זה</div>
+            ) : (
+                <table className={styles.scheduleTable}>
+                    <ReadOnlyDailyHeader items={headerItems} />
+                    <tbody>
+                        {table.getRowModel().rows.map((row) => (
+                            <tr key={row.id}>
+                                {row.getVisibleCells().map((cell) => (
+                                    <ReadOnlyDailyCell key={cell.id} cell={cell} />
+                                ))}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            )}
         </section>
     );
 };

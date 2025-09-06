@@ -1,18 +1,24 @@
+"use client";
+
 import React from "react";
-import ReadOnlyHeader from "@/components/ui/table/ReadOnlyHeader/ReadOnlyHeader";
+import styles from "./ReadOnlyDailyHeader.module.css";
 
-type ReadOnlyDailyHeaderProps = {
-    titles: string[];
+type Props = {
+    items: { title: string; color?: string }[];
 };
 
-const ReadOnlyDailyHeader: React.FC<ReadOnlyDailyHeaderProps> = ({ titles }) => {
+export default function ReadOnlyDailyHeader({ items }: Props) {
     return (
-        <ReadOnlyHeader
-            trs={Array.from({ length: titles.length }, (_, i) => i + 1)}
-            textPlaceholder={(i: unknown) => titles[(i as number) - 1]}
-            hasHour
-        />
+        <thead>
+            <tr>
+                {/* שעה */}
+                <th className={styles.hourHeader}></th>
+                {items.map((it, i) => (
+                    <th key={i} className={styles.dayHeader} style={{ background: it.color || "transparent" }}>
+                        {it.title || "—"}
+                    </th>
+                ))}
+            </tr>
+        </thead>
     );
-};
-
-export default ReadOnlyDailyHeader;
+}

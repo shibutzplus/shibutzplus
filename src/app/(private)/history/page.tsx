@@ -24,7 +24,6 @@ const History = () => {
             const response = await getDailyScheduleAction(school.id, date);
             if (response.success && response.data) {
                 setCurrentDateData(response.data);
-                //successToast(messages.dailySchedule.success);
             } else {
                 errorToast(response.message || messages.dailySchedule.error);
                 setCurrentDateData([]);
