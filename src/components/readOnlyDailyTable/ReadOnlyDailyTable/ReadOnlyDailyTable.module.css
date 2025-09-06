@@ -11,6 +11,10 @@
     height: 100%;
 }
 
+.scheduleTable thead th {
+    height: 60px;
+}
+
 .scheduleTable td {
     border: 1px solid #ccc;
     text-align: center;
