@@ -82,39 +82,6 @@ const InputSelect: React.FC<Props> = (props) => {
         onChange(opt ? opt.value : "");
     };
 
-    // Merge base customStyles with RTL/overflow fixes
-    const mergedStyles = useMemo(() => {
-        const base = customStyles(error || "", hasBorder, true, backgroundColor) as any;
-        return {
-            ...base,
-            control: (provided: any, state: any) => ({
-                ...(base.control ? base.control(provided, state) : provided),
-                overflow: "visible",
-                direction: "rtl",
-            }),
-            valueContainer: (provided: any, state: any) => ({
-                ...(base.valueContainer ? base.valueContainer(provided, state) : provided),
-                overflow: "visible",
-                paddingRight: 10,
-                paddingLeft: 0,
-            }),
-            singleValue: (provided: any, state: any) => ({
-                ...(base.singleValue ? base.singleValue(provided, state) : provided),
-                direction: "rtl",
-                textAlign: "right",
-            }),
-            placeholder: (provided: any, state: any) => ({
-                ...(base.placeholder ? base.placeholder(provided, state) : provided),
-                direction: "rtl",
-                textAlign: "right",
-            }),
-            menu: (provided: any, state: any) => ({
-                ...(base.menu ? base.menu(provided, state) : provided),
-                direction: "rtl",
-                textAlign: "right",
-            }),
-        };
-    }, [error, hasBorder, backgroundColor]);
 
     return (
         <div className={styles.selectContainer}>
@@ -163,7 +130,7 @@ const InputSelect: React.FC<Props> = (props) => {
                         }
                     }
                 }}
-                styles={mergedStyles}
+                styles={customStyles(error || "", hasBorder, true, backgroundColor)}
                 classNamePrefix="react-select"
             />
             {error && <p className={styles.errorText}>{error}</p>}
