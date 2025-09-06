@@ -1,5 +1,8 @@
+-- @tanstack/react-query for cache and efficency
+
+-- daily - check what happend if you clear the event header
 -- storage array of the dates that was published and disable the button if the day was published
--- history page, find by day and month
+v-- history page, find by day and month
 
 
 - roy - daily - remove save details alerts

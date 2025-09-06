@@ -59,7 +59,7 @@ const ReadOnlyDailyTable: React.FC<ReadOnlyDailyTableProps> = ({ scheduleData })
                     const hour = info.row.original.hour;
                     const cellData = scheduleByColumn[columnId][hour];
                     if (!cellData) return <div className={styles.emptyCell}></div>;
-                    if (cellData.event) return <ReadOnlyEventCell cellData={cellData} />;
+                    if (cellData.issueTeacherType === "event" && cellData.event) return <ReadOnlyEventCell cellData={cellData} />;
                     return <ReadOnlyTeacherCell cellData={cellData} />;
                 },
                 meta: { bgColor: "#ffffff" },

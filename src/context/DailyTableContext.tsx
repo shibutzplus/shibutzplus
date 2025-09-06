@@ -46,6 +46,8 @@ import { eventPlaceholder } from "@/models/constant/table";
 import { getStorageDailyTable, setStorageDailyTable } from "@/lib/localStorage";
 import { sortColumnsByIssueTeacherType } from "@/utils/sort";
 import { AvailableTeachers } from "@/models/types/annualSchedule";
+import { deleteDailyCellAction } from "@/app/actions/DELETE/deleteDailyCellAction";
+import { updateDeleteCell } from "@/services/dailyScheduleService";
 
 interface DailyTableContextType {
     tableColumns: ColumnDef<TeacherRow>[];
@@ -56,6 +58,12 @@ interface DailyTableContextType {
     selectedDate: string;
     addNewColumn: (colType: ColumnType) => void;
     deleteColumn: (columnId: string) => Promise<boolean>;
+    deleteCell: (
+        type: ColumnType,
+        cellData: DailyScheduleCell,
+        columnId: string,
+        dailyScheduleId: string,
+    ) => Promise<boolean | undefined>;
     populateTeacherColumn: (
         id: string,
         dayNumber: number,
@@ -410,6 +418,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         return undefined;
     };
 
+    // TODO: not in use
     const addEmptyCell = async (
         type: ColumnType,
         cellData: DailyScheduleCell,
@@ -470,7 +479,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         let response;
         const position = 0;
         if (!school) return;
-        if (type === "event" && data.event) {
+        if (type === "event" && data.event !== undefined) {
             const dailyCellData = addNewEventCell(
                 school,
                 cellData,
@@ -519,6 +528,38 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         return undefined;
     };
 
+    const deleteCell = async (
+        type: ColumnType,
+        cellData: DailyScheduleCell,
+        columnId: string,
+        dailyScheduleId: string,
+    ) => {
+        let response;
+        if (!school) return;
+        if (type === "event") {
+            response = await deleteDailyCellAction(school.id, dailyScheduleId);
+        }
+        if (response?.success && response.deletedRowId) {
+            setDailyDbRows((prev) => {
+                if (!prev) return prev;
+                // Remove the deleted row from the database rows
+                return prev.filter((item) => item.id !== response.deletedRowId);
+            });
+
+            const updatedSchedule = updateDeleteCell(
+                response.deletedRowId,
+                mainDailyTable,
+                selectedDate,
+                cellData,
+                columnId,
+            );
+            setMainAndStorageTable(updatedSchedule);
+
+            return true;
+        }
+        return undefined;
+    };
+
     // -- Table Actions -- //
 
     const addNewColumn = (colType: ColumnType) => {
@@ -559,7 +600,6 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
             return false;
         }
     };
-
     // const filteredCols = tableColumns.filter((col) => col.id !== columnId);
     // if (filteredCols.length === tableColumns.length) return false;
     // const sortedCols = sortColumnsByIssueTeacherType(filteredCols);
@@ -606,6 +646,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 selectedDate,
                 addNewColumn,
                 deleteColumn,
+                deleteCell,
                 populateTeacherColumn,
                 populateEventColumn,
                 addNewCell,

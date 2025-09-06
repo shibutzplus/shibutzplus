@@ -51,7 +51,7 @@ export default function TeacherSignInPage() {
             try {
                 setIsLoading(false);
                 setIsLoadingTeachers(true);
-                const response = await getTeachersAction(schoolId, { isPrivate: false });
+                const response = await getTeachersAction(schoolId, { isPrivate: false, hasSub: false });
                 if (response.success && response.data) {
                     const teacherOptions: SelectOption[] = response.data.map((teacher) => ({
                         value: teacher.id,

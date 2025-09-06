@@ -1,14 +1,14 @@
 "use server";
 
-import { GetTeachersResponse } from "@/models/types/teachers";
+import { GetTeachersResponse, TeacherRoleValues } from "@/models/types/teachers";
 import { checkAuthAndParams, publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
-import { eq } from "drizzle-orm";
+import { eq, ne, and } from "drizzle-orm";
 
 export async function getTeachersAction(
     schoolId: string,
-    options: { isPrivate: boolean } = { isPrivate: true },
+    options: { isPrivate: boolean; hasSub: boolean } = { isPrivate: true, hasSub: true },
 ): Promise<GetTeachersResponse> {
     try {
         let authError;
@@ -20,11 +20,24 @@ export async function getTeachersAction(
         if (authError) return authError as GetTeachersResponse;
 
         const teachers = await executeQuery(async () => {
-            return await db
-                .select()
-                .from(schema.teachers)
-                .where(eq(schema.teachers.schoolId, schoolId))
-                .orderBy(schema.teachers.name);
+            if (options.hasSub) {
+                return await db
+                    .select()
+                    .from(schema.teachers)
+                    .where(eq(schema.teachers.schoolId, schoolId))
+                    .orderBy(schema.teachers.name);
+            } else {
+                return await db
+                    .select()
+                    .from(schema.teachers)
+                    .where(
+                        and(
+                            eq(schema.teachers.schoolId, schoolId),
+                            ne(schema.teachers.role, TeacherRoleValues.SUBSTITUTE),
+                        ),
+                    )
+                    .orderBy(schema.teachers.name);
+            }
         });
 
         if (!teachers || teachers.length === 0) {

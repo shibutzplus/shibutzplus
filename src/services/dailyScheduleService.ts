@@ -175,7 +175,6 @@ export const addNewEventCell = (
         event,
         position,
     };
-
     return dailyCellData;
 };
 
@@ -283,6 +282,33 @@ export const updateAddCell = (
     }
 
     updatedSchedule[selectedDate][columnId][hourStr] = existingCell;
+    return updatedSchedule;
+};
+
+export const updateDeleteCell = (
+    deletedRowId: string,
+    mainDailyTable: DailySchedule,
+    selectedDate: string,
+    cellData: DailyScheduleCell,
+    columnId: string,
+) => {
+    // Update mainDailyTable by removing the deleted cell data
+    const updatedSchedule = { ...mainDailyTable };
+    if (!updatedSchedule[selectedDate] || !updatedSchedule[selectedDate][columnId]) {
+        return updatedSchedule;
+    }
+
+    const hourStr = cellData.hour.toString();
+    const existingCell = updatedSchedule[selectedDate][columnId][hourStr];
+    
+    if (existingCell && existingCell.DBid === deletedRowId) {
+        // Clear the cell data but keep the header structure
+        updatedSchedule[selectedDate][columnId][hourStr] = {
+            headerCol: existingCell.headerCol,
+            hour: existingCell.hour,
+        };
+    }
+
     return updatedSchedule;
 };
 

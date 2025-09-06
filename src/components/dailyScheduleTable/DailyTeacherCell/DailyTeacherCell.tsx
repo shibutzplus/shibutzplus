@@ -6,10 +6,11 @@ import { useDailyTableContext } from "@/context/DailyTableContext";
 import { CellContext } from "@tanstack/react-table";
 import { TeacherRow } from "@/models/types/table";
 import DynamicInputGroupSelect from "@/components/ui/select/InputGroupSelect/DynamicInputGroupSelect";
-import { ColumnType, OtherTeacherValues } from "@/models/types/dailySchedule";
+import { ColumnType, ActivityValues } from "@/models/types/dailySchedule";
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { sortDailyTeachers } from "@/utils/sort";
+import { activityOptionsMapValToLabel } from "@/resources/dailySelectActivities";
 
 type DailyTeacherCellProps = {
     cell: CellContext<TeacherRow, unknown>;
@@ -25,7 +26,6 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
         selectedDate,
         updateCell,
         addNewCellText,
-        addEmptyCell,
     } = useDailyTableContext();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -49,21 +49,23 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
         [teachers, classes, selectedClassId, day, hour],
     );
 
-    const checkOneOfOtherOptions = (value: string) =>
-        Object.values(OtherTeacherValues).some((option) => option === value);
+    const checkIfActivity = (value: string) =>
+        Object.values(ActivityValues).some((option) => option === value);
 
-    const handleTeacherChange = async (methodType: "teacher" | "text", value: string) => {
+    const handleTeacherChange = async (methodType: "update" | "create", value: string) => {
         if (!hour || !columnId || !selectedDate || !headerData) return;
-        setIsLoading(true);
-
+        
         try {
+            setIsLoading(true);
             const cellData = mainDailyTable[selectedDate]?.[columnId]?.[hour];
             if (!cellData) return;
             setSelectedSubTeacher(value);
-            const isOneOfOtherOptions = checkOneOfOtherOptions(value) && methodType === "teacher";
+            const isTeacherOption = !checkIfActivity(value) && methodType === "update";
+            const isActivityOption = checkIfActivity(value) && methodType === "update";
+            const isEventOption = methodType === "create";
 
             let newSubTeacherData;
-            if (!isOneOfOtherOptions) {
+            if (isTeacherOption) {
                 newSubTeacherData = teachers?.find((t) => t.id === value);
                 if (!newSubTeacherData) return;
             }
@@ -74,24 +76,24 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
                 const existingDailyId = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.DBid;
                 if (existingDailyId) {
                     let data = {};
-                    if (!isOneOfOtherOptions && methodType === "teacher") {
+                    if (isTeacherOption) {
                         data = { subTeacher: newSubTeacherData };
-                    } else if (methodType === "text") {
+                    } else if (isEventOption) {
                         data = { event: value.trim() };
-                    } else if (isOneOfOtherOptions) {
-                        data = {};
+                    } else if (isActivityOption) {
+                        data = { event: activityOptionsMapValToLabel(value) };
                     }
                     response = await updateCell(type, cellData, columnId, existingDailyId, data);
                 }
             } else {
-                if (!isOneOfOtherOptions && methodType === "teacher") {
+                if (isTeacherOption) {
                     response = await addNewCell(type, cellData, columnId, {
                         subTeacher: newSubTeacherData,
                     });
-                } else if (methodType === "text") {
+                } else if (isEventOption) {
                     response = await addNewCellText(type, cellData, columnId, value.trim());
-                } else if (isOneOfOtherOptions) {
-                    response = await addEmptyCell(type, cellData, columnId);
+                } else if (isActivityOption) {
+                    response = await addNewCellText(type, cellData, columnId, activityOptionsMapValToLabel(value) || "");
                 }
             }
             if (!response) throw new Error();
@@ -107,24 +109,15 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
         <div className={styles.cellContent}>
             {classData && subjectData ? (
                 <div className={styles.innerCellContent}>
-                    <div
-                        className={styles.classAndSubject}
-                        style={{
-                            opacity:
-                                selectedSubTeacher === "noTeacher" ||
-                                selectedSubTeacher === "noSubstitute"
-                                    ? 0.3
-                                    : 1,
-                        }}
-                    >
+                    <div className={styles.classAndSubject}>
                         {classData.name} | {subjectData.name}
                     </div>
                     <div className={styles.teacherSelect}>
                         <DynamicInputGroupSelect
                             options={sortedTeacherOptions}
                             value={selectedSubTeacher}
-                            onChange={(value: string) => handleTeacherChange("teacher", value)}
-                            onCreate={(value: string) => handleTeacherChange("text", value)}
+                            onChange={(value: string) => handleTeacherChange("update", value)}
+                            onCreate={(value: string) => handleTeacherChange("create", value)}
                             placeholder="בחירת מורה מחליף"
                             isSearchable
                             isAllowAddNew
@@ -141,3 +134,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
 };
 
 export default DailyTeacherCell;
+
+
+// TODO: option to opacity other options
+// style={{ opacity: selectedSubTeacher === "trip" ? 0.3 : 1 }}
