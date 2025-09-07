@@ -1,4 +1,4 @@
-.container{
+.container {
   width: 100%;
   height: 100%;
   display: flex;
@@ -7,20 +7,24 @@
   overflow: visible;
 }
 
-.content{
+.content {
   flex: 1 1 auto;
   min-height: 0;
   display: flex;
   justify-content: center;
 }
 
-.withBottomPadding{
+.withBottomPadding {
   padding-bottom: calc(64px + env(safe-area-inset-bottom));
 }
 
-.whiteBox{
+.whiteBox {
   background: var(--background-inner);
   border: 0.1px solid #ccc;
   width: 100%;
   border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
 }

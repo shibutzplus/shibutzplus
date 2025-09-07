@@ -1,3 +1,15 @@
+:root {
+    --mobile-nav-h: 64px; /* height of bottom navigation */
+}
+
+.tableContainer {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    height: calc(100dvh - var(--header-height) - var(--mobile-nav-h)- 2px);
+}
+
 .scheduleTable {
     width: 100%;
     border-collapse: collapse;
@@ -23,7 +35,6 @@
 .scheduleTable td {
     line-height: 40px;
     padding: 1px 8px;
-    /* overflow-wrap: anywhere; */
 }
 
 .scheduleTable th:nth-child(1),
@@ -43,6 +54,10 @@
 
 /* Desktop */
 @media (min-width: 768px) {
+    .tableContainer {
+        height: calc(100dvh - var(--header-height) - 4px);
+    }
+
     .scheduleTable thead th {
         line-height: 40px;
         padding: 6px 10px;
@@ -66,5 +81,4 @@
         min-width: 150px;
         max-width: 150px;
     }
-
 }

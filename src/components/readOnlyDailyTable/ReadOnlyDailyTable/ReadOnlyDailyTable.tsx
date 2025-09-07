@@ -1,6 +1,7 @@
+// ReadOnlyDailyTable.tsx
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import styles from "./ReadOnlyDailyTable.module.css";
 import { getCoreRowModel, useReactTable, ColumnDef } from "@tanstack/react-table";
 import { TeacherRow } from "@/models/types/table";
@@ -15,6 +16,7 @@ import { DailyTableColors } from "@/style/tableColors";
 interface ReadOnlyDailyTableProps {
   scheduleData: DailyScheduleType[];
   isLoading: boolean;
+  hasMobileNav?: boolean; // new: apply bottom-nav height subtraction on mobile
 }
 
 const COLOR_BY_TYPE = {
@@ -23,7 +25,7 @@ const COLOR_BY_TYPE = {
   event: DailyTableColors.event.headerColor,
 } as const;
 
-const ReadOnlyDailyTable: React.FC<ReadOnlyDailyTableProps> = ({ scheduleData, isLoading }) => {
+const ReadOnlyDailyTable: React.FC<ReadOnlyDailyTableProps> = ({ scheduleData, isLoading, hasMobileNav = false }) => {
   const [data] = useState<TeacherRow[]>(
     Array.from({ length: TableRows }, (_, i) => ({ hour: i + 1 }))
   );
@@ -42,7 +44,7 @@ const ReadOnlyDailyTable: React.FC<ReadOnlyDailyTableProps> = ({ scheduleData, i
     return grouped;
   }, [scheduleData, hasData]);
 
-  const headerItems = React.useMemo(() => {
+  const headerItems = useMemo(() => {
     const columnIds = Object.keys(scheduleByColumn);
     return columnIds.map((columnId) => {
       const firstItem = Object.values(scheduleByColumn[columnId])[0];
@@ -55,7 +57,7 @@ const ReadOnlyDailyTable: React.FC<ReadOnlyDailyTableProps> = ({ scheduleData, i
     });
   }, [scheduleByColumn]);
 
-  const dynamicColumns = React.useMemo(() => {
+  const dynamicColumns = useMemo(() => {
     const columnIds = Object.keys(scheduleByColumn);
     return columnIds.map((columnId) => {
       return {
@@ -71,7 +73,7 @@ const ReadOnlyDailyTable: React.FC<ReadOnlyDailyTableProps> = ({ scheduleData, i
     });
   }, [scheduleByColumn]);
 
-  const baseCols = React.useMemo(
+  const baseCols = useMemo(
     () =>
       [
         {
@@ -83,11 +85,14 @@ const ReadOnlyDailyTable: React.FC<ReadOnlyDailyTableProps> = ({ scheduleData, i
     []
   );
 
-  const columns = React.useMemo(() => [...baseCols, ...dynamicColumns], [baseCols, dynamicColumns]);
+  const columns = useMemo(() => [...baseCols, ...dynamicColumns], [baseCols, dynamicColumns]);
   const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() });
 
   return (
-    <section className={styles.tableContainer}>
+    <section
+      className={`${styles.tableContainer} ${hasMobileNav ? styles.withMobileNav : ""}`}
+      aria-label="טבלת מערכת יומית"
+    >
       {isLoading ? (
         <div className={styles.loader} aria-busy="true" aria-live="polite"></div>
       ) : hasData ? (
