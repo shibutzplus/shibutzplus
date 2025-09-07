@@ -9,16 +9,19 @@ import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { useHistoryTable } from "@/context/HistoryTableContext";
 import ReadOnlyDailyTable from "@/components/readOnlyDailyTable/ReadOnlyDailyTable/ReadOnlyDailyTable";
+import { useSearchParams } from "next/navigation"; // read ?date= from URL
 
 const History = () => {
     const { school } = useMainContext();
     const { selectedYearDate } = useHistoryTable();
+    const searchParams = useSearchParams();
+    const dateFromQuery = searchParams.get("date"); // format: YYYY-MM-DD
+
     const [currentDateData, setCurrentDateData] = useState<DailyScheduleType[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
     const fetchDailyScheduleData = async (date: string) => {
         if (!school || !date) return;
-
         setIsLoading(true);
         try {
             const response = await getDailyScheduleAction(school.id, date);
@@ -38,12 +41,13 @@ const History = () => {
     };
 
     useEffect(() => {
-        if (selectedYearDate && school) {
-            fetchDailyScheduleData(selectedYearDate);
+        const targetDate = dateFromQuery || selectedYearDate;
+        if (targetDate && school) {
+            fetchDailyScheduleData(targetDate);
         } else {
             setCurrentDateData([]);
         }
-    }, [selectedYearDate, school]);
+    }, [school, dateFromQuery, selectedYearDate]);
 
     return (
         <div className={styles.content}>
