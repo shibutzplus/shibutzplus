@@ -149,13 +149,24 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     const [mapAvailableTeachers, setMapAvailableTeachers] = useState<AvailableTeachers>({});
 
     // -- Select Date -- //
-    const [selectedDate, setSelectedDayId] = useState<string>(getTomorrowOption());
-    const daysSelectOptions = () => {
-        return getIsraeliDateOptions();
-    };
-    const handleDayChange = (value: string) => {
-        setSelectedDayId(value);
-    };
+    const daysSelectOptions = () => getIsraeliDateOptions()
+
+    // Default date logic: show today until 16:00, after that show tomorrow
+    const [selectedDate, setSelectedDayId] = useState<string>(() => {
+        const now = new Date()
+        const hour = now.getHours()
+        const opts = getIsraeliDateOptions()
+        const pad = (n: number) => String(n).padStart(2, "0") // comment: local YYYY-MM-DD
+        const todayStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
+        if (hour < 16) {
+            const today = opts.find(o => o.value === todayStr)
+            return today?.value || opts[0]?.value || getTomorrowOption()
+        }
+        return getTomorrowOption()
+    })
+
+    // Handle manual day change from dropdown
+    const handleDayChange = (value: string) => setSelectedDayId(value)
 
     /**
      * Fetch annual schedule and map available teachers for each day and hour
