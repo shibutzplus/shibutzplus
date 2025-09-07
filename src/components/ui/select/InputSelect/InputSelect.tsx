@@ -82,6 +82,23 @@ const InputSelect: React.FC<Props> = (props) => {
         onChange(opt ? opt.value : "");
     };
 
+    // Prevent cutting of the selected text
+    const mergedStyles = useMemo(() => {
+        const base = customStyles(error || "", hasBorder, true, backgroundColor) as any;
+        return {
+            ...base,
+            valueContainer: (p: any, s: any) => ({
+                ...(base.valueContainer ? base.valueContainer(p, s) : p),
+                overflow: "visible",
+            }),
+            singleValue: (p: any, s: any) => ({
+                ...(base.singleValue ? base.singleValue(p, s) : p),
+                maxWidth: "none",
+                overflow: "visible",
+                whiteSpace: "nowrap",
+            }),
+        };
+    }, [error, hasBorder, backgroundColor]);
 
     return (
         <div className={styles.selectContainer}>
@@ -130,7 +147,7 @@ const InputSelect: React.FC<Props> = (props) => {
                         }
                     }
                 }}
-                styles={customStyles(error || "", hasBorder, true, backgroundColor)}
+                styles={mergedStyles}
                 classNamePrefix="react-select"
             />
             {error && <p className={styles.errorText}>{error}</p>}
