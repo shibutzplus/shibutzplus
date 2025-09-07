@@ -26,3 +26,19 @@
 .editor:focus {
     outline: none;
 }
+
+.wrapper {
+  border: 1px solid transparent; /* no visible border by default */
+  border-radius: 10px;
+  background: #fff;
+  transition: border-color .15s, box-shadow .15s;
+}
+
+.wrapper:hover {
+  border-color: #e6e6e6; /* very light grey on hover */
+}
+
+.wrapper:focus-within {
+  border-color: #dbe9f9; /* very light blue focus */
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.08); /* soft blue glow */
+}
