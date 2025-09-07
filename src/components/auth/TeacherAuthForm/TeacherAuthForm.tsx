@@ -16,11 +16,7 @@ type TeacherAuthFormProps = {
     isLoadingTeachers: boolean;
 };
 
-const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({
-    schoolId,
-    teachers,
-    isLoadingTeachers,
-}) => {
+const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({ schoolId, teachers, isLoadingTeachers }) => {
     const route = useRouter();
     const [selectedTeacher, setSelectedTeacher] = useState<string>("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -40,7 +36,7 @@ const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({
         setError("");
         setSchoolCookie(schoolId);
         setTeacherCookie(selectedTeacher);
-        route.push(`${router.teacherPortalRead.p}/${schoolId}/${selectedTeacher}`);
+        route.push(`${router.teacherPortalWrite.p}/${schoolId}/${selectedTeacher}`);
     };
 
     return (
@@ -52,16 +48,14 @@ const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({
                         options={teachers}
                         value={selectedTeacher}
                         onChange={setSelectedTeacher}
-                        placeholder={
-                            isLoadingTeachers
-                                ? "טוען רשימת מורים..."
-                                : "בחרו את שמכם כדי שנוכל להמשיך"
-                        }
+                        placeholder={isLoadingTeachers ? "טוען רשימת מורים..." : "בחרו את שמכם כדי שנוכל להמשיך"}
                         isSearchable={false}
                         isDisabled={isLoadingTeachers}
                         hasBorder
                     />
+                    {isLoadingTeachers && <span className={styles.inlineLoader} aria-label="Loading" />}
                 </div>
+
                 <SubmitBtn
                     type="submit"
                     buttonText="כניסה"
@@ -75,3 +69,4 @@ const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({
 };
 
 export default TeacherAuthForm;
+

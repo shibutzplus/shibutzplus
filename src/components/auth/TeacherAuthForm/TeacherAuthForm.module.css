@@ -41,3 +41,25 @@
   margin-bottom: 0;
   align-items: flex-end;
 }
+
+.inputGroup {
+  position: relative;
+}
+
+.inlineLoader {
+  position: absolute;
+  inset-inline-end: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--input-border);
+  border-top-color: var(--button-bg);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes spin {
+  to { transform: translateY(-50%) rotate(360deg); }
+}

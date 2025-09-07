@@ -48,7 +48,7 @@ const DailySchedulePortalPage = () => {
     return (
         <div className={styles.content}>
             <div className={styles.tableWrapper}>
-                <ReadOnlyDailyTable scheduleData={currentDateData} />
+                <ReadOnlyDailyTable scheduleData={currentDateData} isLoading={isLoading} />
             </div>
         </div>
     );
