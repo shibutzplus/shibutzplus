@@ -30,6 +30,7 @@ import { GoHistory } from "react-icons/go";
 import { LiaChalkboardTeacherSolid } from "react-icons/lia";
 import { GiTeacher } from "react-icons/gi";
 import { IoMdPerson } from "react-icons/io";
+import { LuEye } from "react-icons/lu";
 
 const Icons = {
     addTeacher: MdPersonAdd,
@@ -48,6 +49,7 @@ const Icons = {
     empty: MdOutlineImageNotSupported,
     emptyList: FaList,
     event: BsCalendar4Event,
+    eye: LuEye,
     history: GoHistory,
     home: IoHomeOutline,
     link: FaLink,

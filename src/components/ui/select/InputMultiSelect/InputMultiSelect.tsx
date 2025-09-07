@@ -13,7 +13,6 @@ export type InputMultiSelectProps = {
     options: SelectOption[];
     error?: string;
     id?: string;
-    /** Selected values */
     value?: string[];
     onChange: (value: string[], method: SelectMethod) => void;
     placeholder?: string;
@@ -22,13 +21,11 @@ export type InputMultiSelectProps = {
     isDisabled?: boolean;
     hasBorder?: boolean;
     backgroundColor?: "white" | "transparent";
-    /** Clears all selections when true */
     isClearable?: boolean;
-    /** Create handler should return the new option id (value) */
     onCreate?: (value: string) => Promise<string | undefined>;
     createBtnText?: string;
-    /** Keep menu open when selecting multiple (recommended for multi) */
     closeMenuOnSelect?: boolean;
+    onBeforeRemove?: (removedLabel: string | null, proceed: () => void) => void;
 };
 
 const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
@@ -48,12 +45,13 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
     onCreate,
     createBtnText,
     closeMenuOnSelect = true,
+    onBeforeRemove,
 }) => {
     const [options, setOptions] = useState<SelectOption[]>(initialOptions);
     const [selectedOptions, setSelectedOptions] = useState<SelectOption[]>([]);
     const [isMounted, setIsMounted] = useState(false);
 
-    // Generate a unique instanceId for SSR consistency
+    // Unique id for SSR consistency
     const selectInstanceId = useId();
 
     // Sync options list when parent updates
@@ -78,13 +76,29 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
         setIsMounted(true);
     }, []);
 
+    const applyChange = (
+        next: SelectOption[],
+        meta: ActionMeta<SelectOption>
+    ) => {
+        setSelectedOptions(next);
+        onChange(next.map((o) => o.value), meta.action as SelectMethod);
+    };
+
     const handleChange = (
         opts: OnChangeValue<SelectOption, true>,
-        meta: ActionMeta<SelectOption>,
+        meta: ActionMeta<SelectOption>
     ) => {
         const next = Array.isArray(opts) ? [...opts] : [];
-        setSelectedOptions(next);
-        onChange(next.map((o) => o.value), meta.action);
+
+        // Intercept remove actions to allow confirmation
+        if (onBeforeRemove && meta.action === "remove-value") {
+            const removedLabel =
+                ((meta as any).removedValue?.label as string | undefined) ?? null;
+
+            return onBeforeRemove(removedLabel, () => applyChange(next, meta));
+        }
+
+        applyChange(next, meta);
     };
 
     const handleOnCreate = async (inputValue: string) => {
@@ -102,7 +116,6 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
                 const newOption: SelectOption = { value: valueId, label: labelTrimmed };
                 const updatedOptions = [...options, newOption];
                 setOptions(updatedOptions);
-                // Add to selection set
                 const nextSelected = [...selectedOptions, newOption];
                 setSelectedOptions(nextSelected);
                 onChange(nextSelected.map((o) => o.value), "create-option");
@@ -169,7 +182,7 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
                     backgroundColor,
                     "white",
                     "#aaa",
-                    600,)}
+                    600)}
                 classNamePrefix="react-select"
             />
 

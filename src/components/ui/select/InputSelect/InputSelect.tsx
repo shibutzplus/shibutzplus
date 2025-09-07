@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useId, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import Select from "react-select";
 import styles from "./InputSelect.module.css";
 import { SelectOption } from "@/models/types";
@@ -29,7 +29,7 @@ type Props = {
 const InputSelect: React.FC<Props> = (props) => {
     const {
         label,
-        options: initialOptions,
+        options,
         error,
         id,
         value,
@@ -45,43 +45,44 @@ const InputSelect: React.FC<Props> = (props) => {
         createBtnText,
     } = props;
 
-    const [options, setOptions] = useState<SelectOption[]>(initialOptions);
-    const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
+    // simple id for label association (optional)
+    const resolvedId = id ?? "input-select";
 
-    const uid = useId();
-    const resolvedId = useMemo(() => id ?? `select-${uid}`, [id, uid]);
-    const inputId = `react-select-${resolvedId}-input`;
-
-    useEffect(() => setOptions(initialOptions), [initialOptions]);
-
-    useEffect(() => {
-        if (value) {
-            const opt = options.find((o) => o.value === value);
-            setSelectedOption(opt ?? null);
-        } else {
-            setSelectedOption(null);
-        }
-    }, [value, options]);
-
-    const handleOnCreate = async (inputValue: string) => {
-        const exists = options.some((o) => o.label.toLowerCase() === inputValue.toLowerCase());
-        if (!exists && isAllowAddNew && onCreate) {
-            const valueId = await onCreate(inputValue);
-            if (valueId) {
-                const newOption = { value: valueId, label: inputValue };
-                const updated = [...options, newOption];
-                setOptions(updated);
-                setSelectedOption(newOption);
-                onChange(valueId);
-            }
-        }
-    };
+    // derive selected option directly from props
+    const selectedOption = useMemo(
+        () => (value ? options.find((o) => o.value === value) ?? null : null),
+        [value, options]
+    );
 
     const handleChange = (opt: SelectOption | null) => {
-        setSelectedOption(opt);
-        onChange(opt ? opt.value : "");
+        const next = opt?.value ?? "";
+        if ((value ?? "") !== next) onChange(next);
     };
 
+    const handleOnCreate = async (inputValue: string) => {
+        if (!isAllowAddNew || !onCreate) return;
+        const exists = options.some((o) => o.label.toLowerCase() === inputValue.toLowerCase());
+        if (exists || !inputValue.trim()) return;
+        const valueId = await onCreate(inputValue);
+        if (valueId && valueId !== value) onChange(valueId);
+    };
+
+    const mergedStyles = useMemo(() => {
+        const base = customStyles(error || "", hasBorder, true, backgroundColor) as any;
+        return {
+            ...base,
+            valueContainer: (p: any, s: any) => ({
+                ...(base.valueContainer ? base.valueContainer(p, s) : p),
+                overflow: "visible",
+            }),
+            singleValue: (p: any, s: any) => ({
+                ...(base.singleValue ? base.singleValue(p, s) : p),
+                maxWidth: "none",
+                overflow: "visible",
+                whiteSpace: "nowrap",
+            }),
+        };
+    }, [error, hasBorder, backgroundColor]);
 
     return (
         <div className={styles.selectContainer}>
@@ -91,9 +92,7 @@ const InputSelect: React.FC<Props> = (props) => {
                 </label>
             )}
             <Select
-                id={resolvedId}
-                inputId={inputId}
-                instanceId={resolvedId}
+                inputId={resolvedId}
                 value={selectedOption}
                 onChange={handleChange}
                 options={options}
@@ -101,7 +100,6 @@ const InputSelect: React.FC<Props> = (props) => {
                 isClearable={isClearable}
                 isDisabled={isDisabled}
                 placeholder={placeholder}
-                menuPortalTarget={typeof window !== "undefined" ? document.body : undefined}
                 menuPlacement="auto"
                 noOptionsMessage={({ inputValue }) =>
                     isAllowAddNew && onCreate ? (
@@ -113,24 +111,7 @@ const InputSelect: React.FC<Props> = (props) => {
                         <div>לא נמצאו אפשרויות</div>
                     )
                 }
-                onKeyDown={(e) => {
-                    if (
-                        isAllowAddNew &&
-                        e.key === "Enter" &&
-                        typeof e.target === "object" &&
-                        "value" in e.target
-                    ) {
-                        const inputValue = (e.target as HTMLInputElement).value;
-                        const exists = options.some(
-                            (opt) => opt.label.toLowerCase() === inputValue.toLowerCase(),
-                        );
-                        if (!exists && inputValue.trim().length > 0) {
-                            e.preventDefault();
-                            handleOnCreate(inputValue);
-                        }
-                    }
-                }}
-                styles={customStyles(error || "", hasBorder, true, backgroundColor)}
+                styles={mergedStyles}
                 classNamePrefix="react-select"
             />
             {error && <p className={styles.errorText}>{error}</p>}

@@ -32,7 +32,7 @@ const links: ILink[] = [
     {
         name: routePath.dailySchedule.title,
         p: routePath.dailySchedule.p,
-        Icon: <Icons.dailyCalendar size={24} />,
+        Icon: <Icons.calendar size={24} />,
         withDivider: true,
     },
     {

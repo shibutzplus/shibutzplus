@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { SelectOption } from "@/models/types";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
 type Ctx = {
     selectedYearDate: string;
@@ -37,15 +38,22 @@ const monthOptionsStatic: SelectOption[] = [
     { value: "6", label: "יוני" },
 ];
 
-
 function pad2(n: number) {
     return n < 10 ? `0${n}` : `${n}`;
 }
 function daysInMonth(year: number, month1to12: number) {
     return new Date(year, month1to12, 0).getDate();
 }
+function isYYYYMMDD(s: string) {
+    return /^\d{4}-\d{2}-\d{2}$/.test(s);
+}
 
 export const HistoryTableProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const pathname = usePathname();
+    const dateQ = searchParams.get("date"); // YYYY-MM-DD or null
+
     // default yesterday
     const now = new Date();
     const yday = new Date(now);
@@ -56,12 +64,17 @@ export const HistoryTableProvider: React.FC<{ children: React.ReactNode }> = ({ 
     const ydayDay = yday.getDate();
 
     // if yesterday is in July or August, fallback to September
-    const initialMonth =
-        ydayMonth === 7 || ydayMonth === 8 ? "9" : `${ydayMonth}`;
+    const initialMonth = ydayMonth === 7 || ydayMonth === 8 ? "9" : `${ydayMonth}`;
 
-    const [selectedYear, setSelectedYear] = useState<string>(currentYear);
-    const [selectedMonth, setSelectedMonth] = useState<string>(initialMonth);
-    const [selectedDay, setSelectedDay] = useState<string>(`${ydayDay}`);
+    // derive initial state from ?date= if valid; otherwise fall back to defaults
+    const fromQuery = dateQ && isYYYYMMDD(dateQ) ? dateQ : null;
+    const qYear = fromQuery ? fromQuery.slice(0, 4) : undefined;
+    const qMonth = fromQuery ? String(parseInt(fromQuery.slice(5, 7), 10)) : undefined; // "1".."12"
+    const qDay = fromQuery ? String(parseInt(fromQuery.slice(8, 10), 10)) : undefined; // "1".."31"
+
+    const [selectedYear, setSelectedYear] = useState<string>(qYear || currentYear);
+    const [selectedMonth, setSelectedMonth] = useState<string>(qMonth || initialMonth);
+    const [selectedDay, setSelectedDay] = useState<string>(qDay || `${ydayDay}`);
 
     const yearOptions: SelectOption[] = useMemo(
         () => [{ value: currentYear, label: currentYear }],
@@ -72,6 +85,7 @@ export const HistoryTableProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
     const [dayOptions, setDayOptions] = useState<SelectOption[]>([]);
 
+    // rebuild day options when year/month changes
     useEffect(() => {
         const yNum = parseInt(selectedYear, 10);
         const mNum = parseInt(selectedMonth, 10);
@@ -85,6 +99,15 @@ export const HistoryTableProvider: React.FC<{ children: React.ReactNode }> = ({ 
         if (dNum > max) setSelectedDay(`${max}`);
     }, [selectedYear, selectedMonth]);
 
+    // keep context in sync if ?date= changes
+    useEffect(() => {
+        if (!fromQuery) return;
+        setSelectedYear(qYear!);
+        setSelectedMonth(qMonth!);
+        setSelectedDay(qDay!);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dateQ]);
+
     const selectedYearDate = useMemo(() => {
         const yNum = parseInt(selectedYear, 10);
         const mNum = parseInt(selectedMonth, 10);
@@ -92,6 +115,18 @@ export const HistoryTableProvider: React.FC<{ children: React.ReactNode }> = ({ 
         return `${yNum}-${pad2(mNum)}-${pad2(dNum)}`;
     }, [selectedYear, selectedMonth, selectedDay]);
 
+    // reflect selectedYearDate into the URL (?date=YYYY-MM-DD)
+    useEffect(() => {
+        const currentQ = searchParams.get("date");
+        if (selectedYearDate && currentQ !== selectedYearDate) {
+            const next = new URLSearchParams(searchParams.toString());
+            next.set("date", selectedYearDate);
+            router.replace(`${pathname}?${next.toString()}`);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedYearDate]);
+
+    // public API
     const handleYearChange = (val: string) => setSelectedYear(val);
     const handleMonthChange = (val: string) => setSelectedMonth(val);
     const handleDayChange = (val: string) => setSelectedDay(val);

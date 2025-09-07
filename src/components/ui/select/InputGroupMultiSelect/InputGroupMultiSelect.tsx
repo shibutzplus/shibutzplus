@@ -15,7 +15,6 @@ export interface InputGroupMultiSelectProps {
     options: GroupOption[];
     error?: string;
     id?: string;
-    /** Selected values */
     value?: string[];
     onChange: (value: string[], method: SelectMethod) => void;
     placeholder?: string;
@@ -27,10 +26,9 @@ export interface InputGroupMultiSelectProps {
     isClearable?: boolean;
     onCreate?: (value: string) => Promise<string | undefined>;
     createBtnText?: string;
-    /** Keep menu open when selecting multiple (recommended) */
     closeMenuOnSelect?: boolean;
-    /** Label for the dynamic group that holds user-created options */
     createdGroupLabel?: string;
+    onBeforeRemove?: (removedLabel: string | null, proceed: () => void) => void;
 }
 
 const formatGroupLabel = (data: GroupOption) => (
@@ -58,6 +56,7 @@ const InputGroupMultiSelect: React.FC<InputGroupMultiSelectProps> = ({
     createBtnText,
     closeMenuOnSelect = true,
     createdGroupLabel = "Custom",
+    onBeforeRemove,
 }) => {
     const [groupedOptions, setGroupedOptions] = useState<GroupOption[]>(groupedInitial);
     const [selectedOptions, setSelectedOptions] = useState<SelectOption[]>([]);
@@ -107,6 +106,18 @@ const InputGroupMultiSelect: React.FC<InputGroupMultiSelectProps> = ({
         meta: ActionMeta<SelectOption>,
     ) => {
         const next = Array.isArray(opts) ? [...opts] : [];
+
+        // confirm only when clicking the X on a selected chip
+        if (onBeforeRemove && meta.action === "remove-value") {
+            const removedLabel =
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                ((meta as any).removedValue?.label as string | undefined) ?? null;
+            return onBeforeRemove(removedLabel, () => {
+                setSelectedOptions(next);
+                onChange(next.map((o) => o.value), meta.action);
+            });
+        }
+
         setSelectedOptions(next);
         onChange(next.map((o) => o.value), meta.action);
     };

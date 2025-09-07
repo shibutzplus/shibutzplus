@@ -19,11 +19,6 @@ const PortalTopActions: React.FC = () => {
         return;
     };
 
-    const pushToTeacherPortalRead = () => {
-        if (teacher) route.push(`${router.teacherPortalRead.p}/${teacher.schoolId}/${teacher.id}`);
-        return;
-    };
-
     const pushToDailySchedulePortal = () => {
         route.push(`${router.dailySchedulePortal.p}`);
         return;
@@ -68,9 +63,9 @@ const PortalTopActions: React.FC = () => {
                         className={`${styles.topBtn} ${pathname.includes(router.dailySchedulePortal.p) ? styles.active : ""}`}
                     >
                         {pathname.includes(router.dailySchedulePortal.p) ? (
-                            <Icons.calendarFill size={16} style={{ marginInlineEnd: "4px" }} />
-                        ) : (
                             <Icons.calendar size={16} style={{ marginInlineEnd: "4px" }} />
+                        ) : (
+                            <Icons.dailyCalendar size={16} style={{ marginInlineEnd: "4px" }} />
                         )}
                         מערכת בית ספרית
                     </button>

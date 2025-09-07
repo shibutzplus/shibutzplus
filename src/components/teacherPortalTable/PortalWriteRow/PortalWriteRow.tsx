@@ -36,17 +36,15 @@ const PortalWriteRow: React.FC<PortalWriteRowProps> = ({ hour, row }) => {
             <td className={styles.hourCell} style={{ backgroundColor: HourRowColor }}>
                 {hour}
             </td>
-
             <td className={styles.scheduleCell}>
                 <div className={styles.cellContent}>
                     <div className={styles.className}>{row?.class?.name ?? ""}</div>
                     <div className={styles.subjectName}>{row?.subject?.name ?? ""}</div>
                     <div className={styles.subTeacher}>
-                        {row?.subTeacher?.name ?? row?.event ?? ""}
+                        {row?.subTeacher?.name ? `מ"מ: ${row.subTeacher.name}` : ""}
                     </div>
                 </div>
             </td>
-
             <td className={styles.scheduleCellInput}>
                 {row ? (
                     <RichText

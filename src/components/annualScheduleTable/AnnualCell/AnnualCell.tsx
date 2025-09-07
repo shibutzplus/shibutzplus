@@ -10,6 +10,8 @@ import DynamicInputMultiSelect from "@/components/ui/select/InputMultiSelect/Dyn
 import { SelectMethod } from "@/models/types/actions";
 import { useAnnualTable } from "@/context/AnnualTableContext";
 import { sortAnnualTeachers, sortByHebrewName } from "@/utils/sort";
+import useDeletePopup from "@/hooks/useDeletePopup";
+import { PopupAction } from "@/context/PopupContext";
 
 type AnnualCellProps = {
     day: string;
@@ -38,6 +40,7 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
 }) => {
 
     const { handleAddNewRow } = useAnnualTable();
+    const { handleOpenPopup } = useDeletePopup();
     const sortedTeacherOptions = useMemo(
         () =>
             sortAnnualTeachers(
@@ -59,6 +62,15 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
         handleAddNewRow("teachers", values, day, hour, method);
     };
 
+    const confirmRemove = (what: string | null, proceed: () => void) => {
+        handleOpenPopup(
+            PopupAction.deleteTeacher,
+            what ? `למחוק את ${what} מהרשימה?` : "למחוק את הפריט מהרשימה?",
+            async () => { proceed(); }
+        );
+    };
+
+
     return (
         <td className={styles.scheduleCell}>
             <div className={styles.cellContent}>
@@ -71,6 +83,7 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
                     isSearchable
                     isAllowAddNew
                     isDisabled={isDisabled}
+                    onBeforeRemove={confirmRemove}
                 />
                 <DynamicInputGroupMultiSelect
                     placeholder="מורה"
@@ -83,6 +96,7 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
                         return onCreateTeacher(day, hour, v);
                     }}
                     isDisabled={isDisabled}
+                    onBeforeRemove={confirmRemove}
                 />
             </div>
         </td>
