@@ -1,65 +1,31 @@
--- @tanstack/react-query for cache and efficency
 
--- daily - check what happend if you clear the event header
--- storage array of the dates that was published and disable the button if the day was published
-v-- history page, find by day and month
-
-
-- roy - daily - remove save details alerts
-- roy - daily - remove the selected issue teachers from the select
-- lior - teachers - validation - zod
-- lior - all tables - colors 
-
-- how we want to show that the page is published?
-- need to save everything on the tables
-- if there was a new value, it wont reflact on the publish page
-- teachers page will be also for the sub teachers with hidden elements 
-- teachers page check for url teacher id
-
-
-
--- daily - share button
--- portal - cahce and efficency 
--- portal - ui
--- portal - loading / skeleton
--- portal - on "my schadule" minimze the instraction and only show on click (show only the hour class and subject)
-
-
--- daily page
-- remove the selected issue teachers from the select
-- sub teacher can also be text, not only select
-- sort the columns to be group by type (color)
-- react motion for change position
-- does the select group is ok (need to check if that correct)
-- option to select multiple sub teachers (do we need?)
-- option to clear sub teacher cell
-- responsive page
-- skeleton page
-
-
-
--- for specific teacher that is missing table has 
-class, subTeacher, subject, study material, instructions
 
 TODO
-- loading skeleton
+- daily - remove save details alerts
+-- storage array of the dates that was published and disable the button if the day was published
+- loading skeleton [daily, portal pages]
 - portal - query param of the selected date in the teacher page
 - history page
 - portal - leave empty hours that has no information (gray + small height)
 
 BUGs
+-- daily - filter not working good - I can put teacher on the same hour for 2 columns 
 - role teacher not allow to enter the big system, need alert on that
 -- daily - the new annual rows do not update in the daily because of the cache. need to fetch the data from DB if comming from deffrent page
+-- render daily with the new data after remove teacher, class or subject or update annual
 
 TO CHECK
 - list of all the published days (new page)
 
 FOR LATER
+-- @tanstack/react-query for cache and efficency
 - daily - position columns need helper table and delete the 'position' from the daily-schadule table
+-- portal - cahce and efficency 
 - lists - add search
 - improve preformance by converting the teachers classes and subjects array to Dictionary
 - helper/guide box for the user to understand the system
 - daily - select header colors
+- daily - react motion for change position
 - annual - populate the table from an excel file
 - DB addition - school - hours: int (9)
 - DB addition - school - days: int (6)
@@ -67,12 +33,26 @@ FOR LATER
 - connect page
 - settings page
 - profile page
+- if there was a new value, it wont reflact on the publish page (websocket)
 
 WONT DO
 - hamburger open by default and responsive to the screen
 - side nav split into sections with title
+-- portal - on "my schadule" minimze the instraction and only show on click (show only the hour class and subject)
 
-
+v- how we want to show that the page is published?
+v- need to save everything on the tables
+v- teachers page will be also for the sub teachers with hidden elements 
+v- teachers page check for url teacher id
+v-- daily - event header
+v-- daily - check what happend if you clear the event header
+v-- history page, find by day and month
+v- roy - daily - remove the selected issue teachers from the select
+v-- for specific teacher that is missing table has class, subTeacher, subject, study material, instructions
+v- remove the selected issue teachers from the select
+v- sub teacher can also be text, not only select
+v- sort the columns to be group by type (color)
+v- does the select group is ok (need to check if that correct)
 v- daily-schadule-readonly --> daily-schadule-portal
 v-- logo on dark mode
 v- daily - after publish, show the published link

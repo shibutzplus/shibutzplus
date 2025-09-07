@@ -11,6 +11,7 @@ export type GetDailyEmptyCellsResponse = ActionResponse & {
     data?: DailyScheduleCell[];
 };
 
+//TODO: not in use
 export async function getDailyEmptyCellsAction(
     schoolId: string,
     day: number,

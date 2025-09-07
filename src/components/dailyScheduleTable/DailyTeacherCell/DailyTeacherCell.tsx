@@ -19,14 +19,8 @@ type DailyTeacherCellProps = {
 
 const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
     const { teachers, classes } = useMainContext();
-    const {
-        mainDailyTable,
-        mapAvailableTeachers,
-        addNewCell,
-        selectedDate,
-        updateCell,
-        addNewCellText,
-    } = useDailyTableContext();
+    const { mainDailyTable, mapAvailableTeachers, selectedDate, updateTeacherCell } =
+        useDailyTableContext();
     const [isLoading, setIsLoading] = useState(false);
 
     // Get data from the row data
@@ -54,7 +48,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
 
     const handleTeacherChange = async (methodType: "update" | "create", value: string) => {
         if (!hour || !columnId || !selectedDate || !headerData) return;
-        
+
         try {
             setIsLoading(true);
             const cellData = mainDailyTable[selectedDate]?.[columnId]?.[hour];
@@ -70,33 +64,19 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
                 if (!newSubTeacherData) return;
             }
 
-            let response;
-            const isUpdate = subTeacherData || teacherText;
-            if (isUpdate) {
-                const existingDailyId = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.DBid;
-                if (existingDailyId) {
-                    let data = {};
-                    if (isTeacherOption) {
-                        data = { subTeacher: newSubTeacherData };
-                    } else if (isEventOption) {
-                        data = { event: value.trim() };
-                    } else if (isActivityOption) {
-                        data = { event: activityOptionsMapValToLabel(value) };
-                    }
-                    response = await updateCell(type, cellData, columnId, existingDailyId, data);
-                }
-            } else {
+            const existingDailyId = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.DBid;
+            if (existingDailyId) {
+                let data = {};
                 if (isTeacherOption) {
-                    response = await addNewCell(type, cellData, columnId, {
-                        subTeacher: newSubTeacherData,
-                    });
+                    data = { subTeacher: newSubTeacherData };
                 } else if (isEventOption) {
-                    response = await addNewCellText(type, cellData, columnId, value.trim());
+                    data = { event: value.trim() };
                 } else if (isActivityOption) {
-                    response = await addNewCellText(type, cellData, columnId, activityOptionsMapValToLabel(value) || "");
+                    data = { event: activityOptionsMapValToLabel(value) };
                 }
+                const response = await updateTeacherCell(type, cellData, columnId, existingDailyId, data);
+                if (!response) throw new Error();
             }
-            if (!response) throw new Error();
         } catch (error) {
             errorToast(messages.dailySchedule.createError);
             setSelectedSubTeacher("");
@@ -134,7 +114,6 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
 };
 
 export default DailyTeacherCell;
-
 
 // TODO: option to opacity other options
 // style={{ opacity: selectedSubTeacher === "trip" ? 0.3 : 1 }}

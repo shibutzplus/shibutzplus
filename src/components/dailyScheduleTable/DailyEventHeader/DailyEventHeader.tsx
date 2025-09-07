@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import InputText from "../../ui/InputText/InputText";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import EditableHeader from "../../ui/table/EditableHeader/EditableHeader";
@@ -9,13 +9,16 @@ type DailyEventHeaderProps = {
 
 const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId }) => {
     const { populateEventColumn, mainDailyTable, selectedDate } = useDailyTableContext();
-
+    
     const selectedEventData =
-        mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.headerEvent;
+    mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.headerEvent;
+
+    const [prevValue, setPrevValue] = useState<string>(selectedEventData || "");
 
     const handleChange = (value: string) => {
-        if (value.trim()) {
-            populateEventColumn(columnId, value);
+        if (prevValue !== value.trim()) {
+            populateEventColumn(columnId, value.trim());
+            setPrevValue(value.trim());
         }
     };
 

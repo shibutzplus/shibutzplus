@@ -10,7 +10,8 @@ import { errorToast } from "@/lib/toast";
 type DailyEventCellProps = { cell: CellContext<TeacherRow, unknown> };
 
 const DailyEventCell: React.FC<DailyEventCellProps> = ({ cell }) => {
-    const { mainDailyTable, addNewCell, updateCell, deleteCell, selectedDate } = useDailyTableContext();
+    const { mainDailyTable, addEventCell, updateEventCell, deleteEventCell, selectedDate } =
+        useDailyTableContext();
     const [isLoading, setIsLoading] = useState(false);
 
     const columnId = cell?.column?.id;
@@ -37,15 +38,15 @@ const DailyEventCell: React.FC<DailyEventCellProps> = ({ cell }) => {
             if (event === "") {
                 const existingId = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.DBid;
                 if (existingId) {
-                    response = await deleteCell("event", cellData, columnId, existingId);
+                    response = await deleteEventCell(cellData, columnId, existingId);
                 }
             } else if (eventData) {
                 const existingId = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.DBid;
                 if (existingId) {
-                    response = await updateCell("event", cellData, columnId, existingId, { event });
+                    response = await updateEventCell(cellData, columnId, existingId, event);
                 }
             } else {
-                response = await addNewCell("event", cellData, columnId, { event });
+                response = await addEventCell(cellData, columnId, { event });
             }
 
             if (!response) {
