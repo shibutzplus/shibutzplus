@@ -18,7 +18,7 @@ const History = () => {
     const dateFromQuery = searchParams.get("date"); // format: YYYY-MM-DD
 
     const [currentDateData, setCurrentDateData] = useState<DailyScheduleType[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     const fetchDailyScheduleData = async (date: string) => {
         if (!school || !date) return;
@@ -46,13 +46,14 @@ const History = () => {
             fetchDailyScheduleData(targetDate);
         } else {
             setCurrentDateData([]);
+            setIsLoading(false);
         }
     }, [school, dateFromQuery, selectedYearDate]);
 
     return (
         <div className={styles.content}>
             <div className={styles.tableWrapper}>
-                <ReadOnlyDailyTable scheduleData={currentDateData} />
+                <ReadOnlyDailyTable scheduleData={currentDateData} isLoading={isLoading} />
             </div>
         </div>
     );
