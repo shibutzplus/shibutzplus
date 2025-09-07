@@ -62,12 +62,9 @@
 }
 
 .hourHeader {
-    font-weight: bold;
     width: var(--table-template-cell-width);
     min-height: unset;
     display: flex;
-    align-items: center;
-    justify-content: center;
     border-inline-end: none;
     height: var(--table-header-height);
 }
@@ -113,7 +110,6 @@
 }
 
 .templateHeaderText {
-    color: #878686;
     text-align: center;
 }
 
@@ -131,6 +127,11 @@
     border-inline-end: 1px solid #ccc;
 }
 
+.dayHeader,
+.dayHeader * {
+  font-weight: 700 !important;
+}
+
 @media (max-width: 767px) {
     .dayHeader {
         min-width: 140px;
@@ -143,7 +144,6 @@
     .hourHeader,
     .hourCell {
         width: calc(var(--table-template-cell-width) - 10px);
-        font-size: 0.95rem;
     }
     .cellContent {
         padding: 4px;
