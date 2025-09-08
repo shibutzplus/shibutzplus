@@ -7,13 +7,15 @@ import TopNav from "@/components/navigation/TopNav/TopNav";
 import HistoryTopActions from "@/components/actions/HistoryTopActions/HistoryTopActions";
 
 // Loading fallback for the layout
-const HistoryLayoutLoading = ({ children }: { children: React.ReactNode }) => (
-    <PrivatePageLayout>{children}</PrivatePageLayout>
+const HistoryLayoutLoading = () => (
+    <PrivatePageLayout>
+        <div></div>
+    </PrivatePageLayout>
 );
 
 export default function HistoryLayout({ children }: { children: React.ReactNode }) {
     return (
-        <Suspense fallback={<HistoryLayoutLoading>{children}</HistoryLayoutLoading>}>
+        <Suspense fallback={<HistoryLayoutLoading />}>
             <HistoryTableProvider>
                 <PrivatePageLayout
                     CustomTopNav={<TopNav type="admin" actions={<HistoryTopActions />} />}
