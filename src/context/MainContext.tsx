@@ -17,6 +17,7 @@ import { setStorageClasses, setStorageSubjects, setStorageTeachers } from "@/lib
 import { deleteClassAction } from "@/app/actions/DELETE/deleteClassAction";
 import { deleteTeacherAction } from "@/app/actions/DELETE/deleteTeacherAction";
 import { deleteSubjectAction } from "@/app/actions/DELETE/deleteSubjectAction";
+import { infoToast } from "@/lib/toast";
 
 interface MainContextType {
     school: SchoolType | undefined;
@@ -86,6 +87,10 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
             });
             return response.data;
         }
+        if (!response.success && (response as any).errorCode === "23505") {
+            infoToast(response.message);
+            return undefined;
+        }
         return undefined;
     };
 
@@ -121,7 +126,10 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
             });
             return response.data;
         }
-        return undefined;
+        if (!response.success && (response as any).errorCode === "23505") {
+            infoToast(response.message);
+            return undefined;
+        }
     };
 
     const updateTeacher = async (teacherId: string, teacherData: TeacherRequest) => {
@@ -155,6 +163,10 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
                 return updatedSubjects;
             });
             return response.data;
+        }
+        if (!response.success && (response as any).errorCode === "23505") {
+            infoToast(response.message);
+            return undefined;
         }
         return undefined;
     };

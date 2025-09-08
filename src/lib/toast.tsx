@@ -18,5 +18,6 @@ export const infoToast = (message: string) => {
     toast(message, {
         duration: 7000,
         position: "bottom-right",
+        icon: "ℹ️",
     });
 };

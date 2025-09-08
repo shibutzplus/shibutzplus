@@ -9,14 +9,13 @@ import { NewTeacherSchema } from "@/db/schema";
 
 export async function addTeacherAction(
     teacherData: TeacherRequest,
-): Promise<ActionResponse & { data?: TeacherType }> {
+): Promise<ActionResponse & { data?: TeacherType; errorCode?: string }> {
     try {
         const authError = await checkAuthAndParams({
             name: teacherData.name,
             role: teacherData.role,
             schoolId: teacherData.schoolId,
         });
-
         if (authError) {
             return authError as ActionResponse;
         }
@@ -42,11 +41,17 @@ export async function addTeacherAction(
             message: messages.teachers.createSuccess,
             data: newTeacher,
         };
-    } catch (error) {
-        console.error("Error creating teacher:", error);
-        return {
-            success: false,
-            message: messages.common.serverError,
-        };
+    } catch (error: any) {
+        const pgCode = error?.code ?? error?.cause?.code ?? error?.originalError?.code;
+        if (pgCode === "23505") {
+            return {
+                success: false,
+                errorCode: "23505",
+                message: "מורה בשם הזה כבר קיים בבית הספר",
+            };
+        }
+
+        return { success: false, message: messages.common.serverError };
     }
 }
+

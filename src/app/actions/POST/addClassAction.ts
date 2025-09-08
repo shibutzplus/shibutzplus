@@ -8,28 +8,20 @@ import messages from "@/resources/messages";
 
 export async function addClassAction(
     classData: ClassRequest,
-): Promise<ActionResponse & { data?: ClassType }> {
+): Promise<ActionResponse & { data?: ClassType; errorCode?: string }> {
     try {
-        // Check authentication and required parameters
         const authError = await checkAuthAndParams({
             name: classData.name,
             schoolId: classData.schoolId,
         });
+        if (authError) return authError as ActionResponse;
 
-        if (authError) {
-            return authError as ActionResponse;
-        }
-
-        // Create the class in the database
         const newClass = await executeQuery(async () => {
             return (await db.insert(schema.classes).values(classData).returning())[0];
         });
 
         if (!newClass) {
-            return {
-                success: false,
-                message: messages.classes.createError,
-            };
+            return { success: false, message: messages.classes.createError };
         }
 
         return {
@@ -37,11 +29,15 @@ export async function addClassAction(
             message: messages.classes.createSuccess,
             data: newClass,
         };
-    } catch (error) {
-        console.error("Error creating class:", error);
-        return {
-            success: false,
-            message: messages.common.serverError,
-        };
+    } catch (error: any) {
+        const pgCode = error?.code ?? error?.cause?.code ?? error?.originalError?.code;
+        if (pgCode === "23505") {
+            return {
+                success: false,
+                errorCode: "23505",
+                message: "כיתה בשם הזה כבר קיימת בבית הספר",
+            };
+        }
+        return { success: false, message: messages.common.serverError };
     }
 }
