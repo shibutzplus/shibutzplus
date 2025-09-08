@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Btn from "@/components/ui/buttons/Btn/Btn";
 import InputText from "@/components/ui/InputText/InputText";
 import Icons from "@/style/icons";
-import { errorToast } from "@/lib/toast";
+import { infoToast } from "@/lib/toast";
 import styles from "./AddListRow.module.css";
 
 // T is the shape of the data to add (e.g., { name: string, schoolId: string })
@@ -61,11 +61,11 @@ function AddListRow<T extends Record<string, any>>({
                 setValues(initialValues);
                 if (onSuccess) onSuccess();
             } else {
-                errorToast(Object.values(errorMessages)[0] || "שגיאה בהוספה");
+                infoToast(Object.values(errorMessages)[0] || "בעיה בהוספה");
             }
         } catch (error) {
             console.error(error);
-            errorToast(Object.values(errorMessages)[0] || "שגיאה בהוספה");
+            infoToast(Object.values(errorMessages)[0] || "בעיה בהוספה");
         } finally {
             setIsLoading(false);
         }

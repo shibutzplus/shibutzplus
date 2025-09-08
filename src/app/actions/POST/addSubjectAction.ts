@@ -9,16 +9,13 @@ import { NewSubjectSchema } from "@/db/schema";
 
 export async function addSubjectAction(
     subjectData: SubjectRequest,
-): Promise<ActionResponse & { data?: SubjectType }> {
+): Promise<ActionResponse & { data?: SubjectType; errorCode?: string }> {
     try {
         const authError = await checkAuthAndParams({
             name: subjectData.name,
             schoolId: subjectData.schoolId,
         });
-
-        if (authError) {
-            return authError as ActionResponse;
-        }
+        if (authError) return authError as ActionResponse;
 
         const newSubject = await executeQuery(async () => {
             return (
@@ -30,10 +27,7 @@ export async function addSubjectAction(
         });
 
         if (!newSubject) {
-            return {
-                success: false,
-                message: messages.subjects.createError,
-            };
+            return { success: false, message: messages.subjects.createError };
         }
 
         return {
@@ -41,11 +35,15 @@ export async function addSubjectAction(
             message: messages.subjects.createSuccess,
             data: newSubject,
         };
-    } catch (error) {
-        console.error("Error creating subject:", error);
-        return {
-            success: false,
-            message: messages.common.serverError,
-        };
+    } catch (error: any) {
+        const pgCode = error?.code ?? error?.cause?.code ?? error?.originalError?.code;
+        if (pgCode === "23505") {
+            return {
+                success: false,
+                errorCode: "23505",
+                message: "מקצוע בשם הזה כבר קיים בבית הספר",
+            };
+        }
+        return { success: false, message: messages.common.serverError };
     }
 }
