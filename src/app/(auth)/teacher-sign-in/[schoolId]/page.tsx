@@ -35,14 +35,14 @@ export default function TeacherSignInPage() {
         if (teacherId) {
             setSchoolCookie(schoolId);
             setTeacherCookie(teacherId);
-            route.push(`${router.teacherPortalWrite.p}/${schoolId}/${teacherId}`);
+            route.push(`${router.teacherPortal.p}/${schoolId}/${teacherId}`);
             return;
         }
 
         // Check if teacher is already selected via cookie
         const selectedTeacherId = getTeacherCookie();
         if (selectedTeacherId) {
-            route.push(`${router.teacherPortalWrite.p}/${schoolId}/${selectedTeacherId}`);
+            route.push(`${router.teacherPortal.p}/${schoolId}/${selectedTeacherId}`);
             return;
         }
 

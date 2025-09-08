@@ -6,16 +6,15 @@ import { usePortal } from "@/context/PortalContext";
 import PortalTable from "@/components/teacherPortalTable/PortalTable/PortalTable";
 import styles from "./teacherPortal.module.css";
 import router from "@/routes";
-import { usePortalRead } from "@/context/PortalReadContext";
 
 const TeacherPortalPage = () => {
     const params = useParams();
     const route = useRouter();
-    const schoolId = params.schoolId as string;
-    const teacherId = params.teacherId as string;
+    const schoolId = params.schoolId as string | undefined;
+    const teacherId = params.teacherId as string | undefined;
     const { teacher, setTeacherAndSchool } = usePortal();
-    const { teacherTableData, isLoading } = usePortalRead();
 
+    if (!schoolId) route.push(`${router.teacherSignIn.p}`);
     if (!teacherId) route.push(`${router.teacherSignIn.p}/${schoolId}`);
 
     useEffect(() => {
@@ -29,7 +28,7 @@ const TeacherPortalPage = () => {
     return (
         <section className={styles.content}>
             <div className={styles.whiteBox}>
-                <PortalTable tableData={teacherTableData} mode="read" />
+                <PortalTable />
             </div>
         </section>
     );

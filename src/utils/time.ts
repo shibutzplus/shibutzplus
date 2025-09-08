@@ -24,6 +24,11 @@ export const formatTMDintoDMY = (date: string) => {
     return `${day}-${month}-${year}`;
 };
 
+export const isYYYYMMDD = (s: string) => {
+    return /^\d{4}-\d{2}-\d{2}$/.test(s);
+};
+
+
 export const getStringReturnDate = (date: string) => {
     return new Date(date);
 };
@@ -164,4 +169,14 @@ export const getCurrentWeekEntries = (data?: DailyScheduleType[]) => {
     });
 
     return currentWeekEntries;
+};
+
+// -- History -- //
+
+export const pad2 = (n: number) => {
+    return n < 10 ? `0${n}` : `${n}`;
+};
+
+export const daysInMonth = (year: number, month1to12: number) => {
+    return new Date(year, month1to12, 0).getDate();
 };

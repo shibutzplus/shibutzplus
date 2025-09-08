@@ -3,17 +3,18 @@
 import { db, executeQuery } from "@/db";
 import { teachers } from "@/db/schema/teachers";
 import { eq } from "drizzle-orm";
-import { TeacherType } from "@/models/types/teachers";
 import messages from "@/resources/messages";
-
-export type GetTeacherByIdResponse = {
-    success: boolean;
-    message: string;
-    data?: TeacherType;
-};
+import { publicAuthAndParams } from "@/utils/authUtils";
+import { ActionResponse } from "@/models/types/actions";
+import { GetTeacherByIdResponse } from "@/models/types/dailySchedule";
 
 export async function getTeacherByIdAction(teacherId: string): Promise<GetTeacherByIdResponse> {
     try {
+        const authError = await publicAuthAndParams({ teacherId });
+        if (authError) {
+            return authError as ActionResponse;
+        }
+
         if (!teacherId) {
             return {
                 success: false,

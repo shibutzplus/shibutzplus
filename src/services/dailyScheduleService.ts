@@ -163,6 +163,14 @@ export const updateAllEventHeader = (
     return updatedSchedule;
 };
 
+export const setEmptyColumn = (mainDailyTable: DailySchedule, selectedDate: string) => {
+    const updateDailyTable = { ...mainDailyTable };
+    if (!updateDailyTable[selectedDate]) {
+        updateDailyTable[selectedDate] = {};
+    }
+    return updateDailyTable;
+};
+
 export const addNewEventCell = (
     school: SchoolType,
     cellData: DailyScheduleCell,

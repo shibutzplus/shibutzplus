@@ -1,21 +1,21 @@
 
 
 TODO
-- daily - remove save details alerts
--- storage array of the dates that was published and disable the button if the day was published
 - loading skeleton [daily, portal pages]
-- portal - query param of the selected date in the teacher page
-- history page
+- loading when there is no data
 - portal - leave empty hours that has no information (gray + small height)
+- portal - UI improve for the table and input
+- text for 'create new teacher' in the select
+- mete title tab with the page description
+- portal - query param of the selected date in the teacher page
+- react markdown for the event cell
 
 BUGs
+- portal wont render with the new instraction if other teacher update the detials (need refrsh button or websocket)
 -- daily - filter not working good - I can put teacher on the same hour for 2 columns 
 - role teacher not allow to enter the big system, need alert on that
 -- daily - the new annual rows do not update in the daily because of the cache. need to fetch the data from DB if comming from deffrent page
 -- render daily with the new data after remove teacher, class or subject or update annual
-
-TO CHECK
-- list of all the published days (new page)
 
 FOR LATER
 -- @tanstack/react-query for cache and efficency
@@ -39,7 +39,15 @@ WONT DO
 - hamburger open by default and responsive to the screen
 - side nav split into sections with title
 -- portal - on "my schadule" minimze the instraction and only show on click (show only the hour class and subject)
+- list of all the published days (new page)
+- portal - fix calendar icon (to black)
 
+v- portal - handle refresh
+v- daily - remove save details alerts
+v-- storage array of the dates that was published and disable the button if the day was published
+v- hamburger - fix user icon (to white)
+v- daily - improve cache by store in the table storage also days without information (insted of fetching for DB every time)
+v- history page
 v- how we want to show that the page is published?
 v- need to save everything on the tables
 v- teachers page will be also for the sub teachers with hidden elements 

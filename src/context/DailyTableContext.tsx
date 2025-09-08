@@ -31,6 +31,7 @@ import {
     fillLeftRowsWithEmptyCells,
     initDailySchedule,
     updateAllEventHeader,
+    setEmptyColumn,
 } from "@/services/dailyScheduleService";
 import { generateId } from "@/utils";
 import DailyTeacherCell from "@/components/dailyScheduleTable/DailyTeacherCell/DailyTeacherCell";
@@ -137,30 +138,32 @@ interface DailyTableProviderProps {
 export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children }) => {
     const { school, teachers } = useMainContext();
 
-    const [tableColumns, setActionCols] = useState<ColumnDef<TeacherRow>[]>([]); // Main state for table object storage
-    const [mainDailyTable, setMainDailyTable] = useState<DailySchedule>({});
+    const [tableColumns, setActionCols] = useState<ColumnDef<TeacherRow>[]>([]);
+    const [mainDailyTable, setMainDailyTable] = useState<DailySchedule>({}); // Main state for table object storage
     const [mapAvailableTeachers, setMapAvailableTeachers] = useState<AvailableTeachers>({});
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     // -- Select Date -- //
-    const daysSelectOptions = () => getIsraeliDateOptions()
+    const daysSelectOptions = () => getIsraeliDateOptions();
 
+    // TODO: fix this
     // Default date logic: show today until 16:00, after that show tomorrow
     const [selectedDate, setSelectedDayId] = useState<string>(() => {
-        const now = new Date()
-        const hour = now.getHours()
-        const opts = getIsraeliDateOptions()
-        const pad = (n: number) => String(n).padStart(2, "0") // comment: local YYYY-MM-DD
-        const todayStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
+        const now = new Date();
+        const hour = now.getHours();
+        const opts = getIsraeliDateOptions();
+        const pad = (n: number) => String(n).padStart(2, "0"); // comment: local YYYY-MM-DD
+        const todayStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
         if (hour < 16) {
-            const today = opts.find(o => o.value === todayStr)
-            return today?.value || opts[0]?.value || getTomorrowOption()
+            const today = opts.find((o) => o.value === todayStr);
+            return today?.value || opts[0]?.value || getTomorrowOption();
         }
-        return getTomorrowOption()
-    })
+        return getTomorrowOption();
+    });
 
+    // TODO: fix this
     // Handle manual day change from dropdown
-    const handleDayChange = (value: string) => setSelectedDayId(value)
+    const handleDayChange = (value: string) => setSelectedDayId(value);
 
     /**
      * Fetch annual schedule and map available teachers for each day and hour
@@ -188,16 +191,14 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     useEffect(() => {
         const fetchDataForDate = async () => {
             if (!school?.id || !selectedDate) return;
-            setIsLoading(true);
-            let dataColumns: DailyScheduleType[] | undefined = [];
-            const populateFromStorage = populateTableFromStorage();
-            if (populateFromStorage) return;
-
             try {
+                setIsLoading(true);
+                const populateFromStorage = populateTableFromStorage();
+                if (populateFromStorage) return;
                 const targetDate = selectedDate || getTomorrowOption();
                 const response = await getDailyScheduleAction(school.id, targetDate);
                 if (response.success && response.data && teachers) {
-                    dataColumns = response.data;
+                    populateDailyScheduleTable(response.data);
                 } else {
                     console.error("Failed to fetch daily schedule:", response.message);
                 }
@@ -205,7 +206,6 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 console.error("Error fetching daily schedule data:", error);
             } finally {
                 setIsLoading(false);
-                if (teachers) populateDailyScheduleTable(dataColumns);
             }
         };
 
@@ -240,7 +240,11 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     const populateDailyScheduleTable = async (dataColumns: DailyScheduleType[]) => {
         try {
             clearDailySchedule();
-            if (!dataColumns || dataColumns.length === 0) return;
+            if (!dataColumns) return;
+            if (dataColumns.length === 0) {
+                setMainAndStorageTable(setEmptyColumn(mainDailyTable, selectedDate));
+                return;
+            }
 
             const { entriesByDayAndHeader, columnsToCreate } = populateTable(
                 dataColumns,

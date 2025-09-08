@@ -1,19 +1,19 @@
 "use server";
 
-import { checkAuthAndParams } from "@/utils/authUtils";
+import { publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { eq, and } from "drizzle-orm";
 import { db, schema, executeQuery } from "../../../db";
 import { ActionResponse } from "@/models/types/actions";
 import { NewDailyScheduleSchema } from "@/db/schema";
 
-export async function updateDailyEventHeaderAction(
+export async function updateDailyInstructionAction(
     date: string,
-    columnId: string,
-    eventTitle: string,
+    rowId: string,
+    instructions?: string,
 ): Promise<ActionResponse> {
     try {
-        const authError = await checkAuthAndParams({ date, columnId, eventTitle });
+        const authError = await publicAuthAndParams({ date, rowId });
         if (authError) {
             return authError as ActionResponse;
         }
@@ -21,12 +21,11 @@ export async function updateDailyEventHeaderAction(
         const updatedEntries = await executeQuery(async () => {
             return await db
                 .update(schema.dailySchedule)
-                .set({ eventTitle: eventTitle } as Partial<NewDailyScheduleSchema>)
+                .set({ instructions: instructions || null } as Partial<NewDailyScheduleSchema>)
                 .where(
                     and(
                         eq(schema.dailySchedule.date, date),
-                        eq(schema.dailySchedule.columnId, columnId),
-                        eq(schema.dailySchedule.issueTeacherType, "event"),
+                        eq(schema.dailySchedule.id, rowId),
                     ),
                 )
                 .returning();

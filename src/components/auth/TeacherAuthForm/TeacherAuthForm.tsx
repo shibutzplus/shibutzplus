@@ -36,7 +36,7 @@ const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({ schoolId, teachers, i
         setError("");
         setSchoolCookie(schoolId);
         setTeacherCookie(selectedTeacher);
-        route.push(`${router.teacherPortalWrite.p}/${schoolId}/${selectedTeacher}`);
+        route.push(`${router.teacherPortal.p}/${schoolId}/${selectedTeacher}`);
     };
 
     return (

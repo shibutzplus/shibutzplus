@@ -9,13 +9,13 @@ import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { useHistoryTable } from "@/context/HistoryTableContext";
 import ReadOnlyDailyTable from "@/components/readOnlyDailyTable/ReadOnlyDailyTable/ReadOnlyDailyTable";
-import { useSearchParams } from "next/navigation"; // read ?date= from URL
+import { useSearchParams } from "next/navigation";
 
 const History = () => {
     const { school } = useMainContext();
     const { selectedYearDate } = useHistoryTable();
     const searchParams = useSearchParams();
-    const dateFromQuery = searchParams.get("date"); // format: YYYY-MM-DD
+    const dateFromQuery = searchParams.get("date");
 
     const [currentDateData, setCurrentDateData] = useState<DailyScheduleType[]>([]);
     const [isLoading, setIsLoading] = useState(true);

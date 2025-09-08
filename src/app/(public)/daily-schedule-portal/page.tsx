@@ -2,13 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 import styles from "./dailySchedulePortal.module.css";
-import ReadOnlyDailyTable from "@/components/readOnlyDailyTable/ReadOnlyDailyTable/ReadOnlyDailyTable";
 import { DailyScheduleType } from "@/models/types/dailySchedule";
 import { usePortal } from "@/context/PortalContext";
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
 import { getSchoolCookie } from "@/lib/cookies";
+import ReadOnlyDailyTable from "@/components/readOnlyDailyTable/ReadOnlyDailyTable/ReadOnlyDailyTable";
 
 const DailySchedulePortalPage = () => {
     const { selectedDate } = usePortal();
@@ -48,7 +48,11 @@ const DailySchedulePortalPage = () => {
     return (
         <div className={styles.content}>
             <div className={styles.tableWrapper}>
-                <ReadOnlyDailyTable scheduleData={currentDateData} isLoading={isLoading} hasMobileNav />
+                <ReadOnlyDailyTable
+                    scheduleData={currentDateData}
+                    isLoading={isLoading}
+                    hasMobileNav
+                />
             </div>
         </div>
     );

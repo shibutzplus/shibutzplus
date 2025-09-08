@@ -3,20 +3,20 @@
 import React, { useEffect, useState } from "react";
 import styles from "./PortalWriteRow.module.css";
 import RichText from "@/components/ui/RichText/RichText";
-import { DailyScheduleRequest, DailyScheduleType } from "@/models/types/dailySchedule";
 import { HourRowColor } from "@/style/tableColors";
 import { usePortal } from "@/context/PortalContext";
-import { initDailyCellData } from "@/utils/Initialize";
+import { PortalScheduleType } from "@/models/types/portalSchedule";
 
 type PortalWriteRowProps = {
     hour: number;
-    row?: DailyScheduleType;
+    row?: PortalScheduleType;
 };
 
 const PortalWriteRow: React.FC<PortalWriteRowProps> = ({ hour, row }) => {
-    const { handleSave, selectedDate } = usePortal();
+    const { teacher, handleSave } = usePortal();
 
     const [instructions, setInstructions] = useState<string>(row?.instructions || "");
+    const [prevInstructions, setPrevInstructions] = useState<string>(row?.instructions || "");
 
     useEffect(() => {
         if (!row) return;
@@ -25,10 +25,29 @@ const PortalWriteRow: React.FC<PortalWriteRowProps> = ({ hour, row }) => {
 
     const handleChange = async (html: string) => {
         if (!row) return;
-        const value = html.trim() !== "" ? html.trim() : undefined;
-        const dailyCellData: DailyScheduleRequest = initDailyCellData(row, selectedDate, value);
+        const value = html.trim();
+        if (value === prevInstructions) return;
+        setPrevInstructions(value);
+        await handleSave(row.DBid, hour, value === "" ? undefined : value);
+    };
 
-        await handleSave(row.id, dailyCellData);
+    const replaceTeacher = () => {
+        if (row?.issueTeacher) {
+            // If Im the issue teacher
+            if (teacher?.id === row?.issueTeacher?.id) {
+                // If I have sub teacher
+                if (row?.subTeacher) {
+                    return `מחליף אותי: ${row?.subTeacher?.name}`;
+                } else {
+                    return "";
+                }
+            } else {
+                // Else, Im the sub teacher
+                return `מחליף את: ${row?.issueTeacher?.name}`;
+            }
+        } else {
+            return "";
+        }
     };
 
     return (
@@ -40,9 +59,7 @@ const PortalWriteRow: React.FC<PortalWriteRowProps> = ({ hour, row }) => {
                 <div className={styles.cellContent}>
                     <div className={styles.className}>{row?.class?.name ?? ""}</div>
                     <div className={styles.subjectName}>{row?.subject?.name ?? ""}</div>
-                    <div className={styles.subTeacher}>
-                        {row?.subTeacher?.name ? `מ"מ: ${row.subTeacher.name}` : ""}
-                    </div>
+                    <div className={styles.subTeacher}>{replaceTeacher()}</div>
                 </div>
             </td>
             <td className={styles.scheduleCellInput}>

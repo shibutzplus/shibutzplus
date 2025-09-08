@@ -1,54 +1,35 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react";
 import { SelectOption } from "@/models/types";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { daysInMonth, isYYYYMMDD, pad2 } from "@/utils/time";
 
-type Ctx = {
+interface HistoryTableContextType {
     selectedYearDate: string;
     selectedYear: string;
     selectedMonth: string; // "1".."12"
     selectedDay: string;   // "1".."31"
     yearOptions: SelectOption[];
-    monthOptions: SelectOption[];
     dayOptions: SelectOption[];
     handleYearChange: (val: string) => void;
     handleMonthChange: (val: string) => void;
     handleDayChange: (val: string) => void;
 };
 
-const HistoryTableContext = createContext<Ctx | null>(null);
+const HistoryTableContext = createContext<HistoryTableContextType | undefined>(undefined);
+
 export const useHistoryTable = () => {
-    const ctx = useContext(HistoryTableContext);
-    if (!ctx) throw new Error("useHistoryTable must be used within HistoryTableProvider");
-    return ctx;
+    const context = useContext(HistoryTableContext);
+    if (!context) throw new Error("useHistoryTable must be used within HistoryTableProvider");
+    return context;
 };
 
-// Hebrew month labels excluding July and August
-const monthOptionsStatic: SelectOption[] = [
-    { value: "9", label: "ספטמבר" },
-    { value: "10", label: "אוקטובר" },
-    { value: "11", label: "נובמבר" },
-    { value: "12", label: "דצמבר" },
-    { value: "1", label: "ינואר" },
-    { value: "2", label: "פברואר" },
-    { value: "3", label: "מרץ" },
-    { value: "4", label: "אפריל" },
-    { value: "5", label: "מאי" },
-    { value: "6", label: "יוני" },
-];
-
-function pad2(n: number) {
-    return n < 10 ? `0${n}` : `${n}`;
-}
-function daysInMonth(year: number, month1to12: number) {
-    return new Date(year, month1to12, 0).getDate();
-}
-function isYYYYMMDD(s: string) {
-    return /^\d{4}-\d{2}-\d{2}$/.test(s);
+interface HistoryTableProviderProps {
+    children: ReactNode;
 }
 
-export const HistoryTableProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const HistoryTableProvider: React.FC<HistoryTableProviderProps> = ({ children }) => {
     const searchParams = useSearchParams();
     const router = useRouter();
     const pathname = usePathname();
@@ -80,8 +61,6 @@ export const HistoryTableProvider: React.FC<{ children: React.ReactNode }> = ({ 
         () => [{ value: currentYear, label: currentYear }],
         [currentYear]
     );
-
-    const monthOptions = monthOptionsStatic;
 
     const [dayOptions, setDayOptions] = useState<SelectOption[]>([]);
 
@@ -126,7 +105,6 @@ export const HistoryTableProvider: React.FC<{ children: React.ReactNode }> = ({ 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedYearDate]);
 
-    // public API
     const handleYearChange = (val: string) => setSelectedYear(val);
     const handleMonthChange = (val: string) => setSelectedMonth(val);
     const handleDayChange = (val: string) => setSelectedDay(val);
@@ -139,7 +117,6 @@ export const HistoryTableProvider: React.FC<{ children: React.ReactNode }> = ({ 
                 selectedMonth,
                 selectedDay,
                 yearOptions,
-                monthOptions,
                 dayOptions,
                 handleYearChange,
                 handleMonthChange,

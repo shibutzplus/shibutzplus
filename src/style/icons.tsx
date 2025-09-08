@@ -29,7 +29,7 @@ import { PiChairLight } from "react-icons/pi";
 import { GoHistory } from "react-icons/go";
 import { LiaChalkboardTeacherSolid } from "react-icons/lia";
 import { GiTeacher } from "react-icons/gi";
-import { IoMdPerson } from "react-icons/io";
+import { IoPersonOutline } from "react-icons/io5";
 import { LuEye } from "react-icons/lu";
 
 const Icons = {
@@ -66,7 +66,7 @@ const Icons = {
     teacher1: MdPerson,
     teacher2: LiaChalkboardTeacherSolid,
     teacher3: GiTeacher,
-    teacher: IoMdPerson,
+    teacher: IoPersonOutline,
 };
 
 export default Icons;

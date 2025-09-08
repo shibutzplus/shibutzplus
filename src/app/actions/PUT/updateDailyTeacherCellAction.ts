@@ -8,7 +8,6 @@ import { db, schema, executeQuery } from "../../../db";
 import { ActionResponse } from "@/models/types/actions";
 import { NewDailyScheduleSchema } from "@/db/schema";
 import { getDateReturnString, getStringReturnDate } from "@/utils/time";
-import { TeacherType } from "@/models/types/teachers";
 
 export async function updateDailyTeacherCellAction(
     id: string,

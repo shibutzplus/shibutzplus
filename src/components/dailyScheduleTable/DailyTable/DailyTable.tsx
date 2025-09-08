@@ -6,7 +6,6 @@ import { useDailyTableContext } from "@/context/DailyTableContext";
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { TeacherRow } from "@/models/types/table";
 import { TableRows } from "@/models/constant/table";
-import Icons from "@/style/icons";
 import { HeaderColor } from "@/style/tableColors";
 
 const DailyTable: React.FC = () => {

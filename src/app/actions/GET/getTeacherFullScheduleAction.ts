@@ -3,7 +3,7 @@
 import { DailyScheduleType, GetDailyScheduleResponse } from "@/models/types/dailySchedule";
 import { publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
-import { and, eq } from "drizzle-orm";
+import { and, eq, or } from "drizzle-orm";
 import { db, schema, executeQuery } from "../../../db";
 import { getDayNumberByDate } from "@/utils/time";
 
@@ -21,11 +21,14 @@ const getTeacherFullScheduleAction = async (
         //TODO: should it have +1 ?
         const day = getDayNumberByDate(new Date(date)) + 1;
         const result = await executeQuery(async () => {
-            // Get daily schedule entries for this teacher on this date
+            // Get daily schedule entries where teacher is either subTeacher or issueTeacher
             const dailySchedules = await db.query.dailySchedule.findMany({
                 where: and(
                     eq(schema.dailySchedule.date, date),
-                    eq(schema.dailySchedule.subTeacherId, teacherId),
+                    or(
+                        eq(schema.dailySchedule.subTeacherId, teacherId),
+                        eq(schema.dailySchedule.issueTeacherId, teacherId)
+                    )
                 ),
                 with: {
                     class: true,
@@ -34,30 +37,31 @@ const getTeacherFullScheduleAction = async (
                     subTeacher: true,
                     school: true,
                 },
+                orderBy: schema.dailySchedule.hour,
             });
 
-            // Get annual schedule entries for this teacher and day
-            const annualSchedules = await db.query.annualSchedule.findMany({
-                where: and(
-                    eq(schema.annualSchedule.schoolId, schoolId),
-                    eq(schema.annualSchedule.teacherId, teacherId),
-                    eq(schema.annualSchedule.day, day),
-                ),
-                with: {
-                    school: true,
-                    class: true,
-                    teacher: true,
-                    subject: true,
-                },
-            });
-
-            // Create a map of daily schedules by hour for quick lookup
-            const dailyByHour = new Map<number, any>();
+            // Group by hour to handle conflicts
+            const schedulesByHour = new Map<number, any>();
+            
             dailySchedules.forEach((schedule) => {
-                dailyByHour.set(schedule.hour, schedule);
+                const hour = schedule.hour;
+                const existing = schedulesByHour.get(hour);
+                
+                if (!existing) {
+                    // No existing schedule for this hour, add it
+                    schedulesByHour.set(hour, schedule);
+                } else {
+                    // There's a conflict - prioritize subTeacher over issueTeacher
+                    if (schedule.subTeacherId === teacherId) {
+                        // Current schedule has teacher as subTeacher, use it
+                        schedulesByHour.set(hour, schedule);
+                    }
+                    // If current schedule only has teacher as issueTeacher and existing already exists,
+                    // keep the existing one (which could be subTeacher or was added first)
+                }
             });
 
-            const dailyResults: DailyScheduleType[] = dailySchedules.map((schedule) => ({
+            const results: DailyScheduleType[] = Array.from(schedulesByHour.values()).map((schedule) => ({
                 id: schedule.id,
                 date: new Date(schedule.date),
                 day: schedule.day,
@@ -75,35 +79,9 @@ const getTeacherFullScheduleAction = async (
                 instructions: schedule.instructions || undefined,
                 createdAt: schedule.createdAt,
                 updatedAt: schedule.updatedAt,
-            }));
+            })).sort((a, b) => a.hour - b.hour);
 
-            const annualResults: DailyScheduleType[] = annualSchedules
-                .filter((schedule) => !dailyByHour.has(schedule.hour))
-                .map((schedule) => ({
-                    id: `annual-${schedule.id}`,
-                    date: new Date(date),
-                    day: day.toString(),
-                    hour: schedule.hour,
-                    columnId: `annual-${schedule.id}`,
-                    eventTitle: undefined,
-                    event: undefined,
-                    school: schedule.school,
-                    class: schedule.class || undefined,
-                    subject: schedule.subject || undefined,
-                    issueTeacher: schedule.teacher || undefined,
-                    issueTeacherType: "existingTeacher",
-                    subTeacher: schedule.teacher || undefined,
-                    position: 0,
-                    instructions: undefined,
-                    createdAt: schedule.createdAt,
-                    updatedAt: schedule.updatedAt,
-                }));
-
-            const combinedResults = [...dailyResults, ...annualResults].sort(
-                (a, b) => a.hour - b.hour,
-            );
-
-            return combinedResults;
+            return results;
         });
 
         return {

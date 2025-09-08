@@ -31,3 +31,9 @@ export const DailyTableColors = {
         color: "#606060",
     },
 };
+
+export const COLOR_BY_TYPE = {
+    missingTeacher: DailyTableColors.missingTeacher.headerColor,
+    existingTeacher: DailyTableColors.existingTeacher.headerColor,
+    event: DailyTableColors.event.headerColor,
+} as const;

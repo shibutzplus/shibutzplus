@@ -88,6 +88,10 @@ export type GetTeacherScheduleResponse = ActionResponse & {
     data?: TeacherHourlyScheduleItem[];
 };
 
+export type GetTeacherByIdResponse = ActionResponse & {
+    data?: TeacherType;
+};
+
 export const ActivityValues = {
     missingTeacher: "missing" as const,
     test: "test" as const,

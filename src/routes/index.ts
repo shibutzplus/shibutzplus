@@ -18,8 +18,7 @@ const router: Record<string, IRoute> = {
     profile: { id: "profile", p: "/profile", private: true, title: "המשתמש שלי" },
     history: { id: "history", p: "/history", private: true, title: "מערכות שפורסמו" },
     teacherSignIn: { id: "teacherSignIn", p: "/teacher-sign-in", private: false, title: "כניסה למורים" },
-    teacherPortalWrite: { id: "teacherPortalWrite", p: "/teacher-portal/write", private: false, title: "חומרי לימוד" },
-    teacherPortalRead: { id: "teacherPortalRead", p: "/teacher-portal/read", private: false, title: "המערכת שלי" },
+    teacherPortal: { id: "teacherPortal", p: "/teacher-portal", private: false, title: "המערכת שלי" },
     dailySchedulePortal: { id: "dailySchedulePortal", p: "/daily-schedule-portal", private: false, title: "מערכת יומית" },
 };
 

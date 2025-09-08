@@ -13,12 +13,12 @@ const PublicMobileNav: React.FC = () => {
     const { teacher } = usePortal();
 
     const pushToTeacherPortalWrite = () => {
-        if (teacher) route.push(`${router.teacherPortalWrite.p}/${teacher.schoolId}/${teacher.id}`);
+        if (teacher) route.push(`${router.teacherPortal.p}/${teacher.schoolId}/${teacher.id}`);
         return;
     };
 
     const pushToTeacherPortalRead = () => {
-        if (teacher) route.push(`${router.teacherPortalRead.p}/${teacher.schoolId}/${teacher.id}`);
+        if (teacher) route.push(`${router.teacherPortal.p}/${teacher.schoolId}/${teacher.id}`);
         return;
     };
 
@@ -33,9 +33,9 @@ const PublicMobileNav: React.FC = () => {
                 type="button"
                 aria-label="הזנת חומרי לימוד"
                 onClick={pushToTeacherPortalWrite}
-                className={`${styles.item} ${pathname.includes(router.teacherPortalWrite.p) ? styles.active : ""}`}
+                className={`${styles.item} ${pathname.includes(router.teacherPortal.p) ? styles.active : ""}`}
             >
-                {pathname.includes(router.teacherPortalWrite.p) ? (
+                {pathname.includes(router.teacherPortal.p) ? (
                     <Icons.bookFill size={16} style={{ marginInlineEnd: "4px" }} />
                 ) : (
                     <Icons.book size={16} style={{ marginInlineEnd: "4px" }} />

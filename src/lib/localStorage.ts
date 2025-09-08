@@ -1,9 +1,20 @@
 import { SchoolType } from "@/models/types/school";
 import { SubjectType } from "@/models/types/subjects";
 import { TeacherType } from "@/models/types/teachers";
-import { STORAGE_KEYS } from "@/resources/storage";
 import { ClassType } from "@/models/types/classes";
 import { DailySchedule } from "@/models/types/dailySchedule";
+
+// Local storage keys
+export const STORAGE_KEYS = {
+    CACHE_TIMESTAMP: "cache_timestamp",
+    CLASSES_DATA: "classes_data",
+    TEACHERS_DATA: "teachers_data",
+    SUBJECTS_DATA: "subjects_data",
+    SCHOOL_ID: "school_id",
+    SCHOOL_DATA: "school_data",
+    DAILY_TABLE_DATA: "daily_schedule_data",
+    PUBLISH_DATES: "publish_dates",
+};
 
 export const getStorage = <T>(key: string) => {
     const storage: string | null = localStorage.getItem(key);
@@ -75,6 +86,16 @@ export const setStorageClasses = (classes: ClassType[]) => {
 
 export const getStorageDailyTable = () => {
     return getStorage<DailySchedule>(STORAGE_KEYS.DAILY_TABLE_DATA);
+}
+
+export const getStoragePublishDates = () => {
+    return getStorage<string[]>(STORAGE_KEYS.PUBLISH_DATES);
+}
+
+export const setStoragePublishDates = (publishDate: string) => {
+    const existingStorage = getStoragePublishDates() || [];
+    const updatedStorage = [...existingStorage, publishDate];
+    return setStorage(STORAGE_KEYS.PUBLISH_DATES, updatedStorage);
 }
 
 export const setStorageDailyTable = (dailyTable: DailySchedule, selectedDate: string) => {

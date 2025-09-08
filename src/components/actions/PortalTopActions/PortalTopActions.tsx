@@ -15,7 +15,7 @@ const PortalTopActions: React.FC = () => {
     const { teacher, selectedDate, isLoading, publishDatesOptions, handleDayChange } = usePortal();
 
     const pushToTeacherPortalWrite = () => {
-        if (teacher) route.push(`${router.teacherPortalWrite.p}/${teacher.schoolId}/${teacher.id}`);
+        if (teacher) route.push(`${router.teacherPortal.p}/${teacher.schoolId}/${teacher.id}`);
         return;
     };
 
@@ -44,9 +44,9 @@ const PortalTopActions: React.FC = () => {
                         type="button"
                         aria-label="הזנת חומרי לימוד"
                         onClick={pushToTeacherPortalWrite}
-                        className={`${styles.topBtn} ${pathname.includes(router.teacherPortalWrite.p) ? styles.active : ""}`}
+                        className={`${styles.topBtn} ${pathname.includes(router.teacherPortal.p) ? styles.active : ""}`}
                     >
-                        {pathname.includes(router.teacherPortalWrite.p) ? (
+                        {pathname.includes(router.teacherPortal.p) ? (
                             <Icons.bookFill size={16} style={{ marginInlineEnd: "4px" }} />
                         ) : (
                             <Icons.book size={16} style={{ marginInlineEnd: "4px" }} />

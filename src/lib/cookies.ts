@@ -1,6 +1,11 @@
 import Cookies from "js-cookie";
-import { COOKIES_KEYS } from "@/resources/storage";
 import { COOKIES_EXPIRE_TIME } from "@/utils/time";
+
+// Cookies keys
+export const COOKIES_KEYS = {
+    SELECTED_SCHOOL: "school_id",
+    SELECTED_TEACHER: "teacher_id",
+};
 
 export const getCookie = <T = string>(key: string): T | null => {
     try {
