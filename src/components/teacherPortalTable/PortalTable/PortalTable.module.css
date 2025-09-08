@@ -1,13 +1,9 @@
-:root {
-    --mobile-nav-h: 64px; /* height of bottom navigation */
-}
-
 .tableContainer {
     flex: 1 1 auto;
     min-height: 0;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
-    height: calc(100dvh - var(--header-height) - var(--mobile-nav-h)- 2px);
+    height: calc(100dvh - var(--header-height) - 62px);
 }
 
 .scheduleTable {

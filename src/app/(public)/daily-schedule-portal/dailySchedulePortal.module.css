@@ -1,14 +1,12 @@
-:root { --top-nav-h: 64px; }
-
-.content{
-  height: calc(100dvh - var(--top-nav-h));
+.content {
+  height: calc(100dvh - 64px);
   overflow: hidden;
   display: flex;
 }
 
-.tableWrapper{
+.tableWrapper {
   flex: 1;
   height: 100%;
   overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0,0,0,.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .1);
 }
