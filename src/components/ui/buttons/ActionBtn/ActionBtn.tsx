@@ -1,14 +1,16 @@
 import React from "react";
 import styles from "./ActionBtn.module.css";
+import Loading from "@/components/core/Loading/Loading";
 
 const ActionBtn: React.FC<{
     type?: string;
     Icon?: React.ReactNode;
-    label?: string; 
+    label?: string;
     style: React.CSSProperties;
     func: () => void;
+    isLoading?: boolean;
     isDisabled?: boolean;
-}> = ({ type, Icon, label, style, func, isDisabled = false }) => (
+}> = ({ type, Icon, label, style, func, isLoading = false, isDisabled = false }) => (
     <button
         key={type}
         style={style}
@@ -17,7 +19,7 @@ const ActionBtn: React.FC<{
         onClick={func}
         disabled={isDisabled}
     >
-        {Icon ? Icon : null}
+        {isLoading ? <Loading size="S" /> : Icon ? Icon : null}
         {label && <span>{label}</span>}
     </button>
 );

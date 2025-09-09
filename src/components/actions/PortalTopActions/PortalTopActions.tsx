@@ -8,11 +8,20 @@ import { usePortal } from "@/context/PortalContext";
 import { TeacherRoleValues } from "@/models/types/teachers";
 import { usePathname, useRouter } from "next/navigation";
 import router from "@/routes";
+import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
+import { successToast } from "@/lib/toast";
 
 const PortalTopActions: React.FC = () => {
     const route = useRouter();
     const pathname = usePathname();
-    const { teacher, selectedDate, isLoading, publishDatesOptions, handleDayChange } = usePortal();
+    const {
+        teacher,
+        selectedDate,
+        isLoading,
+        publishDatesOptions,
+        handleDayChange,
+        refreshPortalTable,
+    } = usePortal();
 
     const pushToTeacherPortalWrite = () => {
         if (teacher) route.push(`${router.teacherPortal.p}/${teacher.schoolId}/${teacher.id}`);
@@ -24,18 +33,35 @@ const PortalTopActions: React.FC = () => {
         return;
     };
 
+    const handleRefresh = async () => {
+        const response = await refreshPortalTable();
+        if (response) {
+            successToast("המערכת נטענה בהצלחה");
+        }
+    };
+
     return (
         <section className={styles.actionsContainer}>
-            <div className={styles.selectContainer}>
-                <DynamicInputSelect
-                    options={publishDatesOptions}
-                    value={selectedDate}
-                    isDisabled={isLoading}
-                    onChange={handleDayChange}
-                    isSearchable={false}
-                    placeholder="בחר יום..."
-                    hasBorder
-                />
+            <div className={styles.selectRefreshContainer}>
+                <div className={styles.selectContainer}>
+                    <DynamicInputSelect
+                        options={publishDatesOptions}
+                        value={selectedDate}
+                        isDisabled={isLoading}
+                        onChange={handleDayChange}
+                        isSearchable={false}
+                        placeholder="בחר יום..."
+                        hasBorder
+                    />
+                </div>
+                <div className={styles.refreshContainer}>
+                    <IconBtn
+                        Icon={<Icons.refresh size={26} />}
+                        onClick={handleRefresh}
+                        disabled={isLoading}
+                        isLoading={isLoading}
+                    />
+                </div>
             </div>
 
             {teacher?.role === TeacherRoleValues.REGULAR && (

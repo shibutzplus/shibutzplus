@@ -283,6 +283,10 @@ export const updateAddCell = (
         existingCell.DBid = responseId;
         existingCell.subTeacher = data.subTeacher;
         delete existingCell.event;
+    } else if (!data.subTeacher && !data.event) {
+        existingCell.DBid = responseId;
+        delete existingCell.subTeacher;
+        delete existingCell.event;
     }
 
     updatedSchedule[selectedDate][columnId][hourStr] = existingCell;

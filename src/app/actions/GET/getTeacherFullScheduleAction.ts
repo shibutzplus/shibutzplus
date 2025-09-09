@@ -5,10 +5,8 @@ import { publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { and, eq, or } from "drizzle-orm";
 import { db, schema, executeQuery } from "../../../db";
-import { getDayNumberByDate } from "@/utils/time";
 
 const getTeacherFullScheduleAction = async (
-    schoolId: string,
     teacherId: string,
     date: string,
 ): Promise<GetDailyScheduleResponse> => {
@@ -18,8 +16,6 @@ const getTeacherFullScheduleAction = async (
             return authError as GetDailyScheduleResponse;
         }
 
-        //TODO: should it have +1 ?
-        const day = getDayNumberByDate(new Date(date)) + 1;
         const result = await executeQuery(async () => {
             // Get daily schedule entries where teacher is either subTeacher or issueTeacher
             const dailySchedules = await db.query.dailySchedule.findMany({
@@ -27,8 +23,8 @@ const getTeacherFullScheduleAction = async (
                     eq(schema.dailySchedule.date, date),
                     or(
                         eq(schema.dailySchedule.subTeacherId, teacherId),
-                        eq(schema.dailySchedule.issueTeacherId, teacherId)
-                    )
+                        eq(schema.dailySchedule.issueTeacherId, teacherId),
+                    ),
                 ),
                 with: {
                     class: true,
@@ -42,11 +38,11 @@ const getTeacherFullScheduleAction = async (
 
             // Group by hour to handle conflicts
             const schedulesByHour = new Map<number, any>();
-            
+
             dailySchedules.forEach((schedule) => {
                 const hour = schedule.hour;
                 const existing = schedulesByHour.get(hour);
-                
+
                 if (!existing) {
                     // No existing schedule for this hour, add it
                     schedulesByHour.set(hour, schedule);
@@ -61,25 +57,27 @@ const getTeacherFullScheduleAction = async (
                 }
             });
 
-            const results: DailyScheduleType[] = Array.from(schedulesByHour.values()).map((schedule) => ({
-                id: schedule.id,
-                date: new Date(schedule.date),
-                day: schedule.day,
-                hour: schedule.hour,
-                columnId: schedule.columnId || `daily-${schedule.id}`,
-                eventTitle: schedule.eventTitle || undefined,
-                event: schedule.event || undefined,
-                school: schedule.school,
-                class: schedule.class || undefined,
-                subject: schedule.subject || undefined,
-                issueTeacher: schedule.issueTeacher || undefined,
-                issueTeacherType: schedule.issueTeacherType || undefined,
-                subTeacher: schedule.subTeacher || undefined,
-                position: schedule.position || 0,
-                instructions: schedule.instructions || undefined,
-                createdAt: schedule.createdAt,
-                updatedAt: schedule.updatedAt,
-            })).sort((a, b) => a.hour - b.hour);
+            const results: DailyScheduleType[] = Array.from(schedulesByHour.values())
+                .map((schedule) => ({
+                    id: schedule.id,
+                    date: new Date(schedule.date),
+                    day: schedule.day,
+                    hour: schedule.hour,
+                    columnId: schedule.columnId || `daily-${schedule.id}`,
+                    eventTitle: schedule.eventTitle || undefined,
+                    event: schedule.event || undefined,
+                    school: schedule.school,
+                    class: schedule.class || undefined,
+                    subject: schedule.subject || undefined,
+                    issueTeacher: schedule.issueTeacher || undefined,
+                    issueTeacherType: schedule.issueTeacherType || undefined,
+                    subTeacher: schedule.subTeacher || undefined,
+                    position: schedule.position || 0,
+                    instructions: schedule.instructions || undefined,
+                    createdAt: schedule.createdAt,
+                    updatedAt: schedule.updatedAt,
+                }))
+                .sort((a, b) => a.hour - b.hour);
 
             return results;
         });

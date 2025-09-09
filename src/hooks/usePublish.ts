@@ -4,29 +4,42 @@ import { useMainContext } from "@/context/MainContext";
 import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { generateSchoolUrl } from "@/utils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useShareTextOrLink } from "./useShareTextOrLink";
 import { getStoragePublishDates, setStoragePublishDates } from "@/lib/localStorage";
+import routePath from "@/routes";
 
 const usePublish = () => {
     const { school } = useMainContext();
     const { selectedDate } = useDailyTableContext();
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [btnTitle, setBtnTitle] = useState<string>("פרסום למורים");
+    const [isDisabled, setIsDisabled] = useState<boolean>(false);
     const share = useShareTextOrLink();
 
-    const publishDailySchedule = async () => {
-        try {
-            setIsLoading(true);
-            if (!selectedDate || !school) return;
+    useEffect(() => {
+        if (selectedDate) {
             const storageDates = getStoragePublishDates();
             if (storageDates?.includes(selectedDate)) {
-                successToast(messages.publish.success);
-                return;
+                setBtnTitle("המערכת פורסמה");
+                setIsDisabled(true);
+            } else {
+                setBtnTitle("פרסום למורים");
+                setIsDisabled(false);
             }
+        }
+    }, [selectedDate]);
+
+    const publishDailySchedule = async () => {
+        if (!selectedDate || !school || isDisabled) return;
+        try {
+            setIsLoading(true);
             const response = await publishDailyScheduleAction(school.id, selectedDate);
             if (response.success) {
                 setStoragePublishDates(selectedDate);
                 successToast(messages.publish.success);
+                setBtnTitle("המערכת פורסמה");
+                setIsDisabled(true);
             } else {
                 errorToast(messages.publish.error);
             }
@@ -42,7 +55,15 @@ const usePublish = () => {
         share(messages.share.daily.title, messages.share.daily.text, generateSchoolUrl(school.id));
     };
 
-    return { publishDailySchedule, isLoading, onShareLink };
+    // Open history in a new tab with selected date
+    const onOpenHistory = () => {
+        if (!selectedDate) return;
+        const base = new URL(routePath.history.p, window.location.origin);
+        base.searchParams.set("date", selectedDate);
+        window.open(base.toString(), "_blank", "noopener,noreferrer");
+    };
+
+    return { publishDailySchedule, isLoading, onShareLink, onOpenHistory, btnTitle, isDisabled };
 };
 
 export default usePublish;

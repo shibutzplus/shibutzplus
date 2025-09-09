@@ -9,9 +9,12 @@ TODO
 - mete title tab with the page description
 - portal - query param of the selected date in the teacher page
 - react markdown for the event cell
+- daily - when the schadule published, on the buttom replace the option with view the history
+- daily - when the schadule published, remove the hover effect on disabled
 
 BUGs
-- portal wont render with the new instraction if other teacher update the detials (need refrsh button or websocket)
+- daily - if refresh you dont see in the select option the available teachers
+v- portal wont render with the new instraction if other teacher update the detials (need refrsh button or websocket)
 -- daily - filter not working good - I can put teacher on the same hour for 2 columns 
 - role teacher not allow to enter the big system, need alert on that
 -- daily - the new annual rows do not update in the daily because of the cache. need to fetch the data from DB if comming from deffrent page

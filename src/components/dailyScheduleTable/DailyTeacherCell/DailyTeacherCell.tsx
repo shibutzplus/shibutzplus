@@ -11,6 +11,7 @@ import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { sortDailyTeachers } from "@/utils/sort";
 import { activityOptionsMapValToLabel } from "@/resources/dailySelectActivities";
+import { EmptyValue } from "@/models/constant/daily";
 
 type DailyTeacherCellProps = {
     cell: CellContext<TeacherRow, unknown>;
@@ -19,7 +20,7 @@ type DailyTeacherCellProps = {
 
 const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
     const { teachers, classes } = useMainContext();
-    const { mainDailyTable, mapAvailableTeachers, selectedDate, updateTeacherCell } =
+    const { mainDailyTable, mapAvailableTeachers, selectedDate, updateTeacherCell, clearTeacherCell } =
         useDailyTableContext();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -53,6 +54,18 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
             setIsLoading(true);
             const cellData = mainDailyTable[selectedDate]?.[columnId]?.[hour];
             if (!cellData) return;
+
+            // Handle empty value - clear the selection
+            if (value === EmptyValue) {
+                setSelectedSubTeacher("");
+                const existingDailyId = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.DBid;
+                if (existingDailyId) {
+                    const response = await clearTeacherCell(type, cellData, columnId, existingDailyId);
+                    if (!response) throw new Error();
+                }
+                return;
+            }
+
             setSelectedSubTeacher(value);
             const isTeacherOption = !checkIfActivity(value) && methodType === "update";
             const isActivityOption = checkIfActivity(value) && methodType === "update";

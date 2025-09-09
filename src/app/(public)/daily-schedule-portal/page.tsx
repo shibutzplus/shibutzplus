@@ -21,7 +21,7 @@ const DailySchedulePortalPage = () => {
 
         setIsLoading(true);
         try {
-            const response = await getDailyScheduleAction(schoolId, date);
+            const response = await getDailyScheduleAction(schoolId, date, { isPrivate: false });
             if (response.success && response.data) {
                 setCurrentDateData(response.data);
             } else {

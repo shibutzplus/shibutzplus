@@ -8,6 +8,7 @@ import { dayToNumber } from "./time";
 import { ClassType } from "@/models/types/classes";
 import { createSelectOptions } from "./format";
 import { dailySelectActivity } from "@/resources/dailySelectActivities";
+import { EmptyValue } from "@/models/constant/daily";
 
 /**
  * Sorts an array of objects by their Hebrew name property in alphabetical order (א-ב-ג...)
@@ -96,6 +97,10 @@ export const sortDailyTeachers = (
     });
 
     const groups: GroupOption[] = [
+        {
+            label: "מחיקה",
+            options: [{ value: EmptyValue, label: "" }],
+        },
         {
             label: "מורים ממלאי מקום", // Substitute
             options: substituteTeachers.map((teacher) => ({

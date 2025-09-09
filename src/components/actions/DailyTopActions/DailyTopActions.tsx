@@ -9,19 +9,19 @@ import Icons from "@/style/icons";
 import ActionBtn from "@/components/ui/buttons/ActionBtn/ActionBtn";
 import usePublish from "@/hooks/usePublish";
 import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
-import routePath from "@/routes"; // used to build the history URL
+import routePath from "@/routes";
 
 const DailyTopActions: React.FC = () => {
     const { isLoading, addNewColumn, daysSelectOptions, selectedDate, handleDayChange } =
         useDailyTableContext();
-    const { publishDailySchedule, isLoading: publishLoading, onShareLink } = usePublish();
-
-    // Open history in a new tab with selected date
-    const openHistoryInNewTab = () => {
-        const base = new URL(routePath.history.p, window.location.origin)
-        base.searchParams.set("date", selectedDate)
-        window.open(base.toString(), "_blank", "noopener,noreferrer")
-    }
+    const {
+        publishDailySchedule,
+        isLoading: publishLoading,
+        onShareLink,
+        onOpenHistory,
+        isDisabled,
+        btnTitle,
+    } = usePublish();
 
     return (
         <section className={styles.actionsContainer}>
@@ -78,8 +78,9 @@ const DailyTopActions: React.FC = () => {
                 <ActionBtn
                     type="publish"
                     Icon={<Icons.publish size={16} />}
-                    label="פרסום למורים"
-                    isDisabled={publishLoading}
+                    label={btnTitle}
+                    isLoading={publishLoading}
+                    isDisabled={publishLoading || isDisabled}
                     func={publishDailySchedule}
                     style={{
                         borderLeft: DailyTableColors.publish.borderLeft,
@@ -88,10 +89,18 @@ const DailyTopActions: React.FC = () => {
                 />
 
                 <span className={styles.hideOnMobile}>
-                    <IconBtn Icon={<Icons.eye size={24} />} onClick={openHistoryInNewTab} disabled={publishLoading} />
+                    <IconBtn
+                        Icon={<Icons.eye size={24} />}
+                        onClick={onOpenHistory}
+                        disabled={publishLoading}
+                    />
                 </span>
 
-                <IconBtn Icon={<Icons.share size={16} />} onClick={onShareLink} disabled={publishLoading} />
+                <IconBtn
+                    Icon={<Icons.share size={16} />}
+                    onClick={onShareLink}
+                    disabled={publishLoading}
+                />
             </div>
         </section>
     );

@@ -75,6 +75,12 @@ interface DailyTableContextType {
             subTeacher?: TeacherType;
         },
     ) => Promise<DailyScheduleType | undefined>;
+    clearTeacherCell: (
+        type: ColumnType,
+        cellData: DailyScheduleCell,
+        columnId: string,
+        dailyScheduleId: string,
+    ) => Promise<DailyScheduleType | undefined>;
     updateEventCell: (
         cellData: DailyScheduleCell,
         columnId: string,
@@ -395,6 +401,41 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         return undefined;
     };
 
+    const clearTeacherCell = async (
+        type: ColumnType,
+        cellData: DailyScheduleCell,
+        columnId: string,
+        dailyScheduleId: string,
+    ) => {
+        if (!school) return;
+        const dailyCellData = addNewTeacherValueCell(
+            school,
+            cellData,
+            columnId,
+            selectedDate,
+            type,
+            undefined,
+            undefined,
+        );
+
+        if (dailyCellData) {
+            const response = await updateDailyTeacherCellAction(dailyScheduleId, dailyCellData);
+            if (response?.success && response.data) {
+                const updatedSchedule = updateAddCell(
+                    response.data.id,
+                    mainDailyTable,
+                    selectedDate,
+                    cellData,
+                    columnId,
+                    { subTeacher: undefined, event: undefined },
+                );
+                setMainAndStorageTable(updatedSchedule);
+                return response.data;
+            }
+        }
+        return undefined;
+    };
+
     // -- Event Column -- //
 
     const populateEventColumn = async (columnId: string, eventTitle: string) => {
@@ -577,6 +618,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 populateEventColumn,
                 addEventCell,
                 updateTeacherCell,
+                clearTeacherCell,
                 updateEventCell,
                 daysSelectOptions,
                 handleDayChange,

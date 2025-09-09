@@ -33,6 +33,7 @@ interface PortalContextType {
     mainPortalTable: PortalSchedule;
     setTeacherAndSchool: (schoolId?: string, teacherId?: string) => Promise<boolean>;
     handleSave: (rowId: string, hour: number, instructions?: string) => Promise<void>;
+    refreshPortalTable: () => Promise<boolean>;
     publishDatesOptions: SelectOption[];
     isLoading: boolean;
     isSaving: boolean;
@@ -94,7 +95,7 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
                     setIsLoading(false);
                 }
             } else {
-                handleDayChange("");    // If no date is published, set `selectedDate` to empty so no data will be retrieved.
+                handleDayChange(""); // If no date is published, set `selectedDate` to empty so no data will be retrieved.
                 setPublishDatesOptions([]);
             }
         };
@@ -109,11 +110,7 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
                 const populateFromStorage = populateTableFromStorage();
                 if (populateFromStorage) return;
 
-                const response = await getTeacherFullScheduleAction(
-                    teacher.schoolId,
-                    teacher.id,
-                    selectedDate,
-                );
+                const response = await getTeacherFullScheduleAction(teacher.id, selectedDate);
                 if (response.success && response.data) {
                     populatePortalTable(response.data);
                 } else {
@@ -156,6 +153,7 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
                 subject: entry.subject,
                 subTeacher: entry.subTeacher,
                 issueTeacher: entry.issueTeacher,
+                event: entry.event,
                 instructions: entry.instructions,
             };
         });
@@ -204,6 +202,26 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         }
     };
 
+    const refreshPortalTable = async () => {
+        if (!teacher || !selectedDate) return false;
+        try {
+            setIsLoading(true);
+            const response = await getTeacherFullScheduleAction(teacher.id, selectedDate);
+            if (response.success && response.data) {
+                populatePortalTable(response.data);
+                return true;
+            } else {
+                console.error("Failed to fetch daily schedule:", response.message);
+                return false;
+            }
+        } catch (error) {
+            console.error("Error fetching daily schedule data:", error);
+            return false;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const value: PortalContextType = {
         selectedDate,
         handleDayChange,
@@ -214,6 +232,7 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         publishDatesOptions,
         isLoading,
         handleSave,
+        refreshPortalTable,
         isSaving,
     };
 

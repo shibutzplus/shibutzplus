@@ -35,11 +35,14 @@ const PortalWriteRow: React.FC<PortalWriteRowProps> = ({ hour, row }) => {
         if (row?.issueTeacher) {
             // If Im the issue teacher
             if (teacher?.id === row?.issueTeacher?.id) {
-                // If I have sub teacher
                 if (row?.subTeacher) {
+                    // If I have sub teacher
                     return `מ״מ: ${row?.subTeacher?.name}`;
+                } else if (row?.event) {
+                    // If I have activity
+                    return row?.event;
                 } else {
-                    return "";
+                    return ""
                 }
             } else {
                 // Else, Im the sub teacher

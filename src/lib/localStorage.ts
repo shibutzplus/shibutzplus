@@ -3,6 +3,7 @@ import { SubjectType } from "@/models/types/subjects";
 import { TeacherType } from "@/models/types/teachers";
 import { ClassType } from "@/models/types/classes";
 import { DailySchedule } from "@/models/types/dailySchedule";
+import { DailyTableLimitNumber, PublishLimitNumber } from "@/models/constant/daily";
 
 // Local storage keys
 export const STORAGE_KEYS = {
@@ -88,23 +89,43 @@ export const getStorageDailyTable = () => {
     return getStorage<DailySchedule>(STORAGE_KEYS.DAILY_TABLE_DATA);
 }
 
-export const getStoragePublishDates = () => {
-    return getStorage<string[]>(STORAGE_KEYS.PUBLISH_DATES);
-}
-
-export const setStoragePublishDates = (publishDate: string) => {
-    const existingStorage = getStoragePublishDates() || [];
-    const updatedStorage = [...existingStorage, publishDate];
-    return setStorage(STORAGE_KEYS.PUBLISH_DATES, updatedStorage);
-}
-
 export const setStorageDailyTable = (dailyTable: DailySchedule, selectedDate: string) => {
     const existingStorage = getStorageDailyTable() || {};
     const updatedStorage = {
         ...existingStorage,
         [selectedDate]: dailyTable[selectedDate]
     };
+    
+    // Maintain a maximum of 14 dates (FIFO)
+    const dateKeys = Object.keys(updatedStorage);
+    if (dateKeys.length > DailyTableLimitNumber) {
+        // Sort dates and remove the oldest ones
+        const sortedDates = dateKeys.sort();
+        const datesToRemove = sortedDates.slice(0, dateKeys.length - DailyTableLimitNumber);
+        datesToRemove.forEach(date => {
+            delete updatedStorage[date];
+        });
+    }
+    
     return setStorage(STORAGE_KEYS.DAILY_TABLE_DATA, updatedStorage);
+}
+
+export const getStoragePublishDates = () => {
+    return getStorage<string[]>(STORAGE_KEYS.PUBLISH_DATES);
+}
+
+export const setStoragePublishDates = (publishDate: string) => {
+    const existingStorage = getStoragePublishDates() || [];
+    // Don't add duplicate dates
+    if (existingStorage.includes(publishDate)) {
+        return false;
+    }
+    let updatedStorage = [...existingStorage, publishDate];
+    // Maintain a maximum of 6 elements (FIFO)
+    if (updatedStorage.length > PublishLimitNumber) {
+        updatedStorage = updatedStorage.slice(1);
+    }
+    return setStorage(STORAGE_KEYS.PUBLISH_DATES, updatedStorage);
 }
 
 export const clearStorage = () => {

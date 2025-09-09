@@ -1,7 +1,6 @@
 "use server";
 
 import { ActionResponse } from "@/models/types/actions";
-import { DailyScheduleType } from "@/models/types/dailySchedule";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";

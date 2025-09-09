@@ -12,6 +12,7 @@ export type PortalScheduleType = {
     subject?: SubjectType;
     issueTeacher?: TeacherType;
     subTeacher?: TeacherType;
+    event?: string;
     instructions?: string;
 };
 

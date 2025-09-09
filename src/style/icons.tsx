@@ -14,6 +14,7 @@ import {
     IoBookOutline,
     IoBook,
 } from "react-icons/io5";
+import { IoMdRefresh } from "react-icons/io";
 import { RiEdit2Fill, RiDeleteBin6Line } from "react-icons/ri";
 import { BsMegaphoneFill, BsCalendar4Event } from "react-icons/bs";
 import {
@@ -67,6 +68,7 @@ const Icons = {
     teacher2: LiaChalkboardTeacherSolid,
     teacher3: GiTeacher,
     teacher: IoPersonOutline,
+    refresh: IoMdRefresh,
 };
 
 export default Icons;

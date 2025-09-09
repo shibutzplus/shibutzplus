@@ -18,6 +18,7 @@ const DailySchedulePage: NextPage = () => {
       <div id="bottomScroller" className={styles.bottomScroller} aria-label="horizontal scroller">
         <div className={styles.bottomInner} />
       </div>
+      {/* TODO: move to the layout */}
       {isMobile ? <MobileNav /> : null}
     </section>
   );

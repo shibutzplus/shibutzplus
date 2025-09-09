@@ -4,6 +4,7 @@ import { db, executeQuery, schema } from "@/db";
 import { eq } from "drizzle-orm";
 import { ActionResponse } from "@/models/types/actions";
 import messages from "@/resources/messages";
+import { PublishLimitNumber } from "@/models/constant/daily";
 
 export async function publishDailyScheduleAction(
     schoolId: string,
@@ -27,7 +28,7 @@ export async function publishDailyScheduleAction(
 
         // queue (FIFO) maintain maximum 6 elements
         let updatedDates = [...publishDates, date];
-        if (updatedDates.length > 6) {
+        if (updatedDates.length > PublishLimitNumber) {
             updatedDates = updatedDates.slice(1);
         }
         await executeQuery(async () => {
