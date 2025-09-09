@@ -20,7 +20,6 @@
 
 .whiteBox {
   background: var(--background-inner);
-  border: 0.1px solid #ccc;
   width: 100%;
   border-radius: 0;
   display: flex;
