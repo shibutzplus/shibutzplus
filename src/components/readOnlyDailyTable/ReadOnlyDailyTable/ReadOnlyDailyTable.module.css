@@ -6,7 +6,7 @@
     height: calc(100dvh - var(--header-height) - 2px);
 }
 
-.withMobileNav{
+.withMobileNav {
     height: calc(100dvh - var(--header-height) - 62px);
 }
 
@@ -24,10 +24,12 @@
     border: 1px solid #ccc;
     text-align: center;
     background: var(--background-inner);
+    padding: 0 4px;
 }
 
 .scheduleCell {
-    min-width: var(--table-cell-min-width) !important;
+    min-width: 180px !important;
+    max-width: 250px !important;
 }
 
 .hourCell {

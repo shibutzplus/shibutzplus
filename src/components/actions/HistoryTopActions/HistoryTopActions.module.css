@@ -28,6 +28,6 @@
 @media (min-width: 768px) {
   .actionsContainer {
     margin-right: 0;
-    gap: 2em;
+    gap: 1em;
   }
 }

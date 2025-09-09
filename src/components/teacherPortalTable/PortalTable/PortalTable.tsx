@@ -5,7 +5,18 @@ import PortalWriteRow from "../PortalWriteRow/PortalWriteRow";
 import { usePortal } from "@/context/PortalContext";
 
 const PortalTable: React.FC = () => {
-    const { mainPortalTable, selectedDate } = usePortal();
+    const { mainPortalTable, selectedDate, isLoading } = usePortal();
+
+    const dayTable = selectedDate ? mainPortalTable[selectedDate] : undefined;
+    const hasData = !!dayTable && Object.keys(dayTable).length > 0;
+
+    if (!hasData && !isLoading)
+        return (
+            <div className={styles.noDataMessage}>
+                אין נתונים להצגה <br /> לא פורסמה מערכת
+            </div>
+        );
+
     return (
         <div className={styles.tableContainer} role="region">
             <table className={styles.scheduleTable}>
@@ -18,7 +29,7 @@ const PortalTable: React.FC = () => {
                 </thead>
                 <tbody>
                     {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => {
-                        const row = mainPortalTable[selectedDate]?.[String(hour)];
+                        const row = dayTable?.[String(hour)];
                         return <PortalWriteRow key={hour} hour={hour} row={row} />;
                     })}
                 </tbody>

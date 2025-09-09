@@ -48,6 +48,18 @@
     max-width: 100px;
 }
 
+.noDataMessage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 220px;
+    font-size: 1.4rem;
+    color: #666;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.6;
+}
+
 /* Desktop */
 @media (min-width: 768px) {
     .tableContainer {

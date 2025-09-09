@@ -25,7 +25,7 @@ const ReadOnlyDailyTable: React.FC<ReadOnlyDailyTableProps> = ({
     if (!hasData && !isLoading)
         return (
             <div className={styles.noDataMessage}>
-                אין נתונים להצגה <br /> לא פורסמה מערכת ליום זה
+                אין נתונים להצגה <br /> לא פורסמה מערכת
             </div>
         );
 

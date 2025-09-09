@@ -94,7 +94,7 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
                     setIsLoading(false);
                 }
             } else {
-                handleDayChange(getTomorrowOption());
+                handleDayChange("");    // If no date is published, set `selectedDate` to empty so no data will be retrieved.
                 setPublishDatesOptions([]);
             }
         };

@@ -7,17 +7,29 @@ type ReadOnlyTeacherCellProps = {
 };
 
 const ReadOnlyTeacherCell: React.FC<ReadOnlyTeacherCellProps> = ({ cellData }) => {
+    const hasThirdRow = !!cellData.subTeacher || !!cellData.event;
+
     return (
         <div className={styles.teacherCell}>
-            {cellData.class && <div className={styles.className}>{cellData.class.name}</div>}
-            {cellData.subject && <div className={styles.subjectName}>{cellData.subject.name}</div>}
-            {cellData.subTeacher ? (
-                <div className={styles.subTeacherName}>{cellData.subTeacher?.name}</div>
-            ) : (
-                <div className={styles.subTeacherName}>{cellData.event}</div>
+            {cellData.class && (
+                <div className={`${styles.className} ${!hasThirdRow ? styles.faded : ""}`}>
+                    {cellData.class.name}
+                </div>
             )}
+            {cellData.subject && (
+                <div className={`${styles.subjectName} ${!hasThirdRow ? styles.faded : ""}`}>
+                    {cellData.subject.name}
+                </div>
+            )}
+            {cellData.subTeacher ? (
+                <div className={styles.subTeacherName}>מחליף: {cellData.subTeacher?.name}</div>
+            ) : cellData.event ? (
+                <div className={styles.subTeacherName}>{cellData.event}</div>
+            ) : null}
         </div>
     );
 };
+
+
 
 export default ReadOnlyTeacherCell;

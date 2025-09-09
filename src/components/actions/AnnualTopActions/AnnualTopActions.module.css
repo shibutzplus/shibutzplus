@@ -9,7 +9,8 @@
 }
 
 .selectContainer {
-    width: 100%;
+    min-width: fit-content;
+    width: 180px;
 }
 
 .btnContainer {
@@ -37,11 +38,6 @@
     .actionsContainer {
         margin-right: 0;
         gap: 3em;
-    }
-
-    .selectContainer {
-        min-width: fit-content;
-        width: 200px;
     }
 
     .link {
