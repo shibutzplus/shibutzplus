@@ -98,5 +98,6 @@ export const ActivityValues = {
     trip: "trip" as const,
     show: "show" as const,
     returns: "returns" as const,
+    home: "home" as const,
 };
 export type ActivityOptions = (typeof ActivityValues)[keyof typeof ActivityValues];

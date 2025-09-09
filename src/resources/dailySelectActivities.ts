@@ -7,6 +7,7 @@ export const dailySelectActivity: SelectOption<ActivityOptions>[] = [
     { value: "trip", label: "טיול" },
     { value: "show", label: "הצגה" },
     { value: "returns", label: "חזרות" },
+    { value: "home", label: "משוחררים הביתה" },
 ];
 
 export const activityOptionsMapValToLabel = (value: string) => {
@@ -21,5 +22,7 @@ export const activityOptionsMapValToLabel = (value: string) => {
             return "הצגה";
         case "returns":
             return "חזרות";
+        case "home":
+            return "משוחררים הביתה";
     }
 };
