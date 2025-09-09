@@ -1,7 +1,7 @@
 :root {
   /* Base colors */
   --background: #ffffff;
-  --background-inner: #ffffff;
+  --background-secondary: #f9fafc;
   --foreground: #171717;
 
   /* Login page colors */
@@ -41,14 +41,26 @@
   /* Table colors */
   --header-cell-color: #f7faff;
   --row-cell-color: #f7faff;
-  --empty-cell-color: #ffffff;
+  --empty-cell-color: #f7f7f7;
+
+
+  --daily-btns-color: #606060;
+
+  --daily-template-color: #d6d5d5;
+
+
+  --border-primary: 1px solid #ddd;
+  --border-heavy-primary: 2px solid #ddd;
 
 
   /* Box shadows */
   --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  --daily-btns-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   --input-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --header-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   --input-focus-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   --error-box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.2);
+  --mobile-nav-box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
 
   /* Size */
   --header-height: 60px;
@@ -64,7 +76,7 @@
   --table-cell-min-width: 300px;
   --table-cell-width: 300px;
   --table-cell-min-height: 80px;
-  --table-cell-height: 13vh;
+  --table-cell-height: 120px;
 
   --box-border-radius: 10px;
   --btn-border-radius: 4px;
@@ -79,7 +91,7 @@ body {
 
 body {
   color: var(--foreground);
-  background-color: var(--background-inner);
+  background-color: var( --background);
   font-family: Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

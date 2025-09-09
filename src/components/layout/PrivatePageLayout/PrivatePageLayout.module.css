@@ -3,7 +3,7 @@
   height: 100dvh;
   display: flex;
   flex-direction: column;
-  background-color: var(--background);
+  background-color: var(--background-secondary);
 }
 
 /* Top area stays at top */
@@ -21,13 +21,13 @@
 .contentMain {
   flex: 1 1 auto;
   min-height: 0;
-  overflow: auto;              /* scrolling happens here */
-  direction: ltr;              /* scrollbar on the right */
+  overflow: auto; /* scrolling happens here */
+  direction: ltr; /* scrollbar on the right */
   width: 100%;
-  -webkit-overflow-scrolling: touch;
+  /* -webkit-overflow-scrolling: touch; */
 }
 
 /* Main content */
 .scrollInner {
-  direction: rtl;              /* restore RTL for content */
+  direction: rtl;
 }

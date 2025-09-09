@@ -1,7 +1,7 @@
 /* Base (Mobile first) */
 .contentHeader {
-    background-color: var(--background-inner);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: var(--background);
+    box-shadow: var(--header-box-shadow);
     height: var(--header-height);
     padding: 0 1vw;
     display: flex;
@@ -53,13 +53,13 @@
 .filters {
     position: sticky;
     top: var(--header-height);
-    background-color: var(--background-inner);
+    background-color: var(--background);
     z-index: 99;
     display: flex;
     gap: 10px;
     align-items: center;
     padding: 8px 3vw;
-    border-bottom: 1px solid #eee;
+    border-bottom: var(--border-primary);
 }
 
 .filterItem {
@@ -67,6 +67,7 @@
     align-items: center;
     gap: 6px;
 }
+
 .filterLabel {
     font-size: 14px;
     color: var(--text-secondary);
@@ -75,9 +76,9 @@
 .select {
     height: 32px;
     padding: 4px 8px;
-    border: 1px solid #ddd;
+    border: var(--border-primary);
     border-radius: 6px;
-    background: var(--background-inner);
+    background: var(--background);
     color: var(--text-primary);
 }
 

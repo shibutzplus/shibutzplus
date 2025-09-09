@@ -19,10 +19,7 @@ const MobileNav: React.FC = () => {
                 type="missingTeacher"
                 label="מורה חסר"
                 isDisabled={isLoading}
-                style={{
-                    color: DailyTableColors.missingTeacher.color,
-                    backgroundColor: DailyTableColors.missingTeacher.headerColor,
-                }}
+                style={{ backgroundColor: DailyTableColors.missingTeacher.headerColor }}
                 func={() => addNewColumn("missingTeacher")}
             />
 
@@ -30,10 +27,7 @@ const MobileNav: React.FC = () => {
                 type="existingTeacher"
                 label="מורה נוכח"
                 isDisabled={isLoading}
-                style={{
-                    color: DailyTableColors.existingTeacher.color,
-                    backgroundColor: DailyTableColors.existingTeacher.headerColor,
-                }}
+                style={{ backgroundColor: DailyTableColors.existingTeacher.headerColor }}
                 func={() => addNewColumn("existingTeacher")}
             />
 
@@ -41,10 +35,7 @@ const MobileNav: React.FC = () => {
                 type="event"
                 label="ארועים"
                 isDisabled={isLoading}
-                style={{
-                    color: DailyTableColors.event.color,
-                    backgroundColor: DailyTableColors.event.headerColor,
-                }}
+                style={{ backgroundColor: DailyTableColors.event.headerColor }}
                 func={() => addNewColumn("event")}
             />
 
@@ -52,9 +43,7 @@ const MobileNav: React.FC = () => {
                 Icon={<Icons.publish size={16} />}
                 isDisabled={publishLoading}
                 func={publishDailySchedule}
-                style={{
-                    color: DailyTableColors.publish.color,
-                }}
+                style={{}}
             />
 
             <IconBtn

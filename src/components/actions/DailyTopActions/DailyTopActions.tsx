@@ -9,7 +9,6 @@ import Icons from "@/style/icons";
 import ActionBtn from "@/components/ui/buttons/ActionBtn/ActionBtn";
 import usePublish from "@/hooks/usePublish";
 import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
-import routePath from "@/routes";
 
 const DailyTopActions: React.FC = () => {
     const { isLoading, addNewColumn, daysSelectOptions, selectedDate, handleDayChange } =
@@ -43,10 +42,7 @@ const DailyTopActions: React.FC = () => {
                     Icon={<Icons.addTeacher size={16} />}
                     label="שיבוץ למורה חסר"
                     isDisabled={isLoading}
-                    style={{
-                        borderLeft: DailyTableColors.missingTeacher.borderLeft,
-                        color: DailyTableColors.missingTeacher.color,
-                    }}
+                    style={{ borderLeft: DailyTableColors.missingTeacher.borderLeft }}
                     func={() => addNewColumn("missingTeacher")}
                 />
                 <ActionBtn
@@ -54,10 +50,7 @@ const DailyTopActions: React.FC = () => {
                     Icon={<Icons.addTeacher size={16} />}
                     label="שיבוץ למורה נוכח"
                     isDisabled={isLoading}
-                    style={{
-                        borderLeft: DailyTableColors.existingTeacher.borderLeft,
-                        color: DailyTableColors.existingTeacher.color,
-                    }}
+                    style={{ borderLeft: DailyTableColors.existingTeacher.borderLeft }}
                     func={() => addNewColumn("existingTeacher")}
                 />
 
@@ -66,10 +59,7 @@ const DailyTopActions: React.FC = () => {
                     Icon={<Icons.event size={16} />}
                     label="עדכון ארועים"
                     isDisabled={isLoading}
-                    style={{
-                        borderLeft: DailyTableColors.event.borderLeft,
-                        color: DailyTableColors.event.color,
-                    }}
+                    style={{ borderLeft: DailyTableColors.event.borderLeft }}
                     func={() => addNewColumn("event")}
                 />
             </div>
@@ -82,10 +72,7 @@ const DailyTopActions: React.FC = () => {
                     isLoading={publishLoading}
                     isDisabled={publishLoading || isDisabled}
                     func={publishDailySchedule}
-                    style={{
-                        borderLeft: DailyTableColors.publish.borderLeft,
-                        color: DailyTableColors.publish.color,
-                    }}
+                    style={{ borderLeft: DailyTableColors.publish.borderLeft }}
                 />
 
                 <span className={styles.hideOnMobile}>

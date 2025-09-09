@@ -2,7 +2,6 @@
     flex: 1 1 auto;
     min-height: 0;
     overflow: auto;
-    -webkit-overflow-scrolling: touch;
     height: calc(100dvh - var(--header-height) - 2px);
 }
 
@@ -23,7 +22,7 @@
 .scheduleTable td {
     border: 1px solid #ccc;
     text-align: center;
-    background: var(--background-inner);
+    background: var( --background);
     padding: 0 4px;
 }
 
@@ -64,11 +63,10 @@
     align-items: center;
     min-height: 220px;
     font-size: 1.4rem;
-    color: #666;
+    color: var(--description-text);
     font-weight: 600;
     text-align: center;
     line-height: 1.6;
-
     opacity: 0;
     animation: fadeIn 0.5s ease-in forwards;
 }

@@ -14,24 +14,18 @@
 .textarea {
     width: 100%;
     box-sizing: border-box;
-
     line-height: 1.5em;
     min-height: 60px;
     height: auto;
     max-height: none;
-
     padding: 0px 0px;
     border: none;
-
     font-size: 16px;
     font-family: inherit;
-
-    background-color: var(--background-inner);
+    background-color: var(--background);
     color: var(--foreground);
-
     text-align: right;
     direction: rtl;
-
     resize: none;
     overflow: hidden;
     transition: height 0.1s ease;
@@ -41,13 +35,16 @@
     color: var(--placeholder-color);
     opacity: 0.8;
 }
+
 .textarea:focus {
     outline: none;
     border-color: var(--focus, #c7c7c7);
 }
+
 .textareaError {
     border-color: var(--error-color);
 }
+
 .textareaError:focus {
     box-shadow: var(--error-box-shadow);
 }

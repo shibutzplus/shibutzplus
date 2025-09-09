@@ -1,0 +1,126 @@
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.tableSkeleton {
+    width: 100%;
+    height: 100%;
+    border-radius: var(--box-border-radius);
+    padding: 0.5rem;
+    box-sizing: border-box;
+    background: #f3f3f3;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.headerRow {
+    display: grid;
+    grid-template-columns: 60px repeat(6, 1fr);
+    gap: 4px;
+    margin-bottom: 1px;
+}
+
+.headerCell {
+    height: 70px;
+    background: #e3e3e3;
+    border-radius: 8px;
+    animation: skeleton-shimmer 10s infinite linear;
+    background: linear-gradient(120deg, #e3e3e3 25%, #f0f0f0 50%, #e3e3e3 75%);
+    background-size: 300% 100%;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 60px repeat(6, 1fr);
+    gap: 4px;
+    margin-bottom: 1px;
+}
+
+.hourCell {
+    height: 110px;
+    background: #e3e3e3;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: skeleton-shimmer 10s infinite linear;
+    background: linear-gradient(120deg, #e3e3e3 25%, #f0f0f0 50%, #e3e3e3 75%);
+    background-size: 300% 100%;
+}
+
+.cell {
+    height: 110px;
+    background: #ececec;
+    border-radius: 6px;
+    box-sizing: border-box;
+    animation: skeleton-shimmer 10s infinite linear;
+    background: linear-gradient(120deg, #ececec 25%, #e8e8e8 50%, #ececec 75%);
+    background-size: 300% 100%;
+}
+
+.dropdown {
+    height: 28px;
+    border-radius: 4px;
+    background: #e3e3e3;
+    position: relative;
+    overflow: hidden;
+    animation: skeleton-shimmer 10s infinite linear;
+    background: linear-gradient(120deg, #e3e3e3 25%, #e8e8e8 50%, #e3e3e3 75%);
+    background-size: 300% 100%;
+}
+
+.dropdown:nth-child(1) {
+    animation-delay: 0.2s;
+}
+
+.dropdown:nth-child(2) {
+    animation-delay: 0.4s;
+}
+
+@keyframes skeleton-shimmer {
+    0% {
+        background-position: -400% 0;
+    }
+    100% {
+        background-position: 400% 0;
+    }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .tableSkeleton {
+        padding: 1rem;
+    }
+
+    .headerRow,
+    .row {
+        grid-template-columns: 60px repeat(6, 1fr);
+        gap: 4px;
+    }
+
+    .cell {
+        height: 70px;
+        padding: 6px;
+        gap: 4px;
+    }
+
+    .dropdown {
+        height: 24px;
+    }
+
+    .hourCell {
+        height: 70px;
+    }
+
+    .headerCell {
+        height: 40px;
+    }
+}

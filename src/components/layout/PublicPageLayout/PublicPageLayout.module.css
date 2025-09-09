@@ -1,34 +1,33 @@
 /* Root layout fills viewport and stacks header + main */
 .publicPageLayout {
-    height: 100dvh;
-    display: flex;
-    flex-direction: column;
-    background-color: var(--background);
-  }
-  
-  /* Top area stays at top */
-  .contentHeader {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: var(--background);
-    border-bottom: 1px solid #e5e5e5;
-    flex: 0 0 auto;
-    min-height: var(--header-height);
-  }
-  
-  /* Only the content area scrolls */
-  .contentMain {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow: hidden;
-    direction: ltr;
-    width: 100%;
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  /* Main content */
-  .scrollInner {
-    direction: rtl;
-  }
-  
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background-secondary);
+}
+
+/* Top area stays at top */
+.contentHeader {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--background);
+  border-bottom: 1px solid #e5e5e5;
+  flex: 0 0 auto;
+  min-height: var(--header-height);
+}
+
+/* Only the content area scrolls */
+.contentMain {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  direction: ltr;
+  width: 100%;
+  /* -webkit-overflow-scrolling: touch; */
+}
+
+/* Main content */
+.scrollInner {
+  direction: rtl;
+}

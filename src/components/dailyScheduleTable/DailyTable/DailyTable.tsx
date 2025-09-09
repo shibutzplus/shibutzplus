@@ -26,7 +26,7 @@ const DailyTable: React.FC = () => {
             cell: () => (
                 <div className={styles.templateCell}>
                     {/* <Icons.empty className={styles.templateIcon} size={18} /> */}
-                    <div className={styles.templateText}>אין נתונים להצגה</div>
+                    {/* <div className={styles.templateText}>אין נתונים להצגה</div> */}
                 </div>
             ),
             meta: { bgColor: HeaderColor },

@@ -10,8 +10,8 @@
     position: sticky;
     left: 0;
     z-index: 10;
-    background: var(--background-inner);
-    border-inline-end: 1px solid #ccc;
+    background: var(--background);
+    border-inline-end: var(--border-primary);
     flex-shrink: 0;
 }
 
@@ -33,7 +33,7 @@
 .hourHeader,
 .hourCell {
     box-sizing: border-box;
-    border: 1px solid #ccc;
+    border: var(--border-primary);
     text-align: center;
 }
 
@@ -92,7 +92,7 @@
     justify-content: flex-start;
     height: 100%;
     gap: 6px;
-    background: var(--background-inner);
+    background: var(--background);
 }
 
 .empty {
@@ -114,22 +114,22 @@
 }
 
 .templateText {
-    color: #d6d5d5;
+    color: var(--daily-template-color);
     text-align: center;
 }
 
 .templateIcon {
-    color: #d6d5d5;
+    color: var(--daily-template-color);
 }
 
 :root:dir(rtl) .fixedHourColumn,
 :root:dir(ltr) .fixedHourColumn {
-    border-inline-end: 1px solid #ccc;
+    border-inline-end: var(--border-primary);
 }
 
 .dayHeader,
 .dayHeader * {
-  font-weight: 700 !important;
+    font-weight: 700 !important;
 }
 
 @media (max-width: 767px) {
@@ -138,13 +138,16 @@
         font-size: 0.95rem;
         padding-inline: 6px;
     }
+
     .scheduleCell {
         min-width: 220px;
     }
+
     .hourHeader,
     .hourCell {
         width: calc(var(--table-template-cell-width) - 10px);
     }
+
     .cellContent {
         padding: 4px;
         gap: 6px;

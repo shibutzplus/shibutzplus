@@ -13,7 +13,7 @@
 }
 
 .modalContainer {
-  background-color: var(--background-inner);
+  background-color: var( --background);
   border-radius: var(--box-border-radius);
   box-shadow: var(--card-shadow);
   position: relative;

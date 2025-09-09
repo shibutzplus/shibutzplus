@@ -14,17 +14,17 @@ export const DailyTableColors = {
     missingTeacher: {
         borderLeft: "4px solid #ae2b27af",
         color: "#606060",
-        headerColor: "#af3c3815",
+        headerColor: "#F8EFEF",
     },
     existingTeacher: {
         borderLeft: "4px solid #2e6e94",
         color: "#606060",
-        headerColor: "#3883af17",
+        headerColor: "#EDF4F8",
     },
     event: {
         borderLeft: "4px solid #27ae60",
         color: "#606060",
-        headerColor: "#64af380d",
+        headerColor: "#F7FBF5",
     },
     publish: {
         borderLeft: "4px solid #8a2be2",

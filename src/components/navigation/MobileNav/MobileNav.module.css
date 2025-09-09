@@ -4,17 +4,14 @@
   align-items: center;
   gap: 1rem;
   width: 100%;
-
-  /* fixed to bottom of the viewport */
-  position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   z-index: 99;
-
-  background-color: var(--background-inner);
+  background-color: var(--background);
   height: var(--header-height);
   box-sizing: border-box;
   padding: 0 1em;
-  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  border-top: var(--border-primary);
 }

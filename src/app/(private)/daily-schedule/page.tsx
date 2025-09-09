@@ -4,12 +4,9 @@ import React from "react";
 import { NextPage } from "next";
 import DailyTable from "@/components/dailyScheduleTable/DailyTable/DailyTable";
 import styles from "./DailySchedule.module.css";
-import MobileNav from "@/components/navigation/MobileNav/MobileNav";
-import { useMobileSize } from "@/hooks/useMobileSize";
 import usePageScroll from "@/hooks/scroll/usePageScroll";
 
 const DailySchedulePage: NextPage = () => {
-  const isMobile = useMobileSize();
   usePageScroll("bottomScroller")
 
   return (
@@ -18,8 +15,6 @@ const DailySchedulePage: NextPage = () => {
       <div id="bottomScroller" className={styles.bottomScroller} aria-label="horizontal scroller">
         <div className={styles.bottomInner} />
       </div>
-      {/* TODO: move to the layout */}
-      {isMobile ? <MobileNav /> : null}
     </section>
   );
 };
