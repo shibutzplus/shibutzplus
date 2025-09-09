@@ -98,7 +98,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
                             value={selectedSubTeacher}
                             onChange={(value: string) => handleTeacherChange("update", value)}
                             onCreate={(value: string) => handleTeacherChange("create", value)}
-                            placeholder="בחירת מורה מחליף"
+                            placeholder='בחירת מורה מ״מ'
                             isSearchable
                             isAllowAddNew
                             hasBorder
