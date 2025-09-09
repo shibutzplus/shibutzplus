@@ -1,11 +1,19 @@
 .teacherCell {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.faded {
+    color: #999; /* אפור בהיר */
+}
+
+.subTeacherName {
+    font-weight: bold;
 }
 
 @media (max-width: 767px) {
-  .teacherCell {
-    padding-block: 6px;
-  }
+    .teacherCell {
+        padding-block: 6px;
+    }
 }
