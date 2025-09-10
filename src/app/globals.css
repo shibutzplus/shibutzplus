@@ -40,7 +40,7 @@
     /* Table colors */
     --header-cell-color: #f7faff;
     --row-cell-color: #f7faff;
---empty-cell-color: #fcfcfc;
+    --empty-cell-color: #fcfcfc;
 
     --daily-btns-color: #606060;
 
