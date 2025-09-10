@@ -13,7 +13,7 @@ const usePublish = () => {
     const { school } = useMainContext();
     const { selectedDate } = useDailyTableContext();
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [btnTitle, setBtnTitle] = useState<string>("פרסום למורים");
+    const [btnTitle, setBtnTitle] = useState<string>("פרסום המערכת");
     const [isDisabled, setIsDisabled] = useState<boolean>(false);
     const share = useShareTextOrLink();
 
@@ -24,7 +24,7 @@ const usePublish = () => {
                 setBtnTitle("המערכת פורסמה");
                 setIsDisabled(true);
             } else {
-                setBtnTitle("פרסום למורים");
+                setBtnTitle("פרסום המערכת");
                 setIsDisabled(false);
             }
         }

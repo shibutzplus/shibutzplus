@@ -20,6 +20,23 @@
     display: none;
 }
 
+.publishLabel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    height: 34px;
+    font-size: 12px;
+    cursor: default;
+    transform: rotate(30deg);
+    transform-origin: center;
+    background: rgba(200, 200, 200, 0.1);
+    border-radius: 6px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+    letter-spacing: 1px;
+    white-space: pre-line;
+}
+
 .iconBtn,
 .iconBtnPrimary {
     display: inline-flex;
