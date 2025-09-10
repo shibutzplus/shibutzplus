@@ -78,7 +78,7 @@ const DailyTopActions: React.FC = () => {
                     />
                 )}
 
-                <span className={styles.hideOnMobile}>
+                <span className={styles.hideOnMobile} title="תצוגה מקדימה">
                     <IconBtn
                         Icon={<Icons.eye size={24} />}
                         onClick={onOpenHistory}
