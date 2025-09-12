@@ -1,17 +1,15 @@
-import React from "react";
-import PrivatePageLayout from "@/components/layout/PrivatePageLayout/PrivatePageLayout";
-import { AnnualTableProvider } from "@/context/AnnualTableContext";
-import TopNav from "@/components/navigation/TopNav/TopNav";
-import AnnualTopActions from "@/components/actions/AnnualTopActions/AnnualTopActions";
+import type { Metadata } from "next";
+import AnnualScheduleLayoutClient from "./layoutClient";
 
-export default function AnnualScheduleLayout({ children }: { children: React.ReactNode }) {
-    return (
-        <AnnualTableProvider>
-            <PrivatePageLayout
-                CustomTopNav={<TopNav type="admin" actions={<AnnualTopActions />} />}
-            >
-                {children}
-            </PrivatePageLayout>
-        </AnnualTableProvider>
-    );
+export const metadata: Metadata = {
+    title: "מערכת שנתית | שיבוץ+",
+    robots: "noindex, nofollow",
+};
+
+export default function AnnualScheduleLayout({
+    children,
+}: {
+    children: React.ReactNode;
+}) {
+    return <AnnualScheduleLayoutClient>{children}</AnnualScheduleLayoutClient>;
 }

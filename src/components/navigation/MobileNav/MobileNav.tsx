@@ -11,7 +11,13 @@ import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
 
 const MobileNav: React.FC = () => {
     const { isLoading, addNewColumn } = useDailyTableContext();
-    const { publishDailySchedule, isLoading: publishLoading, onShareLink } = usePublish();
+    const {
+        publishDailySchedule,
+        isLoading: publishLoading,
+        onShareLink,
+        btnTitle,
+        isDisabled,
+    } = usePublish();
 
     return (
         <nav className={styles.mobileNav}>
@@ -39,12 +45,16 @@ const MobileNav: React.FC = () => {
                 func={() => addNewColumn("event")}
             />
 
-            <ActionBtn
-                Icon={<Icons.publish size={16} />}
-                isDisabled={publishLoading}
-                func={publishDailySchedule}
-                style={{}}
-            />
+            {isDisabled ? (
+                <span className={styles.publishLabel}>המערכת פורסמה</span>
+            ) : (
+                <ActionBtn
+                    Icon={<Icons.publish size={16} />}
+                    isDisabled={publishLoading}
+                    func={publishDailySchedule}
+                    style={{}}
+                />
+            )}
 
             <IconBtn
                 Icon={<Icons.share size={16} />}

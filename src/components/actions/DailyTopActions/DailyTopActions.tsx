@@ -53,7 +53,6 @@ const DailyTopActions: React.FC = () => {
                     style={{ borderLeft: DailyTableColors.existingTeacher.borderLeft }}
                     func={() => addNewColumn("existingTeacher")}
                 />
-
                 <ActionBtn
                     type="event"
                     Icon={<Icons.event size={16} />}
@@ -65,17 +64,21 @@ const DailyTopActions: React.FC = () => {
             </div>
 
             <div className={styles.leftSide}>
-                <ActionBtn
-                    type="publish"
-                    Icon={<Icons.publish size={16} />}
-                    label={btnTitle}
-                    isLoading={publishLoading}
-                    isDisabled={publishLoading || isDisabled}
-                    func={publishDailySchedule}
-                    style={{ borderLeft: DailyTableColors.publish.borderLeft }}
-                />
+                {isDisabled ? (
+                    <span className={styles.publishLabel}>המערכת{"\n"}פורסמה</span>
+                ) : (
+                    <ActionBtn
+                        type="publish"
+                        Icon={<Icons.publish size={16} />}
+                        label={btnTitle}
+                        isLoading={publishLoading}
+                        isDisabled={publishLoading}
+                        func={publishDailySchedule}
+                        style={{ borderLeft: DailyTableColors.publish.borderLeft }}
+                    />
+                )}
 
-                <span className={styles.hideOnMobile}>
+                <span className={styles.hideOnMobile} title="תצוגה מקדימה">
                     <IconBtn
                         Icon={<Icons.eye size={24} />}
                         onClick={onOpenHistory}
@@ -83,11 +86,14 @@ const DailyTopActions: React.FC = () => {
                     />
                 </span>
 
-                <IconBtn
-                    Icon={<Icons.share size={16} />}
-                    onClick={onShareLink}
-                    disabled={publishLoading}
-                />
+                <span title="שיתוף קישור">
+                    <IconBtn
+                        Icon={<Icons.share size={16} />}
+                        onClick={onShareLink}
+                        disabled={publishLoading}
+                    />
+                </span>
+
             </div>
         </section>
     );

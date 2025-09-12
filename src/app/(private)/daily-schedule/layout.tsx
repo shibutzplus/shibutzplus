@@ -1,24 +1,15 @@
-"use client";
+import type { Metadata } from "next";
+import DailyScheduleLayoutClient from "./layoutClient";
 
-import React from "react";
-import PrivatePageLayout from "@/components/layout/PrivatePageLayout/PrivatePageLayout";
-import { DailyTableProvider } from "@/context/DailyTableContext";
-import TopNav from "@/components/navigation/TopNav/TopNav";
-import DailyTopActions from "@/components/actions/DailyTopActions/DailyTopActions";
-import { useMobileSize } from "@/hooks/useMobileSize";
-import MobileNav from "@/components/navigation/MobileNav/MobileNav";
+export const metadata: Metadata = {
+  title: "שיבוץ יומי | שיבוץ+",
+  robots: "noindex, nofollow",
+};
 
-export default function DailyScheduleLayout({ children }: { children: React.ReactNode }) {
-    const isMobile = useMobileSize();
-
-    return (
-        <DailyTableProvider>
-            <PrivatePageLayout CustomTopNav={<TopNav type="admin" actions={<DailyTopActions />} />}>
-                <main>
-                    <section style={{ marginBottom: isMobile ? "60px" : "0" }}>{children}</section>
-                    {isMobile ? <MobileNav /> : null}
-                </main>
-            </PrivatePageLayout>
-        </DailyTableProvider>
-    );
+export default function DailyScheduleLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return <DailyScheduleLayoutClient>{children}</DailyScheduleLayoutClient>;
 }

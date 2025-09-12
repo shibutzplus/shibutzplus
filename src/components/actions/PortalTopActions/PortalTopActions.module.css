@@ -8,19 +8,15 @@
     gap: 0;
 }
 
+.selectContainer {
+    min-width: fit-content;
+    width: 190px;
+}
+
 .selectRefreshContainer {
     display: flex;
     align-items: center;
-    gap: 30px;
-}
-
-.selectContainer {
-    min-width: fit-content;
-    width: 200px;
-}
-
-.refreshContainer{
-    display: none;
+    gap: 10px;
 }
 
 .topButtonsContainer {
@@ -55,8 +51,8 @@
         gap: 3em;
     }
 
-    .refreshContainer {
-        display: inline-block;
+    .selectRefreshContainer {
+        gap: 30px;
     }
 
     .topButtonsContainer {
