@@ -46,8 +46,9 @@
 
     --daily-template-color: #d6d5d5;
 
-    --border-primary: 1px solid #ddd;
-    --border-heavy-primary: 2px solid #ddd;
+    --separator-color: #888;
+
+    --daily-btns-color: #606060;
 
     /* Box shadows */
     --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -57,6 +58,29 @@
     --input-focus-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     --error-box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.2);
     --mobile-nav-box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+
+    /* Size */
+    --header-height: 60px;
+    --nav-width: 240px;
+
+    --border-primary: 1px solid #ddd;
+    --border-heavy-primary: 2px solid #ddd;
+    --border-inline-start: 1px solid #e5e5e5;
+
+    --skeleton-input-color: #ececec;
+    --skeleton-input-color-bright: #f2f0f0;
+
+    --annual-table-width: 180px;
+    --annual-template-width: 70px;
+
+    --table-header-min-height: 70px;
+    --table-header-height: 70px;
+
+    --table-template-cell-width: 60px;
+    --table-cell-min-width: 300px;
+    --table-cell-width: 300px;
+    --table-cell-min-height: 80px;
+    --table-cell-height: 120px;
 
     /* Size */
     --header-height: 60px;

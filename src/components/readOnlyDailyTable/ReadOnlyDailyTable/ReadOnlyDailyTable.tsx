@@ -8,31 +8,33 @@ import ReadOnlyDailyHeader from "../ReadOnlyDailyHeader/ReadOnlyDailyHeader";
 import ReadOnlyTeacherCell from "../ReadOnlyTeacherCell/ReadOnlyTeacherCell";
 import ReadOnlyEventCell from "../ReadOnlyEventCell/ReadOnlyEventCell";
 import { getHeaderItems, sortAndGroupScheduleData } from "@/services/portalDailyScheduleService";
+import NotPublishedLayout from "@/components/layout/NotPublishedLayout/NotPublishedLayout";
 
 interface ReadOnlyDailyTableProps {
     scheduleData: DailyScheduleType[];
-    isLoading: boolean;
     hasMobileNav?: boolean;
+    noScheduleTitle?: string;
+    noScheduleSubTitle?: string[];
 }
 
 const ReadOnlyDailyTable: React.FC<ReadOnlyDailyTableProps> = ({
     scheduleData,
-    isLoading,
     hasMobileNav = false,
+    noScheduleTitle,
+    noScheduleSubTitle,
 }) => {
-    const hasData = Array.isArray(scheduleData) && scheduleData.length > 0;
-
-    if (!hasData && !isLoading)
+    if (scheduleData.length === 0)
         return (
-            <div className={styles.noDataMessage}>
-                אין נתונים להצגה <br /> לא פורסמה מערכת
-            </div>
+            <NotPublishedLayout
+                title={noScheduleTitle || "אין נתונים להצגה"}
+                subTitle={noScheduleSubTitle || ["לא פורסמה מערכת"]}
+            />
         );
 
     const scheduleByColumn = React.useMemo(() => {
-        if (!hasData) return {};
+        if (scheduleData.length === 0) return {};
         return sortAndGroupScheduleData(scheduleData);
-    }, [scheduleData, hasData]);
+    }, [scheduleData]);
 
     const headerItems = useMemo(() => {
         return getHeaderItems(scheduleByColumn);

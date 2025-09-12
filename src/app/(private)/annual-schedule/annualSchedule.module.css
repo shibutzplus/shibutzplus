@@ -10,7 +10,8 @@
     background-color: var( --background);
     width: 100%;
     height: auto;
-    border: 0.1px solid #ccc;
+    /* TODO */
+    border: 0.1px solid #ccc; 
 }
 
 @media (max-width: 767px) {

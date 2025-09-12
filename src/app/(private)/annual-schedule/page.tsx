@@ -8,6 +8,7 @@ import { populateAnnualSchedule } from "@/utils/schedule";
 import { initializeEmptyAnnualSchedule } from "@/utils/Initialize";
 import AnnualTable from "@/components/annualScheduleTable/AnnualTable/AnnualTable";
 import { useAnnualTable } from "@/context/AnnualTableContext";
+import SkeletonAnnualSchedule from "./loading";
 
 const AnnualSchedulePage: NextPage = () => {
     const { classes, teachers, subjects } = useMainContext();
@@ -32,6 +33,9 @@ const AnnualSchedulePage: NextPage = () => {
             blockRef.current = false;
         }
     }, [classes, annualScheduleTable]);
+
+    if (!schedule || !selectedClassId || !subjects || !classes ? true : false)
+        return <SkeletonAnnualSchedule />;
 
     return (
         <div className={styles.container}>

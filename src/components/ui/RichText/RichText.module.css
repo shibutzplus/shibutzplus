@@ -1,13 +1,21 @@
 .wrapper {
-    overflow: hidden;
+  width: 100%;
+  height: 100%;
+  padding: 6px 6px;
+  box-sizing: border-box;
+}
+
+.wrapper div {
+  height: 100%;
 }
 
 .editor {
-    padding: 8px 10px;
     font-size: 16px;
-    line-height: 1.6;
+    line-height: 22px;
     overflow-y: auto;
     direction: rtl;
+    width: 100%;
+    height: 100%;
 }
 
 .editor p.is-editor-empty::before {
@@ -19,7 +27,7 @@
 }
 
 .editor a {
-    color: blue;
+    color: var(--link-color);
     text-decoration: underline;
 }
 
@@ -27,18 +35,3 @@
     outline: none;
 }
 
-.wrapper {
-  border: 1px solid transparent; /* no visible border by default */
-  border-radius: 10px;
-  background: #fff;
-  transition: border-color .15s, box-shadow .15s;
-}
-
-.wrapper:hover {
-  border-color: #e6e6e6; /* very light grey on hover */
-}
-
-.wrapper:focus-within {
-  border-color: #dbe9f9; /* very light blue focus */
-  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.08); /* soft blue glow */
-}

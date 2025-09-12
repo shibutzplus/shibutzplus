@@ -13,7 +13,7 @@ import { SubjectType } from "@/models/types/subjects";
 import useSubmit from "@/hooks/useSubmit";
 import AddSubjectRow from "../AddSubjectRow/AddSubjectRow";
 import EmptyTable from "@/components/ui/table/EmptyTable/EmptyTable";
-
+import ListRowLoading from "@/components/layout/loading/ListRowLoading/ListRowLoading";
 
 const SubjectsList: React.FC = () => {
     const { handleOpenPopup } = useDeletePopup();
@@ -40,15 +40,18 @@ const SubjectsList: React.FC = () => {
         );
     };
 
-    const sortedSubjects = React.useMemo(() => (
-        subjects !== undefined ? sortByHebrewName(subjects) : undefined
-    ), [subjects]);
+    const sortedSubjects = React.useMemo(
+        () => (subjects !== undefined ? sortByHebrewName(subjects) : undefined),
+        [subjects],
+    );
 
     return (
         <TableList headThs={["שם המקצוע", "פעולות"]}>
             <tbody>
                 <AddSubjectRow />
-                {sortedSubjects?.length === 0 ? (
+                {subjects === undefined ? (
+                    <ListRowLoading />
+                ) : sortedSubjects?.length === 0 ? (
                     <EmptyTable text="עדיין לא נוספו מקצועות לרשימה" />
                 ) : (
                     sortedSubjects?.map((subject: SubjectType) => (

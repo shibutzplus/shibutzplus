@@ -1,13 +1,16 @@
 .container {
-    display: block;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* Desktop Screens */
+/* Desktop */
 .pageList {
     --table-margin: 0 auto;
 }
 
-/* Mobile Screens */
+/* Mobile */
 @media (max-width: 767px) {
     .pageList {
         --table-margin: 10px;

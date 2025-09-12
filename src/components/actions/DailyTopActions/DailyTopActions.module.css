@@ -45,14 +45,14 @@
     width: 34px;
     height: 34px;
     border-radius: 8px;
-    border: 1px solid var(--input-border);
-    background: #fff;
+    border: var(--border-primary);
+    background-color: var(--background);
     cursor: pointer;
 }
 
 .iconBtnPrimary {
-    border-left: 3px solid var(--brand-purple, #6f2dbd);
-    box-shadow: 0 0 0 2px rgba(111, 45, 189, 0.08);
+    border-left: 3px solid #6f2dbd;
+    box-shadow: 0 0 0 2px #6f2dbd14;
 }
 
 .hideOnMobile {

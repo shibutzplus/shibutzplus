@@ -1,6 +1,6 @@
 .emptyTrHeader {
     background-color: var(--header-cell-color);
-    border-left: 1px solid #e0e0e0;
+    border-left: var(--border-primary);
     padding: 12px;
     text-align: center;
     width: var(--annual-template-width);
@@ -11,5 +11,5 @@
     text-align: center;
     min-width: var(--annual-table-width);
     font-weight: 600;
-    border-left: 1px solid #e0e0e0;
+    border-left: var(--border-primary);
 }

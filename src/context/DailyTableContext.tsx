@@ -43,12 +43,12 @@ import { getIsraeliDateOptions, getTomorrowOption } from "@/resources/dayOptions
 import { SelectOption } from "@/models/types";
 import { DailyTableColors } from "@/style/tableColors";
 import { eventPlaceholder } from "@/models/constant/table";
-import { getStorageDailyTable, setStorageDailyTable } from "@/lib/localStorage";
 import { sortColumnsByIssueTeacherType } from "@/utils/sort";
 import { AvailableTeachers } from "@/models/types/annualSchedule";
 import { deleteDailyCellAction } from "@/app/actions/DELETE/deleteDailyCellAction";
 import { updateDeleteCell } from "@/services/dailyScheduleService";
 import { updateDailyEventHeaderAction } from "@/app/actions/PUT/updateDailyEventHeaderAction";
+import { getSessionDailyTable, setSessionDailyTable } from "@/lib/sessionStorage";
 
 interface DailyTableContextType {
     tableColumns: ColumnDef<TeacherRow>[];
@@ -147,7 +147,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     const [tableColumns, setActionCols] = useState<ColumnDef<TeacherRow>[]>([]);
     const [mainDailyTable, setMainDailyTable] = useState<DailySchedule>({}); // Main state for table object storage
     const [mapAvailableTeachers, setMapAvailableTeachers] = useState<AvailableTeachers>({});
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     // -- Select Date -- //
     const daysSelectOptions = () => getIsraeliDateOptions();
@@ -220,11 +220,11 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
 
     const setMainAndStorageTable = (newSchedule: DailySchedule) => {
         setMainDailyTable(newSchedule);
-        setStorageDailyTable(newSchedule, selectedDate);
+        setSessionDailyTable(newSchedule, selectedDate);
     };
 
     const populateTableFromStorage = () => {
-        const tableStorage = getStorageDailyTable();
+        const tableStorage = getSessionDailyTable();
         if (tableStorage && tableStorage[selectedDate]) {
             setMainDailyTable({ [selectedDate]: tableStorage[selectedDate] });
             // Rebuild columns from storage and restore saved order

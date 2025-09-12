@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "./dailySchedulePortal.module.css";
 import { DailyScheduleType } from "@/models/types/dailySchedule";
 import { usePortal } from "@/context/PortalContext";
@@ -9,21 +9,24 @@ import messages from "@/resources/messages";
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
 import { getSchoolCookie } from "@/lib/cookies";
 import ReadOnlyDailyTable from "@/components/readOnlyDailyTable/ReadOnlyDailyTable/ReadOnlyDailyTable";
+import PublishedSkeleton from "@/components/layout/loading/skeleton/PublishedSkeleton/PublishedSkeleton";
 
 const DailySchedulePortalPage = () => {
     const { selectedDate } = usePortal();
     const [currentDateData, setCurrentDateData] = useState<DailyScheduleType[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const fetchDailyScheduleData = async (date: string) => {
+    const fetchDailyScheduleData = async () => {
         const schoolId = getSchoolCookie();
-        if (!date || !schoolId) return;
-
-        setIsLoading(true);
+        if (!schoolId || !selectedDate || currentDateData.length > 0) return;
         try {
-            const response = await getDailyScheduleAction(schoolId, date, { isPrivate: false });
+            setIsLoading(true);
+            const response = await getDailyScheduleAction(schoolId, selectedDate, {
+                isPrivate: false,
+            });
             if (response.success && response.data) {
                 setCurrentDateData(response.data);
+                blockRef.current = false;
             } else {
                 errorToast(response.message || messages.dailySchedule.error);
                 setCurrentDateData([]);
@@ -37,20 +40,22 @@ const DailySchedulePortalPage = () => {
         }
     };
 
+    const blockRef = useRef<boolean>(true);
     useEffect(() => {
-        if (selectedDate) {
-            fetchDailyScheduleData(selectedDate);
-        } else {
-            setCurrentDateData([]);
+        if (blockRef.current) {
+            fetchDailyScheduleData();
         }
     }, [selectedDate]);
+
+    if (isLoading) return <PublishedSkeleton />;
 
     return (
         <div className={styles.content}>
             <div className={styles.tableWrapper}>
                 <ReadOnlyDailyTable
                     scheduleData={currentDateData}
-                    isLoading={isLoading}
+                    noScheduleTitle="אין נתונים להצגה"
+                    noScheduleSubTitle={["לא פורסמה מערכת"]}
                     hasMobileNav
                 />
             </div>

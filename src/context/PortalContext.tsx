@@ -26,7 +26,7 @@ import getTeacherFullScheduleAction from "@/app/actions/GET/getTeacherFullSchedu
 import { updateDailyInstructionAction } from "@/app/actions/PUT/updateDailyInstractionAction";
 
 interface PortalContextType {
-    selectedDate: string;
+    selectedDate: string | undefined;
     handleDayChange: (value: string) => void;
     teacher: TeacherType | undefined;
     schoolId: string | undefined;
@@ -50,14 +50,14 @@ export const usePortal = () => {
 };
 
 export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [selectedDate, setSelectedDayId] = useState<string>(getTomorrowOption());
+    const [selectedDate, setSelectedDayId] = useState<string | undefined>();
     const [publishDatesOptions, setPublishDatesOptions] = useState<SelectOption[]>([]);
 
     const [mainPortalTable, setMainPortalTable] = useState<PortalSchedule>({}); // Main state for table object storage
 
     const [teacher, setTeacher] = useState<TeacherType | undefined>();
     const [schoolId, setSchoolId] = useState<string | undefined>();
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isSaving, setIsSaving] = useState<boolean>(false);
 
     useEffect(() => {
@@ -128,7 +128,7 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
     const populateTableFromStorage = () => {
         const tableStorage = getSessionPortalTable();
-        if (tableStorage && tableStorage[selectedDate]) {
+        if (tableStorage && selectedDate && tableStorage[selectedDate]) {
             setMainPortalTable({ [selectedDate]: tableStorage[selectedDate] });
             setIsLoading(false);
             return true;
@@ -185,6 +185,7 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     const handleSave = async (rowId: string, hour: number, instructions?: string) => {
         try {
             setIsSaving(true);
+            if (!selectedDate) return;
             const response = await updateDailyInstructionAction(selectedDate, rowId, instructions);
             if (response.success) {
                 const portalSchedule = { ...mainPortalTable };

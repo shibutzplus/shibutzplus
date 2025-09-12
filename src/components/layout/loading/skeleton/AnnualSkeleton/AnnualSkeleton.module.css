@@ -1,129 +1,116 @@
+/* Mobile */
 .container {
+    padding: 0;
+    width: 100%;
+    height: auto;
+    display: block;
+    background-color: var(--school-section-bg);
+}
+
+.whiteBox {
+    background-color: var(--background);
+    width: 100%;
+    height: auto;
+    border: var(--border-primary);
+}
+
+.scheduleTable {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--background);
+    min-width: 800px;
+}
+
+.emptyTrHeader {
+    background-color: var(--header-cell-color);
+    border-left: var(--border-primary);
+    padding: 12px;
+    text-align: center;
+    width: var(--annual-template-width);
+}
+
+.trHeader {
+    padding: 12px;
+    min-width: var(--annual-table-width);
+    font-weight: 600;
+    border-left: var(--border-primary);
+}
+
+.thSkeleton,
+.tdSkeleton {
+    height: 20px;
+    background-color: var(--skeleton-input-color);
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
+    border-radius: 5px;
+    animation: pulse 1.5s ease-in-out infinite;
 }
 
-.tableSkeleton {
-    width: 100%;
-    height: 100%;
-    border-radius: var(--box-border-radius);
-    padding: 0.5rem;
-    box-sizing: border-box;
-    background: #f3f3f3;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+@keyframes pulse {
+
+    0%,
+    100% {
+        background-color: var(--skeleton-input-color);
+    }
+
+    50% {
+        background-color: var(--skeleton-input-color-bright);
+    }
 }
 
-.headerRow {
-    display: grid;
-    grid-template-columns: 80px repeat(6, 1fr);
-    gap: 8px;
-    margin-bottom: 8px;
-}
-
-.headerCell {
-    height: 50px;
-    background: #ececec;
-    border-radius: 8px;
-    animation: skeleton-loading 3s infinite linear;
-    background: linear-gradient(140deg, #ececec 30%, #f0f0f0 45%, #ececec 60%);
-    background-size: 200% 200%;
-}
-
-.row {
-    display: grid;
-    grid-template-columns: 80px repeat(6, 1fr);
-    gap: 8px;
-    margin-bottom: 4px;
+.tdSkeleton{
+    height: 38px;
 }
 
 .hourCell {
-    height: 80px;
-    background: #ececec;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: skeleton-loading 2.8s infinite linear;
-    background: linear-gradient(140deg, #ececec 30%, #f0f0f0 45%, #ececec 60%);
-    background-size: 200% 200%;
+    border: var(--border-primary);
+    padding: 12px;
+    font-weight: bold;
+    text-align: center;
+    width: 60px;
+    vertical-align: middle;
 }
 
-.cell {
-    height: 80px;
-    background: #ececec;
-    border-radius: 6px;
+.scheduleCell {
+    position: relative;
     padding: 8px;
-    box-sizing: border-box;
+    border: var(--border-primary);
+    vertical-align: top;
+    min-width: var(--annual-table-width);
+    max-width: 0;
+    height: 80px;
+}
+
+.cellContent {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    justify-content: center;
+    gap: 4px;
+    height: 100%;
 }
 
-.dropdown {
-    height: 28px;
-    border-radius: 4px;
-    background: #e3e3e3;
-    position: relative;
-    overflow: hidden;
-    animation: skeleton-loading 3.2s infinite linear;
-    background: linear-gradient(140deg, #e3e3e3 30%, #e8e8e8 45%, #e3e3e3 60%);
-    background-size: 200% 200%;
-}
-
-.dropdown:nth-child(1) {
-    animation-delay: 0.2s;
-}
-
-.dropdown:nth-child(2) {
-    animation-delay: 0.4s;
-}
-
-@keyframes skeleton-loading {
-    0% {
-        background-position: 200% 0;
+/* Mobile */
+@media (max-width: 767px) {
+    .whiteBox {
+        overflow-x: auto;
     }
 
-    100% {
-        background-position: -200% 0;
+    .whiteBox table {
+        min-width: 700px;
+        width: max-content;
     }
-}
 
-/* Responsive design */
-@media (max-width: 768px) {
-    .container {
-        padding: 1rem;
+    .scheduleTable th:first-child,
+    .scheduleTable td:first-child {
+        width: 50px;
+        min-width: 50px;
+        max-width: 50px;
     }
-    
-    .tableSkeleton {
-        padding: 1rem;
-    }
-    
-    .headerRow,
-    .row {
-        grid-template-columns: 60px repeat(6, 1fr);
-        gap: 4px;
-    }
-    
-    .cell {
-        height: 70px;
-        padding: 6px;
-        gap: 4px;
-    }
-    
-    .dropdown {
-        height: 24px;
-    }
-    
-    .hourCell {
-        height: 70px;
-    }
-    
-    .headerCell {
-        height: 40px;
+
+    .scheduleTable th:not(:first-child),
+    .scheduleTable td:not(:first-child) {
+        width: 230px;
+        min-width: 200px;
+        max-width: 300px;
     }
 }

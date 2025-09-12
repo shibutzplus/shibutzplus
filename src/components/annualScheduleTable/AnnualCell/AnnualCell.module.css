@@ -1,7 +1,7 @@
 .scheduleCell {
     position: relative;
     padding: 8px;
-    border: 1px solid #e0e0e0;
+    border: var(--border-primary);
     vertical-align: top;
     min-width: var(--annual-table-width);
     max-width: 0;
@@ -13,17 +13,4 @@
     flex-direction: column;
     gap: 4px;
     height: 100%;
-}
-
-.deleteBtn{
-    position: absolute;
-    z-index: 2;
-    cursor: pointer;
-    width: 20px;
-    height: 20px;
-    background-color: #ededed;
-    color: #bbbbbb;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }

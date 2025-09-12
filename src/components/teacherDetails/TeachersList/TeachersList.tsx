@@ -14,6 +14,7 @@ import AddTeacherRow from "../AddTeacherRow/AddTeacherRow";
 import EmptyTable from "@/components/ui/table/EmptyTable/EmptyTable";
 import TeacherRow from "../TeacherRow/TeacherRow";
 import { sortByHebrewName } from "@/utils/sort";
+import ListRowLoading from "@/components/layout/loading/ListRowLoading/ListRowLoading";
 
 const TeachersList: React.FC = () => {
     const { handleOpenPopup } = useDeletePopup();
@@ -50,7 +51,9 @@ const TeachersList: React.FC = () => {
         <TableList headThs={["שם המורה", "פעולות"]}>
             <tbody>
                 <AddTeacherRow />
-                {sortedTeachers?.length === 0 ? (
+                {sortedTeachers === undefined ? (
+                    <ListRowLoading />
+                ) : sortedTeachers?.length === 0 ? (
                     <EmptyTable text="עדיין לא נוספו מורים לרשימה" />
                 ) : (
                     sortedTeachers?.map((teacher: TeacherType) => (

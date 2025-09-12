@@ -2,14 +2,14 @@
     display: grid;
     place-items: center;
     min-height: 60vh;
-    gap: 12px;
 }
 
 .loadingSection{
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: 30px;
 }
 
 .loading {
@@ -18,13 +18,3 @@
     margin: 0;
     text-align: center;
 }
-
-
-.loadingSection {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-}
-

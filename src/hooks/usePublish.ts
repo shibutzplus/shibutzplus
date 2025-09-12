@@ -6,8 +6,8 @@ import messages from "@/resources/messages";
 import { generateSchoolUrl } from "@/utils";
 import { useEffect, useState } from "react";
 import { useShareTextOrLink } from "./useShareTextOrLink";
-import { getStoragePublishDates, setStoragePublishDates } from "@/lib/localStorage";
 import routePath from "@/routes";
+import { getSessionPublishDates, setSessionPublishDates } from "@/lib/sessionStorage";
 
 const usePublish = () => {
     const { school } = useMainContext();
@@ -18,9 +18,12 @@ const usePublish = () => {
     const share = useShareTextOrLink();
 
     useEffect(() => {
-        if (selectedDate) {
-            const storageDates = getStoragePublishDates();
+        if (selectedDate && school) {
+            const storageDates = getSessionPublishDates();
             if (storageDates?.includes(selectedDate)) {
+                setBtnTitle("המערכת פורסמה");
+                setIsDisabled(true);
+            } else if (school.publishDates?.includes(selectedDate)) {
                 setBtnTitle("המערכת פורסמה");
                 setIsDisabled(true);
             } else {
@@ -28,7 +31,7 @@ const usePublish = () => {
                 setIsDisabled(false);
             }
         }
-    }, [selectedDate]);
+    }, [school, selectedDate]);
 
     const publishDailySchedule = async () => {
         if (!selectedDate || !school || isDisabled) return;
@@ -36,7 +39,7 @@ const usePublish = () => {
             setIsLoading(true);
             const response = await publishDailyScheduleAction(school.id, selectedDate);
             if (response.success) {
-                setStoragePublishDates(selectedDate);
+                setSessionPublishDates(selectedDate);
                 successToast(messages.publish.success);
                 setBtnTitle("המערכת פורסמה");
                 setIsDisabled(true);
