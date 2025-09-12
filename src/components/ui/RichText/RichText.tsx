@@ -58,7 +58,7 @@ const RichText: React.FC<RichTextProps> = ({
             attributes: {
                 class: styles.editor,
                 "data-placeholder": placeholder || "",
-                style: `min-height:${minHeight}px;`,
+                style: `min-height:${minHeight}px; height: 100%;`,
                 dir: "auto",
             },
         },

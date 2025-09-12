@@ -54,14 +54,16 @@ const PortalTopActions: React.FC = () => {
                         hasBorder
                     />
                 </div>
-                <div className={styles.refreshContainer}>
-                    <IconBtn
-                        Icon={<Icons.refresh size={26} />}
-                        onClick={handleRefresh}
-                        disabled={isLoading}
-                        isLoading={isLoading}
-                    />
-                </div>
+                {pathname.includes(router.teacherPortal.p) ? (
+                    <div className={styles.refreshContainer}>
+                        <IconBtn
+                            Icon={<Icons.refresh size={26} />}
+                            onClick={handleRefresh}
+                            disabled={isLoading}
+                            isLoading={isLoading}
+                        />
+                    </div>
+                ) : null}
             </div>
 
             {teacher?.role === TeacherRoleValues.REGULAR && (
@@ -89,9 +91,9 @@ const PortalTopActions: React.FC = () => {
                         className={`${styles.topBtn} ${pathname.includes(router.dailySchedulePortal.p) ? styles.active : ""}`}
                     >
                         {pathname.includes(router.dailySchedulePortal.p) ? (
-                            <Icons.calendar size={16} style={{ marginInlineEnd: "4px" }} />
+                            <Icons.calendarFill size={16} style={{ marginInlineEnd: "4px" }} />
                         ) : (
-                            <Icons.dailyCalendar size={16} style={{ marginInlineEnd: "4px" }} />
+                            <Icons.calendar size={16} style={{ marginInlineEnd: "4px" }} />
                         )}
                         מערכת בית ספרית
                     </button>

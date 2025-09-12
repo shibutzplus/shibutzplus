@@ -1,9 +1,9 @@
 import React from "react";
 import { NextPage } from "next";
-import styles from "./DailySkeleton.module.css";
+import styles from "./PublishedSkeleton.module.css";
 import { TableRows } from "@/models/constant/table";
 
-const DailySkeleton: NextPage = () => {
+const PublishedSkeleton: NextPage = () => {
     const ColsNumber = 6;
     return (
         <div className={styles.content}>
@@ -13,11 +13,11 @@ const DailySkeleton: NextPage = () => {
                         <thead>
                             <tr>
                                 <th className={styles.hourHeader}></th>
-                                <th colSpan={ColsNumber} className={styles.dayHeader}>
-                                    <div className={styles.thContainer}>
+                                {Array.from({ length: ColsNumber }, (_, i) => i + 1).map((hour) => (
+                                    <th key={hour} className={styles.dayHeader}>
                                         <div className={styles.thSkeletonName} />
-                                    </div>
-                                </th>
+                                    </th>
+                                ))}
                             </tr>
                         </thead>
                         <tbody>
@@ -28,15 +28,19 @@ const DailySkeleton: NextPage = () => {
                                             <span>{hour}</span>
                                         </div>
                                     </td>
-                                    <td colSpan={ColsNumber} className={styles.scheduleCell}>
-                                        <div className={styles.cellContent}>
-                                            <div className={styles.teacherCell}>
-                                                <div className={styles.tdSkeleton1} />
-                                                <div className={styles.tdSkeleton2} />
-                                                <div className={styles.tdSkeleton3} />
-                                            </div>
-                                        </div>
-                                    </td>
+                                    {Array.from({ length: ColsNumber }, (_, i) => i + 1).map(
+                                        (columnId) => (
+                                            <td key={columnId} className={styles.scheduleCell}>
+                                                <div className={styles.cellContent}>
+                                                    <div className={styles.teacherCell}>
+                                                        <div className={styles.tdSkeleton1} />
+                                                        <div className={styles.tdSkeleton2} />
+                                                        <div className={styles.tdSkeleton3} />
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        ),
+                                    )}
                                 </tr>
                             ))}
                         </tbody>
@@ -47,4 +51,4 @@ const DailySkeleton: NextPage = () => {
     );
 };
 
-export default DailySkeleton;
+export default PublishedSkeleton;

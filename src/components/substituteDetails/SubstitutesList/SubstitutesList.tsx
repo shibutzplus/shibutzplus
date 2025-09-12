@@ -14,6 +14,7 @@ import EmptyTable from "@/components/ui/table/EmptyTable/EmptyTable";
 import SubstituteRow from "../SubstituteRow/SubstituteRow";
 import AddSubstituteRow from "../AddSubstituteRow/AddSubstituteRow";
 import { sortByHebrewName } from "@/utils/sort";
+import ListRowLoading from "@/components/layout/loading/ListRowLoading/ListRowLoading";
 
 const SubstitutesList: React.FC = () => {
     const { handleOpenPopup } = useDeletePopup();
@@ -33,10 +34,8 @@ const SubstitutesList: React.FC = () => {
     };
 
     const handleDeleteTeacher = (teacher: TeacherType) => {
-        handleOpenPopup(
-            PopupAction.deleteTeacher,
-            `האם למחוק את המורה ${teacher.name}`,
-            () => handleDeleteTeacherFromState(teacher.id),
+        handleOpenPopup(PopupAction.deleteTeacher, `האם למחוק את המורה ${teacher.name}`, () =>
+            handleDeleteTeacherFromState(teacher.id),
         );
     };
 
@@ -52,7 +51,9 @@ const SubstitutesList: React.FC = () => {
         <TableList headThs={["שם המורה", "פעולות"]}>
             <tbody>
                 <AddSubstituteRow />
-                {sortedTeachers?.length === 0 ? (
+                {sortedTeachers === undefined ? (
+                    <ListRowLoading />
+                ) : sortedTeachers?.length === 0 ? (
                     <EmptyTable text="עדיין לא נוספו מורים לרשימה" />
                 ) : (
                     sortedTeachers?.map((teacher: TeacherType) => (

@@ -10,10 +10,9 @@
 .scheduleCell,
 .scheduleCellInput {
   position: relative;
-  padding: 8px;
   border: 1px solid #e0e0e0;
   vertical-align: top;
-  height: auto;
+  height: 100%;
   min-height: 36px;
 }
 
@@ -26,23 +25,22 @@
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  height: auto;
-}
-
-.scheduleCellInput textarea#instructions {
-  width: 100%;
-  box-sizing: border-box;
-  line-height: 1.35;
-  padding: 2px 6px;
-  min-height: 1.35em;
-  height: auto;
-  max-height: none;
-  resize: none;
-  overflow: hidden;
-  border: none;
-  background: transparent;
+  height: 100%;
+  line-height: 22px;
 }
 
 .className {
   font-weight: bold;
+}
+
+/* Desktop */
+@media (min-width: 768px) {
+  .cellContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    line-height: 26px;
+  }
 }

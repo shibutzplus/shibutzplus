@@ -2,7 +2,7 @@ import ListSkeleton from "@/components/layout/loading/skeleton/ListSkeleton/List
 import React from "react";
 
 const Loading: React.FC = () => {
-    return <ListSkeleton />;
+    return <ListSkeleton headThs={["שם הכיתה", "פעולות"]} />;
 };
 
 export default Loading;

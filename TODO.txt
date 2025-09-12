@@ -12,6 +12,8 @@ TODO
 - daily - when the schadule published, on the buttom replace the option with view the history
 - daily - when the schadule published, remove the hover effect on disabled
 
+- portal - maybe we should not delete the school id on logout
+
 BUGs
 - daily - if refresh you dont see in the select option the available teachers
 v- portal wont render with the new instraction if other teacher update the detials (need refrsh button or websocket)

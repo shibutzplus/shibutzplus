@@ -1,32 +1,56 @@
 import React from "react";
 import { NextPage } from "next";
 import styles from "./AnnualSkeleton.module.css";
+import { DAYS_OF_WORK_WEEK } from "@/utils/time";
+import { AnnualTableColors, HourRowColor } from "@/style/tableColors";
+import { TableRows } from "@/models/constant/table";
 
 const AnnualSkeleton: NextPage = () => {
     return (
-        <main className={styles.container}>
-            <section className={styles.tableSkeleton}>
-                {/* Header row with days of the week */}
-                <div className={styles.headerRow}>
-                    {Array.from({ length: 7 }).map((_, i) => (
-                        <div key={i} className={styles.headerCell} />
-                    ))}
+        <div className={styles.container}>
+            <div className={styles.whiteBox}>
+                <div>
+                    <table className={styles.scheduleTable}>
+                        <thead>
+                            <tr>
+                                <th className={styles.emptyTrHeader} />
+                                {DAYS_OF_WORK_WEEK.map((tr: string) => (
+                                    <th
+                                        key={tr}
+                                        className={styles.trHeader}
+                                        style={{
+                                            backgroundColor: AnnualTableColors[0],
+                                        }}
+                                    >
+                                        <div className={styles.thSkeleton} />
+                                    </th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => (
+                                <tr key={hour}>
+                                    <td
+                                        className={styles.hourCell}
+                                        style={{ backgroundColor: HourRowColor }}
+                                    >
+                                        {hour}
+                                    </td>
+                                    {DAYS_OF_WORK_WEEK.map((day) => (
+                                        <td key={day} className={styles.scheduleCell}>
+                                            <div className={styles.cellContent}>
+                                                <div className={styles.tdSkeleton}/>
+                                                <div className={styles.tdSkeleton}/>
+                                            </div>
+                                        </td>
+                                    ))}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
-                
-                {/* Table rows with hour cells and dropdown skeletons */}
-                {Array.from({ length: 9 }).map((_, rowIndex) => (
-                    <div key={rowIndex} className={styles.row}>
-                        <div className={styles.hourCell} />
-                        {Array.from({ length: 6 }).map((_, colIndex) => (
-                            <div key={colIndex} className={styles.cell}>
-                                <div className={styles.dropdown} />
-                                <div className={styles.dropdown} />
-                            </div>
-                        ))}
-                    </div>
-                ))}
-            </section>
-        </main>
+            </div>
+        </div>
     );
 };
 

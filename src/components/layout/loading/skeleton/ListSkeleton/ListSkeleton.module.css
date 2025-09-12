@@ -1,89 +1,178 @@
 .container {
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-
-.tableSkeleton {
-    width: 800px;
-    height: 100%;
-    border-radius: var(--box-border-radius) var(--box-border-radius) 0 0;
-    padding: 0 3em;
-    box-sizing: border-box;
-    background: #f3f3f3;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.pageList {
+    --table-margin: 10px;
 }
 
-.headerRow {
-    height: 52px;
-    width: 600px;
-    background: #ececec;
-    border-radius: 8px 8px 0 0;
-    margin-bottom: 3px;
+
+.tableListSection {
+    background-color: var(--background);
 }
 
-.row,
-.rowAdd {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 67px;
-    width: 600px;
-    margin-bottom: 3px;
-    background: #ececec;
-    border-radius: 6px;
-    gap: 1rem;
-    box-sizing: border-box;
+.tableList {
+    width: 100%;
+    max-width: none;
+    margin: var(--table-margin, 0);
+    border-collapse: separate;
+    border-spacing: 0;
 }
 
-.cell,
-.cellAdd {
-    height: 40px;
-    border-radius: 4px;
-    background: #e3e3e3;
-    margin: 0 1rem;
-    width: 350px;
+.tableList thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: var(--background);
+}
+
+.tableList th {
+    text-align: center;
+    padding: 1rem 2rem 1rem 0;
+    border-bottom: var(--border-heavy-primary);
+    font-weight: 600;
+    color: var(--description-text);
+    width: 100%;
+}
+
+.tableList td {
+    text-align: right;
+    padding: 1rem 1rem 1rem 0;
+    border-bottom: var(--border-primary);
+}
+
+.smallBtn {
+    width: 200px !important;
+    height: 38px;
+    display: inline-flex !important;
+}
+
+.listRow {
     position: relative;
-    overflow: hidden;
-    animation: skeleton-loading 3.5s infinite linear;
-    background: linear-gradient(140deg, #e3e3e3 30%, #e8e8e8 45%, #e3e3e3 60%);
-    background-size: 200% 200%;
+    align-items: flex-start;
 }
 
-.add {
-    height: 40px;
-    border-radius: 4px;
-    background: #e3e3e3;
-    margin: 0 1rem;
-    width: 200px;
-    animation: skeleton-loading 2.5s infinite linear;
-    background: linear-gradient(140deg, #e3e3e3 30%, #e8e8e8 45%, #e3e3e3 60%);
-    background-size: 200% 100%;
+.nameCell {
+    position: relative;
 }
 
-.circles {
+.copyLink {
+    direction: ltr;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
     display: flex;
     align-items: center;
-    gap: 2rem;
-    margin-left: 4rem;
+    color: var(--description-text);
+    cursor: pointer;
 }
 
-.circle {
+.copyLink span {
+    display: none;
+}
+
+.actions {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 75px;
+    gap: 15px;
+}
+
+.tdSkeletonName,
+.tdSkeletonIcon,
+.tdSkeletonInput,
+.tdSkeletonBtn {
+    background-color: var(--skeleton-input-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        background-color: var(--skeleton-input-color);
+    }
+
+    50% {
+        background-color: var(--skeleton-input-color-bright);
+    }
+}
+
+.tdSkeletonInput{
+    width: 364px;
+    margin-right: 16px;
+    height: 40px;
+}
+
+.tdSkeletonBtn{
+    width: 200px;
+    margin-right: 16px;
+    height: 40px;
+}
+
+.tdSkeletonName {
+    width: 260px;
+    height: 20px;
+    border-radius: 5px;
+    margin-right: 16px;
+}
+
+.tdSkeletonIcon {
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    background: #e3e3e3;
 }
 
-@keyframes skeleton-loading {
-    0% {
-        background-position: 200% 0;
+/* Desktop */
+@media (min-width: 768px) {
+    .actions {
+        gap: 35px;
+        margin-right: 8px;
     }
 
-    100% {
-        background-position: -200% 0;
+    .copyLink {
+        direction: ltr;
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        align-items: center;
+        color: var(--description-text);
+        cursor: pointer;
+    }
+
+    .copyLink span {
+        display: block;
+        width: 200px;
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .copyLink:hover {
+        color: var(--description-hover-text);
+    }
+
+    .pageList {
+        --table-margin: 0 auto;
+    }
+
+    .tableListSection {
+        overflow-y: auto;
+    }
+
+    .tableList {
+        width: 600px;
     }
 }

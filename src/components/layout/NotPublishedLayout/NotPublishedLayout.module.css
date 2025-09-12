@@ -1,0 +1,12 @@
+.noDataMessage {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 220px;
+    color: var(--description-text);
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.6;
+    font-size: 1.4rem;
+}

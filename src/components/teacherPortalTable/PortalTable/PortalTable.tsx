@@ -3,19 +3,15 @@ import styles from "./PortalTable.module.css";
 import { TableRows } from "@/models/constant/table";
 import PortalWriteRow from "../PortalWriteRow/PortalWriteRow";
 import { usePortal } from "@/context/PortalContext";
+import NotPublishedLayout from "@/components/layout/NotPublishedLayout/NotPublishedLayout";
 
 const PortalTable: React.FC = () => {
-    const { mainPortalTable, selectedDate, isLoading } = usePortal();
-
+    const { mainPortalTable, selectedDate } = usePortal();
     const dayTable = selectedDate ? mainPortalTable[selectedDate] : undefined;
     const hasData = !!dayTable && Object.keys(dayTable).length > 0;
 
-    if (!hasData && !isLoading)
-        return (
-            <div className={styles.noDataMessage}>
-                אין נתונים להצגה <br /> לא פורסמה מערכת
-            </div>
-        );
+    if (!hasData)
+        return <NotPublishedLayout title="אין נתונים להצגה" subTitle={["לא פורסמה מערכת"]} />;
 
     return (
         <div className={styles.tableContainer} role="region">

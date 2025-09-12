@@ -44,6 +44,8 @@
   --empty-cell-color: #f7f7f7;
 
 
+  --separator-color: #888;
+
   --daily-btns-color: #606060;
 
   --daily-template-color: #d6d5d5;
@@ -51,7 +53,10 @@
 
   --border-primary: 1px solid #ddd;
   --border-heavy-primary: 2px solid #ddd;
+  --border-inline-start: 1px solid #e5e5e5;
 
+  --skeleton-input-color: #ececec;
+  --skeleton-input-color-bright: #f2f0f0;
 
   /* Box shadows */
   --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -71,7 +76,7 @@
 
   --table-header-min-height: 70px;
   --table-header-height: 70px;
-  
+
   --table-template-cell-width: 60px;
   --table-cell-min-width: 300px;
   --table-cell-width: 300px;
@@ -91,7 +96,7 @@ body {
 
 body {
   color: var(--foreground);
-  background-color: var( --background);
+  background-color: var(--background);
   font-family: Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

@@ -1,7 +1,7 @@
 .scheduleTable {
     width: 100%;
     border-collapse: collapse;
-    background-color: white;
+    background-color: var(--background);
     min-width: 800px;
 }
 

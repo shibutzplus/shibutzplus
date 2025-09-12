@@ -1,27 +1,49 @@
 import React from "react";
-import { NextPage } from "next";
 import styles from "./ListSkeleton.module.css";
 
-const ListSkeleton: NextPage = () => {
+type ListSkeletonProps = {
+    headThs: string[];
+    hasAdditionalBtn?: boolean;
+};
+
+const ListSkeleton: React.FC<ListSkeletonProps> = ({ headThs, hasAdditionalBtn = false }) => {
     return (
-        <main className={styles.container}>
-            <section className={styles.tableSkeleton}>
-                <div className={styles.headerRow} />
-                <div className={styles.rowAdd}>
-                    <div className={styles.cellAdd} />
-                    <div className={styles.add} />
-                </div>
-                {Array.from({ length: 7 }).map((_, i) => (
-                    <div key={i} className={styles.row}>
-                        <div className={styles.cell} />
-                        <div className={styles.circles}>
-                            <div className={styles.circle} />
-                            <div className={styles.circle} />
-                        </div>
-                    </div>
-                ))}
+        <div className={styles.container}>
+            <section className={styles.tableListSection}>
+                <table className={styles.tableList}>
+                    <thead>
+                        <tr>
+                            {headThs.map((headTh) => (
+                                <th key={headTh}>{headTh}</th>
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div className={styles.tdSkeletonInput} />
+                            </td>
+                            <td>
+                                <div className={styles.tdSkeletonBtn} />
+                            </td>
+                        </tr>
+                        {Array.from({ length: 15 }, (_, i) => i + 1).map((i) => (
+                            <tr key={i} className={styles.listRow}>
+                                <td className={styles.nameCell}>
+                                    <div className={styles.tdSkeletonName} />
+                                </td>
+
+                                <td className={styles.actions}>
+                                    {hasAdditionalBtn && <div className={styles.tdSkeletonIcon} />}
+                                    <div className={styles.tdSkeletonIcon} />
+                                    <div className={styles.tdSkeletonIcon} />
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </section>
-        </main>
+        </div>
     );
 };
 

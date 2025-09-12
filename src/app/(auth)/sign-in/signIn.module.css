@@ -1,4 +1,4 @@
-/* Mobile 320px - 767px -- 812px */
+/* Mobile */
 .container {
     position: fixed;
     top: 0;
@@ -28,9 +28,9 @@
     justify-content: center;
     gap: 0.75rem;
     padding: 1rem 1.5rem;
-    border: 2px solid #dadce0;
+    border: var(--border-heavy-primary);
     border-radius: 8px;
-    background-color: white;
+    background-color: var(--background);
     color: #3c4043;
     font-size: 18px;
     font-weight: 500;
@@ -40,13 +40,13 @@
 }
 
 .googleButton:hover {
-    background-color: #f8f9fa;
+    background-color: var(--background-secondary);
     border-color: #c8c9ca;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--header-box-shadow);
 }
 
 .googleButton:active {
-    background-color: #f1f3f4;
+    background-color: var(--background-secondary);
 }
 
 .error {

@@ -13,6 +13,7 @@ import AddClassRow from "../AddClassRow/AddClassRow";
 import ClassRow from "../ClassRow/ClassRow";
 import EmptyTable from "@/components/ui/table/EmptyTable/EmptyTable";
 import { sortByHebrewName } from "@/utils/sort";
+import ListRowLoading from "@/components/layout/loading/ListRowLoading/ListRowLoading";
 
 const ClassesList: React.FC = () => {
     const { classes, deleteClass } = useMainContext();
@@ -48,7 +49,9 @@ const ClassesList: React.FC = () => {
         <TableList headThs={["שם הכיתה", "פעולות"]}>
             <tbody>
                 <AddClassRow />
-                {sortedClasses?.length === 0 ? (
+                {classes === undefined ? (
+                    <ListRowLoading />
+                ) : sortedClasses?.length === 0 ? (
                     <EmptyTable text="עדיין לא נוספו כיתות לרשימה" />
                 ) : (
                     sortedClasses?.map((classItem) => (

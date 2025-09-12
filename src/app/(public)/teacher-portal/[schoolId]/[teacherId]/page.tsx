@@ -6,13 +6,14 @@ import { usePortal } from "@/context/PortalContext";
 import PortalTable from "@/components/teacherPortalTable/PortalTable/PortalTable";
 import styles from "./teacherPortal.module.css";
 import router from "@/routes";
+import TeacherPortalSkeleton from "@/components/layout/loading/skeleton/TeacherPortalSkeleton/TeacherPortalSkeleton";
 
 const TeacherPortalPage = () => {
     const params = useParams();
     const route = useRouter();
     const schoolId = params.schoolId as string | undefined;
     const teacherId = params.teacherId as string | undefined;
-    const { teacher, setTeacherAndSchool } = usePortal();
+    const { teacher, setTeacherAndSchool, isLoading } = usePortal();
 
     if (!schoolId) route.push(`${router.teacherSignIn.p}`);
     if (!teacherId) route.push(`${router.teacherSignIn.p}/${schoolId}`);
@@ -24,6 +25,8 @@ const TeacherPortalPage = () => {
         };
         if (!teacher) setTeacher();
     }, [teacherId, schoolId]);
+
+    if (isLoading) return <TeacherPortalSkeleton />;
 
     return (
         <section className={styles.content}>
