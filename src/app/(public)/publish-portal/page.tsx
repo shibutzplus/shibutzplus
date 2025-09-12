@@ -1,17 +1,18 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import styles from "./dailySchedulePortal.module.css";
+import styles from "./PublishedPortal.module.css";
 import { DailyScheduleType } from "@/models/types/dailySchedule";
 import { usePortal } from "@/context/PortalContext";
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
 import { getSchoolCookie } from "@/lib/cookies";
-import ReadOnlyDailyTable from "@/components/readOnlyDailyTable/ReadOnlyDailyTable/ReadOnlyDailyTable";
-import PublishedSkeleton from "@/components/layout/loading/skeleton/PublishedSkeleton/PublishedSkeleton";
+import ViewTable from "@/components/viewTable/ViewTable/ViewTable";
+import PublishedSkeleton from "@/components/layout/skeleton/PublishedSkeleton/PublishedSkeleton";
+import { NextPage } from "next";
 
-const DailySchedulePortalPage = () => {
+const PublishedPortalPage: NextPage = () => {
     const { selectedDate } = usePortal();
     const [currentDateData, setCurrentDateData] = useState<DailyScheduleType[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -52,7 +53,7 @@ const DailySchedulePortalPage = () => {
     return (
         <div className={styles.content}>
             <div className={styles.tableWrapper}>
-                <ReadOnlyDailyTable
+                <ViewTable
                     scheduleData={currentDateData}
                     noScheduleTitle="אין נתונים להצגה"
                     noScheduleSubTitle={["לא פורסמה מערכת"]}
@@ -63,4 +64,4 @@ const DailySchedulePortalPage = () => {
     );
 };
 
-export default DailySchedulePortalPage;
+export default PublishedPortalPage;

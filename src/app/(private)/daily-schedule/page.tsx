@@ -6,7 +6,7 @@ import DailyTable from "@/components/dailyScheduleTable/DailyTable/DailyTable";
 import styles from "./DailySchedule.module.css";
 import usePageScroll from "@/hooks/scroll/usePageScroll";
 import { useDailyTableContext } from "@/context/DailyTableContext";
-import DailySkeleton from "@/components/layout/loading/skeleton/DailySkeleton/DailySkeleton";
+import DailySkeleton from "@/components/layout/skeleton/DailySkeleton/DailySkeleton";
 
 const DailySchedulePage: NextPage = () => {
     const { isLoading } = useDailyTableContext();

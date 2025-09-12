@@ -19,7 +19,7 @@ const router: Record<string, IRoute> = {
     history: { id: "history", p: "/history", private: true, title: "מערכות שפורסמו" },
     teacherSignIn: { id: "teacherSignIn", p: "/teacher-sign-in", private: false, title: "כניסה למורים" },
     teacherPortal: { id: "teacherPortal", p: "/teacher-portal", private: false, title: "המערכת שלי" },
-    dailySchedulePortal: { id: "dailySchedulePortal", p: "/daily-schedule-portal", private: false, title: "מערכת יומית" },
+    publishedPortal: { id: "publishedPortal", p: "/publish-portal", private: false, title: "מערכת יומית" },
 };
 
 export default router;

@@ -22,7 +22,7 @@ import {
     setNewScheduleTemplate,
     getUniqueCellsFromQueue,
     getSelectedClass,
-} from "@/services/ annualScheduleService";
+} from "@/services/annualScheduleService";
 import { dayToNumber } from "@/utils/time";
 import { TeacherType } from "@/models/types/teachers";
 import { SubjectType } from "@/models/types/subjects";

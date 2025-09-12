@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import InputText from "@/components/ui/InputText/InputText";
+import InputText from "@/components/ui/inputs/InputText/InputText";
 import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
 import Icons from "@/style/icons";
 import styles from "./ListRow.module.css";

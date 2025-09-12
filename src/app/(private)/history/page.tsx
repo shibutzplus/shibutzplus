@@ -8,11 +8,12 @@ import { useMainContext } from "@/context/MainContext";
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { useHistoryTable } from "@/context/HistoryTableContext";
-import ReadOnlyDailyTable from "@/components/readOnlyDailyTable/ReadOnlyDailyTable/ReadOnlyDailyTable";
+import ViewTable from "@/components/viewTable/ViewTable/ViewTable";
 import { useSearchParams } from "next/navigation";
-import PublishedSkeleton from "@/components/layout/loading/skeleton/PublishedSkeleton/PublishedSkeleton";
+import PublishedSkeleton from "@/components/layout/skeleton/PublishedSkeleton/PublishedSkeleton";
+import { NextPage } from "next";
 
-const History = () => {
+const HistorySchedulePage: NextPage = () => {
     const { school } = useMainContext();
     const { selectedYearDate } = useHistoryTable();
     const searchParams = useSearchParams();
@@ -64,7 +65,7 @@ const History = () => {
     return (
         <div className={styles.content}>
             <div className={styles.tableWrapper}>
-                <ReadOnlyDailyTable
+                <ViewTable
                     scheduleData={currentDateData}
                     noScheduleTitle="אין נתונים להצגה"
                     noScheduleSubTitle={["לא פורסמה מערכת ליום זה", "בחרו יום אחר מהרשימה"]}
@@ -74,4 +75,4 @@ const History = () => {
     );
 };
 
-export default History;
+export default HistorySchedulePage;

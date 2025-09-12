@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import InputText from "../../ui/InputText/InputText";
+import InputText from "../../ui/inputs/InputText/InputText";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import EditableHeader from "../../ui/table/EditableHeader/EditableHeader";
 

@@ -6,9 +6,10 @@ import { usePortal } from "@/context/PortalContext";
 import PortalTable from "@/components/teacherPortalTable/PortalTable/PortalTable";
 import styles from "./teacherPortal.module.css";
 import router from "@/routes";
-import TeacherPortalSkeleton from "@/components/layout/loading/skeleton/TeacherPortalSkeleton/TeacherPortalSkeleton";
+import TeacherPortalSkeleton from "@/components/layout/skeleton/TeacherPortalSkeleton/TeacherPortalSkeleton";
+import { NextPage } from "next";
 
-const TeacherPortalPage = () => {
+const TeacherPortalPage: NextPage = () => {
     const params = useParams();
     const route = useRouter();
     const schoolId = params.schoolId as string | undefined;

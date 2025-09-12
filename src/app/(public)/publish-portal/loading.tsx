@@ -1,9 +1,8 @@
-"use client";
 import React from "react";
 import PublishedSkeleton from "@/components/layout/skeleton/PublishedSkeleton/PublishedSkeleton";
 
-const SkeletonDailySchedule: React.FC = () => {
+const SkeletonPublishedPortal: React.FC = () => {
     return <PublishedSkeleton />;
 };
 
-export default SkeletonDailySchedule;
+export default SkeletonPublishedPortal;

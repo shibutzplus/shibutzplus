@@ -1,12 +1,12 @@
 import React from "react";
-import styles from "./ReadOnlyEventCell.module.css";
+import styles from "./ViewEventCell.module.css";
 import { DailyScheduleType } from "@/models/types/dailySchedule";
 
-type ReadOnlyEventCellProps = {
+type ViewEventCellProps = {
     cellData: DailyScheduleType;
 };
 
-const ReadOnlyEventCell: React.FC<ReadOnlyEventCellProps> = ({ cellData }) => {
+const ViewEventCell: React.FC<ViewEventCellProps> = ({ cellData }) => {
     return (
         <div className={styles.eventCell}>
             <div className={styles.eventText}>{cellData.event}</div>
@@ -14,4 +14,4 @@ const ReadOnlyEventCell: React.FC<ReadOnlyEventCellProps> = ({ cellData }) => {
     );
 };
 
-export default ReadOnlyEventCell;
+export default ViewEventCell;

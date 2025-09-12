@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Btn from "@/components/ui/buttons/Btn/Btn";
-import InputText from "@/components/ui/InputText/InputText";
+import InputText from "@/components/ui/inputs/InputText/InputText";
 import Icons from "@/style/icons";
 import { infoToast } from "@/lib/toast";
 import styles from "./AddListRow.module.css";

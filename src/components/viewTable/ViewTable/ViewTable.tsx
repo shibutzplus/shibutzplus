@@ -1,23 +1,23 @@
 "use client";
 
 import React, { useMemo } from "react";
-import styles from "./ReadOnlyDailyTable.module.css";
+import styles from "./ViewTable.module.css";
 import { TableRows } from "@/models/constant/table";
 import { DailyScheduleType } from "@/models/types/dailySchedule";
-import ReadOnlyDailyHeader from "../ReadOnlyDailyHeader/ReadOnlyDailyHeader";
-import ReadOnlyTeacherCell from "../ReadOnlyTeacherCell/ReadOnlyTeacherCell";
-import ReadOnlyEventCell from "../ReadOnlyEventCell/ReadOnlyEventCell";
+import ViewHeader from "../ViewHeader/ViewHeader";
+import ViewTeacherCell from "../ViewTeacherCell/ViewTeacherCell";
+import ViewEventCell from "../ViewEventCell/ViewEventCell";
 import { getHeaderItems, sortAndGroupScheduleData } from "@/services/portalDailyScheduleService";
 import NotPublishedLayout from "@/components/layout/NotPublishedLayout/NotPublishedLayout";
 
-interface ReadOnlyDailyTableProps {
+type ReadOnlyDailyTableProps = {
     scheduleData: DailyScheduleType[];
     hasMobileNav?: boolean;
     noScheduleTitle?: string;
     noScheduleSubTitle?: string[];
-}
+};
 
-const ReadOnlyDailyTable: React.FC<ReadOnlyDailyTableProps> = ({
+const ViewTable: React.FC<ReadOnlyDailyTableProps> = ({
     scheduleData,
     hasMobileNav = false,
     noScheduleTitle,
@@ -47,8 +47,8 @@ const ReadOnlyDailyTable: React.FC<ReadOnlyDailyTableProps> = ({
         const cellData = scheduleByColumn[columnId]?.[hour];
         if (!cellData) return <div className={styles.emptyCell}></div>;
         if (cellData.issueTeacherType === "event" && cellData.event)
-            return <ReadOnlyEventCell cellData={cellData} />;
-        return <ReadOnlyTeacherCell cellData={cellData} />;
+            return <ViewEventCell cellData={cellData} />;
+        return <ViewTeacherCell cellData={cellData} />;
     };
 
     return (
@@ -57,7 +57,7 @@ const ReadOnlyDailyTable: React.FC<ReadOnlyDailyTableProps> = ({
             aria-label="טבלת מערכת יומית"
         >
             <table className={styles.scheduleTable}>
-                <ReadOnlyDailyHeader items={headerItems} />
+                <ViewHeader items={headerItems} />
                 <tbody>
                     {hours.map((hour) => (
                         <tr key={hour}>
@@ -81,4 +81,4 @@ const ReadOnlyDailyTable: React.FC<ReadOnlyDailyTableProps> = ({
     );
 };
 
-export default ReadOnlyDailyTable;
+export default ViewTable;

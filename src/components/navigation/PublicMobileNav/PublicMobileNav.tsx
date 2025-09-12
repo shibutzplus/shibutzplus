@@ -23,7 +23,7 @@ const PublicMobileNav: React.FC = () => {
     };
 
     const pushToDailySchedulePortal = () => {
-        route.push(`${router.dailySchedulePortal.p}`);
+        route.push(`${router.publishedPortal.p}`);
         return;
     };
 
@@ -47,9 +47,9 @@ const PublicMobileNav: React.FC = () => {
                 type="button"
                 aria-label="מערכת בית ספרית"
                 onClick={pushToDailySchedulePortal}
-                className={`${styles.item} ${pathname.includes(router.dailySchedulePortal.p) ? styles.active : ""}`}
+                className={`${styles.item} ${pathname.includes(router.publishedPortal.p) ? styles.active : ""}`}
             >
-                {pathname.includes(router.dailySchedulePortal.p) ? (
+                {pathname.includes(router.publishedPortal.p) ? (
                     <Icons.calendarFill size={16} style={{ marginInlineEnd: "4px" }} />
                 ) : (
                     <Icons.calendar size={16} style={{ marginInlineEnd: "4px" }} />

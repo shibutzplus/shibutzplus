@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import styles from "./PortalWriteRow.module.css";
-import RichText from "@/components/ui/RichText/RichText";
+import InputRichText from "@/components/ui/inputs/InputRichText/InputRichText";
 import { HourRowColor } from "@/style/tableColors";
 import { usePortal } from "@/context/PortalContext";
 import { PortalScheduleType } from "@/models/types/portalSchedule";
@@ -67,7 +67,7 @@ const PortalWriteRow: React.FC<PortalWriteRowProps> = ({ hour, row }) => {
             </td>
             <td className={styles.scheduleCellInput}>
                 {row ? (
-                    <RichText
+                    <InputRichText
                         value={instructions}
                         onChangeHTML={setInstructions}
                         onBlurHTML={handleChange}

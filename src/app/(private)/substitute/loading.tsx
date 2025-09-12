@@ -1,5 +1,5 @@
 import React from "react";
-import ListSkeleton from "@/components/layout/loading/skeleton/ListSkeleton/ListSkeleton";
+import ListSkeleton from "@/components/layout/skeleton/ListSkeleton/ListSkeleton";
 
 const Loading: React.FC = () => {
     return <ListSkeleton headThs={["שם המורה", "פעולות"]} hasAdditionalBtn />;

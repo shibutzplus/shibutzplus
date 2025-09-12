@@ -1,12 +1,12 @@
 import React from "react";
-import styles from "./ReadOnlyTeacherCell.module.css";
+import styles from "./ViewTeacherCell.module.css";
 import { DailyScheduleType } from "@/models/types/dailySchedule";
 
-type ReadOnlyTeacherCellProps = {
+type ViewTeacherCellProps = {
     cellData: DailyScheduleType;
 };
 
-const ReadOnlyTeacherCell: React.FC<ReadOnlyTeacherCellProps> = ({ cellData }) => {
+const ViewTeacherCell: React.FC<ViewTeacherCellProps> = ({ cellData }) => {
     const hasThirdRow = !!cellData.subTeacher || !!cellData.event;
 
     return (
@@ -32,4 +32,4 @@ const ReadOnlyTeacherCell: React.FC<ReadOnlyTeacherCellProps> = ({ cellData }) =
 
 
 
-export default ReadOnlyTeacherCell;
+export default ViewTeacherCell;

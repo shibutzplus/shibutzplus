@@ -5,10 +5,10 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
-import styles from "./RichText.module.css";
+import styles from "./InputRichText.module.css";
 import { sanitizeHtml } from "@/utils/sanitize";
 
-type RichTextProps = {
+type InputRichTextProps = {
     value: string;
     placeholder?: string;
     onChangeHTML: (html: string) => void;
@@ -22,7 +22,7 @@ const normalize = (html: string) => {
     return sanitizeHtml(trimmed);
 };
 
-const RichText: React.FC<RichTextProps> = ({
+const InputRichText: React.FC<InputRichTextProps> = ({
     value,
     placeholder,
     onChangeHTML,
@@ -85,4 +85,4 @@ const RichText: React.FC<RichTextProps> = ({
     );
 };
 
-export default RichText;
+export default InputRichText;

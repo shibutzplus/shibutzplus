@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import InputText from "@/components/ui/InputText/InputText";
-import InputPassword from "@/components/ui/InputPassword/InputPassword";
+import InputText from "@/components/ui/inputs/InputText/InputText";
+import InputPassword from "@/components/ui/inputs/InputPassword/InputPassword";
 import SubmitBtn from "@/components/ui/buttons/SubmitBtn/SubmitBtn";
 import styles from "./signUp.module.css";
 import routePath from "../../../routes";
