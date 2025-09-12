@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useId, useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Select, { StylesConfig } from "react-select";
 import styles from "./InputGroupSelect.module.css";
 import { customStyles } from "@/style/selectStyle";
@@ -50,37 +50,25 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     onCreate,
     createBtnText,
 }) => {
-    const [selectedOption, setSelectedOption] = useState<{ value: string; label: string } | null>(
-        null
-    );
-    const [isMounted, setIsMounted] = useState(false);
-    const selectInstanceId = useId();
+    const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
 
     useEffect(() => {
         if (value) {
             const allOptions = options.flatMap((group) => group.options);
             const found = allOptions.find((opt) => opt.value === value);
-            setSelectedOption(found || { value: value, label: value });
+            setSelectedOption(found || { value, label: value });
         } else {
             setSelectedOption(null);
         }
     }, [value, options]);
 
-    useEffect(() => {
-        setIsMounted(true);
-    }, []);
-
     const handleOnCreate = async (inputValue: string) => {
         const exists = options.some(
             (option) => option.label.toLowerCase() === inputValue.toLowerCase()
         );
-
         if (!exists && isAllowAddNew && onCreate) {
             await onCreate(inputValue);
-            const newOption: SelectOption = {
-                value: inputValue,
-                label: inputValue,
-            };
+            const newOption: SelectOption = { value: inputValue, label: inputValue };
             setSelectedOption(newOption);
         }
     };
@@ -90,23 +78,21 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
         onChange(option ? option.value : "");
     };
 
-    const selectRef = React.useRef<any>(null);
+    const selectRef = useRef<any>(null);
 
     const baseStyles = customStyles(error || "", hasBorder, true, backgroundColor);
 
-    const stylesOverride: StylesConfig<SelectOption, false, any> = {
-        // keep existing base styles
-        ...(baseStyles as StylesConfig<SelectOption, false, any>),
-        // override control to the chosen variant
+    const stylesOverride: StylesConfig<SelectOption, false, GroupOption> = {
+        ...(baseStyles as StylesConfig<SelectOption, false, GroupOption>),
         control: (prov: any, state: any) => {
             const b =
-                typeof baseStyles.control === "function" ? baseStyles.control(prov, state) : prov;
+                typeof (baseStyles as any).control === "function"
+                    ? (baseStyles as any).control(prov, state)
+                    : prov;
             return {
                 ...b,
                 border: "none",
-                boxShadow: state.isFocused
-                    ? "0 0 0 1px #dbe1e7ff"
-                    : "0 1px 2px rgba(0,0,0,0.08)",
+                boxShadow: state.isFocused ? "0 0 0 1px #dbe1e7ff" : "0 1px 2px rgba(0,0,0,0.08)",
                 backgroundColor: "#ffffff",
                 borderRadius: 4,
                 minHeight: 32,
@@ -121,10 +107,9 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
                     {label}
                 </label>
             )}
-            <Select
+            <Select<SelectOption, false, GroupOption>
                 ref={selectRef}
-                instanceId={selectInstanceId}
-                id={id}
+                inputId={id}
                 value={selectedOption}
                 onChange={handleChange}
                 options={options}
@@ -132,7 +117,6 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
                 isClearable={isClearable}
                 isDisabled={isDisabled}
                 placeholder={placeholder}
-                menuPortalTarget={isMounted ? document.body : null}
                 menuPlacement="auto"
                 formatGroupLabel={formatGroupLabel}
                 noOptionsMessage={({ inputValue }) =>
