@@ -9,7 +9,7 @@ import { TeacherRoleValues } from "@/models/types/teachers";
 import { usePathname, useRouter } from "next/navigation";
 import router from "@/routes";
 import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
-import { successToast } from "@/lib/toast";
+import { errorToast } from "@/lib/toast";
 
 const PortalTopActions: React.FC = () => {
     const route = useRouter();
@@ -34,9 +34,10 @@ const PortalTopActions: React.FC = () => {
     };
 
     const handleRefresh = async () => {
-        const response = await refreshPortalTable();
-        if (response) {
-            successToast("המערכת נטענה בהצלחה");
+        const response = await refreshPortalTable();    // Roy: Currently its doing only: populatePortalTable 
+                                                        // If its clicked from Published screen it should do also populatePublishedTable
+        if (!response) {
+            errorToast("בעיה בטעינה, נסו שוב");
         }
     };
 

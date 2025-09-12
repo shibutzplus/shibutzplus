@@ -1,17 +1,35 @@
 .mobileNav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  width: 100%;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 99;
-  background-color: var(--background);
-  height: var(--header-height);
-  box-sizing: border-box;
-  padding: 0 1em;
-  position: fixed;
-  border-top: var(--border-primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    background-color: var(--background);
+    height: var(--header-height);
+    box-sizing: border-box;
+    padding: 0 1em;
+    position: fixed;
+    border-top: var(--border-primary);
+}
+
+.publishLabel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    height: 34px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: default;
+    color: rgb(92, 92, 92);
+    transform: rotate(30deg);
+    transform-origin: center;
+    background: rgba(200, 200, 200, 0.1);
+    border-radius: 6px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+    letter-spacing: 1px;
 }
