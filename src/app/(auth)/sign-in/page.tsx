@@ -80,7 +80,7 @@ const SignInContent: React.FC = () => {
             <section className={styles.mainSection}>
                 <HeroSection
                     title="ניהול מערכת השעות"
-                    description="מערכת שעות יומית ושיבוץ מורים — פשוט, חכם, יעיל"
+                    description="שינויים במערכת היומית — פשוט, חכם, יעיל"
                 />
                 <div className={styles.formContainer}>
                     <button
