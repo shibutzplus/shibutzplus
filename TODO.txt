@@ -1,23 +1,14 @@
 
 
 TODO
-- loading skeleton [daily, portal pages]
-- loading when there is no data
 - portal - leave empty hours that has no information (gray + small height)
 - portal - UI improve for the table and input
 - text for 'create new teacher' in the select
 - mete title tab with the page description
 - portal - query param of the selected date in the teacher page
-- react markdown for the event cell
-- daily - when the schadule published, on the buttom replace the option with view the history
-- daily - when the schadule published, remove the hover effect on disabled
-
 - portal - maybe we should not delete the school id on logout
 
 BUGs
-- daily - if refresh you dont see in the select option the available teachers
-v- portal wont render with the new instraction if other teacher update the detials (need refrsh button or websocket)
--- daily - filter not working good - I can put teacher on the same hour for 2 columns 
 - role teacher not allow to enter the big system, need alert on that
 -- daily - the new annual rows do not update in the daily because of the cache. need to fetch the data from DB if comming from deffrent page
 -- render daily with the new data after remove teacher, class or subject or update annual
@@ -46,7 +37,15 @@ WONT DO
 -- portal - on "my schadule" minimze the instraction and only show on click (show only the hour class and subject)
 - list of all the published days (new page)
 - portal - fix calendar icon (to black)
+- react markdown for the event cell
 
+v- daily - if refresh you dont see in the select option the available teachers
+v- portal wont render with the new instraction if other teacher update the detials (need refrsh button or websocket)
+v-- daily - filter not working good - I can put teacher on the same hour for 2 columns 
+v- loading skeleton [daily, portal pages]
+v- loading when there is no data
+v- daily - when the schadule published, on the buttom replace the option with view the history
+v- daily - when the schadule published, remove the hover effect on disabled
 v- portal - handle refresh
 v- daily - remove save details alerts
 v-- storage array of the dates that was published and disable the button if the day was published

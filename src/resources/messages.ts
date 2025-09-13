@@ -86,7 +86,7 @@ const messages = {
         error: "בעיה בפרסום המערכת, אנא נסו שוב",
         alreadyPublished: "יום זה כבר פורסם",
     },
-    //TODO
+    //TODO: do I need a text here?
     share: {
         teacher: {
             title: "",

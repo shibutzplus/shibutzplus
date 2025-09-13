@@ -53,52 +53,77 @@ export const sortColumnsByIssueTeacherType = (filteredCols: ColumnDef<TeacherRow
 export const sortDailyTeachers = (
     allTeachers: TeacherType[],
     mapAvailableTeachers: AvailableTeachers,
+    dailyDay: {
+        [header: string]: {
+            [hour: string]: DailyScheduleCell;
+        };
+    },
     day: string,
     hour: number,
 ) => {
     const dayStr = dayToNumber(day);
     const hourStr = hour.toString();
+
     // Get teachers scheduled for this day/hour from annual schedule
-    const scheduledTeacherIds = mapAvailableTeachers[dayStr]?.[hourStr] || [];
+    const scheduledTeacherIds = new Set(mapAvailableTeachers[dayStr]?.[hourStr] || []);
+    const teachesOnDayIds = new Set<string>();
 
-    // מורים מחליפים - substitute teachers who teach on this day
-    const substituteTeachers = allTeachers.filter((teacher) => {
-        return teacher.role === "substitute";
-    });
+    // Build set of teachers who teach on this day (any hour)
+    if (mapAvailableTeachers[dayStr]) {
+        Object.values(mapAvailableTeachers[dayStr]).forEach((hourTeachers) => {
+            hourTeachers.forEach((id) => teachesOnDayIds.add(id));
+        });
+    }
 
-    // מורים פנויים - regular teachers who teach on this day but NOT in this hour
-    const availableTeachers = allTeachers.filter((teacher) => {
-        if (teacher.role !== "regular") return false;
+    // Set of teachers already assigned in other columns for this hour in daily schedule
+    const dailyAssignedTeacherIds = new Set<string>();
+    if (dailyDay) {
+        Object.values(dailyDay).forEach((dailyColumn) => {
+            const column = dailyColumn[hourStr];
+            if (column) {
+                // Check substitute teacher
+                if (column.subTeacher?.id) {
+                    dailyAssignedTeacherIds.add(column.subTeacher.id);
+                }
+                // // Check header teacher (main teacher for the column)
+                // if (column.headerCol?.headerTeacher?.id) {
+                //     dailyAssignedTeacherIds.add(column.headerCol.headerTeacher.id);
+                // }
+            }
+        });
+    }
 
-        // Check if teacher teaches on this day (any hour)
-        const teachesOnDay =
-            mapAvailableTeachers[dayStr] &&
-            Object.values(mapAvailableTeachers[dayStr]).some((hourTeachers) =>
-                hourTeachers.includes(teacher.id),
-            );
+    const substituteTeachers: TeacherType[] = [];
+    const availableTeachers: TeacherType[] = [];
+    const unavailableTeachers: TeacherType[] = [];
 
-        // Teacher is available if they teach on this day but NOT in this specific hour
-        return teachesOnDay && !scheduledTeacherIds.includes(teacher.id);
-    });
+    for (const teacher of allTeachers) {
+        // Skip teachers already assigned in other columns for this hour
+        if (dailyAssignedTeacherIds.has(teacher.id)) {
+            unavailableTeachers.push(teacher);
+            continue;
+        }
 
-    // מורים לא פנויים - regular teachers who don't teach on this day OR teach in this hour
-    const unavailableTeachers = allTeachers.filter((teacher) => {
-        if (teacher.role !== "regular") return false;
+        if (teacher.role === "substitute") {
+            substituteTeachers.push(teacher);
+        } else if (teacher.role === "regular") {
+            const teachesToday = teachesOnDayIds.has(teacher.id);
+            const scheduledThisHour = scheduledTeacherIds.has(teacher.id);
 
-        // Check if teacher teaches on this day
-        const teachesOnDay =
-            mapAvailableTeachers[dayStr] &&
-            Object.values(mapAvailableTeachers[dayStr]).some((hourTeachers) =>
-                hourTeachers.includes(teacher.id),
-            );
+            if (teachesToday) {
+                if (!scheduledThisHour) {
+                    availableTeachers.push(teacher);
+                } else {
+                    unavailableTeachers.push(teacher);
+                }
+            }
+        }
+    }
 
-        // Teacher is unavailable if they don't teach on this day OR they teach in this hour
-        return !teachesOnDay || scheduledTeacherIds.includes(teacher.id);
-    });
-
+    // TODO: if array is empty, the lable wont show (react-select functionality)
     const groups: GroupOption[] = [
         {
-            label: "מחיקה",
+            label: "",
             options: [{ value: EmptyValue, label: "" }],
         },
         {

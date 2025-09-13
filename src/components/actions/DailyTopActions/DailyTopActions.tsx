@@ -64,19 +64,15 @@ const DailyTopActions: React.FC = () => {
             </div>
 
             <div className={styles.leftSide}>
-                {isDisabled ? (
-                    <span className={styles.publishLabel}>המערכת{"\n"}פורסמה</span>
-                ) : (
-                    <ActionBtn
-                        type="publish"
-                        Icon={<Icons.publish size={16} />}
-                        label={btnTitle}
-                        isLoading={publishLoading}
-                        isDisabled={publishLoading}
-                        func={publishDailySchedule}
-                        style={{ borderLeft: DailyTableColors.publish.borderLeft }}
-                    />
-                )}
+                <ActionBtn
+                    type="publish"
+                    label={btnTitle}
+                    isLoading={publishLoading}
+                    isDisabled={isDisabled}
+                    func={publishDailySchedule}
+                    Icon={isDisabled ? <Icons.success size={17} /> : <Icons.publish size={16} />}
+                    style={{ borderLeft: isDisabled ? "" : DailyTableColors.publish.borderLeft }}
+                />
 
                 <span className={styles.hideOnMobile} title="תצוגה מקדימה">
                     <IconBtn
@@ -93,7 +89,6 @@ const DailyTopActions: React.FC = () => {
                         disabled={publishLoading}
                     />
                 </span>
-
             </div>
         </section>
     );

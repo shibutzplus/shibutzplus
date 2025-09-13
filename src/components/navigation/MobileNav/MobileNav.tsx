@@ -45,16 +45,14 @@ const MobileNav: React.FC = () => {
                 func={() => addNewColumn("event")}
             />
 
-            {isDisabled ? (
-                <span className={styles.publishLabel}>המערכת פורסמה</span>
-            ) : (
-                <ActionBtn
-                    Icon={<Icons.publish size={16} />}
-                    isDisabled={publishLoading}
-                    func={publishDailySchedule}
-                    style={{}}
-                />
-            )}
+            <ActionBtn
+                type="publish"
+                label={btnTitle}
+                isLoading={publishLoading}
+                isDisabled={isDisabled}
+                func={publishDailySchedule}
+                style={{}}
+            />
 
             <IconBtn
                 Icon={<Icons.share size={16} />}

@@ -19,9 +19,14 @@ type DailyTeacherCellProps = {
 };
 
 const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
-    const { teachers, classes } = useMainContext();
-    const { mainDailyTable, mapAvailableTeachers, selectedDate, updateTeacherCell, clearTeacherCell } =
-        useDailyTableContext();
+    const { teachers } = useMainContext();
+    const {
+        mainDailyTable,
+        mapAvailableTeachers,
+        selectedDate,
+        updateTeacherCell,
+        clearTeacherCell,
+    } = useDailyTableContext();
     const [isLoading, setIsLoading] = useState(false);
 
     // Get data from the row data
@@ -34,14 +39,20 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
     const headerData = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.headerCol;
 
     const [selectedSubTeacher, setSelectedSubTeacher] = useState<string>(
-        subTeacherData?.id || teacherText || "",
+        subTeacherData?.name || teacherText || "",
     );
 
-    const selectedClassId = classData?.id || "";
     const day = getDayNameByDateString(selectedDate);
     const sortedTeacherOptions = useMemo(
-        () => sortDailyTeachers(teachers || [], mapAvailableTeachers, day, Number(hour)),
-        [teachers, classes, selectedClassId, day, hour],
+        () =>
+            sortDailyTeachers(
+                teachers || [],
+                mapAvailableTeachers,
+                mainDailyTable[selectedDate],
+                day,
+                Number(hour),
+            ),
+        [teachers, mapAvailableTeachers, mainDailyTable, selectedDate, hour],
     );
 
     const checkIfActivity = (value: string) =>
@@ -60,13 +71,17 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
                 setSelectedSubTeacher("");
                 const existingDailyId = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.DBid;
                 if (existingDailyId) {
-                    const response = await clearTeacherCell(type, cellData, columnId, existingDailyId);
+                    const response = await clearTeacherCell(
+                        type,
+                        cellData,
+                        columnId,
+                        existingDailyId,
+                    );
                     if (!response) throw new Error();
                 }
                 return;
             }
 
-            setSelectedSubTeacher(value);
             const isTeacherOption = !checkIfActivity(value) && methodType === "update";
             const isActivityOption = checkIfActivity(value) && methodType === "update";
             const isEventOption = methodType === "create";
@@ -76,6 +91,8 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
                 newSubTeacherData = teachers?.find((t) => t.id === value);
                 if (!newSubTeacherData) return;
             }
+
+            setSelectedSubTeacher(isTeacherOption ? newSubTeacherData?.name || "" : value);
 
             const existingDailyId = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.DBid;
             if (existingDailyId) {
@@ -87,7 +104,13 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
                 } else if (isActivityOption) {
                     data = { event: activityOptionsMapValToLabel(value) };
                 }
-                const response = await updateTeacherCell(type, cellData, columnId, existingDailyId, data);
+                const response = await updateTeacherCell(
+                    type,
+                    cellData,
+                    columnId,
+                    existingDailyId,
+                    data,
+                );
                 if (!response) throw new Error();
             }
         } catch (error) {
@@ -111,7 +134,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
                             value={selectedSubTeacher}
                             onChange={(value: string) => handleTeacherChange("update", value)}
                             onCreate={(value: string) => handleTeacherChange("create", value)}
-                            placeholder='ממלא מקום'
+                            placeholder="ממלא מקום"
                             isSearchable
                             isAllowAddNew
                             hasBorder

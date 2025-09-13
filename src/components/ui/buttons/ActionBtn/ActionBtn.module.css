@@ -8,7 +8,6 @@
     border-radius: 8px;
     font-size: 12px;
     font-weight: bold;
-    cursor: pointer;
     transition: all 0.2s ease;
     position: relative;
     background-color: var(--background);
@@ -19,9 +18,10 @@
     color: var(--daily-btns-color);
 }
 
-.topButton:hover {
+.topButton:not(:disabled):hover {
     transform: translateY(-2px);
     box-shadow: var(--daily-btns-box-shadow);
+    cursor: pointer;
 }
 
 /* Desktop */

@@ -1,7 +1,5 @@
 import {
     IoArrowForward,
-    IoCalendarClearOutline,
-    IoCalendarClear,
     IoHomeOutline,
     IoCalendarOutline,
     IoCalendarSharp,
@@ -30,7 +28,7 @@ import { PiChairLight } from "react-icons/pi";
 import { GoHistory } from "react-icons/go";
 import { LiaChalkboardTeacherSolid } from "react-icons/lia";
 import { GiTeacher } from "react-icons/gi";
-import { IoPersonOutline } from "react-icons/io5";
+import { IoPersonOutline, IoCheckmarkCircle } from "react-icons/io5";
 import { LuEye } from "react-icons/lu";
 
 const Icons = {
@@ -67,6 +65,7 @@ const Icons = {
     teacher3: GiTeacher,
     teacher: IoPersonOutline,
     refresh: IoMdRefresh,
+    success: IoCheckmarkCircle,
 };
 
 export default Icons;

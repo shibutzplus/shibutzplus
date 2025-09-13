@@ -549,7 +549,6 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         setActionCols(sortedCols);
     };
 
-    // TODO: check why lior did the change
     const deleteColumn = async (columnId: string) => {
         if (!school?.id) return false;
 
@@ -578,15 +577,6 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
             return false;
         }
     };
-    // const filteredCols = tableColumns.filter((col) => col.id !== columnId);
-    // if (filteredCols.length === tableColumns.length) return false;
-    // const sortedCols = sortColumnsByIssueTeacherType(filteredCols);
-
-    // const day = selectedDate;
-    // const nextDay = { ...(mainDailyTable[day] || {}) };
-    // delete nextDay[columnId];
-    // const nextSchedule = { ...mainDailyTable, [day]: nextDay };
-    // setMainAndStorageTable(nextSchedule);
 
     const clearColumn = (day: string, columnId: string) => {
         const updatedSchedule = { ...mainDailyTable };
