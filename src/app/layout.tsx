@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
     title: "שיבוץ+",
-    description: "ניהול מערכת שעות יומית ושיבוץ מורים",
+    description: "ניהול מערכת שעות יומית ושיבוץ מורים בקלות וביעילות, מותאם לסגני מנהלים ולרכזי מערכת בבתי ספר.",
     manifest: "/manifest.json",
     icons: {
         icon: "/favicon.png",

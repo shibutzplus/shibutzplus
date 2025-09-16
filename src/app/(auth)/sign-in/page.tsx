@@ -11,7 +11,7 @@ import GoogleIcon from "@/components/ui/assets/googleIcon";
 import Link from "next/link";
 import { signInWithGoogle } from "@/app/actions/POST/signInAction";
 import { EmailLink } from "@/models/constant";
-import { errorToast } from "@/lib/toast";
+import { infoToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import Loading from "@/components/core/Loading/Loading";
 import routes from "@/routes";
@@ -31,7 +31,7 @@ const SignInContent: React.FC = () => {
 
     useEffect(() => {
         if (googleError === "AccessDenied") {
-            errorToast(messages.auth.accessDenied);
+            infoToast(messages.auth.accessDenied);
         }
     }, [googleError]);
 
@@ -79,8 +79,8 @@ const SignInContent: React.FC = () => {
         <main className={styles.container}>
             <section className={styles.mainSection}>
                 <HeroSection
-                    title="ניהול מערכת השעות"
-                    description="שינויים במערכת היומית — פשוט, חכם, יעיל"
+                    title="ניהול מערכת השעות היומית"
+                    description="פשוט, חכם, יעיל"
                 />
                 <div className={styles.formContainer}>
                     <button
@@ -95,7 +95,6 @@ const SignInContent: React.FC = () => {
                     {error && <p className={styles.error}>{error}</p>}
                     <div className={styles.registerLink}>
                         <p>
-                            בעיה בהתחברות?{" "}
                             <Link href={EmailLink} className={styles.problemLink}>
                                 צרו קשר
                             </Link>
