@@ -1,12 +1,15 @@
-/* Mobile 320px - 767px -- 812px */
+/* Mobile */
 .tableListSection {
     background-color: var(--background);
+    width: 100vw;
+    padding: 0;
+    border-radius: var(--box-border-radius);
 }
 
 .tableList {
+    min-width: 50vw;
     width: 100%;
     max-width: none;
-    margin: var(--table-margin, 0);
     border-collapse: separate;
     border-spacing: 0;
 }
@@ -20,7 +23,7 @@
 
 .tableList th {
     text-align: center;
-    padding: 1rem 2rem 1rem 0;
+    padding: 1rem 0;
     border-bottom: var(--border-heavy-primary);
     font-weight: 600;
     color: var(--description-text);
@@ -29,7 +32,7 @@
 
 .tableList td {
     text-align: right;
-    padding: 1rem 1rem 1rem 0;
+    padding: 1rem 16px;
     border-bottom: var(--border-primary);
 }
 
@@ -37,9 +40,7 @@
 @media (min-width: 768px) {
     .tableListSection {
         overflow-y: auto;
-    }
-
-    .tableList {
-        width: 600px;
+        width: 100%;
+        padding: 0 5vw;
     }
 }

@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--black-shadow-background);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -56,7 +56,7 @@
 }
 
 .closeButton:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: #0000000d;
 }
 
 .modalContent {

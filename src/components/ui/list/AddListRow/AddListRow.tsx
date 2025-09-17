@@ -72,7 +72,7 @@ function AddListRow<T extends Record<string, any>>({
     };
 
     return (
-        <tr>
+        <tr className={styles.trAddListRow}>
             <td key={String(field.key)}>
                 <InputText
                     key={String(field.key)}
@@ -83,6 +83,7 @@ function AddListRow<T extends Record<string, any>>({
                     placeholder={field.placeholder}
                     error={validationErrors[field.key]}
                     type={field.inputType || "text"}
+                    style={{minWidth: 200, width: "100%"}}
                     onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
                         if (e.key === "Enter") {
                             e.preventDefault();

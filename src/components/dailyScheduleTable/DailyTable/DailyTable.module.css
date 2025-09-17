@@ -62,7 +62,7 @@
 }
 
 .hourHeader {
-    width: var(--table-template-cell-width);
+    width: var(--table-template-cell-width-mobile);
     min-height: unset;
     display: flex;
     border-inline-end: none;
@@ -71,7 +71,7 @@
 
 .hourCell {
     font-weight: bold;
-    width: var(--table-template-cell-width);
+    width: var(--table-template-cell-width-mobile);
     min-height: unset;
     display: flex;
     align-items: center;

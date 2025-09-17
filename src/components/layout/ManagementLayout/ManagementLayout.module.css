@@ -1,18 +1,15 @@
+/* Mobile */
 .container {
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 0;
 }
 
 /* Desktop */
-.pageList {
-    --table-margin: 0 auto;
-}
-
-/* Mobile */
-@media (max-width: 767px) {
-    .pageList {
-        --table-margin: 10px;
+@media (min-width: 768px) {
+    .container {
+        padding: 2vh 0;
     }
 }

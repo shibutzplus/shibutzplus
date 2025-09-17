@@ -1,5 +1,18 @@
+.trAddListRow{
+    width: 100%;
+}
+
+.trAddListRow td:first-child {
+    padding-right: 16px;
+    width: 100%;
+}
+.trAddListRow td:last-child {
+    padding-left: 16px;
+}
+
 .smallBtn {
-    width: 200px !important;
+    min-width: 100px;
+    width: 100% !important;
     height: 38px;
     display: inline-flex !important;
 }

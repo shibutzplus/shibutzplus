@@ -7,6 +7,7 @@ import { customStyles } from "@/style/selectStyle";
 import { GroupOption, SelectOption } from "@/models/types";
 import AddToSelectBtn from "../../buttons/AddToSelectBtn/AddToSelectBtn";
 import { createNewSelectOption_btnText } from "@/utils/format";
+import { useMobileSelectScroll } from "@/hooks/useMobileSelectScroll";
 
 export interface InputGroupSelectProps {
     label?: string;
@@ -79,6 +80,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     };
 
     const selectRef = useRef<any>(null);
+    const { selectRef: mobileScrollRef, containerRef, handleMenuOpen } = useMobileSelectScroll();
 
     const baseStyles = customStyles(error || "", hasBorder, true, backgroundColor);
 
@@ -101,14 +103,17 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     };
 
     return (
-        <div className={styles.selectContainer}>
+        <div ref={containerRef} className={styles.selectContainer}>
             {label && (
                 <label htmlFor={id} className={styles.label}>
                     {label}
                 </label>
             )}
             <Select<SelectOption, false, GroupOption>
-                ref={selectRef}
+                ref={(ref) => {
+                    selectRef.current = ref;
+                    mobileScrollRef.current = ref;
+                }}
                 inputId={id}
                 value={selectedOption}
                 onChange={handleChange}
@@ -118,6 +123,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
                 isDisabled={isDisabled}
                 placeholder={placeholder}
                 menuPlacement="auto"
+                onMenuOpen={handleMenuOpen}
                 formatGroupLabel={formatGroupLabel}
                 noOptionsMessage={({ inputValue }) =>
                     isAllowAddNew && inputValue.trim() !== "" ? (

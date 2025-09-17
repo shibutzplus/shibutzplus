@@ -1,23 +1,24 @@
+/* Mobile */
 .container {
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 0;
 }
-
-.pageList {
-    --table-margin: 10px;
-}
-
 
 .tableListSection {
     background-color: var(--background);
+    width: 100%;
+    /* TODO */
+    max-width: 50vw;
+    padding: 0;
+    border-radius: var(--box-border-radius);
+
 }
 
 .tableList {
-    width: 100%;
-    max-width: none;
-    margin: var(--table-margin, 0);
+    min-width: 50vw;
     border-collapse: separate;
     border-spacing: 0;
 }
@@ -31,7 +32,7 @@
 
 .tableList th {
     text-align: center;
-    padding: 1rem 2rem 1rem 0;
+    padding: 1rem 0;
     border-bottom: var(--border-heavy-primary);
     font-weight: 600;
     color: var(--description-text);
@@ -40,48 +41,27 @@
 
 .tableList td {
     text-align: right;
-    padding: 1rem 1rem 1rem 0;
+    padding: 1rem 16px;
     border-bottom: var(--border-primary);
-}
-
-.smallBtn {
-    width: 200px !important;
-    height: 38px;
-    display: inline-flex !important;
 }
 
 .listRow {
     position: relative;
     align-items: flex-start;
+    width: 100%;
+    position: relative;
 }
 
 .nameCell {
     position: relative;
 }
 
-.copyLink {
-    direction: ltr;
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    align-items: center;
-    color: var(--description-text);
-    cursor: pointer;
-}
-
-.copyLink span {
-    display: none;
-}
-
 .actions {
     width: 100%;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     height: 75px;
-    gap: 15px;
 }
 
 .tdSkeletonName,
@@ -107,15 +87,13 @@
     }
 }
 
-.tdSkeletonInput{
+.tdSkeletonInput {
     width: 364px;
-    margin-right: 16px;
     height: 40px;
 }
 
-.tdSkeletonBtn{
+.tdSkeletonBtn {
     width: 200px;
-    margin-right: 16px;
     height: 40px;
 }
 
@@ -123,7 +101,6 @@
     width: 260px;
     height: 20px;
     border-radius: 5px;
-    margin-right: 16px;
 }
 
 .tdSkeletonIcon {
@@ -134,42 +111,19 @@
 
 /* Desktop */
 @media (min-width: 768px) {
-    .actions {
-        gap: 35px;
-        margin-right: 8px;
-    }
-
-    .copyLink {
-        direction: ltr;
-        position: absolute;
-        left: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        display: flex;
-        align-items: center;
-        color: var(--description-text);
-        cursor: pointer;
-    }
-
-    .copyLink span {
-        display: block;
-        width: 200px;
-        max-width: 150px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    .copyLink:hover {
-        color: var(--description-hover-text);
-    }
-
-    .pageList {
-        --table-margin: 0 auto;
+    .container {
+        padding: 2vh 0;
     }
 
     .tableListSection {
         overflow-y: auto;
+        width: 100%;
+        padding: 0 5vw;
+        box-sizing: content-box;
+    }
+
+    .actions {
+        gap: 35px;
     }
 
     .tableList {
