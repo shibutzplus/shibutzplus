@@ -4,7 +4,7 @@ const messages = {
         serverError: "שגיאת מערכת פנימית. אנא נסו שוב"
     },
     auth: {
-        accessDenied: "בעיה בהתחברות, אנא נסו שנית",
+        accessDenied: "כדי להתנסות במערכת, פנו אלינו במייל shibutzplus@gmail.com",
 
         unauthorized: "אין הרשאה. אנא התחבר כדי לגשת למידע זה",
         paramRequired: "פרמטר נדרש",
