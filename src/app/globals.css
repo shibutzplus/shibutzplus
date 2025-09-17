@@ -1,6 +1,6 @@
 :root {
     /* Base colors */
-    --background: #ffffff;
+    --background: #fdfbfb;
     --background-secondary: #f9fafc;
     --foreground: #171717;
 
@@ -38,16 +38,12 @@
     --error-color-hover: #9d3130;
 
     /* Table colors */
-    --header-cell-color: #f7faff;
-    --row-cell-color: #f7faff;
+    --header-cell-color: #fdfbfb;
+    --row-cell-color: #fdfbfb;
     --empty-cell-color: #fcfcfc;
-
     --daily-btns-color: #606060;
-
     --daily-template-color: #d6d5d5;
-
     --separator-color: #888;
-
     --daily-btns-color: #606060;
 
     /* Box shadows */

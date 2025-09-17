@@ -20,7 +20,7 @@ export type InputMultiSelectProps = {
     isAllowAddNew?: boolean;
     isDisabled?: boolean;
     hasBorder?: boolean;
-    backgroundColor?: "white" | "transparent";
+    backgroundColor?: "#fdfbfb" | "transparent";
     isClearable?: boolean;
     onCreate?: (value: string) => Promise<string | undefined>;
     createBtnText?: string;
@@ -40,7 +40,7 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
     isAllowAddNew = false,
     isDisabled = false,
     hasBorder = false,
-    backgroundColor = "white",
+    backgroundColor = "#fdfbfb",
     isClearable = false,
     onCreate,
     createBtnText,
@@ -180,7 +180,7 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
                     hasBorder,
                     true,
                     backgroundColor,
-                    "white",
+                    "#fdfbfb",
                     "#aaa",
                     600)}
                 classNamePrefix="react-select"

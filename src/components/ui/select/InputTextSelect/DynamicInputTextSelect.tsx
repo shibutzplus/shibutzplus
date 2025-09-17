@@ -11,7 +11,7 @@ const DynamicInputTextSelect = dynamic(() => import("./InputTextSelect"), {
                 borderWidth: "1px",
                 borderStyle: "solid",
                 fontSize: "16px",
-                backgroundColor: "white",
+                backgroundColor: "#fdfbfb",
                 color: "#999",
                 transition: "all 0.2s ease",
                 display: "flex",

@@ -4,7 +4,7 @@ import styles from "./InputText.module.css";
 interface InputTextProps extends InputHTMLAttributes<HTMLInputElement> {
     label?: string;
     error?: string;
-    backgroundColor?: "white" | "transparent";
+    backgroundColor?: "#fdfbfb" | "transparent";
     readonly?: boolean;
     hasBorder?: boolean;
 }
@@ -14,7 +14,7 @@ const InputText: React.FC<InputTextProps> = ({
     error,
     className,
     id,
-    backgroundColor = "white",
+    backgroundColor = "#fdfbfb",
     readonly = false,
     hasBorder = true,
     ...props

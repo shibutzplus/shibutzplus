@@ -2,7 +2,7 @@ export const customStyles = (
     error: any,
     hasBorder: boolean,
     hasArrow: boolean = true,
-    backgroundColor: string = "white",
+    backgroundColor: string = "#fdfbfb",
     noOptionsMsgColor: string = "#aaa",
 ) => {
     return {
@@ -42,7 +42,7 @@ export const customStyles = (
                 ? "#4a90e2"
                 : state.isFocused
                     ? "rgba(74, 144, 226, 0.1)"
-                    : "white",
+                    : "#fdfbfb",
             color: state.isSelected ? "white" : "#333",
             padding: "10px 12px",
             fontSize: "16px",

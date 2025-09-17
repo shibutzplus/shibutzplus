@@ -20,7 +20,7 @@ type Props = {
     isAllowAddNew?: boolean;
     isDisabled?: boolean;
     hasBorder?: boolean;
-    backgroundColor?: "white" | "transparent";
+    backgroundColor?: "#fdfbfb" | "transparent";
     isClearable?: boolean;
     onCreate?: (value: string) => Promise<string | undefined>;
     createBtnText?: string;
@@ -39,7 +39,7 @@ const InputSelect: React.FC<Props> = (props) => {
         isAllowAddNew = false,
         isDisabled = false,
         hasBorder = false,
-        backgroundColor = "white",
+        backgroundColor = "#fdfbfb",
         isClearable = false,
         onCreate,
         createBtnText,
