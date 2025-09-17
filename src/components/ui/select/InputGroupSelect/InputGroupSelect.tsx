@@ -20,7 +20,7 @@ export interface InputGroupSelectProps {
     isAllowAddNew?: boolean;
     isDisabled?: boolean;
     hasBorder?: boolean;
-    backgroundColor?: "white" | "transparent";
+    backgroundColor?: "#fdfbfb" | "transparent";
     isClearable?: boolean;
     onCreate?: (value: string) => Promise<void>;
     createBtnText?: string;
@@ -45,7 +45,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     isAllowAddNew = false,
     isDisabled = false,
     hasBorder = false,
-    backgroundColor = "white",
+    backgroundColor = "#fdfbfb",
     isClearable = false,
     onCreate,
     createBtnText,
@@ -93,7 +93,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
                 ...b,
                 border: "none",
                 boxShadow: state.isFocused ? "0 0 0 1px #dbe1e7ff" : "0 1px 2px rgba(0,0,0,0.08)",
-                backgroundColor: "#ffffff",
+                backgroundColor: "#fdfbfb",
                 borderRadius: 4,
                 minHeight: 32,
             };

@@ -10,7 +10,6 @@
     position: sticky;
     left: 0;
     z-index: 10;
-    background: var(--background);
     border-inline-end: var(--border-primary);
     flex-shrink: 0;
 }

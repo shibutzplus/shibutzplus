@@ -15,7 +15,7 @@ interface InputSearchSelectProps {
     error?: string;
     isDisabled?: boolean;
     hasBorder?: boolean;
-    backgroundColor?: "white" | "transparent";
+    backgroundColor?: "#fdfbfb" | "transparent";
     isClearable?: boolean;
 }
 
@@ -28,7 +28,7 @@ const InputSearchSelect: React.FC<InputSearchSelectProps> = ({
     error,
     isDisabled = false,
     hasBorder = false,
-    backgroundColor = "white",
+    backgroundColor = "#fdfbfb",
     isClearable = false,
 }) => {
     const [options, setOptions] = useState<SelectOption[]>(initialOptions);
