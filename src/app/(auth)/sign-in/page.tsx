@@ -105,10 +105,11 @@ const SignInContent: React.FC = () => {
 
             <div className={styles.illustrationContainer}>
                 <Image
-                    src="/undraw_workspace_s6wf.svg"
-                    alt="Workspace Illustration"
-                    width={140}
-                    height={40}
+                    src="/LoginImage.png"
+                    alt="שיבוץ+"
+                    width={0}
+                    height={0}
+                    sizes="40vw"
                     className={styles.illustration}
                     priority
                 />

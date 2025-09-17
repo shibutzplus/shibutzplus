@@ -73,7 +73,17 @@
 }
 
 .illustrationContainer {
-    display: none;
+    display: block;
+    position: absolute;
+    bottom: 1%;
+    left: 32%;
+    z-index: 0;
+    opacity: 0.9;
+}
+
+.illustration {
+    width: 55vw;
+    height: auto;
 }
 
 /* Desktop */
@@ -85,19 +95,11 @@
     }
 
     .illustrationContainer {
-        display: block;
-        position: absolute;
-        bottom: -10px;
-        left: -55px;
-        max-width: 400px;
-        z-index: 1;
-        transform: rotateY(180deg);
-        opacity: 0.9;
+        bottom: 1%;
+        left: 2%;
     }
 
     .illustration {
-        width: 100%;
-        height: auto;
-        object-fit: contain;
+        width: 35vw;
     }
 }
