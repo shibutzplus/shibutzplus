@@ -123,7 +123,7 @@ export const sortDailyTeachers = (
     // TODO: if array is empty, the lable wont show (react-select functionality)
     const groups: GroupOption[] = [
         {
-            label: "",
+            label: "מחיקת ממלא מקום",
             options: [{ value: EmptyValue, label: "" }],
         },
         {
