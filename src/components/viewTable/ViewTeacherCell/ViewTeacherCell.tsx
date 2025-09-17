@@ -7,20 +7,10 @@ type ViewTeacherCellProps = {
 };
 
 const ViewTeacherCell: React.FC<ViewTeacherCellProps> = ({ cellData }) => {
-    const hasThirdRow = !!cellData.subTeacher || !!cellData.event;
-
     return (
         <div className={styles.teacherCell}>
-            {cellData.class && (
-                <div className={`${styles.className} ${!hasThirdRow ? styles.faded : ""}`}>
-                    {cellData.class.name}
-                </div>
-            )}
-            {cellData.subject && (
-                <div className={`${styles.subjectName} ${!hasThirdRow ? styles.faded : ""}`}>
-                    {cellData.subject.name}
-                </div>
-            )}
+            {cellData.class && <div className={styles.className}>{cellData.class.name}</div>}
+            {cellData.subject && <div className={styles.subjectName}>{cellData.subject.name}</div>}
             {cellData.subTeacher ? (
                 <div className={styles.subTeacherName}>מחליף: {cellData.subTeacher?.name}</div>
             ) : cellData.event ? (
@@ -29,7 +19,5 @@ const ViewTeacherCell: React.FC<ViewTeacherCellProps> = ({ cellData }) => {
         </div>
     );
 };
-
-
 
 export default ViewTeacherCell;

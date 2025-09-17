@@ -34,9 +34,9 @@
 
 .scheduleTable th:nth-child(1),
 .scheduleTable td:nth-child(1) {
-    width: 30px;
-    min-width: 30px;
-    max-width: 30px;
+    width: var(--table-template-cell-width-mobile);
+    min-width: var(--table-template-cell-width-mobile);
+    max-width: var(--table-template-cell-width-mobile);
     text-align: center;
 }
 
@@ -65,9 +65,9 @@
 
     .scheduleTable th:nth-child(1),
     .scheduleTable td:nth-child(1) {
-        width: 50px;
-        min-width: 50px;
-        max-width: 50px;
+        width: var(--table-template-cell-width);
+        min-width: var(--table-template-cell-width);
+        max-width: var(--table-template-cell-width);
     }
 
     .scheduleTable th:nth-child(2),

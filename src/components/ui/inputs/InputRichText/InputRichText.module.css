@@ -3,6 +3,19 @@
   height: 100%;
   padding: 6px 6px;
   box-sizing: border-box;
+  position: relative;
+}
+
+.placeholder {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    color: var(--placeholder-color);
+    pointer-events: none;
+    font-size: 16px;
+    line-height: 22px;
+    z-index: 1;
+    direction: ltr;
 }
 
 .wrapper div {
@@ -20,7 +33,7 @@
 
 .editor p.is-editor-empty::before {
     content: attr(data-placeholder);
-    color: #aaa;
+    color: var(--placeholder-color);
     pointer-events: none;
     float: right;
     height: 0;

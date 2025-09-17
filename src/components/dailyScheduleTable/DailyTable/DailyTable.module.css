@@ -34,6 +34,7 @@
     box-sizing: border-box;
     border: var(--border-primary);
     text-align: center;
+    padding: 12px;
 }
 
 .scheduleTable thead th,
@@ -61,7 +62,7 @@
 }
 
 .hourHeader {
-    width: var(--table-template-cell-width);
+    width: var(--table-template-cell-width-mobile);
     min-height: unset;
     display: flex;
     border-inline-end: none;
@@ -70,7 +71,7 @@
 
 .hourCell {
     font-weight: bold;
-    width: var(--table-template-cell-width);
+    width: var(--table-template-cell-width-mobile);
     min-height: unset;
     display: flex;
     align-items: center;
@@ -148,7 +149,6 @@
     }
 
     .cellContent {
-        padding: 4px;
         gap: 6px;
     }
 }

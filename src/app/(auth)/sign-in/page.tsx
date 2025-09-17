@@ -78,10 +78,7 @@ const SignInContent: React.FC = () => {
     return (
         <main className={styles.container}>
             <section className={styles.mainSection}>
-                <HeroSection
-                    title="ניהול מערכת השעות היומית"
-                    description="פשוט, חכם, יעיל"
-                />
+                <HeroSection title="ניהול מערכת השעות היומית" description="פשוט, חכם, יעיל" />
                 <div className={styles.formContainer}>
                     <button
                         type="button"
@@ -103,7 +100,7 @@ const SignInContent: React.FC = () => {
                 </div>
             </section>
 
-            <div className={styles.illustrationContainer}>
+            {/* <div className={styles.illustrationContainer}>
                 <Image
                     src="/LoginImage.png"
                     alt="שיבוץ+"
@@ -113,7 +110,7 @@ const SignInContent: React.FC = () => {
                     className={styles.illustration}
                     priority
                 />
-            </div>
+            </div> */}
         </main>
     );
 };

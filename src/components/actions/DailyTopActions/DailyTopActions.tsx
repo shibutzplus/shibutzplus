@@ -71,7 +71,12 @@ const DailyTopActions: React.FC = () => {
                     isDisabled={isDisabled}
                     func={publishDailySchedule}
                     Icon={isDisabled ? <Icons.success size={17} /> : <Icons.publish size={16} />}
-                    style={{ borderLeft: isDisabled ? "" : DailyTableColors.publish.borderLeft }}
+                    style={{
+                        borderLeft: isDisabled ? "transparent" : DailyTableColors.publish.borderLeft,
+                        borderRight: isDisabled ? "transparent" : "1px solid #ddd",
+                        borderBottom: isDisabled ? "transparent" : "1px solid #ddd",
+                        borderTop: isDisabled ? "transparent" : "1px solid #ddd",
+                    }}
                 />
 
                 <span className={styles.hideOnMobile} title="תצוגה מקדימה">
