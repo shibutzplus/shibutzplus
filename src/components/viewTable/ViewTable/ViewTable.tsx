@@ -62,7 +62,7 @@ const ViewTable: React.FC<ReadOnlyDailyTableProps> = ({
                     {hours.map((hour) => (
                         <tr key={hour}>
                             <td className={styles.hourCell}>
-                                <div className={styles.cellContent}>
+                                <div className={styles.cellContentHour}>
                                     <span>{hour}</span>
                                 </div>
                             </td>

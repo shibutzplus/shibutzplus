@@ -38,14 +38,21 @@
     min-width: var(--table-template-cell-width);
     width: var(--table-template-cell-width);
 }
+
+.cellContentHour,
 .cellContent {
     display: flex;
     flex-direction: column;
+    height: 100%;
+}
+
+.cellContentHour {
+    height: unset;
 }
 
 .emptyCell {
     height: 100%;
-    min-height: 60px;
+    min-height: var(--table-header-height);
 }
 
 .scheduleTable thead th:first-child,

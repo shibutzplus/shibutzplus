@@ -1,10 +1,10 @@
-/* Mobile 320px - 767px -- 812px */
+/* Mobile */
 .topButton {
     width: 150px;
     height: 40px;
     padding: 0.7rem 0;
     padding-left: 0;
-    border: 1px solid #ccc;
+    border: var(--border-primary);
     border-radius: 8px;
     font-size: 12px;
     font-weight: bold;

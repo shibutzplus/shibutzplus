@@ -29,7 +29,6 @@ const InputRichText: React.FC<InputRichTextProps> = ({
     onBlurHTML,
     minHeight = 40,
 }) => {
-
     const editor = useEditor({
         immediatelyRender: false,
         extensions: [
@@ -81,6 +80,7 @@ const InputRichText: React.FC<InputRichTextProps> = ({
                 editor={editor}
                 onBlur={() => onBlurHTML?.(normalize(editor.getHTML()))}
             />
+            {value === "" ? <div className={styles.placeholder}>{placeholder || ""}</div> : null}
         </div>
     );
 };
