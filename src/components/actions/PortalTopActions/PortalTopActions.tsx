@@ -17,10 +17,11 @@ const PortalTopActions: React.FC = () => {
     const {
         teacher,
         selectedDate,
-        isLoading,
+        isPortalLoading,
         publishDatesOptions,
         handleDayChange,
-        refreshPortalTable,
+        fetchPortalScheduleDate,
+        fetchPublishScheduleData,
     } = usePortal();
 
     const pushToTeacherPortalWrite = () => {
@@ -34,9 +35,13 @@ const PortalTopActions: React.FC = () => {
     };
 
     const handleRefresh = async () => {
-        const response = await refreshPortalTable();    // Roy: Currently its doing only: populatePortalTable 
-                                                        // If its clicked from Published screen it should do also populatePublishedTable
-        if (!response) {
+        let response;
+        if (pathname.includes(router.teacherPortal.p)) {
+            response = await fetchPortalScheduleDate();
+        } else {
+            response = await fetchPublishScheduleData();
+        }
+        if (!response.success && response.error !== "") {
             errorToast("בעיה בטעינה, נסו שוב");
         }
     };
@@ -48,23 +53,21 @@ const PortalTopActions: React.FC = () => {
                     <DynamicInputSelect
                         options={publishDatesOptions}
                         value={selectedDate}
-                        isDisabled={isLoading}
+                        isDisabled={isPortalLoading}
                         onChange={handleDayChange}
                         isSearchable={false}
                         placeholder="בחר יום..."
                         hasBorder
                     />
                 </div>
-                {pathname.includes(router.teacherPortal.p) ? (
-                    <div className={styles.refreshContainer}>
-                        <IconBtn
-                            Icon={<Icons.refresh size={26} />}
-                            onClick={handleRefresh}
-                            disabled={isLoading}
-                            isLoading={isLoading}
-                        />
-                    </div>
-                ) : null}
+                <div className={styles.refreshContainer}>
+                    <IconBtn
+                        Icon={<Icons.refresh size={26} />}
+                        onClick={handleRefresh}
+                        disabled={isPortalLoading}
+                        isLoading={isPortalLoading}
+                    />
+                </div>
             </div>
 
             {teacher?.role === TeacherRoleValues.REGULAR && (
