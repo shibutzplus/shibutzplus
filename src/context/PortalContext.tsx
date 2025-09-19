@@ -1,10 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode, useEffect, useRef } from "react";
-import {
-    getPublishedDatesOptions as getPublishedDatesOptions,
-    getTomorrowOption,
-} from "@/resources/dayOptions";
+import { getPublishedDatesOptions as getPublishedDatesOptions } from "@/resources/dayOptions";
 import { SelectOption } from "@/models/types";
 import { TeacherType } from "@/models/types/teachers";
 import { getSchoolAction } from "@/app/actions/GET/getSchoolAction";
@@ -24,6 +21,7 @@ import { PortalSchedule } from "@/models/types/portalSchedule";
 import { getTeacherByIdAction } from "@/app/actions/GET/getTeacherByIdAction";
 import getTeacherFullScheduleAction from "@/app/actions/GET/getTeacherFullScheduleAction";
 import { updateDailyInstructionAction } from "@/app/actions/PUT/updateDailyInstractionAction";
+import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
 
 interface PortalContextType {
     selectedDate: string | undefined;
@@ -33,10 +31,19 @@ interface PortalContextType {
     mainPortalTable: PortalSchedule;
     setTeacherAndSchool: (schoolId?: string, teacherId?: string) => Promise<boolean>;
     handleSave: (rowId: string, hour: number, instructions?: string) => Promise<void>;
-    refreshPortalTable: () => Promise<boolean>;
     publishDatesOptions: SelectOption[];
-    isLoading: boolean;
+    isPortalLoading: boolean;
+    isPublishLoading: boolean;
     isSaving: boolean;
+    fetchPortalScheduleDate: (withCache?: boolean) => Promise<{
+        success: boolean;
+        error: string;
+    }>;
+    fetchPublishScheduleData: () => Promise<{
+        success: boolean;
+        error: string;
+    }>;
+    mainPublishTable: DailyScheduleType[];
 }
 
 const PortalContext = createContext<PortalContextType | undefined>(undefined);
@@ -53,12 +60,16 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     const [selectedDate, setSelectedDayId] = useState<string | undefined>();
     const [publishDatesOptions, setPublishDatesOptions] = useState<SelectOption[]>([]);
 
-    const [mainPortalTable, setMainPortalTable] = useState<PortalSchedule>({}); // Main state for table object storage
-
     const [teacher, setTeacher] = useState<TeacherType | undefined>();
     const [schoolId, setSchoolId] = useState<string | undefined>();
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+
+    const [mainPortalTable, setMainPortalTable] = useState<PortalSchedule>({}); // Main state for table object storage
+    const [mainPublishTable, setMainPublishTable] = useState<DailyScheduleType[]>([]);
+
+    const [isPortalLoading, setIsPortalLoading] = useState<boolean>(true);
     const [isSaving, setIsSaving] = useState<boolean>(false);
+
+    const [isPublishLoading, setIsPublishLoading] = useState<boolean>(true);
 
     useEffect(() => {
         if (!schoolId) {
@@ -75,7 +86,7 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     useEffect(() => {
         const fetchDateOptions = async () => {
             if (teacher) {
-                setIsLoading(true);
+                setIsPortalLoading(true);
                 try {
                     const response = await getSchoolAction(teacher.schoolId);
                     if (response.success && response.data) {
@@ -92,7 +103,7 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
                     console.error("Error fetching publish dates:", error);
                     setPublishDatesOptions([]);
                 } finally {
-                    setIsLoading(false);
+                    setIsPortalLoading(false);
                 }
             } else {
                 handleDayChange(""); // If no date is published, set `selectedDate` to empty so no data will be retrieved.
@@ -102,35 +113,11 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         blockRef.current && fetchDateOptions();
     }, [teacher]);
 
-    useEffect(() => {
-        const fetchDataForDate = async () => {
-            if (!teacher || !selectedDate) return;
-            try {
-                setIsLoading(true);
-                const populateFromStorage = populateTableFromStorage();
-                if (populateFromStorage) return;
-
-                const response = await getTeacherFullScheduleAction(teacher.id, selectedDate);
-                if (response.success && response.data) {
-                    populatePortalTable(response.data);
-                } else {
-                    console.error("Failed to fetch daily schedule:", response.message);
-                }
-            } catch (error) {
-                console.error("Error fetching daily schedule data:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchDataForDate();
-    }, [selectedDate, teacher]);
-
     const populateTableFromStorage = () => {
         const tableStorage = getSessionPortalTable();
         if (tableStorage && selectedDate && tableStorage[selectedDate]) {
             setMainPortalTable({ [selectedDate]: tableStorage[selectedDate] });
-            setIsLoading(false);
+            setIsPortalLoading(false);
             return true;
         }
         return false;
@@ -159,6 +146,56 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         });
         setMainPortalTable(portalSchedule);
         setSessionPortalTable(portalSchedule);
+    };
+
+    const fetchPublishScheduleData = async () => {
+        const schoolId = getSchoolCookie();
+        if (!schoolId || !selectedDate) return { success: false, error: "" };
+
+        try {
+            setIsPublishLoading(true);
+            const response = await getDailyScheduleAction(schoolId, selectedDate, {
+                isPrivate: false,
+            });
+            if (response.success && response.data) {
+                setMainPublishTable(response.data);
+                return { success: true, error: "" };
+            } else {
+                setMainPublishTable([]);
+                return { success: false, error: response.message || messages.dailySchedule.error };
+            }
+        } catch (error) {
+            console.error("Error fetching daily schedule:", error);
+            setMainPublishTable([]);
+            return { success: false, error: messages.dailySchedule.error };
+        } finally {
+            setIsPublishLoading(false);
+        }
+    };
+
+    const fetchPortalScheduleDate = async (withCache: boolean = false) => {
+        if (!teacher || !selectedDate) return { success: false, error: "" };
+        try {
+            setIsPortalLoading(true);
+            if (withCache) {
+                const populateFromStorage = populateTableFromStorage();
+                if (populateFromStorage) return { success: true, error: "" };
+            }
+
+            const response = await getTeacherFullScheduleAction(teacher.id, selectedDate);
+            if (response.success && response.data) {
+                populatePortalTable(response.data);
+                return { success: true, error: "" };
+            } else {
+                console.error("Failed to fetch daily schedule:", response.message);
+                return { success: false, error: response.message || messages.dailySchedule.error };
+            }
+        } catch (error) {
+            console.error("Error fetching daily schedule data:", error);
+            return { success: false, error: messages.dailySchedule.error };
+        } finally {
+            setIsPortalLoading(false);
+        }
     };
 
     const handleDayChange = (value: string) => {
@@ -203,26 +240,6 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         }
     };
 
-    const refreshPortalTable = async () => {
-        if (!teacher || !selectedDate) return false;
-        try {
-            setIsLoading(true);
-            const response = await getTeacherFullScheduleAction(teacher.id, selectedDate);
-            if (response.success && response.data) {
-                populatePortalTable(response.data);
-                return true;
-            } else {
-                console.error("Failed to fetch daily schedule:", response.message);
-                return false;
-            }
-        } catch (error) {
-            console.error("Error fetching daily schedule data:", error);
-            return false;
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
     const value: PortalContextType = {
         selectedDate,
         handleDayChange,
@@ -231,11 +248,40 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         mainPortalTable,
         setTeacherAndSchool,
         publishDatesOptions,
-        isLoading,
+        isPortalLoading,
+        isPublishLoading,
         handleSave,
-        refreshPortalTable,
         isSaving,
+        fetchPortalScheduleDate,
+        fetchPublishScheduleData,
+        mainPublishTable,
     };
 
     return <PortalContext.Provider value={value}>{children}</PortalContext.Provider>;
 };
+
+// const refreshPortalTable = async (page: string) => {
+//     if (!teacher || !selectedDate) return false;
+//     try {
+//         setIsPortalLoading(true);
+//         if (page.includes(router.teacherPortal.p)) {
+//             const response = await getTeacherFullScheduleAction(teacher.id, selectedDate);
+//             if (response.success && response.data) {
+//                 populatePortalTable(response.data);
+//                 return true;
+//             } else {
+//                 console.error("Failed to fetch daily schedule:", response.message);
+//                 return false;
+//             }
+//         } else {
+//             const response = await fetchPublishScheduleData();
+//             if (response) return true;
+//             return false;
+//         }
+//     } catch (error) {
+//         console.error("Error fetching daily schedule data:", error);
+//         return false;
+//     } finally {
+//         setIsPortalLoading(false);
+//     }
+// };
