@@ -38,8 +38,7 @@
     --error-color-hover: #9d3130;
 
     /* Table colors */
-    --header-cell-color: #fdfbfb;
-    --row-cell-color: #fdfbfb;
+    --table-headers-color: #fffaf0;
     --empty-cell-color: #fcfcfc;
     --daily-btns-color: #606060;
     --daily-template-color: #d6d5d5;
@@ -72,8 +71,8 @@
     --annual-table-width: 180px;
     --annual-template-width: 70px;
 
-    --table-header-min-height: 70px;
-    --table-header-height: 70px;
+    --table-header-min-height: 60px;
+    --table-header-height: 60px;
 
     --table-template-cell-width: 30px;
     --table-template-cell-width-mobile: 30px;

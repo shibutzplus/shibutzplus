@@ -42,7 +42,7 @@
 }
 
 .hourCell {
-    background: var(--row-cell-color);
+    background: var(--table-headers-color);
     font-weight: bold;
     text-align: center;
     min-width: var(--table-template-cell-width);
@@ -56,7 +56,7 @@
 
 .scheduleTable thead th:first-child,
 .scheduleTable tbody td:first-child {
-    background: var(--row-cell-color);
+    background: var(--table-headers-color);
     font-weight: bold;
     text-align: center;
     min-width: var(--table-template-cell-width);
@@ -73,7 +73,7 @@
     border: var(--border-primary);
     min-width: 64px;
     padding: 10px;
-    background-color: var(--row-cell-color);
+    background-color: var(--table-headers-color);
 }
 
 .dayHeader {
@@ -82,7 +82,7 @@
     border: var(--border-primary);
     min-width: 220px;
     padding: 10px;
-    background-color: var(--row-cell-color);
+    background-color: var(--table-headers-color);
 }
 
 .thContainer {

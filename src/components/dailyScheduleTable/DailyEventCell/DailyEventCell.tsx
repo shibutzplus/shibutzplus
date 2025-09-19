@@ -73,7 +73,7 @@ const DailyEventCell: React.FC<DailyEventCellProps> = ({ cell }) => {
                 value={info}
                 onChange={(e) => setInfo(e.target.value)}
                 onBlur={(e) => handleChange(e.target.value)}
-                placeholder="מה הולך לקרות בשעה זו?"
+                placeholder="מה מתוכנן לשעה זו?"
                 disabled={isLoading}
                 rows={1}
                 autoGrow

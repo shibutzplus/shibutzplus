@@ -5,6 +5,13 @@
     min-width: 800px;
 }
 
+.scheduleTable th:first-child,
+.scheduleTable td:first-child {
+    width: var(--table-template-cell-width);
+    min-width: 30px;
+    max-width: 80px;
+}
+
 /* Mobile */
 @media (max-width: 767px) {
     .scheduleTable th:first-child,

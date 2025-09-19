@@ -10,7 +10,6 @@
     font-weight: bold;
     transition: all 0.2s ease;
     position: relative;
-    background-color: var(--background);
     display: flex;
     align-items: center;
     justify-content: center;

@@ -22,7 +22,7 @@
 }
 
 .emptyTrHeader {
-    background-color: var(--header-cell-color);
+    background-color: var(--table-headers-color);
     border-left: var(--border-primary);
     padding: 12px;
     text-align: center;

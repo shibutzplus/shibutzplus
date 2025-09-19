@@ -78,7 +78,7 @@
     justify-content: center;
     border-inline-end: none;
     height: var(--table-cell-height);
-    background: var(--row-cell-color);
+    background: var(--table-headers-color);
 }
 
 .scheduleCell {
