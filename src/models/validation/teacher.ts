@@ -7,7 +7,12 @@ export const teacherSchema = z.object({
         .trim()
         .min(2, "שם מורה חייב להכיל לפחות 2 תווים")
         .max(50, "שם מורה לא יכול להכיל יותר מ-50 תווים")
-        .transform((s) => s.replace(/\s+/g, " "))
-        .refine((s) => !noControlRe.test(s), "תווים לא חוקיים")
-        .refine((s) => allowedRe.test(s), "תווים לא חוקיים"),
+        .transform((s) => s.replace(/\s+/g, " ")) // collapse inner spaces
+        // Only check illegal chars if not empty, so empty/short hits .min message
+        .refine((s) => s.length === 0 || !noControlRe.test(s), {
+            message: "תווים לא חוקיים",
+        })
+        .refine((s) => s.length === 0 || allowedRe.test(s), {
+            message: "תווים לא חוקיים",
+        }),
 });
