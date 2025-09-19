@@ -7,7 +7,7 @@ import {
     getTomorrowDateString,
     ONE_WEEK,
     SATURDAY_NUMBER,
-    THREE_DAYS,
+    ONE_DAY,
     israelTimezoneDate,
     generateDateRange,
     getCurrentMonth,
@@ -50,7 +50,7 @@ export function getIsraeliDateOptions(): SelectOption[] {
 
     // Calculate start date (3 days ago) and end date (2 weeks from today)
     const startDate = new Date(israelToday);
-    startDate.setDate(israelToday.getDate() - THREE_DAYS);
+    startDate.setDate(israelToday.getDate() - ONE_DAY);
 
     const endDate = new Date(israelToday);
     endDate.setDate(israelToday.getDate() + ONE_WEEK * 2);
