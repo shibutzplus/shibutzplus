@@ -68,7 +68,7 @@ const HistorySchedulePage: NextPage = () => {
                 <ViewTable
                     scheduleData={currentDateData}
                     noScheduleTitle="אין נתונים להצגה"
-                    noScheduleSubTitle={["לא פורסמה מערכת ליום זה", "בחרו יום אחר מהרשימה"]}
+                    noScheduleSubTitle={["אין מערכת שפורסמה עבור יום זה"]}
                 />
             </div>
         </div>
