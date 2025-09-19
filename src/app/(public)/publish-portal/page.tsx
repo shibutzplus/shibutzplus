@@ -34,7 +34,7 @@ const PublishedPortalPage: NextPage = () => {
                 <ViewTable
                     scheduleData={mainPublishTable}
                     noScheduleTitle="אין נתונים להצגה"
-                    noScheduleSubTitle={["לא פורסמה מערכת"]}
+                    noScheduleSubTitle={["לא פורסמה מערכת עבור יום זה"]}
                     hasMobileNav
                 />
             </div>

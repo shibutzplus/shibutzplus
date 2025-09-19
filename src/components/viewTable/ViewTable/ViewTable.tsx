@@ -27,7 +27,7 @@ const ViewTable: React.FC<ReadOnlyDailyTableProps> = ({
         return (
             <NotPublishedLayout
                 title={noScheduleTitle || "אין נתונים להצגה"}
-                subTitle={noScheduleSubTitle || ["לא פורסמה מערכת"]}
+                subTitle={noScheduleSubTitle || ["לא פורסמה מערכת עבור יום זה"]}
             />
         );
 
@@ -54,7 +54,7 @@ const ViewTable: React.FC<ReadOnlyDailyTableProps> = ({
     return (
         <section
             className={`${styles.tableContainer} ${hasMobileNav ? styles.withMobileNav : ""}`}
-            aria-label="טבלת מערכת יומית"
+            aria-label="מערכת יומית"
         >
             <table className={styles.scheduleTable}>
                 <ViewHeader items={headerItems} />

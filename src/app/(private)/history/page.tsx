@@ -49,7 +49,7 @@ const HistorySchedulePage: NextPage = () => {
         }
     };
 
-    // TODO: need to check on production, possible that 1 rander would cause issues 
+    // TODO: need to check on production, possible that 1 render would cause issues 
     const blockRef = useRef<boolean>(true);
     useEffect(() => {
         if (selectedYearDate !== prevSelectedDate) {
@@ -68,7 +68,7 @@ const HistorySchedulePage: NextPage = () => {
                 <ViewTable
                     scheduleData={currentDateData}
                     noScheduleTitle="אין נתונים להצגה"
-                    noScheduleSubTitle={["אין מערכת שפורסמה עבור יום זה"]}
+                    noScheduleSubTitle={["לא פורסמה מערכת עבור יום זה"]}
                 />
             </div>
         </div>
