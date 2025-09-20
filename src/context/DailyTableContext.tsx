@@ -3,13 +3,7 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from "react";
 import { TeacherRow } from "@/models/types/table";
 import { ColumnDef } from "@tanstack/react-table";
-import {
-    ColumnType,
-    DailySchedule,
-    DailyScheduleCell,
-    DailyScheduleType,
-    TeacherHourlyScheduleItem,
-} from "@/models/types/dailySchedule";
+import { ColumnType, DailySchedule, DailyScheduleCell, DailyScheduleType, TeacherHourlyScheduleItem, } from "@/models/types/dailySchedule";
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
 import { getTeacherScheduleByDayAction } from "@/app/actions/GET/getTeacherScheduleByDayAction";
 import { getAnnualScheduleAction } from "@/app/actions/GET/getAnnualScheduleAction";
@@ -20,18 +14,9 @@ import { updateDailyEventCellAction } from "@/app/actions/PUT/updateDailyEventCe
 import { deleteDailyColumnAction } from "@/app/actions/DELETE/deleteDailyColumnAction";
 import { useMainContext } from "./MainContext";
 import {
-    addNewEventCell,
-    addNewTeacherValueCell,
-    setEmptyTeacherColumn,
-    setColumn,
-    getColumnsFromStorage,
-    updateAddCell,
-    populateTable,
-    mapAnnualTeachers,
-    fillLeftRowsWithEmptyCells,
-    initDailySchedule,
-    updateAllEventHeader,
-    setEmptyColumn,
+    addNewEventCell, addNewTeacherValueCell, setEmptyTeacherColumn, setColumn,
+    getColumnsFromStorage, updateAddCell, populateTable, mapAnnualTeachers, fillLeftRowsWithEmptyCells,
+    initDailySchedule, updateAllEventHeader, setEmptyColumn,
 } from "@/services/dailyScheduleService";
 import { generateId } from "@/utils";
 import DailyTeacherCell from "@/components/dailyScheduleTable/DailyTeacherCell/DailyTeacherCell";
@@ -49,6 +34,7 @@ import { deleteDailyCellAction } from "@/app/actions/DELETE/deleteDailyCellActio
 import { updateDeleteCell } from "@/services/dailyScheduleService";
 import { updateDailyEventHeaderAction } from "@/app/actions/PUT/updateDailyEventHeaderAction";
 import { getSessionDailyTable, setSessionDailyTable } from "@/lib/sessionStorage";
+import { infoToast } from "@/lib/toast";
 
 interface DailyTableContextType {
     tableColumns: ColumnDef<TeacherRow>[];
@@ -206,7 +192,8 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 if (response.success && response.data && teachers) {
                     populateDailyScheduleTable(response.data);
                 } else {
-                    console.error("Failed to fetch daily schedule:", response.message);
+                    infoToast("החיבור למשתמש נותק, יש להיכנס מחדש למערכת.");
+                    //console.error("Failed to fetch daily schedule:", response.message);
                 }
             } catch (error) {
                 console.error("Error fetching daily schedule data:", error);

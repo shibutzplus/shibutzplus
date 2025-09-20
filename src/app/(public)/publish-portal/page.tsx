@@ -17,7 +17,9 @@ const PublishedPortalPage: NextPage = () => {
         const fetchData = async () => {
             if (blockRef.current && mainPublishTable.length === 0) {
                 const response = await fetchPublishScheduleData();
-                if (response.success) blockRef.current = false;
+                console.log(response)
+                if (response.success)
+                    blockRef.current = false;
                 else if (response.error !== "") {
                     errorToast(response.error);
                 }

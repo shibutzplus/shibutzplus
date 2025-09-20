@@ -5,8 +5,8 @@ export const teacherSchema = z.object({
     name: z
         .string()
         .trim()
-        .min(2, "שם מורה חייב להכיל לפחות 2 תווים")
-        .max(50, "שם מורה לא יכול להכיל יותר מ-50 תווים")
+        .min(2, "שם חייב להכיל לפחות 2 תווים")
+        .max(50, "שם לא יכול להכיל יותר מ-50 תווים")
         .transform((s) => s.replace(/\s+/g, " ")) // collapse inner spaces
         // Only check illegal chars if not empty, so empty/short hits .min message
         .refine((s) => s.length === 0 || !noControlRe.test(s), {
