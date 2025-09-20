@@ -42,8 +42,10 @@ const PortalTopActions: React.FC = () => {
             response = await fetchPublishScheduleData();
         }
         if (!response.success && response.error !== "") {
-            errorToast("בעיה בטעינה, נסו שוב");
+            errorToast("בעיה בטעינת המידע, נסו שוב");
         }
+
+        // Bug: Need to refresh also the dates dropdown (Lior/Roy) 
     };
 
     return (
