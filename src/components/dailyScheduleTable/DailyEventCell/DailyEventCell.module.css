@@ -3,5 +3,6 @@
   margin: 0;
   height: auto;
   min-height: 1.5em;
-  padding: 15px 10px;
+  max-height: 100px;
+  padding: 10px 10px;
 }
