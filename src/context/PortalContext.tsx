@@ -149,11 +149,14 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     };
 
     const fetchPublishScheduleData = async () => {
-        const schoolId = getSchoolCookie();
-        if (!schoolId || !selectedDate) return { success: false, error: "" };
-
+        setIsPublishLoading(true);
         try {
-            setIsPublishLoading(true);
+            const schoolId = getSchoolCookie();
+            if (!schoolId || !selectedDate) {
+                setMainPublishTable([]);
+                return { success: false, error: "" };
+            }
+
             const response = await getDailyScheduleAction(schoolId, selectedDate, {
                 isPrivate: false,
             });

@@ -11,7 +11,7 @@ const PortalTable: React.FC = () => {
     const hasData = !!dayTable && Object.keys(dayTable).length > 0;
 
     if (!hasData)
-        return <NotPublishedLayout title="אין נתונים להצגה" subTitle={["לא פורסמה מערכת"]} />;
+        return <NotPublishedLayout title="אין נתונים להצגה" subTitle={["לא פורסמה מערכת עבור יום זה"]} />;
 
     return (
         <div className={styles.tableContainer} role="region">

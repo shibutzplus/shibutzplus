@@ -14,10 +14,10 @@ const PublishedPortalPage: NextPage = () => {
 
     const blockRef = useRef<boolean>(true);
     useEffect(() => {
+        blockRef.current = true;
         const fetchData = async () => {
-            if (blockRef.current && mainPublishTable.length === 0) {
+            if (blockRef.current) {
                 const response = await fetchPublishScheduleData();
-                console.log(response)
                 if (response.success)
                     blockRef.current = false;
                 else if (response.error !== "") {
@@ -27,6 +27,7 @@ const PublishedPortalPage: NextPage = () => {
         };
         fetchData();
     }, [selectedDate]);
+
 
     if (isPublishLoading) return <PublishedSkeleton />;
 
