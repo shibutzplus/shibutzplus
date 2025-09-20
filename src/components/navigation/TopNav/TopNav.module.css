@@ -1,6 +1,6 @@
 /* Base (Mobile first) */
 .contentHeader {
-    background: linear-gradient(90deg, #fdfbfb, #d6e4f0);
+    background: #f7f7fa;
     box-shadow: var(--header-box-shadow);
     height: var(--header-height);
     padding: 0 1vw;

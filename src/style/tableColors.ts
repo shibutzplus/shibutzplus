@@ -1,6 +1,6 @@
-export const HeaderColor = "#fffaf0";
-export const HourHeaderColor = "#fffaf0";
-export const HourRowColor = "#fffaf0";
+export const HeaderColor = "#fffbf5";
+export const HourHeaderColor = "#fffbf5";
+export const HourRowColor = "#fffbf5";
 
 export const AnnualTableColors = [
     HeaderColor,

@@ -42,7 +42,7 @@ const DailyTopActions: React.FC = () => {
                     Icon={<Icons.addTeacher size={16} />}
                     label="שיבוץ למורה חסר"
                     isDisabled={isLoading}
-                    style={{ borderLeft: DailyTableColors.missingTeacher.borderLeft }}
+                    style={{ borderLeft: DailyTableColors.missingTeacher.borderLeft, backgroundColor: "#ffffff"  }}
                     func={() => addNewColumn("missingTeacher")}
                 />
                 <ActionBtn
@@ -50,7 +50,7 @@ const DailyTopActions: React.FC = () => {
                     Icon={<Icons.addTeacher size={16} />}
                     label="שיבוץ למורה נוכח"
                     isDisabled={isLoading}
-                    style={{ borderLeft: DailyTableColors.existingTeacher.borderLeft }}
+                    style={{ borderLeft: DailyTableColors.existingTeacher.borderLeft, backgroundColor: "#ffffff"  }}
                     func={() => addNewColumn("existingTeacher")}
                 />
                 <ActionBtn
@@ -58,7 +58,7 @@ const DailyTopActions: React.FC = () => {
                     Icon={<Icons.event size={16} />}
                     label="עדכון ארועים"
                     isDisabled={isLoading}
-                    style={{ borderLeft: DailyTableColors.event.borderLeft }}
+                    style={{ borderLeft: DailyTableColors.event.borderLeft, backgroundColor: "#ffffff"  }}
                     func={() => addNewColumn("event")}
                 />
             </div>
@@ -76,6 +76,7 @@ const DailyTopActions: React.FC = () => {
                         borderRight: isDisabled ? "transparent" : "1px solid #ddd",
                         borderBottom: isDisabled ? "transparent" : "1px solid #ddd",
                         borderTop: isDisabled ? "transparent" : "1px solid #ddd",
+                        backgroundColor: "#ffffff" 
                     }}
                 />
 
