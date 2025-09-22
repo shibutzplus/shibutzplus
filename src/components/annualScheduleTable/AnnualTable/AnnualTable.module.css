@@ -16,9 +16,9 @@
 @media (max-width: 767px) {
     .scheduleTable th:first-child,
     .scheduleTable td:first-child {
-        width: var(--table-template-cell-width-mobile);
-        min-width: var(--table-template-cell-width-mobile);
-        max-width: var(--table-template-cell-width-mobile);
+        width: var(--table-template-cell-width);
+        min-width: var(--table-template-cell-width);
+        max-width: var(--table-template-cell-width);
     }
     .scheduleTable th:not(:first-child),
     .scheduleTable td:not(:first-child) {
