@@ -41,27 +41,33 @@ export async function updateDailyTeacherCellAction(
             return authError as ActionResponse;
         }
 
-        // TODO: validation that only teacher with regular role can update their data
+        // Build update payload (minimal change: handle instructions conditionally)
+        const updateData: Partial<NewDailyScheduleSchema> = {
+            date: getDateReturnString(scheduleData.date),
+            day: scheduleData.day,
+            hour: scheduleData.hour,
+            columnId: scheduleData.columnId,
+            schoolId: school.id,
+            classId: classData.id,
+            subjectId: subject.id,
+            issueTeacherId: issueTeacher?.id,
+            issueTeacherType: issueTeacherType,
+            subTeacherId: subTeacher?.id || null,
+            eventTitle: eventTitle,
+            event: event || null,
+            position: position,
+        };
+
+        // Only update instructions if it was provided; otherwise leave DB value as-is
+        if (instructions !== undefined) {
+            updateData.instructions =
+                typeof instructions === "string" && instructions.trim() === "" ? null : instructions;
+        }
 
         const updatedEntry = await executeQuery(async () => {
             return await db
                 .update(schema.dailySchedule)
-                .set({
-                    date: getDateReturnString(scheduleData.date),
-                    day: scheduleData.day,
-                    hour: scheduleData.hour,
-                    columnId: scheduleData.columnId,
-                    schoolId: school.id,
-                    classId: classData.id,
-                    subjectId: subject.id,
-                    issueTeacherId: issueTeacher?.id,
-                    issueTeacherType: issueTeacherType,
-                    subTeacherId: subTeacher?.id || null,
-                    eventTitle: eventTitle,
-                    event: event || null,
-                    position: position,
-                    instructions: instructions || null,
-                } as Partial<NewDailyScheduleSchema>)
+                .set(updateData)
                 .where(eq(schema.dailySchedule.id, id))
                 .returning();
         });
@@ -94,7 +100,7 @@ export async function updateDailyTeacherCellAction(
                 eventTitle,
                 event,
                 position,
-                instructions,
+                instructions: updateSchedule.instructions,
             } as DailyScheduleType,
         };
     } catch (error) {
