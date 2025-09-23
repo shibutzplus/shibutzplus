@@ -9,12 +9,7 @@ import { DailyScheduleType } from "@/models/types/dailySchedule";
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { selectSelectedDate } from "@/services/portalTeacherService";
-import {
-    getSessionPortalTable,
-    getSessionTeacher,
-    setSessionPortalTable,
-    setSessionTeacher,
-} from "@/lib/sessionStorage";
+import { getSessionPortalTable, getSessionTeacher, setSessionPortalTable, setSessionTeacher, } from "@/lib/sessionStorage";
 import { getSchoolCookie } from "@/lib/cookies";
 import { getDateReturnString } from "@/utils/time";
 import { PortalSchedule } from "@/models/types/portalSchedule";
@@ -44,6 +39,7 @@ interface PortalContextType {
         error: string;
     }>;
     mainPublishTable: DailyScheduleType[];
+    refreshPublishDates: () => Promise<{ success: boolean; error: string }>;
 }
 
 const PortalContext = createContext<PortalContextType | undefined>(undefined);
@@ -243,6 +239,41 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         }
     };
 
+    // Refresh the published dates options and selectedDate
+    const refreshPublishDates = async (): Promise<{ success: boolean; error: string }> => {
+        if (!teacher) {
+            setPublishDatesOptions([]);
+            setSelectedDayId("");
+            return { success: false, error: "" };
+        }
+
+        setIsPortalLoading(true);
+        try {
+            const response = await getSchoolAction(teacher.schoolId);
+            if (response.success && response.data) {
+                const options = getPublishedDatesOptions(response.data.publishDates);
+                setPublishDatesOptions(options);
+
+                // Pick a valid selected date from the refreshed list (or clear if empty)
+                const nextSelected = options.length > 0 ? (selectSelectedDate(options)?.value || "") : "";
+                setSelectedDayId(nextSelected);
+
+                return { success: true, error: "" };
+            } else {
+                setPublishDatesOptions([]);
+                setSelectedDayId("");
+                return { success: false, error: response.message || "" };
+            }
+        } catch (err) {
+            console.error("Error refreshing publish dates:", err);
+            setPublishDatesOptions([]);
+            setSelectedDayId("");
+            return { success: false, error: "" };
+        } finally {
+            setIsPortalLoading(false);
+        }
+    };
+
     const value: PortalContextType = {
         selectedDate,
         handleDayChange,
@@ -258,6 +289,7 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         fetchPortalScheduleDate,
         fetchPublishScheduleData,
         mainPublishTable,
+        refreshPublishDates,
     };
 
     return <PortalContext.Provider value={value}>{children}</PortalContext.Provider>;

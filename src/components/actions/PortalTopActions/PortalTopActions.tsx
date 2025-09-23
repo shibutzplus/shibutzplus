@@ -22,6 +22,7 @@ const PortalTopActions: React.FC = () => {
         handleDayChange,
         fetchPortalScheduleDate,
         fetchPublishScheduleData,
+        refreshPublishDates,
     } = usePortal();
 
     const pushToTeacherPortalWrite = () => {
@@ -35,17 +36,19 @@ const PortalTopActions: React.FC = () => {
     };
 
     const handleRefresh = async () => {
+        // Refresh the dates dropdown so the selector reflects latest publish dates
+        const datesRes = await refreshPublishDates();
+
         let response;
         if (pathname.includes(router.teacherPortal.p)) {
             response = await fetchPortalScheduleDate();
         } else {
             response = await fetchPublishScheduleData();
         }
-        if (!response.success && response.error !== "") {
+
+        if ((!response.success && response.error !== "") || (!datesRes.success && datesRes.error !== "")) {
             errorToast("בעיה בטעינת המידע, נסו שוב");
         }
-
-        // Bug: Need to refresh also the dates dropdown (Lior/Roy) 
     };
 
     return (

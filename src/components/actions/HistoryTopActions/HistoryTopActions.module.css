@@ -1,33 +1,27 @@
 .actionsContainer {
-  margin-right: 10px;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+    margin-inline-start: 30px;
+    width: 100%;
+    display: flex;
+    align-items: center;
 }
 
-.selectContainer {
-  flex-shrink: 0;
+.dateInput {
+    font-family: inherit;
+    padding: 6px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: transparent;
+    color: inherit;
 }
 
-.yearSelect {
-  min-width: 150px;
-  width: auto;
-}
-
-.monthSelect {
-  min-width: 120px;
-  width: auto;
-}
-
-.daySelect {
-  min-width: 70px;
-  width: auto;
+.dateInput:focus {
+    outline: none;
+    background: transparent;
 }
 
 @media (min-width: 768px) {
-  .actionsContainer {
-    margin-right: 0;
-    gap: 1em;
-  }
+    .dateInput {
+        font-size: 16px;
+    }
 }

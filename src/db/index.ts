@@ -3,12 +3,6 @@ import { neonConfig } from "@neondatabase/serverless";
 import * as schema from "./schema";
 import { sql, executeQuery } from "./connectionPool";
 
-// Configure Neon for better connection management
-neonConfig.fetchConnectionCache = true;
-neonConfig.useSecureWebSocket = false;
-neonConfig.pipelineConnect = false;
-neonConfig.pipelineTLS = false;
-
 // Narrow, stable DB type that doesn't encode $client generics
 type DB = NeonHttpDatabase<typeof schema>;
 

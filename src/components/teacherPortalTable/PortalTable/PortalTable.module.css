@@ -34,9 +34,9 @@
 
 .scheduleTable th:nth-child(1),
 .scheduleTable td:nth-child(1) {
-    width: var(--table-template-cell-width-mobile);
-    min-width: var(--table-template-cell-width-mobile);
-    max-width: var(--table-template-cell-width-mobile);
+    width: var(--table-template-cell-width);
+    min-width: var(--table-template-cell-width);
+    max-width: var(--table-template-cell-width);
     text-align: center;
 }
 

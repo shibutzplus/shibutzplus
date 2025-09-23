@@ -1,0 +1,25 @@
+.container {
+    padding: 0;
+    width: 100%;
+    height: auto;
+    display: block;
+    background-color: var(--school-section-bg);
+}
+
+.whiteBox {
+    background-color: var( --background);
+    width: 100%;
+    height: auto;
+    border: var(--border-primary);
+}
+
+@media (max-width: 767px) {
+    .whiteBox {
+        overflow-x: auto;
+    }
+
+    .whiteBox table {
+        min-width: 700px;
+        width: max-content;
+    }
+}

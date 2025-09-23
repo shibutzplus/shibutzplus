@@ -359,29 +359,15 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         dailyScheduleId: string,
         data: { event?: string; subTeacher?: TeacherType },
     ) => {
-        if (!school) return;
-        const dailyCellData = addNewTeacherValueCell(
-            school,
-            cellData,
-            columnId,
-            selectedDate,
-            type,
-            data.subTeacher,
-            data.event,
-        );
+        if (!school)
+            return;
+
+        const dailyCellData = addNewTeacherValueCell(school, cellData, columnId, selectedDate, type, data.subTeacher, data.event,);
         if (dailyCellData) {
             const response = await updateDailyTeacherCellAction(dailyScheduleId, dailyCellData);
             if (response?.success && response.data) {
-                const updatedSchedule = updateAddCell(
-                    response.data.id,
-                    mainDailyTable,
-                    selectedDate,
-                    cellData,
-                    columnId,
-                    data,
-                );
+                const updatedSchedule = updateAddCell(response.data.id, mainDailyTable, selectedDate, cellData, columnId, data,);
                 setMainAndStorageTable(updatedSchedule);
-
                 return response.data;
             }
         }
@@ -395,27 +381,12 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         dailyScheduleId: string,
     ) => {
         if (!school) return;
-        const dailyCellData = addNewTeacherValueCell(
-            school,
-            cellData,
-            columnId,
-            selectedDate,
-            type,
-            undefined,
-            undefined,
-        );
+        const dailyCellData = addNewTeacherValueCell(school, cellData, columnId, selectedDate, type, undefined, undefined,);
 
         if (dailyCellData) {
             const response = await updateDailyTeacherCellAction(dailyScheduleId, dailyCellData);
             if (response?.success && response.data) {
-                const updatedSchedule = updateAddCell(
-                    response.data.id,
-                    mainDailyTable,
-                    selectedDate,
-                    cellData,
-                    columnId,
-                    { subTeacher: undefined, event: undefined },
-                );
+                const updatedSchedule = updateAddCell(response.data.id, mainDailyTable, selectedDate, cellData, columnId, { subTeacher: undefined, event: undefined },);
                 setMainAndStorageTable(updatedSchedule);
                 return response.data;
             }
@@ -424,7 +395,6 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     };
 
     // -- Event Column -- //
-
     const populateEventColumn = async (columnId: string, eventTitle: string) => {
         const alreadyExists = mainDailyTable[selectedDate]?.[columnId];
         let updatedSchedule: DailySchedule = { ...mainDailyTable };

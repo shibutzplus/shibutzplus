@@ -1,6 +1,6 @@
 .scheduleCell {
     position: relative;
-    padding: 8px;
+    padding: 4px;
     border: var(--border-primary);
     vertical-align: top;
     min-width: var(--annual-table-width);
