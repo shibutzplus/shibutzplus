@@ -71,7 +71,7 @@ const PortalWriteRow: React.FC<PortalWriteRowProps> = ({ hour, row }) => {
                         value={instructions}
                         onChangeHTML={setInstructions}
                         onBlurHTML={handleChange}
-                        placeholder="הזינו כאן את חומרי הלימוד"
+                        placeholder="חומר הלימוד"
                         minHeight={80}
                     />
                 ) : null}
