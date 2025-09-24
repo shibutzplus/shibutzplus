@@ -36,7 +36,6 @@ const PortalTopActions: React.FC = () => {
     };
 
     const handleRefresh = async () => {
-        // Refresh the dates dropdown so the selector reflects latest publish dates
         const datesRes = await refreshPublishDates();
 
         let response;

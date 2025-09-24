@@ -37,16 +37,16 @@ const PortalWriteRow: React.FC<PortalWriteRowProps> = ({ hour, row }) => {
             if (teacher?.id === row?.issueTeacher?.id) {
                 if (row?.subTeacher) {
                     // If I have sub teacher
-                    return `מ״מ: ${row?.subTeacher?.name}`;
+                    return `${row?.subTeacher?.name}`;
                 } else if (row?.event) {
-                    // If I have activity
+                    // If I have event
                     return row?.event;
                 } else {
                     return ""
                 }
             } else {
                 // Else, Im the sub teacher
-                return `מחליף את: ${row?.issueTeacher?.name}`;
+                return `במקום: ${row?.issueTeacher?.name}`;
             }
         } else {
             return "";
@@ -71,7 +71,7 @@ const PortalWriteRow: React.FC<PortalWriteRowProps> = ({ hour, row }) => {
                         value={instructions}
                         onChangeHTML={setInstructions}
                         onBlurHTML={handleChange}
-                        placeholder="הזינו כאן את חומרי הלימוד"
+                        placeholder="חומר הלימוד"
                         minHeight={80}
                     />
                 ) : null}

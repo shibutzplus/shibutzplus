@@ -33,7 +33,7 @@ const TeacherPortalPage: NextPage = () => {
     useEffect(() => {
         const fetchData = async () => {
             if (blockRef.current) {
-                const response = await fetchPortalScheduleDate(true);
+                const response = await fetchPortalScheduleDate();
                 if (response.success) blockRef.current = false;
                 else if (response.error !== "") {
                     errorToast(response.error);

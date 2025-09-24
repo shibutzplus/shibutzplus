@@ -20,7 +20,7 @@ const SubstituteRow: React.FC<SubstituteRowProps> = ({ teacher, handleDeleteTeac
             onUpdate={(id, data) =>
                 updateTeacher(id, {
                     name: (data.name ?? teacher.name) as string,
-                    role: TeacherRoleValues.REGULAR as import("@/models/types/teachers").TeacherRole,
+                    role: TeacherRoleValues.SUBSTITUTE as import("@/models/types/teachers").TeacherRole,
                     schoolId: teacher.schoolId,
                 })
             }
@@ -29,7 +29,7 @@ const SubstituteRow: React.FC<SubstituteRowProps> = ({ teacher, handleDeleteTeac
             getId={(t) => t.id}
             getInitialValue={(t) => t.name}
             updateExtraFields={() => ({
-                role: TeacherRoleValues.REGULAR as import("@/models/types/teachers").TeacherRole,
+                role: TeacherRoleValues.SUBSTITUTE as import("@/models/types/teachers").TeacherRole,
                 schoolId: teacher.schoolId,
             })}
             link={generateSchoolUrl(teacher.schoolId, teacher.id)}
