@@ -8,7 +8,6 @@ export const SESSION_KEYS = {
     DAILY_TABLE_DATA: "daily_schedule_data",
     PUBLISH_DATES: "publish_dates",
     TEACHERS_DATA: "teachers_data",
-    PORTAL_TABLE_DATA: "portal_table_data",
 };
 
 export const getSessionStorage = <T>(key: string) => {
@@ -108,14 +107,3 @@ export const clearSessionTeachers = () => {
     return removeSessionStorage(SESSION_KEYS.TEACHERS_DATA);
 };
 
-export const getSessionPortalTable = () => {
-    return getSessionStorage<PortalSchedule>(SESSION_KEYS.PORTAL_TABLE_DATA);
-};
-
-export const setSessionPortalTable = (portalTable: PortalSchedule) => {
-    return setSessionStorage(SESSION_KEYS.PORTAL_TABLE_DATA, portalTable);
-};
-
-export const clearSessionPortalTable = () => {
-    return removeSessionStorage(SESSION_KEYS.PORTAL_TABLE_DATA);
-};

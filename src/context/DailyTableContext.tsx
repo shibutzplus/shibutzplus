@@ -153,7 +153,6 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         return getTomorrowOption();
     });
 
-    // TODO: fix this
     // Handle manual day change from dropdown
     const handleDayChange = (value: string) => setSelectedDayId(value);
 

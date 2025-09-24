@@ -46,7 +46,7 @@ const PortalWriteRow: React.FC<PortalWriteRowProps> = ({ hour, row }) => {
                 }
             } else {
                 // Else, Im the sub teacher
-                return `מחליף את: ${row?.issueTeacher?.name}`;
+                return `במקום: ${row?.issueTeacher?.name}`;
             }
         } else {
             return "";

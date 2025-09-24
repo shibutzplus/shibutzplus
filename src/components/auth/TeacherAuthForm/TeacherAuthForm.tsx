@@ -48,7 +48,7 @@ const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({ schoolId, teachers, i
                         options={teachers}
                         value={selectedTeacher}
                         onChange={setSelectedTeacher}
-                        placeholder={isLoadingTeachers ? "טוען רשימת מורים..." : "בחרו את שמכם כדי שנוכל להמשיך"}
+                        placeholder={isLoadingTeachers ? "טוען רשימת מורים..." : "בחרו את שמכם"}
                         isSearchable={false}
                         isDisabled={isLoadingTeachers}
                         hasBorder
