@@ -50,6 +50,7 @@ export const sortColumnsByIssueTeacherType = (filteredCols: ColumnDef<TeacherRow
     return sortedCols;
 };
 
+// DailySchedule Dropdown: Build grouped teacher options (substitutes, available, unavailable) for a specific day/hour
 export const sortDailyTeachers = (
     allTeachers: TeacherType[],
     mapAvailableTeachers: AvailableTeachers,
@@ -120,11 +121,24 @@ export const sortDailyTeachers = (
         }
     }
 
+    // Build a Set of all teacher IDs that appear anywhere in the annual (yearly) schedule
+    const annualTeacherIds = new Set<string>();
+    Object.values(mapAvailableTeachers || {}).forEach((hoursMap) => {
+        Object.values(hoursMap || {}).forEach((ids) => {
+            ids.forEach((id) => annualTeacherIds.add(id));
+        });
+    });
+
+    // Regular teachers who have zero hours in the annual schedule
+    const extraRegularTeachers = allTeachers.filter(
+        (t) => t.role === "regular" && !annualTeacherIds.has(t.id)
+    );
+
     // TODO: if array is empty, the lable wont show (react-select functionality)
     const groups: GroupOption[] = [
         {
             label: "הסרת ממלא מקום",
-            options: [{ value: EmptyValue, label: "" }],
+            options: [{ value: EmptyValue, label: "🗑️" }],
         },
         {
             label: "מורים ממלאי מקום", // Substitute
@@ -134,27 +148,33 @@ export const sortDailyTeachers = (
             })),
         },
         {
-            label: "מורים פנויים", // Available
+            label: "מורים פנויים", // Available Teachers
             options: availableTeachers.map((teacher) => ({
                 value: teacher.id,
                 label: teacher.name,
             })),
         },
         {
-            label: "אפשרויות נוספות",
-            options: dailySelectActivity,
-        },
-        {
-            label: "מורים לא פנויים", // Unavailable
+            label: "מורים לא פנויים", // Unavailable Teachers
             options: unavailableTeachers.map((teacher) => ({
                 value: teacher.id,
                 label: teacher.name,
             })),
         },
+        {
+            label: "מורים נוספים בתקן", // Teachers without fixed hours in the schedule
+            options: extraRegularTeachers.map((t) => ({ value: t.id, label: t.name })),
+        },
+        {
+            label: "אפשרויות נוספות",   // Additional Options like Trip, Go home, etc.
+            options: dailySelectActivity,
+        },
     ];
     return groups;
 };
 
+
+// Annual Schedule: Build grouped teacher options (available vs unavailable) for a class at a specific day/hour in the annual schedule
 export const sortAnnualTeachers = (
     allTeachers: TeacherType[],
     classes: ClassType[],
@@ -214,6 +234,7 @@ export const sortAnnualTeachers = (
     return groups;
 };
 
+// DailySchedule Header Dropdown: Filter header teacher options to avoid duplicates across the daily schedule
 export const filterDailyHeaderTeachers = (
     teachers: TeacherType[] | undefined,
     alreadySelectedTeachers: DailySchedule,
