@@ -1,13 +1,12 @@
 import { DailyTableLimitNumber, PublishLimitNumber } from "@/models/constant/daily";
 import { DailySchedule } from "@/models/types/dailySchedule";
-import { PortalSchedule } from "@/models/types/portalSchedule";
 import { TeacherType } from "@/models/types/teachers";
 
 // Session keys
 export const SESSION_KEYS = {
-    DAILY_TABLE_DATA: "daily_schedule_data",
-    PUBLISH_DATES: "publish_dates",
-    TEACHERS_DATA: "teachers_data",
+    DAILY_TABLE_DATA: "daily_schedule_data",    // Manager Portal
+    PUBLISH_DATES: "publish_dates",             // Manager Portal
+    TEACHERS_DATA: "teachers_data",             // Teachers Portal
 };
 
 export const getSessionStorage = <T>(key: string) => {
