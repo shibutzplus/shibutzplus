@@ -46,3 +46,19 @@
 .editor:focus {
     outline: none;
 }
+
+.placeholder {
+    color: var(--placeholder-color);
+}
+.placeholderImportant {
+    animation: pulseColor 2s ease-in-out infinite;
+}
+
+@keyframes pulseColor {
+    0%,
+    100% {
+        color: black;
+    }
+    50% {
+        color: var(--placeholder-color);
+    }}
