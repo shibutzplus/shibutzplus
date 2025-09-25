@@ -78,7 +78,7 @@ const PortalTopActions: React.FC = () => {
                 <div className={styles.topButtonsContainer}>
                     <button
                         type="button"
-                        aria-label="הזנת חומרי לימוד"
+                        aria-label="המערכת שלי"
                         onClick={pushToTeacherPortalWrite}
                         className={`${styles.topBtn} ${pathname.includes(router.teacherPortal.p) ? styles.active : ""}`}
                     >

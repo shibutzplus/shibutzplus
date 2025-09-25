@@ -145,7 +145,7 @@
 
     .hourHeader,
     .hourCell {
-        width: calc(var(--table-template-cell-width) - 10px);
+        width: calc(var(--table-template-cell-width) - 8px);
     }
 
     .cellContent {
