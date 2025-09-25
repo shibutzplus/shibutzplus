@@ -12,3 +12,8 @@
 .subTeacherName {
     font-weight: bold;
 }
+
+.missingSubTeacherName {
+    font-weight: bold;
+    color: red;
+}
