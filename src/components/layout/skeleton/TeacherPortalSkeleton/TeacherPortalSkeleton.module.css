@@ -159,7 +159,7 @@
 /* Desktop */
 @media (min-width: 768px) {
     .tableContainer {
-        height: calc(100dvh - var(--header-height) - 4px);
+        height: calc(100dvh - var(--header-height) - 8px);
     }
 
     .scheduleTable thead th {

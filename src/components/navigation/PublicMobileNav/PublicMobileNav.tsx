@@ -31,7 +31,7 @@ const PublicMobileNav: React.FC = () => {
         <nav className={styles.mobileNav} role="navigation" aria-label="Bottom navigation">
             <button
                 type="button"
-                aria-label="הזנת חומרי לימוד"
+                aria-label="המערכת שלי"
                 onClick={pushToTeacherPortalWrite}
                 className={`${styles.item} ${pathname.includes(router.teacherPortal.p) ? styles.active : ""}`}
             >

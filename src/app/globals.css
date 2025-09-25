@@ -65,14 +65,14 @@
     --black-shadow-background: #00000080;
 
     /* Size */
-    --header-height: 60px;
+    --header-height: 50px;
     --nav-width: 240px;
 
     --annual-table-width: 180px;
     --annual-template-width: 70px;
 
-    --table-header-min-height: 60px;
-    --table-header-height: 60px;
+    --table-header-min-height: 50px;
+    --table-header-height: 50px;
 
     --table-template-cell-width: 30px;
     --table-cell-min-width: 300px;

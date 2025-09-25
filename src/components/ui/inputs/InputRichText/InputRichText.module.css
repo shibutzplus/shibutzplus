@@ -1,15 +1,14 @@
 .wrapper {
-  width: 100%;
-  height: 100%;
-  padding: 6px 6px;
-  box-sizing: border-box;
-  position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 6px 0px;
+    box-sizing: border-box;
+    position: relative;
 }
 
 .placeholder {
     position: absolute;
     top: 6px;
-    right: 6px;
     color: var(--placeholder-color);
     pointer-events: none;
     font-size: 16px;
@@ -19,7 +18,7 @@
 }
 
 .wrapper div {
-  height: 100%;
+    height: 100%;
 }
 
 .editor {
@@ -48,3 +47,18 @@
     outline: none;
 }
 
+.placeholder {
+    color: var(--placeholder-color);
+}
+.placeholderImportant {
+    animation: pulseColor 2s ease-in-out infinite;
+}
+
+@keyframes pulseColor {
+    0%,
+    100% {
+        color: black;
+    }
+    50% {
+        color: var(--placeholder-color);
+    }}

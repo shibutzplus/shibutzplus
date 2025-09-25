@@ -35,17 +35,16 @@ export const HistoryTableProvider: React.FC<HistoryTableProviderProps> = ({ chil
     const pathname = usePathname();
     const dateQ = searchParams.get("date"); // YYYY-MM-DD or null
 
-    // default yesterday
     const now = new Date();
-    const yday = new Date(now);
-    yday.setDate(now.getDate() - 1);
+    const tday = new Date(now);
 
-    const currentYear = `${yday.getFullYear()}`;
-    const ydayMonth = yday.getMonth() + 1; // 1..12
-    const ydayDay = yday.getDate();
+    const currentYear = `${tday.getFullYear()}`;
+    const tdayMonth = tday.getMonth() + 1; // 1..12
+    const tdayDay = tday.getDate();
 
     // if yesterday is in July or August, fallback to September
-    const initialMonth = ydayMonth === 7 || ydayMonth === 8 ? "9" : `${ydayMonth}`;
+    const initialMonth = tdayMonth === 7 || tdayMonth === 8 ? "9" : `${tdayMonth}`;
+
 
     // derive initial state from ?date= if valid; otherwise fall back to defaults
     const fromQuery = dateQ && isYYYYMMDD(dateQ) ? dateQ : null;
@@ -55,7 +54,7 @@ export const HistoryTableProvider: React.FC<HistoryTableProviderProps> = ({ chil
 
     const [selectedYear, setSelectedYear] = useState<string>(qYear || currentYear);
     const [selectedMonth, setSelectedMonth] = useState<string>(qMonth || initialMonth);
-    const [selectedDay, setSelectedDay] = useState<string>(qDay || `${ydayDay}`);
+    const [selectedDay, setSelectedDay] = useState<string>(qDay || `${tdayDay}`);
 
     const yearOptions: SelectOption[] = useMemo(
         () => [{ value: currentYear, label: currentYear }],

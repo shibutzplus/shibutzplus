@@ -16,7 +16,7 @@
 }
 
 .scheduleTable thead th {
-    height: 60px;
+    height: 50px;
 }
 
 .scheduleTable td {
@@ -90,6 +90,6 @@
 /* Desktop */
 @media (min-width: 768px) {
     .tableContainer {
-        height: calc(100dvh - var(--header-height) - 4px);
+        height: calc(100dvh - var(--header-height) - 8px);
     }
 }

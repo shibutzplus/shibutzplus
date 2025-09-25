@@ -1,5 +1,4 @@
 .content {
-    height: calc(100dvh - 64px);
     overflow: hidden;
     display: flex;
 }
@@ -26,7 +25,7 @@
 }
 
 .scheduleTable thead th {
-    height: 60px;
+    height: 50px;
 }
 
 .scheduleTable td {
@@ -80,8 +79,7 @@
     font-weight: bold;
     text-align: center;
     border: var(--border-primary);
-    min-width: 220px;
-    padding: 10px;
+    min-width: 200px;
     background-color: var(--table-headers-color);
 }
 
@@ -155,7 +153,7 @@
 /* Desktop */
 @media (min-width: 768px) {
     .tableContainer {
-        height: calc(100dvh - var(--header-height) - 4px);
+        height: calc(100dvh - var(--header-height) - 8px);
     }
 
     .thSkeletonName {

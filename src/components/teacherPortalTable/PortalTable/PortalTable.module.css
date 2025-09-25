@@ -1,3 +1,4 @@
+/* Mobile First */
 .tableContainer {
     flex: 1 1 auto;
     min-height: 0;
@@ -16,8 +17,7 @@
     background: var(--table-headers-color);
     font-weight: 600;
     font-size: 16px;
-    line-height: 44px;
-    padding: 8px 12px;
+    line-height: 50px;
     border-bottom: var(--border-primary);
     border-inline-start: var(--border-inline-start);
     white-space: nowrap;
@@ -45,6 +45,8 @@
 .scheduleTable td:nth-child(2) {
     width: 1%;
     white-space: nowrap;
+    max-width: 125px;
+    overflow: hidden;
 }
 
 .scheduleTable th:nth-child(3),
@@ -55,33 +57,6 @@
 /* Desktop */
 @media (min-width: 768px) {
     .tableContainer {
-        height: calc(100dvh - var(--header-height) - 4px);
-    }
-
-    .scheduleTable thead th {
-        line-height: 40px;
-        padding: 6px 10px;
-    }
-
-    .scheduleTable td {
-        padding: 2px 6px;
-    }
-
-    .scheduleTable th:nth-child(1),
-    .scheduleTable td:nth-child(1) {
-        width: var(--table-template-cell-width);
-        min-width: var(--table-template-cell-width);
-        max-width: var(--table-template-cell-width);
-    }
-
-    .scheduleTable th:nth-child(2),
-    .scheduleTable td:nth-child(2) {
-        width: 1%;
-        white-space: nowrap;
-    }
-
-    .scheduleTable th:nth-child(3),
-    .scheduleTable td:nth-child(3) {
-        width: auto;
+        height: calc(100dvh - var(--header-height) - 5px);
     }
 }
