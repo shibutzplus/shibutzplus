@@ -21,6 +21,7 @@ import {
     MdPersonAdd,
     MdPerson,
     MdSwapHoriz,
+    MdOpenInNew,
 } from "react-icons/md";
 import { FaPlus, FaList } from "react-icons/fa6";
 import { FaSave, FaLink, FaShareAlt } from "react-icons/fa";
@@ -52,6 +53,7 @@ const Icons = {
     link: FaLink,
     logOut: IoLogOutOutline,
     menu: IoMenuOutline,
+    newWindow: MdOpenInNew,
     people: IoPeopleOutline,
     personCircle: IoPersonCircleOutline,
     plus: FaPlus,

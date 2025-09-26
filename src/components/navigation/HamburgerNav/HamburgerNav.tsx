@@ -14,7 +14,6 @@ import { usePathname, useRouter } from "next/navigation"
 import router from "../../../routes"
 import { clearSessionStorage } from "@/lib/sessionStorage"
 
-
 type HamburgerNavProps = {
     isOpen: boolean
     onClose: () => void
@@ -26,45 +25,52 @@ interface ILink {
     p: string
     Icon: React.ReactNode
     withDivider?: boolean
+    withExternal?: boolean
 }
-
 const links: ILink[] = [
     {
         name: routePath.dailySchedule.title,
         p: routePath.dailySchedule.p,
         Icon: <Icons.calendar size={24} />,
         withDivider: true,
+        withExternal: false,
     },
     {
         name: routePath.substitute.title,
         p: routePath.substitute.p,
         Icon: <Icons.substituteTeacher size={24} />,
+        withExternal: false,
     },
     {
         name: routePath.teachers.title,
         p: routePath.teachers.p,
         Icon: <Icons.teacher size={24} />,
+        withExternal: false,
     },
     {
         name: routePath.subjects.title,
         p: routePath.subjects.p,
         Icon: <Icons.book size={24} />,
+        withExternal: false,
     },
     {
         name: routePath.classes.title,
         p: routePath.classes.p,
         Icon: <Icons.chair size={24} />,
         withDivider: true,
+        withExternal: false,
     },
     {
         name: routePath.history.title,
         p: routePath.history.p,
         Icon: <Icons.history size={24} />,
+        withExternal: true,
     },
     {
         name: routePath.annualSchedule.title,
         p: routePath.annualSchedule.p,
         Icon: <Icons.calendar size={24} />,
+        withExternal: true,
     },
 ]
 
@@ -75,16 +81,38 @@ type LinkComponentProps = {
 }
 
 const LinkComponent: React.FC<LinkComponentProps> = ({ link, onClose, currentPath }) => {
-    const isActive = currentPath.startsWith(link.p) // include sub routes
+    const isActive = currentPath.startsWith(link.p)
+
+    // Open link in a new tab without closing the menu
+    const handleOpenNewTab = (e: React.MouseEvent) => {
+        e.stopPropagation()
+        e.preventDefault()
+        window.open(link.p, "_blank", "noopener,noreferrer")
+    }
+
     return (
-        <Link
-            href={link.p}
-            className={`${styles.navLink} ${isActive ? styles.active : ""}`}
-            onClick={onClose}
-        >
-            {link.Icon}
-            <span>{link.name}</span>
-        </Link>
+        <div className={styles.linkWrapper}>
+            <Link
+                href={link.p}
+                className={`${styles.navLink} ${isActive ? styles.active : ""}`}
+                onClick={onClose}
+            >
+                {link.Icon}
+                <span>{link.name}</span>
+            </Link>
+
+            {link.withExternal && (
+                <button
+                    type="button"
+                    className={styles.newTabBtn}
+                    onClick={handleOpenNewTab}
+                    aria-label={`Open ${link.name} in new tab`}
+                    title="פתח בטאב חדש"
+                >
+                    <Icons.newWindow size={18} style={{ color: "#707070ff" }} />
+                </button>
+            )}
+        </div>
     )
 }
 

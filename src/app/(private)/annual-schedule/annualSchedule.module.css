@@ -1,3 +1,4 @@
+/* Desktop First */
 .container {
     padding: 0;
     width: 100%;
@@ -10,9 +11,9 @@
     background-color: var( --background);
     width: 100%;
     height: auto;
-    border: var(--border-primary);
 }
 
+/* Mobile */
 @media (max-width: 767px) {
     .whiteBox {
         overflow-x: auto;
