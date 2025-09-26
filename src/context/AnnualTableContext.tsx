@@ -101,7 +101,17 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
     }, [queueRows]);
 
     const classesSelectOptions = () => {
-        return createSelectOptions<ClassType>(sortByHebrewName(classes || []));
+        const opts = createSelectOptions<ClassType>(sortByHebrewName(classes || []));
+        return [{ value: "", label: "כל הכיתות" }, ...opts];
+    };
+
+    const teachersSelectOptions = () => {
+        const regular = (teachers || []).filter((t) => t.role === "regular");
+        return createSelectOptions<TeacherType>(sortByHebrewName(regular));
+    };
+
+    const handleTeacherChange = (value: string) => {
+        setSelectedTeacherId(value || "");
     };
 
     const teachersSelectOptions = () => {

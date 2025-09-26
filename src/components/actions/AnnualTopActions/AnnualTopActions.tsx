@@ -38,6 +38,19 @@ const AnnualTopActions: React.FC = () => {
                     isClearable
                 />
             </div>
+
+            <div className={styles.teacherSelect}>
+                <DynamicInputSelect
+                    options={teachersSelectOptions()}
+                    value={selectedTeacherId}
+                    onChange={handleTeacherChange}
+                    isSearchable
+                    isDisabled={isSaving || isLoading}
+                    placeholder="בחר מורה..."
+                    hasBorder
+                    isClearable
+                />
+            </div>
         </section>
     );
 };
