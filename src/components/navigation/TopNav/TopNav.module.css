@@ -33,7 +33,7 @@
 .routeTitle {
     font-size: 14px;
     font-weight: 600;
-    margin: 0;
+    margin: 2;
     color: var(--title-color);
     min-width: 80px;
     max-width: 120px;

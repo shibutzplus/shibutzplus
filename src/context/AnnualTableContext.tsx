@@ -47,6 +47,11 @@ interface AnnualTableContextType {
         method: SelectMethod,
         newElementObj?: TeacherType | SubjectType,
     ) => Promise<void>;
+
+    teachersSelectOptions: () => SelectOption[];
+    selectedTeacherId: string;
+    handleTeacherChange: (value: string) => void;
+    canShowTable: boolean;
 }
 
 const AnnualTableContext = createContext<AnnualTableContextType | undefined>(undefined);
@@ -70,6 +75,7 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
 
     const [queueRows, setQueueRows] = useState<AnnualScheduleRequest[]>([]);
     const [schedule, setSchedule] = useState<WeeklySchedule>({});
+    const [selectedTeacherId, setSelectedTeacherId] = useState<string>("");
 
     useInitAnnualData({
         annualScheduleTable,
@@ -95,7 +101,17 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
     }, [queueRows]);
 
     const classesSelectOptions = () => {
-        return createSelectOptions<ClassType>(sortByHebrewName(classes || []));
+        const opts = createSelectOptions<ClassType>(sortByHebrewName(classes || []));
+        return [{ value: "", label: "כל הכיתות" }, ...opts];
+    };
+
+    const teachersSelectOptions = () => {
+        const regular = (teachers || []).filter((t) => t.role === "regular");
+        return createSelectOptions<TeacherType>(sortByHebrewName(regular));
+    };
+
+    const handleTeacherChange = (value: string) => {
+        setSelectedTeacherId(value || "");
     };
 
     const addNewAnnualScheduleItem = async (newScheduleItem: AnnualScheduleRequest) => {
@@ -131,8 +147,10 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
     };
 
     const handleClassChange = (value: string) => {
-        setSelectedClassId(value);
+        setSelectedClassId(value || "");
     };
+
+
 
     const addToQueue = (rows: AnnualScheduleRequest[]) => {
         setQueueRows((prev) => (Array.isArray(prev) ? [...prev, ...rows] : [...rows]));
@@ -174,7 +192,6 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
         let newSchedule = { ...schedule };
         newSchedule = setNewScheduleTemplate(newSchedule, selectedClassId, day, hour);
 
-        // If not already filled, fill it and get the IDs
         newSchedule[selectedClassId][day][hour][type] = elementIds;
         const teacherIds = schedule[selectedClassId][day][hour].teachers;
         const subjectIds = schedule[selectedClassId][day][hour].subjects;
@@ -213,6 +230,9 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
         addToQueue(requests);
     };
 
+    // guard: show table only if at least class selected (not "all") OR teacher selected
+    const canShowTable = (selectedClassId !== "") || !!selectedTeacherId;
+
     const value: AnnualTableContextType = {
         annualScheduleTable,
         selectedClassId,
@@ -225,6 +245,10 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
         schedule,
         setSchedule,
         handleAddNewRow,
+        teachersSelectOptions,
+        selectedTeacherId,
+        handleTeacherChange,
+        canShowTable,
     };
 
     return <AnnualTableContext.Provider value={value}>{children}</AnnualTableContext.Provider>;

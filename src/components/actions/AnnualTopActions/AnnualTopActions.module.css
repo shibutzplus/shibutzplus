@@ -1,63 +1,34 @@
-/* Mobile */
+/* Desktop (first) */
 .actionsContainer {
-    margin-right: 10px;
+    margin-right: 0;
     width: 100%;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 5px;
+    gap: 3em;
 }
 
-.selectContainer {
-    min-width: fit-content;
-    width: 180px;
+.selectClass {
+    min-width: 150px;
+    width: fit-content;
 }
 
-.btnContainer {
-    display: flex;
-    align-items: center;
-    gap: 1em;
+.teacherSelect {
+    min-width: 200px;
+    width: fit-content;
 }
 
-.loading {
-    position: fixed;
-    bottom: 10;
-    left: 11;
-    background-color: var(--background);
-    padding: 5px 7px;
-    border-radius: 5px;
-    box-shadow: var(--header-box-shadow);
-}
-
-.link {
-    display: none;
-}
-
-/* Desktop */
-@media (min-width: 768px) {
+/* Mobile */
+@media (max-width: 767px) {
     .actionsContainer {
-        margin-right: 0;
-        gap: 3em;
+        gap: 5px;
+    }
+    .selectClass {
+        min-width: fit-content;
+        width: 120px;
     }
 
-    .link {
-        display: block;
-        text-decoration: underline;
-        color: var(--description-text);
-        cursor: pointer;
-    }
-
-    .link:hover {
-        color: var(--description-hover-text);
-    }
-
-    .loading {
-        position: relative;
-        top: 0;
-        left: 0;
-        background-color: transparent;
-        padding: unset;
-        border-radius: unset;
-        box-shadow: unset;
+    .teacherSelect {
+        min-width: fit-content;
+        width: 120px;
     }
 }

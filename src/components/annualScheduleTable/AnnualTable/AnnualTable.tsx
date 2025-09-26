@@ -13,6 +13,7 @@ import { useMainContext } from "@/context/MainContext";
 import messages from "@/resources/messages";
 import { errorToast, successToast } from "@/lib/toast";
 import { useAnnualTable } from "@/context/AnnualTableContext";
+import NotPublishedLayout from "@/components/layout/NotPublishedLayout/NotPublishedLayout"; // <-- add
 
 type AnnualTableProps = {
     schedule: WeeklySchedule;
@@ -30,25 +31,19 @@ const AnnualTable: React.FC<AnnualTableProps> = ({
     classes,
 }) => {
     const { school, addNewTeacher, addNewSubject } = useMainContext();
-    const { setIsLoading, setIsSaving, isSaving, handleAddNewRow } = useAnnualTable();
+    const { setIsLoading, setIsSaving, isSaving, handleAddNewRow, selectedTeacherId, canShowTable } = useAnnualTable();
 
-    const isDisabled = isSaving || !schedule || !selectedClassId || !subjects || !classes;
+    const isDisabled = isSaving || !schedule || !subjects || !classes || !canShowTable;
 
     useEffect(() => {
-        setIsLoading(!schedule || !selectedClassId || !subjects || !classes ? true : false);
-    }, [schedule, selectedClassId, subjects, classes]);
+        setIsLoading(!schedule || !subjects || !classes);
+    }, [!!schedule, !!subjects, !!classes]);
 
     const handleCreateTeacher = async (day: string, hour: number, value: string) => {
         if (!school?.id) return;
         setIsSaving(true);
-
         try {
-            const newTeacher: TeacherRequest = {
-                name: value,
-                role: TeacherRoleValues.REGULAR,
-                schoolId: school.id,
-                userId: null,
-            };
+            const newTeacher: TeacherRequest = { name: value, role: TeacherRoleValues.REGULAR, schoolId: school.id, userId: null };
             const res = await addNewTeacher(newTeacher);
             if (res) {
                 await handleAddNewRow("teachers", [res.id], day, hour, "create-option", res);
@@ -67,13 +62,8 @@ const AnnualTable: React.FC<AnnualTableProps> = ({
     const handleCreateSubject = async (day: string, hour: number, value: string) => {
         if (!school?.id) return;
         setIsSaving(true);
-
         try {
-            const newSubject: SubjectRequest = {
-                name: value,
-                schoolId: school.id,
-            };
-
+            const newSubject: SubjectRequest = { name: value, schoolId: school.id };
             const res = await addNewSubject(newSubject);
             if (res) {
                 await handleAddNewRow("subjects", [res.id], day, hour, "create-option", res);
@@ -88,6 +78,10 @@ const AnnualTable: React.FC<AnnualTableProps> = ({
             setIsSaving(false);
         }
     };
+
+    if (!canShowTable) {
+        return <NotPublishedLayout title="" subTitle={["יש לבחור כיתה או מורה להצגה"]} />;
+    }
 
     return (
         <div>
@@ -106,6 +100,7 @@ const AnnualTable: React.FC<AnnualTableProps> = ({
                             classes={classes || []}
                             onCreateSubject={handleCreateSubject}
                             onCreateTeacher={handleCreateTeacher}
+                            selectedTeacherId={selectedTeacherId}
                         />
                     ))}
                 </tbody>

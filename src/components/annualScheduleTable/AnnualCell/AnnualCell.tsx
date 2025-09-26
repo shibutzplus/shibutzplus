@@ -24,6 +24,7 @@ type AnnualCellProps = {
     isDisabled: boolean;
     onCreateSubject: (day: string, hour: number, value: string) => Promise<string | undefined>;
     onCreateTeacher: (day: string, hour: number, value: string) => Promise<string | undefined>;
+    selectedTeacherId: string;
 };
 
 const AnnualCell: React.FC<AnnualCellProps> = ({
@@ -37,10 +38,11 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
     isDisabled,
     onCreateSubject,
     onCreateTeacher,
+    selectedTeacherId,
 }) => {
-
     const { handleAddNewRow } = useAnnualTable();
     const { handleOpenPopup } = useDeletePopup();
+
     const sortedTeacherOptions = useMemo(
         () =>
             sortAnnualTeachers(
@@ -66,10 +68,28 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
         handleOpenPopup(
             PopupAction.deleteTeacher,
             what ? `למחוק את ${what} מהרשימה?` : "למחוק את הפריט מהרשימה?",
-            async () => { proceed(); }
+            async () => {
+                proceed();
+            },
         );
     };
 
+    let teacherIds: string[] = [];
+
+    if (selectedClassId) {
+        teacherIds = schedule[selectedClassId]?.[day]?.[hour]?.teachers ?? [];
+    } else if (selectedTeacherId) {
+        const hasTeacher = (classes || []).some(
+            (cls) => schedule[cls.id]?.[day]?.[hour]?.teachers?.includes(selectedTeacherId),
+        );
+        if (!hasTeacher) {
+            return <td className={styles.scheduleCell}></td>;
+        }
+    }
+
+    if (selectedTeacherId && selectedClassId && !teacherIds.includes(selectedTeacherId)) {
+        return <td className={styles.scheduleCell}></td>;
+    }
 
     return (
         <td className={styles.scheduleCell}>
@@ -88,7 +108,7 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
                 <DynamicInputGroupMultiSelect
                     placeholder="מורה"
                     options={sortedTeacherOptions}
-                    value={schedule[selectedClassId]?.[day]?.[hour]?.teachers ?? []}
+                    value={teacherIds}
                     onChange={handleTeacherChange}
                     isSearchable
                     isAllowAddNew
