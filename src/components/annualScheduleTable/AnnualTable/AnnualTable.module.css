@@ -1,3 +1,4 @@
+/* Desktop */
 .scheduleTable {
     width: 100%;
     border-collapse: collapse;
@@ -17,9 +18,8 @@
     .scheduleTable th:first-child,
     .scheduleTable td:first-child {
         width: var(--table-template-cell-width);
-        min-width: var(--table-template-cell-width);
-        max-width: var(--table-template-cell-width);
     }
+
     .scheduleTable th:not(:first-child),
     .scheduleTable td:not(:first-child) {
         width: 230px;

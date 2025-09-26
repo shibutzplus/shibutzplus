@@ -1,6 +1,5 @@
 /* Desktop (first) */
 .actionsContainer {
-    margin-right: 0;
     width: 100%;
     display: flex;
     align-items: center;
@@ -9,12 +8,10 @@
 
 .selectClass {
     min-width: 150px;
-    width: fit-content;
 }
 
 .teacherSelect {
     min-width: 200px;
-    width: fit-content;
 }
 
 /* Mobile */
@@ -22,6 +19,7 @@
     .actionsContainer {
         gap: 5px;
     }
+
     .selectClass {
         min-width: fit-content;
         width: 120px;
