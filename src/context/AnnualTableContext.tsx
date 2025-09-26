@@ -114,15 +114,6 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
         setSelectedTeacherId(value || "");
     };
 
-    const teachersSelectOptions = () => {
-        const regular = (teachers || []).filter((t) => t.role === "regular");
-        return createSelectOptions<TeacherType>(sortByHebrewName(regular));
-    };
-
-    const handleTeacherChange = (value: string) => {
-        setSelectedTeacherId(value || "");
-    };
-
     const addNewAnnualScheduleItem = async (newScheduleItem: AnnualScheduleRequest) => {
         const response = await addAnnualScheduleAction(newScheduleItem);
         if (response.success && response.data) {
