@@ -29,9 +29,10 @@ const TopNav: React.FC<Props> = ({
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // default behavior per type
+  // Decide when to use the page title
   const resolvedUsePageTitle = usePageTitle ?? (type === "admin" || type === "list");
 
+  // Compute title
   const title = useMemo(() => {
     if (type === "portal" && greetingName) return `שלום ${greetingName}`;
     if (resolvedUsePageTitle) return getPageTitleFromUrl(pathname) || "";
@@ -40,9 +41,15 @@ const TopNav: React.FC<Props> = ({
 
   const showHamburger = true;
 
+  // When there are no extra elements (no actions, no dropdowns), allow title to expand
+  const noExtras = !actions && !dropdowns;
+
   return (
     <>
-      <header className={`${styles.contentHeader} ${sticky ? styles.sticky : ""}`}>
+      <header
+        className={`${styles.contentHeader} ${sticky ? styles.sticky : ""} ${noExtras ? styles.noExtras : ""
+          }`}
+      >
         <div className={styles.headerRight}>
           {showHamburger && (
             <HamburgerButton onClick={() => setIsMenuOpen(v => !v)} isOpen={isMenuOpen} />

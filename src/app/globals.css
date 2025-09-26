@@ -115,3 +115,8 @@ a {
 [class*="scrollableContent"]::-webkit-scrollbar {
     display: none;
 }
+
+/* InputSelect Dropdown: Move the clear (X) button closer to the dropdown arrow by shifting it left */
+.react-select__clear-indicator {
+  margin-left: -10px;
+}

@@ -101,8 +101,7 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
     }, [queueRows]);
 
     const classesSelectOptions = () => {
-        const opts = createSelectOptions<ClassType>(sortByHebrewName(classes || []));
-        return [{ value: "", label: "כל הכיתות" }, ...opts];
+        return createSelectOptions<ClassType>(sortByHebrewName(classes || []));
     };
 
     const teachersSelectOptions = () => {
