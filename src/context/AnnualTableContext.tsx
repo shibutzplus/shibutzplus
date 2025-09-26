@@ -102,7 +102,7 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
 
     const classesSelectOptions = () => {
         const opts = createSelectOptions<ClassType>(sortByHebrewName(classes || []));
-        return [{ value: "", label: "כל הכיתות" }, ...opts];
+        return opts;
     };
 
     const teachersSelectOptions = () => {
@@ -149,8 +149,6 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
     const handleClassChange = (value: string) => {
         setSelectedClassId(value || "");
     };
-
-
 
     const addToQueue = (rows: AnnualScheduleRequest[]) => {
         setQueueRows((prev) => (Array.isArray(prev) ? [...prev, ...rows] : [...rows]));
@@ -230,8 +228,8 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
         addToQueue(requests);
     };
 
-    // guard: show table only if at least class selected (not "all") OR teacher selected
-    const canShowTable = (selectedClassId !== "") || !!selectedTeacherId;
+    // show table only if at least a class is selected OR a teacher is selected
+    const canShowTable = selectedClassId !== "" || !!selectedTeacherId;
 
     const value: AnnualTableContextType = {
         annualScheduleTable,
