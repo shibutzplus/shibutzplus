@@ -9,6 +9,7 @@ import AddToSelectBtn from "../../buttons/AddToSelectBtn/AddToSelectBtn";
 import { createNewSelectOption_btnText } from "@/utils/format";
 import { useMobileSelectScroll } from "@/hooks/useMobileSelectScroll";
 
+// Input Dropdown used in Daily Schedule screen for selecting subs teachers
 export interface InputGroupSelectProps {
     label?: string;
     options: GroupOption[];
@@ -52,6 +53,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     createBtnText,
 }) => {
     const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     useEffect(() => {
         if (value) {
@@ -64,13 +66,15 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     }, [value, options]);
 
     const handleOnCreate = async (inputValue: string) => {
-        const exists = options.some(
-            (option) => option.label.toLowerCase() === inputValue.toLowerCase()
+        const allOptions = options.flatMap((group) => group.options);
+        const existsExact = allOptions.some(
+            (opt) => opt.label.trim().toLowerCase() === inputValue.trim().toLowerCase()
         );
-        if (!exists && isAllowAddNew && onCreate) {
+        if (!existsExact && isAllowAddNew && onCreate) {
             await onCreate(inputValue);
             const newOption: SelectOption = { value: inputValue, label: inputValue };
             setSelectedOption(newOption);
+            onChange(inputValue);
         }
     };
 
@@ -123,7 +127,11 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
                 isDisabled={isDisabled}
                 placeholder={placeholder}
                 menuPlacement="auto"
-                onMenuOpen={handleMenuOpen}
+                onMenuOpen={() => {
+                    handleMenuOpen();
+                    setIsMenuOpen(true);
+                }}
+                onMenuClose={() => setIsMenuOpen(false)}
                 formatGroupLabel={formatGroupLabel}
                 noOptionsMessage={({ inputValue }) =>
                     isAllowAddNew && inputValue.trim() !== "" ? (
@@ -135,25 +143,35 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
                         <div>לא נמצאו אפשרויות</div>
                     )
                 }
+
                 onKeyDown={(e: React.KeyboardEvent) => {
-                    if (
-                        isAllowAddNew &&
-                        e.key === "Enter" &&
-                        typeof e.target === "object" &&
-                        "value" in e.target
-                    ) {
-                        const inputValue = (e.target as HTMLInputElement).value;
-                        if (inputValue.trim() === "") return;
-                        const allOptions = options.flatMap((group) => group.options);
-                        const exists = allOptions.some(
-                            (opt) => opt.label.toLowerCase() === inputValue.toLowerCase()
-                        );
-                        if (!exists && inputValue.trim().length > 0) {
+                    if (e.key !== "Enter" || !(typeof e.target === "object" && "value" in e.target)) return;
+
+                    const inputValue = (e.target as HTMLInputElement).value.trim();
+                    if (!inputValue) return;
+
+                    const allOptions = options.flatMap((group) => group.options);
+                    const hasExact = allOptions.some(
+                        (opt) => opt.label.trim().toLowerCase() === inputValue.toLowerCase()
+                    );
+                    const hasAnyMatch = allOptions.some(
+                        (opt) => opt.label.toLowerCase().includes(inputValue.toLowerCase())
+                    );
+
+                    if (isMenuOpen) {
+                        if (!hasAnyMatch && isAllowAddNew && !hasExact) {
                             e.preventDefault();
                             handleOnCreate(inputValue);
                         }
+                        return;
+                    }
+
+                    if (!hasExact && isAllowAddNew) {
+                        e.preventDefault();
+                        handleOnCreate(inputValue);
                     }
                 }}
+
                 styles={stylesOverride}
                 classNamePrefix="react-select"
             />

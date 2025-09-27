@@ -6,17 +6,14 @@ import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputS
 import { useAnnualTable } from "@/context/AnnualTableContext";
 
 const AnnualTopActions: React.FC = () => {
-    const {
-        classesSelectOptions,
-        selectedClassId,
-        handleClassChange,
-        isSaving,
-        isLoading,
-    } = useAnnualTable();
+    const { classesSelectOptions, selectedClassId, handleClassChange,
+        teachersSelectOptions, selectedTeacherId, handleTeacherChange,
+        isSaving, isLoading, } = useAnnualTable();
 
     return (
         <section className={styles.actionsContainer}>
-            <div className={styles.selectContainer}>
+
+            <div className={styles.selectClass}>
                 <DynamicInputSelect
                     options={classesSelectOptions()}
                     value={selectedClassId}
@@ -25,8 +22,23 @@ const AnnualTopActions: React.FC = () => {
                     isDisabled={isSaving || isLoading}
                     placeholder="בחר כיתה..."
                     hasBorder
+                    isClearable
                 />
             </div>
+
+            <div className={styles.teacherSelect}>
+                <DynamicInputSelect
+                    options={teachersSelectOptions()}
+                    value={selectedTeacherId}
+                    onChange={handleTeacherChange}
+                    isSearchable
+                    isDisabled={isSaving || isLoading}
+                    placeholder="בחר מורה..."
+                    hasBorder
+                    isClearable
+                />
+            </div>
+
         </section>
     );
 };

@@ -12,7 +12,7 @@ const router: Record<string, IRoute> = {
     classes: { id: "classes", p: "/classes", private: true, title: "כיתות" },
     teachers: { id: "teachers", p: "/teachers", private: true, title: "מורים" },
     subjects: { id: "subjects", p: "/subjects", private: true, title: "מקצועות" },
-    substitute: { id: "substitute", p: "/substitute", private: true, title: "מורים למילוי מקום" },
+    substitute: { id: "substitute", p: "/substitute", private: true, title: "מורים מילוי מקום" },
     annualSchedule: { id: "annualSchedule", p: "/annual-schedule", private: true, title: "מערכת שנתית" },
     dailySchedule: { id: "dailySchedule", p: "/daily-schedule", private: true, title: "שיבוץ יומי" },
     profile: { id: "profile", p: "/profile", private: true, title: "המשתמש שלי" },

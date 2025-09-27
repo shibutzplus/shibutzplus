@@ -15,13 +15,7 @@ import {
 import { IoMdRefresh } from "react-icons/io";
 import { RiEdit2Fill, RiDeleteBin6Line } from "react-icons/ri";
 import { BsMegaphoneFill, BsCalendar4Event } from "react-icons/bs";
-import {
-    MdOutlineImageNotSupported,
-    MdOutlineContentCopy,
-    MdPersonAdd,
-    MdPerson,
-    MdSwapHoriz,
-} from "react-icons/md";
+import { MdOutlineImageNotSupported, MdOutlineContentCopy, MdPersonAdd, MdPerson, MdSwapHoriz, MdOpenInNew, } from "react-icons/md";
 import { FaPlus, FaList } from "react-icons/fa6";
 import { FaSave, FaLink, FaShareAlt } from "react-icons/fa";
 import { PiChairLight } from "react-icons/pi";
@@ -30,6 +24,7 @@ import { LiaChalkboardTeacherSolid } from "react-icons/lia";
 import { GiTeacher } from "react-icons/gi";
 import { IoPersonOutline, IoCheckmarkCircle } from "react-icons/io5";
 import { LuEye } from "react-icons/lu";
+import { FiCheckCircle } from "react-icons/fi";
 
 const Icons = {
     addTeacher: MdPersonAdd,
@@ -52,6 +47,7 @@ const Icons = {
     link: FaLink,
     logOut: IoLogOutOutline,
     menu: IoMenuOutline,
+    newWindow: MdOpenInNew,
     people: IoPeopleOutline,
     personCircle: IoPersonCircleOutline,
     plus: FaPlus,
@@ -65,7 +61,8 @@ const Icons = {
     teacher3: GiTeacher,
     teacher: IoPersonOutline,
     refresh: IoMdRefresh,
-    success: IoCheckmarkCircle,
+    success1: IoCheckmarkCircle,
+    success2: FiCheckCircle,
 };
 
 export default Icons;

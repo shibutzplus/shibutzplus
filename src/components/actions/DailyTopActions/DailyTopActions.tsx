@@ -42,7 +42,7 @@ const DailyTopActions: React.FC = () => {
                     Icon={<Icons.addTeacher size={16} />}
                     label="שיבוץ למורה חסר"
                     isDisabled={isLoading}
-                    style={{ borderLeft: DailyTableColors.missingTeacher.borderLeft, backgroundColor: "#ffffff"  }}
+                    style={{ borderLeft: DailyTableColors.missingTeacher.borderLeft, backgroundColor: "#ffffff" }}
                     func={() => addNewColumn("missingTeacher")}
                 />
                 <ActionBtn
@@ -50,7 +50,7 @@ const DailyTopActions: React.FC = () => {
                     Icon={<Icons.addTeacher size={16} />}
                     label="שיבוץ למורה נוכח"
                     isDisabled={isLoading}
-                    style={{ borderLeft: DailyTableColors.existingTeacher.borderLeft, backgroundColor: "#ffffff"  }}
+                    style={{ borderLeft: DailyTableColors.existingTeacher.borderLeft, backgroundColor: "#ffffff" }}
                     func={() => addNewColumn("existingTeacher")}
                 />
                 <ActionBtn
@@ -58,7 +58,7 @@ const DailyTopActions: React.FC = () => {
                     Icon={<Icons.event size={16} />}
                     label="עדכון ארועים"
                     isDisabled={isLoading}
-                    style={{ borderLeft: DailyTableColors.event.borderLeft, backgroundColor: "#ffffff"  }}
+                    style={{ borderLeft: DailyTableColors.event.borderLeft, backgroundColor: "#ffffff" }}
                     func={() => addNewColumn("event")}
                 />
             </div>
@@ -70,15 +70,26 @@ const DailyTopActions: React.FC = () => {
                     isLoading={publishLoading}
                     isDisabled={isDisabled}
                     func={publishDailySchedule}
-                    Icon={isDisabled ? <Icons.success size={17} /> : <Icons.publish size={16} />}
-                    style={{
-                        borderLeft: isDisabled ? "transparent" : DailyTableColors.publish.borderLeft,
-                        borderRight: isDisabled ? "transparent" : "1px solid #ddd",
-                        borderBottom: isDisabled ? "transparent" : "1px solid #ddd",
-                        borderTop: isDisabled ? "transparent" : "1px solid #ddd",
-                        backgroundColor: "#ffffff" 
-                    }}
+                    Icon={isDisabled ? <Icons.success2 size={17} /> : <Icons.publish size={16} />}
+                    style={
+                        isDisabled
+                            ? {
+                                backgroundColor: "transparent",
+                                border: "1px solid transparent",
+                                boxShadow: "none",
+                                cursor: "default",
+                                pointerEvents: "none"
+                            }
+                            : {
+                                borderLeft: DailyTableColors.publish.borderLeft,
+                                borderRight: "1px solid #ddd",
+                                borderBottom: "1px solid #ddd",
+                                borderTop: "1px solid #ddd",
+                                backgroundColor: "#ffffff"
+                            }
+                    }
                 />
+
 
                 <span className={styles.hideOnMobile} title="תצוגה מקדימה">
                     <IconBtn

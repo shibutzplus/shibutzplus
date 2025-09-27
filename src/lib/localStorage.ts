@@ -33,6 +33,11 @@ export const setStorage = <T>(key: string, value: T) => {
     }
 };
 
+export const clearStorage = () => {
+    localStorage.clear();
+};
+
+
 export const getCacheTimestamp = () => {
     return getStorage<string>(STORAGE_KEYS.CACHE_TIMESTAMP);
 };
@@ -81,6 +86,3 @@ export const setStorageClasses = (classes: ClassType[]) => {
     return setStorage(STORAGE_KEYS.CLASSES_DATA, classes);
 };
 
-export const clearStorage = () => {
-    localStorage.clear();
-};

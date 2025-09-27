@@ -1,11 +1,9 @@
 /* Mobile */
 .actionsContainer {
     margin-right: 10px;
-    width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0;
 }
 
 .selectContainer {
@@ -58,11 +56,9 @@
     .topButtonsContainer {
         display: flex;
         gap: 1rem;
-        justify-content: center;
         align-items: center;
         flex-wrap: wrap;
         height: 40px;
         min-width: fit-content;
-        width: fit-content;
     }
 }
