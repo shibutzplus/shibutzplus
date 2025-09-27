@@ -68,7 +68,7 @@
     }
 
     .topButtonsContainer {
-        gap: 2em; /* smaller gap on very wide screens */
+        gap: 1.5em;
     }
 
     .leftSide {
