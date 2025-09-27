@@ -1,7 +1,16 @@
+//
+//  Currently unused due to bugs which are hard to fix in this version
+//  Bugs Found:
+//  - DOM timing — hook ran before elements existed and never re-initialized
+//  - [class*="scrollableContent"] breaks with CSS Modules
+//  - When updating content in the scroll area the cursor jumps to the start\
+//  in general even after fix it works randomly
+//
 import { useEffect } from "react";
 
 const usePageScroll = (id: string) => {
     useEffect(() => {
+        // const inner = document.querySelector<HTMLElement>(".daily-scrollable");  // better use this
         const inner = document.querySelector<HTMLElement>('[class*="scrollableContent"]');
         const bar = document.getElementById(id) as HTMLElement | null;
         if (!inner || !bar) return;

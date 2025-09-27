@@ -51,7 +51,7 @@ const DailyTable: React.FC = () => {
                 ))}
             </div>
 
-            <div className={styles.scrollableContent}>
+            <div className={`${styles.scrollableContent} daily-scrollable`}>
                 <table className={styles.scheduleTable}>
                     <thead>
                         {table.getHeaderGroups().map((hg) => (
