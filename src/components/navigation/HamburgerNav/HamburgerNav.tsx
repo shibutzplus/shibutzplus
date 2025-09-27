@@ -134,6 +134,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose, variant = 
     const showAdminLinks = variant === "admin"
 
     const handleLogout = () => {
+        clearSessionStorage()
         if (variant === "admin") {
             clearStorage()
             signOut({ callbackUrl: routePath.signIn.p })
@@ -141,7 +142,6 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose, variant = 
             const schoolId = getSchoolCookie()
             clearSchoolCookie()
             clearTeacherCookie()
-            clearSessionStorage()
             if (schoolId) route.push(`${router.teacherSignIn.p}/${schoolId}`)
             else route.push(`${router.teacherSignIn.p}`)
         }
