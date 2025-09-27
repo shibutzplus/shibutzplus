@@ -81,8 +81,13 @@ const InputSelect: React.FC<Props> = (props) => {
                 overflow: "visible",
                 whiteSpace: "nowrap",
             }),
+            clearIndicator: (p: any, s: any) => ({
+                ...(base.clearIndicator ? base.clearIndicator(p, s) : p),
+                marginLeft: -10,
+            }),
         };
     }, [error, hasBorder, backgroundColor]);
+
 
     return (
         <div className={styles.selectContainer}>
