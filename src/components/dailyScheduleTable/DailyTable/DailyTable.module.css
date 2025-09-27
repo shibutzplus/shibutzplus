@@ -83,7 +83,7 @@
 
 .scheduleCell {
     width: auto;
-    min-width: 300px;
+    min-width: var(--table-cell-min-width);
 }
 
 .cellContent {
