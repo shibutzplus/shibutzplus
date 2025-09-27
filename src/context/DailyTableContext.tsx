@@ -1,38 +1,47 @@
 "use client";
 
 import React, { createContext, useState, useContext, ReactNode, useEffect } from "react";
-import { TeacherRow } from "@/models/types/table";
 import { ColumnDef } from "@tanstack/react-table";
-import { ColumnType, DailySchedule, DailyScheduleCell, DailyScheduleType, TeacherHourlyScheduleItem, } from "@/models/types/dailySchedule";
+import { ColumnType, DailySchedule, DailyScheduleCell, DailyScheduleType, TeacherHourlyScheduleItem } from "@/models/types/dailySchedule";
+import { AvailableTeachers } from "@/models/types/annualSchedule";
+import { SelectOption } from "@/models/types";
+import { TeacherType } from "@/models/types/teachers";
+import { TeacherRow } from "@/models/types/table";
+import { deleteDailyColumnAction } from "@/app/actions/DELETE/deleteDailyColumnAction";
+import { deleteDailyCellAction } from "@/app/actions/DELETE/deleteDailyCellAction";
+import { getAnnualScheduleAction } from "@/app/actions/GET/getAnnualScheduleAction";
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
 import { getTeacherScheduleByDayAction } from "@/app/actions/GET/getTeacherScheduleByDayAction";
-import { getAnnualScheduleAction } from "@/app/actions/GET/getAnnualScheduleAction";
-import { addDailyTeacherCellAction } from "@/app/actions/POST/addDailyTeacherCellAction";
-import { updateDailyTeacherCellAction } from "@/app/actions/PUT/updateDailyTeacherCellAction";
 import { addDailyEventCellAction } from "@/app/actions/POST/addDailyEventCellAction";
+import { addDailyTeacherCellAction } from "@/app/actions/POST/addDailyTeacherCellAction";
 import { updateDailyEventCellAction } from "@/app/actions/PUT/updateDailyEventCellAction";
-import { deleteDailyColumnAction } from "@/app/actions/DELETE/deleteDailyColumnAction";
+import { updateDailyEventHeaderAction } from "@/app/actions/PUT/updateDailyEventHeaderAction";
+import { updateDailyTeacherCellAction } from "@/app/actions/PUT/updateDailyTeacherCellAction";
 import { useMainContext } from "./MainContext";
 import {
-    addNewEventCell, addNewTeacherValueCell, setEmptyTeacherColumn, setColumn,
-    getColumnsFromStorage, updateAddCell, populateTable, mapAnnualTeachers, fillLeftRowsWithEmptyCells,
-    initDailySchedule, updateAllEventHeader, setEmptyColumn,
+    addNewEventCell,
+    addNewTeacherValueCell,
+    fillLeftRowsWithEmptyCells,
+    getColumnsFromStorage,
+    initDailySchedule,
+    mapAnnualTeachers,
+    populateTable,
+    setColumn,
+    setEmptyColumn,
+    setEmptyTeacherColumn,
+    updateAddCell,
+    updateAllEventHeader,
+    updateDeleteCell,
 } from "@/services/dailyScheduleService";
-import { generateId } from "@/utils";
 import DailyTeacherCell from "@/components/dailyScheduleTable/DailyTeacherCell/DailyTeacherCell";
 import DailyTeacherHeader from "@/components/dailyScheduleTable/DailyTeacherHeader/DailyTeacherHeader";
-import { TeacherType } from "@/models/types/teachers";
-import EventHeader from "@/components/dailyScheduleTable/DailyEventHeader/DailyEventHeader";
 import EventCell from "@/components/dailyScheduleTable/DailyEventCell/DailyEventCell";
-import { getIsraeliDateOptions, getTomorrowOption } from "@/resources/dayOptions";
-import { SelectOption } from "@/models/types";
+import EventHeader from "@/components/dailyScheduleTable/DailyEventHeader/DailyEventHeader";
 import { DailyTableColors } from "@/style/tableColors";
 import { eventPlaceholder } from "@/models/constant/table";
 import { sortColumnsByIssueTeacherType } from "@/utils/sort";
-import { AvailableTeachers } from "@/models/types/annualSchedule";
-import { deleteDailyCellAction } from "@/app/actions/DELETE/deleteDailyCellAction";
-import { updateDeleteCell } from "@/services/dailyScheduleService";
-import { updateDailyEventHeaderAction } from "@/app/actions/PUT/updateDailyEventHeaderAction";
+import { generateId } from "@/utils";
+import { getIsraeliDateOptions, getTomorrowOption } from "@/resources/dayOptions";
 import { getSessionDailyTable, setSessionDailyTable } from "@/lib/sessionStorage";
 import { infoToast } from "@/lib/toast";
 
@@ -138,19 +147,21 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     // -- Select Date -- //
     const daysSelectOptions = () => getIsraeliDateOptions();
 
-    // TODO: fix this
-    // Default date logic: show today until 16:00, after that show tomorrow
+    // Pick today if before 16:00, otherwise tomorrow; skip to tomorrow if today not in options (weekend/holiday)
     const [selectedDate, setSelectedDayId] = useState<string>(() => {
         const now = new Date();
         const hour = now.getHours();
         const opts = getIsraeliDateOptions();
         const pad = (n: number) => String(n).padStart(2, "0"); // comment: local YYYY-MM-DD
         const todayStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+
+        const todayInOpts = opts.find((o) => o.value === todayStr)?.value;
+        const tomorrow = getTomorrowOption();
+
         if (hour < 16) {
-            const today = opts.find((o) => o.value === todayStr);
-            return today?.value || opts[0]?.value || getTomorrowOption();
+            return todayInOpts || tomorrow || opts[0]?.value || todayStr;
         }
-        return getTomorrowOption();
+        return tomorrow || todayInOpts || opts[0]?.value || todayStr;
     });
 
     // Handle manual day change from dropdown
