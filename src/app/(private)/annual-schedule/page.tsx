@@ -11,7 +11,7 @@ import { useAnnualTable } from "@/context/AnnualTableContext";
 import SkeletonAnnualSchedule from "./loading";
 
 // Use TEACHER_BUCKET as a single "virtual class" to aggregate all lessons of the selected teacher
-const TEACHER_BUCKET = "__TEACHER__";
+const TEACHER_SCHEDULE = "__TEACHER__";
 
 const AnnualSchedulePage: NextPage = () => {
     const { classes, teachers, subjects } = useMainContext();
@@ -31,14 +31,14 @@ const AnnualSchedulePage: NextPage = () => {
 
         // Case 2: no class + teacher selected → aggregate teacher schedule into a single bucket
         else if (selectedTeacherId) {
-            newSchedule = initializeEmptyAnnualSchedule(newSchedule, TEACHER_BUCKET);
+            newSchedule = initializeEmptyAnnualSchedule(newSchedule, TEACHER_SCHEDULE);
             classes.forEach((cls) => {
                 newSchedule = populateAnnualSchedule(
                     annualScheduleTable,
                     cls.id,
                     newSchedule,
                     selectedTeacherId,
-                    TEACHER_BUCKET
+                    TEACHER_SCHEDULE
                 );
             });
         }
@@ -57,7 +57,7 @@ const AnnualSchedulePage: NextPage = () => {
 
     // Effective id for rendering: when teacher mode, render the single bucket
     const effectiveSelectedId =
-        selectedClassId === "" && selectedTeacherId ? TEACHER_BUCKET : selectedClassId;
+        selectedClassId === "" && selectedTeacherId ? TEACHER_SCHEDULE : selectedClassId;
 
     return (
         <div className={styles.container}>
