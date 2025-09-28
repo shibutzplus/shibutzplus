@@ -234,7 +234,7 @@ export const sortAnnualTeachers = (
     return groups;
 };
 
-// DailySchedule Header Dropdown: Filter header teacher options to avoid duplicates across the daily schedule
+// DailySchedule Header Dropdown: Filter header teacher options: only regular teachers, avoid duplicates
 export const filterDailyHeaderTeachers = (
     teachers: TeacherType[] | undefined,
     alreadySelectedTeachers: DailySchedule,
@@ -251,10 +251,13 @@ export const filterDailyHeaderTeachers = (
                 });
             });
         });
-        const filterdTeachers = teachers.filter(
-            (teacher) => teacher.id === selectedTeacher?.id || !flatTeachersSet.has(teacher.id),
+        const filteredTeachers = teachers.filter(
+            (teacher) =>
+                teacher.role === TeacherRoleValues.REGULAR &&
+                (teacher.id === selectedTeacher?.id || !flatTeachersSet.has(teacher.id)),
         );
-        return createSelectOptions(filterdTeachers);
+        return createSelectOptions(filteredTeachers);
     }
     return [];
 };
+
