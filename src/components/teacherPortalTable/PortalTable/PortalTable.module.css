@@ -36,8 +36,6 @@
 .scheduleTable th:nth-child(1),
 .scheduleTable td:nth-child(1) {
     width: var(--table-hour-cell-width);
-    min-width: var(--table-hour-cell-width);
-    max-width: var(--table-hour-cell-width);
     text-align: center;
 }
 
