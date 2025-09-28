@@ -2,18 +2,18 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { NextPage } from "next";
 import InputText from "@/components/ui/inputs/InputText/InputText";
 import InputPassword from "@/components/ui/inputs/InputPassword/InputPassword";
 import SubmitBtn from "@/components/ui/buttons/SubmitBtn/SubmitBtn";
+import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import styles from "./signUp.module.css";
 import routePath from "../../../routes";
-import { NextPage } from "next";
 import { RegisterRequest, UserGender, UserRole } from "@/models/types/auth";
-import signUp from "@/app/actions/POST/signUpAction";
-import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import { SchoolLevel } from "@/db/schema";
 import { genderOptions, roleOptions, schoolLevelOptions } from "@/resources/onboarding";
 import { registerSchema } from "@/models/validation/register";
+import signUp from "@/app/actions/POST/signUpAction";
 
 const SignUpPage: NextPage = () => {
     const router = useRouter();

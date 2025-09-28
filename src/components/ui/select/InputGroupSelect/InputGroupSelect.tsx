@@ -2,14 +2,14 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Select, { StylesConfig } from "react-select";
-import styles from "./InputGroupSelect.module.css";
-import { customStyles } from "@/style/selectStyle";
 import { GroupOption, SelectOption } from "@/models/types";
-import AddToSelectBtn from "../../buttons/AddToSelectBtn/AddToSelectBtn";
+import { customStyles } from "@/style/selectStyle";
 import { createNewSelectOption_btnText } from "@/utils/format";
 import { useMobileSelectScroll } from "@/hooks/useMobileSelectScroll";
+import AddToSelectBtn from "../../buttons/AddToSelectBtn/AddToSelectBtn";
+import styles from "./InputGroupSelect.module.css";
 
-// Input Dropdown used in Daily Schedule screen for selecting subs teachers
+// Used in Daily Schedule screen for selecting subs teachers
 export interface InputGroupSelectProps {
     label?: string;
     options: GroupOption[];

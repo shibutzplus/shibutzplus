@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import styles from "./PortalWriteRow.module.css";
 import InputRichText from "@/components/ui/inputs/InputRichText/InputRichText";
-import { HourRowColor } from "@/style/tableColors";
 import { usePortal } from "@/context/PortalContext";
+import { HourRowColor } from "@/style/tableColors";
 import { PortalScheduleType } from "@/models/types/portalSchedule";
+import styles from "./PortalWriteRow.module.css";
 
 type PortalWriteRowProps = {
     hour: number;
@@ -77,14 +77,14 @@ const PortalWriteRow: React.FC<PortalWriteRowProps> = ({ hour, row }) => {
             <td className={styles.hourCell} style={{ backgroundColor: HourRowColor }}>
                 {hour}
             </td>
-            <td className={styles.scheduleCell}>
+            <td className={styles.cellClass}>
                 <div className={styles.cellContent}>
                     <div className={styles.className}>{row?.class?.name ?? ""}</div>
                     <div className={styles.subjectName}>{row?.subject?.name ?? ""}</div>
                     <div className={styles.subTeacher}>{replaceTeacher()}</div>
                 </div>
             </td>
-            <td className={styles.scheduleCellInput}>
+            <td className={styles.cellMaterial}>
                 {row ? (
                     <InputRichText
                         value={instructions}

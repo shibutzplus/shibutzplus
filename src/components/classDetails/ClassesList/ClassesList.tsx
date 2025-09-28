@@ -2,17 +2,17 @@
 
 import React from "react";
 import { ClassType } from "@/models/types/classes";
-import TableList from "../../ui/list/TableList/TableList";
 import { useMainContext } from "@/context/MainContext";
 import useSubmit from "@/hooks/useSubmit";
-import messages from "@/resources/messages";
-import { getStorageSchoolId } from "@/lib/localStorage";
 import useDeletePopup from "@/hooks/useDeletePopup";
 import { PopupAction } from "@/context/PopupContext";
+import { getStorageSchoolId } from "@/lib/localStorage";
+import { sortByHebrewName } from "@/utils/sort";
+import messages from "@/resources/messages";
+import TableList from "../../ui/list/TableList/TableList";
 import AddClassRow from "../AddClassRow/AddClassRow";
 import ClassRow from "../ClassRow/ClassRow";
 import EmptyTable from "@/components/ui/table/EmptyTable/EmptyTable";
-import { sortByHebrewName } from "@/utils/sort";
 import ListRowLoading from "@/components/layout/loading/ListRowLoading/ListRowLoading";
 
 const ClassesList: React.FC = () => {

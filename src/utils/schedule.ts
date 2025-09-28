@@ -26,23 +26,23 @@ export const populateAnnualSchedule = (
         classEntries.forEach((entry) => {
             // Convert day number (1-7) to day name from DAYS_OF_WEEK array (0-based index)
             const dayName = DAYS_OF_WEEK[entry.day - 1];
-
+            
             if (dayName && newSchedule[bucketId][dayName]) {
                 if (!newSchedule[bucketId][dayName][entry.hour]) {
                     newSchedule[bucketId][dayName][entry.hour] = {
                         teachers: [],
                         subjects: [],
+                        classId: entry.class?.id,
                     };
+                } else if (!newSchedule[bucketId][dayName][entry.hour].classId) {
+                    newSchedule[bucketId][dayName][entry.hour].classId = entry.class?.id;
                 }
-                // Push teacher.id and subject.id into arrays, avoiding duplicates
+
                 const cell = newSchedule[bucketId][dayName][entry.hour];
-                if (entry.teacher?.id && !cell.teachers.includes(entry.teacher.id)) {
-                    cell.teachers.push(entry.teacher.id);
-                }
-                if (entry.subject?.id && !cell.subjects.includes(entry.subject.id)) {
-                    cell.subjects.push(entry.subject.id);
-                }
+                if (entry.teacher?.id && !cell.teachers.includes(entry.teacher.id)) cell.teachers.push(entry.teacher.id);
+                if (entry.subject?.id && !cell.subjects.includes(entry.subject.id)) cell.subjects.push(entry.subject.id);
             }
+
         });
     }
     return newSchedule;

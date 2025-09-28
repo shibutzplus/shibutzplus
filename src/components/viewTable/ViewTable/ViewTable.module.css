@@ -35,8 +35,8 @@
     background: var(--table-headers-color);
     font-weight: bold;
     text-align: center;
-    min-width: var(--table-template-cell-width);
-    width: var(--table-template-cell-width);
+    min-width: var(--table-hour-cell-width);
+    width: var(--table-hour-cell-width);
 }
 
 .cellContentHour,
@@ -60,8 +60,8 @@
     background: var(--table-headers-color);
     font-weight: bold;
     text-align: center;
-    min-width: var(--table-template-cell-width);
-    width: var(--table-template-cell-width);
+    min-width: var(--table-hour-cell-width);
+    width: var(--table-hour-cell-width);
 }
 
 .loader {

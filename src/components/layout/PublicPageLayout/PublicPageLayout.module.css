@@ -3,7 +3,7 @@
   height: 100dvh;
   display: flex;
   flex-direction: column;
-  background-color: var(--background-secondary);
+  background-color: var(--background);
 }
 
 /* Top area stays at top */

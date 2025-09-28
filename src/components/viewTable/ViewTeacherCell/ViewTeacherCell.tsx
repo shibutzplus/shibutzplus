@@ -11,10 +11,16 @@ const ViewTeacherCell: React.FC<ViewTeacherCellProps> = ({ cellData }) => {
     const pathname = usePathname();
     const isTeacherPortal = pathname.startsWith("/publish-portal");
 
-    // If from teacher portal and no subTeacher/event → return empty cell
-    if (isTeacherPortal && !cellData.subTeacher && !cellData.event) {
+    // If from teacher portal and no subTeacher/event and not missingTeacher → return empty cell
+    if (
+        isTeacherPortal &&
+        !cellData.subTeacher &&
+        !cellData.event &&
+        cellData.issueTeacherType !== "missingTeacher"
+    ) {
         return <div className={styles.teacherCell}></div>;
     }
+
 
     return (
         <div className={styles.teacherCell}>

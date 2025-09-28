@@ -1,19 +1,19 @@
 "use client";
 
 import React from "react";
-import TableList from "../../ui/list/TableList/TableList";
 import { useMainContext } from "@/context/MainContext";
-import messages from "@/resources/messages";
-import { getStorageSchoolId } from "@/lib/localStorage";
 import useDeletePopup from "@/hooks/useDeletePopup";
-import { PopupAction } from "@/context/PopupContext";
-import { filterTeachersByRole } from "@/utils/format";
-import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import useSubmit from "@/hooks/useSubmit";
-import EmptyTable from "@/components/ui/table/EmptyTable/EmptyTable";
+import { PopupAction } from "@/context/PopupContext";
+import { getStorageSchoolId } from "@/lib/localStorage";
+import { filterTeachersByRole } from "@/utils/format";
+import { sortByHebrewName } from "@/utils/sort";
+import messages from "@/resources/messages";
+import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
+import TableList from "../../ui/list/TableList/TableList";
 import SubstituteRow from "../SubstituteRow/SubstituteRow";
 import AddSubstituteRow from "../AddSubstituteRow/AddSubstituteRow";
-import { sortByHebrewName } from "@/utils/sort";
+import EmptyTable from "@/components/ui/table/EmptyTable/EmptyTable";
 import ListRowLoading from "@/components/layout/loading/ListRowLoading/ListRowLoading";
 
 const SubstitutesList: React.FC = () => {

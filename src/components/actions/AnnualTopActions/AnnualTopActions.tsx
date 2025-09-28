@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import styles from "./AnnualTopActions.module.css";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import { useAnnualTable } from "@/context/AnnualTableContext";
+import styles from "./AnnualTopActions.module.css";
 
 const AnnualTopActions: React.FC = () => {
     const { classesSelectOptions, selectedClassId, handleClassChange,

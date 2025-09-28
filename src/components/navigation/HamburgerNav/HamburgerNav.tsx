@@ -1,18 +1,18 @@
 "use client"
 
-import React, { useRef, useEffect } from "react"
-import styles from "./HamburgerNav.module.css"
-import Link from "next/link"
-import { signOut, useSession } from "next-auth/react"
-import routePath from "../../../routes"
-import { useAccessibility } from "../../../hooks/useAccessibility"
-import { STATUS_AUTH } from "@/models/constant/session"
-import Icons from "@/style/icons"
-import { clearStorage } from "@/lib/localStorage"
-import { clearSchoolCookie, clearTeacherCookie, getSchoolCookie } from "@/lib/cookies"
-import { usePathname, useRouter } from "next/navigation"
-import router from "../../../routes"
-import { clearSessionStorage } from "@/lib/sessionStorage"
+import React, { useRef, useEffect } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
+import styles from "./HamburgerNav.module.css";
+import { STATUS_AUTH } from "@/models/constant/session";
+import Icons from "@/style/icons";
+import { useAccessibility } from "../../../hooks/useAccessibility";
+import routePath from "../../../routes";
+import router from "../../../routes";
+import { clearStorage } from "@/lib/localStorage";
+import { clearSchoolCookie, clearTeacherCookie, getSchoolCookie } from "@/lib/cookies";
+import { clearSessionStorage } from "@/lib/sessionStorage";
 
 type HamburgerNavProps = {
     isOpen: boolean

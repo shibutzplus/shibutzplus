@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import styles from "./TopNav.module.css";
 import { usePathname } from "next/navigation";
 import { getPageTitleFromUrl } from "@/utils/format";
 import Logo from "@/components/core/Logo/Logo";
 import HamburgerNav, { HamburgerButton } from "@/components/navigation/HamburgerNav/HamburgerNav";
+import styles from "./TopNav.module.css";
 
 export type NavType = "list" | "admin" | "portal";
 
@@ -44,6 +44,9 @@ const TopNav: React.FC<Props> = ({
   // When there are no extra elements (no actions, no dropdowns), allow title to expand
   const noExtras = !actions && !dropdowns;
 
+  // Detect annual schedule route for special title styling
+  const isAnnual = pathname.includes("/annual-schedule");
+
   return (
     <>
       <header
@@ -54,7 +57,11 @@ const TopNav: React.FC<Props> = ({
           {showHamburger && (
             <HamburgerButton onClick={() => setIsMenuOpen(v => !v)} isOpen={isMenuOpen} />
           )}
-          {!!title && <h2 className={styles.routeTitle}>{title}</h2>}
+          {!!title && (
+            <h2 className={`${styles.routeTitle} ${isAnnual ? styles.annualTitle : ""}`}>
+              {title}
+            </h2>
+          )}
           {actions ? <div className={styles.topActions}>{actions}</div> : null}
         </div>
         <div className={styles.headerLeft}>

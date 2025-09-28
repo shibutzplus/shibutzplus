@@ -8,10 +8,10 @@ import { useEffect, useState } from "react";
 import { getTeacherCookie, setSchoolCookie, setTeacherCookie } from "@/lib/cookies";
 import router from "@/routes";
 import { SelectOption } from "@/models/types";
-import messages from "@/resources/messages";
-import { errorToast } from "@/lib/toast";
 import { getTeachersAction } from "@/app/actions/GET/getTeachersAction";
 import SignInLoadingPage from "@/components/layout/loading/SignInLoadingPage/SignInLoadingPage";
+import { errorToast } from "@/lib/toast";
+import messages from "@/resources/messages";
 
 export default function TeacherSignInPage() {
     const params = useParams();

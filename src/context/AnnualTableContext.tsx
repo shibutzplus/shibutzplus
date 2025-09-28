@@ -2,31 +2,21 @@
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { useMainContext } from "./MainContext";
-import { createSelectOptions } from "@/utils/format";
-import { ClassType } from "@/models/types/classes";
-import { Pair, SelectOption } from "@/models/types";
-import {
-    AnnualScheduleRequest,
-    AnnualScheduleType,
-    WeeklySchedule,
-} from "@/models/types/annualSchedule";
+import useInitAnnualData from "@/hooks/useInitAnnualData";
 import { errorToast, infoToast } from "@/lib/toast";
 import messages from "@/resources/messages";
+import { createSelectOptions } from "@/utils/format";
+import { dayToNumber } from "@/utils/time";
+import { sortByHebrewName } from "@/utils/sort";
+import { createPairs, createAnnualRequests, setNewScheduleTemplate, getUniqueCellsFromQueue, getSelectedClass } from "@/services/annualScheduleService";
 import { addAnnualScheduleAction } from "@/app/actions/POST/addAnnualScheduleAction";
 import { deleteAnnualScheduleAction } from "@/app/actions/DELETE/deleteAnnualScheduleAction";
-import useInitAnnualData from "@/hooks/useInitAnnualData";
+import { AnnualScheduleRequest, AnnualScheduleType, WeeklySchedule } from "@/models/types/annualSchedule";
+import { ClassType } from "@/models/types/classes";
+import { Pair, SelectOption } from "@/models/types";
 import { SelectMethod } from "@/models/types/actions";
-import {
-    createPairs,
-    createAnnualRequests,
-    setNewScheduleTemplate,
-    getUniqueCellsFromQueue,
-    getSelectedClass,
-} from "@/services/annualScheduleService";
-import { dayToNumber } from "@/utils/time";
 import { TeacherType } from "@/models/types/teachers";
 import { SubjectType } from "@/models/types/subjects";
-import { sortByHebrewName } from "@/utils/sort";
 
 interface AnnualTableContextType {
     annualScheduleTable: AnnualScheduleType[] | undefined;
@@ -191,8 +181,15 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
         newSchedule = setNewScheduleTemplate(newSchedule, selectedClassId, day, hour);
 
         newSchedule[selectedClassId][day][hour][type] = elementIds;
-        const teacherIds = schedule[selectedClassId][day][hour].teachers;
-        const subjectIds = schedule[selectedClassId][day][hour].subjects;
+        const teacherIds = newSchedule[selectedClassId][day][hour].teachers;
+        const subjectIds = newSchedule[selectedClassId][day][hour].subjects;
+
+        newSchedule["__TEACHER__"] = newSchedule["__TEACHER__"] || {};
+        newSchedule["__TEACHER__"][day] = newSchedule["__TEACHER__"][day] || {};
+        newSchedule["__TEACHER__"][day][hour] = {
+            teachers: teacherIds, subjects: subjectIds, classId: selectedClassId,
+        };
+
         setSchedule(newSchedule);
 
         if (subjectIds.length === 0 && teacherIds.length === 0) return;

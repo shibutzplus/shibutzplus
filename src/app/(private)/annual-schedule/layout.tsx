@@ -1,3 +1,4 @@
+// Server component layout: defines metadata and wraps children with the client layout
 import type { Metadata } from "next";
 import AnnualScheduleLayoutClient from "./layoutClient";
 

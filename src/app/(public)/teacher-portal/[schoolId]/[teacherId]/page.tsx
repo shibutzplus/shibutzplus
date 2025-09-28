@@ -1,13 +1,13 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useRef } from "react";
-import { usePortal } from "@/context/PortalContext";
+import { NextPage } from "next";
+import { useParams, useRouter } from "next/navigation";
 import PortalTable from "@/components/teacherPortalTable/PortalTable/PortalTable";
+import TeacherPortalSkeleton from "@/components/layout/skeleton/TeacherPortalSkeleton/TeacherPortalSkeleton";
+import { usePortal } from "@/context/PortalContext";
 import styles from "./teacherPortal.module.css";
 import router from "@/routes";
-import TeacherPortalSkeleton from "@/components/layout/skeleton/TeacherPortalSkeleton/TeacherPortalSkeleton";
-import { NextPage } from "next";
 import { errorToast } from "@/lib/toast";
 
 const TeacherPortalPage: NextPage = () => {

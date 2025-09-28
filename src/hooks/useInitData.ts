@@ -1,31 +1,22 @@
 "use client";
 
+import { useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { STATUS_AUTH } from "@/models/constant/session";
 import { GetSchoolResponse, SchoolType } from "@/models/types/school";
 import { GetSubjectsResponse, SubjectType } from "@/models/types/subjects";
 import { GetTeachersResponse, TeacherType } from "@/models/types/teachers";
-import { useSession } from "next-auth/react";
 import { ClassType, GetClassesResponse } from "@/models/types/classes";
-import { useEffect } from "react";
-import {
-    getCacheTimestamp,
-    getStorageClasses,
-    getStorageSchool,
-    getStorageSchoolId,
-    getStorageSubjects,
-    getStorageTeachers,
-    setCacheTimestamp,
-    setStorageClasses,
-    setStorageSchool,
-    setStorageSchoolId,
-    setStorageSubjects,
-    setStorageTeachers,
-} from "@/lib/localStorage";
 import { getSchoolAction as getSchoolFromDB } from "@/app/actions/GET/getSchoolAction";
 import { getTeachersAction as getTeachersFromDB } from "@/app/actions/GET/getTeachersAction";
 import { getSubjectsAction as getSubjectsFromDB } from "@/app/actions/GET/getSubjectsAction";
 import { getClassesAction as getClassesFromDB } from "@/app/actions/GET/getClassesAction";
+import {
+    getCacheTimestamp, getStorageClasses, getStorageSchool, getStorageSchoolId, getStorageSubjects, getStorageTeachers,
+    setCacheTimestamp, setStorageClasses, setStorageSchool, setStorageSchoolId, setStorageSubjects, setStorageTeachers,
+} from "@/lib/localStorage";
 import { isCacheFresh } from "@/utils/time";
-import { STATUS_AUTH } from "@/models/constant/session";
+
 
 interface useInitDataProps {
     school: SchoolType | undefined;

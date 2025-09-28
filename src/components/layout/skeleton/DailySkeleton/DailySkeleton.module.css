@@ -44,8 +44,8 @@
     background: var(--table-headers-color);
     font-weight: bold;
     text-align: center;
-    min-width: var(--table-template-cell-width);
-    width: var(--table-template-cell-width);
+    min-width: var(--table-hour-cell-width);
+    width: var(--table-hour-cell-width);
 }
 
 .cellContent {
@@ -58,12 +58,12 @@
     background: var(--table-headers-color);
     font-weight: bold;
     text-align: center;
-    min-width: var(--table-template-cell-width);
-    width: var(--table-template-cell-width);
+    min-width: var(--table-hour-cell-width);
+    width: var(--table-hour-cell-width);
 }
 
 .scheduleTable tbody td {
-    height: var(--table-cell-height);
+    height: var(--daily-table-cell-height);
 }
 
 .hourHeader {

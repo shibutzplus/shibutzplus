@@ -1,6 +1,7 @@
 import dynamic from "next/dynamic";
 import styles from "./InputGroupMultiSelect.module.css";
 
+// Used in: Annual Schedule 
 const DynamicInputGroupMultiSelect = dynamic(() => import("./InputGroupMultiSelect"), {
     ssr: false,
     loading: () => (
@@ -8,8 +9,6 @@ const DynamicInputGroupMultiSelect = dynamic(() => import("./InputGroupMultiSele
             className={styles.selectContainer}
             style={{
                 background: "#fff",
-                // border: "1px solid #e0e0e0",
-                // borderRadius: "4px",
                 minHeight: "38px",
                 boxShadow: "none",
                 padding: "4px 8px",

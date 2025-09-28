@@ -2,12 +2,13 @@
 
 import React, { useMemo } from "react";
 import Select from "react-select";
-import styles from "./InputSelect.module.css";
 import { SelectOption } from "@/models/types";
 import { customStyles } from "@/style/selectStyle";
-import AddToSelectBtn from "../../buttons/AddToSelectBtn/AddToSelectBtn";
 import { createNewSelectOption_btnText } from "@/utils/format";
+import AddToSelectBtn from "../../buttons/AddToSelectBtn/AddToSelectBtn";
+import styles from "./InputSelect.module.css";
 
+// Used in: Sign-Up, Teachers Sign-In, TopActions (Annual, Daily, Teacher Portal), Annual Schedule Cell, Daily Schedule Header
 type Props = {
     label?: string;
     options: SelectOption[];
@@ -81,8 +82,13 @@ const InputSelect: React.FC<Props> = (props) => {
                 overflow: "visible",
                 whiteSpace: "nowrap",
             }),
+            clearIndicator: (p: any, s: any) => ({
+                ...(base.clearIndicator ? base.clearIndicator(p, s) : p),
+                marginLeft: -10,
+            }),
         };
     }, [error, hasBorder, backgroundColor]);
+
 
     return (
         <div className={styles.selectContainer}>

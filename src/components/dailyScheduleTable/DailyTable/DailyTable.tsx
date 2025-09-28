@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import styles from "./DailyTable.module.css";
-import { useDailyTableContext } from "@/context/DailyTableContext";
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { useDailyTableContext } from "@/context/DailyTableContext";
 import { TeacherRow } from "@/models/types/table";
 import { TableRows } from "@/models/constant/table";
 import { HeaderColor } from "@/style/tableColors";
+import styles from "./DailyTable.module.css";
 
 const DailyTable: React.FC = () => {
     const { tableColumns } = useDailyTableContext();
@@ -20,13 +20,12 @@ const DailyTable: React.FC = () => {
             id: id,
             header: () => (
                 <span className={styles.templateHeaderText}>
-                    לחצו על כפתורי השיבוץ להוספת מערכת יומית
+                    יש ללחוץ על כפתורי השיבוץ כדי לשנות מערכת יומית
                 </span>
             ),
             cell: () => (
                 <div className={styles.templateCell}>
-                    {/* <Icons.empty className={styles.templateIcon} size={18} /> */}
-                    {/* <div className={styles.templateText}>אין נתונים להצגה</div> */}
+                    <div className={styles.templateText}>אין שינוי במערכת היומית</div>
                 </div>
             ),
             meta: { bgColor: HeaderColor },
@@ -59,7 +58,7 @@ const DailyTable: React.FC = () => {
                                 {hg.headers.map((header) => (
                                     <th
                                         key={header.id}
-                                        className={styles.dayHeader}
+                                        className={styles.colHeader}
                                         style={{
                                             background: (header.column.columnDef.meta as any)
                                                 ?.bgColor,

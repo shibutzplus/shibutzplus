@@ -2,10 +2,11 @@
 
 import React, { useEffect, useId, useMemo, useState } from "react";
 import Select from "react-select";
-import styles from "./InputSearchSelect.module.css";
 import { SelectOption } from "@/models/types";
 import { customStyles } from "@/style/selectStyle";
+import styles from "./InputSearchSelect.module.css";
 
+// Unused!!!
 interface InputSearchSelectProps {
     label?: string;
     options: SelectOption[];

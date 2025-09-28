@@ -1,24 +1,22 @@
 "use client";
 
-import Image from "next/image";
 import styles from "./signIn.module.css";
 import { NextPage } from "next";
-import { useEffect, useState, useRef } from "react";
-import { useSession } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { DEFAULT_REDIRECT } from "@/routes/protectedAuth";
-import GoogleIcon from "@/components/ui/assets/googleIcon";
 import Link from "next/link";
+import { useEffect, useState, useRef, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
+import GoogleIcon from "@/components/ui/assets/googleIcon";
+import Loading from "@/components/core/Loading/Loading";
+import HeroSection from "@/components/layout/HeroSection/HeroSection";
+import SignInLoadingPage from "@/components/layout/loading/SignInLoadingPage/SignInLoadingPage";
 import { signInWithGoogle } from "@/app/actions/POST/signInAction";
+import { DEFAULT_REDIRECT } from "@/routes/protectedAuth";
+import routes from "@/routes";
 import { EmailLink } from "@/models/constant";
+import { STATUS_AUTH, STATUS_LOADING, STATUS_UNAUTH } from "@/models/constant/session";
 import { infoToast } from "@/lib/toast";
 import messages from "@/resources/messages";
-import Loading from "@/components/core/Loading/Loading";
-import routes from "@/routes";
-import { Suspense } from "react";
-import HeroSection from "@/components/layout/HeroSection/HeroSection";
-import { STATUS_AUTH, STATUS_LOADING, STATUS_UNAUTH } from "@/models/constant/session";
-import SignInLoadingPage from "@/components/layout/loading/SignInLoadingPage/SignInLoadingPage";
 
 const SignInContent: React.FC = () => {
     const { data: session, status } = useSession();
