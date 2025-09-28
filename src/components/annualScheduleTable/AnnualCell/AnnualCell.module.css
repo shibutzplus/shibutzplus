@@ -12,3 +12,11 @@
     flex-direction: column;
     height: 100%;
 }
+
+.cellContent.viewOnly {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+

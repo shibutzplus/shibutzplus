@@ -9,14 +9,12 @@
 .scheduleTable th:first-child,
 .scheduleTable td:first-child {
     width: var(--table-hour-cell-width);
-    min-width: 30px;
-    max-width: 80px;
 }
 
 /* Mobile */
 @media (max-width: 767px) {
     .scheduleTable th:not(:first-child),
     .scheduleTable td:not(:first-child) {
-        width: 230px;
+        width: 220px;
     }
 }

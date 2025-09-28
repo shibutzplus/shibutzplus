@@ -181,8 +181,15 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
         newSchedule = setNewScheduleTemplate(newSchedule, selectedClassId, day, hour);
 
         newSchedule[selectedClassId][day][hour][type] = elementIds;
-        const teacherIds = schedule[selectedClassId][day][hour].teachers;
-        const subjectIds = schedule[selectedClassId][day][hour].subjects;
+        const teacherIds = newSchedule[selectedClassId][day][hour].teachers;
+        const subjectIds = newSchedule[selectedClassId][day][hour].subjects;
+
+        newSchedule["__TEACHER__"] = newSchedule["__TEACHER__"] || {};
+        newSchedule["__TEACHER__"][day] = newSchedule["__TEACHER__"][day] || {};
+        newSchedule["__TEACHER__"][day][hour] = {
+            teachers: teacherIds, subjects: subjectIds, classId: selectedClassId,
+        };
+
         setSchedule(newSchedule);
 
         if (subjectIds.length === 0 && teacherIds.length === 0) return;
