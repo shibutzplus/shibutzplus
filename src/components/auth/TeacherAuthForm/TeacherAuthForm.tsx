@@ -4,11 +4,11 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import SubmitBtn from "@/components/ui/buttons/SubmitBtn/SubmitBtn";
-import styles from "./TeacherAuthForm.module.css";
 import { SelectOption } from "@/models/types";
+import { setSchoolCookie, setTeacherCookie } from "@/lib/cookies";
 import router from "@/routes";
 import messages from "@/resources/messages";
-import { setSchoolCookie, setTeacherCookie } from "@/lib/cookies";
+import styles from "./TeacherAuthForm.module.css";
 
 type TeacherAuthFormProps = {
     schoolId: string | undefined;

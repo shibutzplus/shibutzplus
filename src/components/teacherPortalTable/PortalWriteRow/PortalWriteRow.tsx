@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import styles from "./PortalWriteRow.module.css";
 import InputRichText from "@/components/ui/inputs/InputRichText/InputRichText";
-import { HourRowColor } from "@/style/tableColors";
 import { usePortal } from "@/context/PortalContext";
+import { HourRowColor } from "@/style/tableColors";
 import { PortalScheduleType } from "@/models/types/portalSchedule";
+import styles from "./PortalWriteRow.module.css";
 
 type PortalWriteRowProps = {
     hour: number;

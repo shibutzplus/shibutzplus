@@ -2,11 +2,11 @@
 
 import React from "react";
 import PrivatePageLayout from "@/components/layout/PrivatePageLayout/PrivatePageLayout";
-import { DailyTableProvider } from "@/context/DailyTableContext";
 import TopNav from "@/components/navigation/TopNav/TopNav";
 import DailyTopActions from "@/components/actions/DailyTopActions/DailyTopActions";
-import { useMobileSize } from "@/hooks/useMobileSize";
 import MobileNav from "@/components/navigation/MobileNav/MobileNav";
+import { DailyTableProvider } from "@/context/DailyTableContext";
+import { useMobileSize } from "@/hooks/useMobileSize";
 
 export default function DailyScheduleLayout({ children }: { children: React.ReactNode }) {
     const isMobile = useMobileSize();

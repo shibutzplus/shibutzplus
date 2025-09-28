@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import styles from "./DeletePopup.module.css";
 import { usePopup } from "@/context/PopupContext";
 import DeleteSvg from "@/components/ui/assets/deleteBtn";
 import Loading from "@/components/core/Loading/Loading";
+import styles from "./DeletePopup.module.css";
 
 interface DeletePopupProps {
     text: string;

@@ -2,13 +2,11 @@
 
 import React, { createContext, useState, useContext, ReactNode, useEffect } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { ColumnType, DailySchedule, DailyScheduleCell, DailyScheduleType, TeacherHourlyScheduleItem } from "@/models/types/dailySchedule";
-import { AvailableTeachers } from "@/models/types/annualSchedule";
-import { SelectOption } from "@/models/types";
-import { TeacherType } from "@/models/types/teachers";
-import { TeacherRow } from "@/models/types/table";
-import { deleteDailyColumnAction } from "@/app/actions/DELETE/deleteDailyColumnAction";
-import { deleteDailyCellAction } from "@/app/actions/DELETE/deleteDailyCellAction";
+import { useMainContext } from "./MainContext";
+import DailyTeacherCell from "@/components/dailyScheduleTable/DailyTeacherCell/DailyTeacherCell";
+import DailyTeacherHeader from "@/components/dailyScheduleTable/DailyTeacherHeader/DailyTeacherHeader";
+import EventCell from "@/components/dailyScheduleTable/DailyEventCell/DailyEventCell";
+import EventHeader from "@/components/dailyScheduleTable/DailyEventHeader/DailyEventHeader";
 import { getAnnualScheduleAction } from "@/app/actions/GET/getAnnualScheduleAction";
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
 import { getTeacherScheduleByDayAction } from "@/app/actions/GET/getTeacherScheduleByDayAction";
@@ -17,33 +15,21 @@ import { addDailyTeacherCellAction } from "@/app/actions/POST/addDailyTeacherCel
 import { updateDailyEventCellAction } from "@/app/actions/PUT/updateDailyEventCellAction";
 import { updateDailyEventHeaderAction } from "@/app/actions/PUT/updateDailyEventHeaderAction";
 import { updateDailyTeacherCellAction } from "@/app/actions/PUT/updateDailyTeacherCellAction";
-import { useMainContext } from "./MainContext";
-import {
-    addNewEventCell,
-    addNewTeacherValueCell,
-    fillLeftRowsWithEmptyCells,
-    getColumnsFromStorage,
-    initDailySchedule,
-    mapAnnualTeachers,
-    populateTable,
-    setColumn,
-    setEmptyColumn,
-    setEmptyTeacherColumn,
-    updateAddCell,
-    updateAllEventHeader,
-    updateDeleteCell,
-} from "@/services/dailyScheduleService";
-import DailyTeacherCell from "@/components/dailyScheduleTable/DailyTeacherCell/DailyTeacherCell";
-import DailyTeacherHeader from "@/components/dailyScheduleTable/DailyTeacherHeader/DailyTeacherHeader";
-import EventCell from "@/components/dailyScheduleTable/DailyEventCell/DailyEventCell";
-import EventHeader from "@/components/dailyScheduleTable/DailyEventHeader/DailyEventHeader";
-import { DailyTableColors } from "@/style/tableColors";
-import { eventPlaceholder } from "@/models/constant/table";
+import { deleteDailyColumnAction } from "@/app/actions/DELETE/deleteDailyColumnAction";
+import { deleteDailyCellAction } from "@/app/actions/DELETE/deleteDailyCellAction";
+import { addNewEventCell, addNewTeacherValueCell, fillLeftRowsWithEmptyCells, getColumnsFromStorage, initDailySchedule, mapAnnualTeachers, populateTable, setColumn, setEmptyColumn, setEmptyTeacherColumn, updateAddCell, updateAllEventHeader, updateDeleteCell } from "@/services/dailyScheduleService";
+import { ColumnType, DailySchedule, DailyScheduleCell, DailyScheduleType, TeacherHourlyScheduleItem } from "@/models/types/dailySchedule";
+import { AvailableTeachers } from "@/models/types/annualSchedule";
+import { SelectOption } from "@/models/types";
+import { TeacherType } from "@/models/types/teachers";
+import { TeacherRow } from "@/models/types/table";
 import { sortColumnsByIssueTeacherType } from "@/utils/sort";
 import { generateId } from "@/utils";
 import { getIsraeliDateOptions, getTomorrowOption } from "@/resources/dayOptions";
 import { getSessionDailyTable, setSessionDailyTable } from "@/lib/sessionStorage";
 import { infoToast } from "@/lib/toast";
+import { eventPlaceholder } from "@/models/constant/table";
+import { DailyTableColors } from "@/style/tableColors";
 
 interface DailyTableContextType {
     tableColumns: ColumnDef<TeacherRow>[];

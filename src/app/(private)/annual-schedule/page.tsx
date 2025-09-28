@@ -1,16 +1,16 @@
 "use client";
 
 import React, { useEffect } from "react";
-import styles from "./annualSchedule.module.css";
 import { NextPage } from "next";
+import styles from "./annualSchedule.module.css";
+import AnnualTable from "@/components/annualScheduleTable/AnnualTable/AnnualTable";
+import SkeletonAnnualSchedule from "./loading";
 import { useMainContext } from "@/context/MainContext";
+import { useAnnualTable } from "@/context/AnnualTableContext";
 import { populateAnnualSchedule } from "@/utils/schedule";
 import { initializeEmptyAnnualSchedule } from "@/utils/Initialize";
-import AnnualTable from "@/components/annualScheduleTable/AnnualTable/AnnualTable";
-import { useAnnualTable } from "@/context/AnnualTableContext";
-import SkeletonAnnualSchedule from "./loading";
 
-// Use TEACHER_BUCKET as a single "virtual class" to aggregate all lessons of the selected teacher
+// Use TEACHER_SCHEDULE as a single "virtual class" to aggregate all lessons of the selected teacher
 const TEACHER_SCHEDULE = "__TEACHER__";
 
 const AnnualSchedulePage: NextPage = () => {

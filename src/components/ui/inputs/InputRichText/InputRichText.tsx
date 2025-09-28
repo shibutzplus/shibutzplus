@@ -5,8 +5,8 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
-import styles from "./InputRichText.module.css";
 import { sanitizeHtml } from "@/utils/sanitize";
+import styles from "./InputRichText.module.css";
 
 type InputRichTextProps = {
     value: string;

@@ -1,17 +1,17 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { NextPage } from "next";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import styles from "./history.module.css";
+import ViewTable from "@/components/viewTable/ViewTable/ViewTable";
+import PublishedSkeleton from "@/components/layout/skeleton/PublishedSkeleton/PublishedSkeleton";
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
-import { DailyScheduleType } from "@/models/types/dailySchedule";
 import { useMainContext } from "@/context/MainContext";
+import { useHistoryTable } from "@/context/HistoryTableContext";
+import { DailyScheduleType } from "@/models/types/dailySchedule";
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
-import { useHistoryTable } from "@/context/HistoryTableContext";
-import ViewTable from "@/components/viewTable/ViewTable/ViewTable";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import PublishedSkeleton from "@/components/layout/skeleton/PublishedSkeleton/PublishedSkeleton";
-import { NextPage } from "next";
 
 const HistorySchedulePage: NextPage = () => {
     const { school } = useMainContext();

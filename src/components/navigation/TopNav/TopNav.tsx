@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import styles from "./TopNav.module.css";
 import { usePathname } from "next/navigation";
 import { getPageTitleFromUrl } from "@/utils/format";
 import Logo from "@/components/core/Logo/Logo";
 import HamburgerNav, { HamburgerButton } from "@/components/navigation/HamburgerNav/HamburgerNav";
+import styles from "./TopNav.module.css";
 
 export type NavType = "list" | "admin" | "portal";
 

@@ -1,6 +1,7 @@
 import dynamic from "next/dynamic";
 import styles from "./InputGroupSelect.module.css";
 
+// Used in: Daily Schedule
 const DynamicInputGroupSelect = dynamic(() => import("./InputGroupSelect"), {
     ssr: false,
     loading: () => (
@@ -8,8 +9,6 @@ const DynamicInputGroupSelect = dynamic(() => import("./InputGroupSelect"), {
             className={styles.selectContainer}
             style={{
                 background: '#fff',
-                // border: '1px solid #e0e0e0',
-                // borderRadius: '4px',
                 minHeight: '38px',
                 boxShadow: 'none',
                 padding: '4px 8px',

@@ -1,5 +1,6 @@
 import dynamic from "next/dynamic";
 
+// Unused
 const DynamicInputTextSelect = dynamic(() => import("./InputTextSelect"), {
     ssr: false,
     loading: () => (
@@ -30,7 +31,7 @@ const DynamicInputTextSelect = dynamic(() => import("./InputTextSelect"), {
                     flex: 1,
                 }}
             >
-                בחר אופציה...
+                בחר אפשרות...
             </div>
 
             {/* Indicators container */}

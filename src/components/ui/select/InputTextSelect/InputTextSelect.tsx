@@ -4,6 +4,7 @@ import { SelectOption } from "@/models/types";
 import Select, { SelectInstance } from "react-select";
 import { customStyles } from "@/style/selectStyle";
 
+// Unused
 type InputTextSelectProps = {
     options: SelectOption[];
     error?: string;

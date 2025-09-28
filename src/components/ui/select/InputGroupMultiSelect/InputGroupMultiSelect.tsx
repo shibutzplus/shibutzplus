@@ -2,13 +2,13 @@
 
 import React, { useEffect, useId, useMemo, useRef, useState } from "react";
 import Select from "react-select";
-import styles from "./InputGroupMultiSelect.module.css";
-import { GroupOption, SelectOption } from "@/models/types";
-import AddToSelectBtn from "../../buttons/AddToSelectBtn/AddToSelectBtn";
 import type { ActionMeta, OnChangeValue } from "react-select";
-import { customStylesMulti } from "@/style/selectMultiStyle";
+import { GroupOption, SelectOption } from "@/models/types";
 import { SelectMethod } from "@/models/types/actions";
+import { customStylesMulti } from "@/style/selectMultiStyle";
 import { createNewSelectOption_btnText } from "@/utils/format";
+import AddToSelectBtn from "../../buttons/AddToSelectBtn/AddToSelectBtn";
+import styles from "./InputGroupMultiSelect.module.css";
 
 export interface InputGroupMultiSelectProps {
     label?: string;

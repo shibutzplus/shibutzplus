@@ -1,11 +1,11 @@
 "use client";
 
 import React from "react";
-import { usePortal } from "@/context/PortalContext";
 import TopNav from "@/components/navigation/TopNav/TopNav";
 import PortalTopActions from "@/components/actions/PortalTopActions/PortalTopActions";
 import PublicPageLayout from "@/components/layout/PublicPageLayout/PublicPageLayout";
 import PublicMobileNav from "@/components/navigation/PublicMobileNav/PublicMobileNav";
+import { usePortal } from "@/context/PortalContext";
 import { useMobileSize } from "@/hooks/useMobileSize";
 
 function TeacherTopNav() {

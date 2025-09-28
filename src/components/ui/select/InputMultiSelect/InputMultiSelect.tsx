@@ -28,6 +28,7 @@ export type InputMultiSelectProps = {
     onBeforeRemove?: (removedLabel: string | null, proceed: () => void) => void;
 };
 
+// Used in: Annual Schedule
 const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
     label,
     options: initialOptions,

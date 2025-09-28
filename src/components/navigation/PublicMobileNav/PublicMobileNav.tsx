@@ -1,11 +1,11 @@
 "use client";
 
 import React from "react";
-import styles from "./PublicMobileNav.module.css";
+import { usePathname, useRouter } from "next/navigation";
 import Icons from "@/style/icons";
 import { usePortal } from "@/context/PortalContext";
-import { usePathname, useRouter } from "next/navigation";
 import router from "@/routes";
+import styles from "./PublicMobileNav.module.css";
 
 const PublicMobileNav: React.FC = () => {
     const route = useRouter();
