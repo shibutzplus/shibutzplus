@@ -3,7 +3,6 @@
     padding: 4px;
     border: var(--border-primary);
     vertical-align: top;
-    min-width: var(--annual-table-width);
     max-width: 0;
     height: 80px;
 }

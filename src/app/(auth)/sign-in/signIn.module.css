@@ -40,13 +40,13 @@
 }
 
 .googleButton:hover {
-    background-color: var(--background-secondary);
+    background-color: var(--background);
     border-color: #c8c9ca;
     box-shadow: var(--header-box-shadow);
 }
 
 .googleButton:active {
-    background-color: var(--background-secondary);
+    background-color: var(--background);
 }
 
 .error {

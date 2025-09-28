@@ -58,7 +58,7 @@ const DailyTable: React.FC = () => {
                                 {hg.headers.map((header) => (
                                     <th
                                         key={header.id}
-                                        className={styles.dayHeader}
+                                        className={styles.colHeader}
                                         style={{
                                             background: (header.column.columnDef.meta as any)
                                                 ?.bgColor,

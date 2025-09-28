@@ -1,19 +1,15 @@
 :root {
     /* Base colors */
     --background: #fdfbfb;
-    --background-secondary: #fdfbfb;
     --foreground: #171717;
 
-    /* Login page colors */
     --school-section-bg: #f9f9f9;
-    --icon-placeholder-bg: #000;
     --title-color: #333;
     --subtitle-color: #666;
     --feature-icon-bg: #f0f0f0;
     --description-text: #666;
-    --description-hover-text: #7d7c7c;
 
-    /* Form elements */
+        /* Form elements */
     --input-color: #171717;
     --input-hover-color: #3c3c3c;
     --input-border: #e0e0e0;
@@ -34,8 +30,6 @@
 
     /* Error colors */
     --error-color: #e53935;
-    --error-shadow: #e5393533;
-    --error-color-hover: #9d3130;
 
     /* Table colors */
     --table-headers-color: #fffbf5;
@@ -66,19 +60,15 @@
 
     /* Size */
     --header-height: 50px;
-    --nav-width: 240px;
 
-    --annual-table-width: 180px;
-    --annual-template-width: 70px;
-
-    --table-header-min-height: 50px;
     --table-header-height: 50px;
+    --table-hour-cell-width: 30px;
 
-    --table-template-cell-width: 30px;
-    --table-cell-min-width: 250px;
-    --table-cell-width: 300px;
-    --table-cell-min-height: 80px;
-    --table-cell-height: 120px;
+    --annual-table-min-col-width: 180px;
+
+    --daily-table-cell-min-width: 240px;
+    --daily-table-cell-min-height: 80px;
+    --daily-table-cell-height: 120px;
 
     --box-border-radius: 10px;
     --btn-border-radius: 4px;

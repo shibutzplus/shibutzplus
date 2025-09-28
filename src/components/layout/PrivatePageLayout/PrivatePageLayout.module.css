@@ -3,10 +3,9 @@
   height: 100dvh;
   display: flex;
   flex-direction: column;
-  background-color: var(--background-secondary);
+  background-color: var(--background);
 }
 
-/* Top area stays at top */
 .contentHeader {
   position: sticky;
   top: 0;
@@ -17,17 +16,14 @@
   min-height: var(--header-height);
 }
 
-/* Only the content area scrolls */
 .contentMain {
   flex: 1 1 auto;
   min-height: 0;
-  overflow: auto; /* scrolling happens here */
-  direction: ltr; /* scrollbar on the right */
+  overflow: auto;
+  direction: ltr;
   width: 100%;
-  /* -webkit-overflow-scrolling: touch; */
 }
 
-/* Main content */
 .scrollInner {
   direction: rtl;
 }
