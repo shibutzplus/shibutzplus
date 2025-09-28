@@ -3,7 +3,6 @@
     background: #f7f7fa;
     box-shadow: var(--header-box-shadow);
     height: var(--header-height);
-    padding: 0 1vw;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -33,23 +32,26 @@
 .routeTitle {
     font-size: 14px;
     font-weight: 600;
-    margin: 2;
     color: var(--title-color);
-    min-width: 55px;
-    max-width: 55px;
+    display: -webkit-box;
     overflow: hidden;
     overflow-wrap: break-word;
     white-space: normal;
     line-height: 1.2em;
+    /* dont add "max-width" otherwise it will ruin all titles look*/
+}
+
+.annualTitle {
+  max-width: 55px;
 }
 
 /* When there are no extra elements on mobile, let the title grow on one line */
 .noExtras .routeTitle {
-  min-width: unset;
-  max-width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+    min-width: unset;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .topActions {
@@ -91,9 +93,10 @@
     color: var(--text-primary);
 }
 
-/* Tablet and up */
+/* Desktop */
 @media (min-width: 768px) {
     .contentHeader {
+        padding: 0 10px;
         gap: 3em;
     }
 
