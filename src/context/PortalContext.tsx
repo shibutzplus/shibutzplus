@@ -39,7 +39,7 @@ interface PortalContextType {
         error: string;
     }>;
     mainPublishTable: DailyScheduleType[];
-    refreshPublishDates: () => Promise<{ success: boolean; error: string }>;
+    refreshPublishDates: () => Promise<{ success: boolean; error: string; selected: string }>;
 }
 
 const PortalContext = createContext<PortalContextType | undefined>(undefined);
@@ -59,7 +59,7 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     const [teacher, setTeacher] = useState<TeacherType | undefined>();
     const [schoolId, setSchoolId] = useState<string | undefined>();
 
-    const [mainPortalTable, setMainPortalTable] = useState<PortalSchedule>({}); // Main state for table object storage
+    const [mainPortalTable, setMainPortalTable] = useState<PortalSchedule>({});
     const [mainPublishTable, setMainPublishTable] = useState<DailyScheduleType[]>([]);
 
     const [isPortalLoading, setIsPortalLoading] = useState<boolean>(true);
@@ -78,6 +78,28 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         }
     }, []);
 
+    // Helper: choose default date based on current time (before/after 16:00)
+    // - Before 16:00: prefer today if exists, else first available
+    // - After 16:00: prefer tomorrow if exists, else today, else first available
+    const chooseDefaultDate = (options: SelectOption[]): string | undefined => {
+        if (!options || options.length === 0) return "";
+        const now = new Date();
+        const hour = now.getHours();
+        const today = getDateReturnString(now);
+        const tomorrow = getDateReturnString(new Date(now.getTime() + 24 * 60 * 60 * 1000));
+
+        const has = (val: string | undefined) => !!val && options.some(o => o.value === val);
+
+        if (hour < 16) {
+            if (has(today)) return today;
+            return options[0].value;
+        } else {
+            if (has(tomorrow)) return tomorrow;
+            if (has(today)) return today;
+            return options[0].value;
+        }
+    };
+
     const blockRef = useRef<boolean>(true);
     useEffect(() => {
         const fetchDateOptions = async () => {
@@ -92,7 +114,7 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
                             return;
                         }
                         setPublishDatesOptions(res);
-                        handleDayChange(selectSelectedDate(res)?.value);
+                        handleDayChange(chooseDefaultDate(res) ?? selectSelectedDate(res)?.value ?? res[0].value);
                         blockRef.current = false;
                     }
                 } catch (error) {
@@ -145,7 +167,6 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
         setMainPortalTable(next);
     };
-
 
     const fetchPublishScheduleData = async () => {
         setIsPublishLoading(true);
@@ -251,10 +272,10 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
                 const options = getPublishedDatesOptions(response.data.publishDates);
                 setPublishDatesOptions(options);
 
-                // keep current selection if still valid, else fallback to default
+                // Keep current if still valid; otherwise choose by time-based rule
                 const keepCurrent = !!selectedDate && options.some(o => o.value === selectedDate);
                 const nextSelected = options.length
-                    ? (keepCurrent ? selectedDate : (selectSelectedDate(options)?.value || options[0].value))
+                    ? (keepCurrent ? selectedDate! : (chooseDefaultDate(options) ?? selectSelectedDate(options)?.value ?? options[0].value))
                     : "";
 
                 setSelectedDayId(nextSelected);
@@ -273,7 +294,6 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
             setIsPortalLoading(false);
         }
     };
-
 
     const value: PortalContextType = {
         selectedDate,
