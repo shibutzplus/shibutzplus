@@ -1,14 +1,15 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { NextPage } from "next";
+import React, { useEffect, useRef, useState } from "react";
+import type { NextPage } from "next";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import styles from "./history.module.css";
-import ViewTable from "@/components/viewTable/ViewTable/ViewTable";
 import PublishedSkeleton from "@/components/layout/skeleton/PublishedSkeleton/PublishedSkeleton";
-import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
-import { useMainContext } from "@/context/MainContext";
+import TeacherMaterial from "@/components/popups/TeacherMaterial/TeacherMaterial";
+import ViewTable from "@/components/viewTable/ViewTable/ViewTable";
 import { useHistoryTable } from "@/context/HistoryTableContext";
+import { useMainContext } from "@/context/MainContext";
+import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
 import { DailyScheduleType } from "@/models/types/dailySchedule";
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
@@ -26,6 +27,8 @@ const HistorySchedulePage: NextPage = () => {
     const [prevSelectedDate, setPrevSelectedDate] = useState<string>(selectedYearDate);
     const [currentDateData, setCurrentDateData] = useState<DailyScheduleType[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isTeacherModalOpen, setIsTeacherModalOpen] = useState(false);
+    const [selectedTeacher, setSelectedTeacher] = useState<{ id?: string; name: string; date: string } | null>(null);
 
     // Ensure ?date exists on first entry; if missing, inject today's date via replace (no history entry)
     useEffect(() => {
@@ -83,6 +86,12 @@ const HistorySchedulePage: NextPage = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dateFromQuery, selectedYearDate, school]);
 
+    const handleTeacherClick = (teacherName: string, teacherId?: string) => {
+        const date = dateFromQuery || selectedYearDate || "";
+        setSelectedTeacher({ id: teacherId, name: teacherName, date });
+        setIsTeacherModalOpen(true);
+    };
+
     if (isLoading) return <PublishedSkeleton />;
 
     return (
@@ -92,8 +101,18 @@ const HistorySchedulePage: NextPage = () => {
                     scheduleData={currentDateData}
                     noScheduleTitle="אין נתונים להצגה"
                     noScheduleSubTitle={["לא פורסמה מערכת עבור יום זה"]}
+                    onTeacherClick={handleTeacherClick}
+                    isManager={true}
                 />
             </div>
+            <TeacherMaterial
+                isOpen={isTeacherModalOpen}
+                onClose={() => setIsTeacherModalOpen(false)}
+                teacherName={selectedTeacher?.name || ""}
+                date={selectedTeacher?.date || ""}
+                teacherId={selectedTeacher?.id}
+                schoolId={school?.id}
+            />
         </div>
     );
 };

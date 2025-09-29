@@ -51,7 +51,15 @@ export const usePortal = () => {
     return context;
 };
 
-export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+// init props for controlled one-time initialization
+type PortalProviderProps = {
+    children: ReactNode;
+    initTeacherId?: string;
+    initSchoolId?: string;
+    initDate?: string;
+};
+
+export const PortalProvider: React.FC<PortalProviderProps> = ({ children, initTeacherId, initSchoolId, initDate }) => {
     const [selectedDate, setSelectedDayId] = useState<string | undefined>();
     const [publishDatesOptions, setPublishDatesOptions] = useState<SelectOption[]>([]);
 
@@ -66,6 +74,7 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
     const [isPublishLoading, setIsPublishLoading] = useState<boolean>(true);
 
+    // One-time init from local storage (fallback when init props are not provided)
     useEffect(() => {
         if (!schoolId) {
             const storedTeacher = getStorageTeacher();
@@ -100,6 +109,38 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     };
 
     const blockRef = useRef<boolean>(true);
+
+    // One-time controlled init from props
+    const didInitFromProps = useRef<boolean>(false);
+    useEffect(() => {
+        // Guard to run only once on mount
+        if (didInitFromProps.current) return;
+        didInitFromProps.current = true;
+
+        // If init props provided from caller, initialize state once and prevent auto date override
+        const init = async () => {
+            if (initDate) {
+                // Set selected date explicitly from caller
+                setSelectedDayId(initDate);
+            }
+            if (initSchoolId && initTeacherId) {
+                // Prevent fetchDateOptions effect from overriding initDate
+                blockRef.current = false;
+                try {
+                    const res = await getTeacherByIdAction(initTeacherId);
+                    if (res.success && res.data) {
+                        setTeacher(res.data);
+                        setSchoolId(initSchoolId);
+                    }
+                } catch (e) {
+                    console.error("Error initializing teacher from props:", e);
+                }
+            }
+        };
+        init();
+        // Dependencies intentionally empty to ensure one-time behavior
+    }, []); // do not add init* deps to keep one-time init
+
     useEffect(() => {
         const fetchDateOptions = async () => {
             if (teacher) {

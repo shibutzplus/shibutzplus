@@ -45,8 +45,6 @@ export type GetDailyScheduleResponse = ActionResponse & {
     data?: DailyScheduleType[];
 };
 
-export type ColumnType = "existingTeacher" | "event" | "missingTeacher";
-
 export interface ScheduleColumn {
     id: string;
     type: ColumnType;
@@ -101,3 +99,10 @@ export const ActivityValues = {
     home: "home" as const,
 };
 export type ActivityOptions = (typeof ActivityValues)[keyof typeof ActivityValues];
+
+export const ColumnTypeValues = {
+  existingTeacher: "existingTeacher" as const,
+  event: "event" as const,
+  missingTeacher: "missingTeacher" as const,
+};
+export type ColumnType = keyof typeof ColumnTypeValues;

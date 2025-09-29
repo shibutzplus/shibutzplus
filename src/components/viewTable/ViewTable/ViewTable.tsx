@@ -15,14 +15,20 @@ type ReadOnlyDailyTableProps = {
     hasMobileNav?: boolean;
     noScheduleTitle?: string;
     noScheduleSubTitle?: string[];
+    onTeacherClick?: (teacherName: string, teacherId?: string) => void;
+    isManager?: boolean;
 };
+
 
 const ViewTable: React.FC<ReadOnlyDailyTableProps> = ({
     scheduleData,
     hasMobileNav = false,
     noScheduleTitle,
     noScheduleSubTitle,
+    onTeacherClick,
+    isManager,
 }) => {
+
     if (scheduleData.length === 0)
         return (
             <NotPublishedLayout
@@ -52,12 +58,9 @@ const ViewTable: React.FC<ReadOnlyDailyTableProps> = ({
     };
 
     return (
-        <section
-            className={`${styles.tableContainer} ${hasMobileNav ? styles.withMobileNav : ""}`}
-            aria-label="מערכת יומית"
-        >
+        <section className={`${styles.tableContainer} ${hasMobileNav ? styles.withMobileNav : ""}`}>
             <table className={styles.scheduleTable}>
-                <ViewHeader items={headerItems} />
+                <ViewHeader items={headerItems} onTeacherClick={onTeacherClick} isManager={isManager} />
                 <tbody>
                     {hours.map((hour) => (
                         <tr key={hour}>
