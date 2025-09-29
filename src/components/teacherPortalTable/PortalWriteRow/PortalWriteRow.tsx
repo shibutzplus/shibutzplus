@@ -53,16 +53,14 @@ const PortalWriteRow: React.FC<PortalWriteRowProps> = ({ hour, row }) => {
         const isIssueTeacher = teacher.id === row.issueTeacher?.id;
         const isSubTeacher = teacher.id === row.subTeacher?.id;
 
-        // If I am the main teacher:
-        // Show "הזינו חומר לימוד" only if there is a sub teacher.
-        // If no sub teacher exists → show nothing.
+        // If I am the main teacher
         if (isIssueTeacher) {
-            return row.subTeacher ? "הזינו את חומר הלימוד" : "";
+            return row.subTeacher ? "הזינו כאן את חומר הלימוד" : "";
         }
 
-        // If I am the substitute teacher → waiting for material
+        // If I am the substitute teacher
         if (isSubTeacher) {
-            return "ממתין לחומר הלימוד";
+            return "עדיין לא הוזן חומר לימוד לשיעור זה";
         }
 
         // Default for all others

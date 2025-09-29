@@ -4,19 +4,18 @@ const messages = {
         serverError: "שגיאת מערכת פנימית. אנא נסו שוב"
     },
     auth: {
-        accessDenied: "כדי להתנסות במערכת, פנו אלינו במייל shibutzplus@gmail.com",
-
-        unauthorized: "אין הרשאה. אנא התחבר כדי לגשת למידע זה",
+        accessDenied: "כדי להתנסות במערכת, לחצו על צרו קשר shibutzplus@gmail.com",
+        unauthorized: "אין הרשאה. יש להתחבר כדי לגשת למידע זה",
         paramRequired: "פרמטר נדרש",
         login: {
             failed: "ההתחברות נכשלה",
-            success: "Signed in successfully"
+            success: "ההתחברות הצליחה"
         },
         register: {
             failed: "ההרשמה נכשלה",
             emailInUse: "האימייל כבר בשימוש",
             invalid: "חסרים פרמטרים",
-            success: "Registered successfully",
+            success: "ההרשמה הסתיימה בהצלחה",
             schoolExist: "בית הספר כבר קיים",
             schoolNotFound: "בית ספר לא נמצא",
             error: "שגיאה"
@@ -40,58 +39,54 @@ const messages = {
     },
     subjects: {
         success: "רשימת מקצועות נטענה בהצלחה",
-        error: "בעיה בטעינת רשימת המקצועות. אנא נסו שוב",
+        error: "בעיה בטעינת רשימת המקצועות אנא נסו שוב",
         createSuccess: "מקצוע נוסף בהצלחה",
-        createError: "בעיה בהוספת מקצוע. אנא נסו שוב",
+        createError: "בעיה בהוספת מקצוע אנא נסו שוב",
         deleteSuccess: "מקצוע נמחק בהצלחה",
-        deleteError: "בעיה במחיקת המקצוע. אנא נסו שוב",
+        deleteError: "בעיה במחיקת המקצוע אנא נסו שוב",
         invalid: "חסרים פרמטרים",
         updateSuccess: "מקצוע עודכן בהצלחה",
-        updateError: "בעיה בעדכון המקצוע. אנא נסו שוב",
+        updateError: "בעיה בעדכון המקצוע אנא נסו שוב",
     },
     classes: {
         success: "רשימת כיתות נטענה בהצלחה",
-        error: "בעיה בטעינת רשימת הכיתות. אנא נסו שוב",
+        error: "בעיה בטעינת רשימת הכיתות אנא נסו שוב",
         createSuccess: "כיתה נוספה בהצלחה",
-        createError: "בעיה בהוספת כיתה. אנא נסו שוב",
+        createError: "בעיה בהוספת כיתה אנא נסו שוב",
         deleteSuccess: "כיתה נמחקה בהצלחה",
-        deleteError: "בעיה במחיקת כיתה. אנא נסו שוב",
+        deleteError: "בעיה במחיקת כיתה אנא נסו שוב",
         invalid: "חסרים פרמטרים",
         updateSuccess: "כיתה עודכנה בהצלחה",
-        updateError: "בעיה בעדכון כיתה. אנא נסו שוב",
+        updateError: "בעיה בעדכון כיתה אנא נסו שוב",
     },
     annualSchedule: {
         success: "מערכת שנתית נטענה בהצלחה",
-        error: "בעיה בטעינת המערכת השנתית. אנא נסו שוב",
-        createSuccess: "השעה נוספה למערכת השנתית בהצלחה",
-        createError: "בעיה בהוספת שעה למערכת השנתית. אנא נסו שוב",
-        deleteSuccess: "השעה נמחקה במערכת השנתית בהצלחה",
-        deleteError: "בעיה במחיקת שעה במערכת השנתית. אנא נסו שוב",
+        error: "בעיה בטעינת המערכת השנתית אנא נסו שוב",
+        createSuccess: "שעה נוספה למערכת היומית בהצלחה",
+        createError: "בעיה בהוספת שעה למערכת השנתית אנא נסו שוב",
+        deleteSuccess: "שעה נמחקה מהמערכת היומית",
+        deleteError: "בעיה במחיקת שעה במערכת השנתית אנא נסו שוב",
         updateSuccess: "השעה עודכנה במערכת השנתית בהצלחה",
-        updateError: "בעיה בעדכון שעה במערכת השנתית. אנא נסו שוב",
+        updateError: "בעיה בעדכון שעה במערכת השנתית אנא נסו שוב",
     },
     dailySchedule: {
         success: "המערכת היומית נטענה בהצלחה",
-        error: "בעיה בטעינת המערכת היומית. אנא נסו שוב",
+        error: "בעיה בטעינת המערכת היומית אנא נסו שוב",
         createSuccess: "שעה נוספה למערכת היומית",
-        createError: "בעיה בהוספת שעה למערכת היומית. אנא נסו שוב",
+        createError: "בעיה בהוספת שעה למערכת היומית אנא נסו שוב",
         updateSuccess: "השעה עודכנה בהצלחה",
-        updateError: "בעיה בעדכון שעה במערכת היומית. אנא נסו שוב",
+        updateError: "בעיה בעדכון שעה במערכת היומית אנא נסו שוב",
         deleteSuccess: "העמודה נמחקה",
-        deleteError: "בעיה במחיקת עמודה במערכת היומית. אנא נסו שוב",
+        deleteError: "בעיה במחיקת עמודה במערכת היומית אנא נסו שוב",
         noScheduleFound: "לא נמצאו שעות לימוד למורה ביום זה",
     },
     publish: {
         success: "המערכת היומית פורסמה וזמינה למורים",
-        error: "בעיה בפרסום המערכת, אנא נסו שוב",
+        error: "בעיה בפרסום המערכת אנא נסו שוב",
         alreadyPublished: "יום זה כבר פורסם",
     },
-    //TODO: do I need a text here?
+    //TODO: text?
     share: {
-        teacher: {
-            title: "",
-            text: "",
-        },
         daily: {
             title: "",
             text: "",

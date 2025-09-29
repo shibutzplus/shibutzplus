@@ -9,9 +9,7 @@ import { STATUS_AUTH } from "@/models/constant/session";
 import Icons from "@/style/icons";
 import { useAccessibility } from "../../../hooks/useAccessibility";
 import routePath from "../../../routes";
-import router from "../../../routes";
-import { clearStorage } from "@/lib/localStorage";
-import { clearSchoolCookie, clearTeacherCookie, getSchoolCookie } from "@/lib/cookies";
+import { clearStorage, getStorageTeacher } from "@/lib/localStorage";
 import { clearSessionStorage } from "@/lib/sessionStorage";
 
 type HamburgerNavProps = {
@@ -139,11 +137,12 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose, variant = 
             clearStorage()
             signOut({ callbackUrl: routePath.signIn.p })
         } else {
-            const schoolId = getSchoolCookie()
-            clearSchoolCookie()
-            clearTeacherCookie()
-            if (schoolId) route.push(`${router.teacherSignIn.p}/${schoolId}`)
-            else route.push(`${router.teacherSignIn.p}`)
+            // Read schoolId from teacher stored in localStorage
+            const schoolId = getStorageTeacher()?.schoolId
+            if (schoolId)
+                route.push(`${routePath.teacherSignIn.p}/${schoolId}?auth=logout`)
+            else
+                route.push(`${routePath.teacherSignIn.p}?auth=logout`)
         }
         onClose()
     }
@@ -156,6 +155,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose, variant = 
                 role="dialog"
                 aria-modal="true"
                 aria-label="Navigation menu"
+                id="mobile-menu"
             >
                 <button className={styles.closeButton} onClick={onClose} aria-label="Close menu">
                     <Icons.close size={24} />

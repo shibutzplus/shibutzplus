@@ -5,16 +5,39 @@ import PortalWriteRow from "../PortalWriteRow/PortalWriteRow";
 import { usePortal } from "@/context/PortalContext";
 import NotPublishedLayout from "@/components/layout/NotPublishedLayout/NotPublishedLayout";
 
-const PortalTable: React.FC = () => {
-    const { mainPortalTable, selectedDate } = usePortal();
+type Props = {
+    embedded?: boolean; // render inside modal Div
+};
+
+const PortalTable: React.FC<Props> = ({ embedded = false }) => {
+    const { mainPortalTable, selectedDate, isPortalLoading } = usePortal(); // use loader state
     const dayTable = selectedDate ? mainPortalTable[selectedDate] : undefined;
     const hasData = !!dayTable && Object.keys(dayTable).length > 0;
 
-    if (!hasData)
-        return <NotPublishedLayout title="" subTitle={["אין לך שינויים במערכת השעות להיום"]} />;
+    if (!hasData) {
+        // In embedded mode show a small preloader while loading, otherwise show nothing
+        if (embedded) {
+            if (isPortalLoading) {
+                // Minimal loader placeholder. Replace with your Loader component if exists.
+                return <div className={styles.loader}></div>;
+            }
+            return null;
+        }
+        // Regular screen "no data" message
+        return (
+            <NotPublishedLayout
+                title=""
+                subTitle={["אין לך שינויים במערכת ליום זה"]}
+            />
+        );
+    }
 
     return (
-        <div className={styles.tableContainer} role="region">
+        <div
+            className={`${styles.tableContainer} ${embedded ? styles.embeddedContainer : ""
+                }`}
+            role="region"
+        >
             <table className={styles.scheduleTable}>
                 <thead>
                     <tr>

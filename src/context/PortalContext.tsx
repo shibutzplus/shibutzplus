@@ -13,10 +13,9 @@ import { PortalSchedule } from "@/models/types/portalSchedule";
 import { getPublishedDatesOptions as getPublishedDatesOptions } from "@/resources/dayOptions";
 import messages from "@/resources/messages";
 import { errorToast } from "@/lib/toast";
-import { getSessionTeacher, setSessionTeacher } from "@/lib/sessionStorage";
-import { getSchoolCookie } from "@/lib/cookies";
 import { getDateReturnString } from "@/utils/time";
 import { selectSelectedDate } from "@/services/portalTeacherService";
+import { getStorageTeacher } from "@/lib/localStorage";
 
 interface PortalContextType {
     selectedDate: string | undefined;
@@ -52,7 +51,15 @@ export const usePortal = () => {
     return context;
 };
 
-export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+// init props for controlled one-time initialization
+type PortalProviderProps = {
+    children: ReactNode;
+    initTeacherId?: string;
+    initSchoolId?: string;
+    initDate?: string;
+};
+
+export const PortalProvider: React.FC<PortalProviderProps> = ({ children, initTeacherId, initSchoolId, initDate }) => {
     const [selectedDate, setSelectedDayId] = useState<string | undefined>();
     const [publishDatesOptions, setPublishDatesOptions] = useState<SelectOption[]>([]);
 
@@ -67,14 +74,15 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
     const [isPublishLoading, setIsPublishLoading] = useState<boolean>(true);
 
+    // One-time init from local storage (fallback when init props are not provided)
     useEffect(() => {
         if (!schoolId) {
-            const cookieTeacher = getSchoolCookie();
-            if (cookieTeacher) setSchoolId(cookieTeacher);
+            const storedTeacher = getStorageTeacher();
+            if (storedTeacher) setSchoolId(storedTeacher.schoolId);
         }
         if (!teacher) {
-            const sessionTeacher = getSessionTeacher();
-            if (sessionTeacher) setTeacher(sessionTeacher);
+            const storedTeacher = getStorageTeacher();
+            if (storedTeacher) setTeacher(storedTeacher);
         }
     }, []);
 
@@ -101,6 +109,38 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     };
 
     const blockRef = useRef<boolean>(true);
+
+    // One-time controlled init from props
+    const didInitFromProps = useRef<boolean>(false);
+    useEffect(() => {
+        // Guard to run only once on mount
+        if (didInitFromProps.current) return;
+        didInitFromProps.current = true;
+
+        // If init props provided from caller, initialize state once and prevent auto date override
+        const init = async () => {
+            if (initDate) {
+                // Set selected date explicitly from caller
+                setSelectedDayId(initDate);
+            }
+            if (initSchoolId && initTeacherId) {
+                // Prevent fetchDateOptions effect from overriding initDate
+                blockRef.current = false;
+                try {
+                    const res = await getTeacherByIdAction(initTeacherId);
+                    if (res.success && res.data) {
+                        setTeacher(res.data);
+                        setSchoolId(initSchoolId);
+                    }
+                } catch (e) {
+                    console.error("Error initializing teacher from props:", e);
+                }
+            }
+        };
+        init();
+        // Dependencies intentionally empty to ensure one-time behavior
+    }, []); // do not add init* deps to keep one-time init
+
     useEffect(() => {
         const fetchDateOptions = async () => {
             if (teacher) {
@@ -171,13 +211,13 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     const fetchPublishScheduleData = async () => {
         setIsPublishLoading(true);
         try {
-            const schoolId = getSchoolCookie();
-            if (!schoolId || !selectedDate) {
+            const effectiveSchoolId = teacher?.schoolId || schoolId;
+            if (!effectiveSchoolId || !selectedDate) {
                 setMainPublishTable([]);
                 return { success: false, error: "" };
             }
 
-            const response = await getDailyScheduleAction(schoolId, selectedDate, {
+            const response = await getDailyScheduleAction(effectiveSchoolId, selectedDate, {
                 isPrivate: false,
             });
             if (response.success && response.data) {
@@ -227,7 +267,6 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
             if (response.success && response.data) {
                 setTeacher(response.data);
                 setSchoolId(schoolId);
-                setSessionTeacher(response.data);
                 return true;
             }
             return false;

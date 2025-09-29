@@ -3,8 +3,7 @@ import { COOKIES_EXPIRE_TIME } from "@/utils/time";
 
 // Cookies keys
 export const COOKIES_KEYS = {
-    SELECTED_SCHOOL: "shibutzplus_school_id",
-    SELECTED_TEACHER: "shibutzplus_teacher_id",
+    FFU: "shibutz_ffu", 
 };
 
 export const getCookie = <T = string>(key: string): T | null => {
@@ -56,24 +55,4 @@ export const clearAllCookies = () => {
         console.error("Error clearing all cookies:", error);
         return false;
     }
-};
-
-export const getTeacherCookie = () => {
-    return getCookie<string>(COOKIES_KEYS.SELECTED_TEACHER);
-};
-export const setTeacherCookie = (teacherId: string) => {
-    return setCookie(COOKIES_KEYS.SELECTED_TEACHER, teacherId);
-};
-export const clearTeacherCookie = () => {
-    return removeCookie(COOKIES_KEYS.SELECTED_TEACHER);
-};
-
-export const getSchoolCookie = () => {
-    return getCookie<string>(COOKIES_KEYS.SELECTED_SCHOOL);
-};
-export const setSchoolCookie = (schoolId: string) => {
-    return setCookie(COOKIES_KEYS.SELECTED_SCHOOL, schoolId);
-};
-export const clearSchoolCookie = () => {
-    return removeCookie(COOKIES_KEYS.SELECTED_SCHOOL);
 };

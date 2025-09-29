@@ -22,6 +22,9 @@ export const getHeaderItems = (scheduleByColumn: Record<string, Record<number, D
         const color = firstItem?.issueTeacherType
             ? COLOR_BY_TYPE[firstItem.issueTeacherType as keyof typeof COLOR_BY_TYPE]
             : undefined;
-        return { title, color };
+        const type = firstItem?.issueTeacherType;
+        const teacherId = firstItem?.issueTeacher?.id;
+        return { title, color, type, teacherId };
     });
 };
+

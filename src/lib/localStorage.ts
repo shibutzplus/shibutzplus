@@ -11,6 +11,7 @@ export const STORAGE_KEYS = {
     SUBJECTS_DATA: "subjects_data",
     SCHOOL_ID: "school_id",
     SCHOOL_DATA: "school_data",
+    TEACHER_DATA: "teacher_data",
 };
 
 export const getStorage = <T>(key: string) => {
@@ -84,5 +85,13 @@ export const getStorageClasses = () => {
 
 export const setStorageClasses = (classes: ClassType[]) => {
     return setStorage(STORAGE_KEYS.CLASSES_DATA, classes);
+};
+
+export const getStorageTeacher = () => {
+    return getStorage<TeacherType>(STORAGE_KEYS.TEACHER_DATA);
+};
+
+export const setStorageTeacher = (teacher: TeacherType) => {
+    return setStorage(STORAGE_KEYS.TEACHER_DATA, teacher);
 };
 

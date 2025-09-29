@@ -13,3 +13,14 @@
   border:1px solid #ccc;
   min-width:200px;
 }
+
+.clickable{
+  user-select:none;
+}
+.clickable:hover{
+  filter: brightness(0.92);
+  cursor: pointer;
+}
+.clickable:focus{
+  outline-offset: -2px;
+}

@@ -26,7 +26,7 @@
 .cellContent {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: right;
     justify-content: center;
     height: 100%;
     line-height: 26px;
