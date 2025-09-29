@@ -13,10 +13,9 @@ import { PortalSchedule } from "@/models/types/portalSchedule";
 import { getPublishedDatesOptions as getPublishedDatesOptions } from "@/resources/dayOptions";
 import messages from "@/resources/messages";
 import { errorToast } from "@/lib/toast";
-import { getSessionTeacher, setSessionTeacher } from "@/lib/sessionStorage";
-import { getSchoolCookie } from "@/lib/cookies";
 import { getDateReturnString } from "@/utils/time";
 import { selectSelectedDate } from "@/services/portalTeacherService";
+import { getStorageTeacher } from "@/lib/localStorage";
 
 interface PortalContextType {
     selectedDate: string | undefined;
@@ -69,12 +68,12 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
     useEffect(() => {
         if (!schoolId) {
-            const cookieTeacher = getSchoolCookie();
-            if (cookieTeacher) setSchoolId(cookieTeacher);
+            const storedTeacher = getStorageTeacher();
+            if (storedTeacher) setSchoolId(storedTeacher.schoolId);
         }
         if (!teacher) {
-            const sessionTeacher = getSessionTeacher();
-            if (sessionTeacher) setTeacher(sessionTeacher);
+            const storedTeacher = getStorageTeacher();
+            if (storedTeacher) setTeacher(storedTeacher);
         }
     }, []);
 
@@ -171,13 +170,13 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     const fetchPublishScheduleData = async () => {
         setIsPublishLoading(true);
         try {
-            const schoolId = getSchoolCookie();
-            if (!schoolId || !selectedDate) {
+            const effectiveSchoolId = teacher?.schoolId || schoolId;
+            if (!effectiveSchoolId || !selectedDate) {
                 setMainPublishTable([]);
                 return { success: false, error: "" };
             }
 
-            const response = await getDailyScheduleAction(schoolId, selectedDate, {
+            const response = await getDailyScheduleAction(effectiveSchoolId, selectedDate, {
                 isPrivate: false,
             });
             if (response.success && response.data) {
@@ -227,7 +226,6 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
             if (response.success && response.data) {
                 setTeacher(response.data);
                 setSchoolId(schoolId);
-                setSessionTeacher(response.data);
                 return true;
             }
             return false;

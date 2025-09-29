@@ -1,12 +1,10 @@
 import { DailyTableLimitNumber, PublishLimitNumber } from "@/models/constant/daily";
 import { DailySchedule } from "@/models/types/dailySchedule";
-import { TeacherType } from "@/models/types/teachers";
 
 // Session keys
 export const SESSION_KEYS = {
     DAILY_TABLE_DATA: "daily_schedule_data",    // Manager Portal
     PUBLISH_DATES: "publish_dates",             // Manager Portal
-    TEACHERS_DATA: "teachers_data",             // Teachers Portal
 };
 
 export const getSessionStorage = <T>(key: string) => {
@@ -94,15 +92,4 @@ export const removeSessionPublishDates = () => {
     return removeSessionStorage(SESSION_KEYS.PUBLISH_DATES);
 };
 
-export const getSessionTeacher = () => {
-    return getSessionStorage<TeacherType>(SESSION_KEYS.TEACHERS_DATA);
-};
-
-export const setSessionTeacher = (teacher: TeacherType) => {
-    return setSessionStorage(SESSION_KEYS.TEACHERS_DATA, teacher);
-};
-
-export const clearSessionTeachers = () => {
-    return removeSessionStorage(SESSION_KEYS.TEACHERS_DATA);
-};
 

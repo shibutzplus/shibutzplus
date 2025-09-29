@@ -5,7 +5,6 @@ const messages = {
     },
     auth: {
         accessDenied: "כדי להתנסות במערכת, פנו אלינו במייל shibutzplus@gmail.com",
-
         unauthorized: "אין הרשאה. אנא התחבר כדי לגשת למידע זה",
         paramRequired: "פרמטר נדרש",
         login: {

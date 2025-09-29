@@ -5,13 +5,15 @@ import HeroSection from "@/components/layout/HeroSection/HeroSection";
 import TeacherAuthForm from "@/components/auth/TeacherAuthForm/TeacherAuthForm";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getTeacherCookie, setSchoolCookie, setTeacherCookie } from "@/lib/cookies";
 import router from "@/routes";
 import { SelectOption } from "@/models/types";
 import { getTeachersAction } from "@/app/actions/GET/getTeachersAction";
 import SignInLoadingPage from "@/components/layout/loading/SignInLoadingPage/SignInLoadingPage";
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
+import { TeacherType } from "@/models/types/teachers";
+import { setStorageTeacher, getStorageTeacher } from "@/lib/localStorage";
+import { getTeacherByIdAction } from "@/app/actions/GET/getTeacherByIdAction";
 
 export default function TeacherSignInPage() {
     const params = useParams();
@@ -21,9 +23,36 @@ export default function TeacherSignInPage() {
     const teacherId = searchParams.get("teacher_id") as string | null;
 
     const [teachers, setTeachers] = useState<SelectOption[]>([]);
+    const [teachersFull, setTeachersFull] = useState<TeacherType[]>([]);
     const [isLoadingTeachers, setIsLoadingTeachers] = useState(true);
 
     const [isLoading, setIsLoading] = useState(true);
+
+    const fetchTeachers = async () => {
+        if (!schoolId) return;
+        try {
+            setIsLoading(false);
+            setIsLoadingTeachers(true);
+            const response = await getTeachersAction(schoolId, { isPrivate: false, hasSub: false });
+            if (response.success && response.data) {
+                const teacherOptions: SelectOption[] = response.data.map((teacher) => ({
+                    value: teacher.id,
+                    label: teacher.name,
+                }));
+                setTeachers(teacherOptions);
+                setTeachersFull(response.data);
+            } else {    // Back to login page on error
+                route.push(`${router.teacherSignIn.p}`);
+            }
+        } catch (error) {
+            console.error("Error fetching teachers:", error);
+            errorToast(messages.auth.login.failed);
+            route.push(`${router.teacherSignIn.p}`);
+        } finally {
+            setIsLoadingTeachers(false);
+        }
+    };
+
 
     useEffect(() => {
         if (!schoolId) {
@@ -31,45 +60,47 @@ export default function TeacherSignInPage() {
             return;
         }
 
-        // Check if teacherId is provided in URL query params
+        const isLogout = searchParams.get("auth") === "logout";
+        if (isLogout) {
+            setIsLoading(false);
+            setIsLoadingTeachers(true);
+            fetchTeachers();
+            return;
+        }
+
         if (teacherId) {
-            setSchoolCookie(schoolId);
-            setTeacherCookie(teacherId);
-            route.push(`${router.teacherPortal.p}/${schoolId}/${teacherId}`);
-            return;
-        }
-
-        // Check if teacher is already selected via cookie
-        const selectedTeacherId = getTeacherCookie();
-        if (selectedTeacherId) {
-            route.push(`${router.teacherPortal.p}/${schoolId}/${selectedTeacherId}`);
-            return;
-        }
-
-        // Fetch teachers for the given schoolId
-        const fetchTeachers = async () => {
-            try {
-                setIsLoading(false);
-                setIsLoadingTeachers(true);
-                const response = await getTeachersAction(schoolId, { isPrivate: false, hasSub: false });
-                if (response.success && response.data) {
-                    const teacherOptions: SelectOption[] = response.data.map((teacher) => ({
-                        value: teacher.id,
-                        label: teacher.name,
-                    }));
-                    setTeachers(teacherOptions);
-                } else {
-                    errorToast(response.message || messages.teachers.error);
-                    route.push(`${router.teacherSignIn.p}`);
+            (async () => {
+                try {
+                    setIsLoading(true);
+                    const resp = await getTeacherByIdAction(teacherId);
+                    if (resp.success && resp.data) {
+                        const t = resp.data as TeacherType;
+                        const safeTeacher: TeacherType = {
+                            id: t.id,
+                            name: t.name,
+                            role: t.role,
+                            schoolId: t.schoolId,
+                        };
+                        setStorageTeacher(safeTeacher);
+                        route.push(`${router.teacherPortal.p}/${schoolId}/${t.id}`);
+                        return;
+                    }
+                    errorToast(messages.auth.login.failed);
+                } catch (e) {
+                    console.error("Error in teacher_id auto login:", e);
+                    errorToast(messages.auth.login.failed);
+                } finally {
+                    setIsLoading(false);
                 }
-            } catch (error) {
-                console.error("Error fetching teachers:", error);
-                errorToast(messages.teachers.error);
-                route.push(`${router.teacherSignIn.p}`);
-            } finally {
-                setIsLoadingTeachers(false);
-            }
-        };
+            })();
+            return;
+        }
+
+        const storedTeacher = getStorageTeacher();
+        if (storedTeacher) {
+            route.push(`${router.teacherPortal.p}/${schoolId}/${storedTeacher.id}`);
+            return;
+        }
 
         fetchTeachers();
     }, [route, schoolId, teacherId]);
@@ -86,6 +117,7 @@ export default function TeacherSignInPage() {
                     <TeacherAuthForm
                         schoolId={schoolId}
                         teachers={teachers}
+                        teachersFull={teachersFull}
                         isLoadingTeachers={isLoadingTeachers}
                     />
                 </div>
