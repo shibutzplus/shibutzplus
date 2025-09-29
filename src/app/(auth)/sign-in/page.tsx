@@ -30,8 +30,10 @@ const SignInContent: React.FC = () => {
     useEffect(() => {
         if (googleError === "AccessDenied") {
             infoToast(messages.auth.accessDenied);
+            router.replace(window.location.pathname);
         }
-    }, [googleError]);
+    }, [googleError, router]);
+
 
     useEffect(() => {
         if (status === STATUS_LOADING) setIsLoading(true);
@@ -85,7 +87,7 @@ const SignInContent: React.FC = () => {
                         disabled={isLoading}
                     >
                         {isLoading ? <Loading /> : null}
-                        <GoogleIcon /> התחברות בעזרת Google
+                        <GoogleIcon /> משתמש רשום - התחברות
                     </button>
                     {error && <p className={styles.error}>{error}</p>}
                     <div className={styles.registerLink}>

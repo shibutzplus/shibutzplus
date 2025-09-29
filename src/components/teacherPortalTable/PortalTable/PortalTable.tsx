@@ -27,7 +27,7 @@ const PortalTable: React.FC<Props> = ({ embedded = false }) => {
         return (
             <NotPublishedLayout
                 title=""
-                subTitle={["אין לך שינויים במערכת השעות להיום"]}
+                subTitle={["אין לך שינויים במערכת ליום זה"]}
             />
         );
     }
