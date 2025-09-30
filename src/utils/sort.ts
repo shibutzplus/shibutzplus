@@ -165,6 +165,14 @@ export const sortDailyTeachers = (
         });
     }
 
+    // Build a set of all teachers appearing anywhere in the annual schedule
+    const annualTeacherIds = new Set<string>();
+    Object.values(mapAvailableTeachers || {}).forEach((hoursMap) => {
+        Object.values(hoursMap || {}).forEach((ids) => {
+            ids.forEach((id) => annualTeacherIds.add(id));
+        });
+    });
+
     // Track teachers already assigned in other daily columns for this hour
     const dailyAssignedTeacherIds = new Set<string>();
     const subTeachersThisHour = new Set<string>(); // teachers assigned as a sub
@@ -210,19 +218,13 @@ export const sortDailyTeachers = (
                     unavailableTeachers.push(teacher);
                 }
             } else {
-                // Regular teacher with a free day (not teaching at all today)
-                freeDayTeachers.push(teacher);
+                // Regular teacher with a free day, but only if they appear in the annual schedule at least once
+                if (annualTeacherIds.has(teacher.id)) {
+                    freeDayTeachers.push(teacher);
+                }
             }
         }
     }
-
-    // Build a set of all teachers appearing anywhere in the annual schedule
-    const annualTeacherIds = new Set<string>();
-    Object.values(mapAvailableTeachers || {}).forEach((hoursMap) => {
-        Object.values(hoursMap || {}).forEach((ids) => {
-            ids.forEach((id) => annualTeacherIds.add(id));
-        });
-    });
 
     // Regular teachers with zero annual hours
     const extraRegularTeachers = allTeachers.filter(
@@ -239,13 +241,11 @@ export const sortDailyTeachers = (
 
     // Additional teachers for the same lesson (co-teachers of the header's class at this time)
     const additionalLessonTeachers: TeacherType[] = (() => {
-        // If no header teacher context or no index for this slot, nothing to show
         if (!currentHeaderTeacherId) return [];
         const indexForSlot = teacherAtIndex?.[dayKey]?.[hourStr] || {};
         const headerClassId = indexForSlot[currentHeaderTeacherId];
         if (!headerClassId) return [];
 
-        // Collect teachers mapped to the same classId at this day/hour (exclude header and active subs / already assigned)
         const ids = Object.entries(indexForSlot)
             .filter(([tid, cid]) => cid === headerClassId && tid !== currentHeaderTeacherId)
             .map(([tid]) => tid)
@@ -253,7 +253,6 @@ export const sortDailyTeachers = (
 
         if (ids.length === 0) return [];
 
-        // Map ids to TeacherType (skip unknown)
         const byId = new Map(allTeachers.map((t) => [t.id, t]));
         const unique: TeacherType[] = [];
         const seen = new Set<string>();
@@ -315,4 +314,3 @@ export const sortDailyTeachers = (
 
     return groups;
 };
-
