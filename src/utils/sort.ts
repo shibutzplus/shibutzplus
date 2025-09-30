@@ -267,6 +267,10 @@ export const sortDailyTeachers = (
         return unique;
     })();
 
+    // Exclude "מורים נוספים בתקן" from the Unavailable list
+    const additionalIds = new Set(additionalLessonTeachers.map((t) => t.id));
+    const filteredUnavailableTeachers = unavailableTeachers.filter((t) => !additionalIds.has(t.id));
+
     // Groups
     const groups: GroupOption[] = [
         {
@@ -293,7 +297,7 @@ export const sortDailyTeachers = (
         },
         {
             label: "מורים לא פנויים",
-            options: unavailableTeachers.map((teacher) => ({
+            options: filteredUnavailableTeachers.map((teacher) => ({
                 value: teacher.id,
                 label: getUnavailableLabel(teacher),
             })),
