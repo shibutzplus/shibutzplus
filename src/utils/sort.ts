@@ -282,7 +282,7 @@ export const sortDailyTeachers = (
             options: additionalLessonTeachers.map((t) => ({ value: t.id, label: t.name })),
         },
         {
-            label: "מורים ממלאי מקום",
+            label: "מורים מילוי מקום",
             options: substituteTeachers.map((teacher) => ({
                 value: teacher.id,
                 label: teacher.name,
@@ -297,6 +297,7 @@ export const sortDailyTeachers = (
         },
         {
             label: "מורים לא פנויים",
+            collapsed: true,
             options: filteredUnavailableTeachers.map((teacher) => ({
                 value: teacher.id,
                 label: getUnavailableLabel(teacher),
@@ -304,10 +305,12 @@ export const sortDailyTeachers = (
         },
         {
             label: "מורים נוספים בתקן",
+            collapsed: true,
             options: extraRegularTeachers.map((t) => ({ value: t.id, label: t.name })),
         },
         {
             label: "מורים ביום חופשי",
+            collapsed: true,
             options: freeDayTeachers.map((t) => ({ value: t.id, label: t.name })),
         },
         {
