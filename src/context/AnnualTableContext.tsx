@@ -15,7 +15,7 @@ import { AnnualScheduleRequest, AnnualScheduleType, WeeklySchedule } from "@/mod
 import { ClassType } from "@/models/types/classes";
 import { Pair, SelectOption } from "@/models/types";
 import { SelectMethod } from "@/models/types/actions";
-import { TeacherType } from "@/models/types/teachers";
+import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import { SubjectType } from "@/models/types/subjects";
 
 interface AnnualTableContextType {
@@ -96,7 +96,7 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
     };
 
     const teachersSelectOptions = () => {
-        const regular = (teachers || []).filter((t) => t.role === "regular");
+        const regular = (teachers || []).filter((t) => t.role === TeacherRoleValues.REGULAR);
         return createSelectOptions<TeacherType>(sortByHebrewName(regular));
     };
 

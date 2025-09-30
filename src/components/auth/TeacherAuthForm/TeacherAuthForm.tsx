@@ -6,7 +6,7 @@ import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputS
 import SubmitBtn from "@/components/ui/buttons/SubmitBtn/SubmitBtn";
 import { SelectOption } from "@/models/types";
 import { getStorageTeacher, setStorageTeacher } from "@/lib/localStorage";
-import { TeacherType } from "@/models/types/teachers";
+import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import router from "@/routes";
 import messages from "@/resources/messages";
 import styles from "./TeacherAuthForm.module.css";
@@ -38,7 +38,7 @@ const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({
         if (schoolId && stored.schoolId !== schoolId) return;
 
         // If substitute → hide regular teachers list
-        if (stored.role === "substitute") {
+        if (stored.role === TeacherRoleValues.SUBSTITUTE) {
             setSelectedTeacher(stored.id);
             setUseSubstituteQuickLogin(true);
             return;

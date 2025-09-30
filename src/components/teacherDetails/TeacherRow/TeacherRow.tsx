@@ -28,7 +28,7 @@ const TeacherRow: React.FC<TeacherRowProps> = ({ teacher, handleDeleteTeacher })
             field={{ key: "name", placeholder: "לדוגמא: ישראל ישראלי" }}
             getId={(t) => t.id}
             getInitialValue={(t) => t.name}
-            updateExtraFields={() => ({ role: "regular" as const, schoolId: teacher.schoolId })}
+            updateExtraFields={() => ({ role: TeacherRoleValues.REGULAR, schoolId: teacher.schoolId })}
             link={generateSchoolUrl(teacher.schoolId, teacher.id)}
         />
     );

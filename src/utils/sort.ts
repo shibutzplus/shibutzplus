@@ -105,9 +105,9 @@ export const sortDailyTeachers = (
             continue;
         }
 
-        if (teacher.role === "substitute") {
+        if (teacher.role === TeacherRoleValues.SUBSTITUTE) {
             substituteTeachers.push(teacher);
-        } else if (teacher.role === "regular") {
+        } else if (teacher.role === TeacherRoleValues.REGULAR) {
             const teachesToday = teachesOnDayIds.has(teacher.id);
             const scheduledThisHour = scheduledTeacherIds.has(teacher.id);
 
@@ -131,7 +131,7 @@ export const sortDailyTeachers = (
 
     // Regular teachers who have zero hours in the annual schedule
     const extraRegularTeachers = allTeachers.filter(
-        (t) => t.role === "regular" && !annualTeacherIds.has(t.id)
+        (t) => t.role === TeacherRoleValues.REGULAR && !annualTeacherIds.has(t.id)
     );
 
     // TODO: if array is empty, the lable wont show (react-select functionality)
