@@ -38,7 +38,9 @@ export const clearStorage = () => {
     localStorage.clear();
 };
 
-
+//
+// CacheTimestamp
+//
 export const getCacheTimestamp = () => {
     return getStorage<string>(STORAGE_KEYS.CACHE_TIMESTAMP);
 };
@@ -47,6 +49,9 @@ export const setCacheTimestamp = (timestamp: string) => {
     return setStorage(STORAGE_KEYS.CACHE_TIMESTAMP, timestamp);
 };
 
+//
+// SchoolId & SchoolData
+//
 export const getStorageSchoolId = () => {
     return getStorage<string>(STORAGE_KEYS.SCHOOL_ID);
 };
@@ -63,6 +68,9 @@ export const setStorageSchool = (school: SchoolType) => {
     return setStorage(STORAGE_KEYS.SCHOOL_DATA, school);
 };
 
+//
+// Teachers
+//
 export const getStorageTeachers = () => {
     return getStorage<TeacherType[]>(STORAGE_KEYS.TEACHERS_DATA);
 };
@@ -71,6 +79,9 @@ export const setStorageTeachers = (teachers: TeacherType[]) => {
     return setStorage(STORAGE_KEYS.TEACHERS_DATA, teachers);
 };
 
+//
+// Subjects
+//
 export const getStorageSubjects = () => {
     return getStorage<SubjectType[]>(STORAGE_KEYS.SUBJECTS_DATA);
 };
@@ -79,6 +90,9 @@ export const setStorageSubjects = (subjects: SubjectType[]) => {
     return setStorage(STORAGE_KEYS.SUBJECTS_DATA, subjects);
 };
 
+//
+// Classes
+//
 export const getStorageClasses = () => {
     return getStorage<ClassType[]>(STORAGE_KEYS.CLASSES_DATA);
 };
@@ -87,6 +101,9 @@ export const setStorageClasses = (classes: ClassType[]) => {
     return setStorage(STORAGE_KEYS.CLASSES_DATA, classes);
 };
 
+//
+// Current logged in Teacher
+//
 export const getStorageTeacher = () => {
     return getStorage<TeacherType>(STORAGE_KEYS.TEACHER_DATA);
 };
