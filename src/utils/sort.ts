@@ -182,11 +182,10 @@ export const sortDailyTeachers = (
         });
     }
 
-    const substituteTeachers: TeacherType[] = [];   // substitute teachers  
-    const availableTeachers: TeacherType[] = [];    // regular teachers free this hour  
-    const unavailableTeachers: TeacherType[] = [];  // teachers busy this hour  
-    const freeDayTeachers: TeacherType[] = [];      // regular teachers not teaching on this day  
-
+    const substituteTeachers: TeacherType[] = [];   // substitute teachers
+    const availableTeachers: TeacherType[] = [];    // regular teachers free this hour
+    const unavailableTeachers: TeacherType[] = [];  // teachers busy this hour
+    const freeDayTeachers: TeacherType[] = [];      // regular teachers not teaching on this day
 
     for (const teacher of allTeachers) {
         // skip the column's header teacher as it should not appear in its own dropdown
@@ -238,11 +237,46 @@ export const sortDailyTeachers = (
         return subTeachersThisHour.has(t.id) ? `${base} (מ"מ)` : base;
     };
 
+    // Additional teachers for the same lesson (co-teachers of the header's class at this time)
+    const additionalLessonTeachers: TeacherType[] = (() => {
+        // If no header teacher context or no index for this slot, nothing to show
+        if (!currentHeaderTeacherId) return [];
+        const indexForSlot = teacherAtIndex?.[dayKey]?.[hourStr] || {};
+        const headerClassId = indexForSlot[currentHeaderTeacherId];
+        if (!headerClassId) return [];
+
+        // Collect teachers mapped to the same classId at this day/hour (exclude header and active subs / already assigned)
+        const ids = Object.entries(indexForSlot)
+            .filter(([tid, cid]) => cid === headerClassId && tid !== currentHeaderTeacherId)
+            .map(([tid]) => tid)
+            .filter((tid) => !subTeachersThisHour.has(tid) && !dailyAssignedTeacherIds.has(tid));
+
+        if (ids.length === 0) return [];
+
+        // Map ids to TeacherType (skip unknown)
+        const byId = new Map(allTeachers.map((t) => [t.id, t]));
+        const unique: TeacherType[] = [];
+        const seen = new Set<string>();
+        for (const id of ids) {
+            if (seen.has(id)) continue;
+            const t = byId.get(id);
+            if (t) {
+                unique.push(t);
+                seen.add(id);
+            }
+        }
+        return unique;
+    })();
+
     // Groups
     const groups: GroupOption[] = [
         {
             label: "הסרת ממלא מקום",
             options: [{ value: EmptyValue, label: "🗑️" }],
+        },
+        {
+            label: "מורה נוסף בשיעור",
+            options: additionalLessonTeachers.map((t) => ({ value: t.id, label: t.name })),
         },
         {
             label: "מורים ממלאי מקום",
@@ -281,3 +315,4 @@ export const sortDailyTeachers = (
 
     return groups;
 };
+
