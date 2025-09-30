@@ -59,7 +59,7 @@ const InputRichText: React.FC<InputRichTextProps> = ({
             attributes: {
                 class: styles.editor,
                 "data-placeholder": placeholder || "",
-                style: `min-height:${minHeight}px; height: 100%;`,
+                style: `min-height:${minHeight}px; height:100%; overflow-wrap:anywhere; word-break:break-word;`,
                 dir: "auto",
             },
         },
