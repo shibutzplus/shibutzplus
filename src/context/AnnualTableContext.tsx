@@ -8,7 +8,16 @@ import messages from "@/resources/messages";
 import { createSelectOptions } from "@/utils/format";
 import { dayToNumber } from "@/utils/time";
 import { sortByHebrewName } from "@/utils/sort";
-import { createPairs, createAnnualRequests, setNewScheduleTemplate, getUniqueCellsFromQueue, getSelectedClass } from "@/services/annualScheduleService";
+import {
+    createPairs,
+    createAnnualRequests,
+    setNewScheduleTemplate,
+    getUniqueCellsFromQueue,
+    getSelectedClass,
+    buildTeacherAtIndex,
+    buildClassNameById,
+    buildWeeklyScheduleFromAnnual,
+} from "@/services/annualScheduleService";
 import { addAnnualScheduleAction } from "@/app/actions/POST/addAnnualScheduleAction";
 import { deleteAnnualScheduleAction } from "@/app/actions/DELETE/deleteAnnualScheduleAction";
 import { AnnualScheduleRequest, AnnualScheduleType, WeeklySchedule } from "@/models/types/annualSchedule";
@@ -17,6 +26,9 @@ import { Pair, SelectOption } from "@/models/types";
 import { SelectMethod } from "@/models/types/actions";
 import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import { SubjectType } from "@/models/types/subjects";
+
+type TeacherAtIndex = Record<string, Record<string, Record<string, string>>>;
+type ClassNameById = Record<string, string>;
 
 interface AnnualTableContextType {
     annualScheduleTable: AnnualScheduleType[] | undefined;
@@ -37,11 +49,14 @@ interface AnnualTableContextType {
         method: SelectMethod,
         newElementObj?: TeacherType | SubjectType,
     ) => Promise<void>;
-
     teachersSelectOptions: () => SelectOption[];
     selectedTeacherId: string;
     handleTeacherChange: (value: string) => void;
     canShowTable: boolean;
+    teacherAtIndex: TeacherAtIndex;
+    setTeacherAtIndex: React.Dispatch<React.SetStateAction<TeacherAtIndex>>;
+    classNameById: ClassNameById;
+    setClassNameById: React.Dispatch<React.SetStateAction<ClassNameById>>;
 }
 
 const AnnualTableContext = createContext<AnnualTableContextType | undefined>(undefined);
@@ -59,13 +74,12 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
     const [selectedClassId, setSelectedClassId] = useState<string>(classes?.[0]?.id || "");
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [annualScheduleTable, setAnnualScheduleTable] = useState<
-        AnnualScheduleType[] | undefined
-    >(undefined);
-
+    const [annualScheduleTable, setAnnualScheduleTable] = useState<AnnualScheduleType[] | undefined>(undefined);
     const [queueRows, setQueueRows] = useState<AnnualScheduleRequest[]>([]);
     const [schedule, setSchedule] = useState<WeeklySchedule>({});
     const [selectedTeacherId, setSelectedTeacherId] = useState<string>("");
+    const [teacherAtIndex, setTeacherAtIndex] = useState<TeacherAtIndex>({});
+    const [classNameById, setClassNameById] = useState<ClassNameById>({});
 
     useInitAnnualData({
         annualScheduleTable,
@@ -89,6 +103,21 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
             handleSave();
         }
     }, [queueRows]);
+
+    // Initialize/refresh schedule from annual table
+    useEffect(() => {
+        setSchedule(buildWeeklyScheduleFromAnnual(annualScheduleTable));
+    }, [annualScheduleTable]);
+
+    // Rebuild reverse index whenever schedule changes
+    useEffect(() => {
+        setTeacherAtIndex(buildTeacherAtIndex(schedule));
+    }, [schedule]);
+
+    // Rebuild class name map whenever classes change
+    useEffect(() => {
+        setClassNameById(buildClassNameById(classes));
+    }, [classes]);
 
     const classesSelectOptions = () => {
         const opts = createSelectOptions<ClassType>(sortByHebrewName(classes || []));
@@ -244,6 +273,10 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
         selectedTeacherId,
         handleTeacherChange,
         canShowTable,
+        teacherAtIndex,
+        setTeacherAtIndex,
+        classNameById,
+        setClassNameById,
     };
 
     return <AnnualTableContext.Provider value={value}>{children}</AnnualTableContext.Provider>;

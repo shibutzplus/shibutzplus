@@ -61,35 +61,36 @@ export const sortDailyTeachers = (
     },
     day: string,
     hour: number,
+    teacherAtIndex: Record<string, Record<string, Record<string, string>>> = {},
+    classNameById: Record<string, string> = {},
+    currentHeaderTeacherId?: string,
 ) => {
-    const dayStr = dayToNumber(day);
+    const dayNum = dayToNumber(day);
+    const dayKey = String(dayNum);
     const hourStr = hour.toString();
 
-    // Get teachers scheduled for this day/hour from annual schedule
-    const scheduledTeacherIds = new Set(mapAvailableTeachers[dayStr]?.[hourStr] || []);
+    // Annual availability lookups
+    const scheduledTeacherIds = new Set(mapAvailableTeachers[dayNum]?.[hourStr] || []);
     const teachesOnDayIds = new Set<string>();
-
-    // Build set of teachers who teach on this day (any hour)
-    if (mapAvailableTeachers[dayStr]) {
-        Object.values(mapAvailableTeachers[dayStr]).forEach((hourTeachers) => {
+    if (mapAvailableTeachers[dayNum]) {
+        Object.values(mapAvailableTeachers[dayNum]).forEach((hourTeachers) => {
             hourTeachers.forEach((id) => teachesOnDayIds.add(id));
         });
     }
 
-    // Set of teachers already assigned in other columns for this hour in daily schedule
+    // Track teachers already assigned in other daily columns for this hour
     const dailyAssignedTeacherIds = new Set<string>();
+    const subTeachersThisHour = new Set<string>(); // teachers assigned as a sub
+
     if (dailyDay) {
         Object.values(dailyDay).forEach((dailyColumn) => {
             const column = dailyColumn[hourStr];
-            if (column) {
-                // Check substitute teacher
-                if (column.subTeacher?.id) {
-                    dailyAssignedTeacherIds.add(column.subTeacher.id);
-                }
-                // // Check header teacher (main teacher for the column)
-                // if (column.headerCol?.headerTeacher?.id) {
-                //     dailyAssignedTeacherIds.add(column.headerCol.headerTeacher.id);
-                // }
+            if (!column) return;
+
+            // Sub teacher occupying this hour in another column
+            if (column.subTeacher?.id) {
+                dailyAssignedTeacherIds.add(column.subTeacher.id);
+                subTeachersThisHour.add(column.subTeacher.id); // mark as current substitute
             }
         });
     }
@@ -99,7 +100,10 @@ export const sortDailyTeachers = (
     const unavailableTeachers: TeacherType[] = [];
 
     for (const teacher of allTeachers) {
-        // Skip teachers already assigned in other columns for this hour
+        // skip the column's header teacher as it should not appear in its own dropdown
+        if (currentHeaderTeacherId && teacher.id === currentHeaderTeacherId) continue;
+
+        // Block teachers already placed in another daily column at this hour
         if (dailyAssignedTeacherIds.has(teacher.id)) {
             unavailableTeachers.push(teacher);
             continue;
@@ -121,7 +125,7 @@ export const sortDailyTeachers = (
         }
     }
 
-    // Build a Set of all teacher IDs that appear anywhere in the annual (yearly) schedule
+    // Build a set of all teachers appearing anywhere in the annual schedule
     const annualTeacherIds = new Set<string>();
     Object.values(mapAvailableTeachers || {}).forEach((hoursMap) => {
         Object.values(hoursMap || {}).forEach((ids) => {
@@ -129,49 +133,59 @@ export const sortDailyTeachers = (
         });
     });
 
-    // Regular teachers who have zero hours in the annual schedule
+    // Regular teachers with zero annual hours
     const extraRegularTeachers = allTeachers.filter(
         (t) => t.role === TeacherRoleValues.REGULAR && !annualTeacherIds.has(t.id)
     );
 
-    // TODO: if array is empty, the lable wont show (react-select functionality)
+    // Label helper: add class name for annual-unavailable and "(מ\"מ)" for active daily subs
+    const getUnavailableLabel = (t: TeacherType) => {
+        const classId = teacherAtIndex?.[dayKey]?.[hourStr]?.[t.id];
+        const className = classId ? (classNameById[classId] || classId) : undefined;
+        const base = className ? `${t.name} (${className})` : t.name;
+        return subTeachersThisHour.has(t.id) ? `${base} (מ"מ)` : base;
+    };
+
+    // Groups
     const groups: GroupOption[] = [
         {
             label: "הסרת ממלא מקום",
             options: [{ value: EmptyValue, label: "🗑️" }],
         },
         {
-            label: "מורים ממלאי מקום", // Substitute
+            label: "מורים ממלאי מקום",
             options: substituteTeachers.map((teacher) => ({
                 value: teacher.id,
                 label: teacher.name,
             })),
         },
         {
-            label: "מורים פנויים", // Available Teachers
+            label: "מורים פנויים",
             options: availableTeachers.map((teacher) => ({
                 value: teacher.id,
                 label: teacher.name,
             })),
         },
         {
-            label: "מורים לא פנויים", // Unavailable Teachers
+            label: "מורים לא פנויים",
             options: unavailableTeachers.map((teacher) => ({
                 value: teacher.id,
-                label: teacher.name,
+                label: getUnavailableLabel(teacher),
             })),
         },
         {
-            label: "מורים נוספים בתקן", // Teachers without fixed hours in the schedule
+            label: "מורים נוספים בתקן",
             options: extraRegularTeachers.map((t) => ({ value: t.id, label: t.name })),
         },
         {
-            label: "אפשרויות נוספות",   // Additional Options like Trip, Go home, etc.
+            label: "אפשרויות נוספות",
             options: dailySelectActivity,
         },
     ];
+
     return groups;
 };
+
 
 
 // Annual Schedule: Build grouped teacher options (available vs unavailable) for a class at a specific day/hour in the annual schedule

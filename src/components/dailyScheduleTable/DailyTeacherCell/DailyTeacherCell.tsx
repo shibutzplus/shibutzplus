@@ -12,6 +12,7 @@ import messages from "@/resources/messages";
 import { sortDailyTeachers } from "@/utils/sort";
 import { activityOptionsMapValToLabel } from "@/resources/dailySelectActivities";
 import { EmptyValue } from "@/models/constant/daily";
+import { useAnnualTable } from "@/context/AnnualTableContext";
 
 type DailyTeacherCellProps = {
     cell: CellContext<TeacherRow, unknown>;
@@ -27,6 +28,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
         updateTeacherCell,
         clearTeacherCell,
     } = useDailyTableContext();
+    const { teacherAtIndex, classNameById } = useAnnualTable();
     const [isLoading, setIsLoading] = useState(false);
 
     // Get data from the row data
@@ -51,8 +53,20 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
                 mainDailyTable[selectedDate],
                 day,
                 Number(hour),
+                teacherAtIndex,
+                classNameById,
+                headerData?.headerTeacher?.id,
             ),
-        [teachers, mapAvailableTeachers, mainDailyTable, selectedDate, hour],
+        [
+            teachers,
+            mapAvailableTeachers,
+            mainDailyTable,
+            selectedDate,
+            hour,
+            teacherAtIndex,
+            classNameById,
+            headerData?.headerTeacher?.id,
+        ],
     );
 
     const checkIfActivity = (value: string) =>
@@ -150,6 +164,3 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
 };
 
 export default DailyTeacherCell;
-
-// TODO: option to opacity other options
-// style={{ opacity: selectedSubTeacher === "trip" ? 0.3 : 1 }}
