@@ -95,9 +95,11 @@ export const sortDailyTeachers = (
         });
     }
 
-    const substituteTeachers: TeacherType[] = [];
-    const availableTeachers: TeacherType[] = [];
-    const unavailableTeachers: TeacherType[] = [];
+    const substituteTeachers: TeacherType[] = [];   // substitute teachers  
+    const availableTeachers: TeacherType[] = [];    // regular teachers free this hour  
+    const unavailableTeachers: TeacherType[] = [];  // teachers busy this hour  
+    const freeDayTeachers: TeacherType[] = [];      // regular teachers not teaching on this day  
+
 
     for (const teacher of allTeachers) {
         // skip the column's header teacher as it should not appear in its own dropdown
@@ -121,6 +123,9 @@ export const sortDailyTeachers = (
                 } else {
                     unavailableTeachers.push(teacher);
                 }
+            } else {
+                // Regular teacher with a free day (not teaching at all today)
+                freeDayTeachers.push(teacher);
             }
         }
     }
@@ -178,6 +183,10 @@ export const sortDailyTeachers = (
             options: extraRegularTeachers.map((t) => ({ value: t.id, label: t.name })),
         },
         {
+            label: "מורים ביום חופשי",
+            options: freeDayTeachers.map((t) => ({ value: t.id, label: t.name })),
+        },
+        {
             label: "אפשרויות נוספות",
             options: dailySelectActivity,
         },
@@ -185,8 +194,6 @@ export const sortDailyTeachers = (
 
     return groups;
 };
-
-
 
 // Annual Schedule: Build grouped teacher options (available vs unavailable) for a class at a specific day/hour in the annual schedule
 export const sortAnnualTeachers = (
