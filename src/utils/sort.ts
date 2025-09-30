@@ -50,6 +50,93 @@ export const sortColumnsByIssueTeacherType = (filteredCols: ColumnDef<TeacherRow
     return sortedCols;
 };
 
+// Annual Schedule: Build grouped teacher options (available vs unavailable) for a class at a specific day/hour in the annual schedule
+export const sortAnnualTeachers = (
+    allTeachers: TeacherType[],
+    classes: ClassType[],
+    schedule: WeeklySchedule,
+    selectedClassId: string,
+    day: string,
+    hour: number,
+): GroupOption[] => {
+    // Calculate available teachers for this specific day and hour
+    const busyTeacherIds = new Set<string>();
+
+    // Check all classes except the currently selected one
+    classes.forEach((cls) => {
+        if (cls.id != selectedClassId) {
+            const teacherIds = schedule[cls.id]?.[day]?.[hour]?.teachers;
+            if (teacherIds) {
+                teacherIds.forEach((id) => {
+                    busyTeacherIds.add(id);
+                });
+            }
+        }
+    });
+
+    // Filter available teachers (not busy at this time)
+    const availableTeachers = allTeachers.filter((teacher) => !busyTeacherIds.has(teacher.id));
+    const availableTeacherIds = new Set(availableTeachers.map((t) => t.id));
+
+    const availableRegular = allTeachers.filter(
+        (teacher) =>
+            teacher.role === TeacherRoleValues.REGULAR && availableTeacherIds.has(teacher.id),
+    );
+
+    const unavailableTeachers = allTeachers.filter((teacher) => busyTeacherIds.has(teacher.id));
+
+    // Sort each group alphabetically in Hebrew
+    const sortedAvailableRegular = sortByHebrewName(availableRegular);
+    const sortedUnavailableTeachers = sortByHebrewName(unavailableTeachers);
+
+    // Build grouped options (always three groups, even if empty)
+    const groups: GroupOption[] = [
+        {
+            label: "מורים פנויים", // Available
+            options: sortedAvailableRegular.map((teacher) => ({
+                value: teacher.id,
+                label: teacher.name,
+            })),
+        },
+        {
+            label: "מורים לא פנויים", // Unavailable
+            options: sortedUnavailableTeachers.map((teacher) => ({
+                value: teacher.id,
+                label: teacher.name,
+            })),
+        },
+    ];
+
+    return groups;
+};
+
+// DailySchedule Header Dropdown: Filter header teacher options: only regular teachers, avoid duplicates
+export const filterDailyHeaderTeachers = (
+    teachers: TeacherType[] | undefined,
+    alreadySelectedTeachers: DailySchedule,
+    selectedTeacher?: TeacherType,
+) => {
+    const flatTeachersSet = new Set<string>();
+    if (teachers) {
+        Object.values(alreadySelectedTeachers).forEach((day) => {
+            Object.values(day).forEach((hour) => {
+                Object.values(hour).forEach((teacher) => {
+                    if (teacher.headerCol?.headerTeacher?.id) {
+                        flatTeachersSet.add(teacher.headerCol.headerTeacher.id);
+                    }
+                });
+            });
+        });
+        const filteredTeachers = teachers.filter(
+            (teacher) =>
+                teacher.role === TeacherRoleValues.REGULAR &&
+                (teacher.id === selectedTeacher?.id || !flatTeachersSet.has(teacher.id)),
+        );
+        return createSelectOptions(filteredTeachers);
+    }
+    return [];
+};
+
 // DailySchedule Dropdown: Build grouped teacher options (substitutes, available, unavailable) for a specific day/hour
 export const sortDailyTeachers = (
     allTeachers: TeacherType[],
@@ -194,91 +281,3 @@ export const sortDailyTeachers = (
 
     return groups;
 };
-
-// Annual Schedule: Build grouped teacher options (available vs unavailable) for a class at a specific day/hour in the annual schedule
-export const sortAnnualTeachers = (
-    allTeachers: TeacherType[],
-    classes: ClassType[],
-    schedule: WeeklySchedule,
-    selectedClassId: string,
-    day: string,
-    hour: number,
-): GroupOption[] => {
-    // Calculate available teachers for this specific day and hour
-    const busyTeacherIds = new Set<string>();
-
-    // Check all classes except the currently selected one
-    classes.forEach((cls) => {
-        if (cls.id != selectedClassId) {
-            const teacherIds = schedule[cls.id]?.[day]?.[hour]?.teachers;
-            if (teacherIds) {
-                teacherIds.forEach((id) => {
-                    busyTeacherIds.add(id);
-                });
-            }
-        }
-    });
-
-    // Filter available teachers (not busy at this time)
-    const availableTeachers = allTeachers.filter((teacher) => !busyTeacherIds.has(teacher.id));
-    const availableTeacherIds = new Set(availableTeachers.map((t) => t.id));
-
-    const availableRegular = allTeachers.filter(
-        (teacher) =>
-            teacher.role === TeacherRoleValues.REGULAR && availableTeacherIds.has(teacher.id),
-    );
-
-    const unavailableTeachers = allTeachers.filter((teacher) => busyTeacherIds.has(teacher.id));
-
-    // Sort each group alphabetically in Hebrew
-    const sortedAvailableRegular = sortByHebrewName(availableRegular);
-    const sortedUnavailableTeachers = sortByHebrewName(unavailableTeachers);
-
-    // Build grouped options (always three groups, even if empty)
-    const groups: GroupOption[] = [
-        {
-            label: "מורים פנויים", // Available
-            options: sortedAvailableRegular.map((teacher) => ({
-                value: teacher.id,
-                label: teacher.name,
-            })),
-        },
-        {
-            label: "מורים לא פנויים", // Unavailable
-            options: sortedUnavailableTeachers.map((teacher) => ({
-                value: teacher.id,
-                label: teacher.name,
-            })),
-        },
-    ];
-
-    return groups;
-};
-
-// DailySchedule Header Dropdown: Filter header teacher options: only regular teachers, avoid duplicates
-export const filterDailyHeaderTeachers = (
-    teachers: TeacherType[] | undefined,
-    alreadySelectedTeachers: DailySchedule,
-    selectedTeacher?: TeacherType,
-) => {
-    const flatTeachersSet = new Set<string>();
-    if (teachers) {
-        Object.values(alreadySelectedTeachers).forEach((day) => {
-            Object.values(day).forEach((hour) => {
-                Object.values(hour).forEach((teacher) => {
-                    if (teacher.headerCol?.headerTeacher?.id) {
-                        flatTeachersSet.add(teacher.headerCol.headerTeacher.id);
-                    }
-                });
-            });
-        });
-        const filteredTeachers = teachers.filter(
-            (teacher) =>
-                teacher.role === TeacherRoleValues.REGULAR &&
-                (teacher.id === selectedTeacher?.id || !flatTeachersSet.has(teacher.id)),
-        );
-        return createSelectOptions(filteredTeachers);
-    }
-    return [];
-};
-
