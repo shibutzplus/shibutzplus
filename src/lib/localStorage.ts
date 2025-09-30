@@ -9,7 +9,6 @@ export const STORAGE_KEYS = {
     CLASSES_DATA: "classes_data",
     TEACHERS_DATA: "teachers_data",
     SUBJECTS_DATA: "subjects_data",
-    SCHOOL_ID: "school_id",
     SCHOOL_DATA: "school_data",
     TEACHER_DATA: "teacher_data",
 };
@@ -50,16 +49,8 @@ export const setCacheTimestamp = (timestamp: string) => {
 };
 
 //
-// SchoolId & SchoolData
+// SchoolData
 //
-export const getStorageSchoolId = () => {
-    return getStorage<string>(STORAGE_KEYS.SCHOOL_ID);
-};
-
-export const setStorageSchoolId = (schoolId: string) => {
-    return setStorage(STORAGE_KEYS.SCHOOL_ID, schoolId);
-};
-
 export const getStorageSchool = () => {
     return getStorage<SchoolType>(STORAGE_KEYS.SCHOOL_DATA);
 };

@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { getAnnualScheduleAction as getAnnualScheduleFromDB } from "@/app/actions/GET/getAnnualScheduleAction";
 import { STATUS_AUTH } from "@/models/constant/session";
 import { AnnualScheduleType } from "@/models/types/annualSchedule";
-import { getStorageSchoolId, setCacheTimestamp, setStorageSchoolId } from "@/lib/localStorage";
+import { setCacheTimestamp } from "@/lib/localStorage";
 
 interface useInitAnnualDataProps {
     annualScheduleTable: AnnualScheduleType[] | undefined;
@@ -47,9 +47,6 @@ const useInitAnnualData = ({
         };
 
         if (status === STATUS_AUTH && typeof window !== "undefined" && session?.user?.schoolId) {
-            // Initialize school ID from user session if available
-            const storedSchoolId = getStorageSchoolId();
-            if (!storedSchoolId) setStorageSchoolId(session.user.schoolId);
             fetchData(session.user.schoolId);
         }
     }, [session, status, annualScheduleTable]);

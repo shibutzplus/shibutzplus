@@ -6,7 +6,6 @@ import { useMainContext } from "@/context/MainContext";
 import useSubmit from "@/hooks/useSubmit";
 import useDeletePopup from "@/hooks/useDeletePopup";
 import { PopupAction } from "@/context/PopupContext";
-import { getStorageSchoolId } from "@/lib/localStorage";
 import { sortByHebrewName } from "@/utils/sort";
 import messages from "@/resources/messages";
 import TableList from "../../ui/list/TableList/TableList";
@@ -16,20 +15,19 @@ import EmptyTable from "@/components/ui/table/EmptyTable/EmptyTable";
 import ListRowLoading from "@/components/layout/loading/ListRowLoading/ListRowLoading";
 
 const ClassesList: React.FC = () => {
-    const { classes, deleteClass } = useMainContext();
+    const { classes, deleteClass, school } = useMainContext();
     const { handleOpenPopup } = useDeletePopup();
 
     const { handleSubmitDelete, isLoading } = useSubmit(
-        () => {},
+        () => { },
         messages.classes.deleteSuccess,
         messages.classes.deleteError,
         messages.classes.invalid,
     );
 
     const handleDeleteClassFromState = async (classId: string) => {
-        const schoolId = getStorageSchoolId();
-        if (!schoolId) return;
-        await handleSubmitDelete(schoolId, classId, deleteClass);
+        if (!school?.id) return;
+        await handleSubmitDelete(school.id, classId, deleteClass);
     };
 
     const handleDeleteClass = (classItem: ClassType) => {
