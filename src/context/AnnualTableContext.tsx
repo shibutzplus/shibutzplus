@@ -71,7 +71,7 @@ export const useAnnualTable = () => {
 
 export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const { classes, school, teachers, subjects, annualAfterDelete } = useMainContext();
-    const [selectedClassId, setSelectedClassId] = useState<string>(classes?.[0]?.id || "");
+    const [selectedClassId, setSelectedClassId] = useState<string>("");
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [annualScheduleTable, setAnnualScheduleTable] = useState<AnnualScheduleType[] | undefined>(undefined);
@@ -85,12 +85,6 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
         annualScheduleTable,
         setAnnualScheduleTable,
     });
-
-    useEffect(() => {
-        if (classes && classes?.length > 0 && selectedClassId === "") {
-            setSelectedClassId(classes[0].id);
-        }
-    }, [classes]);
 
     useEffect(() => {
         if (annualAfterDelete) {
