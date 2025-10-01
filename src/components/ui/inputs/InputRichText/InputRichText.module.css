@@ -44,7 +44,7 @@
 }
 
 .editor:focus {
-    outline: none;
+    outline: 1px solid var(--input-border);
 }
 
 .placeholder {
