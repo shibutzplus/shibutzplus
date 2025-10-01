@@ -1,6 +1,6 @@
 import React from "react";
 import { NextPage } from "next";
-import TeachersList from "@/components/teacherDetails/TeachersList/TeachersList";
+import TeachersList from "@/components/details/teacherDetails/TeachersList/TeachersList";
 import ManagementLayout from "@/components/layout/ManagementLayout/ManagementLayout";
 
 const TeachersPage: NextPage = () => {

@@ -9,18 +9,18 @@ import { filterTeachersByRole } from "@/utils/format";
 import { sortByHebrewName } from "@/utils/sort";
 import messages from "@/resources/messages";
 import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
-import TableList from "../../ui/list/TableList/TableList";
-import SubstituteRow from "../SubstituteRow/SubstituteRow";
-import AddSubstituteRow from "../AddSubstituteRow/AddSubstituteRow";
+import TableList from "../../../ui/list/TableList/TableList";
+import AddTeacherRow from "../AddTeacherRow/AddTeacherRow";
+import TeacherRow from "../TeacherRow/TeacherRow";
 import EmptyTable from "@/components/ui/table/EmptyTable/EmptyTable";
 import ListRowLoading from "@/components/layout/loading/ListRowLoading/ListRowLoading";
 
-const SubstitutesList: React.FC = () => {
+const TeachersList: React.FC = () => {
     const { handleOpenPopup } = useDeletePopup();
     const { teachers, deleteTeacher, school } = useMainContext();
 
     const { handleSubmitDelete } = useSubmit(
-        () => { },
+        () => {},
         messages.teachers.deleteSuccess,
         messages.teachers.deleteError,
         messages.teachers.invalid,
@@ -42,7 +42,7 @@ const SubstitutesList: React.FC = () => {
     const sortedTeachers = React.useMemo(
         () =>
             teachers !== undefined
-                ? filterTeachersByRole(sortByHebrewName(teachers), TeacherRoleValues.SUBSTITUTE)
+                ? filterTeachersByRole(sortByHebrewName(teachers), TeacherRoleValues.REGULAR)
                 : undefined,
         [teachers],
     );
@@ -50,14 +50,14 @@ const SubstitutesList: React.FC = () => {
     return (
         <TableList headThs={["שם המורה", "פעולות"]}>
             <tbody>
-                <AddSubstituteRow />
+                <AddTeacherRow />
                 {sortedTeachers === undefined ? (
                     <ListRowLoading />
                 ) : sortedTeachers?.length === 0 ? (
                     <EmptyTable text="עדיין לא נוספו מורים לרשימה" />
                 ) : (
                     sortedTeachers?.map((teacher: TeacherType) => (
-                        <SubstituteRow
+                        <TeacherRow
                             key={teacher.id}
                             teacher={teacher}
                             handleDeleteTeacher={handleDeleteTeacher}
@@ -69,4 +69,4 @@ const SubstitutesList: React.FC = () => {
     );
 };
 
-export default SubstitutesList;
+export default TeachersList;

@@ -8,7 +8,7 @@ import useDeletePopup from "@/hooks/useDeletePopup";
 import { PopupAction } from "@/context/PopupContext";
 import { sortByHebrewName } from "@/utils/sort";
 import messages from "@/resources/messages";
-import TableList from "../../ui/list/TableList/TableList";
+import TableList from "../../../ui/list/TableList/TableList";
 import AddClassRow from "../AddClassRow/AddClassRow";
 import ClassRow from "../ClassRow/ClassRow";
 import EmptyTable from "@/components/ui/table/EmptyTable/EmptyTable";
