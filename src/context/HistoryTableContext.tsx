@@ -45,6 +45,19 @@ export const HistoryTableProvider: React.FC<HistoryTableProviderProps> = ({ chil
     // if yesterday is in July or August, fallback to September
     const initialMonth = tdayMonth === 7 || tdayMonth === 8 ? "9" : `${tdayMonth}`;
 
+    // Helper: build today's date in YYYY-MM-DD
+    const todayStr = `${tday.getFullYear()}-${pad2(tdayMonth)}-${pad2(tdayDay)}`;
+
+    // Ensure URL has a valid ?date on first loads and when invalid values appear
+    useEffect(() => {
+        const q = searchParams.get("date");
+        if (!q || !isYYYYMMDD(q)) {
+            const next = new URLSearchParams(searchParams.toString());
+            next.set("date", todayStr);
+            router.replace(`${pathname}?${next.toString()}`);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pathname]); // run on mount / route change
 
     // derive initial state from ?date= if valid; otherwise fall back to defaults
     const fromQuery = dateQ && isYYYYMMDD(dateQ) ? dateQ : null;
@@ -63,7 +76,7 @@ export const HistoryTableProvider: React.FC<HistoryTableProviderProps> = ({ chil
 
     const [dayOptions, setDayOptions] = useState<SelectOption[]>([]);
 
-    // rebuild day options when year/month changes
+    // Rebuild day options when year/month changes
     useEffect(() => {
         const yNum = parseInt(selectedYear, 10);
         const mNum = parseInt(selectedMonth, 10);
@@ -75,9 +88,9 @@ export const HistoryTableProvider: React.FC<HistoryTableProviderProps> = ({ chil
         setDayOptions(opts);
         const dNum = parseInt(selectedDay, 10);
         if (dNum > max) setSelectedDay(`${max}`);
-    }, [selectedYear, selectedMonth]);
+    }, [selectedYear, selectedMonth, selectedDay]);
 
-    // keep context in sync if ?date= changes
+    // Keep context in sync if ?date= changes (URL -> state)
     useEffect(() => {
         if (!fromQuery) return;
         setSelectedYear(qYear!);
@@ -93,7 +106,7 @@ export const HistoryTableProvider: React.FC<HistoryTableProviderProps> = ({ chil
         return `${yNum}-${pad2(mNum)}-${pad2(dNum)}`;
     }, [selectedYear, selectedMonth, selectedDay]);
 
-    // reflect selectedYearDate into the URL (?date=YYYY-MM-DD)
+    // Reflect selectedYearDate into the URL (?date=YYYY-MM-DD) (state -> URL)
     useEffect(() => {
         const currentQ = searchParams.get("date");
         if (selectedYearDate && currentQ !== selectedYearDate) {
