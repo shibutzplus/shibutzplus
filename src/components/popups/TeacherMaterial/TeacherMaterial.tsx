@@ -2,7 +2,7 @@
 
 import React from "react";
 import styles from "./TeacherMaterial.module.css";
-import PortalTable from "@/components/teacherPortalTable/PortalTable/PortalTable";
+import PortalTable from "@/components/tables/teacherPortalTable/PortalTable/PortalTable";
 import { PortalProvider } from "@/context/PortalContext";
 
 type InnerProps = {

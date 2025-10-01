@@ -3,10 +3,10 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { useMainContext } from "./MainContext";
-import DailyTeacherCell from "@/components/dailyScheduleTable/DailyTeacherCell/DailyTeacherCell";
-import DailyTeacherHeader from "@/components/dailyScheduleTable/DailyTeacherHeader/DailyTeacherHeader";
-import EventCell from "@/components/dailyScheduleTable/DailyEventCell/DailyEventCell";
-import EventHeader from "@/components/dailyScheduleTable/DailyEventHeader/DailyEventHeader";
+import DailyTeacherCell from "@/components/tables/dailyScheduleTable/DailyTeacherCell/DailyTeacherCell";
+import DailyTeacherHeader from "@/components/tables/dailyScheduleTable/DailyTeacherHeader/DailyTeacherHeader";
+import EventCell from "@/components/tables/dailyScheduleTable/DailyEventCell/DailyEventCell";
+import EventHeader from "@/components/tables/dailyScheduleTable/DailyEventHeader/DailyEventHeader";
 import { getAnnualScheduleAction } from "@/app/actions/GET/getAnnualScheduleAction";
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
 import { getTeacherScheduleByDayAction } from "@/app/actions/GET/getTeacherScheduleByDayAction";

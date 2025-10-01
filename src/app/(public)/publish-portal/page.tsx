@@ -3,7 +3,7 @@
 import React, { useEffect, useRef } from "react";
 import { NextPage } from "next";
 import styles from "./PublishedPortal.module.css";
-import ViewTable from "@/components/viewTable/ViewTable/ViewTable";
+import ViewTable from "@/components/tables/viewTable/ViewTable/ViewTable";
 import PublishedSkeleton from "@/components/layout/skeleton/PublishedSkeleton/PublishedSkeleton";
 import { usePortal } from "@/context/PortalContext";
 import { errorToast } from "@/lib/toast";

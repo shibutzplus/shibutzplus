@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation";
 import styles from "./history.module.css";
 import PublishedSkeleton from "@/components/layout/skeleton/PublishedSkeleton/PublishedSkeleton";
 import TeacherMaterial from "@/components/popups/TeacherMaterial/TeacherMaterial";
-import ViewTable from "@/components/viewTable/ViewTable/ViewTable";
+import ViewTable from "@/components/tables/viewTable/ViewTable/ViewTable";
 import { useMainContext } from "@/context/MainContext";
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
 import { DailyScheduleType } from "@/models/types/dailySchedule";

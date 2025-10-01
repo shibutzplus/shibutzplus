@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import { NextPage } from "next";
-import DailyTable from "@/components/dailyScheduleTable/DailyTable/DailyTable";
+import DailyTable from "@/components/tables/dailyScheduleTable/DailyTable/DailyTable";
 import DailySkeleton from "@/components/layout/skeleton/DailySkeleton/DailySkeleton";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import styles from "./DailySchedule.module.css";
