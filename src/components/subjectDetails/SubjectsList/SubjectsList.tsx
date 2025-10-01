@@ -5,7 +5,6 @@ import { useMainContext } from "@/context/MainContext";
 import useDeletePopup from "@/hooks/useDeletePopup";
 import useSubmit from "@/hooks/useSubmit";
 import { PopupAction } from "@/context/PopupContext";
-import { getStorageSchoolId } from "@/lib/localStorage";
 import { sortByHebrewName } from "@/utils/sort";
 import messages from "@/resources/messages";
 import { SubjectType } from "@/models/types/subjects";
@@ -17,19 +16,18 @@ import ListRowLoading from "@/components/layout/loading/ListRowLoading/ListRowLo
 
 const SubjectsList: React.FC = () => {
     const { handleOpenPopup } = useDeletePopup();
-    const { subjects, deleteSubject } = useMainContext();
+    const { subjects, deleteSubject, school } = useMainContext();
 
     const { handleSubmitDelete } = useSubmit(
-        () => {},
+        () => { },
         messages.subjects.deleteSuccess,
         messages.subjects.deleteError,
         messages.subjects.invalid,
     );
 
     const handleDeleteSubjectFromState = async (subjectId: string) => {
-        const schoolId = getStorageSchoolId();
-        if (!schoolId) return;
-        await handleSubmitDelete(schoolId, subjectId, deleteSubject);
+        if (!school?.id) return;
+        await handleSubmitDelete(school.id, subjectId, deleteSubject);
     };
 
     const handleDeleteSubject = (subject: SubjectType) => {

@@ -8,6 +8,7 @@ import usePublish from "@/hooks/usePublish";
 import Icons from "@/style/icons";
 import { DailyTableColors } from "@/style/tableColors";
 import styles from "./MobileNav.module.css";
+import { ColumnTypeValues } from "@/models/types/dailySchedule";
 
 const MobileNav: React.FC = () => {
     const { isLoading, addNewColumn } = useDailyTableContext();
@@ -22,27 +23,27 @@ const MobileNav: React.FC = () => {
     return (
         <nav className={styles.mobileNav}>
             <ActionBtn
-                type="missingTeacher"
+                type={ColumnTypeValues.missingTeacher}
                 label="מורה חסר"
                 isDisabled={isLoading}
                 style={{ backgroundColor: DailyTableColors.missingTeacher.headerColor }}
-                func={() => addNewColumn("missingTeacher")}
+                func={() => addNewColumn(ColumnTypeValues.missingTeacher)}
             />
 
             <ActionBtn
-                type="existingTeacher"
+                type={ColumnTypeValues.existingTeacher}
                 label="מורה נוכח"
                 isDisabled={isLoading}
                 style={{ backgroundColor: DailyTableColors.existingTeacher.headerColor }}
-                func={() => addNewColumn("existingTeacher")}
+                func={() => addNewColumn(ColumnTypeValues.existingTeacher)}
             />
 
             <ActionBtn
-                type="event"
+                type={ColumnTypeValues.event}
                 label="ארועים"
                 isDisabled={isLoading}
                 style={{ backgroundColor: DailyTableColors.event.headerColor }}
-                func={() => addNewColumn("event")}
+                func={() => addNewColumn(ColumnTypeValues.event)}
             />
 
             <ActionBtn

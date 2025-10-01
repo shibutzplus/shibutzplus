@@ -12,8 +12,8 @@ import { getTeachersAction as getTeachersFromDB } from "@/app/actions/GET/getTea
 import { getSubjectsAction as getSubjectsFromDB } from "@/app/actions/GET/getSubjectsAction";
 import { getClassesAction as getClassesFromDB } from "@/app/actions/GET/getClassesAction";
 import {
-    getCacheTimestamp, getStorageClasses, getStorageSchool, getStorageSchoolId, getStorageSubjects, getStorageTeachers,
-    setCacheTimestamp, setStorageClasses, setStorageSchool, setStorageSchoolId, setStorageSubjects, setStorageTeachers,
+    getCacheTimestamp, getStorageClasses, getStorageSchool, getStorageSubjects, getStorageTeachers,
+    setCacheTimestamp, setStorageClasses, setStorageSchool, setStorageSubjects, setStorageTeachers,
 } from "@/lib/localStorage";
 import { isCacheFresh } from "@/utils/time";
 
@@ -127,9 +127,6 @@ const useInitData = ({
         };
 
         if (status === STATUS_AUTH && typeof window !== "undefined" && session?.user?.schoolId) {
-            // Initialize school ID from user session if available
-            const storedSchoolId = getStorageSchoolId();
-            if (!storedSchoolId) setStorageSchoolId(session.user.schoolId);
             fetchData(session.user.schoolId);
         }
     }, [session, status, school, teachers, subjects, classes]);

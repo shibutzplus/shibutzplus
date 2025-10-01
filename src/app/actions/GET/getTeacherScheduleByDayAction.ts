@@ -4,10 +4,7 @@ import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { and, asc, eq } from "drizzle-orm";
-import {
-    GetTeacherScheduleResponse,
-    TeacherHourlyScheduleItem,
-} from "@/models/types/dailySchedule";
+import { ColumnTypeValues, GetTeacherScheduleResponse, TeacherHourlyScheduleItem, } from "@/models/types/dailySchedule";
 
 export async function getTeacherScheduleByDayAction(
     schoolId: string,
@@ -45,7 +42,7 @@ export async function getTeacherScheduleByDayAction(
                         subject: schedule.subject,
                         headerCol: {
                             headerTeacher: schedule.teacher,
-                            type: "existingTeacher" as const,
+                            type: ColumnTypeValues.existingTeacher,
                         },
                     }) as TeacherHourlyScheduleItem,
             );

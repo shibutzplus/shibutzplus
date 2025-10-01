@@ -6,6 +6,7 @@ import DailyTable from "@/components/dailyScheduleTable/DailyTable/DailyTable";
 import DailySkeleton from "@/components/layout/skeleton/DailySkeleton/DailySkeleton";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import styles from "./DailySchedule.module.css";
+import { AnnualTableProvider } from "@/context/AnnualTableContext"; // Added: provider for annual table
 
 const DailySchedulePage: NextPage = () => {
   const { isLoading } = useDailyTableContext();
@@ -93,16 +94,18 @@ const DailySchedulePage: NextPage = () => {
   if (isLoading) return <DailySkeleton />;
 
   return (
-    <section className={styles.container}>
-      <DailyTable />
-      <div
-        id="bottomScroller"
-        className={styles.bottomScroller}
-        aria-label="horizontal scroller"
-      >
-        <div className={styles.bottomInner} />
-      </div>
-    </section>
+    <AnnualTableProvider>
+      <section className={styles.container}>
+        <DailyTable />
+        <div
+          id="bottomScroller"
+          className={styles.bottomScroller}
+          aria-label="horizontal scroller"
+        >
+          <div className={styles.bottomInner} />
+        </div>
+      </section>
+    </AnnualTableProvider>
   );
 };
 

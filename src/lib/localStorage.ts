@@ -9,7 +9,6 @@ export const STORAGE_KEYS = {
     CLASSES_DATA: "classes_data",
     TEACHERS_DATA: "teachers_data",
     SUBJECTS_DATA: "subjects_data",
-    SCHOOL_ID: "school_id",
     SCHOOL_DATA: "school_data",
     TEACHER_DATA: "teacher_data",
 };
@@ -38,7 +37,9 @@ export const clearStorage = () => {
     localStorage.clear();
 };
 
-
+//
+// CacheTimestamp
+//
 export const getCacheTimestamp = () => {
     return getStorage<string>(STORAGE_KEYS.CACHE_TIMESTAMP);
 };
@@ -47,14 +48,9 @@ export const setCacheTimestamp = (timestamp: string) => {
     return setStorage(STORAGE_KEYS.CACHE_TIMESTAMP, timestamp);
 };
 
-export const getStorageSchoolId = () => {
-    return getStorage<string>(STORAGE_KEYS.SCHOOL_ID);
-};
-
-export const setStorageSchoolId = (schoolId: string) => {
-    return setStorage(STORAGE_KEYS.SCHOOL_ID, schoolId);
-};
-
+//
+// SchoolData
+//
 export const getStorageSchool = () => {
     return getStorage<SchoolType>(STORAGE_KEYS.SCHOOL_DATA);
 };
@@ -63,6 +59,9 @@ export const setStorageSchool = (school: SchoolType) => {
     return setStorage(STORAGE_KEYS.SCHOOL_DATA, school);
 };
 
+//
+// Teachers
+//
 export const getStorageTeachers = () => {
     return getStorage<TeacherType[]>(STORAGE_KEYS.TEACHERS_DATA);
 };
@@ -71,6 +70,9 @@ export const setStorageTeachers = (teachers: TeacherType[]) => {
     return setStorage(STORAGE_KEYS.TEACHERS_DATA, teachers);
 };
 
+//
+// Subjects
+//
 export const getStorageSubjects = () => {
     return getStorage<SubjectType[]>(STORAGE_KEYS.SUBJECTS_DATA);
 };
@@ -79,6 +81,9 @@ export const setStorageSubjects = (subjects: SubjectType[]) => {
     return setStorage(STORAGE_KEYS.SUBJECTS_DATA, subjects);
 };
 
+//
+// Classes
+//
 export const getStorageClasses = () => {
     return getStorage<ClassType[]>(STORAGE_KEYS.CLASSES_DATA);
 };
@@ -87,6 +92,9 @@ export const setStorageClasses = (classes: ClassType[]) => {
     return setStorage(STORAGE_KEYS.CLASSES_DATA, classes);
 };
 
+//
+// Current logged in Teacher
+//
 export const getStorageTeacher = () => {
     return getStorage<TeacherType>(STORAGE_KEYS.TEACHER_DATA);
 };

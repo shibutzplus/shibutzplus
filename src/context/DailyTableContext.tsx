@@ -18,7 +18,7 @@ import { updateDailyTeacherCellAction } from "@/app/actions/PUT/updateDailyTeach
 import { deleteDailyColumnAction } from "@/app/actions/DELETE/deleteDailyColumnAction";
 import { deleteDailyCellAction } from "@/app/actions/DELETE/deleteDailyCellAction";
 import { addNewEventCell, addNewTeacherValueCell, fillLeftRowsWithEmptyCells, getColumnsFromStorage, initDailySchedule, mapAnnualTeachers, populateTable, setColumn, setEmptyColumn, setEmptyTeacherColumn, updateAddCell, updateAllEventHeader, updateDeleteCell } from "@/services/dailyScheduleService";
-import { ColumnType, DailySchedule, DailyScheduleCell, DailyScheduleType, TeacherHourlyScheduleItem } from "@/models/types/dailySchedule";
+import { ColumnTypeValues, ColumnType, DailySchedule, DailyScheduleCell, DailyScheduleType, TeacherHourlyScheduleItem } from "@/models/types/dailySchedule";
 import { AvailableTeachers } from "@/models/types/annualSchedule";
 import { SelectOption } from "@/models/types";
 import { TeacherType } from "@/models/types/teachers";
@@ -91,22 +91,22 @@ export const useDailyTableContext = () => {
 };
 
 function buildColumn(colType: ColumnType, columnId: string): ColumnDef<TeacherRow> {
-    if (colType === "missingTeacher") {
+    if (colType === ColumnTypeValues.missingTeacher) {
         return {
             id: columnId,
-            header: () => <DailyTeacherHeader columnId={columnId} type="missingTeacher" />,
-            cell: (props) => <DailyTeacherCell cell={props} type="missingTeacher" />,
-            meta: { bgColor: DailyTableColors.missingTeacher.headerColor, type: "missingTeacher" },
+            header: () => <DailyTeacherHeader columnId={columnId} type={ColumnTypeValues.missingTeacher} />,
+            cell: (props) => <DailyTeacherCell cell={props} type={ColumnTypeValues.missingTeacher} />,
+            meta: { bgColor: DailyTableColors.missingTeacher.headerColor, type: ColumnTypeValues.missingTeacher },
         };
     }
-    if (colType === "existingTeacher") {
+    if (colType === ColumnTypeValues.existingTeacher) {
         return {
             id: columnId,
-            header: () => <DailyTeacherHeader columnId={columnId} type="existingTeacher" />,
-            cell: (props) => <DailyTeacherCell cell={props} type="existingTeacher" />,
+            header: () => <DailyTeacherHeader columnId={columnId} type={ColumnTypeValues.existingTeacher} />,
+            cell: (props) => <DailyTeacherCell cell={props} type={ColumnTypeValues.existingTeacher} />,
             meta: {
                 bgColor: DailyTableColors.existingTeacher.headerColor,
-                type: "existingTeacher",
+                type: ColumnTypeValues.existingTeacher,
             },
         };
     }
@@ -114,9 +114,10 @@ function buildColumn(colType: ColumnType, columnId: string): ColumnDef<TeacherRo
         id: columnId,
         header: () => <EventHeader columnId={columnId} />,
         cell: (props) => <EventCell cell={props} />,
-        meta: { bgColor: DailyTableColors.event.headerColor, type: "event" },
+        meta: { bgColor: DailyTableColors.event.headerColor, type: ColumnTypeValues.event },
     };
 }
+
 
 interface DailyTableProviderProps {
     children: ReactNode;
@@ -415,7 +416,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
 
         updatedSchedule = fillLeftRowsWithEmptyCells(updatedSchedule, selectedDate, columnId, {
             headerEvent: eventTitle,
-            type: "event",
+            type: ColumnTypeValues.event,
         });
         setMainAndStorageTable(updatedSchedule);
     };

@@ -102,7 +102,7 @@ export type ActivityOptions = (typeof ActivityValues)[keyof typeof ActivityValue
 
 export const ColumnTypeValues = {
   existingTeacher: "existingTeacher" as const,
-  event: "event" as const,
   missingTeacher: "missingTeacher" as const,
+  event: "event" as const,
 };
 export type ColumnType = keyof typeof ColumnTypeValues;

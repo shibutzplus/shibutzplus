@@ -5,7 +5,6 @@ import { useMainContext } from "@/context/MainContext";
 import useDeletePopup from "@/hooks/useDeletePopup";
 import useSubmit from "@/hooks/useSubmit";
 import { PopupAction } from "@/context/PopupContext";
-import { getStorageSchoolId } from "@/lib/localStorage";
 import { filterTeachersByRole } from "@/utils/format";
 import { sortByHebrewName } from "@/utils/sort";
 import messages from "@/resources/messages";
@@ -18,24 +17,25 @@ import ListRowLoading from "@/components/layout/loading/ListRowLoading/ListRowLo
 
 const SubstitutesList: React.FC = () => {
     const { handleOpenPopup } = useDeletePopup();
-    const { teachers, deleteTeacher } = useMainContext();
+    const { teachers, deleteTeacher, school } = useMainContext();
 
     const { handleSubmitDelete } = useSubmit(
-        () => {},
+        () => { },
         messages.teachers.deleteSuccess,
         messages.teachers.deleteError,
         messages.teachers.invalid,
     );
 
     const handleDeleteTeacherFromState = async (teacherId: string) => {
-        const schoolId = getStorageSchoolId();
-        if (!schoolId) return;
-        await handleSubmitDelete(schoolId, teacherId, deleteTeacher);
+        if (!school?.id) return;
+        await handleSubmitDelete(school.id, teacherId, deleteTeacher);
     };
 
     const handleDeleteTeacher = (teacher: TeacherType) => {
-        handleOpenPopup(PopupAction.deleteTeacher, `האם למחוק את המורה ${teacher.name}`, () =>
-            handleDeleteTeacherFromState(teacher.id),
+        handleOpenPopup(
+            PopupAction.deleteTeacher,
+            `האם למחוק את המורה ${teacher.name}`,
+            () => handleDeleteTeacherFromState(teacher.id),
         );
     };
 

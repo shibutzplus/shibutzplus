@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import Select, { StylesConfig } from "react-select";
+import Select, { StylesConfig, components } from "react-select";
 import { GroupOption, SelectOption } from "@/models/types";
 import { customStyles } from "@/style/selectStyle";
 import { createNewSelectOption_btnText } from "@/utils/format";
@@ -28,13 +28,6 @@ export interface InputGroupSelectProps {
     createBtnText?: string;
 }
 
-const formatGroupLabel = (data: GroupOption) => (
-    <div className={styles.groupStyles}>
-        <span>{data.label}</span>
-        <span className={styles.groupBadgeStyles}>{data.options.length}</span>
-    </div>
-);
-
 const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     label,
     options,
@@ -54,6 +47,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
 }) => {
     const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
 
     useEffect(() => {
         if (value) {
@@ -64,6 +58,17 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
             setSelectedOption(null);
         }
     }, [value, options]);
+
+    // Initialize collapsed state per group based on GroupOption.collapsed
+    useEffect(() => {
+        setCollapsedGroups((prev) => {
+            const next: Record<string, boolean> = {};
+            options.forEach((g) => {
+                next[g.label] = prev[g.label] !== undefined ? prev[g.label] : (g as any).collapsed ?? false;
+            });
+            return next;
+        });
+    }, [options]);
 
     const handleOnCreate = async (inputValue: string) => {
         const allOptions = options.flatMap((group) => group.options);
@@ -104,6 +109,48 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
                 minHeight: 32,
             };
         },
+        option: (prov: any, state: any) => ({
+            ...prov,
+            padding: "8px 8px",
+        }),
+        groupHeading: (prov: any) => ({
+            ...prov,
+            paddingTop: "8px",
+            paddingBottom: "8px",
+            fontSize: "14px",
+            backgroundColor: "#f7f7f7"
+        }),
+    };
+
+
+    // Custom Group: always render heading, hide children (options) when collapsed
+    const Group = (props: any) => {
+        const { data } = props;
+        const isCollapsed = collapsedGroups[data.label] ?? false;
+
+        const toggle = () => {
+            setCollapsedGroups((prev) => ({
+                ...prev,
+                [data.label]: !isCollapsed,
+            }));
+        };
+
+        // remove props that leak to DOM via GroupHeading
+        const { Heading, headingProps, ...safeHeadingProps } = props as any;
+
+        const optionsChildren = props.children;
+
+        return (
+            <div>
+                <components.GroupHeading {...safeHeadingProps}>
+                    <div className={styles.groupStyles} onClick={toggle}>
+                        <span>{data.label}</span>
+                        <span className={styles.groupBadgeStyles}>{data.options.length}</span>
+                    </div>
+                </components.GroupHeading>
+                {!isCollapsed && optionsChildren}
+            </div>
+        );
     };
 
     return (
@@ -132,7 +179,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
                     setIsMenuOpen(true);
                 }}
                 onMenuClose={() => setIsMenuOpen(false)}
-                formatGroupLabel={formatGroupLabel}
+                components={{ Group }}
                 noOptionsMessage={({ inputValue }) =>
                     isAllowAddNew && inputValue.trim() !== "" ? (
                         <AddToSelectBtn

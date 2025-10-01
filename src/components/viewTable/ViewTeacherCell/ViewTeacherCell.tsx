@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./ViewTeacherCell.module.css";
-import { DailyScheduleType } from "@/models/types/dailySchedule";
+import { ColumnTypeValues, DailyScheduleType } from "@/models/types/dailySchedule";
 import { usePathname } from "next/navigation";
 
 type ViewTeacherCellProps = {
@@ -16,7 +16,7 @@ const ViewTeacherCell: React.FC<ViewTeacherCellProps> = ({ cellData }) => {
         isTeacherPortal &&
         !cellData.subTeacher &&
         !cellData.event &&
-        cellData.issueTeacherType !== "missingTeacher"
+        cellData.issueTeacherType !== ColumnTypeValues.missingTeacher
     ) {
         return <div className={styles.teacherCell}></div>;
     }
