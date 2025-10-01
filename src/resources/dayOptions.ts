@@ -48,12 +48,12 @@ export function getIsraeliDateOptions(): SelectOption[] {
         };
     };
 
-    // Calculate start date (3 days ago) and end date (2 weeks from today)
+    // Calculate start date (1 day ago) and end date (1 month from today)
     const startDate = new Date(israelToday);
     startDate.setDate(israelToday.getDate() - ONE_DAY);
 
     const endDate = new Date(israelToday);
-    endDate.setDate(israelToday.getDate() + ONE_WEEK * 2);
+    endDate.setMonth(endDate.getMonth() + 1)
 
     // Generate all dates in the range
     const currentDate = new Date(startDate);
