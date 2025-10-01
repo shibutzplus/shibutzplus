@@ -48,3 +48,17 @@
     outline: none;
 }
 
+.mobileWrapper {
+    cursor: pointer;
+    user-select: none;
+}
+
+.mobileEditor {
+    pointer-events: none;
+    cursor: pointer;
+}
+
+.mobileEditor:focus {
+    outline: none;
+}
+

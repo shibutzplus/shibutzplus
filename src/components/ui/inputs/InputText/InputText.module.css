@@ -80,3 +80,14 @@
   border: none !important;
   box-shadow: none !important;
 }
+
+.mobileInput {
+  cursor: pointer;
+  user-select: none;
+}
+
+.mobileInput:focus {
+  outline: none;
+  border-color: var(--input-border);
+  box-shadow: none;
+}

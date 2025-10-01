@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
+import { useMobileSize } from "@/hooks/useMobileSize";
+import { useMobileInput } from "@/context/MobileInputContext";
 import styles from "./InputRichText.module.css";
 import { sanitizeHtml } from "@/utils/sanitize";
 
@@ -29,6 +31,10 @@ const InputRichText: React.FC<InputRichTextProps> = ({
     onBlurHTML,
     minHeight = 40,
 }) => {
+    const isMobile = useMobileSize();
+    const { openRichTextOverlay } = useMobileInput();
+    const [displayValue, setDisplayValue] = useState(value || "");
+
     const editor = useEditor({
         immediatelyRender: false,
         extensions: [
@@ -52,15 +58,20 @@ const InputRichText: React.FC<InputRichTextProps> = ({
             Placeholder.configure({ placeholder: placeholder || "" }),
         ],
         content: value || "",
-        onUpdate: ({ editor }) => onChangeHTML(normalize(editor.getHTML())),
+        onUpdate: ({ editor }) => {
+            if (!isMobile) {
+                onChangeHTML(normalize(editor.getHTML()));
+            }
+        },
         editorProps: {
             attributes: {
-                class: styles.editor,
+                class: `${styles.editor} ${isMobile ? styles.mobileEditor : ''}`,
                 "data-placeholder": placeholder || "",
                 style: `min-height:${minHeight}px; height: 100%;`,
                 dir: "auto",
             },
         },
+        editable: !isMobile,
     });
 
     useEffect(() => {
@@ -69,16 +80,43 @@ const InputRichText: React.FC<InputRichTextProps> = ({
         const incoming = normalize(value || "");
         if (incoming !== current) {
             editor.commands.setContent(incoming, { emitUpdate: false });
+            setDisplayValue(incoming);
         }
     }, [value, editor]);
+
+    const handleMobileClick = () => {
+        if (isMobile) {
+            const currentValue = value || "";
+            openRichTextOverlay(
+                currentValue,
+                placeholder || "",
+                (newValue: string) => {
+                    setDisplayValue(newValue);
+                    onChangeHTML(newValue);
+                    if (onBlurHTML) {
+                        onBlurHTML(newValue);
+                    }
+                }
+            );
+        }
+    };
+
+    const handleDesktopBlur = () => {
+        if (!isMobile && editor) {
+            onBlurHTML?.(normalize(editor.getHTML()));
+        }
+    };
 
     if (!editor) return null;
 
     return (
-        <div className={styles.wrapper}>
+        <div 
+            className={`${styles.wrapper} ${isMobile ? styles.mobileWrapper : ''}`}
+            onClick={handleMobileClick}
+        >
             <EditorContent
                 editor={editor}
-                onBlur={() => onBlurHTML?.(normalize(editor.getHTML()))}
+                onBlur={handleDesktopBlur}
             />
             {value === "" ? <div className={styles.placeholder}>{placeholder || ""}</div> : null}
         </div>

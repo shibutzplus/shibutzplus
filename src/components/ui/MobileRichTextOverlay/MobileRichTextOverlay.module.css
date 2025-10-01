@@ -1,0 +1,226 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 9999;
+    display: flex;
+    align-items: flex-end;
+    animation: fadeIn 0.25s ease-out;
+    backdrop-filter: blur(2px);
+}
+
+.container {
+    width: 100%;
+    background-color: var(--background, #ffffff);
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+    animation: slideUp 0.3s ease-out;
+    max-height: 70vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--input-border, #e0e0e0);
+    background-color: var(--background, #ffffff);
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    min-height: 60px;
+}
+
+.title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--foreground, #333333);
+    text-align: center;
+    flex: 1;
+}
+
+.cancelButton {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: var(--text-secondary, #666666);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+}
+
+.cancelButton:hover {
+    background-color: var(--hover-background, #f5f5f5);
+}
+
+.saveButton {
+    background-color: var(--primary-color, #0073e6);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 70px;
+    box-shadow: 0 2px 8px rgba(0, 115, 230, 0.2);
+}
+
+.saveButton:hover {
+    background-color: var(--primary-hover, #005bb5);
+}
+
+.saveButton:active {
+    transform: translateY(1px);
+}
+
+.editorContainer {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    min-height: 200px;
+}
+
+.editor {
+    width: 100%;
+    min-height: 150px;
+    padding: 16px;
+    border: 2px solid var(--input-border, #ddd);
+    border-radius: 12px;
+    font-size: 16px;
+    color: var(--foreground, #333333);
+    background-color: var(--input-background, #f8f9fa);
+    transition: all 0.25s ease;
+    text-align: right;
+    direction: rtl;
+    line-height: 1.5;
+    font-family: inherit;
+    outline: none;
+}
+
+.editor:focus-within {
+    border-color: var(--primary-color, #0073e6);
+    box-shadow: 0 0 0 3px rgba(0, 115, 230, 0.1);
+    background-color: var(--background, #ffffff);
+}
+
+.editor p {
+    margin: 0 0 8px 0;
+}
+
+.editor p:last-child {
+    margin-bottom: 0;
+}
+
+.editor strong {
+    font-weight: 600;
+}
+
+.editor a {
+    color: var(--primary-color, #0073e6);
+    text-decoration: underline;
+}
+
+.editor [data-placeholder]:before {
+    content: attr(data-placeholder);
+    color: var(--placeholder-color, #999999);
+    opacity: 0.8;
+    pointer-events: none;
+    position: absolute;
+}
+
+.toolbar {
+    display: flex;
+    gap: 8px;
+    padding: 16px 20px;
+    border-top: 1px solid var(--input-border, #e0e0e0);
+    background-color: var(--background-secondary, #f8f9fa);
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+}
+
+.toolbarButton {
+    background-color: var(--background, #ffffff);
+    border: 1px solid var(--input-border, #ddd);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--foreground, #333333);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toolbarButton:hover {
+    background-color: var(--hover-background, #f5f5f5);
+    border-color: var(--primary-color, #0073e6);
+}
+
+.toolbarButton.active {
+    background-color: var(--primary-color, #0073e6);
+    color: white;
+    border-color: var(--primary-color, #0073e6);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .header {
+        padding: 12px 16px;
+    }
+    
+    .editorContainer {
+        padding: 16px;
+    }
+    
+    .toolbar {
+        padding: 12px 16px;
+    }
+    
+    .editor {
+        padding: 14px;
+        font-size: 16px; /* Prevent zoom on iOS */
+        min-height: 120px;
+    }
+    
+    .toolbarButton {
+        padding: 8px 12px;
+        min-width: 36px;
+        height: 36px;
+        font-size: 13px;
+    }
+}
