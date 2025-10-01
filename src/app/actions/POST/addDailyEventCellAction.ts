@@ -1,13 +1,13 @@
 "use server";
 
-import { DailyScheduleType, DailyScheduleRequest } from "@/models/types/dailySchedule";
+import { ColumnTypeValues, DailyScheduleType, DailyScheduleRequest } from "@/models/types/dailySchedule";
+import { ActionResponse } from "@/models/types/actions";
+import { eventPlaceholder } from "@/models/constant/table";
 import { checkAuthAndParams } from "@/utils/authUtils";
+import { getDateReturnString } from "@/utils/time";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "../../../db";
-import { ActionResponse } from "@/models/types/actions";
 import { NewDailyScheduleSchema } from "@/db/schema";
-import { getDateReturnString } from "@/utils/time";
-import { eventPlaceholder } from "@/models/constant/table";
 
 export async function addDailyEventCellAction(
     scheduleCellData: DailyScheduleRequest,
@@ -38,7 +38,7 @@ export async function addDailyEventCellAction(
             classId: null,
             subjectId: null,
             issueTeacherId: null,
-            issueTeacherType: "event",
+            issueTeacherType: ColumnTypeValues.event,
             subTeacherId: null,
             eventTitle: eventTitle,
             event: resEvent,
@@ -70,7 +70,7 @@ export async function addDailyEventCellAction(
                 school,
                 class: undefined,
                 issueTeacher: undefined,
-                issueTeacherType: "event",
+                issueTeacherType: ColumnTypeValues.event,
                 subTeacher: undefined,
                 subject: undefined,
                 eventTitle,

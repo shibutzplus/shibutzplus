@@ -1,13 +1,6 @@
 import { eventPlaceholder } from "@/models/constant/table";
 import { getDayNumberByDateString, HOURS_IN_DAY, getStringReturnDate } from "@/utils/time";
-import {
-    ColumnType,
-    DailySchedule,
-    DailyScheduleCell,
-    DailyScheduleRequest,
-    DailyScheduleType,
-    HeaderCol,
-} from "@/models/types/dailySchedule";
+import { ColumnTypeValues, ColumnType, DailySchedule, DailyScheduleCell, DailyScheduleRequest, DailyScheduleType, HeaderCol, } from "@/models/types/dailySchedule";
 import { SchoolType } from "@/models/types/school";
 import { TeacherType } from "@/models/types/teachers";
 import { initDailyEventCellData, initDailyTeacherCellData } from "@/utils/Initialize";
@@ -157,7 +150,7 @@ export const updateAllEventHeader = (
         updatedSchedule[selectedDate][columnId][`${i}`].headerCol = {
             ...updatedSchedule[selectedDate][columnId][`${i}`].headerCol,
             headerEvent: eventTitle,
-            type: "event",
+            type: ColumnTypeValues.event,
         };
     }
     return updatedSchedule;
@@ -186,7 +179,7 @@ export const addNewEventCell = (
         date: getStringReturnDate(selectedDate),
         day: getDayNumberByDateString(selectedDate).toString(),
         eventTitle: headerCol.headerEvent,
-        issueTeacherType: "event",
+        issueTeacherType: ColumnTypeValues.event,
         columnId,
         hour,
         school,

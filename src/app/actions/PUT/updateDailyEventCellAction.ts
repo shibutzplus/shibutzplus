@@ -1,11 +1,11 @@
 "use server";
 
-import { DailyScheduleType, DailyScheduleRequest } from "@/models/types/dailySchedule";
+import { ColumnTypeValues, DailyScheduleType, DailyScheduleRequest } from "@/models/types/dailySchedule";
+import { ActionResponse } from "@/models/types/actions";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { eq } from "drizzle-orm";
 import { db, schema, executeQuery } from "../../../db";
-import { ActionResponse } from "@/models/types/actions";
 import { NewDailyScheduleSchema } from "@/db/schema";
 import { getDateReturnString, getStringReturnDate } from "@/utils/time";
 
@@ -43,7 +43,7 @@ export async function updateDailyEventCellAction(
                     classId: null,
                     subjectId: null,
                     issueTeacherId: null,
-                    issueTeacherType: "event",
+                    issueTeacherType: ColumnTypeValues.event,
                     subTeacherId: null,
                     eventTitle: eventTitle,
                     event: event,
@@ -75,7 +75,7 @@ export async function updateDailyEventCellAction(
                 school,
                 class: undefined,
                 issueTeacher: undefined,
-                issueTeacherType: "event",
+                issueTeacherType: ColumnTypeValues.event,
                 subTeacher: undefined,
                 subject: undefined,
                 eventTitle,

@@ -1,6 +1,6 @@
 import { GroupOption } from "@/models/types";
 import { AvailableTeachers, WeeklySchedule } from "@/models/types/annualSchedule";
-import { ColumnType, DailySchedule, DailyScheduleCell } from "@/models/types/dailySchedule";
+import { ColumnTypeValues, ColumnType, DailySchedule, DailyScheduleCell } from "@/models/types/dailySchedule";
 import { TeacherRow } from "@/models/types/table";
 import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import { ColumnDef } from "@tanstack/react-table";
@@ -31,11 +31,11 @@ export const sortByHebrewName = <T extends Record<string, any>>(
 export const sortColumnsByIssueTeacherType = (filteredCols: ColumnDef<TeacherRow>[]) => {
     const getTypeOrder = (type: ColumnType) => {
         switch (type) {
-            case "missingTeacher":
+            case ColumnTypeValues.missingTeacher:
                 return 1;
-            case "existingTeacher":
+            case ColumnTypeValues.existingTeacher:
                 return 2;
-            case "event":
+            case ColumnTypeValues.event:
                 return 3;
             default:
                 return 4;

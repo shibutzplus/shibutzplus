@@ -5,18 +5,18 @@ import { useMainContext } from "@/context/MainContext";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import { CellContext } from "@tanstack/react-table";
 import { TeacherRow } from "@/models/types/table";
+import { ColumnTypeValues, ActivityValues } from "@/models/types/dailySchedule";
+import { EmptyValue } from "@/models/constant/daily";
 import DynamicInputGroupSelect from "@/components/ui/select/InputGroupSelect/DynamicInputGroupSelect";
-import { ColumnType, ActivityValues } from "@/models/types/dailySchedule";
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { sortDailyTeachers } from "@/utils/sort";
 import { activityOptionsMapValToLabel } from "@/resources/dailySelectActivities";
-import { EmptyValue } from "@/models/constant/daily";
 import { useAnnualTable } from "@/context/AnnualTableContext";
 
 type DailyTeacherCellProps = {
     cell: CellContext<TeacherRow, unknown>;
-    type: Exclude<ColumnType, "event">;
+    type: typeof ColumnTypeValues.missingTeacher | typeof ColumnTypeValues.existingTeacher;
 };
 
 const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {

@@ -1,10 +1,6 @@
 import { WeeklySchedule } from "@/models/types/annualSchedule";
 import { DAYS_OF_WEEK, getDayNumberByDateString, getStringReturnDate, HOURS_IN_DAY } from "./time";
-import {
-    DailyScheduleCell,
-    DailyScheduleRequest,
-    DailyScheduleType,
-} from "@/models/types/dailySchedule";
+import { DailyScheduleCell, DailyScheduleRequest, DailyScheduleType, ColumnTypeValues } from "@/models/types/dailySchedule";
 
 export const initializeEmptyAnnualSchedule = (
     newSchedule: WeeklySchedule,
@@ -49,7 +45,7 @@ export const initDailyEventCellData = (entry: DailyScheduleType) => {
         DBid: entry.id,
         hour: entry.hour,
         event: entry.event,
-        headerCol: { headerEvent: entry.eventTitle, type: "event" },
+        headerCol: { headerEvent: entry.eventTitle, type: ColumnTypeValues.event },
     };
 
     return cellData;

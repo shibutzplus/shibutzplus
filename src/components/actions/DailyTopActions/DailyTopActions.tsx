@@ -9,6 +9,7 @@ import usePublish from "@/hooks/usePublish";
 import { DailyTableColors } from "@/style/tableColors";
 import Icons from "@/style/icons";
 import styles from "./DailyTopActions.module.css";
+import { ColumnTypeValues } from "@/models/types/dailySchedule";
 
 const DailyTopActions: React.FC = () => {
     const { isLoading, addNewColumn, daysSelectOptions, selectedDate, handleDayChange } =
@@ -38,28 +39,28 @@ const DailyTopActions: React.FC = () => {
 
             <div className={styles.topButtonsContainer}>
                 <ActionBtn
-                    type="missingTeacher"
+                    type={ColumnTypeValues.missingTeacher}
                     Icon={<Icons.addTeacher size={16} />}
                     label="שיבוץ למורה חסר"
                     isDisabled={isLoading}
                     style={{ borderLeft: DailyTableColors.missingTeacher.borderLeft, backgroundColor: "#ffffff" }}
-                    func={() => addNewColumn("missingTeacher")}
+                    func={() => addNewColumn(ColumnTypeValues.missingTeacher)}
                 />
                 <ActionBtn
-                    type="existingTeacher"
+                    type={ColumnTypeValues.existingTeacher}
                     Icon={<Icons.addTeacher size={16} />}
                     label="שיבוץ למורה נוכח"
                     isDisabled={isLoading}
                     style={{ borderLeft: DailyTableColors.existingTeacher.borderLeft, backgroundColor: "#ffffff" }}
-                    func={() => addNewColumn("existingTeacher")}
+                    func={() => addNewColumn(ColumnTypeValues.existingTeacher)}
                 />
                 <ActionBtn
-                    type="event"
+                    type={ColumnTypeValues.event}
                     Icon={<Icons.event size={16} />}
                     label="עדכון ארועים"
                     isDisabled={isLoading}
                     style={{ borderLeft: DailyTableColors.event.borderLeft, backgroundColor: "#ffffff" }}
-                    func={() => addNewColumn("event")}
+                    func={() => addNewColumn(ColumnTypeValues.event)}
                 />
             </div>
 

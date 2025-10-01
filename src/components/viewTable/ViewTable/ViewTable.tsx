@@ -2,7 +2,7 @@
 
 import React, { useMemo } from "react";
 import { TableRows } from "@/models/constant/table";
-import { DailyScheduleType } from "@/models/types/dailySchedule";
+import { ColumnTypeValues, DailyScheduleType } from "@/models/types/dailySchedule";
 import { getHeaderItems, sortAndGroupScheduleData } from "@/services/portalDailyScheduleService";
 import ViewHeader from "../ViewHeader/ViewHeader";
 import ViewTeacherCell from "../ViewTeacherCell/ViewTeacherCell";
@@ -52,7 +52,7 @@ const ViewTable: React.FC<ReadOnlyDailyTableProps> = ({
     const renderCell = (columnId: string, hour: number) => {
         const cellData = scheduleByColumn[columnId]?.[hour];
         if (!cellData) return <div className={styles.emptyCell}></div>;
-        if (cellData.issueTeacherType === "event" && cellData.event)
+        if (cellData.issueTeacherType === ColumnTypeValues.event && cellData.event)
             return <ViewEventCell cellData={cellData} />;
         return <ViewTeacherCell cellData={cellData} />;
     };
