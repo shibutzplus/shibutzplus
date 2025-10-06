@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import { NextPage } from "next";
 import styles from "./annualSchedule.module.css";
-import AnnualTable from "@/components/annualScheduleTable/AnnualTable/AnnualTable";
+import AnnualTable from "@/components/tables/annualScheduleTable/AnnualTable/AnnualTable";
 import SkeletonAnnualSchedule from "./loading";
 import { useMainContext } from "@/context/MainContext";
 import { useAnnualTable } from "@/context/AnnualTableContext";

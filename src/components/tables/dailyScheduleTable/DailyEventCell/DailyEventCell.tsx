@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styles from "./DailyEventCell.module.css";
-import InputTextArea from "../../ui/inputs/InputTextArea/InputTextArea";
+import InputTextArea from "../../../ui/inputs/InputTextArea/InputTextArea";
 import messages from "@/resources/messages";
 import { CellContext } from "@tanstack/react-table";
 import { TeacherRow } from "@/models/types/table";

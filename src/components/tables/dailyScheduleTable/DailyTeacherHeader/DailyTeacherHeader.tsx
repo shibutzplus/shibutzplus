@@ -1,13 +1,13 @@
 import React, { useState, useMemo } from "react";
 import { filterDailyHeaderTeachers } from "@/utils/sort";
-import DynamicInputSelect from "../../ui/select/InputSelect/DynamicInputSelect";
+import DynamicInputSelect from "../../../ui/select/InputSelect/DynamicInputSelect";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import { ColumnTypeValues } from "@/models/types/dailySchedule";
 import { getDayNumberByDateString } from "@/utils/time";
 import { useMainContext } from "@/context/MainContext";
 import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
-import EditableHeader from "../../ui/table/EditableHeader/EditableHeader";
+import EditableHeader from "../../../ui/table/EditableHeader/EditableHeader";
 
 type DailyTeacherHeaderProps = {
     columnId: string;

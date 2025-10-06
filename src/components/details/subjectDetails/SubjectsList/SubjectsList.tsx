@@ -8,7 +8,7 @@ import { PopupAction } from "@/context/PopupContext";
 import { sortByHebrewName } from "@/utils/sort";
 import messages from "@/resources/messages";
 import { SubjectType } from "@/models/types/subjects";
-import TableList from "../../ui/list/TableList/TableList";
+import TableList from "../../../ui/list/TableList/TableList";
 import SubjectRow from "../SubjectRow/SubjectRow";
 import AddSubjectRow from "../AddSubjectRow/AddSubjectRow";
 import EmptyTable from "@/components/ui/table/EmptyTable/EmptyTable";
