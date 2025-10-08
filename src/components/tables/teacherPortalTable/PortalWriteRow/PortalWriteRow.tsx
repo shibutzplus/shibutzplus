@@ -90,7 +90,7 @@ const PortalWriteRow: React.FC<PortalWriteRowProps> = ({ hour, row }) => {
                         onBlurHTML={handleChange}
                         placeholder={placeholder}
                         minHeight={60}
-                        importantPlaceholder={isIssueTeacher && !!row.subTeacher} // red only when I am the issue teacher and there is a sub teacher
+                        importantPlaceholder={isIssueTeacher && !!row.subTeacher} // red if there isnt a sub teacher
                     />
                 ) : null}
             </td>
