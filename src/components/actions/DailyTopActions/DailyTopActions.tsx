@@ -57,7 +57,7 @@ const DailyTopActions: React.FC = () => {
                 <ActionBtn
                     type={ColumnTypeValues.event}
                     Icon={<Icons.event size={16} />}
-                    label="עדכון ארועים"
+                    label="שיבוץ ארוע"
                     isDisabled={isLoading}
                     style={{ borderLeft: DailyTableColors.event.borderLeft, backgroundColor: "#ffffff" }}
                     func={() => addNewColumn(ColumnTypeValues.event)}

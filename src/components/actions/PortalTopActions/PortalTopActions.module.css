@@ -17,6 +17,21 @@
     gap: 10px;
 }
 
+.refreshAlert svg {
+    color: #c62828;
+    animation: blink 4s ease-in-out infinite;
+}
+
+@keyframes blink {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.4;
+    }
+}
+
 .topButtonsContainer {
     display: none;
 }
