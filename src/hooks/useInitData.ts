@@ -12,11 +12,10 @@ import { getTeachersAction as getTeachersFromDB } from "@/app/actions/GET/getTea
 import { getSubjectsAction as getSubjectsFromDB } from "@/app/actions/GET/getSubjectsAction";
 import { getClassesAction as getClassesFromDB } from "@/app/actions/GET/getClassesAction";
 import {
-    getCacheTimestamp, getStorageClasses, getStorageSchool, getStorageSubjects, getStorageTeachers,
-    setCacheTimestamp, setStorageClasses, setStorageSchool, setStorageSubjects, setStorageTeachers,
+    getCacheTimestamp, getStorageClasses, getStorageSubjects, getStorageTeachers,
+    setCacheTimestamp, setStorageClasses, setStorageSubjects, setStorageTeachers,
 } from "@/lib/localStorage";
 import { isCacheFresh } from "@/utils/time";
-
 
 interface useInitDataProps {
     school: SchoolType | undefined;
@@ -45,7 +44,7 @@ const useInitData = ({
 }: useInitDataProps) => {
     const { data: session, status } = useSession();
 
-    // Promise that checks if data is in cache, if not, fetches from DB
+    // Promise that checks if data is in cache, if not, fetches from DB. School data is always fetched from DB.
     const promiseFromCacheOrDB = <T, R>(
         schoolId: string,
         storage: T | null,
@@ -62,11 +61,8 @@ const useInitData = ({
                 let schoolPromise, classesPromise, teachersPromise, subjectsPromise, annualPromise;
 
                 if (!school) {
-                    schoolPromise = promiseFromCacheOrDB<SchoolType, GetSchoolResponse>(
-                        schoolId,
-                        getStorageSchool(),
-                        getSchoolFromDB,
-                    );
+                    // fetch school from DB
+                    schoolPromise = getSchoolFromDB(schoolId);
                 }
 
                 if (!classes) {
@@ -102,7 +98,6 @@ const useInitData = ({
 
                 if (schoolRes && schoolRes.success && schoolRes.data) {
                     setSchool(schoolRes.data);
-                    setStorageSchool(schoolRes.data);
                 }
                 if (teachersRes && teachersRes.success && teachersRes.data) {
                     setTeachers(teachersRes.data);

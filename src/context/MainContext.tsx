@@ -40,6 +40,7 @@ interface MainContextType {
         subjectData: SubjectRequest,
     ) => Promise<SubjectType[] | undefined>;
     deleteSubject: (schoolId: string, subjectId: string) => Promise<boolean>;
+    setSchool: React.Dispatch<React.SetStateAction<SchoolType | undefined>>;
 }
 
 const MainContext = createContext<MainContextType | undefined>(undefined);
@@ -207,6 +208,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         addNewSubject,
         updateSubject,
         deleteSubject,
+        setSchool,
     };
 
     return <MainContext.Provider value={value}>{children}</MainContext.Provider>;

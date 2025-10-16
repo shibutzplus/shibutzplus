@@ -10,7 +10,7 @@ import routePath from "@/routes";
 import { getSessionPublishDates, setSessionPublishDates } from "@/lib/sessionStorage";
 
 const usePublish = () => {
-    const { school } = useMainContext();
+    const { school, setSchool } = useMainContext()
     const { selectedDate } = useDailyTableContext();
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [btnTitle, setBtnTitle] = useState<string>("פרסום המערכת");
@@ -40,6 +40,8 @@ const usePublish = () => {
             const response = await publishDailyScheduleAction(school.id, selectedDate);
             if (response.success) {
                 setSessionPublishDates(selectedDate);
+                // Update school context to include the newly published date (Local Storage not updated, currently unused)
+                setSchool(prev => prev ? { ...prev, publishDates: Array.from(new Set([...(prev.publishDates || []), selectedDate])) } : prev)
                 successToast(messages.publish.success);
                 setBtnTitle("המערכת פורסמה");
                 setIsDisabled(true);
