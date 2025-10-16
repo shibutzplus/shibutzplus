@@ -1,4 +1,3 @@
-import { SchoolType } from "@/models/types/school";
 import { SubjectType } from "@/models/types/subjects";
 import { TeacherType } from "@/models/types/teachers";
 import { ClassType } from "@/models/types/classes";
@@ -9,7 +8,6 @@ export const STORAGE_KEYS = {
     CLASSES_DATA: "classes_data",
     TEACHERS_DATA: "teachers_data",
     SUBJECTS_DATA: "subjects_data",
-    SCHOOL_DATA: "school_data",
     TEACHER_DATA: "teacher_data",
 };
 
@@ -46,17 +44,6 @@ export const getCacheTimestamp = () => {
 
 export const setCacheTimestamp = (timestamp: string) => {
     return setStorage(STORAGE_KEYS.CACHE_TIMESTAMP, timestamp);
-};
-
-//
-// SchoolData
-//
-export const getStorageSchool = () => {
-    return getStorage<SchoolType>(STORAGE_KEYS.SCHOOL_DATA);
-};
-
-export const setStorageSchool = (school: SchoolType) => {
-    return setStorage(STORAGE_KEYS.SCHOOL_DATA, school);
 };
 
 //
