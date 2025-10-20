@@ -12,7 +12,6 @@ import {
     createPairs,
     createAnnualRequests,
     setNewScheduleTemplate,
-    getUniqueCellsFromQueue,
     getSelectedClass,
     buildTeacherAtIndex,
     buildClassNameById,
@@ -175,15 +174,24 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
         }
 
         try {
-            const uniqueCells = getUniqueCellsFromQueue(queueRows);
-            for (const cell of uniqueCells) {
-                await deleteAnnualScheduleItem(cell.day, cell.hour, selectedClassId, school.id);
+            // Collect unique (classId + day + hour) tuples to delete safely
+            const uniqueCellsMap = new Map<string, { day: number; hour: number; classId: string }>();
+            for (const row of queueRows) {
+                const key = `${row.class?.id}_${row.day}_${row.hour}`;
+                if (!uniqueCellsMap.has(key) && row.class?.id) {
+                    uniqueCellsMap.set(key, { day: row.day, hour: row.hour, classId: row.class.id });
+                }
             }
+
+            for (const { day, hour, classId } of uniqueCellsMap.values()) {
+                await deleteAnnualScheduleItem(day, hour, classId, school.id);
+            }
+
             for (const row of queueRows) {
                 await addNewAnnualScheduleItem(row);
             }
         } catch (error) {
-            console.error("Error deleting annual schedule entry:", error);
+            console.error("Error saving annual schedule entry:", error);
             errorToast(messages.annualSchedule.error);
         } finally {
             setQueueRows([]);
@@ -215,14 +223,21 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
 
         setSchedule(newSchedule);
 
-        if (subjectIds.length === 0 && teacherIds.length === 0) return;
-        if (subjectIds.length === 0 || teacherIds.length === 0) {
-            if (method === "remove-value") {
-                const dayNum = dayToNumber(day);
+        // 1) Handle deletions first
+        if (method === "remove-value") {
+            const dayNum = dayToNumber(day);
+            if (subjectIds.length === 0 || teacherIds.length === 0) {
                 await deleteAnnualScheduleItem(dayNum, hour, selectedClassId, school.id);
+                return; // stop here
             }
+        }
+
+        // 2) Incomplete pair → do nothing yet (no warning)
+        if (subjectIds.length === 0 || teacherIds.length === 0) {
             return;
         }
+
+        // 3) Only warn when both sides exist and subjects > teachers
         if (subjectIds.length > teacherIds.length) {
             infoToast("שימו ❤️, יש יותר מקצועות ממורים בשיעור אחד.");
             return;
