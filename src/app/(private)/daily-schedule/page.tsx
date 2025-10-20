@@ -91,7 +91,14 @@ const DailySchedulePage: NextPage = () => {
     };
   }, [isLoading]);
 
-  if (isLoading) return <DailySkeleton />;
+  if (isLoading) {
+    return (
+      <div className={styles.loadingWrapper}>
+        <DailySkeleton />
+        <div className={styles.loader}></div>
+      </div>
+    )
+  }
 
   return (
     <AnnualTableProvider>
