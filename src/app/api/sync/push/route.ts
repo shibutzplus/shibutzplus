@@ -4,9 +4,10 @@ export async function POST(req: Request) {
   try {
 
     // Skip push in local development (For debug comment out this block)
-    //if (process.env.NODE_ENV === "development" || req.headers.get("host")?.includes("localhost")) {
-    //  return new Response("dev mode - skipped", { status: 200 });
-    //}
+    if (process.env.NODE_ENV === "development" || req.headers.get("host")?.includes("localhost")) {
+      return new Response("dev mode - skipped", { status: 200 });
+    }
+    
     const url = new URL(req.url)
     const type = url.searchParams.get("type")
 
