@@ -34,7 +34,6 @@ const SignInContent: React.FC = () => {
         }
     }, [googleError, router]);
 
-
     useEffect(() => {
         if (status === STATUS_LOADING) setIsLoading(true);
     }, [status]);
@@ -90,12 +89,10 @@ const SignInContent: React.FC = () => {
                         <GoogleIcon /> משתמש רשום - התחברות
                     </button>
                     {error && <p className={styles.error}>{error}</p>}
-                    <div className={styles.registerLink}>
-                        <p>
-                            <Link href={EmailLink} className={styles.problemLink}>
-                                צרו קשר
-                            </Link>
-                        </p>
+                    <div className={styles.contact}>
+                        <Link href={EmailLink} className={styles.contactLink}>
+                            צרו קשר
+                        </Link>
                     </div>
                 </div>
             </section>
