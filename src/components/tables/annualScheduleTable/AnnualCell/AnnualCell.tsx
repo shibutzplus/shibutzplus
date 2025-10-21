@@ -12,6 +12,7 @@ import { useAnnualTable } from "@/context/AnnualTableContext";
 import { sortAnnualTeachers, sortByHebrewName } from "@/utils/sort";
 import useDeletePopup from "@/hooks/useDeletePopup";
 import { PopupAction } from "@/context/PopupContext";
+import { dayToNumber } from "@/utils/time";
 
 type AnnualCellProps = {
     day: string;
@@ -70,7 +71,7 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
     const handleTeacherChange = (values: string[], method: SelectMethod) => {
         handleAddNewRow("teachers", values, day, hour, method);
     };
-    
+
     const confirmRemove = (what: string | null, proceed: () => void) => {
         handleOpenPopup(
             PopupAction.deleteTeacher,
@@ -79,13 +80,29 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
         );
     };
 
-    // Resolve teacher IDs and subjects for a real class cell
+    // Keys normalization (minimal, non-breaking)
+    const hourKey = String(hour);
+    const dayKeyAlt = String(dayToNumber(day));
+
+    // Resolve teacher IDs and subjects with tolerant keys
     const teacherIds: string[] = effectiveClassId
-        ? schedule[effectiveClassId]?.[day]?.[hour]?.teachers ?? []
+        ? (
+            schedule[effectiveClassId]?.[day]?.[hour]?.teachers ??
+            schedule[effectiveClassId]?.[day]?.[hourKey]?.teachers ??
+            schedule[effectiveClassId]?.[dayKeyAlt]?.[hour]?.teachers ??
+            schedule[effectiveClassId]?.[dayKeyAlt]?.[hourKey]?.teachers ??
+            []
+        )
         : [];
 
     const subjectIdsInBucket: string[] = effectiveClassId
-        ? schedule[effectiveClassId]?.[day]?.[hour]?.subjects ?? []
+        ? (
+            schedule[effectiveClassId]?.[day]?.[hour]?.subjects ??
+            schedule[effectiveClassId]?.[day]?.[hourKey]?.subjects ??
+            schedule[effectiveClassId]?.[dayKeyAlt]?.[hour]?.subjects ??
+            schedule[effectiveClassId]?.[dayKeyAlt]?.[hourKey]?.subjects ??
+            []
+        )
         : [];
 
     const subjectNames =
@@ -107,7 +124,12 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
 
     // Teacher-only: Display subject + class
     if (isTeacherOnly) {
-        const teacherSlot = schedule[TEACHER_SCHEDULE]?.[day]?.[hour];
+        const teacherSlot =
+            schedule[TEACHER_SCHEDULE]?.[day]?.[hour] ??
+            schedule[TEACHER_SCHEDULE]?.[day]?.[hourKey] ??
+            schedule[TEACHER_SCHEDULE]?.[dayKeyAlt]?.[hour] ??
+            schedule[TEACHER_SCHEDULE]?.[dayKeyAlt]?.[hourKey];
+
         if (!teacherSlot) return <td className={styles.scheduleCell}></td>;
 
         const subjNames = (teacherSlot.subjects || [])
@@ -131,7 +153,7 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
         );
 
     }
-
+    
 
     // Class + Teacher: Display subjects only
     if (isClassAndTeacher) {
@@ -150,7 +172,13 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
                     <DynamicInputMultiSelect
                         placeholder="מקצוע"
                         options={createSelectOptions<SubjectType>(sortByHebrewName(subjects || []))}
-                        value={schedule[effectiveClassId]?.[day]?.[hour]?.subjects ?? []}
+                        value={
+                            schedule[effectiveClassId]?.[day]?.[hour]?.subjects ??
+                            schedule[effectiveClassId]?.[day]?.[hourKey]?.subjects ??
+                            schedule[effectiveClassId]?.[dayKeyAlt]?.[hour]?.subjects ??
+                            schedule[effectiveClassId]?.[dayKeyAlt]?.[hourKey]?.subjects ??
+                            []
+                        }
                         onChange={handleSubjectChange}
                         onCreate={(value: string) => onCreateSubject(day, hour, value)}
                         isSearchable
