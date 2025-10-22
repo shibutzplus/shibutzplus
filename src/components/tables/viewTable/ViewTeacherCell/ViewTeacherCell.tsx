@@ -31,7 +31,14 @@ const ViewTeacherCell: React.FC<ViewTeacherCellProps> = ({ cellData }) => {
             ) : cellData.event ? (
                 <div className={styles.subTeacherName}>{cellData.event}</div>
             ) : (
-                <div className={styles.missingSubTeacherName}>אין מילוי מקום</div>
+                <div className={
+                    // If existingTeacher → show light red, else (missing Teacher) display red
+                    cellData.issueTeacherType === ColumnTypeValues.existingTeacher
+                        ? styles.noSubNeeded
+                        : styles.missingSubTeacherName
+                }>
+                    אין מילוי מקום
+                </div>
             )}
         </div>
     );
