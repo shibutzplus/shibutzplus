@@ -237,9 +237,9 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
             return;
         }
 
-        // 3) Only warn when both sides exist and subjects > teachers
+        // when both sides exist and subjects > teachers dont update yet
         if (subjectIds.length > teacherIds.length) {
-            infoToast("שימו ❤️, יש יותר מקצועות ממורים בשיעור אחד.");
+        //    infoToast("שימו ❤️, יש יותר מקצועות ממורים בשיעור אחד.");
             return;
         }
 

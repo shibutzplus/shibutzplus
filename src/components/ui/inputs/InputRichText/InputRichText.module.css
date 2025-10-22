@@ -4,6 +4,7 @@
     padding: 6px 0px;
     box-sizing: border-box;
     position: relative;
+    text-align: right;
 }
 
 .placeholder {
