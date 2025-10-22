@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { STATUS_AUTH } from "@/models/constant/session";
-import { GetSchoolResponse, SchoolType } from "@/models/types/school";
+import { SchoolType } from "@/models/types/school";
 import { GetSubjectsResponse, SubjectType } from "@/models/types/subjects";
 import { GetTeachersResponse, TeacherType } from "@/models/types/teachers";
 import { ClassType, GetClassesResponse } from "@/models/types/classes";
@@ -27,6 +27,8 @@ interface useInitDataProps {
     classes: ClassType[] | undefined;
     setClasses: (classes: ClassType[] | undefined) => void;
 }
+
+const POWER_USER_EMAIL = process.env.NEXT_PUBLIC_POWER_USER_EMAIL;
 
 /**
  * Initialize data for the app
@@ -58,7 +60,7 @@ const useInitData = ({
     useEffect(() => {
         const fetchData = async (schoolId: string) => {
             try {
-                let schoolPromise, classesPromise, teachersPromise, subjectsPromise, annualPromise;
+                let schoolPromise, classesPromise, teachersPromise, subjectsPromise;
 
                 if (!school) {
                     // fetch school from DB
@@ -122,7 +124,17 @@ const useInitData = ({
         };
 
         if (status === STATUS_AUTH && typeof window !== "undefined" && session?.user?.schoolId) {
-            fetchData(session.user.schoolId);
+            // prefer ?schoolId for Power User
+            const email = (session.user as any)?.email as string | undefined;
+            let picked: string | null = null;
+            try {
+                picked = new URLSearchParams(window.location.search).get("schoolId");
+            } catch {
+                picked = null;
+            }
+            const effectiveSchoolId = email === POWER_USER_EMAIL && picked?.trim() ? picked.trim() : session.user.schoolId;
+
+            fetchData(effectiveSchoolId);
         }
     }, [session, status, school, teachers, subjects, classes]);
 };

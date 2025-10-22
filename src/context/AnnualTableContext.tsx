@@ -83,6 +83,7 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
     useInitAnnualData({
         annualScheduleTable,
         setAnnualScheduleTable,
+        schoolId: school?.id,
     });
 
     useEffect(() => {
@@ -239,7 +240,7 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
 
         // when both sides exist and subjects > teachers dont update yet
         if (subjectIds.length > teacherIds.length) {
-        //    infoToast("שימו ❤️, יש יותר מקצועות ממורים בשיעור אחד.");
+            //    infoToast("שימו ❤️, יש יותר מקצועות ממורים בשיעור אחד.");
             return;
         }
 
