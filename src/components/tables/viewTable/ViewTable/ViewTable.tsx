@@ -32,8 +32,8 @@ const ViewTable: React.FC<ReadOnlyDailyTableProps> = ({
     if (scheduleData.length === 0)
         return (
             <NotPublishedLayout
-                title={noScheduleTitle || "אין נתונים להצגה"}
-                subTitle={noScheduleSubTitle || ["לא פורסמה מערכת עבור יום זה"]}
+                title={noScheduleTitle || ""}
+                subTitle={noScheduleSubTitle || [""]}
             />
         );
 

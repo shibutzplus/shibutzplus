@@ -26,10 +26,9 @@ const HistorySchedulePage: NextPage = () => {
     const [selectedTeacher, setSelectedTeacher] = useState<{ id?: string; name: string; date: string } | null>(null);
 
     const fetchDailyScheduleData = async () => {
-        // No date dont fetch
+        // Guard: do not flip loading off before prerequisites exist
         if (!school?.id || !dateFromQuery) {
             setCurrentDateData([]);
-            setIsLoading(false);
             return;
         }
 
@@ -51,10 +50,10 @@ const HistorySchedulePage: NextPage = () => {
         }
     };
 
-    // Fetch when URL date changes
+    // Fetch only when both school.id and date exist
     useEffect(() => {
+        if (!school?.id || !dateFromQuery) return;
         fetchDailyScheduleData();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dateFromQuery, school?.id]);
 
     const handleTeacherClick = (teacherName: string, teacherId?: string) => {
@@ -63,7 +62,15 @@ const HistorySchedulePage: NextPage = () => {
         setIsTeacherModalOpen(true);
     };
 
-    if (isLoading) return <PublishedSkeleton />;
+    // Keep skeleton until prerequisites exist or loading finishes
+    if (isLoading || !school?.id || !dateFromQuery) {
+        return (
+            <div className={styles.loadingWrapper}>
+                <PublishedSkeleton />
+                <div className={styles.loader}></div>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.content}>
