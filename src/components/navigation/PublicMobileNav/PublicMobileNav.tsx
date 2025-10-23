@@ -6,13 +6,16 @@ import Icons from "@/style/icons";
 import { usePortal } from "@/context/PortalContext";
 import router from "@/routes";
 import styles from "./PublicMobileNav.module.css";
+import { TeacherRoleValues } from "@/models/types/teachers";
 
 const PublicMobileNav: React.FC = () => {
     const route = useRouter();
     const pathname = usePathname();
     const { teacher } = usePortal();
 
-    const pushToTeacherPortalWrite = () => {
+  if (!teacher || teacher.role !== TeacherRoleValues.REGULAR) return null;
+
+  const pushToTeacherPortalWrite = () => {
         if (teacher) route.push(`${router.teacherPortal.p}/${teacher.schoolId}/${teacher.id}`);
         return;
     };

@@ -10,6 +10,7 @@ import { setCacheTimestamp } from "@/lib/localStorage";
 interface useInitAnnualDataProps {
     annualScheduleTable: AnnualScheduleType[] | undefined;
     setAnnualScheduleTable: (annualSchedule: AnnualScheduleType[] | undefined) => void;
+    schoolId?: string;
 }
 
 /**
@@ -19,6 +20,7 @@ interface useInitAnnualDataProps {
 const useInitAnnualData = ({
     annualScheduleTable,
     setAnnualScheduleTable,
+    schoolId,
 }: useInitAnnualDataProps) => {
     const { data: session, status } = useSession();
     useEffect(() => {
@@ -46,10 +48,15 @@ const useInitAnnualData = ({
             }
         };
 
-        if (status === STATUS_AUTH && typeof window !== "undefined" && session?.user?.schoolId) {
-            fetchData(session.user.schoolId);
+        if (typeof window !== "undefined") {
+            // prefer schoolId passed from MainContext; fallback to session user
+            const effectiveId = schoolId || (status === STATUS_AUTH && session?.user?.schoolId ? session.user.schoolId : undefined);
+
+            if (effectiveId) {
+                fetchData(effectiveId);
+            }
         }
-    }, [session, status, annualScheduleTable]);
+    }, [session, status, annualScheduleTable, schoolId]);
 };
 
 export default useInitAnnualData;
