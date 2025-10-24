@@ -62,9 +62,10 @@ const usePublish = () => {
 
     // Open history in a new tab with selected date
     const onOpenHistory = () => {
-        if (!selectedDate) return;
+        if (!selectedDate || !school) return; 
         const base = new URL(routePath.history.p, window.location.origin);
         base.searchParams.set("date", selectedDate);
+        base.searchParams.set("schoolId", school.id);
         window.open(base.toString(), "_blank", "noopener,noreferrer");
     };
 

@@ -30,9 +30,9 @@ const ViewTeacherCell: React.FC<ViewTeacherCellProps> = ({ cellData }) => {
                 <div className={styles.subTeacherName}>מ"מ: {cellData.subTeacher?.name}</div>
             ) : cellData.event ? (
                 <div className={styles.subTeacherName}>{cellData.event}</div>
-            ) : (
+            ) : cellData.issueTeacherType === ColumnTypeValues.missingTeacher ? (
                 <div className={styles.missingSubTeacherName}>אין מילוי מקום</div>
-            )}
+            ) : null}
         </div>
     );
 };
