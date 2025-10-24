@@ -29,7 +29,6 @@ const TeacherRow: React.FC<TeacherRowProps> = ({ teacher, handleDeleteTeacher })
             getId={(t) => t.id}
             getInitialValue={(t) => t.name}
             updateExtraFields={() => ({ role: TeacherRoleValues.REGULAR, schoolId: teacher.schoolId })}
-            link={generateSchoolUrl(teacher.schoolId, teacher.id)}
         />
     );
 };
