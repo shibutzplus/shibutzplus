@@ -82,7 +82,7 @@ const DailyTopActions: React.FC = () => {
                                 pointerEvents: "none"
                             }
                             : {
-                                borderLeft: DailyTableColors.publish.borderLeft,
+                                borderLeft:  "1px solid #ddd",
                                 borderRight: "1px solid #ddd",
                                 borderBottom: "1px solid #ddd",
                                 borderTop: "1px solid #ddd",
@@ -100,7 +100,7 @@ const DailyTopActions: React.FC = () => {
                     />
                 </span>
 
-                <span title="שיתוף קישור">
+                <span title="שיתוף קישור למורים מן המניין">
                     <IconBtn
                         Icon={<Icons.share size={16} />}
                         onClick={onShareLink}
