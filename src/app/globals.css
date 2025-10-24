@@ -1,10 +1,10 @@
 :root {
     --background-color: #FCFDFF;
     --inner-background-color: #F2F6F9;
-    
+
     --top-color: #FFFFFF;
-    --top-color-hover: #f1f1f1;
-    
+    --top-color-hover: #f7f7f7;
+
     --bright-text-color: #FFFFFF;
     --bright-text-color-hover: #e2e2e2;
     --bright-text-color-active: #c7c7c7;
@@ -12,7 +12,7 @@
     --dark-text-color: #494949;
     --dark-text-color-hover: #585757;
     --dark-text-color-active: #585858;
-    
+
     --placeholder-color: #CECECE;
 
     --input-color: #494949;
@@ -20,8 +20,11 @@
     --input-border: #e0e0e0;
     --input-border-focus: #494949;
 
+    --tab-color: #FFFFFF;
+    --tab-color-hover: #0000000d;
+
     --bright-border-color: #e0e0e0;
-    --dark-border-color: #494949;
+    --dark-border-color: #CECECE;
 
     --publish-color: #9D8CDB;
     --existing-teacher-color: #80B0FF;
@@ -30,13 +33,24 @@
 
     --error-color: #e53935;
 
+    --shadow-background: #00000080;
+
+    /* Button colors */
+    --button-color: #FFFFFF;
+    --button-background-color: #000;
+    --button-hover-background-color: #333;
+    --button-disabled-color: #b9b9b9;
+    --button-disabled-background-color: #919191;
+
     --border-primary: 1px solid var(--dark-border-color);
     --border-secondary: 1px solid var(--bright-border-color);
 
     --box-shadow-primary: 0px 4px 4px #00000040;
     --box-shadow-btn: 0px 4px 4px #00000005;
 
-    --header-height: 56px;
+    --border-radius-input: 4px;
+
+    --header-height: 60px;
 }
 
 html,

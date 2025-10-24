@@ -1,0 +1,40 @@
+/* Mobile */
+
+.rightContainer {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-weight: 600;
+    width: 100%;
+}
+
+.selectClass {
+    width: 200px;
+}
+
+.actionsContainer {
+    margin-inline-start: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.dateInput {
+    font-family: inherit;
+    padding: 6px 10px;
+    font-size: 14px;
+    border: var(--border-primary);
+    border-radius: 6px;
+    background: transparent;
+    color: inherit;
+}
+
+.dateInput:focus {
+    outline: none;
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+    .dateInput {
+        font-size: 16px;
+    }
+}

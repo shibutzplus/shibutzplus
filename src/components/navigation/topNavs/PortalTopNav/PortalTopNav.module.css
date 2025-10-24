@@ -1,0 +1,11 @@
+.rightContainer {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-weight: 600;
+    width: 100%;
+}
+
+.selectClass {
+    width: 200px;
+}

@@ -1,19 +1,19 @@
 import TopNavLayout from "@/components/layout/TopNavLayout/TopNavLayout";
-import { getPageTitleFromUrl } from "@/utils/format";
-import { usePathname } from "next/navigation";
-import React, { useMemo } from "react";
+import React from "react";
+import styles from "./DetailsTopNav.module.css";
 
-const DetailsTopNav: React.FC = () => {
-    const pathname = usePathname();
+type DetailsTopNavProps = {
+    pageTitle: string;
+};
 
-    const pageTitle = useMemo(() => {
-        return getPageTitleFromUrl(pathname) || "";
-    }, [pathname]);
-
+const DetailsTopNav: React.FC<DetailsTopNavProps> = ({ pageTitle }) => {
     return (
         <TopNavLayout
             type="details"
-            childrens={{ left: undefined, right: <div>{pageTitle}</div> }}
+            childrens={{
+                left: undefined,
+                right: <div className={styles.rightContainer}>{pageTitle}</div>,
+            }}
         />
     );
 };

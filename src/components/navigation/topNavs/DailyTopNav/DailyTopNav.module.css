@@ -1,0 +1,24 @@
+/* Mobile */
+.rightContainer {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    font-weight: 600;
+}
+
+.selectContainer {
+    width: 300px;
+}
+
+.leftContainer{
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-left: 10px;
+}
+
+
+
+/* Desktop */
+@media (min-width: 1024px) {}

@@ -1,16 +1,17 @@
-// Server component layout: defines metadata and wraps children with the client layout
 import type { Metadata } from "next";
-import AnnualScheduleLayoutClient from "./layoutClient";
+import { AnnualTableProvider } from "@/context/AnnualTableContext";
+import PageLayout from "@/components/layout/PageLayout/PageLayout";
+import AnnualTopNav from "@/components/navigation/topNavs/AnnualTopNav/AnnualTopNav";
 
 export const metadata: Metadata = {
     title: "מערכת שנתית | שיבוץ+",
     robots: "noindex, nofollow",
 };
 
-export default function AnnualScheduleLayout({
-    children,
-}: {
-    children: React.ReactNode;
-}) {
-    return <AnnualScheduleLayoutClient>{children}</AnnualScheduleLayoutClient>;
+export default function Layout({ children }: { children: React.ReactNode }) {
+    return (
+        <AnnualTableProvider>
+            <PageLayout TopNav={<AnnualTopNav />} >{children}</PageLayout>
+        </AnnualTableProvider>
+    );
 }

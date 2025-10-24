@@ -10,6 +10,7 @@ import { DailyTableColors } from "@/style/tableColors";
 import Icons from "@/style/icons";
 import styles from "./DailyTopActions.module.css";
 import { ColumnTypeValues } from "@/models/types/dailySchedule";
+import { EventColor, ExistingTeacherColor, MissingTeacherColor, PublishColor } from "@/style/colors";
 
 const DailyTopActions: React.FC = () => {
     const { isLoading, addNewColumn, daysSelectOptions, selectedDate, handleDayChange } =
@@ -43,7 +44,7 @@ const DailyTopActions: React.FC = () => {
                     Icon={<Icons.addTeacher size={16} />}
                     label="שיבוץ למורה חסר"
                     isDisabled={isLoading}
-                    style={{ borderLeft: DailyTableColors.missingTeacher.borderLeft, backgroundColor: "#ffffff" }}
+                    style={{ borderLeft: `10px solid ${MissingTeacherColor}` }}
                     func={() => addNewColumn(ColumnTypeValues.missingTeacher)}
                 />
                 <ActionBtn
@@ -51,7 +52,7 @@ const DailyTopActions: React.FC = () => {
                     Icon={<Icons.addTeacher size={16} />}
                     label="שיבוץ למורה נוכח"
                     isDisabled={isLoading}
-                    style={{ borderLeft: DailyTableColors.existingTeacher.borderLeft, backgroundColor: "#ffffff" }}
+                    style={{ borderLeft: `10px solid ${ExistingTeacherColor}` }}
                     func={() => addNewColumn(ColumnTypeValues.existingTeacher)}
                 />
                 <ActionBtn
@@ -59,7 +60,7 @@ const DailyTopActions: React.FC = () => {
                     Icon={<Icons.event size={16} />}
                     label="שיבוץ ארוע"
                     isDisabled={isLoading}
-                    style={{ borderLeft: DailyTableColors.event.borderLeft, backgroundColor: "#ffffff" }}
+                    style={{ borderLeft: `10px solid ${EventColor}` }}
                     func={() => addNewColumn(ColumnTypeValues.event)}
                 />
             </div>
@@ -75,22 +76,20 @@ const DailyTopActions: React.FC = () => {
                     style={
                         isDisabled
                             ? {
-                                backgroundColor: "transparent",
-                                border: "1px solid transparent",
-                                boxShadow: "none",
-                                cursor: "default",
-                                pointerEvents: "none"
-                            }
+                                  backgroundColor: "transparent",
+                                  border: "1px solid transparent",
+                                  boxShadow: "none",
+                                  cursor: "default",
+                                  pointerEvents: "none",
+                              }
                             : {
-                                borderLeft: DailyTableColors.publish.borderLeft,
-                                borderRight: "1px solid #ddd",
-                                borderBottom: "1px solid #ddd",
-                                borderTop: "1px solid #ddd",
-                                backgroundColor: "#ffffff"
-                            }
+                                  borderLeft: `10px solid ${PublishColor}`,
+                                  borderRight: "1px solid #ddd",
+                                  borderBottom: "1px solid #ddd",
+                                  borderTop: "1px solid #ddd",
+                              }
                     }
                 />
-
 
                 <span className={styles.hideOnMobile} title="תצוגה מקדימה">
                     <IconBtn

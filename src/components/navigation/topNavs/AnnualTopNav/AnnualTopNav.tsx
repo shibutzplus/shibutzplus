@@ -1,15 +1,14 @@
-import AnnualTopActions from "@/components/actions/AnnualTopActions/AnnualTopActions";
+"use client";
+
 import TopNavLayout from "@/components/layout/TopNavLayout/TopNavLayout";
-import { getPageTitleFromUrl } from "@/utils/format";
-import { usePathname } from "next/navigation";
-import React, { useMemo } from "react";
+import router from "@/routes";
+import styles from "./AnnualTopNav.module.css";
+import { useAnnualTable } from "@/context/AnnualTableContext";
+import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 
 const AnnualTopNav: React.FC = () => {
-    const pathname = usePathname();
-
-    const pageTitle = useMemo(() => {
-        return getPageTitleFromUrl(pathname) || "";
-    }, [pathname]);
+    const { classesSelectOptions, selectedClassId, handleClassChange, isSaving, isLoading } =
+        useAnnualTable();
 
     return (
         <TopNavLayout
@@ -17,8 +16,20 @@ const AnnualTopNav: React.FC = () => {
             childrens={{
                 left: undefined,
                 right: (
-                    <div>
-                        {pageTitle} <AnnualTopActions />
+                    <div className={styles.rightContainer}>
+                        <div>{router.annualSchedule.title}</div>
+                        <div className={styles.selectClass}>
+                            <DynamicInputSelect
+                                options={classesSelectOptions()}
+                                value={selectedClassId}
+                                onChange={handleClassChange}
+                                isSearchable={false}
+                                isDisabled={isSaving || isLoading}
+                                placeholder="בחר כיתה..."
+                                hasBorder
+                                isClearable
+                            />
+                        </div>
                     </div>
                 ),
             }}

@@ -17,6 +17,7 @@ export const filterTeachersByRole = (teachers: TeacherType[], role: TeacherRole)
     return teachers.filter((teacher) => teacher.role === role);
 };
 
+// TODO: in use?
 export const getPageTitleFromUrl = (pathname: string) => {
     const currentPath = pathname.split("/").filter(Boolean)[0] || "";
     const routeKey = Object.keys(routePath).find(

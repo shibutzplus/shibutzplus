@@ -2,31 +2,32 @@
 .topButton {
     width: 150px;
     height: 40px;
-    padding: 0.7rem 0;
+    padding: 0.7rem 2px 0.7rem 0;
     padding-left: 0;
+    color: var(--dark-text-color);
+    background-color: var(--top-color);
     border: var(--border-primary);
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 12px;
     font-weight: bold;
-    transition: all 0.2s ease;
+    transition: all 0.1s ease;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
-    color: var(--daily-btns-color);
 }
 
 .topButton:not(:disabled):hover {
-    transform: translateY(-2px);
-    box-shadow: var(--daily-btns-box-shadow);
+    transform: translateY(-1px);
+    background-color: var(--top-color-hover);
     cursor: pointer;
 }
 
 /* Desktop */
 @media (min-width: 768px) {
     .topButton {
-        width: 150px;
+        width: 160px;
         padding-left: 5px;
         font-size: 14px;
     }

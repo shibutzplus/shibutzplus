@@ -16,11 +16,11 @@ const TopNavLayout: React.FC<TopNavLayoutProps> = ({ childrens, type }) => {
     return (
         <>
             <header className={styles.topNavLayout}>
-                <div className={styles.topNavLeft}>
+                <div className={styles.topNavRight}>
                     <HamburgerButton onClick={() => setIsMenuOpen((v) => !v)} isOpen={isMenuOpen} />
                     {childrens.right}
                 </div>
-                <div className={styles.topNavRight}>
+                <div className={styles.topNavLeft}>
                     {childrens.left}
                     <Logo size="S" />
                 </div>

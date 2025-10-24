@@ -9,8 +9,10 @@ import Icons from "@/style/icons";
 import { DailyTableColors } from "@/style/tableColors";
 import styles from "./MobileNav.module.css";
 import { ColumnTypeValues } from "@/models/types/dailySchedule";
+import { useMobileSize } from "@/hooks/useMobileSize";
 
 const MobileNav: React.FC = () => {
+    const isMobile = useMobileSize();
     const { isLoading, addNewColumn } = useDailyTableContext();
     const {
         publishDailySchedule,
@@ -19,6 +21,8 @@ const MobileNav: React.FC = () => {
         btnTitle,
         isDisabled,
     } = usePublish();
+
+    if (!isMobile) return null;
 
     return (
         <nav className={styles.mobileNav}>

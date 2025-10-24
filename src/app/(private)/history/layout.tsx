@@ -1,12 +1,21 @@
-// Server component layout: defines metadata and wraps children with the client layout
-import type { Metadata } from "next";
-import HistoryLayoutClient from "./layoutClient";
+import React, { Suspense } from "react";
+import PageLayout from "@/components/layout/PageLayout/PageLayout";
+import { HistoryTableProvider } from "@/context/HistoryTableContext";
+import HistoryTopNav from "@/components/navigation/topNavs/HistoryTopNav/HistoryTopNav";
 
-export const metadata: Metadata = {
-  title: "מערכות יומיות | שיבוץ+",
-  robots: "noindex, nofollow",
-};
+// Loading fallback for the layout
+const HistoryLayoutLoading = () => (
+    <PageLayout TopNav={<div />}>
+        <div></div>
+    </PageLayout>
+);
 
 export default function HistoryLayout({ children }: { children: React.ReactNode }) {
-  return <HistoryLayoutClient>{children}</HistoryLayoutClient>;
+    return (
+        <Suspense fallback={<HistoryLayoutLoading />}>
+            <HistoryTableProvider>
+                <PageLayout TopNav={<HistoryTopNav />}>{children}</PageLayout>
+            </HistoryTableProvider>
+        </Suspense>
+    );
 }

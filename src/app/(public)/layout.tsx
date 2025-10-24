@@ -1,16 +1,17 @@
-// Server component layout: defines metadata and wraps children with the client layout
 import type { Metadata } from "next";
-import LayoutClient from "./layoutClient";
+import PageLayout from "@/components/layout/PageLayout/PageLayout";
+import PortalTopNav from "@/components/navigation/topNavs/PortalTopNav/PortalTopNav";
+import { PortalProvider } from "@/context/PortalContext";
 
 export const metadata: Metadata = {
     title: "המערכת שלי | שיבוץ+",
     robots: "noindex, nofollow",
 };
 
-export default function TeacherLayout({
-    children,
-}: {
-    children: React.ReactNode;
-}) {
-    return <LayoutClient>{children}</LayoutClient>;
+export default function Layout({ children }: { children: React.ReactNode }) {
+    return (
+        <PortalProvider>
+            <PageLayout TopNav={<PortalTopNav />}>{children}</PageLayout>
+        </PortalProvider>
+    );
 }
