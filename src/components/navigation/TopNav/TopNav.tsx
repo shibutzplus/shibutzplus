@@ -6,8 +6,7 @@ import { getPageTitleFromUrl } from "@/utils/format";
 import Logo from "@/components/core/Logo/Logo";
 import HamburgerNav, { HamburgerButton } from "@/components/navigation/HamburgerNav/HamburgerNav";
 import styles from "./TopNav.module.css";
-
-export type NavType = "list" | "admin" | "portal";
+import { NavType } from "@/models/types";
 
 type Props = {
   type: NavType;
@@ -30,7 +29,7 @@ const TopNav: React.FC<Props> = ({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Decide when to use the page title
-  const resolvedUsePageTitle = usePageTitle ?? (type === "admin" || type === "list");
+  const resolvedUsePageTitle = usePageTitle ?? (type === "admin" || type === "details");
 
   // Compute title
   const title = useMemo(() => {

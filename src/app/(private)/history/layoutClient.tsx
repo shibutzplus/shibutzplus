@@ -1,27 +1,27 @@
 "use client";
 
 import React, { Suspense } from "react";
-import PrivatePageLayout from "@/components/layout/PrivatePageLayout/PrivatePageLayout";
+import PageLayout from "@/components/layout/PageLayout/PageLayout";
 import TopNav from "@/components/navigation/TopNav/TopNav";
 import HistoryTopActions from "@/components/actions/HistoryTopActions/HistoryTopActions";
 import { HistoryTableProvider } from "@/context/HistoryTableContext";
 
 // Loading fallback for the layout
 const HistoryLayoutLoading = () => (
-    <PrivatePageLayout>
+    <PageLayout>
         <div></div>
-    </PrivatePageLayout>
+    </PageLayout>
 );
 
 export default function HistoryLayout({ children }: { children: React.ReactNode }) {
     return (
         <Suspense fallback={<HistoryLayoutLoading />}>
             <HistoryTableProvider>
-                <PrivatePageLayout
+                <PageLayout
                     CustomTopNav={<TopNav type="admin" actions={<HistoryTopActions />} />}
                 >
                     {children}
-                </PrivatePageLayout>
+                </PageLayout>
             </HistoryTableProvider>
         </Suspense>
     );

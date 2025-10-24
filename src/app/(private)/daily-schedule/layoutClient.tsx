@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import PrivatePageLayout from "@/components/layout/PrivatePageLayout/PrivatePageLayout";
+import PageLayout from "@/components/layout/PageLayout/PageLayout";
 import TopNav from "@/components/navigation/TopNav/TopNav";
 import DailyTopActions from "@/components/actions/DailyTopActions/DailyTopActions";
 import MobileNav from "@/components/navigation/MobileNav/MobileNav";
@@ -13,12 +13,12 @@ export default function DailyScheduleLayout({ children }: { children: React.Reac
 
     return (
         <DailyTableProvider>
-            <PrivatePageLayout CustomTopNav={<TopNav type="admin" actions={<DailyTopActions />} />}>
+            <PageLayout CustomTopNav={<TopNav type="admin" actions={<DailyTopActions />} />}>
                 <main>
                     <section style={{ marginBottom: isMobile ? "60px" : "0" }}>{children}</section>
                     {isMobile ? <MobileNav /> : null}
                 </main>
-            </PrivatePageLayout>
+            </PageLayout>
         </DailyTableProvider>
     );
 }
