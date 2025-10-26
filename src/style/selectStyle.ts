@@ -3,6 +3,7 @@ export const customStyles = (
     hasBorder: boolean,
     hasArrow: boolean = true,
     backgroundColor: string = "#fdfbfb",
+    color: string = "#333",
     noOptionsMsgColor: string = "#aaa",
 ) => {
     return {
@@ -15,7 +16,7 @@ export const customStyles = (
             boxShadow: "none",
             fontSize: "16px",
             backgroundColor: backgroundColor,
-            color: "#aaa",
+            color: color,
             transition: "all 0.2s ease",
             fontWeight: "normal",
             cursor: "pointer",
@@ -53,18 +54,18 @@ export const customStyles = (
         }),
         placeholder: (provided: any) => ({
             ...provided,
-            color: "#aaa",
+            color: color,
             fontSize: "16px",
         }),
         singleValue: (provided: any) => ({
             ...provided,
-            color: "#333",
+            color: color,
             fontSize: "16px",
         }),
         input: (provided: any) => ({
             ...provided,
             fontSize: "16px",
-            color: "#333",
+            color: color,
         }),
         valueContainer: (provided: any) => ({
             ...provided,
@@ -76,19 +77,19 @@ export const customStyles = (
         }),
         dropdownIndicator: (provided: any) => ({
             ...provided,
-            color: "#999",
+            color: color,
             padding: "8px",
             "&:hover": {
-                color: "#333",
+                color: color,
             },
             display: hasArrow ? "block" : "none",
         }),
         clearIndicator: (provided: any) => ({
             ...provided,
-            color: "#999",
+            color: color,
             padding: "8px",
             "&:hover": {
-                color: "#333",
+                color: color,
             },
         }),
         noOptionsMessage: (provided: any) => ({

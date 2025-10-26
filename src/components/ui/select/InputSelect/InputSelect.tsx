@@ -22,6 +22,7 @@ type Props = {
     isDisabled?: boolean;
     hasBorder?: boolean;
     backgroundColor?: "#fdfbfb" | "transparent";
+    color?: "#fff" | "#333";
     isClearable?: boolean;
     onCreate?: (value: string) => Promise<string | undefined>;
     createBtnText?: string;
@@ -41,6 +42,7 @@ const InputSelect: React.FC<Props> = (props) => {
         isDisabled = false,
         hasBorder = false,
         backgroundColor = "#fdfbfb",
+        color = "#333",
         isClearable = false,
         onCreate,
         createBtnText,
@@ -69,7 +71,7 @@ const InputSelect: React.FC<Props> = (props) => {
     };
 
     const mergedStyles = useMemo(() => {
-        const base = customStyles(error || "", hasBorder, true, backgroundColor) as any;
+        const base = customStyles(error || "", hasBorder, true, backgroundColor, color) as any;
         return {
             ...base,
             valueContainer: (p: any, s: any) => ({

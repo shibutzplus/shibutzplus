@@ -1,5 +1,7 @@
 // TODO: to remove this page
 
+import { EventColor, ExistingTeacherColor, MissingTeacherColor } from "./colors";
+
 export const HeaderColor = "#fffbf5";
 export const HourHeaderColor = "#fffbf5";
 export const HourRowColor = "#fffbf5";
@@ -36,7 +38,7 @@ export const DailyTableColors = {
 };
 
 export const COLOR_BY_TYPE = {
-    missingTeacher: DailyTableColors.missingTeacher.headerColor,
-    existingTeacher: DailyTableColors.existingTeacher.headerColor,
-    event: DailyTableColors.event.headerColor,
+    missingTeacher: MissingTeacherColor,
+    existingTeacher: ExistingTeacherColor,
+    event: EventColor,
 } as const;

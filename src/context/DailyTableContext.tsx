@@ -220,6 +220,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
             // Rebuild columns from storage and restore saved order
             const storageData = tableStorage[selectedDate];
             if (storageData && teachers) {
+                /// TODO: do I need this part in the new context?
                 const columnsToCreate = getColumnsFromStorage(storageData);
                 const newColumns = columnsToCreate.map(({ id, type }) => {
                     return buildColumn(type, id);
@@ -332,9 +333,9 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                     const updatedSchedule = setEmptyTeacherColumn(
                         { ...mainDailyTable },
                         selectedDate,
-                        headerTeacher,
                         columnId,
                         type,
+                        headerTeacher,
                     );
                     setMainAndStorageTable(updatedSchedule);
                 }

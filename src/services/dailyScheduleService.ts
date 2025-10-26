@@ -125,9 +125,9 @@ export const fillLeftRowsWithEmptyCells = (
 export const setEmptyTeacherColumn = (
     dailySchedule: DailySchedule,
     selectedDate: string,
-    headerTeacher: TeacherType,
     columnId: string,
     type: ColumnType,
+    headerTeacher?: TeacherType,
 ) => {
     dailySchedule = initDailySchedule(dailySchedule, selectedDate, columnId);
 

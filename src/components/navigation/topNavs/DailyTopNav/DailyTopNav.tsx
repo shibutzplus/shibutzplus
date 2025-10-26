@@ -4,34 +4,34 @@ import TopNavLayout from "@/components/layout/TopNavLayout/TopNavLayout";
 import router from "@/routes";
 import React from "react";
 import styles from "./DailyTopNav.module.css";
-import { useDailyTableContext } from "@/context/DailyTableContext";
+import { useDailyTableContext } from "@/context/DailyTableContextP";
 import usePublish from "@/hooks/usePublish";
 import ActionBtn from "@/components/ui/buttons/ActionBtn/ActionBtn";
 import { ColumnTypeValues } from "@/models/types/dailySchedule";
 import Icons from "@/style/icons";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
-import { DailyTableColors } from "@/style/tableColors";
 import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
 import { EventColor, ExistingTeacherColor, MissingTeacherColor } from "@/style/colors";
 
 const DailyTopNav: React.FC = () => {
-    const { isLoading, addNewColumn, daysSelectOptions, selectedDate, handleDayChange } =
+    const { addNewEmptyColumn, daysSelectOptions, selectedDate, isLoading, handleDayChange } =
         useDailyTableContext();
-    const {
-        publishDailySchedule,
-        isLoading: publishLoading,
-        onShareLink,
-        onOpenHistory,
-        isDisabled,
-        btnTitle,
-    } = usePublish();
+
+    // const {
+    //     publishDailySchedule,
+    //     isLoading: publishLoading,
+    //     onShareLink,
+    //     onOpenHistory,
+    //     isDisabled,
+    //     btnTitle,
+    // } = usePublish();
     return (
         <TopNavLayout
             type="daily"
             childrens={{
                 left: (
                     <div className={styles.leftContainer}>
-                        <span title="תצוגה מקדימה">
+                        {/* <span title="תצוגה מקדימה">
                             <IconBtn
                                 Icon={<Icons.eye size={20} />}
                                 onClick={onOpenHistory}
@@ -53,7 +53,7 @@ const DailyTopNav: React.FC = () => {
                                 onClick={onShareLink}
                                 disabled={publishLoading}
                             />
-                        </span>
+                        </span> */}
                     </div>
                 ),
                 right: (
@@ -77,7 +77,7 @@ const DailyTopNav: React.FC = () => {
                             label="שיבוץ למורה חסר"
                             isDisabled={isLoading}
                             style={{ borderLeft: `10px solid ${MissingTeacherColor}` }}
-                            func={() => addNewColumn(ColumnTypeValues.missingTeacher)}
+                            func={() => addNewEmptyColumn(ColumnTypeValues.missingTeacher)}
                         />
                         <ActionBtn
                             type={ColumnTypeValues.existingTeacher}
@@ -85,7 +85,7 @@ const DailyTopNav: React.FC = () => {
                             label="שיבוץ למורה נוכח"
                             isDisabled={isLoading}
                             style={{ borderLeft: `10px solid ${ExistingTeacherColor}` }}
-                            func={() => addNewColumn(ColumnTypeValues.existingTeacher)}
+                            func={() => addNewEmptyColumn(ColumnTypeValues.existingTeacher)}
                         />
                         <ActionBtn
                             type={ColumnTypeValues.event}
@@ -93,7 +93,7 @@ const DailyTopNav: React.FC = () => {
                             label="שיבוץ ארוע"
                             isDisabled={isLoading}
                             style={{ borderLeft: `10px solid ${EventColor}` }}
-                            func={() => addNewColumn(ColumnTypeValues.event)}
+                            func={() => addNewEmptyColumn(ColumnTypeValues.event)}
                         />
                     </div>
                 ),

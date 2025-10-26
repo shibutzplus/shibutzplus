@@ -1,0 +1,26 @@
+.hoursColumn {
+    width: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(var(--table-daily-cell-height) - 30px);
+    background-color: var(--inner-background-color);
+    border-radius: 40px;
+    box-sizing: border-box;
+    padding-top: calc(var(--table-daily-header-height) + (var(--table-daily-cell-height) / 2) - 5px);
+
+    height: var(--table-daily-full-height);
+}
+
+.hourCell {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--dark-text-color);
+    background-color: var(--top-color);
+    border-radius: 50%;
+}

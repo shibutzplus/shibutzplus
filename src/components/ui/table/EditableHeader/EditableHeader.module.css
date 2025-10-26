@@ -6,6 +6,8 @@
     width: 100%;
     padding: 0 15px;
     text-align: right;
+    height: var(--table-daily-header-height);
+    color: var(--bright-text-color);
 }
 
 .clearButton {
@@ -15,7 +17,8 @@
 }
 
 .clearButton:hover {
-    color: gray;
+    color: var(--bright-text-color-hover);
+    cursor: pointer;
 }
 
 .clearButton:active {

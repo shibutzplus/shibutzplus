@@ -3,27 +3,7 @@
     min-height: 100dvh;
     position: relative;
     padding-bottom: 15px;
-}
-
-.bottomScroller {
-    position: fixed;
-    inset-inline: 0;
-    bottom: 0;
-    overflow-x: auto;
-    overflow-y: hidden;
-    background: #fffffff2;
-    box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.08);
-    z-index: 1000;
-}
-
-.bottomInner {
-    height: 1px;
-}
-
-.scheduleCellInput,
-.scheduleCell {
-    overflow: hidden;
-    overflow-anchor: none;
+    padding-top: 1rem;
 }
 
 .loadingWrapper {

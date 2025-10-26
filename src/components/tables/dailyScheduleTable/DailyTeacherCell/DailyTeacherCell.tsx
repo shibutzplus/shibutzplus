@@ -2,24 +2,27 @@ import React, { useMemo, useState } from "react";
 import { getDayNameByDateString } from "@/utils/time";
 import styles from "./DailyTeacherCell.module.css";
 import { useMainContext } from "@/context/MainContext";
-import { useDailyTableContext } from "@/context/DailyTableContext";
-import { CellContext } from "@tanstack/react-table";
-import { TeacherRow } from "@/models/types/table";
-import { ColumnTypeValues, ActivityValues } from "@/models/types/dailySchedule";
+import { useDailyTableContext } from "@/context/DailyTableContextP";
+import {
+    ActivityValues,
+    ColumnType,
+    DailyScheduleCell,
+} from "@/models/types/dailySchedule";
 import { EmptyValue } from "@/models/constant/daily";
 import DynamicInputGroupSelect from "@/components/ui/select/InputGroupSelect/DynamicInputGroupSelect";
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { sortDailyTeachers } from "@/utils/sort";
 import { activityOptionsMapValToLabel } from "@/resources/dailySelectActivities";
-import { useAnnualTable } from "@/context/AnnualTableContext";
+import EmptyCell from "@/components/ui/table/EmptyCell/EmptyCell";
 
 type DailyTeacherCellProps = {
-    cell: CellContext<TeacherRow, unknown>;
-    type: typeof ColumnTypeValues.missingTeacher | typeof ColumnTypeValues.existingTeacher;
+    columnId: string;
+    cell: DailyScheduleCell;
+    type: ColumnType;
 };
 
-const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
+const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, type }) => {
     const { teachers } = useMainContext();
     const {
         mainDailyTable,
@@ -28,17 +31,15 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
         updateTeacherCell,
         clearTeacherCell,
     } = useDailyTableContext();
-    const { teacherAtIndex, classNameById } = useAnnualTable();
+    // const { teacherAtIndex, classNameById } = useAnnualTable();
     const [isLoading, setIsLoading] = useState(false);
 
-    // Get data from the row data
-    const columnId = cell?.column?.id;
-    const hour = cell?.row?.original?.hour.toString();
-    const classData = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.class;
-    const subjectData = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.subject;
-    const subTeacherData = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.subTeacher;
-    const teacherText = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.event;
-    const headerData = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.headerCol;
+    const hour = cell?.hour;
+    const classData = cell?.class;
+    const subjectData = cell?.subject;
+    const subTeacherData = cell?.subTeacher;
+    const teacherText = cell?.event;
+    const headerData = cell?.headerCol;
 
     const [selectedSubTeacher, setSelectedSubTeacher] = useState<string>(
         subTeacherData?.name || teacherText || "",
@@ -53,8 +54,8 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
                 mainDailyTable[selectedDate],
                 day,
                 Number(hour),
-                teacherAtIndex,
-                classNameById,
+                {},
+                {},
                 headerData?.headerTeacher?.id,
             ),
         [
@@ -63,8 +64,8 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
             mainDailyTable,
             selectedDate,
             hour,
-            teacherAtIndex,
-            classNameById,
+            {},
+            {},
             headerData?.headerTeacher?.id,
         ],
     );
@@ -86,6 +87,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
                 const existingDailyId = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.DBid;
                 if (existingDailyId) {
                     const response = await clearTeacherCell(
+                        selectedDate,
                         type,
                         cellData,
                         columnId,
@@ -119,6 +121,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
                     data = { event: activityOptionsMapValToLabel(value) };
                 }
                 const response = await updateTeacherCell(
+                    selectedDate,
                     type,
                     cellData,
                     columnId,
@@ -146,6 +149,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
                         <DynamicInputGroupSelect
                             options={sortedTeacherOptions}
                             value={selectedSubTeacher}
+                            backgroundColor="transparent"
                             onChange={(value: string) => handleTeacherChange("update", value)}
                             onCreate={(value: string) => handleTeacherChange("create", value)}
                             placeholder="ממלא מקום"
@@ -157,7 +161,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
                     </div>
                 </div>
             ) : (
-                <div className={styles.emptyCell} />
+                <EmptyCell />
             )}
         </div>
     );
