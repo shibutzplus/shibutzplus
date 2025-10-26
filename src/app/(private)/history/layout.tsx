@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import HistoryLayoutClient from "./layoutClient";
 
 export const metadata: Metadata = {
-  title: "שינויים במערכות | שיבוץ+",
+  title: "צפיה במערכות | שיבוץ+",
   robots: "noindex, nofollow",
 };
 
