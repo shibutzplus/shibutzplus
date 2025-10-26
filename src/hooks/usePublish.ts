@@ -57,12 +57,18 @@ const usePublish = () => {
 
     const onShareLink = async () => {
         if (!school) return;
-        share(messages.share.daily.title, messages.share.daily.text, generateSchoolUrl(school.id));
+        const text = `קישור התחברות למורי בית הספר:\n${generateSchoolUrl(school.id)}`;
+        try {
+            await navigator.clipboard.writeText(text);
+            successToast(`הקישור הועתק בהצלחה וניתן לשלוח למורים`);
+        } catch {
+            errorToast("לא ניתן להעתיק את הקישור, אנא פנו לתמיכה");
+        }
     };
 
     // Open history in a new tab with selected date
     const onOpenHistory = () => {
-        if (!selectedDate || !school) return; 
+        if (!selectedDate || !school) return;
         const base = new URL(routePath.history.p, window.location.origin);
         base.searchParams.set("date", selectedDate);
         base.searchParams.set("schoolId", school.id);

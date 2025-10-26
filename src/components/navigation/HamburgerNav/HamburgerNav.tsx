@@ -29,7 +29,7 @@ const links: ILink[] = [
     {
         name: routePath.dailySchedule.title,
         p: routePath.dailySchedule.p,
-        Icon: <Icons.calendar size={24} />,
+        Icon: <Icons.dailyCalendar size={24} />,
         withDivider: true,
         withExternal: false,
     },
@@ -61,7 +61,7 @@ const links: ILink[] = [
     {
         name: routePath.history.title,
         p: routePath.history.p,
-        Icon: <Icons.history size={24} />,
+        Icon: <Icons.eye size={24} />,
         withExternal: true,
     },
     {
