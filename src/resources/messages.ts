@@ -84,13 +84,6 @@ const messages = {
         success: "המערכת היומית פורסמה וזמינה למורים",
         error: "בעיה בפרסום המערכת אנא נסו שוב",
         alreadyPublished: "יום זה כבר פורסם",
-    },
-    //TODO: text?
-    share: {
-        daily: {
-            title: "",
-            text: "",
-        }
     }
 }
 

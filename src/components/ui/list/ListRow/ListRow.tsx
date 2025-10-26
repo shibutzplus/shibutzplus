@@ -4,6 +4,7 @@ import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
 import Icons from "@/style/icons";
 import styles from "./ListRow.module.css";
 import { useShareTextOrLink } from "@/hooks/useShareTextOrLink";
+import { successToast, errorToast } from "@/lib/toast";
 
 export type ListRowProps<T> = {
     item: T;
@@ -75,9 +76,15 @@ function ListRow<T extends Record<string, any>>({
         }
     };
 
-    const shareURL = () => {
-        if (!link) return;
-        share("שיבוץ+", "קישור למערכת האישית", link);
+    const shareURL = async () => {
+        const teacherName = getInitialValue(item);
+        const text = `${teacherName}, קישור להתחברות:\n${link}`;
+        try {
+            await navigator.clipboard.writeText(text);
+            successToast(`הקישור עבור ${teacherName} הועתק בהצלחה, ניתן לשלוח למורה`);
+        } catch {
+            errorToast("לא ניתן להעתיק את הקישור, אנא פנו לתמיכה");
+        }
     };
 
     return (
