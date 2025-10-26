@@ -3,7 +3,7 @@
 import React from "react";
 import ActionBtn from "@/components/ui/buttons/ActionBtn/ActionBtn";
 import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
-import { useDailyTableContext } from "@/context/DailyTableContext";
+import { useDailyTableContext } from "@/context/DailyTableContextP";
 import usePublish from "@/hooks/usePublish";
 import Icons from "@/style/icons";
 import { DailyTableColors } from "@/style/tableColors";
@@ -11,9 +11,10 @@ import styles from "./MobileNav.module.css";
 import { ColumnTypeValues } from "@/models/types/dailySchedule";
 import { useMobileSize } from "@/hooks/useMobileSize";
 
+//TODO: need to change
 const MobileNav: React.FC = () => {
     const isMobile = useMobileSize();
-    const { isLoading, addNewColumn } = useDailyTableContext();
+    const { isLoading, addNewEmptyColumn } = useDailyTableContext();
     const {
         publishDailySchedule,
         isLoading: publishLoading,
@@ -31,7 +32,7 @@ const MobileNav: React.FC = () => {
                 label="מורה חסר"
                 isDisabled={isLoading}
                 style={{ backgroundColor: DailyTableColors.missingTeacher.headerColor }}
-                func={() => addNewColumn(ColumnTypeValues.missingTeacher)}
+                func={() => addNewEmptyColumn(ColumnTypeValues.missingTeacher)}
             />
 
             <ActionBtn
@@ -39,7 +40,7 @@ const MobileNav: React.FC = () => {
                 label="מורה נוכח"
                 isDisabled={isLoading}
                 style={{ backgroundColor: DailyTableColors.existingTeacher.headerColor }}
-                func={() => addNewColumn(ColumnTypeValues.existingTeacher)}
+                func={() => addNewEmptyColumn(ColumnTypeValues.existingTeacher)}
             />
 
             <ActionBtn
@@ -47,7 +48,7 @@ const MobileNav: React.FC = () => {
                 label="ארועים"
                 isDisabled={isLoading}
                 style={{ backgroundColor: DailyTableColors.event.headerColor }}
-                func={() => addNewColumn(ColumnTypeValues.event)}
+                func={() => addNewEmptyColumn(ColumnTypeValues.event)}
             />
 
             <ActionBtn

@@ -200,8 +200,6 @@ export const addNewTeacherValueCell = (
 ) => {
     const { hour, class: classData, subject, headerCol } = cellData;
     if (!school || !classData || !subject || !headerCol?.headerTeacher) return;
-    //TODO: is it ok to remove this line for "empty cell"?
-    // if (!subTeacher && !text) return;
 
     const dailyCellData: DailyScheduleRequest = {
         date: getStringReturnDate(selectedDate),
@@ -222,6 +220,7 @@ export const addNewTeacherValueCell = (
     return dailyCellData;
 };
 
+// TODO: not in use
 export const getColumnsFromStorage = (storageData: {
     [header: string]: {
         [hour: string]: DailyScheduleCell;

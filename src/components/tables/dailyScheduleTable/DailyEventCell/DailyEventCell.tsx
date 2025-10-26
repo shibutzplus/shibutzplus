@@ -4,8 +4,8 @@ import InputTextArea from "../../../ui/inputs/InputTextArea/InputTextArea";
 import messages from "@/resources/messages";
 import { CellContext } from "@tanstack/react-table";
 import { TeacherRow } from "@/models/types/table";
-import { useDailyTableContext } from "@/context/DailyTableContext";
 import { errorToast } from "@/lib/toast";
+import { useDailyTableContext } from "@/context/DailyTableContextP";
 
 type DailyEventCellProps = { cell: CellContext<TeacherRow, unknown> };
 

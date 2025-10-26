@@ -2,7 +2,7 @@
 
 import { ColumnType, TableColumn } from "@/models/types/dailySchedule";
 import { generateId } from "@/utils";
-import { sortDailyColumnsByType } from "@/utils/sortP";
+import { sortDailyColumnIdsByType } from "@/utils/sort";
 import { useState } from "react";
 // TODO: not in use
 const useDailyTableActions = () => {
@@ -15,8 +15,8 @@ const useDailyTableActions = () => {
 
     const addNewColumn = (colType: ColumnType) => {
         const newCol = buildNewColumn(colType);
-        const sortedCols = sortDailyColumnsByType([...tableColumns, newCol]);
-        setTableColumns(sortedCols);
+        // const sortedCols = sortDailyColumnIdsByType([...tableColumns, newCol]);
+        // setTableColumns(sortedCols);
     };
 
     const addColumns = (
@@ -28,8 +28,8 @@ const useDailyTableActions = () => {
         const newColumns = columnsToCreate.map(({ id, type }) => {
             return buildNewColumn(type);
         });
-        const sortedColumnDefs = sortDailyColumnsByType(newColumns);
-        setTableColumns(sortedColumnDefs);
+        // const sortedColumnDefs = sortDailyColumnIdsByType(newColumns);
+        // setTableColumns(sortedColumnDefs);
     };
 
     const deleteColumn = async (columnId: string) => {

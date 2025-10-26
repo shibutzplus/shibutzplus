@@ -1,5 +1,5 @@
 import { publishDailyScheduleAction } from "@/app/actions/POST/publishDailyScheduleAction";
-import { useDailyTableContext } from "@/context/DailyTableContext";
+import { useDailyTableContext } from "@/context/DailyTableContextP";
 import { useMainContext } from "@/context/MainContext";
 import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";

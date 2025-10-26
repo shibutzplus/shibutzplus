@@ -17,21 +17,20 @@ const DailyTopNav: React.FC = () => {
     const { addNewEmptyColumn, daysSelectOptions, selectedDate, isLoading, handleDayChange } =
         useDailyTableContext();
 
-    // const {
-    //     publishDailySchedule,
-    //     isLoading: publishLoading,
-    //     onShareLink,
-    //     onOpenHistory,
-    //     isDisabled,
-    //     btnTitle,
-    // } = usePublish();
+    const {
+        publishDailySchedule,
+        isLoading: publishLoading,
+        onShareLink,
+        onOpenHistory,
+        isDisabled,
+    } = usePublish();
     return (
         <TopNavLayout
             type="daily"
             childrens={{
                 left: (
                     <div className={styles.leftContainer}>
-                        {/* <span title="תצוגה מקדימה">
+                        <span title="תצוגה מקדימה">
                             <IconBtn
                                 Icon={<Icons.eye size={20} />}
                                 onClick={onOpenHistory}
@@ -53,7 +52,7 @@ const DailyTopNav: React.FC = () => {
                                 onClick={onShareLink}
                                 disabled={publishLoading}
                             />
-                        </span> */}
+                        </span>
                     </div>
                 ),
                 right: (
