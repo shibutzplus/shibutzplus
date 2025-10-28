@@ -10,13 +10,6 @@
     overflow: hidden;
 }
 
-.header {
-    background-color: var(--missing-teacher-color);
-    color: var(--bright-text-color);
-    height: var(--table-daily-header-height);
-    width: 100%;
-}
-
 .rows {
     display: flex;
     flex-direction: column;

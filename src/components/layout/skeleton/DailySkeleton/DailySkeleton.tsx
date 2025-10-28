@@ -2,48 +2,35 @@ import React from "react";
 import { NextPage } from "next";
 import styles from "./DailySkeleton.module.css";
 import { TableRows } from "@/models/constant/table";
+import HoursCol from "@/components/ui/table/HoursCol/HoursCol";
+import Loading from "@/components/core/Loading/Loading";
 
 const DailySkeleton: NextPage = () => {
-    const ColsNumber = 6;
     return (
-        <div className={styles.content}>
-            <div className={styles.tableWrapper}>
-                <section className={styles.tableContainer} aria-label="טבלת מערכת יומית">
-                    <table className={styles.scheduleTable}>
-                        <thead>
-                            <tr>
-                                <th className={styles.hourHeader}></th>
-                                <th colSpan={ColsNumber} className={styles.dayHeader}>
-                                    <div className={styles.thContainer}>
-                                        <div className={styles.thSkeletonName} />
-                                    </div>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => (
-                                <tr key={hour}>
-                                    <td className={styles.hourCell}>
-                                        <div className={styles.cellContent}>
-                                            <span>{hour}</span>
-                                        </div>
-                                    </td>
-                                    <td colSpan={ColsNumber} className={styles.scheduleCell}>
-                                        <div className={styles.cellContent}>
-                                            <div className={styles.teacherCell}>
-                                                <div className={styles.tdSkeleton1} />
-                                                <div className={styles.tdSkeleton2} />
-                                                <div className={styles.tdSkeleton3} />
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </section>
+        <section className={styles.container}>
+            <div className={styles.dailyTable}>
+                <HoursCol hours={TableRows} />
+                <div className={styles.dailyColumn}>
+                    <div className={styles.headerSkeleton} />
+                    <div className={styles.rows}>
+                        {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => (
+                            <div key={hour} className={styles.rowSkeleton} />
+                        ))}
+                    </div>
+                </div>
+                <div className={styles.dailyColumn}>
+                    <div className={styles.headerSkeleton} />
+                    <div className={styles.rows}>
+                        {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => (
+                            <div key={hour} className={styles.rowSkeleton} />
+                        ))}
+                    </div>
+                </div>
+                <div className={styles.loadingContainer}>
+                    <Loading size="L" color="var(--skeleton-input-color)" />
+                </div>
             </div>
-        </div>
+        </section>
     );
 };
 

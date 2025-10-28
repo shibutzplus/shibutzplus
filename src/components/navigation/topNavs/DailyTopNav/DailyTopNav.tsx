@@ -35,6 +35,7 @@ const DailyTopNav: React.FC = () => {
                                 Icon={<Icons.eye size={20} />}
                                 onClick={onOpenHistory}
                                 disabled={publishLoading}
+                                hasBorder
                             />
                         </span>
 
@@ -43,6 +44,7 @@ const DailyTopNav: React.FC = () => {
                                 Icon={<Icons.publish size={20} />}
                                 onClick={publishDailySchedule}
                                 disabled={isDisabled}
+                                hasBorder
                             />
                         </span>
 
@@ -51,6 +53,7 @@ const DailyTopNav: React.FC = () => {
                                 Icon={<Icons.share size={16} />}
                                 onClick={onShareLink}
                                 disabled={publishLoading}
+                                hasBorder
                             />
                         </span>
                     </div>

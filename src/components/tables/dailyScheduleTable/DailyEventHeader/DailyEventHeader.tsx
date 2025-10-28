@@ -38,8 +38,8 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, type }) =
     return (
         <EditableHeader
             deleteLabel={selectedEventData || "האירוע"}
-            deleteCol={deleteCol}
             color={COLOR_BY_TYPE[type]}
+            deleteCol={deleteCol}
         >
             <InputText
                 placeholder="כותרת האירוע"

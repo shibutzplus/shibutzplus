@@ -10,14 +10,7 @@ import DailyTable from "@/components/tables/dailyScheduleTable/DailyTableP/Daily
 const DailySchedulePage: NextPage = () => {
     const { isLoading } = useDailyTableContext();
 
-    if (isLoading) {
-        return (
-            <div className={styles.loadingWrapper}>
-                <DailySkeleton />
-                <div className={styles.loader}></div>
-            </div>
-        );
-    }
+    if (isLoading) return <DailySkeleton />;
 
     return (
         <section className={styles.container}>

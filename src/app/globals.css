@@ -35,6 +35,9 @@
 
     --shadow-background: #00000080;
 
+    --skeleton-input-color: #ececec;
+    --skeleton-input-color-bright: #f2f0f0;
+
     /* Button colors */
     --button-color: #FFFFFF;
     --button-background-color: #000;

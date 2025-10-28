@@ -1,9 +1,8 @@
-"use client";
 import React from "react";
-import PublishedSkeleton from "@/components/layout/skeleton/PublishedSkeleton/PublishedSkeleton";
+import DailySkeleton from "@/components/layout/skeleton/DailySkeleton/DailySkeleton";
 
 const SkeletonDailySchedule: React.FC = () => {
-    return <PublishedSkeleton />;
+    return <DailySkeleton />;
 };
 
 export default SkeletonDailySchedule;

@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: var(--black-shadow-background);
+  background-color: var(--shadow-background);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -13,9 +13,9 @@
 }
 
 .modalContainer {
-  background-color: var( --background);
-  border-radius: var(--box-border-radius);
-  box-shadow: var(--card-shadow);
+  background-color: var(--top-color);
+  border-radius: var(--border-radius-table);
+  box-shadow: var(--box-shadow-primary);
   position: relative;
   max-height: 90vh;
   overflow-y: auto;
@@ -45,7 +45,7 @@
   border: none;
   font-size: 24px;
   cursor: pointer;
-  color: var(--foreground);
+  color: var(--dark-text-color);
   width: 32px;
   height: 32px;
   display: flex;
