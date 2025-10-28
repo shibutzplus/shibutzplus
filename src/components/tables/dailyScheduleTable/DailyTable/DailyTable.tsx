@@ -4,7 +4,7 @@ import React from "react";
 import styles from "./DailyTable.module.css";
 import DailyCol from "../DailyCol/DailyCol";
 import HoursCol from "@/components/ui/table/HoursCol/HoursCol";
-import { useDailyTableContext } from "@/context/DailyTableContextP";
+import { useDailyTableContext } from "@/context/DailyTableContext";
 import { TableRows } from "@/models/constant/table";
 import { sortDailyColumnIdsByType } from "@/utils/sort";
 

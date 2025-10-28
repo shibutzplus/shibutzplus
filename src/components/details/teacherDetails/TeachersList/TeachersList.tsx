@@ -13,7 +13,7 @@ import TableList from "../../../ui/list/TableList/TableList";
 import AddTeacherRow from "../AddTeacherRow/AddTeacherRow";
 import TeacherRow from "../TeacherRow/TeacherRow";
 import EmptyTable from "@/components/ui/table/EmptyTable/EmptyTable";
-import ListRowLoading from "@/components/layout/loading/ListRowLoading/ListRowLoading";
+import ListRowLoading from "@/components/loading/ListRowLoading/ListRowLoading";
 
 const TeachersList: React.FC = () => {
     const { handleOpenPopup } = useDeletePopup();

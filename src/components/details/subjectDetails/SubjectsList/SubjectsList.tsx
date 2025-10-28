@@ -12,7 +12,7 @@ import TableList from "../../../ui/list/TableList/TableList";
 import SubjectRow from "../SubjectRow/SubjectRow";
 import AddSubjectRow from "../AddSubjectRow/AddSubjectRow";
 import EmptyTable from "@/components/ui/table/EmptyTable/EmptyTable";
-import ListRowLoading from "@/components/layout/loading/ListRowLoading/ListRowLoading";
+import ListRowLoading from "@/components/loading/ListRowLoading/ListRowLoading";
 
 const SubjectsList: React.FC = () => {
     const { handleOpenPopup } = useDeletePopup();

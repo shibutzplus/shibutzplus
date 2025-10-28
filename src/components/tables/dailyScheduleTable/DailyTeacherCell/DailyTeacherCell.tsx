@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import { getDayNameByDateString } from "@/utils/time";
 import styles from "./DailyTeacherCell.module.css";
 import { useMainContext } from "@/context/MainContext";
-import { useDailyTableContext } from "@/context/DailyTableContextP";
+import { useDailyTableContext } from "@/context/DailyTableContext";
 import {
     ActivityValues,
     ColumnType,

@@ -12,7 +12,7 @@ import TableList from "../../../ui/list/TableList/TableList";
 import AddClassRow from "../AddClassRow/AddClassRow";
 import ClassRow from "../ClassRow/ClassRow";
 import EmptyTable from "@/components/ui/table/EmptyTable/EmptyTable";
-import ListRowLoading from "@/components/layout/loading/ListRowLoading/ListRowLoading";
+import ListRowLoading from "@/components/loading/ListRowLoading/ListRowLoading";
 
 const ClassesList: React.FC = () => {
     const { classes, deleteClass, school } = useMainContext();

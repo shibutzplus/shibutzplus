@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./ListRowLoading.module.css";
-import Loading from "@/components/core/Loading/Loading";
+import Loading from "@/components/loading/Loading/Loading";
 
 const ListRowLoading: React.FC = () => {
     return (

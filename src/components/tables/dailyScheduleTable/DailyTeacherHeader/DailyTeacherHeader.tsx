@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { filterDailyHeaderTeachers } from "@/utils/sort";
 import DynamicInputSelect from "../../../ui/select/InputSelect/DynamicInputSelect";
-import { useDailyTableContext } from "@/context/DailyTableContextP";
+import { useDailyTableContext } from "@/context/DailyTableContext";
 import { ColumnType } from "@/models/types/dailySchedule";
 import { getDayNumberByDateString } from "@/utils/time";
 import { useMainContext } from "@/context/MainContext";

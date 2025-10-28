@@ -3,7 +3,7 @@ import styles from "./DailyEventCell.module.css";
 import InputTextArea from "../../../ui/inputs/InputTextArea/InputTextArea";
 import messages from "@/resources/messages";
 import { errorToast } from "@/lib/toast";
-import { useDailyTableContext } from "@/context/DailyTableContextP";
+import { useDailyTableContext } from "@/context/DailyTableContext";
 import { DailyScheduleCell } from "@/models/types/dailySchedule";
 
 type DailyEventCellProps = { columnId: string; cell: DailyScheduleCell };

@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import styles from "./TopNavLayout.module.css";
 import HamburgerNav, { HamburgerButton } from "@/components/navigation/HamburgerNav/HamburgerNav";
-import Logo from "@/components/core/Logo/Logo";
+import Logo from "@/components/ui/Logo/Logo";
 import { NavType } from "@/models/types";
 
 type TopNavLayoutProps = {

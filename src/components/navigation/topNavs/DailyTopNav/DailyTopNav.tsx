@@ -4,7 +4,7 @@ import TopNavLayout from "@/components/layout/TopNavLayout/TopNavLayout";
 import router from "@/routes";
 import React from "react";
 import styles from "./DailyTopNav.module.css";
-import { useDailyTableContext } from "@/context/DailyTableContextP";
+import { useDailyTableContext } from "@/context/DailyTableContext";
 import usePublish from "@/hooks/usePublish";
 import ActionBtn from "@/components/ui/buttons/ActionBtn/ActionBtn";
 import { ColumnTypeValues } from "@/models/types/dailySchedule";

@@ -3,9 +3,9 @@
 import React from "react";
 import { NextPage } from "next";
 import DailySkeleton from "@/components/layout/skeleton/DailySkeleton/DailySkeleton";
-import { useDailyTableContext } from "@/context/DailyTableContextP";
+import { useDailyTableContext } from "@/context/DailyTableContext";
 import styles from "./DailySchedule.module.css";
-import DailyTable from "@/components/tables/dailyScheduleTable/DailyTableP/DailyTable";
+import DailyTable from "@/components/tables/dailyScheduleTable/DailyTable/DailyTable";
 
 const DailySchedulePage: NextPage = () => {
     const { isLoading } = useDailyTableContext();

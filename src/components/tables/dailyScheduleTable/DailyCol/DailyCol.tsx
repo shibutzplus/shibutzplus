@@ -5,7 +5,7 @@ import { ColumnType, DailyScheduleCell } from "@/models/types/dailySchedule";
 import DailyTeacherCell from "../DailyTeacherCell/DailyTeacherCell";
 import DailyEventHeader from "../DailyEventHeader/DailyEventHeader";
 import DailyEventCell from "../DailyEventCell/DailyEventCell";
-import LoadingDots from "@/components/core/LoadingDots/LoadingDots";
+import LoadingDots from "@/components/loading/LoadingDots/LoadingDots";
 
 type DailyColProps = {
     columnId: string;

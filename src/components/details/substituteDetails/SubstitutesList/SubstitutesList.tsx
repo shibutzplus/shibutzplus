@@ -13,7 +13,7 @@ import TableList from "../../../ui/list/TableList/TableList";
 import SubstituteRow from "../SubstituteRow/SubstituteRow";
 import AddSubstituteRow from "../AddSubstituteRow/AddSubstituteRow";
 import EmptyTable from "@/components/ui/table/EmptyTable/EmptyTable";
-import ListRowLoading from "@/components/layout/loading/ListRowLoading/ListRowLoading";
+import ListRowLoading from "@/components/loading/ListRowLoading/ListRowLoading";
 
 const SubstitutesList: React.FC = () => {
     const { handleOpenPopup } = useDeletePopup();

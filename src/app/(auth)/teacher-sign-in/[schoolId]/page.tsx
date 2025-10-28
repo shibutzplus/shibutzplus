@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import router from "@/routes";
 import { SelectOption } from "@/models/types";
 import { getTeachersAction } from "@/app/actions/GET/getTeachersAction";
-import SignInLoadingPage from "@/components/layout/loading/SignInLoadingPage/SignInLoadingPage";
+import SignInLoadingPage from "@/components/loading/SignInLoadingPage/SignInLoadingPage";
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { TeacherType } from "@/models/types/teachers";

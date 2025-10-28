@@ -3,7 +3,7 @@ import { NextPage } from "next";
 import styles from "./DailySkeleton.module.css";
 import { TableRows } from "@/models/constant/table";
 import HoursCol from "@/components/ui/table/HoursCol/HoursCol";
-import Loading from "@/components/core/Loading/Loading";
+import Loading from "@/components/loading/Loading/Loading";
 
 const DailySkeleton: NextPage = () => {
     return (

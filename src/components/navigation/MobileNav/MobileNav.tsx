@@ -3,7 +3,7 @@
 import React from "react";
 import ActionBtn from "@/components/ui/buttons/ActionBtn/ActionBtn";
 import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
-import { useDailyTableContext } from "@/context/DailyTableContextP";
+import { useDailyTableContext } from "@/context/DailyTableContext";
 import usePublish from "@/hooks/usePublish";
 import Icons from "@/style/icons";
 import { DailyTableColors } from "@/style/tableColors";

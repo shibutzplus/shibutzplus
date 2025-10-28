@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./HeroSection.module.css";
-import Logo from "@/components/core/Logo/Logo";
+import Logo from "@/components/ui/Logo/Logo";
 
 type HeroSectionProps = {
     title: string;

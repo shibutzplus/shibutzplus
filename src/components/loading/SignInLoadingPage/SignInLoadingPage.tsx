@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./SignInLoadingPage.module.css";
-import Loading from "@/components/core/Loading/Loading";
-import Logo from "@/components/core/Logo/Logo";
+import Loading from "@/components/loading/Loading/Loading";
+import Logo from "@/components/ui/Logo/Logo";
 
 const SignInLoadingPage: React.FC = () => {
     return (

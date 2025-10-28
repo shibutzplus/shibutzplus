@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import PageLayout from "@/components/layout/PageLayout/PageLayout";
 import DailyTopNav from "@/components/navigation/topNavs/DailyTopNav/DailyTopNav";
-import { DailyTableProvider } from "@/context/DailyTableContextP";
+import { DailyTableProvider } from "@/context/DailyTableContext";
 
 export const metadata: Metadata = {
     title: "שיבוץ יומי | שיבוץ+",
