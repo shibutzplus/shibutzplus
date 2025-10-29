@@ -7,7 +7,6 @@ export default function TeacherSignIn() {
         <div
           style={{
             textAlign: "center",
-            color: "rgba(150, 1, 1, 0.98)",
             fontWeight: "bold",
             lineHeight: 1.5,
             fontSize: "1.2rem",

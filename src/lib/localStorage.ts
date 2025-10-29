@@ -90,3 +90,6 @@ export const setStorageTeacher = (teacher: TeacherType) => {
     return setStorage(STORAGE_KEYS.TEACHER_DATA, teacher);
 };
 
+export const removeStorageTeacher = () => {
+    localStorage.removeItem(STORAGE_KEYS.TEACHER_DATA);
+};
