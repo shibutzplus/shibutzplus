@@ -1,7 +1,7 @@
 // **Teacher Sign-In Logic**
 //
 // URL without parameters             → Go to teacher login and show a wrong URL message.
-// URL with `school_id` only          → Show regular teacher list for that school.
+// URL with `school_id` only          → Show regular teacher list for that school. (Clear only if substitute teacher in localStorage)
 // URL with `school_id` + `teacher_id`→ Auto-login to the teacher’s portal
 // URL with `auth=logout`             → Display Login but show teacher list only for regular teachers
 
@@ -19,7 +19,7 @@ import SignInLoadingPage from "@/components/layout/loading/SignInLoadingPage/Sig
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { TeacherType } from "@/models/types/teachers";
-import { setStorageTeacher, removeStorageTeacher } from "@/lib/localStorage";
+import { setStorageTeacher, getStorageTeacher, removeStorageTeacher } from "@/lib/localStorage";
 import { getTeacherByIdAction } from "@/app/actions/GET/getTeacherByIdAction";
 
 export default function TeacherSignInPage() {
@@ -75,7 +75,8 @@ export default function TeacherSignInPage() {
 
         // Important: check first no-teacher in url
         if (!teacherId) {
-            removeStorageTeacher();
+            const storedTeacherData = getStorageTeacher?.();
+            if (storedTeacherData?.role === "substitute") removeStorageTeacher();  // Clear local storage only if substitute  
             setIsLoading(false);
             setIsLoadingTeachers(true);
             fetchTeachers();
