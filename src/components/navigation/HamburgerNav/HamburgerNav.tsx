@@ -186,12 +186,9 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose, variant = 
                     <>
                         <section className={styles.supportSection}>
                             <p>צריכים עזרה או מענה לשאלה?</p>
-                            <p>תמיכה בכל שעה בווטסאפ:</p>
-                            <a href="https://wa.me/972528570210" target="_blank" rel="noopener noreferrer">
-                                052-8570210
-                            </a>
-                            <a href="https://wa.me/972525794146" target="_blank" rel="noopener noreferrer">
-                                052-5794146
+                            <p>צרו איתנו קשר:</p>
+                            <a href="mailto:shibutzplus@gmail.com">
+                                shibutzplus@gmail.com
                             </a>
                         </section>
                         <section className={styles.logoutSection}>
