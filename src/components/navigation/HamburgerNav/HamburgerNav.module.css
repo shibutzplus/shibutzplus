@@ -113,7 +113,7 @@
 }
 
 .logoutSection {
-    margin-top: 1rem;
+    margin-top: auto;
     padding-top: 1rem;
     border-top: 1px solid #eee;
 }
@@ -164,6 +164,43 @@
     outline: 2px solid currentColor;
     outline-offset: 2px;
 }
+
+.supportSection {
+    margin-top: 3rem;
+    text-align: right;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #333;
+    padding: 0 0.5rem;
+}
+
+.supportSection a {
+    display: block;
+    direction: ltr;
+    color: #007e8a;
+    text-decoration: none;
+    font-weight: 500;
+    margin-top: 0.2rem;
+}
+
+.supportSection p:first-child {
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+}
+
+.supportSection p:nth-child(2) {
+    font-weight: 500;
+    margin-bottom: 0.3rem;
+}
+
+
+
+.supportSection p:nth-child(3),
+.supportSection p:nth-child(4) {
+    direction: ltr;
+    font-weight: 500;
+}
+
 
 /* Desktop */
 @media (min-width: 768px) {
