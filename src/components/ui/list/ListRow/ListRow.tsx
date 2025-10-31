@@ -96,6 +96,15 @@ function ListRow<T extends Record<string, any>>({
                     name={String(field.key)}
                     value={value}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setValue(e.target.value)}
+                    // Save also on Enter keypress when editing
+                    onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                        const isComposing =
+                            (e.nativeEvent && (e.nativeEvent as any).isComposing) || e.key === "Process";
+                        if (e.key === "Enter" && isEdit && !isEditLoading && !isComposing) {
+                            e.preventDefault();
+                            void handleUpdate();
+                        }
+                    }}
                     placeholder={field.placeholder}
                     error={validationErrors[field.key]}
                     readonly={!isEdit}

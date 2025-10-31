@@ -12,9 +12,10 @@ export async function POST(req: Request) {
     const type = url.searchParams.get("type")
 
     let channel: string
-    if (type === "teacher") channel = "teacher"
-    else if (type === "event") channel = "event"
-    else if (type === "material") channel = "material"
+    if (type === "teacher") channel = "teacher"                         // for dailySchedule teachers columns updates  
+    else if (type === "event") channel = "event"                        // for dailySchedule events column updates
+    else if (type === "material") channel = "material"                  // When materials data updates (not used currently)
+    else if (type === "detailsUpdate") channel = "detailsUpdate"        // for all details screen data updates
     else return new Response("invalid type", { status: 400 })
 
     const item = {
