@@ -1,13 +1,39 @@
+"use client";
+
 import React from "react";
 import { NextPage } from "next";
-import SubstitutesList from "@/components/details/substituteDetails/SubstitutesList/SubstitutesList";
-import ManagementLayout from "@/components/layout/ManagementLayout/ManagementLayout";
+import DetailsListLayout from "@/components/layout/DetailsListLayout/DetailsListLayout";
+import { useMainContext } from "@/context/MainContext";
+import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
+import AddSubstituteRow from "@/components/details/substituteDetails/AddSubstituteRow/AddSubstituteRow";
+import ListRowLoading from "@/components/loading/ListRowLoading/ListRowLoading";
+import EmptyTable from "@/components/ui/table/EmptyTable/EmptyTable";
+import SubstituteRow from "@/components/details/substituteDetails/SubstituteRow/SubstituteRow";
+import { filterTeachersByRole } from "@/utils/format";
+import { sortByHebrewName } from "@/utils/sort";
 
 const SubstitutePage: NextPage = () => {
+    const { teachers } = useMainContext();
+
+    const sortedTeachers = React.useMemo(
+        () =>
+            teachers !== undefined
+                ? filterTeachersByRole(sortByHebrewName(teachers), TeacherRoleValues.SUBSTITUTE)
+                : undefined,
+        [teachers],
+    );
+
     return (
-        <ManagementLayout>
-            <SubstitutesList />
-        </ManagementLayout>
+        <DetailsListLayout<TeacherType>
+            titles={["שם המורה", "פעולות"]}
+            emptyText="עדיין לא נוספו מורים לרשימה"
+            details={sortedTeachers}
+        >
+            <AddSubstituteRow />
+            {sortedTeachers?.map((teacher: TeacherType) => (
+                <SubstituteRow key={teacher.id} teacher={teacher} />
+            ))}
+        </DetailsListLayout>
     );
 };
 

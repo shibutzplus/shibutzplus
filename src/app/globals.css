@@ -19,6 +19,7 @@
     --input-color-hover: #535252;
     --input-border: #e0e0e0;
     --input-border-focus: #494949;
+    --input-height: 38px;
 
     --tab-color: #FFFFFF;
     --tab-color-hover: #0000000d;
@@ -44,6 +45,7 @@
     --button-hover-background-color: #333;
     --button-disabled-color: #b9b9b9;
     --button-disabled-background-color: #919191;
+    --button-height: 38px;
 
     --border-primary: 1px solid var(--dark-border-color);
     --border-secondary: 1px solid var(--bright-border-color);
@@ -62,6 +64,14 @@
     --table-daily-cell-height: 90px;
     --table-daily-full-height: calc(var(--table-daily-header-height) + var(--table-daily-cell-height) * 9 + (5px * 10));
 
+    --list-details-header-height: 50px;
+    --list-details-full-height: calc(100vh - var(--header-height) - 1rem);
+    --list-details-padding: 1rem;
+    --list-details-row-padding: 7px 1rem;
+    --list-details-row-padding-mobile: 5px 0.5rem;
+    --list-details-actions-width: 160px;
+    --list-details-actions-width-mobile: 100px;
+    
 }
 
 html,

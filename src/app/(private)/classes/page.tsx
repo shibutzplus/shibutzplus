@@ -1,13 +1,33 @@
+"use client";
+
 import React from "react";
 import { NextPage } from "next";
-import ClassesList from "@/components/details/classDetails/ClassesList/ClassesList";
-import ManagementLayout from "@/components/layout/ManagementLayout/ManagementLayout";
+import DetailsListLayout from "@/components/layout/DetailsListLayout/DetailsListLayout";
+import { useMainContext } from "@/context/MainContext";
+import AddClassRow from "@/components/details/classDetails/AddClassRow/AddClassRow";
+import ClassRow from "@/components/details/classDetails/ClassRow/ClassRow";
+import { sortByHebrewName } from "@/utils/sort";
+import { ClassType } from "@/models/types/classes";
 
 const ClassesPage: NextPage = () => {
+    const { classes } = useMainContext();
+
+    const sortedClasses = React.useMemo(
+        () => (classes !== undefined ? sortByHebrewName(classes) : undefined),
+        [classes],
+    );
+
     return (
-        <ManagementLayout>
-            <ClassesList />
-        </ManagementLayout>
+        <DetailsListLayout<ClassType>
+            titles={["שם הכיתה", "פעולות"]}
+            emptyText="עדיין לא נוספו כיתות לרשימה"
+            details={sortedClasses}
+        >
+            <AddClassRow />
+            {sortedClasses?.map((classItem) => (
+                <ClassRow key={classItem.id} classItem={classItem} />
+            ))}
+        </DetailsListLayout>
     );
 };
 

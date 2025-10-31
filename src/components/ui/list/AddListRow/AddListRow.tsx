@@ -72,8 +72,8 @@ function AddListRow<T extends Record<string, any>>({
     };
 
     return (
-        <tr className={styles.trAddListRow}>
-            <td key={String(field.key)}>
+        <div className={styles.addListRow}>
+            <div key={String(field.key)} className={styles.addListRowInput}>
                 <InputText
                     key={String(field.key)}
                     id={String(field.key)}
@@ -92,8 +92,8 @@ function AddListRow<T extends Record<string, any>>({
                         }
                     }}
                 />
-            </td>
-            <td>
+            </div>
+            <div className={styles.addListBtn}>
                 <Btn
                     text={buttonLabel}
                     onClick={handleSubmitAdd}
@@ -101,8 +101,8 @@ function AddListRow<T extends Record<string, any>>({
                     Icon={buttonIcon}
                     className={styles.smallBtn}
                 />
-            </td>
-        </tr>
+            </div>
+        </div>
     );
 }
 

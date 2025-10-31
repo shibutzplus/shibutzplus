@@ -8,12 +8,10 @@ type EmptyTableProps = {
 
 const EmptyTable: React.FC<EmptyTableProps> = ({ text }) => {
     return (
-        <tr className={styles.noTeachers}>
-            <td>
-                {text}
-                <Icons.emptyList size={24} />
-            </td>
-        </tr>
+        <div className={styles.noTeachers}>
+            {text}
+            <Icons.emptyList size={24} />
+        </div>
     );
 };
 

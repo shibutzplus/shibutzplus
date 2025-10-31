@@ -4,13 +4,13 @@ import Loading from "@/components/loading/Loading/Loading";
 
 const ListRowLoading: React.FC = () => {
     return (
-        <tr className={styles.listRowLoading}>
-            <td colSpan={2}>
+        <div className={styles.listRowLoading}>
+            <div>
                 <div className={styles.loadingContainer}>
                     <Loading size="M" />
                 </div>
-            </td>
-        </tr>
+            </div>
+        </div>
     );
 };
 

@@ -1,9 +1,12 @@
 /* Mobile */
 .tableListSection {
-    background-color: var(--background);
-    width: 100vw;
+    background-color: var(--inner-background-color);
+    width: 95%;
+    min-height: calc(100vh - var(--header-height) - 1rem);
+    margin: 0 auto;
+    box-sizing: border-box;
     padding: 0;
-    border-radius: var(--box-border-radius);
+    border-radius: var(--border-radius-table);
 }
 
 .tableList {
@@ -37,7 +40,7 @@
 }
 
 /* Desktop */
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
     .tableListSection {
         overflow-y: auto;
         width: 100%;

@@ -18,7 +18,7 @@ export type ListRowProps<T> = {
     getId: (item: T) => string;
     getInitialValue: (item: T) => string;
     updateExtraFields?: (item: T) => Partial<T>;
-    link?: string;
+    hasLink?: string;
 };
 
 function ListRow<T extends Record<string, any>>({
@@ -30,7 +30,7 @@ function ListRow<T extends Record<string, any>>({
     getId,
     getInitialValue,
     updateExtraFields,
-    link,
+    hasLink,
 }: ListRowProps<T>) {
     const [isEdit, setIsEdit] = useState(false);
     const [isEditLoading, setIsEditLoading] = useState(false);
@@ -76,13 +76,13 @@ function ListRow<T extends Record<string, any>>({
     };
 
     const shareURL = () => {
-        if (!link) return;
-        share("שיבוץ+", "קישור למערכת האישית", link);
+        if (!hasLink) return;
+        share("שיבוץ+", "קישור למערכת האישית", hasLink);
     };
 
     return (
-        <tr className={styles.listRow}>
-            <td className={styles.nameCell}>
+        <div className={styles.listRow}>
+            <div className={styles.nameCell}>
                 <InputText
                     key="editName"
                     id={String(field.key)}
@@ -94,10 +94,10 @@ function ListRow<T extends Record<string, any>>({
                     readonly={!isEdit}
                     type={field.inputType || "text"}
                 />
-            </td>
+            </div>
 
-            <td className={styles.actions}>
-                {link && <IconBtn onClick={shareURL} isLoading={false} Icon={<Icons.share />} />}
+            <div className={styles.actions}>
+                {hasLink && <IconBtn onClick={shareURL} isLoading={false} Icon={<Icons.share />} />}
 
                 <IconBtn
                     onClick={handleUpdate}
@@ -105,8 +105,8 @@ function ListRow<T extends Record<string, any>>({
                     Icon={isEdit ? <Icons.save /> : <Icons.edit />}
                 />
                 <IconBtn onClick={() => onDelete(item)} isLoading={false} Icon={<Icons.delete />} />
-            </td>
-        </tr>
+            </div>
+        </div>
     );
 }
 
