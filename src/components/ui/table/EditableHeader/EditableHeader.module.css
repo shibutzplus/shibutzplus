@@ -1,9 +1,11 @@
 .columnHeader {
+    border-radius: var(--border-radius-table) var(--border-radius-table) 0 0;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 10px;
     width: 100%;
+    max-width: var(--table-daily-col-width);
     padding: 0 15px;
     text-align: right;
     height: var(--table-daily-header-height);

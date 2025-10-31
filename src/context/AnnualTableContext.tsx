@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { useMainContext } from "./MainContext";
 import useInitAnnualData from "@/hooks/useInitAnnualData";
-import { errorToast, infoToast } from "@/lib/toast";
+import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { createSelectOptions } from "@/utils/format";
 import { dayToNumber } from "@/utils/time";

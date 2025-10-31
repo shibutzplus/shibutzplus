@@ -1,0 +1,14 @@
+.shadowHeader {
+    position: fixed;
+    top: var(--header-height);
+    z-index: 5;
+    min-width: var(--table-daily-col-width);
+    height: calc(var(--table-daily-header-height) + var(--padding-top));
+    background-color: var(--background-color);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.shadowHeaderBackground {
+    position: relative;
+    top: var(--padding-top);
+}

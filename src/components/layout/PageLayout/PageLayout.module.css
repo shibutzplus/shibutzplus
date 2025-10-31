@@ -9,7 +9,7 @@
 .contentHeader {
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 10;
   background: var(--background);
   border-bottom: var(--border-primary);
   flex: 0 0 auto;

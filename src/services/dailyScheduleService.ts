@@ -1,6 +1,14 @@
 import { eventPlaceholder } from "@/models/constant/table";
 import { getDayNumberByDateString, HOURS_IN_DAY, getStringReturnDate } from "@/utils/time";
-import { ColumnTypeValues, ColumnType, DailySchedule, DailyScheduleCell, DailyScheduleRequest, DailyScheduleType, HeaderCol, } from "@/models/types/dailySchedule";
+import {
+    ColumnTypeValues,
+    ColumnType,
+    DailySchedule,
+    DailyScheduleCell,
+    DailyScheduleRequest,
+    DailyScheduleType,
+    HeaderCol,
+} from "@/models/types/dailySchedule";
 import { SchoolType } from "@/models/types/school";
 import { TeacherType } from "@/models/types/teachers";
 import { initDailyEventCellData, initDailyTeacherCellData } from "@/utils/Initialize";
@@ -120,6 +128,23 @@ export const fillLeftRowsWithEmptyCells = (
         }
     }
     return updatedSchedule;
+};
+
+export const createNewEmptyColumn = (
+    dailySchedule: DailySchedule,
+    selectedDate: string,
+    columnId: string,
+    type: ColumnType,
+) => {
+    dailySchedule = initDailySchedule(dailySchedule, selectedDate, columnId);
+
+    for (let hour = 1; hour <= HOURS_IN_DAY; hour++) {
+        dailySchedule[selectedDate][columnId][`${hour}`] = {
+            headerCol: { type },
+            hour: hour,
+        };
+    }
+    return dailySchedule;
 };
 
 export const setEmptyTeacherColumn = (

@@ -1,14 +1,26 @@
+.overlay {
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    position: sticky;
+    top: 0;
+    right: 0;
+    z-index: 10;
+    height: var(--table-daily-full-height);
+}
+
 .hoursColumn {
     width: 40px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: calc(var(--table-daily-cell-height) - 25px);
-    background-color: var(--inner-background-color);
-    border-radius: 40px;
-    box-sizing: border-box;
     padding-top: calc(var(--table-daily-header-height) + (var(--table-daily-cell-height) / 2) - 10px);
+    background-color: var(--inner-background-color);
+    gap: calc(var(--table-daily-cell-height) - 25px);
     height: var(--table-daily-full-height);
+    border-radius: 40px;
 }
 
 .hourCell {

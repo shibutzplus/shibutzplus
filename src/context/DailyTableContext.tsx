@@ -21,7 +21,7 @@ import {
     populateTable,
     setColumn,
     setEmptyColumn,
-    setEmptyTeacherColumn,
+    createNewEmptyColumn,
 } from "@/services/dailyScheduleService";
 import { getTomorrowOption } from "@/resources/dayOptions";
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
@@ -226,7 +226,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
 
     const addNewEmptyColumn = (type: ColumnType) => {
         const newColumnId = `${type}-${generateId()}`;
-        const updatedSchedule = setEmptyTeacherColumn(
+        const updatedSchedule = createNewEmptyColumn(
             mainDailyTable,
             selectedDate,
             newColumnId,

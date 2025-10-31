@@ -27,7 +27,7 @@ const useDailyEventActions = (
         const alreadyExists = mainDailyTable[selectedDate]?.[columnId];
         let updatedSchedule: DailySchedule = { ...mainDailyTable };
 
-        if (alreadyExists) {
+        if (alreadyExists && alreadyExists["1"]?.headerCol?.headerEvent === eventTitle) {
             const response = await updateDailyEventHeaderAction(selectedDate, columnId, eventTitle);
             if (response.success) {
                 updatedSchedule = updateAllEventHeader(
