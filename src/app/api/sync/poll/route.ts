@@ -1,4 +1,4 @@
-// GET /api/sync/poll?since=TIMESTAMP&channels=teacher,event,material
+// GET /api/sync/poll?since=TIMESTAMP&channels=teacher,event,material,detailsUpdate
 import { redis } from "@/lib/redis"
 
 export async function GET(req: Request) {
@@ -11,7 +11,7 @@ export async function GET(req: Request) {
 
     const url = new URL(req.url)
     const since = Number(url.searchParams.get("since") || 0)
-    const allow = (url.searchParams.get("channels") || "teacher,event,material").split(",")
+    const allow = (url.searchParams.get("channels") || "teacher,event,material,detailsUpdate").split(",")
 
     // Fetch latest items from Upstash Redis (newest first due to LPUSH)
 
