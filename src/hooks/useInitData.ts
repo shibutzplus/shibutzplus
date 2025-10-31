@@ -67,28 +67,48 @@ const useInitData = ({
                     schoolPromise = getSchoolFromDB(schoolId);
                 }
 
+                // single poll for any data change across entities
+                const since = Number(getCacheTimestamp() || 0);
+                let changed = false;
+                try {
+                    const res = await fetch(`/api/sync/poll?since=${since}&channels=detailsUpdate`, { cache: "no-store" });
+                    if (res.ok) {
+                        const data = await res.json();
+                        const latest = Number(data?.latestTs || 0);
+                        changed = latest > since;
+                    }
+                } catch {
+                    // ignore polling errors, fall back to cache logic below
+                }
+
                 if (!classes) {
-                    classesPromise = promiseFromCacheOrDB<ClassType[], GetClassesResponse>(
-                        schoolId,
-                        getStorageClasses(),
-                        getClassesFromDB,
-                    );
+                    classesPromise = changed
+                        ? getClassesFromDB(schoolId)
+                        : promiseFromCacheOrDB<ClassType[], GetClassesResponse>(
+                              schoolId,
+                              getStorageClasses(),
+                              getClassesFromDB,
+                          );
                 }
 
                 if (!teachers) {
-                    teachersPromise = promiseFromCacheOrDB<TeacherType[], GetTeachersResponse>(
-                        schoolId,
-                        getStorageTeachers(),
-                        getTeachersFromDB,
-                    );
+                    teachersPromise = changed
+                        ? getTeachersFromDB(schoolId)
+                        : promiseFromCacheOrDB<TeacherType[], GetTeachersResponse>(
+                              schoolId,
+                              getStorageTeachers(),
+                              getTeachersFromDB,
+                          );
                 }
 
                 if (!subjects) {
-                    subjectsPromise = promiseFromCacheOrDB<SubjectType[], GetSubjectsResponse>(
-                        schoolId,
-                        getStorageSubjects(),
-                        getSubjectsFromDB,
-                    );
+                    subjectsPromise = changed
+                        ? getSubjectsFromDB(schoolId)
+                        : promiseFromCacheOrDB<SubjectType[], GetSubjectsResponse>(
+                              schoolId,
+                              getStorageSubjects(),
+                              getSubjectsFromDB,
+                          );
                 }
 
                 const [schoolRes, classesRes, teachersRes, subjectsRes] = await Promise.all([

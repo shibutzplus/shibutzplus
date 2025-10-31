@@ -25,6 +25,7 @@ import { GiTeacher } from "react-icons/gi";
 import { IoPersonOutline, IoCheckmarkCircle } from "react-icons/io5";
 import { LuEye } from "react-icons/lu";
 import { FiCheckCircle } from "react-icons/fi";
+import { GrSchedule } from "react-icons/gr";
 
 const Icons = {
     addTeacher: MdPersonAdd,
@@ -32,6 +33,7 @@ const Icons = {
     book: IoBookOutline,
     bookFill: IoBook,
     calendar: IoCalendarOutline,
+    dailyCalendar: GrSchedule,
     calendarFill: IoCalendarSharp,
     chair: PiChairLight,
     close: IoCloseOutline,

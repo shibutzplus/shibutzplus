@@ -1,3 +1,10 @@
+// **Teacher Sign-In Logic**
+//
+// URL without parameters             → Go to teacher login and show a wrong URL message.
+// URL with `school_id` only          → Show regular teacher list for that school. (Clear only if substitute teacher in localStorage)
+// URL with `school_id` + `teacher_id`→ Auto-login to the teacher’s portal
+// URL with `auth=logout`             → Display Login but show teacher list only for regular teachers
+
 "use client";
 
 import styles from "../teacherSignIn.module.css";
@@ -12,7 +19,7 @@ import SignInLoadingPage from "@/components/loading/SignInLoadingPage/SignInLoad
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { TeacherType } from "@/models/types/teachers";
-import { setStorageTeacher, getStorageTeacher } from "@/lib/localStorage";
+import { setStorageTeacher, getStorageTeacher, removeStorageTeacher } from "@/lib/localStorage";
 import { getTeacherByIdAction } from "@/app/actions/GET/getTeacherByIdAction";
 
 export default function TeacherSignInPage() {
@@ -25,7 +32,6 @@ export default function TeacherSignInPage() {
     const [teachers, setTeachers] = useState<SelectOption[]>([]);
     const [teachersFull, setTeachersFull] = useState<TeacherType[]>([]);
     const [isLoadingTeachers, setIsLoadingTeachers] = useState(true);
-
     const [isLoading, setIsLoading] = useState(true);
 
     const fetchTeachers = async () => {
@@ -53,7 +59,6 @@ export default function TeacherSignInPage() {
         }
     };
 
-
     useEffect(() => {
         if (!schoolId) {
             route.push(`${router.teacherSignIn.p}`);
@@ -68,41 +73,41 @@ export default function TeacherSignInPage() {
             return;
         }
 
-        if (teacherId) {
-            (async () => {
-                try {
-                    setIsLoading(true);
-                    const resp = await getTeacherByIdAction(teacherId);
-                    if (resp.success && resp.data) {
-                        const t = resp.data as TeacherType;
-                        const safeTeacher: TeacherType = {
-                            id: t.id,
-                            name: t.name,
-                            role: t.role,
-                            schoolId: t.schoolId,
-                        };
-                        setStorageTeacher(safeTeacher);
-                        route.push(`${router.teacherPortal.p}/${schoolId}/${t.id}`);
-                        return;
-                    }
-                    errorToast(messages.auth.login.failed);
-                } catch (e) {
-                    console.error("Error in teacher_id auto login:", e);
-                    errorToast(messages.auth.login.failed);
-                } finally {
-                    setIsLoading(false);
+        // Important: check first no-teacher in url
+        if (!teacherId) {
+            const storedTeacherData = getStorageTeacher?.();
+            if (storedTeacherData?.role === "substitute") removeStorageTeacher();  // Clear local storage only if substitute  
+            setIsLoading(false);
+            setIsLoadingTeachers(true);
+            fetchTeachers();
+            return;
+        }
+
+        // Teacher exist in URL: Auto login teacher
+        (async () => {
+            try {
+                setIsLoading(true);
+                const resp = await getTeacherByIdAction(teacherId);
+                if (resp.success && resp.data) {
+                    const t = resp.data as TeacherType;
+                    const safeTeacher: TeacherType = {
+                        id: t.id,
+                        name: t.name,
+                        role: t.role,
+                        schoolId: t.schoolId,
+                    };
+                    setStorageTeacher(safeTeacher);
+                    route.push(`${router.teacherPortal.p}/${schoolId}/${t.id}`);
+                    return;
                 }
-            })();
-            return;
-        }
-
-        const storedTeacher = getStorageTeacher();
-        if (storedTeacher) {
-            route.push(`${router.teacherPortal.p}/${schoolId}/${storedTeacher.id}`);
-            return;
-        }
-
-        fetchTeachers();
+                errorToast(messages.auth.login.failed);
+            } catch (e) {
+                console.error("Error in teacher_id auto login:", e);
+                errorToast(messages.auth.login.failed);
+            } finally {
+                setIsLoading(false);
+            }
+        })();
     }, [route, schoolId, teacherId]);
 
     if (isLoading) {

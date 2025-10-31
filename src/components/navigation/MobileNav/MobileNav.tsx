@@ -57,7 +57,7 @@ const MobileNav: React.FC = () => {
                 isLoading={publishLoading}
                 isDisabled={isDisabled}
                 func={publishDailySchedule}
-                style={{}}
+                style={{ backgroundColor: "white" }}
             />
 
             <IconBtn

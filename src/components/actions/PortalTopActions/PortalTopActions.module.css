@@ -19,7 +19,7 @@
 
 .refreshAlert svg {
     color: #c62828;
-    animation: blink 4s ease-in-out infinite;
+    animation: blink 2s ease-in-out infinite;
 }
 
 @keyframes blink {

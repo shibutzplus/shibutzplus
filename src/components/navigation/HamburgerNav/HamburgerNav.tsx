@@ -29,7 +29,7 @@ const links: ILink[] = [
     {
         name: routePath.dailySchedule.title,
         p: routePath.dailySchedule.p,
-        Icon: <Icons.calendar size={24} />,
+        Icon: <Icons.dailyCalendar size={24} />,
         withDivider: true,
         withExternal: false,
     },
@@ -61,7 +61,7 @@ const links: ILink[] = [
     {
         name: routePath.history.title,
         p: routePath.history.p,
-        Icon: <Icons.history size={24} />,
+        Icon: <Icons.eye size={24} />,
         withExternal: true,
     },
     {
@@ -183,12 +183,21 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose, variant = 
                         ) : null}
                     </>
                 ) : (
-                    <section className={`${styles.logoutSection} ${styles.noDivider}`}>
-                        <div onClick={handleLogout} className={styles.navLink} aria-label="Logout">
-                            <Icons.logOut size={24} />
-                            <span>יציאה מהמערכת</span>
-                        </div>
-                    </section>
+                    <>
+                        <section className={styles.supportSection}>
+                            <p>צריכים עזרה או מענה לשאלה?</p>
+                            <p>צרו איתנו קשר:</p>
+                            <a href="mailto:shibutzplus@gmail.com">
+                                shibutzplus@gmail.com
+                            </a>
+                        </section>
+                        <section className={styles.logoutSection}>
+                            <div onClick={handleLogout} className={styles.navLink} aria-label="Logout">
+                                <Icons.logOut size={24} />
+                                <span>יציאה מהמערכת</span>
+                            </div>
+                        </section>
+                    </>
                 )}
             </div>
         </div>

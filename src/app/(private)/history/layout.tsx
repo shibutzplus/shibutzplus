@@ -2,6 +2,12 @@ import React, { Suspense } from "react";
 import PageLayout from "@/components/layout/PageLayout/PageLayout";
 import { HistoryTableProvider } from "@/context/HistoryTableContext";
 import HistoryTopNav from "@/components/navigation/topNavs/HistoryTopNav/HistoryTopNav";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "צפיה במערכות | שיבוץ+",
+  robots: "noindex, nofollow",
+};
 
 // Loading fallback for the layout
 const HistoryLayoutLoading = () => (
