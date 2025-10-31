@@ -29,6 +29,7 @@ interface useInitDataProps {
 }
 
 const POWER_USER_EMAIL = process.env.NEXT_PUBLIC_POWER_USER_EMAIL;
+const SYNC_TS_KEY = "sync_ts_detailsUpdate";
 
 /**
  * Initialize data for the app
@@ -68,14 +69,18 @@ const useInitData = ({
                 }
 
                 // single poll for any data change across entities
-                const since = Number(getCacheTimestamp() || 0);
+                const lastSeen = Number((typeof window !== "undefined" && localStorage.getItem(SYNC_TS_KEY)) || 0);
+                const since = Math.max(0, lastSeen - 1);
                 let changed = false;
                 try {
                     const res = await fetch(`/api/sync/poll?since=${since}&channels=detailsUpdate`, { cache: "no-store" });
                     if (res.ok) {
                         const data = await res.json();
                         const latest = Number(data?.latestTs || 0);
-                        changed = latest > since;
+                        changed = latest > lastSeen;
+                        if (changed && typeof window !== "undefined") {
+                            localStorage.setItem(SYNC_TS_KEY, String(latest));
+                        }
                     }
                 } catch {
                     // ignore polling errors, fall back to cache logic below
@@ -85,30 +90,30 @@ const useInitData = ({
                     classesPromise = changed
                         ? getClassesFromDB(schoolId)
                         : promiseFromCacheOrDB<ClassType[], GetClassesResponse>(
-                              schoolId,
-                              getStorageClasses(),
-                              getClassesFromDB,
-                          );
+                            schoolId,
+                            getStorageClasses(),
+                            getClassesFromDB,
+                        );
                 }
 
                 if (!teachers) {
                     teachersPromise = changed
                         ? getTeachersFromDB(schoolId)
                         : promiseFromCacheOrDB<TeacherType[], GetTeachersResponse>(
-                              schoolId,
-                              getStorageTeachers(),
-                              getTeachersFromDB,
-                          );
+                            schoolId,
+                            getStorageTeachers(),
+                            getTeachersFromDB,
+                        );
                 }
 
                 if (!subjects) {
                     subjectsPromise = changed
                         ? getSubjectsFromDB(schoolId)
                         : promiseFromCacheOrDB<SubjectType[], GetSubjectsResponse>(
-                              schoolId,
-                              getStorageSubjects(),
-                              getSubjectsFromDB,
-                          );
+                            schoolId,
+                            getStorageSubjects(),
+                            getSubjectsFromDB,
+                        );
                 }
 
                 const [schoolRes, classesRes, teachersRes, subjectsRes] = await Promise.all([
@@ -134,8 +139,8 @@ const useInitData = ({
                     setStorageClasses(classesRes.data);
                 }
 
-                // Update cache timestamp if any data was fetched
-                if (schoolPromise || classesPromise || teachersPromise || subjectsPromise) {
+                // Update cache timestamp only when real change detected
+                if (changed) {
                     setCacheTimestamp(Date.now().toString());
                 }
             } catch (error) {
