@@ -37,18 +37,18 @@ const links: ILink[] = [
         p: routePath.history.p,
         Icon: <Icons.eye size={24} />,
         withDivider: true,
-        withExternal: true,
-    },
-    {
-        name: routePath.substitute.title,
-        p: routePath.substitute.p,
-        Icon: <Icons.substituteTeacher size={24} />,
         withExternal: false,
     },
     {
         name: routePath.teachers.title,
         p: routePath.teachers.p,
         Icon: <Icons.teacher size={24} />,
+        withExternal: false,
+    },
+    {
+        name: routePath.substitute.title,
+        p: routePath.substitute.p,
+        Icon: <Icons.substituteTeacher size={24} />,
         withExternal: false,
     },
     {
@@ -68,7 +68,7 @@ const links: ILink[] = [
         name: routePath.annualSchedule.title,
         p: routePath.annualSchedule.p,
         Icon: <Icons.calendar size={24} />,
-        withExternal: true,
+        withExternal: false,
     },
 ]
 
