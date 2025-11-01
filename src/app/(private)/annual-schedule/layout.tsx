@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import AnnualScheduleLayoutClient from "./layoutClient";
 
 export const metadata: Metadata = {
-    title: "מערכת שנתית | שיבוץ+",
+    title: "מערכת שבועית | שיבוץ+",
     robots: "noindex, nofollow",
 };
 
