@@ -30,19 +30,25 @@ const links: ILink[] = [
         name: routePath.dailySchedule.title,
         p: routePath.dailySchedule.p,
         Icon: <Icons.dailyCalendar size={24} />,
-        withDivider: true,
         withExternal: false,
     },
     {
-        name: routePath.substitute.title,
-        p: routePath.substitute.p,
-        Icon: <Icons.substituteTeacher size={24} />,
+        name: routePath.history.title,
+        p: routePath.history.p,
+        Icon: <Icons.eye size={24} />,
+        withDivider: true,
         withExternal: false,
     },
     {
         name: routePath.teachers.title,
         p: routePath.teachers.p,
         Icon: <Icons.teacher size={24} />,
+        withExternal: false,
+    },
+    {
+        name: routePath.substitute.title,
+        p: routePath.substitute.p,
+        Icon: <Icons.substituteTeacher size={24} />,
         withExternal: false,
     },
     {
@@ -59,16 +65,10 @@ const links: ILink[] = [
         withExternal: false,
     },
     {
-        name: routePath.history.title,
-        p: routePath.history.p,
-        Icon: <Icons.eye size={24} />,
-        withExternal: true,
-    },
-    {
         name: routePath.annualSchedule.title,
         p: routePath.annualSchedule.p,
         Icon: <Icons.calendar size={24} />,
-        withExternal: true,
+        withExternal: false,
     },
 ]
 
