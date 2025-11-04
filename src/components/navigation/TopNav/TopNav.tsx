@@ -34,7 +34,8 @@ const TopNav: React.FC<Props> = ({
 
   // Compute title
   const title = useMemo(() => {
-    if (type === "portal" && greetingName) return `שלום ${greetingName}`;
+    const firstName = greetingName ? greetingName.split(" ")[0] : null;
+    if (type === "portal" && firstName) return `שלום ${firstName}`;
     if (resolvedUsePageTitle) return getPageTitleFromUrl(pathname) || "";
     return "";
   }, [type, greetingName, resolvedUsePageTitle, pathname]);
