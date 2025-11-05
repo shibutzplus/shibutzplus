@@ -10,11 +10,23 @@ type Props = {
 };
 
 const PortalTable: React.FC<Props> = ({ embedded = false }) => {
-    const { mainPortalTable, selectedDate, isPortalLoading } = usePortal(); // use loader state
+    const { mainPortalTable, selectedDate, isPortalLoading } = usePortal();
     const dayTable = selectedDate ? mainPortalTable[selectedDate] : undefined;
-    const hasData = !!dayTable && Object.keys(dayTable).length > 0;
+    const isDayLoaded = dayTable !== undefined;
+    const hasData = isDayLoaded && Object.keys(dayTable).length > 0;
 
     if (!hasData) {
+        // If the day is not loaded yet, do not show the "no changes" text
+        if (!isDayLoaded) {
+            if (embedded) {
+                if (isPortalLoading) {
+                    return <div className={styles.loader}></div>;
+                }
+                return null;
+            }
+            return null;
+        }
+
         // In embedded mode show a small preloader while loading, otherwise show nothing
         if (embedded) {
             if (isPortalLoading) {
@@ -23,7 +35,8 @@ const PortalTable: React.FC<Props> = ({ embedded = false }) => {
             }
             return null;
         }
-        // Regular screen "no data" message
+
+        // Regular screen "no data" message (only after the day was loaded)
         return (
             <NotPublishedLayout
                 title=""
@@ -34,8 +47,7 @@ const PortalTable: React.FC<Props> = ({ embedded = false }) => {
 
     return (
         <div
-            className={`${styles.tableContainer} ${embedded ? styles.embeddedContainer : ""
-                }`}
+            className={`${styles.tableContainer} ${embedded ? styles.embeddedContainer : ""}`}
             role="region"
         >
             <table className={styles.scheduleTable}>
