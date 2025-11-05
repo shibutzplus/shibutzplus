@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
 import Icons from "@/style/icons";
@@ -20,8 +20,58 @@ const PortalTopActions: React.FC = () => {
         handleDayChange, fetchPortalScheduleDate, fetchPublishScheduleData, refreshPublishDates,
     } = usePortal();
 
-    // Use polling updates hook
-    const { hasUpdate, resetUpdate } = usePollingUpdates();
+    // Alert state for incoming updates
+    const [hasUpdate, setHasUpdate] = useState(false);
+    const [lastTs, setLastTs] = useState<number>(() => Date.now());
+    const lastTsRef = useRef<number>(lastTs);
+    useEffect(() => { lastTsRef.current = lastTs; }, [lastTs]);
+
+    // Poll changes from daily schedule screen 
+    useEffect(() => {
+        let mounted = true;
+        let id: ReturnType<typeof setInterval> | null = null;
+
+        // on teacher screen, listen to teacher columns events only
+        // on schedule screen, listen to both teacher and events columns changes
+        const channels = pathname.includes(router.teacherPortal.p) ? "teacher" : "teacher,event";
+
+        const checkUpdates = async () => {
+            try {
+                const since = lastTsRef.current;
+                const res = await fetch(`/api/sync/poll?since=${since}&channels=${encodeURIComponent(channels)}`, { cache: "no-store" });
+                if (!res.ok) return;
+                const data = await res.json();
+                const latest = Number(data?.latestTs || 0);
+                if (mounted && latest > since) {
+                    errorToast("יש עדכונים חדשים – יש ללחוץ על כפתור הרענון האדום שבסרגל העליון כדי לראותם", 100000);
+                    setHasUpdate(true);
+                    setLastTs(latest);
+                }
+            } catch { }
+        };
+
+        id = setInterval(checkUpdates, 1);
+
+        // Pause polling when tab/browser is not visible
+        const handleVisibility = () => {
+            if (document.hidden) { if (id) clearInterval(id); }
+            else { checkUpdates(); id = setInterval(checkUpdates, 1); }
+        };
+        document.addEventListener("visibilitychange", handleVisibility);
+
+        return () => {
+            mounted = false;
+            if (id) clearInterval(id);
+            document.removeEventListener("visibilitychange", handleVisibility);
+        };
+    }, [pathname]);
+
+
+    // Reset polling state on path change as we already get new data from DB
+    useEffect(() => {
+        setHasUpdate(false);
+        setLastTs(Date.now());
+    }, [pathname]);
 
     const pushToTeacherPortalWrite = () => {
         if (teacher) route.push(`${router.teacherPortal.p}/${teacher.schoolId}/${teacher.id}`);
@@ -47,7 +97,7 @@ const PortalTopActions: React.FC = () => {
         }
 
         // reset update badge after successful refresh
-        resetUpdate();
+        // resetUpdate();
     };
 
     return (

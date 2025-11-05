@@ -5,7 +5,7 @@ import HistoryTopNav from "@/components/navigation/topNavs/HistoryTopNav/History
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "צפיה במערכות | שיבוץ+",
+  title: "מערכות יומיות | שיבוץ+",
   robots: "noindex, nofollow",
 };
 

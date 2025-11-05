@@ -21,6 +21,7 @@ import messages from "@/resources/messages";
 import { TeacherType } from "@/models/types/teachers";
 import { setStorageTeacher, getStorageTeacher, removeStorageTeacher } from "@/lib/localStorage";
 import { getTeacherByIdAction } from "@/app/actions/GET/getTeacherByIdAction";
+import { getSchoolAction } from "@/app/actions/GET/getSchoolAction";
 
 export default function TeacherSignInPage() {
     const params = useParams();
@@ -33,6 +34,7 @@ export default function TeacherSignInPage() {
     const [teachersFull, setTeachersFull] = useState<TeacherType[]>([]);
     const [isLoadingTeachers, setIsLoadingTeachers] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
+    const [schoolName, setSchoolName] = useState<string>("");
 
     const fetchTeachers = async () => {
         if (!schoolId) return;
@@ -59,11 +61,25 @@ export default function TeacherSignInPage() {
         }
     };
 
+    const fetchSchool = async () => {
+        if (!schoolId) return;
+        try {
+            const resp = await getSchoolAction(schoolId);
+            if (resp.success && resp.data) {
+                setSchoolName(resp.data.name);
+            }
+        } catch (error) {
+            //console.error("Error fetching school:", error);
+        }
+    };
+
     useEffect(() => {
         if (!schoolId) {
             route.push(`${router.teacherSignIn.p}`);
             return;
         }
+
+        fetchSchool();
 
         const isLogout = searchParams.get("auth") === "logout";
         if (isLogout) {
@@ -76,7 +92,7 @@ export default function TeacherSignInPage() {
         // Important: check first no-teacher in url
         if (!teacherId) {
             const storedTeacherData = getStorageTeacher?.();
-            if (storedTeacherData?.role === "substitute") removeStorageTeacher();  // Clear local storage only if substitute  
+            if (storedTeacherData?.role === "substitute") removeStorageTeacher();  // Clear local storage only if substitute
             setIsLoading(false);
             setIsLoadingTeachers(true);
             fetchTeachers();
@@ -108,7 +124,7 @@ export default function TeacherSignInPage() {
                 setIsLoading(false);
             }
         })();
-    }, [route, schoolId, teacherId]);
+    }, [route, schoolId, teacherId, searchParams]);
 
     if (isLoading) {
         return <SignInLoadingPage />;
@@ -119,12 +135,15 @@ export default function TeacherSignInPage() {
             <div className={styles.mainSection}>
                 <HeroSection title="מערכת השעות האישית שלכם" description="" />
                 <div className={styles.formContainer}>
-                    <TeacherAuthForm
-                        schoolId={schoolId}
-                        teachers={teachers}
-                        teachersFull={teachersFull}
-                        isLoadingTeachers={isLoadingTeachers}
-                    />
+                    <div className={styles.formInner}>
+                        {schoolName && <h2 className={styles.schoolName}>בית ספר {schoolName}</h2>}
+                        <TeacherAuthForm
+                            schoolId={schoolId}
+                            teachers={teachers}
+                            teachersFull={teachersFull}
+                            isLoadingTeachers={isLoadingTeachers}
+                        />
+                    </div>
                 </div>
                 <footer className={styles.copyright}>&copy; שיבוץ+, כל הזכויות שמורות. 2025</footer>
             </div>

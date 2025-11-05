@@ -4,7 +4,7 @@ import PageLayout from "@/components/layout/PageLayout/PageLayout";
 import AnnualTopNav from "@/components/navigation/topNavs/AnnualTopNav/AnnualTopNav";
 
 export const metadata: Metadata = {
-    title: "מערכת שנתית | שיבוץ+",
+    title: "מערכת שבועית | שיבוץ+",
     robots: "noindex, nofollow",
 };
 
