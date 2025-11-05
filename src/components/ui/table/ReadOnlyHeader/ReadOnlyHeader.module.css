@@ -1,15 +1,46 @@
+.thead {
+    position: sticky;
+    top: var(--padding-top);
+    z-index: 100;
+    background-color: var(--background);
+    z-index: 5;
+}
+
+.thead::before {
+    content: "";
+    position: absolute;
+    top: calc(var(--padding-top) * -1);
+    left: 0;
+    width: 100%;
+    height: calc(var(--padding-top) * 2);
+    background-color: var(--background-color);
+    z-index: -1;
+}
+
 .emptyTrHeader {
-    background-color: var(--table-headers-color);
-    border-left: var(--border-primary);
-    padding: 12px;
-    text-align: center;
-    width: var(--annual-table-min-col-width);
+    background-color: var(--background-color) !important;
+    height: var(--table-annual-header-height);
+    width: 7px;
 }
 
 .trHeader {
-    padding: 12px;
+    height: var(--table-annual-header-height);
     text-align: center;
-    min-width: var(--annual-table-min-col-width);
+    width: var(--table-annual-col-width);
+    color: var(--bright-text-color);
     font-weight: 600;
-    border-left: var(--border-primary);
+    background-color: var(--publish-color);
+}
+
+.trHeader:first-child {
+    border-top-right-radius: var(--border-radius-table);
+    border-top-left-radius: var(--border-radius-table);
+}
+
+.trHeader:nth-child(3) {
+    border-top-right-radius: var(--border-radius-table);
+}
+
+.trHeader:last-child {
+    border-top-left-radius: var(--border-radius-table);
 }

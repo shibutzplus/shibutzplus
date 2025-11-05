@@ -27,7 +27,6 @@ const AnnualTopNav: React.FC = () => {
                                 isDisabled={isSaving || isLoading}
                                 placeholder="בחר כיתה..."
                                 hasBorder
-                                isClearable
                             />
                         </div>
                     </div>

@@ -1,20 +1,10 @@
-/* Desktop */
+/* Mobile */
 .scheduleTable {
     width: 100%;
+    background-color: var(--inner-background-color);
+    border-radius: var(--border-radius-table);
     border-collapse: collapse;
-    background-color: var(--background);
-    min-width: 800px;
 }
 
-.scheduleTable th:first-child,
-.scheduleTable td:first-child {
-    width: var(--table-hour-cell-width);
-}
-
-/* Mobile */
-@media (max-width: 767px) {
-    .scheduleTable th:not(:first-child),
-    .scheduleTable td:not(:first-child) {
-        width: 220px;
-    }
-}
+/* Desktop */
+@media (min-width: 1024px) {}

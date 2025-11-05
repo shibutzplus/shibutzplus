@@ -1,6 +1,5 @@
 import React from "react";
 import styles from "./ReadOnlyHeader.module.css";
-import { AnnualTableColors } from "@/style/tableColors";
 
 type ReadOnlyHeaderProps = {
     trs: any[];
@@ -9,20 +8,21 @@ type ReadOnlyHeaderProps = {
     hasHour?: boolean;
 };
 
-const ReadOnlyHeader: React.FC<ReadOnlyHeaderProps> = ({ trs, emptyTrs = 0, textPlaceholder, hasHour = false }) => {
+const ReadOnlyHeader: React.FC<ReadOnlyHeaderProps> = ({
+    trs,
+    emptyTrs = 0,
+    textPlaceholder,
+    hasHour = false,
+}) => {
     return (
-        <thead>
+        <thead className={styles.thead}>
             <tr>
-                {hasHour ? <th className={styles.emptyTrHeader}>{/* "Hour" column */}</th> : null}
+                {hasHour ? <th className={styles.hourCol}>{/* "Hour" column */}</th> : null}
                 {Array.from({ length: emptyTrs }, (_, i) => i).map((i) => (
                     <th key={i} className={styles.emptyTrHeader}></th>
                 ))}
                 {trs.map((tr: string) => (
-                    <th
-                        key={tr}
-                        className={styles.trHeader}
-                        style={{ backgroundColor: AnnualTableColors[trs.indexOf(tr)] }}
-                    >
+                    <th key={tr} className={styles.trHeader}>
                         {textPlaceholder(tr)}
                     </th>
                 ))}

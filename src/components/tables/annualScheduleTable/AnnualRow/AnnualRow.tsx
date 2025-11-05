@@ -18,26 +18,22 @@ type AnnualRowProps = {
     isDisabled: boolean;
     onCreateSubject: (day: string, hour: number, value: string) => Promise<string | undefined>;
     onCreateTeacher: (day: string, hour: number, value: string) => Promise<string | undefined>;
-    selectedTeacherId: string;
 };
 
 const AnnualRow: React.FC<AnnualRowProps> = (props) => {
-    const { hour, selectedTeacherId } = props;
+    const { hour } = props;
 
     return (
-        <tr>
-            <td
-                className={styles.hourCell}
-                style={{ backgroundColor: HourRowColor }}
-            >
-                {hour}
+        <tr className={styles.annualRow}>
+            <td className={styles.hoursColumn}>
+                <div className={styles.hourCell}>{hour}</div>
             </td>
+            <td className={styles.emptyCell}></td>
             {DAYS_OF_WORK_WEEK.map((day) => (
                 <AnnualCell
                     key={`${day}-${hour}`}
                     day={day}
                     {...props}
-                    selectedTeacherId={selectedTeacherId}
                 />
             ))}
         </tr>

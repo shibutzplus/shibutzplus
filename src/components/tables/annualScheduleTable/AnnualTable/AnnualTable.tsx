@@ -12,7 +12,6 @@ import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import AnnualHeader from "../AnnualHeader/AnnualHeader";
 import AnnualRow from "../AnnualRow/AnnualRow";
-import NotPublishedLayout from "@/components/layout/NotPublishedLayout/NotPublishedLayout";
 import styles from "./AnnualTable.module.css";
 
 type AnnualTableProps = {
@@ -31,9 +30,9 @@ const AnnualTable: React.FC<AnnualTableProps> = ({
     classes,
 }) => {
     const { school, addNewTeacher, addNewSubject } = useMainContext();
-    const { setIsLoading, setIsSaving, isSaving, handleAddNewRow, selectedTeacherId, canShowTable } = useAnnualTable();
+    const { setIsLoading, setIsSaving, isSaving, handleAddNewRow } = useAnnualTable();
 
-    const isDisabled = isSaving || !schedule || !subjects || !classes || !canShowTable;
+    const isDisabled = isSaving || !schedule || !subjects || !classes;
 
     useEffect(() => {
         setIsLoading(!schedule || !subjects || !classes);
@@ -43,7 +42,12 @@ const AnnualTable: React.FC<AnnualTableProps> = ({
         if (!school?.id) return;
         setIsSaving(true);
         try {
-            const newTeacher: TeacherRequest = { name: value, role: TeacherRoleValues.REGULAR, schoolId: school.id, userId: null };
+            const newTeacher: TeacherRequest = {
+                name: value,
+                role: TeacherRoleValues.REGULAR,
+                schoolId: school.id,
+                userId: null,
+            };
             const res = await addNewTeacher(newTeacher);
             if (res) {
                 await handleAddNewRow("teachers", [res.id], day, hour, "create-option", res);
@@ -79,33 +83,26 @@ const AnnualTable: React.FC<AnnualTableProps> = ({
         }
     };
 
-    if (!canShowTable) {
-        return <NotPublishedLayout title="" subTitle={["יש לבחור כיתה או מורה להצגה"]} />;
-    }
-
     return (
-        <div>
-            <table className={styles.scheduleTable}>
-                <AnnualHeader />
-                <tbody>
-                    {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => (
-                        <AnnualRow
-                            key={hour}
-                            hour={hour}
-                            isDisabled={isDisabled}
-                            schedule={schedule}
-                            selectedClassId={selectedClassId}
-                            subjects={subjects || []}
-                            teachers={teachers || []}
-                            classes={classes || []}
-                            onCreateSubject={handleCreateSubject}
-                            onCreateTeacher={handleCreateTeacher}
-                            selectedTeacherId={selectedTeacherId}
-                        />
-                    ))}
-                </tbody>
-            </table>
-        </div>
+        <table className={styles.scheduleTable}>
+            <AnnualHeader />
+            <tbody className={styles.scheduleTableBody}>
+                {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => (
+                    <AnnualRow
+                        key={hour}
+                        hour={hour}
+                        isDisabled={isDisabled}
+                        schedule={schedule}
+                        selectedClassId={selectedClassId}
+                        subjects={subjects || []}
+                        teachers={teachers || []}
+                        classes={classes || []}
+                        onCreateSubject={handleCreateSubject}
+                        onCreateTeacher={handleCreateTeacher}
+                    />
+                ))}
+            </tbody>
+        </table>
     );
 };
 

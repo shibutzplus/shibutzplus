@@ -8,7 +8,7 @@
 }
 
 .selectContainer {
-    width: 300px;
+    width: var(--top-nav-select-width);
 }
 
 .leftContainer{

@@ -6,6 +6,7 @@ const AnnualHeader: React.FC = () => {
     return (
         <ReadOnlyHeader
             trs={DAYS_OF_WORK_WEEK}
+            emptyTrs={1}
             textPlaceholder={(text) => `יום ${text}׳`}
             hasHour
         />

@@ -7,5 +7,5 @@
 }
 
 .selectClass {
-    width: 200px;
+    width: var(--top-nav-select-width);
 }
