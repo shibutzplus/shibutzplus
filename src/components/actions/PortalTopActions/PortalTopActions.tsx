@@ -44,7 +44,7 @@ const PortalTopActions: React.FC = () => {
                 const data = await res.json();
                 const latest = Number(data?.latestTs || 0);
                 if (mounted && latest > since) {
-                    successToast("יש עדכונים חדשים, יש ללחוץ על רענון (הכפתור האדום) כדי לראותם");
+                    successToast("יש עדכונים חדשים, יש ללחוץ על רענון (הכפתור האדום) כדי לראותם", 100000);
                     setHasUpdate(true);
                     setLastTs(latest);
                 }
