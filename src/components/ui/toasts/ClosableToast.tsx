@@ -24,7 +24,7 @@ export const ClosableToast: React.FC<ClosableToastProps> = ({ t, message, varian
                 style={{
                     position: "absolute",
                     top: 0,
-                    left: 8,
+                    left: 2,
                     border: "none",
                     background: "transparent",
                     fontWeight: "bold",
