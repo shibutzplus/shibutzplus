@@ -1,9 +1,7 @@
 import { GroupOption } from "@/models/types";
 import { AvailableTeachers, WeeklySchedule } from "@/models/types/annualSchedule";
 import { ColumnTypeValues, ColumnType, DailySchedule, DailyScheduleCell } from "@/models/types/dailySchedule";
-import { TeacherRow } from "@/models/types/table";
 import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
-import { ColumnDef } from "@tanstack/react-table";
 import { dayToNumber } from "./time";
 import { ClassType } from "@/models/types/classes";
 import { createSelectOptions } from "./format";

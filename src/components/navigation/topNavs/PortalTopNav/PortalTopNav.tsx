@@ -49,6 +49,14 @@ const PortalTopNav: React.FC = () => {
         resetUpdate();
     };
 
+    const greetingTeacher = () => {
+        let greeting = "שלום";
+        if (!teacher?.name) return greeting;
+        const firstName = teacher.name.split(" ")[0];
+        greeting = `${greeting} ${firstName}`;
+        return greeting;
+    };
+
     return (
         <TopNavLayout
             type="portal"
@@ -56,7 +64,7 @@ const PortalTopNav: React.FC = () => {
                 left: <PortalNav />,
                 right: (
                     <div className={styles.rightContainer}>
-                        <div>{`שלום ${teacher?.name ?? ""}`}</div>
+                        <div>{greetingTeacher()}</div>
                         <div className={styles.selectContainer}>
                             <DynamicInputSelect
                                 options={publishDatesOptions}
