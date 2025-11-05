@@ -1,5 +1,20 @@
-import toast from "react-hot-toast";
+import { toast } from "react-hot-toast"
+import { ClosableToast } from "@/components/ui/toasts/ClosableToast"
 
-export const successToast = (message: string) => toast.success(message)
-export const errorToast = (message: string) => toast.error(message)
-export const infoToast = (message: string) => toast(message, { icon: "ℹ️" })
+export const successToast = (message: string, duration = 7000) =>
+    toast((t) => <ClosableToast t={t} message={message} variant="default" />, { duration })
+
+export const errorToast = (message: string, duration = 7000) =>
+    toast(
+        (t) => <ClosableToast t={t} message={message} variant="error" />,
+        {
+            duration,
+            style: {
+                background: "#fee2e2",
+                color: "#7f1d1d",
+            },
+        }
+    )
+
+export const infoToast = (message: string, duration = 7000) =>
+    toast((t) => <ClosableToast t={t} message={message} variant="default" />, { duration })
