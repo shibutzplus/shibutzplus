@@ -92,7 +92,7 @@ const DailyTopActions: React.FC = () => {
                 />
 
 
-                <span className={styles.hideOnMobile} title="תצוגה מקדימה">
+                <span className={styles.hideOnMobile} title="תצוגה מקדימה כפי שמורים רואים את המערכת">
                     <IconBtn
                         Icon={<Icons.eye size={24} />}
                         onClick={onOpenHistory}
