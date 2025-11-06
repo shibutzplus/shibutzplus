@@ -31,6 +31,7 @@ const ViewHeader: React.FC<ViewHeaderProps> = ({ items, onTeacherClick, isManage
                             role={isClickable ? "button" : undefined}
                             tabIndex={isClickable ? 0 : -1}
                             aria-disabled={!isClickable}
+                            title={isClickable ? "לחץ על שם המורה כדי לראות או להזין את חומרי הלימוד" : undefined}
                         >
                             {it.title || "—"}
                         </th>
