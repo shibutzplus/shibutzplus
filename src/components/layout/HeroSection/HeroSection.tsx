@@ -11,7 +11,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ title, description }) => {
     return (
         <div className={styles.heroSection}>
             <div className={styles.schoolIcon}>
-                <Logo />
+                <Logo size="L" />
             </div>
             <h2 className={styles.schoolTitle}>שיבוץ +</h2>
 

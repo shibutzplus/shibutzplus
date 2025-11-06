@@ -22,7 +22,7 @@
 }
 
 .googleButton {
-    width: 100%;
+    width: 320px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -37,6 +37,7 @@
     cursor: pointer;
     transition: all 0.2s ease;
     margin-bottom: 1rem;
+    margin: 0 auto 1rem auto;
 }
 
 .googleButton:hover {
@@ -86,14 +87,21 @@
     height: auto;
 }
 
+.emailLine {
+    display: block;
+    margin-top: 0.75rem;
+}
+
 /* Desktop */
 @media (min-width: 768px) {
     .mainSection {
         gap: 3em;
-        width: 27%;
-        margin-bottom: 20vh;
+        margin: 0 auto 20vh auto;
     }
-
+    .googleButton {
+        width: 320px;
+        margin: 0 auto;
+    }
     .illustrationContainer {
         bottom: 1%;
         left: 2%;

@@ -81,7 +81,7 @@ function ListRow<T extends Record<string, any>>({
         const text = `${teacherName}, קישור להתחברות:\n${link}`;
         try {
             await navigator.clipboard.writeText(text);
-            successToast(`הקישור עבור ${teacherName} הועתק בהצלחה, ניתן לשלוח למורה`,4000);
+            successToast(`הקישור עבור ${teacherName} הועתק בהצלחה, אפשר לשלוח למורה.`,4000);
         } catch {
             errorToast("לא ניתן להעתיק את הקישור, אנא פנו לתמיכה");
         }
