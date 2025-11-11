@@ -7,15 +7,9 @@ import HoursCol from "@/components/ui/table/HoursCol/HoursCol";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import { TableRows } from "@/models/constant/table";
 import { sortDailyColumnIdsByType } from "@/utils/sort";
-import useHeaderVisibility from "@/hooks/scroll/useHeaderVisibility";
-
-const HeaderTrigger: React.FC<{ width: string }> = ({ width }) => {
-    // Hidden trigger element for header visibility detection
-    return <div data-header-trigger="true" className={styles.headerTrigger} style={{ width }} />;
-};
+import EmptyTable from "@/components/ui/table/EmptyTable/EmptyTable";
 
 const DailyTable: React.FC = () => {
-    // useHeaderVisibility();
     const { mainDailyTable, selectedDate } = useDailyTableContext();
     const schedule = mainDailyTable[selectedDate];
     const tableColumns = schedule ? Object.keys(schedule) : [];
@@ -23,11 +17,11 @@ const DailyTable: React.FC = () => {
         ? sortDailyColumnIdsByType(tableColumns, mainDailyTable, selectedDate)
         : [];
 
+
     return (
         <div className={styles.dailyTable}>
             <HoursCol hours={TableRows} />
-            {/* {schedule ? <HeaderTrigger width={`${sortedTableColumns.length * 245}px`} /> : null} */}
-            {schedule ? (
+            {schedule && Object.keys(schedule).length > 0 ? (
                 sortedTableColumns.map((colId) => (
                     <DailyCol
                         key={colId}
@@ -36,7 +30,7 @@ const DailyTable: React.FC = () => {
                     />
                 ))
             ) : (
-                <div>nothing yet</div>
+                <EmptyTable />
             )}
         </div>
     );

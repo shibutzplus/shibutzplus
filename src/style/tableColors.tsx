@@ -2,19 +2,6 @@
 
 import { EventColor, ExistingTeacherColor, MissingTeacherColor } from "./colors";
 
-export const HeaderColor = "#fffbf5";
-export const HourHeaderColor = "#fffbf5";
-export const HourRowColor = "#fffbf5";
-
-export const AnnualTableColors = [
-    HeaderColor,
-    HeaderColor,
-    HeaderColor,
-    HeaderColor,
-    HeaderColor,
-    HeaderColor,
-];
-
 export const DailyTableColors = {
     missingTeacher: {
         borderLeft: "10px solid #ae2b27af",

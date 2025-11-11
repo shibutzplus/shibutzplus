@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import InputRichText from "@/components/ui/inputs/InputRichText/InputRichText";
 import { usePortal } from "@/context/PortalContext";
-import { HourRowColor } from "@/style/tableColors";
 import { PortalScheduleType } from "@/models/types/portalSchedule";
 import styles from "./PortalWriteRow.module.css";
 
@@ -72,7 +71,7 @@ const PortalWriteRow: React.FC<PortalWriteRowProps> = ({ hour, row }) => {
 
     return (
         <tr>
-            <td className={styles.hourCell} style={{ backgroundColor: HourRowColor }}>
+            <td className={styles.hourCell} style={{ backgroundColor: "#fffbf5" }}>
                 {hour}
             </td>
             <td className={styles.cellClass}>

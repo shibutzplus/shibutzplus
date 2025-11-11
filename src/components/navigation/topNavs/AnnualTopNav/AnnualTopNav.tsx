@@ -12,10 +12,9 @@ const AnnualTopNav: React.FC = () => {
 
     return (
         <TopNavLayout
-            type="annual"
-            childrens={{
-                left: undefined,
-                right: (
+            type="private"
+            elements={{
+                topRight: (
                     <div className={styles.rightContainer}>
                         <div>{router.annualSchedule.title}</div>
                         <div className={styles.selectClass}>

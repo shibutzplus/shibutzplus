@@ -2,7 +2,6 @@ import React from "react";
 import { NextPage } from "next";
 import styles from "./AnnualSkeleton.module.css";
 import { DAYS_OF_WORK_WEEK } from "@/utils/time";
-import { AnnualTableColors, HourRowColor } from "@/style/tableColors";
 import { TableRows } from "@/models/constant/table";
 
 const AnnualSkeleton: NextPage = () => {
@@ -19,7 +18,7 @@ const AnnualSkeleton: NextPage = () => {
                                         key={tr}
                                         className={styles.trHeader}
                                         style={{
-                                            backgroundColor: AnnualTableColors[0],
+                                            backgroundColor: "#fffbf5",
                                         }}
                                     >
                                         <div className={styles.thSkeleton} />
@@ -32,7 +31,7 @@ const AnnualSkeleton: NextPage = () => {
                                 <tr key={hour}>
                                     <td
                                         className={styles.hourCell}
-                                        style={{ backgroundColor: HourRowColor }}
+                                        style={{ backgroundColor: "#fffbf5" }}
                                     >
                                         {hour}
                                     </td>

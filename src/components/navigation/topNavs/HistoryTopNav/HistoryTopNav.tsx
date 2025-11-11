@@ -29,10 +29,9 @@ const HistoryTopNav: React.FC = () => {
 
     return (
         <TopNavLayout
-            type="history"
-            childrens={{
-                left: undefined,
-                right: (
+            type="private"
+            elements={{
+                topRight: (
                     <div className={styles.rightContainer}>
                         <div>{router.annualSchedule.title}</div>
                         <div className={styles.selectClass}>

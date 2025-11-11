@@ -18,8 +18,7 @@ const PublishedPortalPage: NextPage = () => {
         const fetchData = async () => {
             if (blockRef.current) {
                 const response = await fetchPublishScheduleData();
-                if (response.success)
-                    blockRef.current = false;
+                if (response.success) blockRef.current = false;
                 else if (response.error !== "") {
                     errorToast(response.error);
                 }
@@ -27,7 +26,6 @@ const PublishedPortalPage: NextPage = () => {
         };
         fetchData();
     }, [selectedDate]);
-
 
     if (isPublishLoading) return <PublishedSkeleton />;
 
@@ -38,7 +36,6 @@ const PublishedPortalPage: NextPage = () => {
                     scheduleData={mainPublishTable}
                     noScheduleTitle=""
                     noScheduleSubTitle={["אין לך שינויים במערכת ליום זה"]}
-                    hasMobileNav
                 />
             </div>
         </div>

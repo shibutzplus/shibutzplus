@@ -6,7 +6,6 @@ import { WeeklySchedule } from "@/models/types/annualSchedule";
 import { SubjectType } from "@/models/types/subjects";
 import { TeacherType } from "@/models/types/teachers";
 import { ClassType } from "@/models/types/classes";
-import { HourRowColor } from "@/style/tableColors";
 
 type AnnualRowProps = {
     hour: number;

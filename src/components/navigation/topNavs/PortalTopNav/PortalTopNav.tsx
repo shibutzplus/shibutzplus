@@ -59,10 +59,10 @@ const PortalTopNav: React.FC = () => {
 
     return (
         <TopNavLayout
-            type="portal"
-            childrens={{
-                left: <PortalNav />,
-                right: (
+            type="public"
+            elements={{
+                topLeft: <PortalNav />,
+                topRight: (
                     <div className={styles.rightContainer}>
                         <div>{greetingTeacher()}</div>
                         <div className={styles.selectContainer}>

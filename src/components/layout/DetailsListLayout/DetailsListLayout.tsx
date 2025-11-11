@@ -1,8 +1,7 @@
 import React from "react";
 import styles from "./DetailsListLayout.module.css";
-import { TeacherType } from "@/models/types/teachers";
 import ListRowLoading from "@/components/loading/ListRowLoading/ListRowLoading";
-import EmptyTable from "@/components/ui/table/EmptyTable/EmptyTable";
+import EmptyList from "@/components/ui/list/EmptyList/EmptyList";
 
 type DetailsListLayoutProps<T> = {
     titles: [string, string];
@@ -30,7 +29,7 @@ const DetailsListLayout = <T,>({
                     {details === undefined ? (
                         <ListRowLoading />
                     ) : details?.length === 0 ? (
-                        <EmptyTable text={emptyText} />
+                        <EmptyList text={emptyText} />
                     ) : (
                         children[1]
                     )}

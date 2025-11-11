@@ -11,4 +11,4 @@ export type GroupOption = {
 
 export type Pair = [string, string];
 
-export type NavType = "details" | "annual" | "daily" | "history" | "admin" | "portal";
+export type NavType = "public" | "private";

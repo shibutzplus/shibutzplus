@@ -11,11 +11,12 @@ import { useAccessibility } from "../../../hooks/useAccessibility";
 import routePath from "../../../routes";
 import { clearStorage, getStorageTeacher } from "@/lib/localStorage";
 import { clearSessionStorage } from "@/lib/sessionStorage";
+import { NavType } from "@/models/types";
 
 type HamburgerNavProps = {
     isOpen: boolean
     onClose: () => void
-    variant?: "admin" | "portal"
+    hamburgerType: NavType;
 }
 
 interface ILink {
@@ -114,7 +115,7 @@ const LinkComponent: React.FC<LinkComponentProps> = ({ link, onClose, currentPat
     )
 }
 
-const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose, variant = "admin" }) => {
+const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose, hamburgerType = "private" }) => {
     const { status } = useSession()
     const pathname = usePathname()
     const navRef = useRef<HTMLDivElement>(null)
@@ -129,11 +130,11 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose, variant = 
         else overlayRef.current.removeAttribute("inert")
     }, [isOpen])
 
-    const showAdminLinks = variant === "admin"
+    const isPrivate = hamburgerType === "private"
 
     const handleLogout = () => {
         clearSessionStorage()
-        if (variant === "admin") {
+        if (isPrivate) {
             clearStorage()
             signOut({ callbackUrl: routePath.signIn.p })
         } else {
@@ -161,7 +162,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose, variant = 
                     <Icons.close size={24} />
                 </button>
 
-                {showAdminLinks ? (
+                {isPrivate ? (
                     <>
                         <section className={styles.menuSection}>
                             <ul>

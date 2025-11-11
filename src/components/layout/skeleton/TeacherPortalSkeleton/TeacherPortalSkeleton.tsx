@@ -1,7 +1,6 @@
 import React from "react";
 import styles from "./TeacherPortalSkeleton.module.css";
 import { TableRows } from "@/models/constant/table";
-import { HourRowColor } from "@/style/tableColors";
 
 const TeacherPortalSkeleton: React.FC = () => {
     return (
@@ -29,7 +28,7 @@ const TeacherPortalSkeleton: React.FC = () => {
                                 <tr key={hour}>
                                     <td
                                         className={styles.hourCell}
-                                        style={{ backgroundColor: HourRowColor }}
+                                        style={{ backgroundColor: "#fffbf5" }}
                                     >
                                         {hour}
                                     </td>

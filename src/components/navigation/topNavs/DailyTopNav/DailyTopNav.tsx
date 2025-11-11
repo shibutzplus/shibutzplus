@@ -24,11 +24,12 @@ const DailyTopNav: React.FC = () => {
         onOpenHistory,
         isDisabled,
     } = usePublish();
+
     return (
         <TopNavLayout
-            type="daily"
-            childrens={{
-                left: (
+            type="private"
+            elements={{
+                topLeft: (
                     <div className={styles.leftContainer}>
                         <span title="תצוגה מקדימה">
                             <IconBtn
@@ -58,7 +59,7 @@ const DailyTopNav: React.FC = () => {
                         </span>
                     </div>
                 ),
-                right: (
+                topRight: (
                     <div className={styles.rightContainer}>
                         <div>{router.dailySchedule.title}</div>
                         <div className={styles.selectContainer}>
@@ -99,6 +100,7 @@ const DailyTopNav: React.FC = () => {
                         />
                     </div>
                 ),
+                bottom: <div></div>,
             }}
         />
     );

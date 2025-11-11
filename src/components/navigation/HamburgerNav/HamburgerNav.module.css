@@ -181,7 +181,7 @@
 
 .supportSection a {
     display: block;
-    direction: ltr;
+    /* direction: ltr; */
     color: #007e8a;
     text-decoration: none;
     font-weight: 500;
@@ -202,7 +202,7 @@
 
 .supportSection p:nth-child(3),
 .supportSection p:nth-child(4) {
-    direction: ltr;
+    /* direction: ltr; */
     font-weight: 500;
 }
 

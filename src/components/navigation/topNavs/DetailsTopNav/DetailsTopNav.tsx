@@ -9,10 +9,9 @@ type DetailsTopNavProps = {
 const DetailsTopNav: React.FC<DetailsTopNavProps> = ({ pageTitle }) => {
     return (
         <TopNavLayout
-            type="details"
-            childrens={{
-                left: undefined,
-                right: <div className={styles.rightContainer}>{pageTitle}</div>,
+            type="private"
+            elements={{
+                topRight: <div className={styles.rightContainer}>{pageTitle}</div>,
             }}
         />
     );
