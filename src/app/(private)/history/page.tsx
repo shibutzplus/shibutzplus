@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import type { NextPage } from "next";
 import { useSearchParams } from "next/navigation";
 import styles from "./history.module.css";
-import PublishedSkeleton from "@/components/layout/skeleton/PublishedSkeleton/PublishedSkeleton";
+import PublishedSkeleton from "@/components/loading/skeleton/PublishedSkeleton/PublishedSkeleton";
 import TeacherMaterial from "@/components/popups/TeacherMaterial/TeacherMaterial";
 import ViewTable from "@/components/tables/viewTable/ViewTable/ViewTable";
 import { useMainContext } from "@/context/MainContext";

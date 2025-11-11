@@ -8,7 +8,7 @@
 "use client";
 
 import styles from "../teacherSignIn.module.css";
-import HeroSection from "@/components/layout/HeroSection/HeroSection";
+import HeroSection from "@/components/auth/HeroSection/HeroSection";
 import TeacherAuthForm from "@/components/auth/TeacherAuthForm/TeacherAuthForm";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";

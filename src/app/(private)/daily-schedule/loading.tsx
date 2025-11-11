@@ -1,5 +1,5 @@
 import React from "react";
-import DailySkeleton from "@/components/layout/skeleton/DailySkeleton/DailySkeleton";
+import DailySkeleton from "@/components/loading/skeleton/DailySkeleton/DailySkeleton";
 
 const SkeletonDailySchedule: React.FC = () => {
     return <DailySkeleton />;

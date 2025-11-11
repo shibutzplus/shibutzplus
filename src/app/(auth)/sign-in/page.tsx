@@ -8,7 +8,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import GoogleIcon from "@/components/ui/assets/googleIcon";
 import Loading from "@/components/loading/Loading/Loading";
-import HeroSection from "@/components/layout/HeroSection/HeroSection";
+import HeroSection from "@/components/auth/HeroSection/HeroSection";
 import SignInLoadingPage from "@/components/loading/SignInLoadingPage/SignInLoadingPage";
 import { signInWithGoogle } from "@/app/actions/POST/signInAction";
 import { DEFAULT_REDIRECT } from "@/routes/protectedAuth";

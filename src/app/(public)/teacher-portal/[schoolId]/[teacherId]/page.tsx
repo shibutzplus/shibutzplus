@@ -4,7 +4,7 @@ import React, { useEffect, useRef } from "react";
 import { NextPage } from "next";
 import { useParams, useRouter } from "next/navigation";
 import PortalTable from "@/components/tables/teacherPortalTable/PortalTable/PortalTable";
-import TeacherPortalSkeleton from "@/components/layout/skeleton/TeacherPortalSkeleton/TeacherPortalSkeleton";
+import TeacherPortalSkeleton from "@/components/loading/skeleton/TeacherPortalSkeleton/TeacherPortalSkeleton";
 import { usePortal } from "@/context/PortalContext";
 import styles from "./teacherPortal.module.css";
 import router from "@/routes";
