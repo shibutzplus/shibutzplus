@@ -7,6 +7,7 @@ export type PortalScheduleType = {
     DBid: string;
     columnId: string;
     hour: number; // 1-7
+    schoolId?: string;
     school?: SchoolType;
     class?: ClassType;
     subject?: SubjectType;

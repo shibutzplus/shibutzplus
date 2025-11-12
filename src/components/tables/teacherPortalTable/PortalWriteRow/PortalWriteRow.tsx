@@ -29,7 +29,12 @@ const PortalWriteRow: React.FC<PortalWriteRowProps> = ({ hour, row }) => {
         const value = html.trim();
         if (value === prevInstructions) return;
         setPrevInstructions(value);
-        await handleSave(row.DBid, hour, value === "" ? undefined : value);
+
+        const schoolId = row.schoolId ?? row.school?.id;
+        const issueTeacherId = row.issueTeacher?.id ?? undefined;
+        const subTeacherId = row.subTeacher?.id ?? undefined;
+
+        await handleSave(row.DBid, hour, value === "" ? undefined : value, schoolId, issueTeacherId, subTeacherId);
     };
 
     // Returns text about replacement teacher or event
