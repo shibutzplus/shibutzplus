@@ -60,7 +60,7 @@ const usePublish = () => {
         const text = `קישור התחברות למורי בית הספר:\n${generateSchoolUrl(school.id)}`;
         try {
             await navigator.clipboard.writeText(text);
-            successToast("הקישור הועתק בהצלחה וניתן לשלוח למורים", 3500)
+            successToast("הקישור הועתק בהצלחה וניתן לשלוח למורים.", 3500)
         } catch {
             errorToast("לא ניתן להעתיק את הקישור, אנא פנו לתמיכה");
         }

@@ -131,11 +131,10 @@ const SignInContent: React.FC = () => {
                     </button>
                     {error && <p className={styles.error}>{error}</p>}
                     <div className={styles.registerLink}>
-                        <p>
-                            <Link href={EmailLink} className={styles.problemLink}>
-                                צרו קשר
-                            </Link>
-                        </p>
+                        <Link href={EmailLink} className={styles.problemLink}>
+                            <span>צרו קשר</span>
+                            <span className={styles.emailLine}>shibutzplus@gmail.com</span>
+                        </Link>
                     </div>
                 </div>
             </section>

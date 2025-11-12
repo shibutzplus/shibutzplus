@@ -1,5 +1,4 @@
 import {
-    IoArrowForward,
     IoHomeOutline,
     IoCalendarOutline,
     IoCalendarSharp,
@@ -20,8 +19,6 @@ import { FaPlus, FaList } from "react-icons/fa6";
 import { FaSave, FaLink, FaShareAlt } from "react-icons/fa";
 import { PiChairLight } from "react-icons/pi";
 import { GoHistory } from "react-icons/go";
-import { LiaChalkboardTeacherSolid } from "react-icons/lia";
-import { GiTeacher } from "react-icons/gi";
 import { IoPersonOutline, IoCheckmarkCircle } from "react-icons/io5";
 import { LuEye } from "react-icons/lu";
 import { FiCheckCircle } from "react-icons/fi";
@@ -29,7 +26,6 @@ import { GrSchedule } from "react-icons/gr";
 
 const Icons = {
     addTeacher: MdPersonAdd,
-    arrowForward: IoArrowForward,
     book: IoBookOutline,
     bookFill: IoBook,
     calendar: IoCalendarOutline,
@@ -58,10 +54,8 @@ const Icons = {
     school: IoSchoolOutline,
     share: FaShareAlt,
     substituteTeacher: MdSwapHoriz,
-    teacher1: MdPerson,
-    teacher2: LiaChalkboardTeacherSolid,
-    teacher3: GiTeacher,
     teacher: IoPersonOutline,
+    teacherSolid: MdPerson,
     refresh: IoMdRefresh,
     success1: IoCheckmarkCircle,
     success2: FiCheckCircle,

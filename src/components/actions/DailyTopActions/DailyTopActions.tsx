@@ -32,7 +32,7 @@ const DailyTopActions: React.FC = () => {
                     isDisabled={isLoading}
                     onChange={handleDayChange}
                     isSearchable={false}
-                    placeholder="בחר יום..."
+                    placeholder="בחרו יום..."
                     hasBorder
                 />
             </div>
@@ -82,7 +82,7 @@ const DailyTopActions: React.FC = () => {
                                 pointerEvents: "none"
                             }
                             : {
-                                borderLeft:  "1px solid #ddd",
+                                borderLeft: "1px solid #ddd",
                                 borderRight: "1px solid #ddd",
                                 borderBottom: "1px solid #ddd",
                                 borderTop: "1px solid #ddd",
@@ -92,7 +92,7 @@ const DailyTopActions: React.FC = () => {
                 />
 
 
-                <span className={styles.hideOnMobile} title="תצוגה מקדימה">
+                <span className={styles.hideOnMobile} title="תצוגה מקדימה כפי שמורים רואים את המערכת">
                     <IconBtn
                         Icon={<Icons.eye size={24} />}
                         onClick={onOpenHistory}

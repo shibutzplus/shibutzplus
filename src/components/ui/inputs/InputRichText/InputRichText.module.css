@@ -16,6 +16,7 @@
     line-height: 22px;
     z-index: 1;
     direction: ltr;
+    white-space: pre-line;
 }
 
 .wrapper div {
@@ -51,9 +52,7 @@
 .placeholder {
     color: var(--placeholder-color);
 }
-.placeholderImportant {
-    animation: pulseColor 2s ease-in-out infinite;
-}
+
 
 @keyframes pulseColor {
     0%,
