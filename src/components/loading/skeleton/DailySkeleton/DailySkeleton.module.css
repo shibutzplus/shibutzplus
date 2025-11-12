@@ -3,7 +3,7 @@
     min-height: 100dvh;
     position: relative;
     padding-bottom: 15px;
-    padding-top: var(--padding-top);
+    padding-top: var(--padding-top-desktop);
 }
 
 .dailyTable {

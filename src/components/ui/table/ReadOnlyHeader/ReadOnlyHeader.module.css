@@ -1,6 +1,7 @@
+/* Mobile */
 .thead {
     position: sticky;
-    top: var(--padding-top);
+    top: calc(var(--header-height) + var(--header-height) + var(--padding-top-mobile));
     z-index: 100;
     background-color: var(--background);
     z-index: 5;
@@ -9,10 +10,10 @@
 .thead::before {
     content: "";
     position: absolute;
-    top: calc(var(--padding-top) * -1);
+    top: calc(var(--padding-top-desktop) * -1);
     left: 0;
     width: 100%;
-    height: calc(var(--padding-top) * 2);
+    height: calc(var(--padding-top-desktop) * 2);
     background-color: var(--background-color);
     z-index: -1;
 }
@@ -32,9 +33,10 @@
     background-color: var(--publish-color);
 }
 
-.trHeader:first-child {
+.hourCol {
     border-top-right-radius: var(--border-radius-table);
     border-top-left-radius: var(--border-radius-table);
+    background-color: var(--inner-background-color);
 }
 
 .trHeader:nth-child(3) {
@@ -43,4 +45,11 @@
 
 .trHeader:last-child {
     border-top-left-radius: var(--border-radius-table);
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+    .thead {
+       top: calc(var(--header-height) + var(--padding-top-desktop)); 
+    }
 }

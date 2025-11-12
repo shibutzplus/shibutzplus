@@ -1,3 +1,4 @@
+/* Mobile */
 .emptyTable {
     position: fixed;
     top: 30vh;
@@ -9,6 +10,8 @@
     gap: 20px;
     max-height: calc(100vh - var(--header-height));
     color: var(--dark-border-color);
+    width: 50vw;
+    text-align: center;
 }
 
 .text {
@@ -18,7 +21,19 @@
 
 .actions {
     display: flex;
+    flex-direction: column;
     align-items: center;
     gap: 15px;
     font-weight: 600;
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+    .emptyTable {
+        width: none;
+    }
+
+    .actions {
+        flex-direction: row;
+    }
 }

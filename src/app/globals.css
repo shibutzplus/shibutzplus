@@ -58,7 +58,12 @@
     --border-radius-cell: 10px;
 
     --header-height: 60px;
-    --padding-top: 1rem;
+
+    --padding-top-desktop: 1rem;
+    --padding-top-mobile: 0.2rem;
+
+    --padding-width-desktop: 10px;
+    --padding-width-mobile: 5px;
 
     --top-nav-select-width: 300px;
 
@@ -68,7 +73,7 @@
     --table-daily-full-height: calc(var(--table-daily-header-height) + var(--table-daily-cell-height) * 9 + (5px * 10));
 
     --table-annual-col-width: 200px;
-    --table-annual-header-height: 50px;
+    --table-annual-header-height: 40px;
     --table-annual-cell-height: 96px;
     --table-annual-full-height: calc(var(--table-daily-header-height) + var(--table-daily-cell-height) * 9 + (5px * 10));
 

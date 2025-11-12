@@ -60,8 +60,8 @@
 @media (min-width: 1024px) {
     .container {
         width: 50vw;
-        margin-top: var(--padding-top);
-        height: calc(var(--list-details-full-height) - var(--padding-top));
+        margin-top: var(--padding-top-desktop);
+        height: calc(var(--list-details-full-height) - var(--padding-top-desktop));
     }
 
     .header {

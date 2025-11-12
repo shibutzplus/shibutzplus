@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import PageLayout from "@/components/layout/PageLayout/PageLayout";
-import DailyTopNav from "@/components/navigation/topNavs/DailyTopNav/DailyTopNav";
 import { DailyTableProvider } from "@/context/DailyTableContext";
+import DailyPageLayout from "@/components/layout/pageLayouts/DailyPageLayout/DailyPageLayout";
 
 export const metadata: Metadata = {
     title: "שיבוץ יומי | שיבוץ+",
@@ -11,7 +10,7 @@ export const metadata: Metadata = {
 export default function Layout({ children }: { children: React.ReactNode }) {
     return (
         <DailyTableProvider>
-            <PageLayout TopNav={<DailyTopNav />}>{children}</PageLayout>
+            <DailyPageLayout>{children}</DailyPageLayout>
         </DailyTableProvider>
     );
 }

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { AnnualTableProvider } from "@/context/AnnualTableContext";
-import PageLayout from "@/components/layout/PageLayout/PageLayout";
-import AnnualTopNav from "@/components/navigation/topNavs/AnnualTopNav/AnnualTopNav";
+import AnnualPageLayout from "@/components/layout/pageLayouts/AnnualPageLayout/AnnualPageLayout";
 
 export const metadata: Metadata = {
     title: "מערכת שבועית | שיבוץ+",
@@ -11,7 +10,7 @@ export const metadata: Metadata = {
 export default function Layout({ children }: { children: React.ReactNode }) {
     return (
         <AnnualTableProvider>
-            <PageLayout TopNav={<AnnualTopNav />} >{children}</PageLayout>
+            <AnnualPageLayout>{children}</AnnualPageLayout>
         </AnnualTableProvider>
     );
 }

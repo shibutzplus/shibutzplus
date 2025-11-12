@@ -1,30 +1,16 @@
+/* Mobile */
 .container {
     width: 100%;
-    min-height: 100dvh;
-    position: relative;
-    padding-bottom: 15px;
-    padding-top: var(--padding-top);
+    margin: 0 auto;
+    box-sizing: border-box;
+    padding-top: calc(var(--header-height) + var(--header-height) + var(--padding-top-mobile));
+    padding-bottom: var(--padding-top-mobile);
 }
 
-.loadingWrapper {
-    position: relative;
-}
-
-.loader {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 50px;
-    height: 50px;
-    border: 5px solid #ccc;
-    border-top-color: var(--primary-color);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    transform: translate(-50%, -50%);
-}
-
-@keyframes spin {
-    to {
-        transform: translate(-50%, -50%) rotate(360deg);
+/* Desktop */
+@media (min-width: 1024px) {
+    .container {
+        padding-top: calc(var(--header-height) + var(--padding-top-desktop));
+        padding-bottom: var(--padding-top-desktop);
     }
 }

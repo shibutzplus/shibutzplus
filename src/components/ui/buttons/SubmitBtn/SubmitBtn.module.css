@@ -38,7 +38,7 @@
 
 .error {
   color: var(--error-color);
-  margin-top: var(--padding-top);
+  margin-top: var(--padding-top-desktop);
   font-size: 0.9rem;
   text-align: center;
 }
