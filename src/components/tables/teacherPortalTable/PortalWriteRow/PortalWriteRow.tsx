@@ -55,7 +55,7 @@ const PortalWriteRow: React.FC<PortalWriteRowProps> = ({ hour, row }) => {
 
         // If I am the main teacher
         if (isIssueTeacher) {
-            return row.subTeacher ? "הזינו כאן את חומר הלימוד\n(ניתן גם להכניס קישורים)" : "";
+            return row.subTeacher ? "הזינו כאן את חומר הלימוד" : "";
         }
 
         // If I am the substitute teacher
