@@ -2,48 +2,45 @@ import React from "react";
 import styles from "./ListSkeleton.module.css";
 
 type ListSkeletonProps = {
-    headThs: string[];
+    titles: [string, string];
     hasAdditionalBtn?: boolean;
 };
 
-const ListSkeleton: React.FC<ListSkeletonProps> = ({ headThs, hasAdditionalBtn = false }) => {
+const ListSkeleton: React.FC<ListSkeletonProps> = ({ titles, hasAdditionalBtn = false }) => {
     return (
-        <div className={styles.container}>
-            <section className={styles.tableListSection}>
-                <table className={styles.tableList}>
-                    <thead>
-                        <tr>
-                            {headThs.map((headTh) => (
-                                <th key={headTh}>{headTh}</th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <div className={styles.tdSkeletonInput} />
-                            </td>
-                            <td>
-                                <div className={styles.tdSkeletonBtn} />
-                            </td>
-                        </tr>
-                        {Array.from({ length: 15 }, (_, i) => i + 1).map((i) => (
-                            <tr key={i} className={styles.listRow}>
-                                <td className={styles.nameCell}>
-                                    <div className={styles.tdSkeletonName} />
-                                </td>
-
-                                <td className={styles.actions}>
-                                    {hasAdditionalBtn && <div className={styles.tdSkeletonIcon} />}
-                                    <div className={styles.tdSkeletonIcon} />
-                                    <div className={styles.tdSkeletonIcon} />
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+        <main className={styles.container}>
+            <header className={styles.header}>
+                {titles.map((title, index) => (
+                    <h2 key={index}>{title}</h2>
+                ))}
+            </header>
+            <section className={styles.listSection}>
+                {/* Add Row Skeleton */}
+                <div className={styles.addListRow}>
+                    <div className={styles.addListRowInput}>
+                        <div className={styles.inputSkeleton} />
+                    </div>
+                    <div className={styles.addListBtn}>
+                        <div className={styles.btnSkeleton} />
+                    </div>
+                </div>
+                
+                <section className={styles.list}>
+                    {Array.from({ length: 8 }, (_, i) => i + 1).map((i) => (
+                        <div key={i} className={styles.listRow}>
+                            <div className={styles.nameCell}>
+                                <div className={styles.nameSkeleton} />
+                            </div>
+                            <div className={styles.actions}>
+                                {hasAdditionalBtn && <div className={styles.iconSkeleton} />}
+                                <div className={styles.iconSkeleton} />
+                                <div className={styles.iconSkeleton} />
+                            </div>
+                        </div>
+                    ))}
+                </section>
             </section>
-        </div>
+        </main>
     );
 };
 

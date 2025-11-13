@@ -1,82 +1,138 @@
 /* Mobile */
 .container {
-    width: 100%;
+    position: relative;
+    width: 95vw;
+    height: var(--list-details-full-height);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0;
+    margin: 0 auto;
+    margin-top: 0.5rem;
+    background-color: var(--inner-background-color);
+    border-radius: var(--border-radius-table);
+    overflow: hidden;
+}
+
+.header {
+    position: relative;
     display: flex;
     align-items: center;
-    justify-content: center;
-    padding: 0;
-}
-
-.tableListSection {
-    background-color: var(--background);
+    justify-content: space-between;
     width: 100%;
-    /* TODO */
-    max-width: 50vw;
+    height: var(--list-details-header-height);
+    background-color: var(--skeleton-header-color);
+    color: var(--bright-text-color);
+    padding: 0 calc(var(--list-details-padding) + 15px);
+    box-sizing: border-box;
+}
+
+.header h2 {
+    font-size: 16px;
     padding: 0;
-    border-radius: var(--box-border-radius);
-
+    margin: 0;
 }
 
-.tableList {
-    min-width: 50vw;
-    border-collapse: separate;
-    border-spacing: 0;
-}
-
-.tableList thead {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    background-color: var(--background);
-}
-
-.tableList th {
-    text-align: center;
-    padding: 1rem 0;
-    border-bottom: var(--border-heavy-primary);
-    font-weight: 600;
-    color: var(--description-text);
+.listSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
     width: 100%;
+    height: calc(100% - var(--list-details-header-height));
+    overflow-y: auto;
+    margin-top: 0.5rem;
 }
 
-.tableList td {
-    text-align: right;
-    padding: 1rem 16px;
-    border-bottom: var(--border-primary);
+.addListRow {
+    width: 95%;
+    background-color: var(--tab-color);
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: var(--list-details-row-padding-mobile);
+    box-sizing: border-box;
+    border-radius: var(--border-radius-cell);
+}
+
+.addListRowInput {
+    width: 100%;
+    height: var(--input-height);
+}
+
+.addListBtn {
+    width: var(--list-details-actions-width-mobile);
+}
+
+.list {
+    margin: 1rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    width: 100%;
+    overflow-y: scroll;
 }
 
 .listRow {
-    position: relative;
-    align-items: flex-start;
-    width: 100%;
-    position: relative;
+    width: 95%;
+    background-color: var(--tab-color);
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: var(--list-details-row-padding-mobile);
+    box-sizing: border-box;
+    border-radius: var(--border-radius-cell);
 }
 
 .nameCell {
+    width: 100%;
     position: relative;
 }
 
 .actions {
-    width: 100%;
+    min-width: var(--list-details-actions-width-mobile);
     display: flex;
-    justify-content: space-between;
+    justify-content: end;
     align-items: center;
-    height: 75px;
+    gap: 5px;
 }
 
-.tdSkeletonName,
-.tdSkeletonIcon,
-.tdSkeletonInput,
-.tdSkeletonBtn {
+.inputSkeleton,
+.btnSkeleton,
+.nameSkeleton,
+.iconSkeleton {
     background-color: var(--skeleton-input-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    border-radius: var(--border-radius-cell);
     animation: pulse 1.5s ease-in-out infinite;
 }
 
-@keyframes pulse {
+.inputSkeleton {
+    width: 100%;
+    height: var(--input-height);
+}
 
+.btnSkeleton {
+    width: 100%;
+    height: var(--button-height);
+    border-radius: var(--border-radius-cell);
+}
+
+.nameSkeleton {
+    width: 80%;
+    height: 20px;
+    border-radius: 5px;
+}
+
+.iconSkeleton {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+}
+
+@keyframes pulse {
     0%,
     100% {
         background-color: var(--skeleton-input-color);
@@ -87,46 +143,40 @@
     }
 }
 
-.tdSkeletonInput {
-    width: 364px;
-    height: 40px;
-}
-
-.tdSkeletonBtn {
-    width: 200px;
-    height: 40px;
-}
-
-.tdSkeletonName {
-    width: 260px;
-    height: 20px;
-    border-radius: 5px;
-}
-
-.tdSkeletonIcon {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-}
-
 /* Desktop */
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
     .container {
-        padding: 2vh 0;
+        width: 50vw;
+        margin-top: var(--padding-top-desktop);
+        height: calc(var(--list-details-full-height) - var(--padding-top-desktop));
     }
 
-    .tableListSection {
-        overflow-y: auto;
-        width: 100%;
-        padding: 0 5vw;
-        box-sizing: content-box;
+    .header {
+        padding: 0 calc(var(--list-details-padding) + 40px);
+        padding-left: calc(var(--list-details-padding) + 70px);
+    }
+
+    .addListRow {
+        padding: var(--list-details-row-padding);
+        gap: 3rem;
+    }
+
+    .addListBtn {
+        width: var(--list-details-actions-width);
+    }
+
+    .btnSkeleton {
+        min-width: var(--list-details-actions-width);
+    }
+
+    .listRow {
+        padding: var(--list-details-row-padding);
+        gap: 3rem;
     }
 
     .actions {
-        gap: 35px;
-    }
-
-    .tableList {
-        width: 600px;
+        min-width: var(--list-details-actions-width);
+        gap: 0;
+        justify-content: space-evenly;
     }
 }

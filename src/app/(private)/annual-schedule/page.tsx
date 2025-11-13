@@ -8,6 +8,7 @@ import { useMainContext } from "@/context/MainContext";
 import { useAnnualTable } from "@/context/AnnualTableContext";
 import { populateAnnualSchedule } from "@/utils/schedule";
 import { initializeEmptyAnnualSchedule } from "@/utils/Initialize";
+import AnnualSkeleton from "@/components/loading/skeleton/AnnualSkeleton/AnnualSkeleton";
 
 const AnnualSchedulePage: NextPage = () => {
     const { classes, teachers, subjects } = useMainContext();

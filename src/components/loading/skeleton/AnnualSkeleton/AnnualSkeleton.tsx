@@ -7,48 +7,35 @@ import { TableRows } from "@/models/constant/table";
 const AnnualSkeleton: NextPage = () => {
     return (
         <div className={styles.container}>
-            <div className={styles.whiteBox}>
-                <div>
-                    <table className={styles.scheduleTable}>
-                        <thead>
-                            <tr>
-                                <th className={styles.emptyTrHeader} />
-                                {DAYS_OF_WORK_WEEK.map((tr: string) => (
-                                    <th
-                                        key={tr}
-                                        className={styles.trHeader}
-                                        style={{
-                                            backgroundColor: "#fffbf5",
-                                        }}
-                                    >
-                                        <div className={styles.thSkeleton} />
-                                    </th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => (
-                                <tr key={hour}>
-                                    <td
-                                        className={styles.hourCell}
-                                        style={{ backgroundColor: "#fffbf5" }}
-                                    >
-                                        {hour}
-                                    </td>
-                                    {DAYS_OF_WORK_WEEK.map((day) => (
-                                        <td key={day} className={styles.scheduleCell}>
-                                            <div className={styles.cellContent}>
-                                                <div className={styles.tdSkeleton}/>
-                                                <div className={styles.tdSkeleton}/>
-                                            </div>
-                                        </td>
-                                    ))}
-                                </tr>
+            <table className={styles.scheduleTable}>
+                <thead className={styles.thead}>
+                    <tr>
+                        <th className={styles.hourCol}></th>
+                        <th className={styles.emptyTrHeader}></th>
+                        {DAYS_OF_WORK_WEEK.map((day: string) => (
+                            <th key={day} className={styles.trHeader} />
+                        ))}
+                    </tr>
+                </thead>
+                <tbody className={styles.scheduleTableBody}>
+                    {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => (
+                        <tr key={hour} className={styles.annualRow}>
+                            <td className={styles.hoursColumn}>
+                                <div className={styles.hourCell}>{hour}</div>
+                            </td>
+                            <td className={styles.emptyCell}></td>
+                            {DAYS_OF_WORK_WEEK.map((day) => (
+                                <td key={day} className={styles.scheduleCell}>
+                                    <div className={styles.cellContent}>
+                                        <div className={styles.tdSkeleton} />
+                                        <div className={styles.tdSkeleton} />
+                                    </div>
+                                </td>
                             ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
     );
 };

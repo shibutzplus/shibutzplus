@@ -1,39 +1,109 @@
 /* Mobile */
 .container {
-    padding: 0;
-    width: 100%;
-    height: auto;
-    display: block;
-    background-color: var(--school-section-bg);
-}
-
-.whiteBox {
-    background-color: var(--background);
-    width: 100%;
-    height: auto;
-    border: var(--border-primary);
+    width: calc(100% - (var(--padding-width-desktop) * 2));
+    margin: 0 auto;
+    box-sizing: border-box;
+    padding-top: calc(var(--header-height) + var(--header-height) + var(--padding-top-mobile));
+    padding-bottom: var(--padding-top-mobile);
 }
 
 .scheduleTable {
     width: 100%;
+    background-color: var(--inner-background-color);
+    border-radius: var(--border-radius-table);
     border-collapse: collapse;
-    background-color: var(--background);
-    min-width: 800px;
+}
+
+.thead {
+    position: sticky;
+    top: calc(var(--header-height) + var(--header-height) + var(--padding-top-mobile));
+    z-index: 100;
+    background-color: var(--skeleton-input-color);
+    z-index: 5;
+}
+
+.thead::before {
+    content: "";
+    position: absolute;
+    top: calc(var(--padding-top-desktop) * -1);
+    left: 0;
+    width: 100%;
+    height: calc(var(--padding-top-desktop) * 2);
+    background-color: var(--background-color);
+    z-index: -1;
+}
+
+.hourCol {
+    border-top-right-radius: var(--border-radius-table);
+    border-top-left-radius: var(--border-radius-table);
+    background-color: var(--inner-background-color);
 }
 
 .emptyTrHeader {
-    background-color: var(--table-headers-color);
-    border-left: var(--border-primary);
-    padding: 12px;
-    text-align: center;
-    width: var(--annual-table-min-col-width);
+    background-color: var(--background-color) !important;
+    height: var(--table-annual-header-height);
+    width: 7px;
 }
 
 .trHeader {
-    padding: 12px;
-    min-width: var(--annual-table-min-col-width);
+    height: var(--table-annual-header-height);
+    text-align: center;
+    width: var(--table-annual-col-width);
+    color: var(--bright-text-color);
     font-weight: 600;
-    border-left: var(--border-primary);
+    background-color: var(--skeleton-header-color);
+}
+
+.trHeader:nth-child(3) {
+    border-top-right-radius: var(--border-radius-table);
+}
+
+.trHeader:last-child {
+    border-top-left-radius: var(--border-radius-table);
+}
+
+.hoursColumn {
+    width: 40px;
+}
+
+.emptyCell {
+    background-color: var(--background-color) !important;
+    width: 5px !important;
+}
+
+.hourCell {
+    padding: 12px;
+    font-weight: bold;
+    text-align: center;
+    vertical-align: middle;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--dark-text-color);
+    background-color: var(--top-color);
+    border-radius: 50%;
+    margin: auto;
+}
+
+.scheduleCell {
+    position: relative;
+    padding: 8px;
+    border: var(--border-secondary);
+    vertical-align: top;
+    min-width: var(--annual-table-min-col-width);
+    max-width: 0;
+    height: 80px;
+}
+
+.cellContent {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 4px;
 }
 
 .thSkeleton,
@@ -59,57 +129,21 @@
     }
 }
 
-.tdSkeleton{
+.tdSkeleton {
     height: 38px;
 }
 
-.hourCell {
-    border: var(--border-primary);
-    padding: 12px;
-    font-weight: bold;
-    text-align: center;
-    width: 60px;
-    vertical-align: middle;
-}
-
-.scheduleCell {
-    position: relative;
-    padding: 8px;
-    border: var(--border-primary);
-    vertical-align: top;
-    min-width: var(--annual-table-min-col-width);
-    max-width: 0;
-    height: 80px;
-}
-
-.cellContent {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-/* Mobile */
-@media (max-width: 767px) {
-    .whiteBox {
-        overflow-x: auto;
+/* Desktop */
+@media (min-width: 1024px) {
+    .container {
+        width: calc(100% - (var(--padding-width-desktop) * 2));
+        margin: 0 auto;
+        box-sizing: border-box;
+        padding-top: calc(var(--header-height) + var(--padding-top-desktop));
+        padding-bottom: var(--padding-top-desktop);
     }
 
-    .whiteBox table {
-        min-width: 700px;
-        width: max-content;
-    }
-
-    .scheduleTable th:first-child,
-    .scheduleTable td:first-child {
-        width: 50px;
-        min-width: 50px;
-        max-width: 50px;
-    }
-
-    .scheduleTable th:not(:first-child),
-    .scheduleTable td:not(:first-child) {
-        width: 230px;
-        min-width: 200px;
-        max-width: 300px;
+    .thead {
+        top: calc(var(--header-height) + var(--padding-top-desktop));
     }
 }

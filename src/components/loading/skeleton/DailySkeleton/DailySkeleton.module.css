@@ -3,7 +3,7 @@
     min-height: 100dvh;
     position: relative;
     padding-bottom: 15px;
-    padding-top: var(--padding-top-desktop);
+    padding-top: calc(var(--padding-top-desktop) + var(--header-height));
 }
 
 .dailyTable {
@@ -28,7 +28,7 @@
 }
 
 .headerSkeleton {
-    background-color: var(--skeleton-input-color);
+    background-color: var(--skeleton-header-color);
     width: 100%;
     height: var(--table-daily-header-height);
     animation: pulse 1.5s ease-in-out infinite;
