@@ -30,6 +30,7 @@ import { getSessionDailyTable, setSessionDailyTable } from "@/lib/sessionStorage
 import { infoToast } from "@/lib/toast";
 import { eventPlaceholder } from "@/models/constant/table";
 import { DailyTableColors } from "@/style/tableColors";
+import { getDayNumberByDateString } from "@/utils/time";
 
 interface DailyTableContextType {
     tableColumns: ColumnDef<TeacherRow>[];
@@ -414,7 +415,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
             updatedSchedule = initDailySchedule(updatedSchedule, selectedDate, columnId);
             // Create a new entry in DB
             if (school?.id) {
-                const dayNum = new Date(selectedDate).getDay().toString();
+                const dayNum = getDayNumberByDateString(selectedDate).toString();
                 await addDailyEventCellAction({
                     date: new Date(selectedDate),
                     day: dayNum,
