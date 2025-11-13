@@ -16,15 +16,15 @@ export const ClosableToast: React.FC<ClosableToastProps> = ({ t, message, varian
         <div
             style={{
                 position: "relative",
-                paddingTop: "25px",
+                paddingTop: "20px",
             }}
         >
             <button
                 onClick={() => toast.dismiss(t.id)}
                 style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 2,
+                    position: "fixed",
+                    top: 15,
+                    left: 15,
                     border: "none",
                     background: "transparent",
                     fontWeight: "bold",

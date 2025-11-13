@@ -134,9 +134,9 @@ const PortalTopActions: React.FC = () => {
                         className={`${styles.topBtn} ${pathname.includes(router.teacherPortal.p) ? styles.active : ""}`}
                     >
                         {pathname.includes(router.teacherPortal.p) ? (
-                            <Icons.bookFill size={16} style={{ marginInlineEnd: "4px" }} />
+                            <Icons.teacherSolid size={18} style={{ marginInlineEnd: "4px" }} />
                         ) : (
-                            <Icons.book size={16} style={{ marginInlineEnd: "4px" }} />
+                            <Icons.teacher size={16} style={{ marginInlineEnd: "4px" }} />
                         )}
                         המערכת שלי
                     </button>

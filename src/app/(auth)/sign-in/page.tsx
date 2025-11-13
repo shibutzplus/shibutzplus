@@ -130,9 +130,10 @@ const SignInContent: React.FC = () => {
                         <GoogleIcon /> משתמש רשום - התחברות
                     </button>
                     {error && <p className={styles.error}>{error}</p>}
-                    <div className={styles.contact}>
-                        <Link href={EmailLink} className={styles.contactLink}>
-                            צרו קשר
+                    <div className={styles.registerLink}>
+                        <Link href={EmailLink} className={styles.problemLink}>
+                            <span>צרו קשר</span>
+                            <span className={styles.emailLine}>shibutzplus@gmail.com</span>
                         </Link>
                     </div>
                 </div>

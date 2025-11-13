@@ -81,7 +81,7 @@ function ListRow<T extends Record<string, any>>({
         const text = `${teacherName}, קישור להתחברות:\n${hasLink}`;
         try {
             await navigator.clipboard.writeText(text);
-            successToast(`הקישור עבור ${teacherName} הועתק בהצלחה, ניתן לשלוח למורה`,4000);
+            successToast(`הקישור עבור ${teacherName} הועתק בהצלחה, אפשר לשלוח למורה.`, 4000);
         } catch {
             errorToast("לא ניתן להעתיק את הקישור, אנא פנו לתמיכה");
         }
@@ -99,7 +99,8 @@ function ListRow<T extends Record<string, any>>({
                     // Save also on Enter keypress when editing
                     onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
                         const isComposing =
-                            (e.nativeEvent && (e.nativeEvent as any).isComposing) || e.key === "Process";
+                            (e.nativeEvent && (e.nativeEvent as any).isComposing) ||
+                            e.key === "Process";
                         if (e.key === "Enter" && isEdit && !isEditLoading && !isComposing) {
                             e.preventDefault();
                             void handleUpdate();
@@ -113,7 +114,14 @@ function ListRow<T extends Record<string, any>>({
             </div>
 
             <div className={styles.actions}>
-                {hasLink && <IconBtn onClick={shareURL} isLoading={false} Icon={<Icons.share />} />}
+                {hasLink && (
+                    <IconBtn
+                        onClick={shareURL}
+                        isLoading={false}
+                        Icon={<Icons.share />}
+                        title={`העתק ושלח קישור אישי עבור ${getInitialValue(item)}`}
+                    />
+                )}
 
                 <IconBtn
                     onClick={handleUpdate}

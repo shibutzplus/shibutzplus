@@ -6,16 +6,17 @@ const ActionBtn: React.FC<{
     type?: string;
     Icon?: React.ReactNode;
     label?: string;
+    tooltip?: string;
     style: React.CSSProperties;
     func: () => void;
     isLoading?: boolean;
     isDisabled?: boolean;
-}> = ({ type, Icon, label, style, func, isLoading = false, isDisabled = false }) => (
+}> = ({ type, Icon, label, tooltip, style, func, isLoading = false, isDisabled = false }) => (
     <button
         key={type}
         style={style}
         className={styles.topButton}
-        title={label || ""}
+        title={tooltip || ""}
         onClick={func}
         disabled={isDisabled}
     >
