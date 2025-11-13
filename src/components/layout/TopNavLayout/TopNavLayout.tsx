@@ -6,7 +6,7 @@ import HamburgerNav, { HamburgerButton } from "@/components/navigation/Hamburger
 import Logo from "@/components/ui/Logo/Logo";
 import { NavType } from "@/models/types";
 import { useMobileSize } from "@/hooks/useMobileSize";
-
+//NOT IN USE
 type TopNavLayoutProps = {
     type: NavType;
     elements: {

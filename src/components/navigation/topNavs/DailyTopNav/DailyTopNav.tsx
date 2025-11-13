@@ -12,7 +12,7 @@ import Icons from "@/style/icons";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
 import { EventColor, ExistingTeacherColor, MissingTeacherColor } from "@/style/colors";
-
+//NOT IN USE
 const DailyTopNav: React.FC = () => {
     const { addNewEmptyColumn, daysSelectOptions, selectedDate, isLoading, handleDayChange } =
         useDailyTableContext();

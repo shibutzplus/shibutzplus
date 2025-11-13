@@ -10,8 +10,7 @@ import { DailyTableColors } from "@/style/tableColors";
 import styles from "./MobileNav.module.css";
 import { ColumnTypeValues } from "@/models/types/dailySchedule";
 import { useMobileSize } from "@/hooks/useMobileSize";
-
-//TODO: need to change
+//NOT IN USE
 const MobileNav: React.FC = () => {
     const isMobile = useMobileSize();
     const { isLoading, addNewEmptyColumn } = useDailyTableContext();

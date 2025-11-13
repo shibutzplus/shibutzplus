@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./DetailsListLayout.module.css";
 import ListRowLoading from "@/components/loading/ListRowLoading/ListRowLoading";
-import EmptyList from "@/components/ui/list/EmptyList/EmptyList";
+import EmptyList from "@/components/empty/EmptyList/EmptyList";
 
 type DetailsListLayoutProps<T> = {
     titles: [string, string];

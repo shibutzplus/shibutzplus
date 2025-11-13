@@ -7,7 +7,7 @@ import HoursCol from "@/components/ui/table/HoursCol/HoursCol";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import { TableRows } from "@/models/constant/table";
 import { sortDailyColumnIdsByType } from "@/utils/sort";
-import EmptyTable from "@/components/ui/table/EmptyTable/EmptyTable";
+import EmptyTable from "@/components/empty/EmptyTable/EmptyTable";
 
 const DailyTable: React.FC = () => {
     const { mainDailyTable, selectedDate } = useDailyTableContext();

@@ -4,7 +4,7 @@ import Icons from "@/style/icons";
 import router from "@/routes";
 import { useRouter, usePathname } from "next/navigation";
 import { usePortal } from "@/context/PortalContext";
-
+//NOT IN USE
 const PortalNav: React.FC = () => {
     const route = useRouter();
     const pathname = usePathname();

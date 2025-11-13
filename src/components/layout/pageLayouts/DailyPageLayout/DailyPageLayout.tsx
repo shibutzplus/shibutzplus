@@ -54,7 +54,7 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
                                             isDisabled={isLoading}
                                             onChange={handleDayChange}
                                             isSearchable={false}
-                                            placeholder="בחר יום..."
+                                            placeholder="בחרו יום..."
                                             hasBorder
                                         />
                                     </div>
@@ -98,6 +98,7 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
                             <div className={styles.topNavBtnContainer}>
                                 <span title="תצוגה מקדימה">
                                     <IconBtn
+                                        title="תצוגה מקדימה כפי שמורים רואים את המערכת"
                                         Icon={<Icons.eye size={20} />}
                                         onClick={onOpenHistory}
                                         disabled={publishLoading}

@@ -7,7 +7,7 @@ import { usePortal } from "@/context/PortalContext";
 import router from "@/routes";
 import styles from "./PublicMobileNav.module.css";
 import { TeacherRoleValues } from "@/models/types/teachers";
-
+//NOT IN USE
 const PublicMobileNav: React.FC = () => {
     const route = useRouter();
     const pathname = usePathname();

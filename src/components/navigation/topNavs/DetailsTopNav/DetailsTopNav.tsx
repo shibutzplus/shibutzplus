@@ -1,7 +1,7 @@
 import TopNavLayout from "@/components/layout/TopNavLayout/TopNavLayout";
 import React from "react";
 import styles from "./DetailsTopNav.module.css";
-
+//NOT IN USE
 type DetailsTopNavProps = {
     pageTitle: string;
 };

@@ -11,7 +11,7 @@ import Icons from "@/style/icons";
 import { usePathname } from "next/navigation";
 import { errorToast } from "@/lib/toast";
 import { usePollingUpdates } from "@/hooks/usePollingUpdates";
-
+//NOT IN USE
 const PortalTopNav: React.FC = () => {
     const pathname = usePathname();
     const { hasUpdate, resetUpdate } = usePollingUpdates();

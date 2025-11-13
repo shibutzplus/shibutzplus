@@ -6,8 +6,6 @@ import DetailsListLayout from "@/components/layout/DetailsListLayout/DetailsList
 import { useMainContext } from "@/context/MainContext";
 import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import AddSubstituteRow from "@/components/details/substituteDetails/AddSubstituteRow/AddSubstituteRow";
-import ListRowLoading from "@/components/loading/ListRowLoading/ListRowLoading";
-import EmptyTable from "@/components/ui/table/EmptyTable/EmptyTable";
 import SubstituteRow from "@/components/details/substituteDetails/SubstituteRow/SubstituteRow";
 import { filterTeachersByRole } from "@/utils/format";
 import { sortByHebrewName } from "@/utils/sort";
