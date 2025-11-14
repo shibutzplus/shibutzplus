@@ -17,6 +17,7 @@ export const ClosableToast: React.FC<ClosableToastProps> = ({ t, message, varian
             style={{
                 position: "relative",
                 paddingTop: "20px",
+                paddingBottom: "20px",
             }}
         >
             <button
