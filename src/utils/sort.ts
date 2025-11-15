@@ -115,27 +115,38 @@ export const filterDailyHeaderTeachers = (
     teachers: TeacherType[] | undefined,
     alreadySelectedTeachers: DailySchedule,
     selectedTeacher?: TeacherType,
+    teachersTeachingTodayIds?: Set<string>,
 ) => {
     const flatTeachersSet = new Set<string>();
-    if (teachers) {
-        Object.values(alreadySelectedTeachers).forEach((day) => {
-            Object.values(day).forEach((hour) => {
-                Object.values(hour).forEach((teacher) => {
-                    if (teacher.headerCol?.headerTeacher?.id) {
-                        flatTeachersSet.add(teacher.headerCol.headerTeacher.id);
-                    }
-                });
+
+    if (!teachers) return [];
+
+    // Collect all teachers already selected as header in any daily column
+    Object.values(alreadySelectedTeachers).forEach((day) => {
+        Object.values(day).forEach((hour) => {
+            Object.values(hour).forEach((teacher) => {
+                if (teacher.headerCol?.headerTeacher?.id) {
+                    flatTeachersSet.add(teacher.headerCol.headerTeacher.id);
+                }
             });
         });
-        const filteredTeachers = teachers.filter(
-            (teacher) =>
-                teacher.role === TeacherRoleValues.REGULAR &&
-                (teacher.id === selectedTeacher?.id || !flatTeachersSet.has(teacher.id)),
-        );
-        return createSelectOptions(filteredTeachers);
-    }
-    return [];
+    });
+
+    const filteredTeachers = teachers.filter((teacher) => {
+        const isRegular = teacher.role === TeacherRoleValues.REGULAR;
+        const isCurrentOrNotUsed =
+            teacher.id === selectedTeacher?.id || !flatTeachersSet.has(teacher.id);
+
+        // If teachersTeachingTodayIds is provided, keep only teachers that teach today
+        const teachesToday =
+            !teachersTeachingTodayIds || teachersTeachingTodayIds.has(teacher.id);
+
+        return isRegular && isCurrentOrNotUsed && teachesToday;
+    });
+
+    return createSelectOptions(filteredTeachers);
 };
+
 
 // DailySchedule Dropdown: Build grouped teacher options (substitutes, available, unavailable) for a specific day/hour
 export const sortDailyTeachers = (
