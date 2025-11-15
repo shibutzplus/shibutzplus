@@ -14,7 +14,7 @@ export async function updateDailyEventHeaderAction(
     eventTitle: string,
 ): Promise<ActionResponse> {
     try {
-        const authError = await checkAuthAndParams({ date, columnId });
+        const authError = await checkAuthAndParams({ date, columnId, eventTitle });
         if (authError) {
             return authError as ActionResponse;
         }
