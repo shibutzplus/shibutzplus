@@ -29,7 +29,12 @@ const PortalWriteRow: React.FC<PortalWriteRowProps> = ({ hour, row }) => {
         const value = html.trim();
         if (value === prevInstructions) return;
         setPrevInstructions(value);
-        await handleSave(row.DBid, hour, value === "" ? undefined : value);
+
+        const schoolId = row.schoolId ?? row.school?.id;
+        const issueTeacherId = row.issueTeacher?.id ?? undefined;
+        const subTeacherId = row.subTeacher?.id ?? undefined;
+
+        await handleSave(row.DBid, hour, value === "" ? undefined : value, schoolId, issueTeacherId, subTeacherId);
     };
 
     // Returns text about replacement teacher or event
@@ -55,7 +60,7 @@ const PortalWriteRow: React.FC<PortalWriteRowProps> = ({ hour, row }) => {
 
         // If I am the main teacher
         if (isIssueTeacher) {
-            return row.subTeacher ? "הזינו כאן את חומר הלימוד\n(ניתן גם להכניס קישורים)" : "";
+            return row.subTeacher ? "הזינו כאן את חומר הלימוד" : "";
         }
 
         // If I am the substitute teacher

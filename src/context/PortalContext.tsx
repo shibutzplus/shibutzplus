@@ -24,7 +24,7 @@ interface PortalContextType {
     schoolId: string | undefined;
     mainPortalTable: PortalSchedule;
     setTeacherAndSchool: (schoolId?: string, teacherId?: string) => Promise<boolean>;
-    handleSave: (rowId: string, hour: number, instructions?: string) => Promise<void>;
+    handleSave: (rowId: string, hour: number, instructions?: string, schoolId?: string, issueTeacherId?: string, subTeacherId?: string) => Promise<void>;
     publishDatesOptions: SelectOption[];
     isPortalLoading: boolean;
     isPublishLoading: boolean;
@@ -194,6 +194,7 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children, initTe
                     DBid: entry.id,
                     columnId: entry.columnId,
                     hour: entry.hour,
+                    schoolId: entry.school?.id,
                     school: entry.school,
                     class: entry.class,
                     subject: entry.subject,
@@ -276,11 +277,19 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children, initTe
         }
     };
 
-    const handleSave = async (rowId: string, hour: number, instructions?: string) => {
+    const handleSave = async (rowId: string, hour: number, instructions?: string, schoolId?: string, issueTeacherId?: string, subTeacherId?: string) => {
         try {
             setIsSaving(true);
             if (!selectedDate) return;
-            const response = await updateDailyInstructionAction(selectedDate, rowId, instructions);
+
+            const response = await (
+                (schoolId && issueTeacherId && subTeacherId)
+                    ? (updateDailyInstructionAction as any)(
+                        selectedDate, rowId, instructions, hour, schoolId, issueTeacherId, subTeacherId
+                    )
+                    : updateDailyInstructionAction(selectedDate, rowId, instructions)
+            );
+
             if (response.success) {
                 const portalSchedule = { ...mainPortalTable };
                 portalSchedule[selectedDate][`${hour}`].instructions = instructions;

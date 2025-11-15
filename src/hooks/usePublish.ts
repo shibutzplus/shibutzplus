@@ -42,14 +42,14 @@ const usePublish = () => {
                 setSessionPublishDates(selectedDate);
                 // Update school context to include the newly published date (Local Storage not updated, currently unused)
                 setSchool(prev => prev ? { ...prev, publishDates: Array.from(new Set([...(prev.publishDates || []), selectedDate])) } : prev)
-                successToast(messages.publish.success);
+                successToast(messages.publish.success, 3000);
                 setBtnTitle("המערכת פורסמה");
                 setIsDisabled(true);
             } else {
-                errorToast(messages.publish.error);
+                errorToast(messages.publish.error, Infinity);
             }
         } catch (error) {
-            errorToast(messages.publish.error);
+            errorToast(messages.publish.error, Infinity);
         } finally {
             setIsLoading(false);
         }
@@ -60,7 +60,7 @@ const usePublish = () => {
         const text = `קישור התחברות למורי בית הספר:\n${generateSchoolUrl(school.id)}`;
         try {
             await navigator.clipboard.writeText(text);
-            successToast("הקישור הועתק בהצלחה וניתן לשלוח למורים.", 3500)
+            successToast("הקישור הועתק בהצלחה וניתן לשלוח למורים.", 3000)
         } catch {
             errorToast("לא ניתן להעתיק את הקישור, אנא פנו לתמיכה");
         }
