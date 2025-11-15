@@ -8,7 +8,7 @@ import { usePortal } from "@/context/PortalContext";
 import { TeacherRoleValues } from "@/models/types/teachers";
 import { usePathname, useRouter } from "next/navigation";
 import router from "@/routes";
-import { successToast, errorToast } from "@/lib/toast";
+import { errorToast } from "@/lib/toast";
 import styles from "./PortalTopActions.module.css";
 
 const POLL_INTERVAL_MS = 30000; // 30 seconds
