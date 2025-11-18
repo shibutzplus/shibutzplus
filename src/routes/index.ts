@@ -16,7 +16,7 @@ const router: Record<string, IRoute> = {
     annualSchedule: { id: "annualSchedule", p: "/annual-schedule", private: true, title: "מערכת שבועית" },
     dailySchedule: { id: "dailySchedule", p: "/daily-schedule", private: true, title: "שיבוץ יומי" },
     profile: { id: "profile", p: "/profile", private: true, title: "המשתמש שלי" },
-    history: { id: "history", p: "/history", private: true, title: "מערכות יומיות" },
+    history: { id: "history", p: "/history", private: true, title: " היסטוריה מערכות" },
     teacherSignIn: { id: "teacherSignIn", p: "/teacher-sign-in", private: false, title: "כניסה למורים" },
     teacherPortal: { id: "teacherPortal", p: "/teacher-portal", private: false, title: "המערכת שלי" },
     publishedPortal: { id: "publishedPortal", p: "/publish-portal", private: false, title: "מערכת יומית" },
