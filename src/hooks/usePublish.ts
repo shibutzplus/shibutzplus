@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { useShareTextOrLink } from "./useShareTextOrLink";
 import routePath from "@/routes";
 import { getSessionPublishDates, setSessionPublishDates } from "@/lib/sessionStorage";
+import { useQueryParam } from "./useQueryParam";
 
 const usePublish = () => {
     const { school, setSchool } = useMainContext()
@@ -16,6 +17,7 @@ const usePublish = () => {
     const [btnTitle, setBtnTitle] = useState<string>("פרסום המערכת");
     const [isDisabled, setIsDisabled] = useState<boolean>(false);
     const share = useShareTextOrLink();
+    const { buildHistoryUrl } = useQueryParam();
 
     useEffect(() => {
         if (selectedDate && school) {
@@ -69,10 +71,8 @@ const usePublish = () => {
     // Open history in a new tab with selected date
     const onOpenHistory = () => {
         if (!selectedDate || !school) return;
-        const base = new URL(routePath.history.p, window.location.origin);
-        base.searchParams.set("date", selectedDate);
-        base.searchParams.set("schoolId", school.id);
-        window.open(base.toString(), "_blank", "noopener,noreferrer");
+        const historyUrl = buildHistoryUrl(routePath.history.p, selectedDate, school.id);
+        window.open(historyUrl, "_blank", "noopener,noreferrer");
     };
 
     return { publishDailySchedule, isLoading, onShareLink, onOpenHistory, btnTitle, isDisabled };

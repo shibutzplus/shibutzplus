@@ -1,11 +1,19 @@
 import React from "react";
 import styles from "./ReadOnlyHeader.module.css";
+import { DailyScheduleType } from "@/models/types/dailySchedule";
 
 type ReadOnlyHeaderProps = {
     trs: any[];
     emptyTrs?: number;
     textPlaceholder: (text: string) => string;
     hasHour?: boolean;
+};
+
+type Tr = {
+    title: string;
+    color?: string;
+    type?: DailyScheduleType;
+    teacherId?: string;
 };
 
 const ReadOnlyHeader: React.FC<ReadOnlyHeaderProps> = ({
@@ -21,8 +29,8 @@ const ReadOnlyHeader: React.FC<ReadOnlyHeaderProps> = ({
                 {Array.from({ length: emptyTrs }, (_, i) => i).map((i) => (
                     <th key={i} className={styles.emptyTrHeader}></th>
                 ))}
-                {trs.map((tr: string) => (
-                    <th key={tr} className={styles.trHeader}>
+                {trs.map((tr: any) => (
+                    <th key={tr} className={`${styles.trHeader} ${(tr as Tr)  }`}>
                         {textPlaceholder(tr)}
                     </th>
                 ))}

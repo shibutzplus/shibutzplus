@@ -180,3 +180,70 @@ export const pad2 = (n: number) => {
 export const daysInMonth = (year: number, month1to12: number) => {
     return new Date(year, month1to12, 0).getDate();
 };
+
+// -- Date Component Utilities -- //
+
+// Get current date components as strings
+export const getCurrentDateComponents = () => {
+    const now = new Date();
+    const year = `${now.getFullYear()}`;
+    const month = `${now.getMonth() + 1}`; // 1-12
+    const day = `${now.getDate()}`;
+    return { year, month, day };
+};
+
+// Parse YYYY-MM-DD string into components
+export const parseDateString = (dateStr: string) => {
+    if (!isYYYYMMDD(dateStr)) return null;
+    
+    const year = dateStr.slice(0, 4);
+    const month = String(parseInt(dateStr.slice(5, 7), 10)); // "1".."12"
+    const day = String(parseInt(dateStr.slice(8, 10), 10)); // "1".."31"
+    
+    return { year, month, day };
+};
+
+// Build YYYY-MM-DD string from components
+export const buildDateString = (year: string, month: string, day: string) => {
+    const yNum = parseInt(year, 10);
+    const mNum = parseInt(month, 10);
+    const dNum = parseInt(day, 10);
+    return `${yNum}-${pad2(mNum)}-${pad2(dNum)}`;
+};
+
+// Get today's date as YYYY-MM-DD string
+export const getTodayString = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1;
+    const day = now.getDate();
+    return `${year}-${pad2(month)}-${pad2(day)}`;
+};
+
+// Get initial month for school year (fallback to September if July/August)
+export const getSchoolYearInitialMonth = () => {
+    const currentMonth = new Date().getMonth() + 1; // 1-12
+    return currentMonth === 7 || currentMonth === 8 ? "9" : `${currentMonth}`;
+};
+
+// Generate day options for select dropdown
+export const generateDayOptions = (year: string, month: string) => {
+    const yNum = parseInt(year, 10);
+    const mNum = parseInt(month, 10);
+    const maxDays = daysInMonth(yNum, mNum);
+    
+    return Array.from({ length: maxDays }, (_, i) => {
+        const d = i + 1;
+        return { value: `${d}`, label: `${d}` };
+    });
+};
+
+// Validate and clamp day to valid range for given month/year
+export const clampDayToMonth = (day: string, year: string, month: string) => {
+    const dNum = parseInt(day, 10);
+    const yNum = parseInt(year, 10);
+    const mNum = parseInt(month, 10);
+    const maxDays = daysInMonth(yNum, mNum);
+    
+    return dNum > maxDays ? `${maxDays}` : day;
+};

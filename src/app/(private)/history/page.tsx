@@ -1,32 +1,26 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import type { NextPage } from "next";
-import { useSearchParams } from "next/navigation";
 import styles from "./history.module.css";
-import PublishedSkeleton from "@/components/loading/skeleton/PublishedSkeleton/PublishedSkeleton";
-import TeacherMaterial from "@/components/popups/TeacherMaterial/TeacherMaterial";
 import ViewTable from "@/components/tables/viewTable/ViewTable/ViewTable";
 import { useMainContext } from "@/context/MainContext";
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
 import { DailyScheduleType } from "@/models/types/dailySchedule";
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
+import { useQueryParam } from "@/hooks/useQueryParam";
 
 const HistorySchedulePage: NextPage = () => {
     const { school } = useMainContext();
-    const searchParams = useSearchParams();
+    const { getDateQ } = useQueryParam();
 
-    // Read date only from URL
-    const dateFromQuery = searchParams.get("date") || "";
+    const dateFromQuery = getDateQ();
 
     const [currentDateData, setCurrentDateData] = useState<DailyScheduleType[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [isTeacherModalOpen, setIsTeacherModalOpen] = useState(false);
-    const [selectedTeacher, setSelectedTeacher] = useState<{ id?: string; name: string; date: string } | null>(null);
 
     const fetchDailyScheduleData = async () => {
-        // Guard: do not flip loading off before prerequisites exist
         if (!school?.id || !dateFromQuery) {
             setCurrentDateData([]);
             return;
@@ -34,7 +28,9 @@ const HistorySchedulePage: NextPage = () => {
 
         try {
             setIsLoading(true);
-            const response = await getDailyScheduleAction(school.id, dateFromQuery, { isPrivate: false });
+            const response = await getDailyScheduleAction(school.id, dateFromQuery, {
+                isPrivate: false,
+            });
             if (response.success && response.data) {
                 setCurrentDateData(response.data);
             } else {
@@ -50,46 +46,17 @@ const HistorySchedulePage: NextPage = () => {
         }
     };
 
-    // Fetch only when both school.id and date exist
     useEffect(() => {
-        if (!school?.id || !dateFromQuery) return;
         fetchDailyScheduleData();
-    }, [dateFromQuery, school?.id]);
-
-    const handleTeacherClick = (teacherName: string, teacherId?: string) => {
-        const date = dateFromQuery || "";
-        setSelectedTeacher({ id: teacherId, name: teacherName, date });
-        setIsTeacherModalOpen(true);
-    };
-
-    // Keep skeleton until prerequisites exist or loading finishes
-    if (isLoading || !school?.id || !dateFromQuery) {
-        return (
-            <div className={styles.loadingWrapper}>
-                <PublishedSkeleton />
-                <div className={styles.loader}></div>
-            </div>
-        );
-    }
+    }, [dateFromQuery]);
 
     return (
         <div className={styles.content}>
-            <div className={styles.tableWrapper}>
-                <ViewTable
-                    scheduleData={currentDateData}
-                    noScheduleTitle="אין נתונים להצגה"
-                    noScheduleSubTitle={["לא פורסמה מערכת עבור יום זה"]}
-                    onTeacherClick={handleTeacherClick}
-                    isManager={true}
-                />
-            </div>
-            <TeacherMaterial
-                isOpen={isTeacherModalOpen}
-                onClose={() => setIsTeacherModalOpen(false)}
-                teacherName={selectedTeacher?.name || ""}
-                date={selectedTeacher?.date || ""}
-                teacherId={selectedTeacher?.id}
-                schoolId={school?.id}
+            <ViewTable
+                scheduleData={currentDateData}
+                noScheduleTitle="אין נתונים להצגה"
+                noScheduleSubTitle="לא פורסמה מערכת עבור יום זה"
+                isManager={true}
             />
         </div>
     );

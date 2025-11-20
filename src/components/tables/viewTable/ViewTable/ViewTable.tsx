@@ -14,26 +14,24 @@ type ReadOnlyDailyTableProps = {
     scheduleData: DailyScheduleType[];
     hasMobileNav?: boolean;
     noScheduleTitle?: string;
-    noScheduleSubTitle?: string[];
-    onTeacherClick?: (teacherName: string, teacherId?: string) => void;
+    noScheduleSubTitle?: string;
+    onColClick?: (teacherName: string, teacherId?: string) => void;
     isManager?: boolean;
 };
-
 
 const ViewTable: React.FC<ReadOnlyDailyTableProps> = ({
     scheduleData,
     hasMobileNav = false,
     noScheduleTitle,
     noScheduleSubTitle,
-    onTeacherClick,
+    onColClick,
     isManager,
 }) => {
-
     if (scheduleData.length === 0)
         return (
             <NotPublishedLayout
-                title={noScheduleTitle || ""}
-                subTitle={noScheduleSubTitle || [""]}
+                title={noScheduleTitle}
+                subTitle={noScheduleSubTitle}
             />
         );
 
@@ -47,7 +45,6 @@ const ViewTable: React.FC<ReadOnlyDailyTableProps> = ({
     }, [scheduleByColumn]);
 
     const columnIds = useMemo(() => Object.keys(scheduleByColumn), [scheduleByColumn]);
-    const hours = useMemo(() => Array.from({ length: TableRows }, (_, i) => i + 1), []);
 
     const renderCell = (columnId: string, hour: number) => {
         const cellData = scheduleByColumn[columnId]?.[hour];
@@ -58,29 +55,28 @@ const ViewTable: React.FC<ReadOnlyDailyTableProps> = ({
     };
 
     return (
-        <section className={`${styles.tableContainer} ${hasMobileNav ? styles.withMobileNav : ""}`}>
-            <table className={styles.scheduleTable}>
-                <ViewHeader items={headerItems} onTeacherClick={onTeacherClick} isManager={isManager} />
-                <tbody>
-                    {hours.map((hour) => (
-                        <tr key={hour}>
-                            <td className={styles.hourCell}>
-                                <div className={styles.cellContentHour}>
-                                    <span>{hour}</span>
+        <table className={styles.scheduleTable}>
+            {/* isManager={isManager} */}
+            <ViewHeader items={headerItems} onClickHeader={onColClick} /> 
+            <tbody className={styles.scheduleTableBody}>
+                {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => (
+                    <tr key={hour}>
+                        <td className={styles.hourCell}>
+                            <div className={styles.cellContentHour}>
+                                <span>{hour}</span>
+                            </div>
+                        </td>
+                        {columnIds.map((columnId) => (
+                            <td key={columnId} className={styles.scheduleCell}>
+                                <div className={styles.cellContent}>
+                                    {renderCell(columnId, hour)}
                                 </div>
                             </td>
-                            {columnIds.map((columnId) => (
-                                <td key={columnId} className={styles.scheduleCell}>
-                                    <div className={styles.cellContent}>
-                                        {renderCell(columnId, hour)}
-                                    </div>
-                                </td>
-                            ))}
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </section>
+                        ))}
+                    </tr>
+                ))}
+            </tbody>
+        </table>
     );
 };
 
