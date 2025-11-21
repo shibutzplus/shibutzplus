@@ -14,6 +14,8 @@ import {
     updateAllEventHeader,
     updateDeleteCell,
 } from "@/services/dailyScheduleService";
+import { pushSyncUpdate } from "@/services/syncService";
+import { getDayNumberByDateString } from "@/utils/time";
 
 const useDailyEventActions = (
     mainDailyTable: DailySchedule,
@@ -22,6 +24,10 @@ const useDailyEventActions = (
     selectedDate: string,
 ) => {
     const { school } = useMainContext();
+
+    const pushIfPublished = () => {
+        if (!!school?.publishDates?.includes(selectedDate)) pushSyncUpdate("event");
+    };
 
     const populateEventColumn = async (columnId: string, eventTitle: string) => {
         const alreadyExists = mainDailyTable[selectedDate]?.[columnId];
@@ -45,7 +51,7 @@ const useDailyEventActions = (
             updatedSchedule = initDailySchedule(updatedSchedule, selectedDate, columnId);
             // Create a new entry in DB
             if (school?.id) {
-                const dayNum = new Date(selectedDate).getDay().toString();
+                const dayNum = getDayNumberByDateString(selectedDate).toString();
                 await addDailyEventCellAction({
                     date: new Date(selectedDate),
                     day: dayNum,
@@ -87,7 +93,7 @@ const useDailyEventActions = (
                     data,
                 );
                 setMainAndStorageTable(updatedSchedule);
-                // pushIfPublished("event");
+                pushIfPublished();
                 return response.data;
             }
         }
@@ -113,7 +119,7 @@ const useDailyEventActions = (
                     { event },
                 );
                 setMainAndStorageTable(updatedSchedule);
-                // pushIfPublished("event");
+                pushIfPublished();
                 return response.data;
             }
         }
@@ -136,7 +142,7 @@ const useDailyEventActions = (
                 columnId,
             );
             setMainAndStorageTable(updatedSchedule);
-            // pushIfPublished("event");
+            pushIfPublished();
             return true;
         }
     };

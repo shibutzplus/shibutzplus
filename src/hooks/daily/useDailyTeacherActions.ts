@@ -11,6 +11,7 @@ import {
     setEmptyTeacherColumn,
     updateAddCell,
 } from "@/services/dailyScheduleService";
+import { pushSyncUpdate } from "@/services/syncService";
 
 const useDailyTeacherActions = (
     mainDailyTable: DailySchedule,
@@ -18,6 +19,10 @@ const useDailyTeacherActions = (
     clearColumn: (day: string, columnId: string) => void,
 ) => {
     const { school, teachers } = useMainContext();
+
+    const pushIfPublished = (selectedDate: string) => {
+        if (!!school?.publishDates?.includes(selectedDate)) pushSyncUpdate("teacher");
+    };
 
     const populateTeacherColumn = async (
         selectedDate: string,
@@ -135,7 +140,7 @@ const useDailyTeacherActions = (
                     data,
                 );
                 setMainAndStorageTable(updatedSchedule);
-                // pushIfPublished("teacher");
+                pushIfPublished(selectedDate);
                 return response.data;
             }
         }
@@ -172,7 +177,7 @@ const useDailyTeacherActions = (
                     { subTeacher: undefined, event: undefined },
                 );
                 setMainAndStorageTable(updatedSchedule);
-                // pushIfPublished("teacher");
+                pushIfPublished(selectedDate);
                 return response.data;
             }
         }

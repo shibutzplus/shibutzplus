@@ -20,14 +20,20 @@ type DailyPageLayoutProps = {
 };
 
 export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
-    const { addNewEmptyColumn, daysSelectOptions, selectedDate, isLoading, handleDayChange } =
-        useDailyTableContext();
+    const {
+        addNewEmptyColumn,
+        daysSelectOptions,
+        selectedDate,
+        isLoading,
+        isEditMode,
+        handleDayChange,
+        changeDailyMode,
+    } = useDailyTableContext();
 
     const {
         publishDailySchedule,
         isLoading: publishLoading,
         onShareLink,
-        onOpenHistory,
         isDisabled,
     } = usePublish();
 
@@ -51,7 +57,7 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
                                         <DynamicInputSelect
                                             options={daysSelectOptions()}
                                             value={selectedDate}
-                                            isDisabled={isLoading}
+                                            isDisabled={isLoading || !isEditMode}
                                             onChange={handleDayChange}
                                             isSearchable={false}
                                             placeholder="בחרו יום..."
@@ -59,38 +65,48 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
                                         />
                                     </div>
 
-                                    <ActionBtn
-                                        type={ColumnTypeValues.missingTeacher}
-                                        Icon={<Icons.addTeacher size={16} />}
-                                        label="שיבוץ למורה חסר"
-                                        isDisabled={isLoading}
-                                        style={{
-                                            borderLeft: `10px solid ${MissingTeacherColor}`,
-                                        }}
-                                        func={() =>
-                                            addNewEmptyColumn(ColumnTypeValues.missingTeacher)
-                                        }
-                                    />
-                                    <ActionBtn
-                                        type={ColumnTypeValues.existingTeacher}
-                                        Icon={<Icons.addTeacher size={16} />}
-                                        label="שיבוץ למורה נוכח"
-                                        isDisabled={isLoading}
-                                        style={{
-                                            borderLeft: `10px solid ${ExistingTeacherColor}`,
-                                        }}
-                                        func={() =>
-                                            addNewEmptyColumn(ColumnTypeValues.existingTeacher)
-                                        }
-                                    />
-                                    <ActionBtn
-                                        type={ColumnTypeValues.event}
-                                        Icon={<Icons.event size={16} />}
-                                        label="שיבוץ ארוע"
-                                        isDisabled={isLoading}
-                                        style={{ borderLeft: `10px solid ${EventColor}` }}
-                                        func={() => addNewEmptyColumn(ColumnTypeValues.event)}
-                                    />
+                                    {isEditMode ? (
+                                        <>
+                                            <ActionBtn
+                                                type={ColumnTypeValues.missingTeacher}
+                                                Icon={<Icons.addTeacher size={16} />}
+                                                label="שיבוץ למורה חסר"
+                                                isDisabled={isLoading}
+                                                style={{
+                                                    borderLeft: `10px solid ${MissingTeacherColor}`,
+                                                }}
+                                                func={() =>
+                                                    addNewEmptyColumn(
+                                                        ColumnTypeValues.missingTeacher,
+                                                    )
+                                                }
+                                            />
+                                            <ActionBtn
+                                                type={ColumnTypeValues.existingTeacher}
+                                                Icon={<Icons.addTeacher size={16} />}
+                                                label="שיבוץ למורה נוכח"
+                                                isDisabled={isLoading}
+                                                style={{
+                                                    borderLeft: `10px solid ${ExistingTeacherColor}`,
+                                                }}
+                                                func={() =>
+                                                    addNewEmptyColumn(
+                                                        ColumnTypeValues.existingTeacher,
+                                                    )
+                                                }
+                                            />
+                                            <ActionBtn
+                                                type={ColumnTypeValues.event}
+                                                Icon={<Icons.event size={16} />}
+                                                label="שיבוץ ארוע"
+                                                isDisabled={isLoading}
+                                                style={{ borderLeft: `10px solid ${EventColor}` }}
+                                                func={() =>
+                                                    addNewEmptyColumn(ColumnTypeValues.event)
+                                                }
+                                            />
+                                        </>
+                                    ) : null}
                                 </div>
                             ) : null}
                         </div>
@@ -99,8 +115,14 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
                                 <span title="תצוגה מקדימה">
                                     <IconBtn
                                         title="תצוגה מקדימה כפי שמורים רואים את המערכת"
-                                        Icon={<Icons.eye size={20} />}
-                                        onClick={onOpenHistory}
+                                        Icon={
+                                            isEditMode ? (
+                                                <Icons.eye size={20} />
+                                            ) : (
+                                                <Icons.edit size={20} />
+                                            )
+                                        }
+                                        onClick={changeDailyMode}
                                         disabled={publishLoading}
                                         hasBorder
                                     />

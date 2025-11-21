@@ -21,7 +21,7 @@ const EditableHeader: React.FC<EditableHeaderProps> = ({ children, color, delete
 
     return (
         <div className={styles.columnHeader} style={{backgroundColor: color}}>
-            <Icons.close className={styles.clearButton} onClick={handleDeleteColumn} size={20} />
+            <Icons.delete className={styles.clearButton} onClick={handleDeleteColumn} size={20} />
             {children}
         </div>
     );

@@ -21,7 +21,6 @@ const DailyTopNav: React.FC = () => {
         publishDailySchedule,
         isLoading: publishLoading,
         onShareLink,
-        onOpenHistory,
         isDisabled,
     } = usePublish();
 
@@ -34,7 +33,7 @@ const DailyTopNav: React.FC = () => {
                         <span title="תצוגה מקדימה">
                             <IconBtn
                                 Icon={<Icons.eye size={20} />}
-                                onClick={onOpenHistory}
+                                onClick={() => {}}
                                 disabled={publishLoading}
                                 hasBorder
                             />

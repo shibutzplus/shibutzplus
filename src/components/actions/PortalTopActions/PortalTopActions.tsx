@@ -9,6 +9,7 @@ import { TeacherRoleValues } from "@/models/types/teachers";
 import { usePathname, useRouter } from "next/navigation";
 import router from "@/routes";
 import { errorToast } from "@/lib/toast";
+import { pollUpdates, getChannelsForPath } from "@/services/syncService";
 import styles from "./PortalTopActions.module.css";
 //NOT IN USE
 const PortalTopActions: React.FC = () => {
@@ -32,21 +33,17 @@ const PortalTopActions: React.FC = () => {
 
         // on teacher screen, listen to teacher columns events only
         // on schedule screen, listen to both teacher and events columns changes
-        const channels = pathname.includes(router.teacherPortal.p) ? "teacher" : "teacher,event";
+        const channels = getChannelsForPath(pathname, router.teacherPortal.p);
 
         const checkUpdates = async () => {
-            try {
-                const since = lastTsRef.current;
-                const res = await fetch(`/api/sync/poll?since=${since}&channels=${encodeURIComponent(channels)}`, { cache: "no-store" });
-                if (!res.ok) return;
-                const data = await res.json();
-                const latest = Number(data?.latestTs || 0);
-                if (mounted && latest > since) {
-                    errorToast("יש עדכונים חדשים – יש ללחוץ על כפתור הרענון האדום שבסרגל העליון כדי לראותם", 100000);
-                    setHasUpdate(true);
-                    setLastTs(latest);
-                }
-            } catch { }
+            const since = lastTsRef.current;
+            const data = await pollUpdates({ since, channels });
+            
+            if (data && mounted && data.latestTs > since) {
+                errorToast("יש עדכונים חדשים – יש ללחוץ על כפתור הרענון האדום שבסרגל העליון כדי לראותם", 100000);
+                setHasUpdate(true);
+                setLastTs(data.latestTs);
+            }
         };
 
         id = setInterval(checkUpdates, 1);

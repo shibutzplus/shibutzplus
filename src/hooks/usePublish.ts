@@ -68,14 +68,7 @@ const usePublish = () => {
         }
     };
 
-    // Open history in a new tab with selected date
-    const onOpenHistory = () => {
-        if (!selectedDate || !school) return;
-        const historyUrl = buildHistoryUrl(routePath.history.p, selectedDate, school.id);
-        window.open(historyUrl, "_blank", "noopener,noreferrer");
-    };
-
-    return { publishDailySchedule, isLoading, onShareLink, onOpenHistory, btnTitle, isDisabled };
+    return { publishDailySchedule, isLoading, onShareLink, btnTitle, isDisabled };
 };
 
 export default usePublish;

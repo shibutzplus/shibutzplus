@@ -74,7 +74,7 @@ export const customStyles = (
         }),
         placeholder: (provided: any) => ({
             ...provided,
-            color: PlaceholderColor,
+            color: color, // TODO: or PlaceholderColor ?
             fontSize: FontSize,
         }),
         singleValue: (provided: any) => ({

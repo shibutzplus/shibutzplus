@@ -28,13 +28,14 @@ import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction
 import { infoToast } from "@/lib/toast";
 import { generateId } from "@/utils";
 import { deleteDailyColumnAction } from "@/app/actions/DELETE/deleteDailyColumnAction";
+import { pushSyncUpdate } from "@/services/syncService";
 import useDailyEventActions from "@/hooks/daily/useDailyEventActions";
-
 
 interface DailyTableContextType {
     mainDailyTable: DailySchedule;
     mapAvailableTeachers: AvailableTeachers;
     isLoading: boolean;
+    isEditMode: boolean;
     selectedDate: string;
     addNewEmptyColumn: (colType: ColumnType) => void;
     deleteColumn: (columnId: string) => Promise<boolean>;
@@ -82,6 +83,7 @@ interface DailyTableContextType {
     ) => Promise<boolean | undefined>;
     daysSelectOptions: () => SelectOption[];
     handleDayChange: (value: string) => void;
+    changeDailyMode: () => void;
 }
 
 const DailyTableContext = createContext<DailyTableContextType | undefined>(undefined);
@@ -104,6 +106,9 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [mapAvailableTeachers, setMapAvailableTeachers] = useState<AvailableTeachers>({});
 
+    const [isEditMode, setEditMode] = useState<boolean>(true);
+    const changeDailyMode = () => setEditMode(prev => !prev);
+
     // Select Date
     const { daysSelectOptions, selectedDate, handleDayChange } = useDailySelectedDate();
 
@@ -121,16 +126,6 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
 
         setMainAndStorageTable(updatedSchedule);
     };
-
-    //TODO: need to add this back
-    // const isSelectedDatePublished = () => {
-    //     return !!school?.publishDates?.includes(selectedDate);
-    // };
-    // const pushIfPublished = (type: "teacher" | "event") => {
-    //     if (isSelectedDatePublished()) {
-    //         void fetch(`/api/sync/push?type=${type}`, { method: "POST" });
-    //     }
-    // };
 
     // Teacher Column Actions
     const { populateTeacherColumn, updateTeacherCell, clearTeacherCell } = useDailyTeacherActions(
@@ -264,6 +259,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 selectedDate,
                 mainDailyTable,
                 isLoading,
+                isEditMode,
                 mapAvailableTeachers,
                 addNewEmptyColumn,
                 deleteColumn,
@@ -276,6 +272,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 addEventCell,
                 updateEventCell,
                 deleteEventCell,
+                changeDailyMode,
             }}
         >
             {children}

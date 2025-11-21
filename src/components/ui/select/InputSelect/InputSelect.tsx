@@ -59,7 +59,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
     const baseStyles = customStyles(
         error || "",
         hasBorder,
-        true,
+        isDisabled ? false : true,
         backgroundColor,
         color,
         colorHover,

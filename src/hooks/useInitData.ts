@@ -16,6 +16,7 @@ import {
     setCacheTimestamp, setStorageClasses, setStorageSubjects, setStorageTeachers,
 } from "@/lib/localStorage";
 import { isCacheFresh } from "@/utils/time";
+import { pollUpdates } from "@/services/syncService";
 
 interface useInitDataProps {
     school: SchoolType | undefined;
@@ -72,18 +73,14 @@ const useInitData = ({
                 const lastSeen = Number((typeof window !== "undefined" && localStorage.getItem(SYNC_TS_KEY)) || 0);
                 const since = Math.max(0, lastSeen - 1);
                 let changed = false;
-                try {
-                    const res = await fetch(`/api/sync/poll?since=${since}&channels=detailsUpdate`, { cache: "no-store" });
-                    if (res.ok) {
-                        const data = await res.json();
-                        const latest = Number(data?.latestTs || 0);
-                        changed = latest > lastSeen;
-                        if (changed && typeof window !== "undefined") {
-                            localStorage.setItem(SYNC_TS_KEY, String(latest));
-                        }
+                
+                const data = await pollUpdates({ since, channels: ["detailsUpdate"] });
+                if (data) {
+                    const latest = data.latestTs;
+                    changed = latest > lastSeen;
+                    if (changed && typeof window !== "undefined") {
+                        localStorage.setItem(SYNC_TS_KEY, String(latest));
                     }
-                } catch {
-                    // ignore polling errors, fall back to cache logic below
                 }
 
                 if (!classes) {
