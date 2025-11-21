@@ -16,7 +16,7 @@ export const ClosableToast: React.FC<ClosableToastProps> = ({ t, message, varian
         <div
             style={{
                 position: "relative",
-                paddingTop: "20px",
+                paddingTop: "28px",
                 paddingBottom: "20px",
             }}
         >
