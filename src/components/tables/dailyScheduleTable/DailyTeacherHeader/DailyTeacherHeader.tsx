@@ -17,7 +17,7 @@ type DailyTeacherHeaderProps = {
 
 const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId, type }) => {
     const { teachers } = useMainContext();
-    const { mainDailyTable, selectedDate, populateTeacherColumn, deleteColumn } =
+    const { mainDailyTable, selectedDate, populateTeacherColumn, deleteColumn, mapAvailableTeachers } =
         useDailyTableContext();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -46,11 +46,29 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId, type 
         setIsLoading(false);
     };
 
-    // filtered out teacher options that already selected
-    // TODO: not efficient, need to check option to use session storage
+    // Build a set of teachers that actually teach today (in the annual schedule)
+    const teachersTeachingTodayIds = useMemo(() => {
+        const ids = new Set<string>();
+        const dayNumber = getDayNumberByDateString(selectedDate);
+        const dayMap = mapAvailableTeachers?.[dayNumber];
+        if (!dayMap) return ids;
+
+        Object.values(dayMap).forEach((hourTeachers) => {
+            hourTeachers.forEach((id) => ids.add(id));
+        });
+
+        return ids;
+    }, [mapAvailableTeachers, selectedDate]);
+
+    // Filtered teacher options: only regular teachers, no duplicates, and only those teaching today
     const filteredTeacherOptions = useMemo(() => {
-        return filterDailyHeaderTeachers(teachers, mainDailyTable, selectedTeacherData);
-    }, [teachers, mainDailyTable, selectedTeacherData]);
+        return filterDailyHeaderTeachers(
+            teachers,
+            mainDailyTable,
+            selectedTeacherData,
+            teachersTeachingTodayIds,
+        );
+    }, [teachers, mainDailyTable, selectedTeacherData, teachersTeachingTodayIds]);
 
     const deleteCol = async () => {
         const response = await deleteColumn(columnId);

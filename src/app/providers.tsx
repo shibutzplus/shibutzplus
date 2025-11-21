@@ -21,7 +21,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                         style: {
                             background: "#fdfbfb",
                             color: "#4a3b00",
-                            fontSize: "1.3rem",
+                            fontSize: "1.2rem",
                             padding: "4px 10px",
                             minHeight: "120px",
                             minWidth: "310px",

@@ -9,7 +9,6 @@ import { TeacherRoleValues } from "@/models/types/teachers";
 import { usePathname, useRouter } from "next/navigation";
 import router from "@/routes";
 import { errorToast } from "@/lib/toast";
-import { usePollingUpdates } from "@/hooks/usePollingUpdates";
 import styles from "./PortalTopActions.module.css";
 //NOT IN USE
 const PortalTopActions: React.FC = () => {

@@ -21,10 +21,19 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, type }) =
 
     const [prevValue, setPrevValue] = useState<string>(selectedEventData || "");
 
-    const handleChange = (value: string) => {
-        if (prevValue !== value.trim()) {
-            populateEventColumn(columnId, value.trim());
-            setPrevValue(value.trim());
+    const handleChange = (e: React.FocusEvent<HTMLInputElement>) => {
+        const newValue = e.target.value.trim();
+
+        // Prevent empty header if there was a previous saved value
+        if (prevValue && newValue === "") {
+            errorToast("כותרת העמודה אינה יכולה להיות ריקה", Infinity);
+            e.target.value = prevValue; // revert to previous value
+            return;
+        }
+
+        if (prevValue !== newValue) {
+            populateEventColumn(columnId, newValue);
+            setPrevValue(newValue);
         }
     };
 
@@ -43,7 +52,7 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, type }) =
         >
             <InputText
                 placeholder="כותרת האירוע"
-                onBlur={(e) => handleChange(e.target.value)}
+                onBlur={handleChange}
                 defaultValue={selectedEventData || ""}
                 backgroundColor="transparent"
                 hasBorder={false}

@@ -5,8 +5,8 @@ import { Metadata } from "next";
 import HistoryPageLayout from "@/components/layout/pageLayouts/HistoryPageLayout/HistoryPageLayout";
 
 export const metadata: Metadata = {
-    title: "מערכות יומיות | שיבוץ+",
-    robots: "noindex, nofollow",
+  title: "היסטוריה | שיבוץ+",
+  robots: "noindex, nofollow",
 };
 
 // Loading fallback for the layout

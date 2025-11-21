@@ -21,9 +21,18 @@ const DailyEventCell: React.FC<DailyEventCellProps> = ({ columnId, cell }) => {
     const [prevInfo, setPrevInfo] = useState<string>(eventData || "");
 
     const handleChange = async (value: string) => {
-        if (!hour || !columnId || !selectedDate || !headerData) return;
+        if (!hour || !columnId || !selectedDate) return;
+
         const event = value.trim();
         if (event === prevInfo) return;
+
+        if (!headerData) {
+            errorToast("יש להזין כותרת לפני הוספת אירועים", Infinity);
+            setInfo("");
+            setPrevInfo("");
+            return;
+        }
+
         setInfo(event);
         setPrevInfo(event);
 
@@ -71,7 +80,7 @@ const DailyEventCell: React.FC<DailyEventCellProps> = ({ columnId, cell }) => {
                 value={info}
                 onChange={(e) => setInfo(e.target.value)}
                 onBlur={(e) => handleChange(e.target.value)}
-                placeholder="מה מתוכנן לשעה זו?"
+                placeholder="מה מתוכנן?"
                 disabled={isLoading}
                 rows={1}
                 autoGrow

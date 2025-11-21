@@ -10,7 +10,7 @@ export const errorToast = (message: string, duration = 7000) =>
         {
             duration,
             style: {
-                background: "#fee2e2",
+                background: "#fff4e5",
                 color: "#7f1d1d",
             },
         }
