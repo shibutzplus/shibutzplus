@@ -1,6 +1,6 @@
 // TODO: to remove this page
 
-import { EventColor, ExistingTeacherColor, MissingTeacherColor } from "./colors";
+import { EventColor, ExistingTeacherColor, MissingTeacherColor } from "./root";
 
 export const DailyTableColors = {
     missingTeacher: {

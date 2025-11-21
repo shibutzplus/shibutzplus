@@ -1,27 +1,45 @@
+import {
+    BorderPrimary,
+    BorderRadiusInput,
+    BorderSecondary,
+    BoxShadowPrimary,
+    BrightBorderColor,
+    DarkBorderColor,
+    ErrorColor,
+    FontSize,
+    InputBackgroundColor,
+    InputColor,
+    InputColorHover,
+    InputHeight,
+    PlaceholderColor,
+    SelectBackgroundColor,
+    SelectBackgroundColorHover,
+} from "./root";
+
 export const customStyles = (
     error: any,
     hasBorder: boolean,
     hasArrow: boolean = true,
-    backgroundColor: string = "#fdfbfb",
-    color: string = "#333",
-    noOptionsMsgColor: string = "#aaa",
+    backgroundColor: string,
+    color: string = InputColor,
+    colorHover: string = InputColorHover,
 ) => {
     return {
-        control: (provided: any, state: any) => ({
+        control: (provided: any) => ({
             ...provided,
             width: "100%",
-            minHeight: "38px",
+            minHeight: InputHeight,
             borderWidth: hasBorder ? "1px" : "0px",
-            borderColor: "#e0e0e0",
+            borderColor: DarkBorderColor,
             boxShadow: "none",
-            fontSize: "16px",
+            fontSize: FontSize,
             backgroundColor: backgroundColor,
             color: color,
             transition: "all 0.2s ease",
             fontWeight: "normal",
             cursor: "pointer",
             "&:hover": {
-                borderColor: error ? "#e53935" : "#ccc",
+                borderColor: error ? ErrorColor : DarkBorderColor,
             },
         }),
         menuPlacement: "auto",
@@ -29,9 +47,9 @@ export const customStyles = (
         menu: (provided: any) => ({
             ...provided,
             zIndex: 9999,
-            borderRadius: "4px",
-            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
-            border: "1px solid #ccc",
+            borderRadius: BorderRadiusInput,
+            boxShadow: BoxShadowPrimary,
+            border: BorderSecondary,
         }),
         menuPortal: (provided: any) => ({
             ...provided,
@@ -40,36 +58,38 @@ export const customStyles = (
         option: (provided: any, state: any) => ({
             ...provided,
             backgroundColor: state.isSelected
-                ? "#4a90e2"
+                ? SelectBackgroundColor
                 : state.isFocused
-                    ? "rgba(74, 144, 226, 0.1)"
-                    : "#fdfbfb",
-            color: state.isSelected ? "white" : "#333",
+                  ? SelectBackgroundColorHover
+                  : InputBackgroundColor,
+            color: state.isSelected ? InputBackgroundColor : InputColor,
             padding: "10px 12px",
-            fontSize: "16px",
+            fontSize: FontSize,
             cursor: "pointer",
             "&:hover": {
-                backgroundColor: state.isSelected ? "#4a90e2" : "rgba(74, 144, 226, 0.1)",
+                backgroundColor: state.isSelected
+                    ? SelectBackgroundColor
+                    : SelectBackgroundColorHover,
             },
         }),
         placeholder: (provided: any) => ({
             ...provided,
-            color: color,
-            fontSize: "16px",
+            color: PlaceholderColor,
+            fontSize: FontSize,
         }),
         singleValue: (provided: any) => ({
             ...provided,
             color: color,
-            fontSize: "16px",
+            fontSize: FontSize,
         }),
         input: (provided: any) => ({
             ...provided,
-            fontSize: "16px",
+            fontSize: FontSize,
             color: color,
         }),
         valueContainer: (provided: any) => ({
             ...provided,
-            padding: "2px 8px",
+            padding: "2px 8px", /// "0px 0px"
         }),
         indicatorSeparator: (provided: any) => ({
             ...provided,
@@ -78,9 +98,9 @@ export const customStyles = (
         dropdownIndicator: (provided: any) => ({
             ...provided,
             color: color,
-            padding: "8px",
+            padding: "8px", /// "0 4px"
             "&:hover": {
-                color: color,
+                color: colorHover,
             },
             display: hasArrow ? "block" : "none",
         }),
@@ -89,13 +109,13 @@ export const customStyles = (
             color: color,
             padding: "8px",
             "&:hover": {
-                color: color,
+                color: colorHover,
             },
         }),
         noOptionsMessage: (provided: any) => ({
             ...provided,
-            color: noOptionsMsgColor,
-            fontSize: "16px",
+            color: PlaceholderColor,
+            fontSize: FontSize,
         }),
     };
 };

@@ -6,7 +6,7 @@ import {
     EventColorDisabled,
     ExistingTeacherColorDisabled,
     MissingTeacherColorDisabled,
-} from "@/style/colors";
+} from "@/style/root";
 
 const EmptyTable: React.FC = () => {
     return (

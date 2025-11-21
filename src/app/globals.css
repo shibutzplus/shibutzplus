@@ -14,12 +14,11 @@
     --dark-text-color-active: #585858;
 
     --placeholder-color: #CECECE;
-
+    --input-background-color: #fff;
     --input-color: #494949;
     --input-color-hover: #535252;
     --input-border: #e0e0e0;
     --input-border-focus: #494949;
-    --input-height: 38px;
 
     --tab-color: #FFFFFF;
     --tab-color-hover: #0000000d;
@@ -46,7 +45,8 @@
     --button-hover-background-color: #333;
     --button-disabled-color: #b9b9b9;
     --button-disabled-background-color: #919191;
-    --button-height: 38px;
+    
+    --input-height: 40px;
 
     --border-primary: 1px solid var(--dark-border-color);
     --border-secondary: 1px solid var(--bright-border-color);

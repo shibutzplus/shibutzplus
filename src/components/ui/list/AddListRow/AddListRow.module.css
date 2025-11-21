@@ -21,7 +21,7 @@
 
 .smallBtn {
     min-width: none;
-    height: var(--button-height);
+    height: var(--input-height);
 }
 
 /* Desktop */

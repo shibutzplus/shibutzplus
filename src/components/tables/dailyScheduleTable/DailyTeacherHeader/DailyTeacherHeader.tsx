@@ -9,6 +9,7 @@ import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import EditableHeader from "../../../ui/table/EditableHeader/EditableHeader";
 import { COLOR_BY_TYPE } from "@/style/tableColors";
+import { BrightTextColor, BrightTextColorHover } from "@/style/root";
 
 type DailyTeacherHeaderProps = {
     columnId: string;
@@ -17,8 +18,13 @@ type DailyTeacherHeaderProps = {
 
 const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId, type }) => {
     const { teachers } = useMainContext();
-    const { mainDailyTable, selectedDate, populateTeacherColumn, deleteColumn, mapAvailableTeachers } =
-        useDailyTableContext();
+    const {
+        mainDailyTable,
+        selectedDate,
+        populateTeacherColumn,
+        deleteColumn,
+        mapAvailableTeachers,
+    } = useDailyTableContext();
     const [isLoading, setIsLoading] = useState(false);
 
     const selectedTeacherData =
@@ -91,7 +97,8 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId, type 
                 isSearchable
                 isDisabled={isLoading}
                 backgroundColor="transparent"
-                color="#fff"
+                color={BrightTextColor}
+                colorHover={BrightTextColorHover}
             />
         </EditableHeader>
     );

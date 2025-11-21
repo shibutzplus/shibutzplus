@@ -8,8 +8,12 @@ import { createNewSelectOption_btnText } from "@/utils/format";
 import { useMobileSelectScroll } from "@/hooks/useMobileSelectScroll";
 import AddToSelectBtn from "../../buttons/AddToSelectBtn/AddToSelectBtn";
 import styles from "./InputGroupSelect.module.css";
+import SelectLayout from "../SelectLayout/SelectLayout";
+import { InputBackgroundColor, TabColor } from "@/style/root";
 
-// Used in Daily Schedule screen for selecting subs teachers
+/**
+ * DailyTeacherCell - Sub Teacher
+ */
 export interface InputGroupSelectProps {
     label?: string;
     options: GroupOption[];
@@ -22,10 +26,9 @@ export interface InputGroupSelectProps {
     isAllowAddNew?: boolean;
     isDisabled?: boolean;
     hasBorder?: boolean;
-    backgroundColor?: "#fdfbfb" | "transparent";
+    backgroundColor?: string;
     isClearable?: boolean;
     onCreate?: (value: string) => Promise<void>;
-    createBtnText?: string;
 }
 
 const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
@@ -40,10 +43,9 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     isAllowAddNew = false,
     isDisabled = false,
     hasBorder = false,
-    backgroundColor = "#fdfbfb",
+    backgroundColor = InputBackgroundColor,
     isClearable = false,
     onCreate,
-    createBtnText,
 }) => {
     const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -64,7 +66,8 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
         setCollapsedGroups((prev) => {
             const next: Record<string, boolean> = {};
             options.forEach((g) => {
-                next[g.label] = prev[g.label] !== undefined ? prev[g.label] : (g as any).collapsed ?? false;
+                next[g.label] =
+                    prev[g.label] !== undefined ? prev[g.label] : ((g as any).collapsed ?? false);
             });
             return next;
         });
@@ -73,7 +76,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     const handleOnCreate = async (inputValue: string) => {
         const allOptions = options.flatMap((group) => group.options);
         const existsExact = allOptions.some(
-            (opt) => opt.label.trim().toLowerCase() === inputValue.trim().toLowerCase()
+            (opt) => opt.label.trim().toLowerCase() === inputValue.trim().toLowerCase(),
         );
         if (!existsExact && isAllowAddNew && onCreate) {
             await onCreate(inputValue);
@@ -92,7 +95,6 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     const { selectRef: mobileScrollRef, containerRef, handleMenuOpen } = useMobileSelectScroll();
 
     const baseStyles = customStyles(error || "", hasBorder, true, backgroundColor);
-
     const stylesOverride: StylesConfig<SelectOption, false, GroupOption> = {
         ...(baseStyles as StylesConfig<SelectOption, false, GroupOption>),
         control: (prov: any, state: any) => {
@@ -103,13 +105,11 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
             return {
                 ...b,
                 border: "none",
-                boxShadow: state.isFocused ? "0 0 0 1px #dbe1e7ff" : "0 1px 2px rgba(0,0,0,0.08)",
-                backgroundColor: "#fdfbfb",
-                borderRadius: 4,
+                backgroundColor: InputBackgroundColor,
                 minHeight: 32,
             };
         },
-        option: (prov: any, state: any) => ({
+        option: (prov: any) => ({
             ...prov,
             padding: "8px 8px",
         }),
@@ -118,10 +118,9 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
             paddingTop: "8px",
             paddingBottom: "8px",
             fontSize: "14px",
-            backgroundColor: "#f7f7f7"
+            backgroundColor: TabColor,
         }),
     };
-
 
     // Custom Group: always render heading, hide children (options) when collapsed
     const Group = (props: any) => {
@@ -154,12 +153,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     };
 
     return (
-        <div ref={containerRef} className={styles.selectContainer}>
-            {label && (
-                <label htmlFor={id} className={styles.label}>
-                    {label}
-                </label>
-            )}
+        <SelectLayout resolvedId={id || ""} error={error} label={label}>
             <Select<SelectOption, false, GroupOption>
                 ref={(ref) => {
                     selectRef.current = ref;
@@ -184,25 +178,25 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
                     isAllowAddNew && inputValue.trim() !== "" ? (
                         <AddToSelectBtn
                             onClick={() => handleOnCreate(inputValue)}
-                            text={createNewSelectOption_btnText(inputValue, createBtnText)}
+                            text={createNewSelectOption_btnText(inputValue)}
                         />
                     ) : (
                         <div>לא נמצאו אפשרויות</div>
                     )
                 }
-
                 onKeyDown={(e: React.KeyboardEvent) => {
-                    if (e.key !== "Enter" || !(typeof e.target === "object" && "value" in e.target)) return;
+                    if (e.key !== "Enter" || !(typeof e.target === "object" && "value" in e.target))
+                        return;
 
                     const inputValue = (e.target as HTMLInputElement).value.trim();
                     if (!inputValue) return;
 
                     const allOptions = options.flatMap((group) => group.options);
                     const hasExact = allOptions.some(
-                        (opt) => opt.label.trim().toLowerCase() === inputValue.toLowerCase()
+                        (opt) => opt.label.trim().toLowerCase() === inputValue.toLowerCase(),
                     );
-                    const hasAnyMatch = allOptions.some(
-                        (opt) => opt.label.toLowerCase().includes(inputValue.toLowerCase())
+                    const hasAnyMatch = allOptions.some((opt) =>
+                        opt.label.toLowerCase().includes(inputValue.toLowerCase()),
                     );
 
                     if (isMenuOpen) {
@@ -218,12 +212,10 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
                         handleOnCreate(inputValue);
                     }
                 }}
-
                 styles={stylesOverride}
                 classNamePrefix="react-select"
             />
-            {error && <p className={styles.errorText}>{error}</p>}
-        </div>
+        </SelectLayout>
     );
 };
 

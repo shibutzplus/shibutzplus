@@ -1,7 +1,7 @@
 /* Mobile */
 .topButton {
     width: 150px;
-    height: 40px;
+    height: var(--input-height);
     padding: 0.7rem 2px 0.7rem 0;
     padding-left: 0;
     color: var(--dark-text-color);

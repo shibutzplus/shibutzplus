@@ -150,14 +150,14 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
                         <DynamicInputGroupSelect
                             options={sortedTeacherOptions}
                             value={selectedSubTeacher}
-                            backgroundColor="transparent"
                             onChange={(value: string) => handleTeacherChange("update", value)}
-                            onCreate={(value: string) => handleTeacherChange("create", value)}
                             placeholder="ממלא מקום"
                             isSearchable
                             isAllowAddNew
-                            hasBorder
                             isDisabled={isLoading}
+                            hasBorder
+                            backgroundColor="transparent"
+                            onCreate={(value: string) => handleTeacherChange("create", value)}
                         />
                     </div>
                 </div>

@@ -1,15 +1,27 @@
 "use client";
 
-import React, { useEffect, useId, useMemo, useRef, useState } from "react";
+import React, { useEffect, useId, useMemo, useState } from "react";
 import Select from "react-select";
-import type { ActionMeta, OnChangeValue } from "react-select";
+import type { ActionMeta, OnChangeValue, StylesConfig } from "react-select";
 import { GroupOption, SelectOption } from "@/models/types";
 import { SelectMethod } from "@/models/types/actions";
-import { customStylesMulti } from "@/style/selectMultiStyle";
 import { createNewSelectOption_btnText } from "@/utils/format";
 import AddToSelectBtn from "../../buttons/AddToSelectBtn/AddToSelectBtn";
 import styles from "./InputGroupMultiSelect.module.css";
+import SelectLayout from "../SelectLayout/SelectLayout";
+import { customStyles } from "@/style/selectStyle";
+import {
+    BorderRadiusInput,
+    DarkTextColor,
+    FontSize,
+    InputBackgroundColor,
+    SelectBackgroundColor,
+    SelectBackgroundColorHover,
+} from "@/style/root";
 
+/**
+ * AnnualCell - Teacher
+ */
 export interface InputGroupMultiSelectProps {
     label?: string;
     options: GroupOption[];
@@ -22,12 +34,9 @@ export interface InputGroupMultiSelectProps {
     isAllowAddNew?: boolean;
     isDisabled?: boolean;
     hasBorder?: boolean;
-    backgroundColor?: "#fdfbfb" | "transparent";
+    backgroundColor?: string;
     isClearable?: boolean;
     onCreate?: (value: string) => Promise<string | undefined>;
-    createBtnText?: string;
-    closeMenuOnSelect?: boolean;
-    createdGroupLabel?: string;
     onBeforeRemove?: (removedLabel: string | null, proceed: () => void) => void;
 }
 
@@ -50,19 +59,15 @@ const InputGroupMultiSelect: React.FC<InputGroupMultiSelectProps> = ({
     isAllowAddNew = false,
     isDisabled = false,
     hasBorder = false,
-    backgroundColor = "#fdfbfb",
+    backgroundColor = InputBackgroundColor,
     isClearable = false,
     onCreate,
-    createBtnText,
-    closeMenuOnSelect = true,
-    createdGroupLabel = "Custom",
     onBeforeRemove,
 }) => {
     const [groupedOptions, setGroupedOptions] = useState<GroupOption[]>(groupedInitial);
     const [selectedOptions, setSelectedOptions] = useState<SelectOption[]>([]);
     const [isMounted, setIsMounted] = useState(false);
-    const selectInstanceId = useId();
-    const selectRef = useRef<any>(null);
+    const selectInstanceId = useId(); // for SSR consistency
 
     // Keep local grouped options in sync with incoming prop, and update selectedOptions only if value or groupedOptions actually changed
     useEffect(() => {
@@ -99,8 +104,6 @@ const InputGroupMultiSelect: React.FC<InputGroupMultiSelectProps> = ({
         if (!isMounted) setIsMounted(true);
     }, [isMounted]);
 
-    const allOptions = useMemo(() => groupedOptions.flatMap((g) => g.options), [groupedOptions]);
-
     const handleChange = (
         opts: OnChangeValue<SelectOption, true>,
         meta: ActionMeta<SelectOption>,
@@ -109,27 +112,24 @@ const InputGroupMultiSelect: React.FC<InputGroupMultiSelectProps> = ({
 
         // confirm only when clicking the X on a selected chip
         if (onBeforeRemove && meta.action === "remove-value") {
-            const removedLabel =
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                ((meta as any).removedValue?.label as string | undefined) ?? null;
+            const removedLabel = ((meta as any).removedValue?.label as string | undefined) ?? null;
             return onBeforeRemove(removedLabel, () => {
                 setSelectedOptions(next);
-                onChange(next.map((o) => o.value), meta.action);
+                onChange(
+                    next.map((o) => o.value),
+                    meta.action as SelectMethod,
+                );
             });
         }
 
         setSelectedOptions(next);
-        onChange(next.map((o) => o.value), meta.action);
+        onChange(
+            next.map((o) => o.value),
+            meta.action as SelectMethod,
+        );
     };
 
-    const ensureCreatedGroup = () => {
-        const idx = groupedOptions.findIndex((g) => g.label === createdGroupLabel);
-        if (idx === -1) {
-            setGroupedOptions((prev) => [...prev, { label: createdGroupLabel, options: [] }]);
-            return groupedOptions.length; // new index will be the last
-        }
-        return idx;
-    };
+    const allOptions = useMemo(() => groupedOptions.flatMap((g) => g.options), [groupedOptions]);
 
     const handleOnCreate = async (inputValue: string) => {
         const labelTrimmed = inputValue.trim();
@@ -146,9 +146,9 @@ const InputGroupMultiSelect: React.FC<InputGroupMultiSelectProps> = ({
                 const newOption: SelectOption = { value: valueId, label: labelTrimmed };
                 // Add to "created" group locally
                 setGroupedOptions((prev) => {
-                    const idx = prev.findIndex((g) => g.label === createdGroupLabel);
+                    const idx = prev.findIndex((g) => g.label === "Custom");
                     if (idx === -1) {
-                        return [...prev, { label: createdGroupLabel, options: [newOption] }];
+                        return [...prev, { label: "Custom", options: [newOption] }];
                     }
                     const next = [...prev];
                     next[idx] = {
@@ -160,21 +160,50 @@ const InputGroupMultiSelect: React.FC<InputGroupMultiSelectProps> = ({
                 // Add to current selection as well
                 const nextSelected = [...selectedOptions, newOption];
                 setSelectedOptions(nextSelected);
-                onChange(nextSelected.map((o) => o.value), "create-option");
+                onChange(
+                    nextSelected.map((o) => o.value),
+                    "create-option",
+                );
             }
         }
     };
 
-    return (
-        <div className={styles.selectContainer}>
-            {label && (
-                <label htmlFor={id} className={styles.label}>
-                    {label}
-                </label>
-            )}
+    const baseStyles = customStyles(error || "", hasBorder, true, backgroundColor);
+    const stylesOverride: StylesConfig<SelectOption, true, GroupOption> = {
+        ...(baseStyles as StylesConfig<SelectOption, true, GroupOption>),
+        multiValue: (provided: any) => ({
+            ...provided,
+            backgroundColor: InputBackgroundColor,
+            borderRadius: BorderRadiusInput,
+            width: "90%",
+            boxSizing: "border-box",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+        }),
+        multiValueLabel: (provided: any) => ({
+            ...provided,
+            color: DarkTextColor,
+            fontSize: FontSize,
+            padding: "7px 15px",
+        }),
+        multiValueRemove: (provided: any) => ({
+            ...provided,
+            color: SelectBackgroundColor,
+            cursor: "pointer",
+            borderRadius: "50%",
+            width: 20,
+            height: 20,
+            "&:hover": {
+                backgroundColor: SelectBackgroundColorHover,
+                color: SelectBackgroundColor,
+            },
+        }),
+    };
 
+    return (
+        <SelectLayout resolvedId={id || ""} error={error} label={label}>
             <Select
-                ref={selectRef}
                 instanceId={selectInstanceId}
                 id={id}
                 isMulti
@@ -185,7 +214,7 @@ const InputGroupMultiSelect: React.FC<InputGroupMultiSelectProps> = ({
                 isClearable={isClearable}
                 isDisabled={isDisabled}
                 placeholder={placeholder}
-                closeMenuOnSelect={closeMenuOnSelect}
+                closeMenuOnSelect={true}
                 hideSelectedOptions={false}
                 backspaceRemovesValue
                 menuPortalTarget={isMounted ? document.body : null}
@@ -195,7 +224,7 @@ const InputGroupMultiSelect: React.FC<InputGroupMultiSelectProps> = ({
                     isAllowAddNew && inputValue.trim() !== "" ? (
                         <AddToSelectBtn
                             onClick={() => handleOnCreate(inputValue)}
-                            text={createNewSelectOption_btnText(inputValue, createBtnText)}
+                            text={createNewSelectOption_btnText(inputValue)}
                         />
                     ) : (
                         <div>לא נמצאו אפשרויות</div>
@@ -220,17 +249,10 @@ const InputGroupMultiSelect: React.FC<InputGroupMultiSelectProps> = ({
                         }
                     }
                 }}
-                styles={customStylesMulti(
-                    error || "",
-                    hasBorder,
-                    true,
-                    backgroundColor,
-                )}
+                styles={stylesOverride}
                 classNamePrefix="react-select"
             />
-
-            {error && <p className={styles.errorText}>{error}</p>}
-        </div>
+        </SelectLayout>
     );
 };
 

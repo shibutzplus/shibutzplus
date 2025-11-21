@@ -12,7 +12,7 @@ import { useDailyTableContext } from "@/context/DailyTableContext";
 import usePublish from "@/hooks/usePublish";
 import { ColumnTypeValues } from "@/models/types/dailySchedule";
 import ActionBtn from "@/components/ui/buttons/ActionBtn/ActionBtn";
-import { EventColor, ExistingTeacherColor, MissingTeacherColor } from "@/style/colors";
+import { EventColor, ExistingTeacherColor, MissingTeacherColor } from "@/style/root";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 
 type DailyPageLayoutProps = {

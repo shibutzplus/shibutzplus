@@ -1,13 +1,24 @@
 import React, { useEffect, useId, useState } from "react";
 import Select from "react-select";
-import styles from "./InputMultiSelect.module.css";
-import { SelectOption } from "@/models/types";
+import { GroupOption, SelectOption } from "@/models/types";
 import AddToSelectBtn from "../../buttons/AddToSelectBtn/AddToSelectBtn";
-import type { ActionMeta, OnChangeValue } from "react-select";
-import { customStylesMulti } from "@/style/selectMultiStyle";
+import type { ActionMeta, OnChangeValue, StylesConfig } from "react-select";
 import { SelectMethod } from "@/models/types/actions";
 import { createNewSelectOption_btnText } from "@/utils/format";
+import SelectLayout from "../SelectLayout/SelectLayout";
+import { customStyles } from "@/style/selectStyle";
+import {
+    BorderRadiusInput,
+    DarkTextColor,
+    FontSize,
+    InputBackgroundColor,
+    SelectBackgroundColor,
+    SelectBackgroundColorHover,
+} from "@/style/root";
 
+/**
+ * AnnualCell - Subject
+ */
 export type InputMultiSelectProps = {
     label?: string;
     options: SelectOption[];
@@ -20,15 +31,12 @@ export type InputMultiSelectProps = {
     isAllowAddNew?: boolean;
     isDisabled?: boolean;
     hasBorder?: boolean;
-    backgroundColor?: "#fdfbfb" | "transparent";
     isClearable?: boolean;
+    backgroundColor?: string;
     onCreate?: (value: string) => Promise<string | undefined>;
-    createBtnText?: string;
-    closeMenuOnSelect?: boolean;
     onBeforeRemove?: (removedLabel: string | null, proceed: () => void) => void;
 };
 
-// Used in: Annual Schedule
 const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
     label,
     options: initialOptions,
@@ -41,19 +49,15 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
     isAllowAddNew = false,
     isDisabled = false,
     hasBorder = false,
-    backgroundColor = "#fdfbfb",
+    backgroundColor = InputBackgroundColor,
     isClearable = false,
     onCreate,
-    createBtnText,
-    closeMenuOnSelect = true,
     onBeforeRemove,
 }) => {
     const [options, setOptions] = useState<SelectOption[]>(initialOptions);
     const [selectedOptions, setSelectedOptions] = useState<SelectOption[]>([]);
     const [isMounted, setIsMounted] = useState(false);
-
-    // Unique id for SSR consistency
-    const selectInstanceId = useId();
+    const selectInstanceId = useId(); // for SSR consistency
 
     // Sync options list when parent updates
     useEffect(() => {
@@ -74,32 +78,33 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
 
     // Client-only portal target for menus to avoid SSR warning
     useEffect(() => {
-        setIsMounted(true);
-    }, []);
-
-    const applyChange = (
-        next: SelectOption[],
-        meta: ActionMeta<SelectOption>
-    ) => {
-        setSelectedOptions(next);
-        onChange(next.map((o) => o.value), meta.action as SelectMethod);
-    };
+        if (!isMounted) setIsMounted(true);
+    }, [isMounted]);
 
     const handleChange = (
         opts: OnChangeValue<SelectOption, true>,
-        meta: ActionMeta<SelectOption>
+        meta: ActionMeta<SelectOption>,
     ) => {
         const next = Array.isArray(opts) ? [...opts] : [];
 
         // Intercept remove actions to allow confirmation
         if (onBeforeRemove && meta.action === "remove-value") {
-            const removedLabel =
-                ((meta as any).removedValue?.label as string | undefined) ?? null;
+            const removedLabel = ((meta as any).removedValue?.label as string | undefined) ?? null;
 
-            return onBeforeRemove(removedLabel, () => applyChange(next, meta));
+            return onBeforeRemove(removedLabel, () => {
+                setSelectedOptions(next);
+                onChange(
+                    next.map((o) => o.value),
+                    meta.action as SelectMethod,
+                );
+            });
         }
 
-        applyChange(next, meta);
+        setSelectedOptions(next);
+        onChange(
+            next.map((o) => o.value),
+            meta.action as SelectMethod,
+        );
     };
 
     const handleOnCreate = async (inputValue: string) => {
@@ -119,19 +124,49 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
                 setOptions(updatedOptions);
                 const nextSelected = [...selectedOptions, newOption];
                 setSelectedOptions(nextSelected);
-                onChange(nextSelected.map((o) => o.value), "create-option");
+                onChange(
+                    nextSelected.map((o) => o.value),
+                    "create-option",
+                );
             }
         }
     };
 
-    return (
-        <div className={styles.selectContainer}>
-            {label && (
-                <label htmlFor={id} className={styles.label}>
-                    {label}
-                </label>
-            )}
+    const baseStyles = customStyles(error || "", hasBorder, true, backgroundColor);
+    const stylesOverride: StylesConfig<SelectOption, true, GroupOption> = {
+        ...(baseStyles as StylesConfig<SelectOption, true, GroupOption>),
+        multiValue: (provided: any) => ({
+            ...provided,
+            backgroundColor: InputBackgroundColor,
+            borderRadius: BorderRadiusInput,
+            width: "90%",
+            boxSizing: "border-box",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+        }),
+        multiValueLabel: (provided: any) => ({
+            ...provided,
+            color: DarkTextColor,
+            fontSize: FontSize,
+            padding: "7px 15px",
+        }),
+        multiValueRemove: (provided: any) => ({
+            ...provided,
+            color: SelectBackgroundColor,
+            cursor: "pointer",
+            borderRadius: "50%",
+            width: 20,
+            height: 20,
+            "&:hover": {
+                backgroundColor: SelectBackgroundColorHover,
+                color: SelectBackgroundColor,
+            },
+        }),
+    };
 
+    return (
+        <SelectLayout resolvedId={id || ""} error={error} label={label}>
             <Select
                 instanceId={selectInstanceId}
                 id={id}
@@ -143,7 +178,7 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
                 isClearable={isClearable}
                 isDisabled={isDisabled}
                 placeholder={placeholder}
-                closeMenuOnSelect={closeMenuOnSelect}
+                closeMenuOnSelect={true}
                 hideSelectedOptions={false}
                 backspaceRemovesValue
                 menuPortalTarget={isMounted ? document.body : null}
@@ -152,7 +187,7 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
                     isAllowAddNew ? (
                         <AddToSelectBtn
                             onClick={() => handleOnCreate(inputValue)}
-                            text={createNewSelectOption_btnText(inputValue, createBtnText)}
+                            text={createNewSelectOption_btnText(inputValue)}
                         />
                     ) : (
                         <div>לא נמצאו אפשרויות</div>
@@ -176,19 +211,10 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
                         }
                     }
                 }}
-                styles={customStylesMulti(
-                    error || "",
-                    hasBorder,
-                    true,
-                    backgroundColor,
-                    "#fdfbfb",
-                    "#aaa",
-                    600)}
+                styles={stylesOverride}
                 classNamePrefix="react-select"
             />
-
-            {error && <p className={styles.errorText}>{error}</p>}
-        </div>
+        </SelectLayout>
     );
 };
 

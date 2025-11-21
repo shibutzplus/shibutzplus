@@ -69,27 +69,27 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
         <td className={styles.scheduleCell}>
             <div className={styles.cellContent}>
                 <DynamicInputMultiSelect
-                    placeholder="מקצוע"
                     options={createSelectOptions<SubjectType>(sortByHebrewName(subjects || []))}
                     value={schedule[selectedClassId]?.[day]?.[hour]?.subjects ?? []}
                     onChange={handleSubjectChange}
-                    onCreate={(value: string) => onCreateSubject(day, hour, value)}
+                    placeholder="מקצוע"
                     isSearchable
                     isAllowAddNew
                     isDisabled={isDisabled}
+                    onCreate={(value: string) => onCreateSubject(day, hour, value)}
                     onBeforeRemove={confirmRemove}
                 />
                 <DynamicInputGroupMultiSelect
-                    placeholder="מורה"
                     options={sortedTeacherOptions}
                     value={schedule[selectedClassId]?.[day]?.[hour]?.teachers ?? []}
                     onChange={handleTeacherChange}
+                    placeholder="מורה"
                     isSearchable
                     isAllowAddNew
+                    isDisabled={isDisabled}
                     onCreate={(v: string) => {
                         return onCreateTeacher(day, hour, v);
                     }}
-                    isDisabled={isDisabled}
                     onBeforeRemove={confirmRemove}
                 />
             </div>
