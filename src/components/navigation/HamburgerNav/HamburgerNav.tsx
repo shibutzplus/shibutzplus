@@ -161,8 +161,8 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose, variant = 
                     <Icons.close size={24} />
                 </button>
 
-                {showAdminLinks ? (
-                    <>
+                <div className={styles.menuContent}>
+                    {showAdminLinks && (
                         <section className={styles.menuSection}>
                             <ul>
                                 {links.map((link, index) => (
@@ -172,33 +172,30 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose, variant = 
                                 ))}
                             </ul>
                         </section>
+                    )}
 
-                        {status === STATUS_AUTH ? (
+                    <div className={styles.bottomSection}>
+                        <section className={styles.menuSection}>
+                            <Link
+                                href={variant === "admin" ? "/faqManager" : "/faqTeachers"}
+                                className={styles.navLink}
+                                onClick={onClose}
+                                aria-label="שאלות נפוצות"
+                            >
+                                <Icons.faq size={24} />
+                                <span>שאלות נפוצות</span>
+                            </Link>
+                        </section>
+                        {status === STATUS_AUTH && (
                             <section className={styles.logoutSection}>
                                 <div onClick={handleLogout} className={styles.navLink} aria-label="Logout">
                                     <Icons.logOut size={24} />
                                     <span>יציאה מהמערכת</span>
                                 </div>
                             </section>
-                        ) : null}
-                    </>
-                ) : (
-                    <>
-                        <section className={styles.supportSection}>
-                            <p>צריכים עזרה או מענה לשאלה?</p>
-                            <p>צרו איתנו קשר:</p>
-                            <a href="mailto:shibutzplus@gmail.com">
-                                shibutzplus@gmail.com
-                            </a>
-                        </section>
-                        <section className={styles.logoutSection}>
-                            <div onClick={handleLogout} className={styles.navLink} aria-label="Logout">
-                                <Icons.logOut size={24} />
-                                <span>יציאה מהמערכת</span>
-                            </div>
-                        </section>
-                    </>
-                )}
+                        )}
+                    </div>
+                </div>
             </div>
         </div>
     )
