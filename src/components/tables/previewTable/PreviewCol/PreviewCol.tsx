@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "./PreviewCol.module.css";
-import { ColumnType, DailyScheduleCell } from "@/models/types/dailySchedule";
+import { ColumnType, DailySchedule } from "@/models/types/dailySchedule";
 import LoadingDots from "@/components/loading/LoadingDots/LoadingDots";
 import PreviewEventHeader from "../PreviewEventHeader/PreviewEventHeader";
 import PreviewEventCell from "../PreviewEventCell/PreviewEventCell";
@@ -10,15 +10,20 @@ import ShadowHeader from "@/components/tables/dailyScheduleTable/ShadowHeader/Sh
 
 type PreviewColProps = {
     columnId: string;
-    column: {
-        [hour: string]: DailyScheduleCell;
-    };
+    mainDailyTable: DailySchedule;
+    selectedDate: string;
     onTeacherClick?: (teacherName: string) => void;
 };
 
-const PreviewCol: React.FC<PreviewColProps> = ({ columnId, column, onTeacherClick }) => {
+const PreviewCol: React.FC<PreviewColProps> = ({
+    columnId,
+    mainDailyTable,
+    selectedDate,
+    onTeacherClick,
+}) => {
     const [columnType, setColumnType] = useState<ColumnType>("event");
-    const colFirstObj = column["1"];
+    const column = mainDailyTable[selectedDate]?.[columnId];
+    const colFirstObj = column?.["1"];
 
     useEffect(() => {
         if (colFirstObj?.headerCol) {
@@ -29,7 +34,7 @@ const PreviewCol: React.FC<PreviewColProps> = ({ columnId, column, onTeacherClic
     return columnType === "event" ? (
         <div className={styles.previewColumn} data-column-id={columnId}>
             <ShadowHeader columnId={columnId}>
-                <PreviewEventHeader columnId={columnId} type={columnType} />
+                <PreviewEventHeader type={columnType} column={column} />
             </ShadowHeader>
             <div style={{ width: "100%", height: "50px" }}></div>
             <div className={styles.rows}>
@@ -45,7 +50,11 @@ const PreviewCol: React.FC<PreviewColProps> = ({ columnId, column, onTeacherClic
     ) : (
         <div className={styles.previewColumn} data-column-id={columnId}>
             <ShadowHeader columnId={columnId}>
-                <PreviewTeacherHeader columnId={columnId} type={columnType} onTeacherClick={onTeacherClick} />
+                <PreviewTeacherHeader
+                    column={column}
+                    type={columnType}
+                    onTeacherClick={onTeacherClick}
+                />
             </ShadowHeader>
             <div style={{ width: "100%", height: "50px" }}></div>
             <div className={styles.rows}>

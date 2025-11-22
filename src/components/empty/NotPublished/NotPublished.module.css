@@ -1,0 +1,27 @@
+/* Mobile */
+.emptyTable {
+    position: fixed;
+    top: 30vh;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    max-height: calc(100vh - var(--header-height));
+    color: var(--dark-border-color);
+    width: 50vw;
+    text-align: center;
+}
+
+.text {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+    .emptyTable {
+        width: none;
+    }
+}

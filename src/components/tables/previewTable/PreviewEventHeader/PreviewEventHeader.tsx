@@ -1,28 +1,21 @@
 import React from "react";
-import { useDailyTableContext } from "@/context/DailyTableContext";
-import { ColumnType } from "@/models/types/dailySchedule";
+import { ColumnType, DailyScheduleCell } from "@/models/types/dailySchedule";
 import styles from "./PreviewEventHeader.module.css";
 import { COLOR_BY_TYPE } from "@/models/constant/daily";
 
 type PreviewEventHeaderProps = {
-    columnId: string;
     type: ColumnType;
+    column: {
+        [hour: string]: DailyScheduleCell;
+    };
 };
 
-const PreviewEventHeader: React.FC<PreviewEventHeaderProps> = ({ columnId, type }) => {
-    const { mainDailyTable, selectedDate } = useDailyTableContext();
-
-    const selectedEventData =
-        mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.headerEvent;
+const PreviewEventHeader: React.FC<PreviewEventHeaderProps> = ({ type, column }) => {
+    const selectedEventData = column?.["1"]?.headerCol?.headerEvent;
 
     return (
-        <div
-            className={styles.header}
-            style={{ backgroundColor: COLOR_BY_TYPE[type] }}
-        >
-            <div className={styles.headerText}>
-                {selectedEventData || ""}
-            </div>
+        <div className={styles.header} style={{ backgroundColor: COLOR_BY_TYPE[type] }}>
+            <div className={styles.headerText}>{selectedEventData || ""}</div>
         </div>
     );
 };

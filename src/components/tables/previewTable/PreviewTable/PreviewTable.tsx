@@ -3,15 +3,23 @@
 import React, { useState } from "react";
 import styles from "./PreviewTable.module.css";
 import HoursCol from "@/components/ui/table/HoursCol/HoursCol";
-import { useDailyTableContext } from "@/context/DailyTableContext";
 import { TableRows } from "@/models/constant/table";
 import { sortDailyColumnIdsByType } from "@/utils/sort";
-import EmptyTable from "@/components/empty/EmptyTable/EmptyTable";
 import PreviewCol from "../PreviewCol/PreviewCol";
 import SlidingPanel from "@/components/ui/SlidingPanel/SlidingPanel";
+import { DailySchedule } from "@/models/types/dailySchedule";
 
-const PreviewTable: React.FC = () => {
-    const { mainDailyTable, selectedDate } = useDailyTableContext();
+type PreviewTableProps = {
+    mainDailyTable: DailySchedule;
+    selectedDate: string;
+    EmptyTable: React.FC;
+};
+
+const PreviewTable: React.FC<PreviewTableProps> = ({
+    mainDailyTable,
+    selectedDate,
+    EmptyTable,
+}) => {
     const schedule = mainDailyTable[selectedDate];
     const tableColumns = schedule ? Object.keys(schedule) : [];
     const sortedTableColumns = schedule
@@ -30,10 +38,6 @@ const PreviewTable: React.FC = () => {
         setIsPanelOpen(false);
     };
 
-    //TODO
-    // if (scheduleData.length === 0)
-    //     return <NotPublishedLayout title={noScheduleTitle} subTitle={noScheduleSubTitle} />;
-
     return (
         <>
             <div className={styles.previewTable}>
@@ -43,7 +47,8 @@ const PreviewTable: React.FC = () => {
                         <PreviewCol
                             key={colId}
                             columnId={colId}
-                            column={mainDailyTable[selectedDate][colId]}
+                            selectedDate={selectedDate}
+                            mainDailyTable={mainDailyTable}
                             onTeacherClick={handleTeacherClick}
                         />
                     ))

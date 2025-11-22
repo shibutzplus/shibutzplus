@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useMemo, ChangeEvent } from "react";
-import styles from "./HistoryTopActions.module.css";
+import React, { ChangeEvent, useMemo } from "react";
 import { useHistoryTable } from "@/context/HistoryTableContext";
-//NOT IN USE
-const HistoryTopActions: React.FC = () => {
-    const { selectedMonth, selectedDay, handleMonthChange, handleDayChange, } = useHistoryTable();
+import styles from "./InputDate.module.css";
+
+const InputDate: React.FC = () => {
+    const { selectedMonth, selectedDay, handleMonthChange, handleDayChange } = useHistoryTable();
 
     // Build YYYY-MM-DD for the <input type="date"> value
     const inputValue = useMemo(() => {
@@ -22,22 +22,26 @@ const HistoryTopActions: React.FC = () => {
         if (!iso) return;
         const [, m, d] = iso.split("-");
         handleMonthChange(String(Number(m))); // "09" -> "9"
-        handleDayChange(String(Number(d)));   // "02" -> "2"
+        handleDayChange(String(Number(d))); // "02" -> "2"
     };
-
+    console.log("inputValue", inputValue);
     return (
-        <section className={styles.actionsContainer}>
-            <input
-                id="history-date"
-                name="history-date"
-                type="date"
-                className={styles.dateInput}
-                value={inputValue}
-                onChange={onDateChange}
-            />
-        </section>
-
+        <input
+            id="history-date"
+            name="history-date"
+            type="date"
+            className={styles.dateInput}
+            value={inputValue}
+            onChange={onDateChange}
+            onClick={(e) => {
+                try {
+                    e.currentTarget.showPicker();
+                } catch (error) {
+                    // Fallback or ignore if not supported
+                }
+            }}
+        />
     );
 };
 
-export default HistoryTopActions;
+export default InputDate;

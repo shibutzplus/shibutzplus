@@ -4,19 +4,22 @@ import React from "react";
 import styles from "./DailyTable.module.css";
 import DailyCol from "../DailyCol/DailyCol";
 import HoursCol from "@/components/ui/table/HoursCol/HoursCol";
-import { useDailyTableContext } from "@/context/DailyTableContext";
 import { TableRows } from "@/models/constant/table";
 import { sortDailyColumnIdsByType } from "@/utils/sort";
 import EmptyTable from "@/components/empty/EmptyTable/EmptyTable";
+import { DailySchedule } from "@/models/types/dailySchedule";
 
-const DailyTable: React.FC = () => {
-    const { mainDailyTable, selectedDate } = useDailyTableContext();
+type DailyTableProps = {
+    mainDailyTable: DailySchedule;
+    selectedDate: string;
+};
+
+const DailyTable: React.FC<DailyTableProps> = ({ mainDailyTable, selectedDate }) => {
     const schedule = mainDailyTable[selectedDate];
     const tableColumns = schedule ? Object.keys(schedule) : [];
     const sortedTableColumns = schedule
         ? sortDailyColumnIdsByType(tableColumns, mainDailyTable, selectedDate)
         : [];
-
 
     return (
         <div className={styles.dailyTable}>

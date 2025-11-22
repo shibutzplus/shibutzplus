@@ -7,7 +7,6 @@ import { getHeaderItems, sortAndGroupScheduleData } from "@/services/portalDaily
 import ViewHeader from "../ViewHeader/ViewHeader";
 import ViewTeacherCell from "../ViewTeacherCell/ViewTeacherCell";
 import ViewEventCell from "../ViewEventCell/ViewEventCell";
-import NotPublishedLayout from "@/components/layout/NotPublishedLayout/NotPublishedLayout";
 import styles from "./ViewTable.module.css";
 // NOT IN USE
 type ReadOnlyDailyTableProps = {
@@ -27,13 +26,13 @@ const ViewTable: React.FC<ReadOnlyDailyTableProps> = ({
     onColClick,
     isManager,
 }) => {
-    if (scheduleData.length === 0)
-        return (
-            <NotPublishedLayout
-                title={noScheduleTitle}
-                subTitle={noScheduleSubTitle}
-            />
-        );
+    // if (scheduleData.length === 0)
+    // return (
+    //     <NotPublishedLayout
+    //         title={noScheduleTitle}
+    //         subTitle={noScheduleSubTitle}
+    //     />
+    // );
 
     const scheduleByColumn = React.useMemo(() => {
         if (scheduleData.length === 0) return {};
@@ -57,7 +56,7 @@ const ViewTable: React.FC<ReadOnlyDailyTableProps> = ({
     return (
         <table className={styles.scheduleTable}>
             {/* isManager={isManager} */}
-            <ViewHeader items={headerItems} onClickHeader={onColClick} /> 
+            <ViewHeader items={headerItems} onClickHeader={onColClick} />
             <tbody className={styles.scheduleTableBody}>
                 {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => (
                     <tr key={hour}>

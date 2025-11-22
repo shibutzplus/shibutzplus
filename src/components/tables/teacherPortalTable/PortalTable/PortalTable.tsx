@@ -3,7 +3,6 @@ import styles from "./PortalTable.module.css";
 import { TableRows } from "@/models/constant/table";
 import PortalWriteRow from "../PortalWriteRow/PortalWriteRow";
 import { usePortal } from "@/context/PortalContext";
-import NotPublishedLayout from "@/components/layout/NotPublishedLayout/NotPublishedLayout";
 
 type Props = {
     embedded?: boolean; // render inside modal Div
@@ -37,12 +36,12 @@ const PortalTable: React.FC<Props> = ({ embedded = false }) => {
         }
 
         // Regular screen "no data" message (only after the day was loaded)
-        return (
-            <NotPublishedLayout
-                title=""
-                subTitle={["אין לך שינויים במערכת ליום זה"]}
-            />
-        );
+        // return (
+        //     <NotPublishedLayout
+        //         title=""
+        //         subTitle={["אין לך שינויים במערכת ליום זה"]}
+        //     />
+        // );
     }
 
     return (

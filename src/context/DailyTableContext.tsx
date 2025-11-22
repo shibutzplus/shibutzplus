@@ -28,7 +28,6 @@ import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction
 import { infoToast } from "@/lib/toast";
 import { generateId } from "@/utils";
 import { deleteDailyColumnAction } from "@/app/actions/DELETE/deleteDailyColumnAction";
-import { pushSyncUpdate } from "@/services/syncService";
 import useDailyEventActions from "@/hooks/daily/useDailyEventActions";
 
 interface DailyTableContextType {
@@ -107,7 +106,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     const [mapAvailableTeachers, setMapAvailableTeachers] = useState<AvailableTeachers>({});
 
     const [isEditMode, setEditMode] = useState<boolean>(true);
-    const changeDailyMode = () => setEditMode(prev => !prev);
+    const changeDailyMode = () => setEditMode((prev) => !prev);
 
     // Select Date
     const { daysSelectOptions, selectedDate, handleDayChange } = useDailySelectedDate();
