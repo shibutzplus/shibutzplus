@@ -1,0 +1,19 @@
+.mobileNav {
+    position: fixed;
+    bottom: var(--padding-top-mobile);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    width: 95%;
+    background-color: var(--top-color);
+    box-shadow: var(--box-shadow-primary);
+    border: var(--border-primary);
+    border-radius: var(--border-radius-cell);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    height: var(--header-height);
+    padding: 0 var(--padding-width-mobile);
+    box-sizing: border-box;
+}

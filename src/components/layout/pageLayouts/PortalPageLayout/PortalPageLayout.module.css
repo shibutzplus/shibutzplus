@@ -17,12 +17,18 @@
     min-height: var(--header-height);
 }
 
+.greeting {
+    width: fit-content;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .mainContent {
     flex: 1 1 auto;
     min-height: 0;
     overflow: auto;
     width: 100%;
-    margin-bottom: calc(var(--header-height) + var(--padding-width-mobile));
 }
 
 .topNavLayout {
@@ -46,33 +52,17 @@
 .topNavRight {
     display: flex;
     align-items: center;
-    gap: 5px;
-    width: 50%;
+    gap: 15px;
+    width: 70%;
 }
 
 .topNavLeft {
     display: flex;
     justify-content: end;
     align-items: center;
-    gap: 9px;
+    gap: 20px;
     width: 50%;
     margin-left: 10px;
-}
-
-.topNavSelectContainer {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.topNavBtnContainer {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-}
-
-.selectContainer {
-    width: 100%;
 }
 
 .bottomNav {
@@ -83,49 +73,31 @@
     align-items: center;
     justify-content: center;
     z-index: -1;
-    padding: 0 var(--padding-width-mobile);
-    box-sizing: border-box;
+}
+
+.selectContainer {
+    width: 100%;
 }
 
 /* Desktop */
 @media (min-width: 1024px) {
-    .pageLayout {
-        height: 100dvh;
-    }
-
-    .mainContent {
-        margin-bottom: 0;
-    }
 
     .topNavSection {
         padding: 0 var(--padding-width-desktop);
-        gap: 2em;
+        gap: 3em;
     }
 
     .topNavRight {
         width: 70%;
-        gap: 15px;
     }
 
     .topNavLeft {
         margin-left: 0;
         width: 30%;
-        gap: 20px;
-    }
-
-    .topNavSelectContainer {
-        gap: 15px;
-    }
-
-    .topNavBtnContainer {
-        gap: 15px;
-    }
-
-    .bottomNav {
-        padding: none;
     }
 
     .selectContainer {
         width: var(--top-nav-select-width);
     }
+
 }

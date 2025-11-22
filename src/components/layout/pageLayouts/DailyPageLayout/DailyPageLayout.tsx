@@ -14,6 +14,7 @@ import { ColumnTypeValues } from "@/models/types/dailySchedule";
 import ActionBtn from "@/components/ui/buttons/ActionBtn/ActionBtn";
 import { EventColor, ExistingTeacherColor, MissingTeacherColor } from "@/style/root";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
+import MobileNavLayout from "../../MobileNavLayout/MobileNavLayout";
 
 type DailyPageLayoutProps = {
     children: React.ReactNode;
@@ -173,7 +174,7 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
                 <main className={styles.mainContent}>{children}</main>
             </div>
             {isMobile ? (
-                <nav className={styles.mobileNav}>
+                <MobileNavLayout>
                     <ActionBtn
                         type={ColumnTypeValues.missingTeacher}
                         Icon={<Icons.addTeacher size={16} />}
@@ -202,7 +203,7 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
                         style={{ borderTop: `10px solid ${EventColor}` }}
                         func={() => addNewEmptyColumn(ColumnTypeValues.event)}
                     />
-                </nav>
+                </MobileNavLayout>
             ) : null}
             <HamburgerNav
                 hamburgerType="private"

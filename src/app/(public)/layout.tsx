@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import PageLayout from "@/components/layout/PageLayout/PageLayout";
-import PortalTopNav from "@/components/navigation/topNavs/PortalTopNav/PortalTopNav";
 import { PortalProvider } from "@/context/PortalContext";
+import { Suspense } from "react";
+import TeacherPortalSkeleton from "@/components/loading/skeleton/TeacherPortalSkeleton/TeacherPortalSkeleton";
+import PortalPageLayout from "@/components/layout/pageLayouts/PortalPageLayout/PortalPageLayout";
 
 export const metadata: Metadata = {
     title: "המערכת שלי | שיבוץ+",
@@ -10,8 +11,10 @@ export const metadata: Metadata = {
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     return (
-        <PortalProvider>
-            <PageLayout TopNav={<PortalTopNav />}>{children}</PageLayout>
-        </PortalProvider>
+        <Suspense fallback={<TeacherPortalSkeleton />}>
+            <PortalProvider>
+                <PortalPageLayout>{children}</PortalPageLayout>
+            </PortalProvider>
+        </Suspense>
     );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
 import Icons from "@/style/icons";
@@ -9,65 +9,24 @@ import { TeacherRoleValues } from "@/models/types/teachers";
 import { usePathname, useRouter } from "next/navigation";
 import router from "@/routes";
 import { errorToast } from "@/lib/toast";
-import { pollUpdates, getChannelsForPath } from "@/services/syncService";
+// import { usePortalPolling } from "@/hooks/usePortalPolling";
 import styles from "./PortalTopActions.module.css";
 //NOT IN USE
 const PortalTopActions: React.FC = () => {
     const route = useRouter();
     const pathname = usePathname();
     const {
-        teacher, selectedDate, isPortalLoading, publishDatesOptions,
-        handleDayChange, fetchPortalScheduleDate, fetchPublishScheduleData, refreshPublishDates,
+        teacher,
+        selectedDate,
+        isPortalLoading,
+        publishDatesOptions,
+        handleDayChange,
+        fetchPortalScheduleDate,
+        fetchPublishScheduleData,
+        refreshPublishDates,
     } = usePortal();
 
-    // Alert state for incoming updates
-    const [hasUpdate, setHasUpdate] = useState(false);
-    const [lastTs, setLastTs] = useState<number>(() => Date.now());
-    const lastTsRef = useRef<number>(lastTs);
-    useEffect(() => { lastTsRef.current = lastTs; }, [lastTs]);
-
-    // Poll changes from daily schedule screen 
-    useEffect(() => {
-        let mounted = true;
-        let id: ReturnType<typeof setInterval> | null = null;
-
-        // on teacher screen, listen to teacher columns events only
-        // on schedule screen, listen to both teacher and events columns changes
-        const channels = getChannelsForPath(pathname, router.teacherPortal.p);
-
-        const checkUpdates = async () => {
-            const since = lastTsRef.current;
-            const data = await pollUpdates({ since, channels });
-            
-            if (data && mounted && data.latestTs > since) {
-                errorToast("יש עדכונים חדשים – יש ללחוץ על כפתור הרענון האדום שבסרגל העליון כדי לראותם", 100000);
-                setHasUpdate(true);
-                setLastTs(data.latestTs);
-            }
-        };
-
-        id = setInterval(checkUpdates, 1);
-
-        // Pause polling when tab/browser is not visible
-        const handleVisibility = () => {
-            if (document.hidden) { if (id) clearInterval(id); }
-            else { checkUpdates(); id = setInterval(checkUpdates, 1); }
-        };
-        document.addEventListener("visibilitychange", handleVisibility);
-
-        return () => {
-            mounted = false;
-            if (id) clearInterval(id);
-            document.removeEventListener("visibilitychange", handleVisibility);
-        };
-    }, [pathname]);
-
-
-    // Reset polling state on path change as we already get new data from DB
-    useEffect(() => {
-        setHasUpdate(false);
-        setLastTs(Date.now());
-    }, [pathname]);
+    // const { hasUpdate } = usePortalPolling();
 
     const pushToTeacherPortalWrite = () => {
         if (teacher) route.push(`${router.teacherPortal.p}/${teacher.schoolId}/${teacher.id}`);
@@ -87,7 +46,10 @@ const PortalTopActions: React.FC = () => {
             response = await fetchPublishScheduleData();
         }
 
-        if ((!response.success && response.error !== "") || (!datesRes.success && datesRes.error !== "")) {
+        if (
+            (!response.success && response.error !== "") ||
+            (!datesRes.success && datesRes.error !== "")
+        ) {
             errorToast("בעיה בטעינת המידע, נסו שוב");
             return;
         }
@@ -111,7 +73,9 @@ const PortalTopActions: React.FC = () => {
                     />
                 </div>
 
-                <div className={`${styles.refreshContainer} ${hasUpdate ? styles.refreshAlert : ""}`}>
+                <div
+                // className={`${styles.refreshContainer} ${hasUpdate ? styles.refreshAlert : ""}`}
+                >
                     <IconBtn
                         Icon={<Icons.refresh size={26} />}
                         onClick={handleRefresh}

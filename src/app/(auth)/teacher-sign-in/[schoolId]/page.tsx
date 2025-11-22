@@ -134,9 +134,11 @@ export default function TeacherSignInPage() {
     return (
         <main className={styles.container}>
             <div className={styles.mainSection}>
-                <HeroSection title="מערכת השעות האישית שלכם" description="" />
+                <HeroSection
+                    title="מערכת השעות האישית שלכם"
+                    description={`בית ספר ${schoolName}`}
+                />
                 <div className={styles.formContainer}>
-                    {schoolName && <h2 className={styles.schoolName}>בית ספר {schoolName}</h2>}
                     <TeacherAuthForm
                         schoolId={schoolId}
                         teachers={teachers}
