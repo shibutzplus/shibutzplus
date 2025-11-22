@@ -6,7 +6,6 @@ import {
     apiAuthPrefix,
     DEFAULT_ERROR_REDIRECT,
     DEFAULT_REDIRECT,
-    protectedPaths,
     publicPaths,
 } from "@/routes/protectedAuth";
 
@@ -16,25 +15,35 @@ export async function middleware(req: NextRequest) {
 
     const isApiAuthRoute = url.pathname.startsWith(apiAuthPrefix);
     const isPublicRoute = publicPaths.some((path) => url.pathname.startsWith(path));
-    const isProtectedRoute = protectedPaths.some((path) => url.pathname.startsWith(path));
 
     if (isApiAuthRoute) {
         return NextResponse.next();
     }
 
-    if (url.pathname === router.home.p) {
-        url.pathname = DEFAULT_ERROR_REDIRECT;
-        return NextResponse.redirect(url);
-    }
+    const isAuthRoute = [router.signIn.p, router.signUp.p].includes(url.pathname);
 
-    if (isProtectedRoute) {
-        if (isLoggedIn) {
+    if (isLoggedIn) {
+        if (isAuthRoute || url.pathname === router.home.p) {
             url.pathname = DEFAULT_REDIRECT;
             return NextResponse.redirect(url);
         }
+        return NextResponse.next();
     }
 
     if (!isLoggedIn && !isPublicRoute) {
+        let callbackUrl = url.pathname;
+        if (url.search) {
+            callbackUrl += url.search;
+        }
+
+        const encodedCallbackUrl = encodeURIComponent(callbackUrl);
+        url.pathname = DEFAULT_ERROR_REDIRECT;
+        url.search = `?callbackUrl=${encodedCallbackUrl}`;
+
+        return NextResponse.redirect(url);
+    }
+
+    if (url.pathname === router.home.p) {
         url.pathname = DEFAULT_ERROR_REDIRECT;
         return NextResponse.redirect(url);
     }
