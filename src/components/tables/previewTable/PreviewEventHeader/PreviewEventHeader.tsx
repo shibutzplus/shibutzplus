@@ -1,8 +1,8 @@
 import React from "react";
 import { useDailyTableContext } from "@/context/DailyTableContext";
-import { COLOR_BY_TYPE } from "@/style/tableColors";
 import { ColumnType } from "@/models/types/dailySchedule";
 import styles from "./PreviewEventHeader.module.css";
+import { COLOR_BY_TYPE } from "@/models/constant/daily";
 
 type PreviewEventHeaderProps = {
     columnId: string;

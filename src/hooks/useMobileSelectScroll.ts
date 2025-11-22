@@ -1,6 +1,6 @@
 import { useCallback, useRef, useEffect } from "react";
 import { useMobileSize } from "./useMobileSize";
-
+//TODO: why I need it?
 /**
  * Custom hook for handling smooth scroll behavior on mobile select inputs
  * Scrolls the select element to the top of the screen when focused on mobile

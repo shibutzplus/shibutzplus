@@ -8,8 +8,8 @@ import { useMainContext } from "@/context/MainContext";
 import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import EditableHeader from "../../../ui/table/EditableHeader/EditableHeader";
-import { COLOR_BY_TYPE } from "@/style/tableColors";
 import { BrightTextColor, BrightTextColorHover } from "@/style/root";
+import { COLOR_BY_TYPE } from "@/models/constant/daily";
 
 type DailyTeacherHeaderProps = {
     columnId: string;

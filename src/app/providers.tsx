@@ -3,6 +3,7 @@ import React from "react"
 import { SessionProvider } from "next-auth/react"
 import { Toaster } from "react-hot-toast"
 import { PopupProvider } from "@/context/PopupContext"
+import { BorderRadiusCell, BoxShadowPrimary, DarkTextColor, FontSize, TabColor } from "@/style/root"
 
 export default function Providers({ children }: { children: React.ReactNode }) {
     return (
@@ -19,15 +20,15 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                     toastOptions={{
                         duration: 7000,
                         style: {
-                            background: "#fdfbfb",
-                            color: "#4a3b00",
-                            fontSize: "1.2rem",
+                            background: TabColor,
+                            color: DarkTextColor,
+                            fontSize: FontSize,
                             padding: "4px 10px",
                             minHeight: "120px",
                             minWidth: "310px",
                             lineHeight: "2rem",
-                            borderRadius: "16px",
-                            boxShadow: "0 18px 45px rgba(15, 23, 42, 0.38)",
+                            borderRadius: BorderRadiusCell,
+                            boxShadow: BoxShadowPrimary,
                         },
                     }}
                 />

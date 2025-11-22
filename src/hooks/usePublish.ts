@@ -5,10 +5,7 @@ import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { generateSchoolUrl } from "@/utils";
 import { useEffect, useState } from "react";
-import { useShareTextOrLink } from "./useShareTextOrLink";
-import routePath from "@/routes";
 import { getSessionPublishDates, setSessionPublishDates } from "@/lib/sessionStorage";
-import { useQueryParam } from "./useQueryParam";
 
 const usePublish = () => {
     const { school, setSchool } = useMainContext()
@@ -16,8 +13,6 @@ const usePublish = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [btnTitle, setBtnTitle] = useState<string>("פרסום המערכת");
     const [isDisabled, setIsDisabled] = useState<boolean>(false);
-    const share = useShareTextOrLink();
-    const { buildHistoryUrl } = useQueryParam();
 
     useEffect(() => {
         if (selectedDate && school) {

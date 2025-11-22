@@ -4,8 +4,8 @@ import { useDailyTableContext } from "@/context/DailyTableContext";
 import EditableHeader from "../../../ui/table/EditableHeader/EditableHeader";
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
-import { COLOR_BY_TYPE } from "@/style/tableColors";
 import { ColumnType } from "@/models/types/dailySchedule";
+import { COLOR_BY_TYPE } from "@/models/constant/daily";
 
 type DailyEventHeaderProps = {
     columnId: string;

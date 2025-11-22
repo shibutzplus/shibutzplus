@@ -1,9 +1,7 @@
 import {
-    BorderPrimary,
     BorderRadiusInput,
     BorderSecondary,
     BoxShadowPrimary,
-    BrightBorderColor,
     DarkBorderColor,
     ErrorColor,
     FontSize,

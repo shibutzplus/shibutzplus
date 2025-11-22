@@ -1,5 +1,5 @@
+import { COLOR_BY_TYPE } from "@/models/constant/daily";
 import { DailyScheduleType } from "@/models/types/dailySchedule";
-import { COLOR_BY_TYPE } from "@/style/tableColors";
 
 export const sortAndGroupScheduleData = (scheduleData: DailyScheduleType[]) => {
     const order = { missingTeacher: 0, existingTeacher: 1, event: 2 } as const;
