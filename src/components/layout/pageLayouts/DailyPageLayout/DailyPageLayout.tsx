@@ -130,14 +130,21 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
 
                                 <span title="פרסום">
                                     <IconBtn
-                                        Icon={<Icons.publish size={20} />}
+                                        Icon={
+                                            isDisabled ? (
+                                                <Icons.success2 size={20} />
+                                            ) : (
+                                                <Icons.publish size={20} />
+                                            )
+                                        }
+                                        isLoading={publishLoading}
                                         onClick={publishDailySchedule}
                                         disabled={isDisabled}
                                         hasBorder
                                     />
                                 </span>
 
-                                <span title="שיתוף קישור">
+                                <span title="שיתוף קישור למורים מן המניין">
                                     <IconBtn
                                         Icon={<Icons.share size={16} />}
                                         onClick={onShareLink}

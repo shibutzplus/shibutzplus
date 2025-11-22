@@ -2,6 +2,7 @@ import React from "react";
 import { ColumnType, DailyScheduleCell } from "@/models/types/dailySchedule";
 import styles from "./PreviewTeacherHeader.module.css";
 import { COLOR_BY_TYPE } from "@/models/constant/daily";
+import Icons from "@/style/icons";
 
 type PreviewTeacherHeaderProps = {
     type: ColumnType;
@@ -29,12 +30,15 @@ const PreviewTeacherHeader: React.FC<PreviewTeacherHeaderProps> = ({
         <div
             className={`${styles.header} ${isClickable ? styles.clickable : ""}`}
             style={{ backgroundColor: COLOR_BY_TYPE[type] }}
-            onClick={isClickable ? handleClick : undefined}
-            aria-disabled={!isClickable}
-            role={isClickable ? "button" : undefined}
-            tabIndex={isClickable ? 0 : -1}
-            title={isClickable ? "לחצו על שם המורה כדי לראות או להזין את חומרי הלימוד" : undefined}
         >
+            {isClickable && (
+                <Icons.eye
+                    className={styles.eyeIcon}
+                    onClick={handleClick}
+                    size={20}
+                    title="לחצו על שם המורה כדי לראות או להזין את חומרי הלימוד"
+                />
+            )}
             <div className={styles.headerText}>{selectedTeacherData?.name || ""}</div>
         </div>
     );

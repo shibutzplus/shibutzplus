@@ -49,7 +49,8 @@ export default function TeacherSignInPage() {
                 }));
                 setTeachers(teacherOptions);
                 setTeachersFull(response.data);
-            } else {    // Back to login page on error
+            } else {
+                // Back to login page on error
                 route.push(`${router.teacherSignIn.p}`);
             }
         } catch (error) {
@@ -92,7 +93,7 @@ export default function TeacherSignInPage() {
         // Important: check first no-teacher in url
         if (!teacherId) {
             const storedTeacherData = getStorageTeacher?.();
-            if (storedTeacherData?.role === "substitute") removeStorageTeacher();  // Clear local storage only if substitute
+            if (storedTeacherData?.role === "substitute") removeStorageTeacher(); // Clear local storage only if substitute
             setIsLoading(false);
             setIsLoadingTeachers(true);
             fetchTeachers();
@@ -135,15 +136,13 @@ export default function TeacherSignInPage() {
             <div className={styles.mainSection}>
                 <HeroSection title="מערכת השעות האישית שלכם" description="" />
                 <div className={styles.formContainer}>
-                    <div className={styles.formInner}>
-                        {schoolName && <h2 className={styles.schoolName}>בית ספר {schoolName}</h2>}
-                        <TeacherAuthForm
-                            schoolId={schoolId}
-                            teachers={teachers}
-                            teachersFull={teachersFull}
-                            isLoadingTeachers={isLoadingTeachers}
-                        />
-                    </div>
+                    {schoolName && <h2 className={styles.schoolName}>בית ספר {schoolName}</h2>}
+                    <TeacherAuthForm
+                        schoolId={schoolId}
+                        teachers={teachers}
+                        teachersFull={teachersFull}
+                        isLoadingTeachers={isLoadingTeachers}
+                    />
                 </div>
                 <footer className={styles.copyright}>&copy; שיבוץ+, כל הזכויות שמורות. 2025</footer>
             </div>

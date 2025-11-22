@@ -21,6 +21,12 @@
     margin-bottom: 10vh;
 }
 
+.formContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
 .googleButton {
     width: 320px;
     display: flex;
@@ -73,6 +79,19 @@
     height: auto;
 }
 
+.registerLink {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.problemLink {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .emailLine {
     display: block;
     margin-top: 0.75rem;
@@ -84,6 +103,11 @@
         gap: 3em;
         margin: 0 auto 20vh auto;
     }
+
+    .formContainer {
+        gap: 3rem;
+    }
+
     .googleButton {
         width: 320px;
         margin: 0 auto;

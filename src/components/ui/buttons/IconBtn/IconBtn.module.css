@@ -17,8 +17,14 @@
     border: var(--border-primary);
 }
 
-.iconBtn:hover {
+.iconBtn:not(:disabled):hover {
     transform: translateY(-1px);
     background-color: var(--top-color-hover);
     cursor: pointer;
+}
+
+.iconBtn:disabled {
+    cursor: default;
+    opacity: 0.5;
+    color: var(--event-color);
 }

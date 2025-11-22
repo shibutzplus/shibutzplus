@@ -6,19 +6,29 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 20px;
     padding: 0 15px;
     box-sizing: border-box;
     color: var(--bright-text-color);
+    position: relative;
 }
 
-.clickable:hover {
-    cursor: pointer;
-    color: var(--bright-text-color-hover);
-}
+
 
 .headerText {
     font-size: 16px;
     font-weight: 600;
     text-align: center;
     word-break: break-word;
+}
+
+.eyeIcon {
+    cursor: pointer;
+    opacity: 0.8;
+    transition: all 0.2s;
+}
+
+.eyeIcon:hover {
+    opacity: 1;
+    color: var(--bright-text-color-hover);
 }
