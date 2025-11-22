@@ -3,7 +3,7 @@ import styles from "./ViewHeader.module.css";
 import { DailyScheduleType, ColumnTypeValues } from "@/models/types/dailySchedule";
 import ReadOnlyHeader from "@/components/ui/table/ReadOnlyHeader/ReadOnlyHeader";
 import { DAYS_OF_WORK_WEEK } from "@/utils/time";
-
+// NOT IN USE
 type ViewHeaderProps = {
     items: {
         title: string;

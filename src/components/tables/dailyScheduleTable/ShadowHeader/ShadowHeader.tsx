@@ -19,9 +19,11 @@ const ShadowHeader: React.FC<ShadowHeaderProps> = ({ columnId, children }) => {
             if (originalColumn) {
                 setColumnExists(true);
                 const rect = originalColumn.getBoundingClientRect();
-                const dailyTableContainer = document.querySelector('[class*="dailyTable"]');
-                if (dailyTableContainer) {
-                    const containerRect = dailyTableContainer.getBoundingClientRect();
+                // Look for either dailyTable or previewTable container
+                const tableContainer = document.querySelector('[class*="dailyTable"]') || 
+                                      document.querySelector('[class*="previewTable"]');
+                if (tableContainer) {
+                    const containerRect = tableContainer.getBoundingClientRect();
                     // Calculate the left position relative to the container
                     const relativeLeft = rect.left - containerRect.left;
                     setLeftPosition(relativeLeft);
@@ -37,9 +39,10 @@ const ShadowHeader: React.FC<ShadowHeaderProps> = ({ columnId, children }) => {
         updatePosition();
 
         // Update position on scroll
-        const dailyTableContainer = document.querySelector('[class*="dailyTable"]');
-        if (dailyTableContainer) {
-            dailyTableContainer.addEventListener("scroll", updatePosition, { passive: true });
+        const tableContainer = document.querySelector('[class*="dailyTable"]') || 
+                               document.querySelector('[class*="previewTable"]');
+        if (tableContainer) {
+            tableContainer.addEventListener("scroll", updatePosition, { passive: true });
         }
 
         // Update position on window resize
@@ -51,9 +54,9 @@ const ShadowHeader: React.FC<ShadowHeaderProps> = ({ columnId, children }) => {
             setTimeout(updatePosition, 50);
         });
 
-        // Observe changes in the daily table container
-        if (dailyTableContainer) {
-            mutationObserver.observe(dailyTableContainer, {
+        // Observe changes in the table container
+        if (tableContainer) {
+            mutationObserver.observe(tableContainer, {
                 childList: true,
                 subtree: true,
                 attributes: true,
@@ -62,8 +65,8 @@ const ShadowHeader: React.FC<ShadowHeaderProps> = ({ columnId, children }) => {
         }
 
         return () => {
-            if (dailyTableContainer) {
-                dailyTableContainer.removeEventListener("scroll", updatePosition);
+            if (tableContainer) {
+                tableContainer.removeEventListener("scroll", updatePosition);
             }
             window.removeEventListener("resize", updatePosition);
             mutationObserver.disconnect();

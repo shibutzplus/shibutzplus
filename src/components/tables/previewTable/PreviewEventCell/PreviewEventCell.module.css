@@ -1,0 +1,29 @@
+.cellContent {
+    width: 100%;
+}
+
+.innerCellContent {
+    width: 100%;
+    gap: 10px;
+    height: var(--table-daily-cell-height);
+    background-color: var(--tab-color);
+    border-radius: var(--border-radius-cell);
+    padding: 15px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.eventText {
+    font-size: 14px;
+    text-align: center;
+    word-break: break-word;
+    white-space: pre-wrap;
+}
+
+.emptyText {
+    font-size: 14px;
+    color: var(--secondary-text-color);
+    opacity: 0.5;
+}

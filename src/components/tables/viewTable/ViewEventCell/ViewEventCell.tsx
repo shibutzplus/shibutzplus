@@ -2,6 +2,7 @@ import React from "react";
 import styles from "./ViewEventCell.module.css";
 import { DailyScheduleType } from "@/models/types/dailySchedule";
 
+// NOT IN USE
 type ViewEventCellProps = {
     cellData: DailyScheduleType;
 };

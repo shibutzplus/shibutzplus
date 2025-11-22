@@ -1,0 +1,94 @@
+/* Backdrop with blur effect */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(4px);
+  z-index: 9998;
+  opacity: 0;
+  transition: opacity 300ms ease-in-out;
+}
+
+.backdropVisible {
+  opacity: 1;
+}
+
+/* Main panel */
+.panel {
+  position: fixed;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  background-color: var(--tab-color);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  z-index: 9999;
+  transition: transform 300ms ease-in-out;
+}
+
+/* Panel positioning and initial states */
+.panel.right {
+  right: 0;
+  transform: translateX(100%);
+}
+
+.panel.left {
+  left: 0;
+  transform: translateX(-100%);
+}
+
+/* Panel animation states */
+.panel.right.open {
+  transform: translateX(0);
+}
+
+.panel.left.open {
+  transform: translateX(0);
+}
+
+/* Close button */
+.closeButton {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  width: 40px;
+  height: 40px;
+  border-radius: 9999px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  transition: background-color 200ms;
+}
+
+.closeButton:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.closeButton:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
+}
+
+.closeIcon {
+  width: 30px;
+  height: 30px;
+  color: var(--dark-text-color);
+  position: relative;
+  top: 1px;
+}
+.closeIcon:hover {
+  color: var(--dark-text-color-hover);
+}
+
+.content {
+  height: 100%;
+  overflow-y: auto;
+  padding: 40px;
+  padding-top: 80px;
+}
+
+/* Responsive: 50% width on medium screens and up */
+@media (min-width: 768px) {
+  .panel {
+    width: 50%;
+  }
+}

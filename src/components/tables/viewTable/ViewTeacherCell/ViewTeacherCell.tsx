@@ -2,7 +2,7 @@ import React from "react";
 import styles from "./ViewTeacherCell.module.css";
 import { ColumnTypeValues, DailyScheduleType } from "@/models/types/dailySchedule";
 import { usePathname } from "next/navigation";
-
+// NOT IN USE
 type ViewTeacherCellProps = {
     cellData: DailyScheduleType;
 };

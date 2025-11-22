@@ -6,15 +6,16 @@ import DailySkeleton from "@/components/loading/skeleton/DailySkeleton/DailySkel
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import styles from "./DailySchedule.module.css";
 import DailyTable from "@/components/tables/dailyScheduleTable/DailyTable/DailyTable";
+import PreviewTable from "@/components/tables/previewTable/PreviewTable/PreviewTable";
 
 const DailySchedulePage: NextPage = () => {
-    const { isLoading } = useDailyTableContext();
+    const { isLoading, isEditMode } = useDailyTableContext();
 
     if (isLoading) return <DailySkeleton />;
 
     return (
         <section className={styles.container}>
-            <DailyTable />
+            {isEditMode ? <DailyTable /> : <PreviewTable />}
         </section>
     );
 };

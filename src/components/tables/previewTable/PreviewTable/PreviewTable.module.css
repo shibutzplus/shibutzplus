@@ -1,0 +1,9 @@
+.previewTable {
+    display: flex;
+    gap: 7px;
+    overflow: scroll;
+    min-width: 100%;
+    padding: 0 10px;
+    box-sizing: border-box;
+    position: relative;
+}

@@ -9,7 +9,7 @@ import ViewTeacherCell from "../ViewTeacherCell/ViewTeacherCell";
 import ViewEventCell from "../ViewEventCell/ViewEventCell";
 import NotPublishedLayout from "@/components/layout/NotPublishedLayout/NotPublishedLayout";
 import styles from "./ViewTable.module.css";
-
+// NOT IN USE
 type ReadOnlyDailyTableProps = {
     scheduleData: DailyScheduleType[];
     hasMobileNav?: boolean;
