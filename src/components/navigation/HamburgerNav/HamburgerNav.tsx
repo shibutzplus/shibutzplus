@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useRef, useEffect } from "react";
 import Link from "next/link";
@@ -14,17 +14,17 @@ import { clearSessionStorage } from "@/lib/sessionStorage";
 import { NavType } from "@/models/types";
 
 type HamburgerNavProps = {
-    isOpen: boolean
-    onClose: () => void
+    isOpen: boolean;
+    onClose: () => void;
     hamburgerType: NavType;
-}
+};
 
 interface ILink {
-    name: string
-    p: string
-    Icon: React.ReactNode
-    withDivider?: boolean
-    withExternal?: boolean
+    name: string;
+    p: string;
+    Icon: React.ReactNode;
+    withDivider?: boolean;
+    withExternal?: boolean;
 }
 const links: ILink[] = [
     {
@@ -71,23 +71,23 @@ const links: ILink[] = [
         Icon: <Icons.calendar size={24} />,
         withExternal: false,
     },
-]
+];
 
 type LinkComponentProps = {
-    link: ILink
-    onClose: () => void
-    currentPath: string
-}
+    link: ILink;
+    onClose: () => void;
+    currentPath: string;
+};
 
 const LinkComponent: React.FC<LinkComponentProps> = ({ link, onClose, currentPath }) => {
-    const isActive = currentPath.startsWith(link.p)
+    const isActive = currentPath.startsWith(link.p);
 
     // Open link in a new tab without closing the menu
     const handleOpenNewTab = (e: React.MouseEvent) => {
-        e.stopPropagation()
-        e.preventDefault()
-        window.open(link.p, "_blank", "noopener,noreferrer")
-    }
+        e.stopPropagation();
+        e.preventDefault();
+        window.open(link.p, "_blank", "noopener,noreferrer");
+    };
 
     return (
         <div className={styles.linkWrapper}>
@@ -112,41 +112,43 @@ const LinkComponent: React.FC<LinkComponentProps> = ({ link, onClose, currentPat
                 </button>
             )}
         </div>
-    )
-}
+    );
+};
 
-const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose, hamburgerType = "private" }) => {
-    const { status } = useSession()
-    const pathname = usePathname()
-    const navRef = useRef<HTMLDivElement>(null)
-    const overlayRef = useRef<HTMLDivElement>(null)
-    const route = useRouter()
+const HamburgerNav: React.FC<HamburgerNavProps> = ({
+    isOpen,
+    onClose,
+    hamburgerType = "private",
+}) => {
+    const { status } = useSession();
+    const pathname = usePathname();
+    const navRef = useRef<HTMLDivElement>(null);
+    const overlayRef = useRef<HTMLDivElement>(null);
+    const route = useRouter();
 
-    useAccessibility({ isOpen, navRef, onClose })
+    useAccessibility({ isOpen, navRef, onClose });
 
     useEffect(() => {
-        if (!overlayRef.current) return
-        if (!isOpen) overlayRef.current.setAttribute("inert", "")
-        else overlayRef.current.removeAttribute("inert")
-    }, [isOpen])
+        if (!overlayRef.current) return;
+        if (!isOpen) overlayRef.current.setAttribute("inert", "");
+        else overlayRef.current.removeAttribute("inert");
+    }, [isOpen]);
 
-    const isPrivate = hamburgerType === "private"
+    const isPrivate = hamburgerType === "private";
 
     const handleLogout = () => {
-        clearSessionStorage()
+        clearSessionStorage();
         if (isPrivate) {
-            clearStorage()
-            signOut({ callbackUrl: routePath.signIn.p })
+            clearStorage();
+            signOut({ callbackUrl: routePath.signIn.p });
         } else {
             // Read schoolId from teacher stored in localStorage
-            const schoolId = getStorageTeacher()?.schoolId
-            if (schoolId)
-                route.push(`${routePath.teacherSignIn.p}/${schoolId}?auth=logout`)
-            else
-                route.push(`${routePath.teacherSignIn.p}?auth=logout`)
+            const schoolId = getStorageTeacher()?.schoolId;
+            if (schoolId) route.push(`${routePath.teacherSignIn.p}/${schoolId}?auth=logout`);
+            else route.push(`${routePath.teacherSignIn.p}?auth=logout`);
         }
-        onClose()
-    }
+        onClose();
+    };
 
     return (
         <div ref={overlayRef} className={`${styles.overlay} ${isOpen ? styles.open : ""}`}>
@@ -162,48 +164,56 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose, hamburgerT
                     <Icons.close size={24} />
                 </button>
 
-                {isPrivate ? (
-                    <>
+                <div className={styles.menuContent}>
+                    {isPrivate ? (
                         <section className={styles.menuSection}>
                             <ul>
                                 {links.map((link, index) => (
-                                    <li key={index} className={link.withDivider ? styles.withDivider : undefined}>
-                                        <LinkComponent link={link} onClose={onClose} currentPath={pathname} />
+                                    <li
+                                        key={index}
+                                        className={
+                                            link.withDivider ? styles.withDivider : undefined
+                                        }
+                                    >
+                                        <LinkComponent
+                                            link={link}
+                                            onClose={onClose}
+                                            currentPath={pathname}
+                                        />
                                     </li>
                                 ))}
                             </ul>
                         </section>
+                    ) : null}
 
-                        {status === STATUS_AUTH ? (
-                            <section className={styles.logoutSection}>
-                                <div onClick={handleLogout} className={styles.navLink} aria-label="Logout">
-                                    <Icons.logOut size={24} />
-                                    <span>יציאה מהמערכת</span>
-                                </div>
-                            </section>
-                        ) : null}
-                    </>
-                ) : (
-                    <>
-                        <section className={styles.supportSection}>
-                            <p>צריכים עזרה או מענה לשאלה?</p>
-                            <p>צרו איתנו קשר:</p>
-                            <a href="mailto:shibutzplus@gmail.com">
-                                shibutzplus@gmail.com
-                            </a>
+                    <div className={styles.bottomSection}>
+                        <section className={styles.menuSection}>
+                            <Link
+                                href={isPrivate ? "/faqManager" : "/faqTeachers"}
+                                className={styles.navLink}
+                                onClick={onClose}
+                                aria-label="שאלות נפוצות"
+                            >
+                                <Icons.faq size={24} />
+                                <span>שאלות נפוצות</span>
+                            </Link>
                         </section>
                         <section className={styles.logoutSection}>
-                            <div onClick={handleLogout} className={styles.navLink} aria-label="Logout">
+                            <div
+                                onClick={handleLogout}
+                                className={styles.navLink}
+                                aria-label="Logout"
+                            >
                                 <Icons.logOut size={24} />
                                 <span>יציאה מהמערכת</span>
                             </div>
                         </section>
-                    </>
-                )}
+                    </div>
+                </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
 export const HamburgerButton: React.FC<{ onClick: () => void; isOpen: boolean }> = ({
     onClick,
@@ -219,7 +229,7 @@ export const HamburgerButton: React.FC<{ onClick: () => void; isOpen: boolean }>
         >
             <Icons.menu size={24} />
         </button>
-    )
-}
+    );
+};
 
-export default HamburgerNav
+export default HamburgerNav;

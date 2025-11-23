@@ -68,7 +68,7 @@ const PortalTopActions: React.FC = () => {
                         isDisabled={isPortalLoading}
                         onChange={handleDayChange}
                         isSearchable={false}
-                        placeholder="בחר יום..."
+                        placeholder="בחרו יום..."
                         hasBorder
                     />
                 </div>

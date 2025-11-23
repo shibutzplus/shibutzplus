@@ -1,0 +1,189 @@
+@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap");
+
+:root {
+    --primary-color: #b57edc;
+    --bg-color: #f9f9f9;
+    --text-color: #333;
+    --border-color: #e0e0e0;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+body {
+    font-family: "Rubik", sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    overflow-y: auto;
+}
+
+.faq-container {
+    max-width: 800px;
+    margin: 20px auto 0 auto;
+    background: #fff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    overflow-wrap: anywhere;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 10px;
+    color: #222;
+}
+
+.subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 40px;
+}
+
+details {
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+}
+
+details[open] {
+    background-color: #fdfdfd;
+    padding-bottom: 10px;
+}
+
+summary {
+    padding: 15px 10px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 1.1rem;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    line-height: 1.8;
+}
+
+summary::after {
+    content: "+";
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    font-weight: bold;
+    transition: transform 0.2s;
+}
+
+details[open] summary::after {
+    transform: rotate(45deg);
+    color: #ff4d4d;
+}
+
+summary::-webkit-details-marker {
+    display: none;
+}
+
+.answer {
+    padding: 0 15px 15px 15px;
+    color: #555;
+    font-size: 1.1rem;
+    line-height: 1.8;
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: underline;
+    font-size: 1rem;
+}
+
+.contact-section {
+    margin-top: 20px;
+    text-align: center;
+    font-weight: 500;
+}
+
+.contact-inline-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    margin-top: 12px;
+}
+
+.contact-textarea {
+    width: 70%;
+    min-height: 120px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background-color: #fff;
+    color: var(--text-color);
+    font-size: 15px;
+    font-family: inherit;
+    resize: vertical;
+}
+
+.contact-inline-form button {
+    background-color: #fff;
+    color: var(--text-color);
+    font-size: 14px;
+    padding: 10px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.contact-textarea:focus {
+    outline: 1px solid var(--border-color);
+}
+
+.contact-inline-form button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.loader {
+    margin: 0 auto;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #fff;
+    border-top: 3px solid #888;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .faq-container {
+        padding: 20px;
+        margin: 0 auto;
+        padding-bottom: 100px;
+    }
+
+    h1 {
+        font-size: 1.6rem;
+    }
+
+    summary {
+        font-size: 1rem;
+        padding: 12px 6px;
+    }
+
+    .answer {
+        font-size: 1rem;
+        padding: 0 6px 12px 6px;
+    }
+
+    .contact-textarea {
+        width: 100%;
+    }
+}

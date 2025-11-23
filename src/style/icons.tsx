@@ -23,7 +23,7 @@ import {
     MdOpenInNew,
 } from "react-icons/md";
 import { FaPlus, FaList } from "react-icons/fa6";
-import { FaSave, FaLink, FaShareAlt } from "react-icons/fa";
+import { FaSave, FaLink, FaShareAlt, FaQuestion } from "react-icons/fa";
 import { PiChairLight } from "react-icons/pi";
 import { GoHistory } from "react-icons/go";
 import { IoPersonOutline, IoCheckmarkCircle } from "react-icons/io5";
@@ -47,6 +47,7 @@ const Icons = {
     emptyList: FaList,
     event: BsCalendar4Event,
     eye: LuEye,
+    faq: FaQuestion,
     history: GoHistory,
     home: IoHomeOutline,
     link: FaLink,
