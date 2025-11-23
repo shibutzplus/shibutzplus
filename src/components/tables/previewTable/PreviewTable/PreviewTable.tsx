@@ -12,7 +12,7 @@ import { DailySchedule } from "@/models/types/dailySchedule";
 type PreviewTableProps = {
     mainDailyTable: DailySchedule;
     selectedDate: string;
-    EmptyTable: React.FC;
+    EmptyTable?: React.FC;
 };
 
 const PreviewTable: React.FC<PreviewTableProps> = ({
@@ -52,9 +52,9 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
                             onTeacherClick={handleTeacherClick}
                         />
                     ))
-                ) : (
+                ) : EmptyTable ? (
                     <EmptyTable />
-                )}
+                ) : null}
             </div>
 
             <SlidingPanel isOpen={isPanelOpen} onClose={handleClosePanel}>

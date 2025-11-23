@@ -7,6 +7,7 @@ import ViewTable from "@/components/tables/viewTable/ViewTable/ViewTable";
 import PublishedSkeleton from "@/components/loading/skeleton/PublishedSkeleton/PublishedSkeleton";
 import { usePortal } from "@/context/PortalContext";
 import { errorToast } from "@/lib/toast";
+import PreviewTable from "@/components/tables/previewTable/PreviewTable/PreviewTable";
 
 const PublishedPortalPage: NextPage = () => {
     const { isPublishLoading, selectedDate, mainPublishTable, fetchPublishScheduleData } =
@@ -30,15 +31,12 @@ const PublishedPortalPage: NextPage = () => {
     if (isPublishLoading) return <PublishedSkeleton />;
 
     return (
-        <div className={styles.content}>
-            <div className={styles.tableWrapper}>
-                <ViewTable
-                    scheduleData={mainPublishTable}
-                    noScheduleTitle=""
-                    noScheduleSubTitle="אין לך שינויים במערכת ליום זה"
-                />
-            </div>
-        </div>
+        <section className={styles.container}>
+            {/* <PreviewTable
+                mainDailyTable={mainDailyTable}
+                selectedDate={selectedYearDate}
+            /> */}
+        </section>
     );
 };
 

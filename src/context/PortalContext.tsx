@@ -24,7 +24,14 @@ interface PortalContextType {
     schoolId: string | undefined;
     mainPortalTable: PortalSchedule;
     setTeacherAndSchool: (schoolId?: string, teacherId?: string) => Promise<boolean>;
-    handleSave: (rowId: string, hour: number, instructions?: string, schoolId?: string, issueTeacherId?: string, subTeacherId?: string) => Promise<void>;
+    handleSave: (
+        rowId: string,
+        hour: number,
+        instructions?: string,
+        schoolId?: string,
+        issueTeacherId?: string,
+        subTeacherId?: string,
+    ) => Promise<void>;
     publishDatesOptions: SelectOption[];
     isPortalLoading: boolean;
     isPublishLoading: boolean;
@@ -59,7 +66,12 @@ type PortalProviderProps = {
     initDate?: string;
 };
 
-export const PortalProvider: React.FC<PortalProviderProps> = ({ children, initTeacherId, initSchoolId, initDate }) => {
+export const PortalProvider: React.FC<PortalProviderProps> = ({
+    children,
+    initTeacherId,
+    initSchoolId,
+    initDate,
+}) => {
     const [selectedDate, setSelectedDayId] = useState<string | undefined>();
     const [publishDatesOptions, setPublishDatesOptions] = useState<SelectOption[]>([]);
 
@@ -96,7 +108,7 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children, initTe
         const today = getDateReturnString(now);
         const tomorrow = getDateReturnString(new Date(now.getTime() + 24 * 60 * 60 * 1000));
 
-        const has = (val: string | undefined) => !!val && options.some(o => o.value === val);
+        const has = (val: string | undefined) => !!val && options.some((o) => o.value === val);
 
         if (hour < 16) {
             if (has(today)) return today;
@@ -154,7 +166,11 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children, initTe
                             return;
                         }
                         setPublishDatesOptions(res);
-                        handleDayChange(chooseDefaultDate(res) ?? selectSelectedDate(res)?.value ?? res[0].value);
+                        handleDayChange(
+                            chooseDefaultDate(res) ??
+                                selectSelectedDate(res)?.value ??
+                                res[0].value,
+                        );
                         blockRef.current = false;
                     }
                 } catch (error) {
@@ -277,18 +293,29 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children, initTe
         }
     };
 
-    const handleSave = async (rowId: string, hour: number, instructions?: string, schoolId?: string, issueTeacherId?: string, subTeacherId?: string) => {
+    const handleSave = async (
+        rowId: string,
+        hour: number,
+        instructions?: string,
+        schoolId?: string,
+        issueTeacherId?: string,
+        subTeacherId?: string,
+    ) => {
         try {
             setIsSaving(true);
             if (!selectedDate) return;
 
-            const response = await (
-                (schoolId && issueTeacherId && subTeacherId)
-                    ? (updateDailyInstructionAction as any)(
-                        selectedDate, rowId, instructions, hour, schoolId, issueTeacherId, subTeacherId
-                    )
-                    : updateDailyInstructionAction(selectedDate, rowId, instructions)
-            );
+            const response = await (schoolId && issueTeacherId && subTeacherId
+                ? (updateDailyInstructionAction as any)(
+                      selectedDate,
+                      rowId,
+                      instructions,
+                      hour,
+                      schoolId,
+                      issueTeacherId,
+                      subTeacherId,
+                  )
+                : updateDailyInstructionAction(selectedDate, rowId, instructions));
 
             if (response.success) {
                 const portalSchedule = { ...mainPortalTable };
@@ -306,7 +333,11 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children, initTe
     };
 
     // Refresh the published dates options and selectedDate
-    const refreshPublishDates = async (): Promise<{ success: boolean; error: string; selected: string }> => {
+    const refreshPublishDates = async (): Promise<{
+        success: boolean;
+        error: string;
+        selected: string;
+    }> => {
         if (!teacher) {
             setPublishDatesOptions([]);
             setSelectedDayId("");
@@ -321,9 +352,13 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children, initTe
                 setPublishDatesOptions(options);
 
                 // Keep current if still valid; otherwise choose by time-based rule
-                const keepCurrent = !!selectedDate && options.some(o => o.value === selectedDate);
+                const keepCurrent = !!selectedDate && options.some((o) => o.value === selectedDate);
                 const nextSelected = options.length
-                    ? (keepCurrent ? selectedDate! : (chooseDefaultDate(options) ?? selectSelectedDate(options)?.value ?? options[0].value))
+                    ? keepCurrent
+                        ? selectedDate!
+                        : (chooseDefaultDate(options) ??
+                          selectSelectedDate(options)?.value ??
+                          options[0].value)
                     : "";
 
                 setSelectedDayId(nextSelected);
