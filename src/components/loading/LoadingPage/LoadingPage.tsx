@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./LoadingPage.module.css";
-import Loading from "@/components/core/Loading/Loading";
-import Logo from "@/components/core/Logo/Logo";
+import Logo from "@/components/ui/Logo/Logo";
+import Loading from "@/components/loading/Loading/Loading";
 
 const LoadingPage: React.FC = () => {
     return (

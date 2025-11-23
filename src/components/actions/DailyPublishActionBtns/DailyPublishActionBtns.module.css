@@ -1,0 +1,12 @@
+.topNavBtnContainer {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+    .topNavBtnContainer {
+        gap: 15px;
+    }
+}
