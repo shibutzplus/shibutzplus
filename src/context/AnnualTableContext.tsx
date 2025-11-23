@@ -6,6 +6,7 @@ import { createSelectOptions } from "@/utils/format";
 import { ClassType } from "@/models/types/classes";
 import { Pair, SelectOption } from "@/models/types";
 import {
+    AnnualInputCellType,
     AnnualScheduleRequest,
     AnnualScheduleType,
     WeeklySchedule,
@@ -16,16 +17,16 @@ import { addAnnualScheduleAction } from "@/app/actions/POST/addAnnualScheduleAct
 import { deleteAnnualScheduleAction } from "@/app/actions/DELETE/deleteAnnualScheduleAction";
 import useInitAnnualData from "@/hooks/useInitAnnualData";
 import { SelectMethod } from "@/models/types/actions";
-import {
-    createPairs,
-    createAnnualRequests,
-    setNewScheduleTemplate,
-    getSelectedClass,
-} from "@/services/annualScheduleService";
 import { dayToNumber } from "@/utils/time";
 import { TeacherType } from "@/models/types/teachers";
 import { SubjectType } from "@/models/types/subjects";
 import { sortByHebrewName } from "@/utils/sort";
+import {
+    createAnnualRequests,
+    createPairs,
+    setNewScheduleTemplate,
+} from "@/services/annual/initialize";
+import { getSelectedClass } from "@/services/annual/get";
 
 interface AnnualTableContextType {
     annualScheduleTable: AnnualScheduleType[] | undefined;
@@ -39,7 +40,7 @@ interface AnnualTableContextType {
     schedule: WeeklySchedule;
     setSchedule: React.Dispatch<React.SetStateAction<WeeklySchedule>>;
     handleAddNewRow: (
-        type: "teachers" | "subjects",
+        type: AnnualInputCellType,
         elementIds: string[],
         day: string,
         hour: number,
@@ -176,7 +177,7 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
     };
 
     const handleAddNewRow = async (
-        type: "teachers" | "subjects",
+        type: AnnualInputCellType,
         elementIds: string[],
         day: string,
         hour: number,

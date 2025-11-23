@@ -13,11 +13,11 @@ import {
     clampDayToMonth,
 } from "@/utils/time";
 import { useQueryParam } from "@/hooks/useQueryParam";
-import { DailySchedule, DailyScheduleType } from "@/models/types/dailySchedule";
+import { DailySchedule } from "@/models/types/dailySchedule";
 import { useMainContext } from "./MainContext";
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
-import { setColumn, setEmptyColumn } from "@/services/dailyScheduleService";
-import { populateTable } from "@/services/daily/populate";
+import { populateDailyScheduleTable } from "@/services/daily/populate";
+import { infoToast } from "@/lib/toast";
 
 interface HistoryTableContextType {
     selectedYearDate: string;
@@ -118,10 +118,14 @@ export const HistoryTableProvider: React.FC<HistoryTableProviderProps> = ({ chil
                 setIsLoading(true);
                 const response = await getDailyScheduleAction(school.id, selectedYearDate);
                 if (response.success && response.data && teachers) {
-                    populateDailyScheduleTable(response.data);
+                    const newSchedule = await populateDailyScheduleTable(
+                        mainDailyTable,
+                        selectedYearDate,
+                        response.data,
+                    );
+                    if (newSchedule) setMainDailyTable(newSchedule);
                 } else {
-                    // infoToast("החיבור למשתמש נותק, יש להיכנס מחדש למערכת.");
-                    setMainDailyTable({});
+                    infoToast("החיבור למשתמש נותק, יש להיכנס מחדש למערכת.");
                 }
             } catch (error) {
                 console.error("Error fetching daily schedule data:", error);
@@ -132,30 +136,6 @@ export const HistoryTableProvider: React.FC<HistoryTableProviderProps> = ({ chil
 
         fetchDataForDate();
     }, [school?.id, selectedYearDate, teachers]);
-
-    const populateDailyScheduleTable = async (dataColumns: DailyScheduleType[]) => {
-        try {
-            if (!dataColumns) return;
-            if (dataColumns.length === 0) {
-                setMainDailyTable(setEmptyColumn({}, selectedYearDate));
-                return;
-            }
-
-            const { entriesByDayAndHeader } = populateTable(dataColumns, selectedYearDate);
-
-            // Populate all schedule data at once
-            const newSchedule: DailySchedule = {};
-            Object.entries(entriesByDayAndHeader).forEach(([date, headerEntries]) => {
-                Object.entries(headerEntries).forEach(([columnId, cells]) => {
-                    // setColumn(cells, newSchedule, columnId, date);
-                });
-            });
-
-            setMainDailyTable(newSchedule);
-        } catch (error) {
-            console.error("Error processing daily schedule data:", error);
-        }
-    };
 
     return (
         <HistoryTableContext.Provider

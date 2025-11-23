@@ -16,14 +16,18 @@ import { TeacherType } from "@/models/types/teachers";
 import useDailyTeacherActions from "@/hooks/daily/useDailyTeacherActions";
 import { getAnnualScheduleAction } from "@/app/actions/GET/getAnnualScheduleAction";
 import { AvailableTeachers } from "@/models/types/annualSchedule";
-import { setColumn, setEmptyColumn, createNewEmptyColumn } from "@/services/dailyScheduleService";
 import { getTomorrowOption } from "@/resources/dayOptions";
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
 import { infoToast } from "@/lib/toast";
 import { generateId } from "@/utils";
 import { deleteDailyColumnAction } from "@/app/actions/DELETE/deleteDailyColumnAction";
 import useDailyEventActions from "@/hooks/daily/useDailyEventActions";
-import { mapAnnualTeachers, populateTable } from "@/services/daily/populate";
+import {
+    mapAnnualTeachers,
+    populateDailyScheduleTable,
+    populateTable,
+} from "@/services/daily/populate";
+import { createNewEmptyColumn } from "@/services/daily/setEmpty";
 
 interface DailyTableContextType {
     mainDailyTable: DailySchedule;
@@ -161,7 +165,12 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 const targetDate = selectedDate || getTomorrowOption();
                 const response = await getDailyScheduleAction(school.id, targetDate);
                 if (response.success && response.data && teachers) {
-                    populateDailyScheduleTable(response.data);
+                    const newSchedule = await populateDailyScheduleTable(
+                        mainDailyTable,
+                        selectedDate,
+                        response.data,
+                    );
+                    if (newSchedule) setMainAndStorageTable(newSchedule);
                 } else {
                     infoToast("החיבור למשתמש נותק, יש להיכנס מחדש למערכת.");
                 }
@@ -185,30 +194,6 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
             return true;
         }
         return false;
-    };
-
-    const populateDailyScheduleTable = async (dataColumns: DailyScheduleType[]) => {
-        try {
-            if (!dataColumns) return;
-            if (dataColumns.length === 0) {
-                setMainAndStorageTable(setEmptyColumn(mainDailyTable, selectedDate));
-                return;
-            }
-
-            const entriesByDayAndHeader = populateTable(dataColumns, selectedDate);
-
-            // Populate all schedule data at once
-            const newSchedule: DailySchedule = {};
-            Object.entries(entriesByDayAndHeader).forEach(([date, headerEntries]) => {
-                Object.entries(headerEntries).forEach(([columnId, cells]) => {
-                    setColumn(cells, newSchedule, columnId, date);
-                });
-            });
-
-            setMainAndStorageTable(newSchedule);
-        } catch (error) {
-            console.error("Error processing daily schedule data:", error);
-        }
     };
 
     const addNewEmptyColumn = (type: ColumnType) => {

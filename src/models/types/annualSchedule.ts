@@ -48,3 +48,5 @@ export type AvailableTeachers = {
         [hour: string]: string[];
     };
 };
+
+export type AnnualInputCellType = "teachers" | "subjects";

@@ -7,8 +7,8 @@ import { ColumnType, DailySchedule, DailyScheduleCell } from "@/models/types/dai
 import { TeacherType } from "@/models/types/teachers";
 import { addNewTeacherValueCell } from "@/services/daily/add";
 import { fillLeftRowsWithEmptyCells } from "@/services/daily/populate";
+import { setEmptyTeacherColumn } from "@/services/daily/setEmpty";
 import { updateAddCell } from "@/services/daily/update";
-import { setEmptyTeacherColumn } from "@/services/dailyScheduleService";
 import { pushSyncUpdate } from "@/services/syncService";
 
 const useDailyTeacherActions = (

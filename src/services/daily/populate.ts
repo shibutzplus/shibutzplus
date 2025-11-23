@@ -6,8 +6,10 @@ import {
     DailyScheduleType,
     HeaderCol,
 } from "@/models/types/dailySchedule";
-import { initDailyEventCellData, initDailyTeacherCellData } from "@/utils/Initialize";
+import { initDailyEventCellData, initDailyTeacherCellData } from "@/services/daily/initialize";
 import { HOURS_IN_DAY } from "@/utils/time";
+import { setColumn } from "./setColumn";
+import { setEmptyColumn } from "./setEmpty";
 
 export const initDailySchedule = (dailySchedule: DailySchedule, date: string, columnId: string) => {
     // Initialize date if it doesn't exist
@@ -118,4 +120,40 @@ export const mapAnnualTeachers = (data: AnnualScheduleType[]) => {
     });
 
     return teacherMapping;
+};
+
+/**
+ * Populates the main daily schedule table with data for a specific date.
+ *
+ * This function takes the current `mainDailyTable`, a `selectedDate`, and an array of `dataColumns`
+ * (representing the schedule data from the backend). It processes the data to structure it by
+ * date and column, and then updates the schedule object. If no data columns are provided,
+ * it ensures an empty column structure is initialized for the date.
+ * @returns A promise that resolves to the updated `DailySchedule` object, or undefined if an error occurs.
+ */
+export const populateDailyScheduleTable = async (
+    mainDailyTable: DailySchedule,
+    selectedDate: string,
+    dataColumns: DailyScheduleType[],
+) => {
+    try {
+        if (!dataColumns) return;
+        if (dataColumns.length === 0) {
+            return setEmptyColumn(mainDailyTable, selectedDate);
+        }
+
+        const entriesByDayAndHeader = populateTable(dataColumns, selectedDate);
+
+        // Populate all schedule data at once
+        const newSchedule: DailySchedule = {};
+        Object.entries(entriesByDayAndHeader).forEach(([date, headerEntries]) => {
+            Object.entries(headerEntries).forEach(([columnId, cells]) => {
+                setColumn(cells, newSchedule, columnId, date);
+            });
+        });
+
+        return newSchedule;
+    } catch (error) {
+        console.error("Error processing daily schedule data:", error);
+    }
 };

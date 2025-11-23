@@ -1,8 +1,16 @@
+import { DailySchedule, DailyScheduleCell } from "@/models/types/dailySchedule";
+import { initDailySchedule } from "./populate";
 import { HOURS_IN_DAY } from "@/utils/time";
-import { ColumnType, DailySchedule, DailyScheduleCell } from "@/models/types/dailySchedule";
-import { TeacherType } from "@/models/types/teachers";
-import { initDailySchedule } from "./daily/populate";
 
+/**
+ * Updates a specific column in the daily schedule with new cell data.
+ *
+ * This function determines whether the provided `cells` belong to a teacher column or an event column
+ * based on the presence of `headerTeacher` in the first cell's header data. It then delegates
+ * the update process to either `setTeacherColumn` or `setEventColumn` accordingly.
+ *
+ * @returns The updated `DailySchedule` object with the modified column.
+ */
 export const setColumn = (
     cells: DailyScheduleCell[],
     newSchedule: DailySchedule,
@@ -93,72 +101,4 @@ export const setEventColumn = (
     }
 
     return dailySchedule;
-};
-
-export const createNewEmptyColumn = (
-    dailySchedule: DailySchedule,
-    selectedDate: string,
-    columnId: string,
-    type: ColumnType,
-) => {
-    dailySchedule = initDailySchedule(dailySchedule, selectedDate, columnId);
-
-    for (let hour = 1; hour <= HOURS_IN_DAY; hour++) {
-        dailySchedule[selectedDate][columnId][`${hour}`] = {
-            headerCol: { type },
-            hour: hour,
-        };
-    }
-    return dailySchedule;
-};
-
-export const setEmptyTeacherColumn = (
-    dailySchedule: DailySchedule,
-    selectedDate: string,
-    columnId: string,
-    type: ColumnType,
-    headerTeacher?: TeacherType,
-) => {
-    dailySchedule = initDailySchedule(dailySchedule, selectedDate, columnId);
-
-    for (let hour = 1; hour <= HOURS_IN_DAY; hour++) {
-        dailySchedule[selectedDate][columnId][`${hour}`] = {
-            headerCol: { headerTeacher, type },
-            hour: hour,
-        };
-    }
-    return dailySchedule;
-};
-
-export const setEmptyColumn = (mainDailyTable: DailySchedule, selectedDate: string) => {
-    const updateDailyTable = { ...mainDailyTable };
-    if (!updateDailyTable[selectedDate]) {
-        updateDailyTable[selectedDate] = {};
-    }
-    return updateDailyTable;
-};
-
-//NOT IN USE
-export const getColumnsFromStorage = (storageData: {
-    [header: string]: {
-        [hour: string]: DailyScheduleCell;
-    };
-}) => {
-    const columnsToCreate: { id: string; type: ColumnType }[] = [];
-    const seenColumnIds = new Set<string>();
-
-    // Extract column information from storage
-    Object.entries(storageData).forEach(([columnId, hourData]) => {
-        if (!seenColumnIds.has(columnId)) {
-            seenColumnIds.add(columnId);
-            const firstHour = Object.values(hourData)[0] as DailyScheduleCell;
-            if (firstHour?.headerCol) {
-                columnsToCreate.push({
-                    id: columnId,
-                    type: firstHour.headerCol.type,
-                });
-            }
-        }
-    });
-    return columnsToCreate;
 };

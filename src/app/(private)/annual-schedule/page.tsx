@@ -6,9 +6,8 @@ import styles from "./annualSchedule.module.css";
 import AnnualTable from "@/components/tables/annualScheduleTable/AnnualTable/AnnualTable";
 import { useMainContext } from "@/context/MainContext";
 import { useAnnualTable } from "@/context/AnnualTableContext";
-import { populateAnnualSchedule } from "@/utils/schedule";
-import { initializeEmptyAnnualSchedule } from "@/utils/Initialize";
-import AnnualSkeleton from "@/components/loading/skeleton/AnnualSkeleton/AnnualSkeleton";
+import { populateAnnualSchedule } from "@/services/annual/populate";
+import { initializeEmptyAnnualSchedule } from "@/services/annual/initialize";
 
 const AnnualSchedulePage: NextPage = () => {
     const { classes, teachers, subjects } = useMainContext();

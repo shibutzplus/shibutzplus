@@ -1,5 +1,5 @@
 import { AnnualScheduleType, WeeklySchedule } from "@/models/types/annualSchedule";
-import { DAYS_OF_WEEK } from "./time";
+import { DAYS_OF_WEEK } from "@/utils/time";
 
 export const populateAnnualSchedule = (
     annualScheduleTable: AnnualScheduleType[] | undefined,
