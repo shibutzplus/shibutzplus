@@ -1,5 +1,9 @@
 import { Pair } from "@/models/types";
-import { AnnualScheduleRequest, WeeklySchedule, AnnualScheduleType } from "@/models/types/annualSchedule";
+import {
+    AnnualScheduleRequest,
+    WeeklySchedule,
+    AnnualScheduleType,
+} from "@/models/types/annualSchedule";
 import { ClassType } from "@/models/types/classes";
 import { SchoolType } from "@/models/types/school";
 import { SubjectType } from "@/models/types/subjects";
@@ -24,7 +28,11 @@ export const setNewScheduleTemplate = (
         newSchedule[selectedClassId][day] = {};
     }
     if (!newSchedule[selectedClassId][day][hour]) {
-        newSchedule[selectedClassId][day][hour] = { teachers: [], subjects: [], classId: selectedClassId };
+        newSchedule[selectedClassId][day][hour] = {
+            teachers: [],
+            subjects: [],
+            classId: selectedClassId,
+        };
     }
     return newSchedule;
 };
@@ -82,6 +90,7 @@ export const getUniqueCellsFromQueue = (queueRows: AnnualScheduleRequest[]) => {
 /**
  * Build reverse index: day -> hour -> teacherId -> classId
  */
+// NOT IN USE
 export const buildTeacherAtIndex = (schedule: WeeklySchedule) => {
     const index: Record<string, Record<string, Record<string, string>>> = {};
     for (const [classKey, days] of Object.entries(schedule || {})) {
@@ -104,6 +113,7 @@ export const buildTeacherAtIndex = (schedule: WeeklySchedule) => {
 /**
  * Build simple lookup: classId -> className
  */
+// NOT IN USE
 export const buildClassNameById = (classes: ClassType[] | undefined) => {
     const map: Record<string, string> = {};
     (classes || []).forEach((c) => {
@@ -117,6 +127,7 @@ export const buildClassNameById = (classes: ClassType[] | undefined) => {
  * Build WeeklySchedule from AnnualScheduleType[]
  * Note: uses String(dayNumber) as the day key (e.g., "1".."7"); hour is also string.
  */
+// NOT IN USE
 export const buildWeeklyScheduleFromAnnual = (rows: AnnualScheduleType[] | undefined) => {
     const schedule: WeeklySchedule = {};
     if (!rows || rows.length === 0) return schedule;
@@ -125,8 +136,8 @@ export const buildWeeklyScheduleFromAnnual = (rows: AnnualScheduleType[] | undef
         const classId = row.class?.id;
         const teacherId = row.teacher?.id;
         const subjectId = row.subject?.id;
-        const dayKey = String(row.day);       // day as "1".."7"
-        const hourKey = String(row.hour);     // hour as string
+        const dayKey = String(row.day); // day as "1".."7"
+        const hourKey = String(row.hour); // hour as string
 
         if (!classId || !teacherId || !subjectId) continue;
 

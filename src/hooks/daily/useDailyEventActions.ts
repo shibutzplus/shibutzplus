@@ -6,14 +6,9 @@ import { useMainContext } from "@/context/MainContext";
 import { eventPlaceholder } from "@/models/constant/table";
 import { ColumnTypeValues, DailySchedule, DailyScheduleCell } from "@/models/types/dailySchedule";
 import { TeacherType } from "@/models/types/teachers";
-import {
-    addNewEventCell,
-    fillLeftRowsWithEmptyCells,
-    initDailySchedule,
-    updateAddCell,
-    updateAllEventHeader,
-    updateDeleteCell,
-} from "@/services/dailyScheduleService";
+import { addNewEventCell } from "@/services/daily/add";
+import { fillLeftRowsWithEmptyCells, initDailySchedule } from "@/services/daily/populate";
+import { updateAddCell, updateAllEventHeader, updateDeleteCell } from "@/services/daily/update";
 import { pushSyncUpdate } from "@/services/syncService";
 import { getDayNumberByDateString } from "@/utils/time";
 

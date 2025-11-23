@@ -16,8 +16,8 @@ import { useQueryParam } from "@/hooks/useQueryParam";
 import { DailySchedule, DailyScheduleType } from "@/models/types/dailySchedule";
 import { useMainContext } from "./MainContext";
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
-import { populateTable, setColumn, setEmptyColumn } from "@/services/dailyScheduleService";
-import { infoToast } from "@/lib/toast";
+import { setColumn, setEmptyColumn } from "@/services/dailyScheduleService";
+import { populateTable } from "@/services/daily/populate";
 
 interface HistoryTableContextType {
     selectedYearDate: string;
@@ -147,7 +147,7 @@ export const HistoryTableProvider: React.FC<HistoryTableProviderProps> = ({ chil
             const newSchedule: DailySchedule = {};
             Object.entries(entriesByDayAndHeader).forEach(([date, headerEntries]) => {
                 Object.entries(headerEntries).forEach(([columnId, cells]) => {
-                    setColumn(cells, newSchedule, columnId, date);
+                    // setColumn(cells, newSchedule, columnId, date);
                 });
             });
 

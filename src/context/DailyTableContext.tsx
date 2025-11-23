@@ -16,19 +16,14 @@ import { TeacherType } from "@/models/types/teachers";
 import useDailyTeacherActions from "@/hooks/daily/useDailyTeacherActions";
 import { getAnnualScheduleAction } from "@/app/actions/GET/getAnnualScheduleAction";
 import { AvailableTeachers } from "@/models/types/annualSchedule";
-import {
-    mapAnnualTeachers,
-    populateTable,
-    setColumn,
-    setEmptyColumn,
-    createNewEmptyColumn,
-} from "@/services/dailyScheduleService";
+import { setColumn, setEmptyColumn, createNewEmptyColumn } from "@/services/dailyScheduleService";
 import { getTomorrowOption } from "@/resources/dayOptions";
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
 import { infoToast } from "@/lib/toast";
 import { generateId } from "@/utils";
 import { deleteDailyColumnAction } from "@/app/actions/DELETE/deleteDailyColumnAction";
 import useDailyEventActions from "@/hooks/daily/useDailyEventActions";
+import { mapAnnualTeachers, populateTable } from "@/services/daily/populate";
 
 interface DailyTableContextType {
     mainDailyTable: DailySchedule;
@@ -200,10 +195,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 return;
             }
 
-            const { entriesByDayAndHeader, columnsToCreate } = populateTable(
-                dataColumns,
-                selectedDate,
-            );
+            const entriesByDayAndHeader = populateTable(dataColumns, selectedDate);
 
             // Populate all schedule data at once
             const newSchedule: DailySchedule = {};

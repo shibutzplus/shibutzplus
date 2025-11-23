@@ -1,28 +1,7 @@
-import { eventPlaceholder } from "@/models/constant/table";
-import { getDayNumberByDateString, HOURS_IN_DAY, getStringReturnDate } from "@/utils/time";
-import {
-    ColumnTypeValues,
-    ColumnType,
-    DailySchedule,
-    DailyScheduleCell,
-    DailyScheduleRequest,
-    DailyScheduleType,
-    HeaderCol,
-} from "@/models/types/dailySchedule";
-import { SchoolType } from "@/models/types/school";
+import { HOURS_IN_DAY } from "@/utils/time";
+import { ColumnType, DailySchedule, DailyScheduleCell } from "@/models/types/dailySchedule";
 import { TeacherType } from "@/models/types/teachers";
-import { initDailyEventCellData, initDailyTeacherCellData } from "@/utils/Initialize";
-import { AnnualScheduleType, AvailableTeachers } from "@/models/types/annualSchedule";
-
-export const initDailySchedule = (dailySchedule: DailySchedule, date: string, columnId: string) => {
-    // Initialize date if it doesn't exist
-    if (!dailySchedule[date]) dailySchedule[date] = {};
-
-    // Initialize header if it doesn't exist
-    if (!dailySchedule[date][columnId]) dailySchedule[date][columnId] = {};
-
-    return dailySchedule;
-};
+import { initDailySchedule } from "./daily/populate";
 
 export const setColumn = (
     cells: DailyScheduleCell[],
@@ -116,20 +95,6 @@ export const setEventColumn = (
     return dailySchedule;
 };
 
-export const fillLeftRowsWithEmptyCells = (
-    updatedSchedule: DailySchedule,
-    selectedDate: string,
-    columnId: string,
-    headerCol?: HeaderCol | undefined,
-) => {
-    for (let hour = 1; hour <= HOURS_IN_DAY; hour++) {
-        if (!updatedSchedule[selectedDate][columnId][`${hour}`]) {
-            updatedSchedule[selectedDate][columnId][`${hour}`] = { headerCol, hour };
-        }
-    }
-    return updatedSchedule;
-};
-
 export const createNewEmptyColumn = (
     dailySchedule: DailySchedule,
     selectedDate: string,
@@ -165,22 +130,6 @@ export const setEmptyTeacherColumn = (
     return dailySchedule;
 };
 
-export const updateAllEventHeader = (
-    updatedSchedule: DailySchedule,
-    selectedDate: string,
-    columnId: string,
-    eventTitle: string,
-) => {
-    for (let i = 1; i <= HOURS_IN_DAY; i++) {
-        updatedSchedule[selectedDate][columnId][`${i}`].headerCol = {
-            ...updatedSchedule[selectedDate][columnId][`${i}`].headerCol,
-            headerEvent: eventTitle,
-            type: ColumnTypeValues.event,
-        };
-    }
-    return updatedSchedule;
-};
-
 export const setEmptyColumn = (mainDailyTable: DailySchedule, selectedDate: string) => {
     const updateDailyTable = { ...mainDailyTable };
     if (!updateDailyTable[selectedDate]) {
@@ -189,63 +138,7 @@ export const setEmptyColumn = (mainDailyTable: DailySchedule, selectedDate: stri
     return updateDailyTable;
 };
 
-export const addNewEventCell = (
-    school: SchoolType,
-    cellData: DailyScheduleCell,
-    columnId: string,
-    selectedDate: string,
-    event: string,
-) => {
-    const { hour, headerCol } = cellData;
-    if (!school || event === undefined || !headerCol?.headerEvent) {
-        return;
-    }
-    const dailyCellData: DailyScheduleRequest = {
-        date: getStringReturnDate(selectedDate),
-        day: getDayNumberByDateString(selectedDate).toString(),
-        eventTitle: headerCol.headerEvent,
-        issueTeacherType: ColumnTypeValues.event,
-        columnId,
-        hour,
-        school,
-        event,
-        position: 0,
-    };
-    return dailyCellData;
-};
-
-export const addNewTeacherValueCell = (
-    school: SchoolType,
-    cellData: DailyScheduleCell,
-    columnId: string,
-    selectedDate: string,
-    type: ColumnType,
-    subTeacher?: TeacherType,
-    text?: string,
-) => {
-    const { hour, class: classData, subject, headerCol } = cellData;
-    if (!school || !classData || !subject || !headerCol?.headerTeacher) return;
-
-    const dailyCellData: DailyScheduleRequest = {
-        date: getStringReturnDate(selectedDate),
-        day: getDayNumberByDateString(selectedDate).toString(),
-        issueTeacher: headerCol.headerTeacher,
-        issueTeacherType: type,
-        eventTitle: undefined,
-        event: text,
-        subTeacher,
-        columnId,
-        hour,
-        school,
-        class: classData,
-        subject,
-        position: 0,
-    };
-
-    return dailyCellData;
-};
-
-// TODO: not in use
+//NOT IN USE
 export const getColumnsFromStorage = (storageData: {
     [header: string]: {
         [hour: string]: DailyScheduleCell;
@@ -268,134 +161,4 @@ export const getColumnsFromStorage = (storageData: {
         }
     });
     return columnsToCreate;
-};
-
-export const updateAddCell = (
-    responseId: string,
-    mainDailyTable: DailySchedule,
-    selectedDate: string,
-    cellData: DailyScheduleCell,
-    columnId: string,
-    data: { event?: string; subTeacher?: TeacherType },
-) => {
-    // Update mainDailyTable with the new cell data
-    const updatedSchedule = { ...mainDailyTable };
-    if (!updatedSchedule[selectedDate]) {
-        updatedSchedule[selectedDate] = {};
-    }
-    if (!updatedSchedule[selectedDate][columnId]) {
-        updatedSchedule[selectedDate][columnId] = {};
-    }
-
-    const hourStr = cellData.hour.toString();
-    const existingCell = updatedSchedule[selectedDate][columnId][hourStr] || {
-        ...cellData,
-    };
-
-    if (data.event) {
-        existingCell.DBid = responseId;
-        existingCell.event = data.event || eventPlaceholder;
-        delete existingCell.subTeacher;
-    } else if (data.subTeacher) {
-        existingCell.DBid = responseId;
-        existingCell.subTeacher = data.subTeacher;
-        delete existingCell.event;
-    } else if (!data.subTeacher && !data.event) {
-        existingCell.DBid = responseId;
-        delete existingCell.subTeacher;
-        delete existingCell.event;
-    }
-
-    updatedSchedule[selectedDate][columnId][hourStr] = existingCell;
-    return updatedSchedule;
-};
-
-export const updateDeleteCell = (
-    deletedRowId: string,
-    mainDailyTable: DailySchedule,
-    selectedDate: string,
-    cellData: DailyScheduleCell,
-    columnId: string,
-) => {
-    // Update mainDailyTable by removing the deleted cell data
-    const updatedSchedule = { ...mainDailyTable };
-    if (!updatedSchedule[selectedDate] || !updatedSchedule[selectedDate][columnId]) {
-        return updatedSchedule;
-    }
-
-    const hourStr = cellData.hour.toString();
-    const existingCell = updatedSchedule[selectedDate][columnId][hourStr];
-
-    if (existingCell && existingCell.DBid === deletedRowId) {
-        // Clear the cell data but keep the header structure
-        updatedSchedule[selectedDate][columnId][hourStr] = {
-            headerCol: existingCell.headerCol,
-            hour: existingCell.hour,
-        };
-    }
-
-    return updatedSchedule;
-};
-
-export const populateTable = (dataColumns: DailyScheduleType[], selectedDate: string) => {
-    const entriesByDayAndHeader: Record<string, Record<string, DailyScheduleCell[]>> = {};
-    const columnsToCreate: { id: string; type: ColumnType }[] = [];
-    const seenColumnIds = new Set<string>();
-
-    for (const columnCell of dataColumns) {
-        const columnId = columnCell.columnId;
-
-        const { issueTeacher, issueTeacherType } = columnCell;
-
-        let cellData: DailyScheduleCell;
-        if (issueTeacher) {
-            cellData = initDailyTeacherCellData(columnCell);
-        } else {
-            cellData = initDailyEventCellData(columnCell);
-        }
-        // If the column is not already in the columnsToCreate array, add it
-        if (!seenColumnIds.has(columnId)) {
-            columnsToCreate.push({
-                id: columnId,
-                type: issueTeacherType,
-            });
-            seenColumnIds.add(columnId);
-        }
-
-        if (!entriesByDayAndHeader[selectedDate]) {
-            entriesByDayAndHeader[selectedDate] = {};
-        }
-        if (!entriesByDayAndHeader[selectedDate][columnId]) {
-            entriesByDayAndHeader[selectedDate][columnId] = [];
-        }
-
-        entriesByDayAndHeader[selectedDate][columnId].push(cellData);
-    }
-
-    return {
-        entriesByDayAndHeader,
-        columnsToCreate,
-    };
-};
-
-export const mapAnnualTeachers = (data: AnnualScheduleType[]) => {
-    const teacherMapping: AvailableTeachers = {};
-
-    data.forEach((schedule) => {
-        const day = schedule.day.toString();
-        const hour = schedule.hour.toString();
-        const teacherId = schedule.teacher?.id;
-
-        if (!teacherMapping[day]) {
-            teacherMapping[day] = {};
-        }
-        if (!teacherMapping[day][hour]) {
-            teacherMapping[day][hour] = [];
-        }
-        if (teacherId && !teacherMapping[day][hour].includes(teacherId)) {
-            teacherMapping[day][hour].push(teacherId);
-        }
-    });
-
-    return teacherMapping;
 };

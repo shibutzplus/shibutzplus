@@ -5,12 +5,10 @@ import { updateDailyTeacherCellAction } from "@/app/actions/PUT/updateDailyTeach
 import { useMainContext } from "@/context/MainContext";
 import { ColumnType, DailySchedule, DailyScheduleCell } from "@/models/types/dailySchedule";
 import { TeacherType } from "@/models/types/teachers";
-import {
-    addNewTeacherValueCell,
-    fillLeftRowsWithEmptyCells,
-    setEmptyTeacherColumn,
-    updateAddCell,
-} from "@/services/dailyScheduleService";
+import { addNewTeacherValueCell } from "@/services/daily/add";
+import { fillLeftRowsWithEmptyCells } from "@/services/daily/populate";
+import { updateAddCell } from "@/services/daily/update";
+import { setEmptyTeacherColumn } from "@/services/dailyScheduleService";
 import { pushSyncUpdate } from "@/services/syncService";
 
 const useDailyTeacherActions = (

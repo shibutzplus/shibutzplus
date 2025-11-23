@@ -1,6 +1,7 @@
 import { COLOR_BY_TYPE } from "@/models/constant/daily";
 import { DailyScheduleType } from "@/models/types/dailySchedule";
 
+// NOT IN USE
 export const sortAndGroupScheduleData = (scheduleData: DailyScheduleType[]) => {
     const order = { missingTeacher: 0, existingTeacher: 1, event: 2 } as const;
     const sorted = [...scheduleData].sort(
@@ -13,8 +14,10 @@ export const sortAndGroupScheduleData = (scheduleData: DailyScheduleType[]) => {
     }
     return grouped;
 };
-
-export const getHeaderItems = (scheduleByColumn: Record<string, Record<number, DailyScheduleType>>) => {
+// NOT IN USE
+export const getHeaderItems = (
+    scheduleByColumn: Record<string, Record<number, DailyScheduleType>>,
+) => {
     const columnIds = Object.keys(scheduleByColumn);
     return columnIds.map((columnId) => {
         const firstItem = Object.values(scheduleByColumn[columnId])[0];
@@ -27,4 +30,3 @@ export const getHeaderItems = (scheduleByColumn: Record<string, Record<number, D
         return { title, color, type, teacherId };
     });
 };
-

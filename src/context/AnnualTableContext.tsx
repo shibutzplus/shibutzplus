@@ -10,7 +10,7 @@ import {
     AnnualScheduleType,
     WeeklySchedule,
 } from "@/models/types/annualSchedule";
-import { errorToast, infoToast } from "@/lib/toast";
+import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { addAnnualScheduleAction } from "@/app/actions/POST/addAnnualScheduleAction";
 import { deleteAnnualScheduleAction } from "@/app/actions/DELETE/deleteAnnualScheduleAction";
@@ -20,13 +20,13 @@ import {
     createPairs,
     createAnnualRequests,
     setNewScheduleTemplate,
-    getUniqueCellsFromQueue,
     getSelectedClass,
 } from "@/services/annualScheduleService";
 import { dayToNumber } from "@/utils/time";
 import { TeacherType } from "@/models/types/teachers";
 import { SubjectType } from "@/models/types/subjects";
 import { sortByHebrewName } from "@/utils/sort";
+
 interface AnnualTableContextType {
     annualScheduleTable: AnnualScheduleType[] | undefined;
     selectedClassId: string;
