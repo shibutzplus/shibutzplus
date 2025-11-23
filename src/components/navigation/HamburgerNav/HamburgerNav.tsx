@@ -186,14 +186,12 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose, variant = 
                                 <span>שאלות נפוצות</span>
                             </Link>
                         </section>
-                        {status === STATUS_AUTH && (
-                            <section className={styles.logoutSection}>
-                                <div onClick={handleLogout} className={styles.navLink} aria-label="Logout">
-                                    <Icons.logOut size={24} />
-                                    <span>יציאה מהמערכת</span>
-                                </div>
-                            </section>
-                        )}
+                        <section className={styles.logoutSection}>
+                            <div onClick={handleLogout} className={styles.navLink} aria-label="Logout">
+                                <Icons.logOut size={24} />
+                                <span>יציאה מהמערכת</span>
+                            </div>
+                        </section>
                     </div>
                 </div>
             </div>
