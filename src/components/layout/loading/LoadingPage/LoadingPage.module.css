@@ -11,10 +11,3 @@
     justify-content: center;
     gap: 30px;
 }
-
-.loading {
-    font-size: 22px;
-    opacity: 0.8;
-    margin: 0;
-    text-align: center;
-}

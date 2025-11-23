@@ -4,6 +4,7 @@ import { getToken } from "next-auth/jwt";
 import router from "@/routes";
 import {
     apiAuthPrefix,
+    authRoutes,
     DEFAULT_ERROR_REDIRECT,
     DEFAULT_REDIRECT,
     publicPaths,
@@ -15,12 +16,11 @@ export async function middleware(req: NextRequest) {
 
     const isApiAuthRoute = url.pathname.startsWith(apiAuthPrefix);
     const isPublicRoute = publicPaths.some((path) => url.pathname.startsWith(path));
+    const isAuthRoute = authRoutes.includes(url.pathname);
 
     if (isApiAuthRoute) {
         return NextResponse.next();
     }
-
-    const isAuthRoute = [router.signIn.p, router.signUp.p].includes(url.pathname);
 
     if (isLoggedIn) {
         if (isAuthRoute || url.pathname === router.home.p) {
