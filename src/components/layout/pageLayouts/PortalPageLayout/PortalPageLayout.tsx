@@ -6,13 +6,12 @@ import Logo from "@/components/ui/Logo/Logo";
 import HamburgerNav, { HamburgerButton } from "@/components/navigation/HamburgerNav/HamburgerNav";
 import { useMobileSize } from "@/hooks/useMobileSize";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
-import { usePortal } from "@/context/PortalContext";
+import { usePortalContext } from "@/context/PortalContext";
 import PortalNav from "@/components/navigation/PortalNav/PortalNav";
 import { greetingTeacher } from "@/utils";
 import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
 import Icons from "@/style/icons";
 import { usePollingUpdates } from "@/hooks/usePollingUpdates";
-import { errorToast } from "@/lib/toast";
 import { usePathname } from "next/navigation";
 import router from "@/routes";
 import MobileNavLayout from "../../MobileNavLayout/MobileNavLayout";
@@ -26,36 +25,32 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
     const pathname = usePathname();
     const {
         teacher,
+        datesOptions,
         selectedDate,
-        isPortalLoading,
-        publishDatesOptions,
+        isDatesLoading,
         handleDayChange,
-        fetchPortalScheduleDate,
-        fetchPublishScheduleData,
-        refreshPublishDates,
-    } = usePortal();
+        handleRefreshDates,
+        handlePortalRefresh,
+        isPortalLoading,
+        handlePublishedRefresh,
+        isPublishLoading,
+    } = usePortalContext();
     const { hasUpdate, resetUpdate } = usePollingUpdates();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const isMobile = useMobileSize();
 
     const isRegularTeacher = teacher?.role === TeacherRoleValues.REGULAR;
 
-    const handleRefresh = async () => {
-        const datesRes = await refreshPublishDates();
+    const isLoading = pathname.includes(router.teacherPortal.p)
+        ? isPortalLoading || isDatesLoading
+        : isPublishLoading || isDatesLoading;
 
-        let response;
-        if (pathname.includes(router.teacherPortal.p)) {
-            response = await fetchPortalScheduleDate();
-        } else {
-            response = await fetchPublishScheduleData();
-        }
-        if (
-            (!response.success && response.error !== "") ||
-            (!datesRes.success && datesRes.error !== "")
-        ) {
-            errorToast("בעיה בטעינת המידע, נסו שוב");
-            return;
-        }
+    const handleRefresh = async () => {
+        await handleRefreshDates();
+
+        if (pathname.includes(router.teacherPortal.p)) await handlePortalRefresh();
+        else await handlePublishedRefresh();
+
         // reset update badge after successful refresh
         resetUpdate();
     };
@@ -74,9 +69,9 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
                             {!isMobile ? (
                                 <div className={styles.selectContainer}>
                                     <DynamicInputSelect
-                                        options={publishDatesOptions}
+                                        options={datesOptions}
                                         value={selectedDate}
-                                        isDisabled={isPortalLoading}
+                                        isDisabled={isLoading}
                                         onChange={handleDayChange}
                                         isSearchable={false}
                                         placeholder="בחר יום..."
@@ -90,8 +85,8 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
                                 <IconBtn
                                     Icon={<Icons.refresh size={26} />}
                                     onClick={handleRefresh}
-                                    disabled={isPortalLoading}
-                                    isLoading={isPortalLoading}
+                                    disabled={isLoading}
+                                    isLoading={isLoading}
                                 />
                             </div>
                         </div>
@@ -107,9 +102,9 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
                     {isMobile ? (
                         <div className={styles.bottomNav}>
                             <DynamicInputSelect
-                                options={publishDatesOptions}
+                                options={datesOptions}
                                 value={selectedDate}
-                                isDisabled={isPortalLoading}
+                                isDisabled={isLoading}
                                 onChange={handleDayChange}
                                 isSearchable={false}
                                 placeholder="בחר יום..."

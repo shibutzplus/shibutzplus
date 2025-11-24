@@ -3,12 +3,12 @@ import styles from "./PortalNav.module.css";
 import Icons from "@/style/icons";
 import router from "@/routes";
 import { useRouter, usePathname } from "next/navigation";
-import { usePortal } from "@/context/PortalContext";
+import { usePortalContext } from "@/context/PortalContext";
 
 const PortalNav: React.FC = () => {
     const route = useRouter();
     const pathname = usePathname();
-    const { teacher } = usePortal();
+    const { teacher } = usePortalContext();
 
     const pushToTeacherPortalWrite = () => {
         if (teacher) route.push(`${router.teacherPortal.p}/${teacher.schoolId}/${teacher.id}`);

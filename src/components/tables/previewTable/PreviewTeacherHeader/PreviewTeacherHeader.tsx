@@ -4,9 +4,11 @@ import styles from "./PreviewTeacherHeader.module.css";
 import { COLOR_BY_TYPE } from "@/models/constant/daily";
 import { useStickyHeader } from "@/hooks/useStickyHeader";
 import Icons from "@/style/icons";
+import { AppType } from "@/models/types";
 
 type PreviewTeacherHeaderProps = {
     type: ColumnType;
+    appType: AppType;
     onTeacherClick?: (teacherName: string) => void;
     column: {
         [hour: string]: DailyScheduleCell;
@@ -16,6 +18,7 @@ type PreviewTeacherHeaderProps = {
 const PreviewTeacherHeader: React.FC<PreviewTeacherHeaderProps> = ({
     type,
     column,
+    appType,
     onTeacherClick,
 }) => {
     const selectedTeacherData = column?.["1"]?.headerCol?.headerTeacher;
@@ -35,7 +38,7 @@ const PreviewTeacherHeader: React.FC<PreviewTeacherHeaderProps> = ({
             className={`${styles.header} ${isClickable ? styles.clickable : ""}`}
             style={{ backgroundColor: COLOR_BY_TYPE[type] }}
         >
-            {isClickable && (
+            {appType === "private" && isClickable && (
                 <Icons.eye
                     className={styles.eyeIcon}
                     onClick={handleClick}

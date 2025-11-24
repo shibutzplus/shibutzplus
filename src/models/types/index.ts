@@ -11,4 +11,4 @@ export type GroupOption = {
 
 export type Pair = [string, string];
 
-export type NavType = "public" | "private";
+export type AppType = "public" | "private";

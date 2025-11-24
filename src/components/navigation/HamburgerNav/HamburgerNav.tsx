@@ -11,12 +11,12 @@ import { useAccessibility } from "../../../hooks/useAccessibility";
 import routePath from "../../../routes";
 import { clearStorage, getStorageTeacher } from "@/lib/localStorage";
 import { clearSessionStorage } from "@/lib/sessionStorage";
-import { NavType } from "@/models/types";
+import { AppType } from "@/models/types";
 
 type HamburgerNavProps = {
     isOpen: boolean;
     onClose: () => void;
-    hamburgerType: NavType;
+    hamburgerType: AppType;
 };
 
 interface ILink {

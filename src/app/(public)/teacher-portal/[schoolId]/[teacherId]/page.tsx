@@ -1,22 +1,22 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import { NextPage } from "next";
-import { useParams, useRouter } from "next/navigation";
 import PortalTable from "@/components/tables/teacherPortalTable/PortalTable/PortalTable";
 import TeacherPortalSkeleton from "@/components/loading/skeleton/TeacherPortalSkeleton/TeacherPortalSkeleton";
-import { usePortal } from "@/context/PortalContext";
 import styles from "./teacherPortal.module.css";
+import { usePortalContext } from "@/context/PortalContext";
+import { useParams, useRouter } from "next/navigation";
 import router from "@/routes";
-import { errorToast } from "@/lib/toast";
 
 const TeacherPortalPage: NextPage = () => {
+    const { selectedDate, isPortalLoading, fetchPortalScheduleDate } = usePortalContext();
+
     const params = useParams();
     const route = useRouter();
+    const { teacher, setTeacherAndSchool } = usePortalContext();
     const schoolId = params.schoolId as string | undefined;
     const teacherId = params.teacherId as string | undefined;
-    const { teacher, setTeacherAndSchool, fetchPortalScheduleDate, isPortalLoading, selectedDate } =
-        usePortal();
 
     if (!schoolId) route.push(`${router.teacherSignIn.p}`);
     if (!teacherId) route.push(`${router.teacherSignIn.p}/${schoolId}`);
@@ -29,19 +29,9 @@ const TeacherPortalPage: NextPage = () => {
         if (!teacher) setTeacher();
     }, [teacherId, schoolId]);
 
-    const blockRef = useRef<boolean>(true);
     useEffect(() => {
-        const fetchData = async () => {
-            if (blockRef.current) {
-                const response = await fetchPortalScheduleDate();
-                if (response.success) blockRef.current = false;
-                else if (response.error !== "") {
-                    errorToast(response.error);
-                }
-            }
-        };
-        fetchData();
-    }, [selectedDate, teacher]);
+        fetchPortalScheduleDate();
+    }, [selectedDate, teacher?.id, schoolId]);
 
     if (isPortalLoading) return <TeacherPortalSkeleton />;
 

@@ -2,14 +2,16 @@ import React from "react";
 import styles from "./PortalTable.module.css";
 import { TableRows } from "@/models/constant/table";
 import PortalWriteRow from "../PortalWriteRow/PortalWriteRow";
-import { usePortal } from "@/context/PortalContext";
+import { usePortalContext } from "@/context/PortalContext";
+import { usePortal } from "@/hooks/usePortal";
 
 type Props = {
     embedded?: boolean; // render inside modal Div
 };
 
 const PortalTable: React.FC<Props> = ({ embedded = false }) => {
-    const { mainPortalTable, selectedDate, isPortalLoading } = usePortal();
+    const { selectedDate } = usePortalContext();
+    const { mainPortalTable, isPortalLoading } = usePortal();
     const dayTable = selectedDate ? mainPortalTable[selectedDate] : undefined;
     const isDayLoaded = dayTable !== undefined;
     const hasData = isDayLoaded && Object.keys(dayTable).length > 0;

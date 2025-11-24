@@ -1,3 +1,4 @@
+import { SelectOption } from "@/models/types";
 import { DailyScheduleType } from "@/models/types/dailySchedule";
 
 export const DAYS_OF_WEEK = ["א", "ב", "ג", "ד", "ה", "ו", "ש"];
@@ -27,7 +28,6 @@ export const formatTMDintoDMY = (date: string) => {
 export const isYYYYMMDD = (s: string) => {
     return /^\d{4}-\d{2}-\d{2}$/.test(s);
 };
-
 
 export const getStringReturnDate = (date: string) => {
     return new Date(date);
@@ -195,11 +195,11 @@ export const getCurrentDateComponents = () => {
 // Parse YYYY-MM-DD string into components
 export const parseDateString = (dateStr: string) => {
     if (!isYYYYMMDD(dateStr)) return null;
-    
+
     const year = dateStr.slice(0, 4);
     const month = String(parseInt(dateStr.slice(5, 7), 10)); // "1".."12"
     const day = String(parseInt(dateStr.slice(8, 10), 10)); // "1".."31"
-    
+
     return { year, month, day };
 };
 
@@ -231,7 +231,7 @@ export const generateDayOptions = (year: string, month: string) => {
     const yNum = parseInt(year, 10);
     const mNum = parseInt(month, 10);
     const maxDays = daysInMonth(yNum, mNum);
-    
+
     return Array.from({ length: maxDays }, (_, i) => {
         const d = i + 1;
         return { value: `${d}`, label: `${d}` };
@@ -244,6 +244,29 @@ export const clampDayToMonth = (day: string, year: string, month: string) => {
     const yNum = parseInt(year, 10);
     const mNum = parseInt(month, 10);
     const maxDays = daysInMonth(yNum, mNum);
-    
+
     return dNum > maxDays ? `${maxDays}` : day;
+};
+
+//TODO: check if whats going on here and if there is another functio that already does this
+// Choose default date based on current time (before/after 16:00)
+// - Before 16:00: prefer today if exists, else first available
+// - After 16:00: prefer tomorrow if exists, else today, else first available
+export const chooseDefaultDate = (options: SelectOption[]): string | undefined => {
+    if (!options || options.length === 0) return "";
+    const now = new Date();
+    const hour = now.getHours();
+    const today = getDateReturnString(now);
+    const tomorrow = getDateReturnString(new Date(now.getTime() + 24 * 60 * 60 * 1000));
+
+    const has = (val: string | undefined) => !!val && options.some((o) => o.value === val);
+
+    if (hour < 16) {
+        if (has(today)) return today;
+        return options[0].value;
+    } else {
+        if (has(tomorrow)) return tomorrow;
+        if (has(today)) return today;
+        return options[0].value;
+    }
 };

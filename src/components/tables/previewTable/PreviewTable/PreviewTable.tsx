@@ -8,10 +8,12 @@ import { sortDailyColumnIdsByType } from "@/utils/sort";
 import PreviewCol from "../PreviewCol/PreviewCol";
 import SlidingPanel from "@/components/ui/SlidingPanel/SlidingPanel";
 import { DailySchedule } from "@/models/types/dailySchedule";
+import { AppType } from "@/models/types";
 
 type PreviewTableProps = {
     mainDailyTable: DailySchedule;
     selectedDate: string;
+    appType?: AppType;
     EmptyTable?: React.FC;
 };
 
@@ -19,6 +21,7 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
     mainDailyTable,
     selectedDate,
     EmptyTable,
+    appType = "private",
 }) => {
     const schedule = mainDailyTable[selectedDate];
     const tableColumns = schedule ? Object.keys(schedule) : [];
@@ -47,6 +50,7 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
                         <PreviewCol
                             key={colId}
                             columnId={colId}
+                            appType={appType}
                             selectedDate={selectedDate}
                             mainDailyTable={mainDailyTable}
                             onTeacherClick={handleTeacherClick}

@@ -5,11 +5,11 @@ import styles from "./FaqPageLayout.module.css";
 import Logo from "@/components/ui/Logo/Logo";
 import HamburgerNav, { HamburgerButton } from "@/components/navigation/HamburgerNav/HamburgerNav";
 import router from "@/routes";
-import { NavType } from "@/models/types";
+import { AppType } from "@/models/types";
 
 type FaqPageLayoutProps = {
     children: React.ReactNode;
-    type: NavType;
+    type: AppType;
 };
 
 export default function FaqPageLayout({ children, type }: FaqPageLayoutProps) {
