@@ -3,11 +3,7 @@ import { getDayNameByDateString } from "@/utils/time";
 import styles from "./DailyTeacherCell.module.css";
 import { useMainContext } from "@/context/MainContext";
 import { useDailyTableContext } from "@/context/DailyTableContext";
-import {
-    ActivityValues,
-    ColumnType,
-    DailyScheduleCell,
-} from "@/models/types/dailySchedule";
+import { ActivityValues, ColumnType, DailyScheduleCell } from "@/models/types/dailySchedule";
 import { EmptyValue } from "@/models/constant/daily";
 import DynamicInputGroupSelect from "@/components/ui/select/InputGroupSelect/DynamicInputGroupSelect";
 import { errorToast } from "@/lib/toast";
@@ -15,6 +11,7 @@ import messages from "@/resources/messages";
 import { sortDailyTeachers } from "@/utils/sort";
 import { activityOptionsMapValToLabel } from "@/resources/dailySelectActivities";
 import EmptyCell from "@/components/ui/table/EmptyCell/EmptyCell";
+import Tooltip from "@/components/ui/Tooltip/Tooltip";
 
 type DailyTeacherCellProps = {
     columnId: string;
@@ -143,9 +140,14 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
         <div className={styles.cellContent}>
             {classData && subjectData ? (
                 <div className={styles.innerCellContent}>
-                    <div className={styles.classAndSubject}>
-                        {classData.name} | {subjectData.name}
-                    </div>
+                    <Tooltip
+                        content={classData.name + " | " + subjectData.name}
+                        on={["click", "scroll"]}
+                    >
+                        <div className={styles.classAndSubject}>
+                            {classData.name} | {subjectData.name}
+                        </div>
+                    </Tooltip>
                     <div className={styles.teacherSelect}>
                         <DynamicInputGroupSelect
                             options={sortedTeacherOptions}

@@ -6,7 +6,6 @@ import PreviewEventHeader from "../PreviewEventHeader/PreviewEventHeader";
 import PreviewEventCell from "../PreviewEventCell/PreviewEventCell";
 import PreviewTeacherHeader from "../PreviewTeacherHeader/PreviewTeacherHeader";
 import PreviewTeacherCell from "../PreviewTeacherCell/PreviewTeacherCell";
-import ShadowHeader from "@/components/tables/dailyScheduleTable/ShadowHeader/ShadowHeader";
 
 type PreviewColProps = {
     columnId: string;
@@ -33,9 +32,7 @@ const PreviewCol: React.FC<PreviewColProps> = ({
 
     return columnType === "event" ? (
         <div className={styles.previewColumn} data-column-id={columnId}>
-            <ShadowHeader columnId={columnId}>
-                <PreviewEventHeader type={columnType} column={column} />
-            </ShadowHeader>
+            <PreviewEventHeader type={columnType} column={column} />
             <div style={{ width: "100%", height: "50px" }}></div>
             <div className={styles.rows}>
                 {colFirstObj ? (
@@ -49,13 +46,11 @@ const PreviewCol: React.FC<PreviewColProps> = ({
         </div>
     ) : (
         <div className={styles.previewColumn} data-column-id={columnId}>
-            <ShadowHeader columnId={columnId}>
-                <PreviewTeacherHeader
-                    column={column}
-                    type={columnType}
-                    onTeacherClick={onTeacherClick}
-                />
-            </ShadowHeader>
+            <PreviewTeacherHeader
+                column={column}
+                type={columnType}
+                onTeacherClick={onTeacherClick}
+            />
             <div style={{ width: "100%", height: "50px" }}></div>
             <div className={styles.rows}>
                 {colFirstObj ? (

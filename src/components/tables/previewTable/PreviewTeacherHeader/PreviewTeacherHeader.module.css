@@ -10,10 +10,11 @@
     padding: 0 15px;
     box-sizing: border-box;
     color: var(--bright-text-color);
-    position: relative;
+    position: absolute;
+    left: 0;
+    will-change: transform;
+    z-index: 5;
 }
-
-
 
 .headerText {
     font-size: 16px;

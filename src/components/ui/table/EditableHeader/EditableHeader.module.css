@@ -10,6 +10,10 @@
     text-align: right;
     height: var(--table-daily-header-height);
     color: var(--bright-text-color);
+    will-change: transform;
+    position: absolute;
+    left: 0;
+    z-index: 5;
 }
 
 .clearButton {

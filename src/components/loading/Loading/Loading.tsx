@@ -1,13 +1,14 @@
 import React from "react";
 import styles from "./Loading.module.css";
 import { PopupSize } from "@/models/types/ui";
+import { LoadingColor } from "@/style/root";
 
 type LoadingProps = {
     size?: PopupSize;
     color?: string;
 };
 
-const Loading: React.FC<LoadingProps> = ({ size = "M", color = "var(--loading-color)" }) => {
+const Loading: React.FC<LoadingProps> = ({ size = "M", color = LoadingColor }) => {
     return (
         <div
             className={styles.loader}

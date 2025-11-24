@@ -45,6 +45,8 @@ export const SkeletonHeaderColor: string = "#e0e0e0";
 export const SkeletonInputColor: string = "#ececec";
 export const SkeletonInputColorBright: string = "#f2f0f0";
 
+export const LoadingColor: string = "#575757";
+
 export const ButtonColor: string = "#FFFFFF";
 export const ButtonBackgroundColor: string = "#000";
 export const ButtonHoverBackgroundColor: string = "#333";

@@ -20,6 +20,7 @@ export const customStyles = (
     hasArrow: boolean = true,
     backgroundColor: string,
     color: string = InputColor,
+    placeholderColor: string = PlaceholderColor,
     colorHover: string = InputColorHover,
 ) => {
     return {
@@ -72,7 +73,7 @@ export const customStyles = (
         }),
         placeholder: (provided: any) => ({
             ...provided,
-            color: color, // TODO: or PlaceholderColor ?
+            color: placeholderColor,
             fontSize: FontSize,
         }),
         singleValue: (provided: any) => ({

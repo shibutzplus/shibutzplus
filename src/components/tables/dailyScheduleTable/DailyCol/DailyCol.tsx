@@ -6,7 +6,7 @@ import DailyTeacherCell from "../DailyTeacherCell/DailyTeacherCell";
 import DailyEventHeader from "../DailyEventHeader/DailyEventHeader";
 import DailyEventCell from "../DailyEventCell/DailyEventCell";
 import LoadingDots from "@/components/loading/LoadingDots/LoadingDots";
-import ShadowHeader from "../ShadowHeader/ShadowHeader";
+import { TableDailyHeaderHeight } from "@/style/root";
 
 type DailyColProps = {
     columnId: string;
@@ -27,26 +27,22 @@ const DailyCol: React.FC<DailyColProps> = ({ columnId, column }) => {
 
     return columnType === "event" ? (
         <div className={styles.dailyColumn} data-column-id={columnId}>
-            <ShadowHeader columnId={columnId}>
-                <DailyEventHeader columnId={columnId} type={columnType} />
-            </ShadowHeader>
-            <div style={{width: "100%", height: "50px"}}></div>
+            <DailyEventHeader columnId={columnId} type={columnType} />
+            <div style={{ width: "100%", height: TableDailyHeaderHeight }}></div>
             <div className={styles.rows}>
                 {colFirtsObj ? (
                     Object.entries(column).map(([hour, cell]) => (
                         <DailyEventCell key={hour} cell={cell} columnId={columnId} />
                     ))
                 ) : (
-                    <LoadingDots size="S" color="var(--background-color)" />
+                    <LoadingDots size="S" />
                 )}
             </div>
         </div>
     ) : (
         <div className={styles.dailyColumn} data-column-id={columnId}>
-            <ShadowHeader columnId={columnId}>
-                <DailyTeacherHeader columnId={columnId} type={columnType} />
-            </ShadowHeader>
-            <div style={{width: "100%", height: "50px"}}></div>
+            <DailyTeacherHeader columnId={columnId} type={columnType} />
+            <div style={{ width: "100%", height: TableDailyHeaderHeight }}></div>
             <div className={styles.rows}>
                 {colFirtsObj ? (
                     Object.entries(column).map(([hour, cell]) => (
@@ -58,7 +54,7 @@ const DailyCol: React.FC<DailyColProps> = ({ columnId, column }) => {
                         />
                     ))
                 ) : (
-                    <LoadingDots size="S" color="var(--background-color)" />
+                    <LoadingDots size="S" />
                 )}
             </div>
         </div>

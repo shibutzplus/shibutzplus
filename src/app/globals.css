@@ -40,13 +40,15 @@
     --skeleton-input-color: #ececec;
     --skeleton-input-color-bright: #f2f0f0;
 
+    --loading-color: #575757;
+
     /* Button colors */
     --button-color: #FFFFFF;
     --button-background-color: #000;
     --button-hover-background-color: #333;
     --button-disabled-color: #b9b9b9;
     --button-disabled-background-color: #919191;
-    
+
     --input-height: 40px;
 
     --border-primary: 1px solid var(--dark-border-color);
@@ -86,7 +88,7 @@
     --list-details-row-padding-mobile: 5px 0.5rem;
     --list-details-actions-width: 160px;
     --list-details-actions-width-mobile: 100px;
-    
+
 }
 
 html,

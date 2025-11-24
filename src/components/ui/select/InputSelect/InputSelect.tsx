@@ -28,6 +28,7 @@ type InputSelectProps = {
     backgroundColor?: string;
     color?: string;
     colorHover?: string;
+    isBold?: boolean;
 };
 
 const InputSelect: React.FC<InputSelectProps> = ({
@@ -44,6 +45,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
     backgroundColor = InputBackgroundColor,
     color = InputColor,
     colorHover = InputColorHover,
+    isBold = false,
 }) => {
     // derive selected option directly from props
     const selectedOption = useMemo(
@@ -86,6 +88,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
                 maxWidth: "none",
                 overflow: "visible",
                 whiteSpace: "nowrap",
+                fontWeight: isBold ? 600 : 500,
             };
         },
         clearIndicator: (provided: any) => {

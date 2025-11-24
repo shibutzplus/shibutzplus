@@ -9,7 +9,23 @@
     right: 0;
     z-index: 1;
     height: var(--table-daily-full-height);
+    z-index: 1;
 }
+
+.backgroundHidden {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50px;
+    height: var(--table-daily-full-height);
+    background-color: var(--background-color);
+    z-index: -1;
+    border-radius: 20px 0 0 20px;
+
+    box-shadow: -1px -2px 5px #00000010;
+}
+
+.topHidden {}
 
 .hoursColumn {
     width: 40px;

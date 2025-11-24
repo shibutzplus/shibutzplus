@@ -2,6 +2,7 @@ import React from "react";
 import { ColumnType, DailyScheduleCell } from "@/models/types/dailySchedule";
 import styles from "./PreviewTeacherHeader.module.css";
 import { COLOR_BY_TYPE } from "@/models/constant/daily";
+import { useStickyHeader } from "@/hooks/useStickyHeader";
 import Icons from "@/style/icons";
 
 type PreviewTeacherHeaderProps = {
@@ -19,6 +20,8 @@ const PreviewTeacherHeader: React.FC<PreviewTeacherHeaderProps> = ({
 }) => {
     const selectedTeacherData = column?.["1"]?.headerCol?.headerTeacher;
     const isClickable = !!selectedTeacherData?.name;
+    const headerRef = React.useRef<HTMLDivElement>(null);
+    useStickyHeader(headerRef);
 
     const handleClick = () => {
         if (isClickable && selectedTeacherData?.name && onTeacherClick) {
@@ -28,6 +31,7 @@ const PreviewTeacherHeader: React.FC<PreviewTeacherHeaderProps> = ({
 
     return (
         <div
+            ref={headerRef}
             className={`${styles.header} ${isClickable ? styles.clickable : ""}`}
             style={{ backgroundColor: COLOR_BY_TYPE[type] }}
         >

@@ -1,13 +1,14 @@
 import React from "react";
 import styles from "./LoadingDots.module.css";
 import { PopupSize } from "@/models/types/ui";
+import { LoadingColor } from "@/style/root";
 
 type LoadingDotsProps = {
     size?: PopupSize;
     color?: string;
 };
 
-const LoadingDots: React.FC<LoadingDotsProps> = ({ size = "M", color = "var(--loading-color)" }) => {
+const LoadingDots: React.FC<LoadingDotsProps> = ({ size = "M", color = LoadingColor }) => {
     return (
         <div
             className={styles.loader}
