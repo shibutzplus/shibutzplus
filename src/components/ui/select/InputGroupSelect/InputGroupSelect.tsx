@@ -145,7 +145,9 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
                 <components.GroupHeading {...safeHeadingProps}>
                     <div className={styles.groupStyles} onClick={toggle}>
                         <span>{data.label}</span>
-                        <span className={styles.groupBadgeStyles}>{data.options.length}</span>
+                        {!data.hideCount && (
+                            <span className={styles.groupBadgeStyles}>{data.options.length}</span>
+                        )}
                     </div>
                 </components.GroupHeading>
                 {!isCollapsed && optionsChildren}
