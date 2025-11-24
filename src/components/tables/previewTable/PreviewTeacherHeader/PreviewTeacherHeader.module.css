@@ -1,35 +1,40 @@
 .header {
     border-radius: var(--border-radius-table) var(--border-radius-table) 0 0;
-    min-height: var(--table-daily-header-height);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
     width: 100%;
     max-width: var(--table-daily-col-width);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
     padding: 0 15px;
-    box-sizing: border-box;
+    text-align: right;
+    height: var(--table-daily-header-height);
     color: var(--bright-text-color);
+    will-change: transform;
     position: absolute;
     left: 0;
-    will-change: transform;
     z-index: 5;
+}
+
+.eyeIcon {
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s ease;
+}
+
+.eyeIcon:hover {
+    color: var(--bright-text-color-hover);
+    cursor: pointer;
+}
+
+.eyeIcon:active {
+    transform: translateY(1px);
 }
 
 .headerText {
     font-size: 16px;
     font-weight: 600;
-    text-align: center;
     word-break: break-word;
-}
-
-.eyeIcon {
-    cursor: pointer;
-    opacity: 0.8;
-    transition: all 0.2s;
-}
-
-.eyeIcon:hover {
-    opacity: 1;
-    color: var(--bright-text-color-hover);
+    width: 100%;
+    padding-right: 10px;
 }

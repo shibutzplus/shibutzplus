@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function FAQManagerLayout({ children }: { children: React.ReactNode }) {
-    return <FaqPageLayout type="private">{children}</FaqPageLayout>;
+    return <FaqPageLayout type="public">{children}</FaqPageLayout>;
 }

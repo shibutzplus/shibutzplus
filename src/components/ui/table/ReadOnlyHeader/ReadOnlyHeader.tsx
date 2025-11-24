@@ -15,7 +15,7 @@ type Tr = {
     type?: DailyScheduleType;
     teacherId?: string;
 };
-
+//MOVE TO ANNUAL HEADER
 const ReadOnlyHeader: React.FC<ReadOnlyHeaderProps> = ({
     trs,
     emptyTrs = 0,
@@ -30,7 +30,7 @@ const ReadOnlyHeader: React.FC<ReadOnlyHeaderProps> = ({
                     <th key={i} className={styles.emptyTrHeader}></th>
                 ))}
                 {trs.map((tr: any) => (
-                    <th key={tr} className={`${styles.trHeader} ${(tr as Tr)  }`}>
+                    <th key={tr} className={`${styles.trHeader} ${tr as Tr}`}>
                         {textPlaceholder(tr)}
                     </th>
                 ))}
