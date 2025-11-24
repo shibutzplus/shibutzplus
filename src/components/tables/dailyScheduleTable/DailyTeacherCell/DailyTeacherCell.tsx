@@ -56,6 +56,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
                 teacherAtIndex,
                 classNameById,
                 headerData?.headerTeacher?.id,
+                subTeacherData?.id || teacherText,
             ),
         [
             teachers,
@@ -66,6 +67,8 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
             teacherAtIndex,
             classNameById,
             headerData?.headerTeacher?.id,
+            subTeacherData,
+            teacherText,
         ],
     );
 
