@@ -162,6 +162,7 @@ export const sortDailyTeachers = (
     teacherAtIndex: Record<string, Record<string, Record<string, string>>> = {},
     classNameById: Record<string, string> = {},
     currentHeaderTeacherId?: string,
+    currentValue?: string,
 ) => {
     const dayNum = dayToNumber(day);
     const dayKey = String(dayNum);
@@ -300,11 +301,11 @@ export const sortDailyTeachers = (
 
     // Groups
     const groups: GroupOption[] = [
-        {
+        ...(currentValue ? [{
             label: "הסרת ממלא מקום",
             options: [{ value: EmptyValue, label: "🗑️" }],
             hideCount: true,
-        },
+        }] : []),
         {
             label: "מורה נוסף בשיעור",
             collapsed: true,
