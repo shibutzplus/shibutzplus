@@ -140,6 +140,7 @@ export const sortDailyTeachers = (
     teacherAtIndex: Record<string, Record<string, Record<string, string>>> = {},
     classNameById: Record<string, string> = {},
     currentHeaderTeacherId?: string,
+    currentValue?: string,
 ) => {
     const dayNum = dayToNumber(day);
     const dayKey = String(dayNum);
@@ -148,9 +149,19 @@ export const sortDailyTeachers = (
     // Annual availability lookups
     const scheduledTeacherIds = new Set(mapAvailableTeachers[dayNum]?.[hourStr] || []);
     const teachesOnDayIds = new Set<string>();
+    const teacherStartEndMap = new Map<string, { min: number; max: number }>();
+
     if (mapAvailableTeachers[dayNum]) {
-        Object.values(mapAvailableTeachers[dayNum]).forEach((hourTeachers) => {
-            hourTeachers.forEach((id) => teachesOnDayIds.add(id));
+        Object.entries(mapAvailableTeachers[dayNum]).forEach(([hStr, hourTeachers]) => {
+            const h = parseInt(hStr);
+            hourTeachers.forEach((id) => {
+                teachesOnDayIds.add(id);
+                const current = teacherStartEndMap.get(id) || { min: 24, max: -1 };
+                teacherStartEndMap.set(id, {
+                    min: Math.min(current.min, h),
+                    max: Math.max(current.max, h),
+                });
+            });
         });
     }
 
@@ -183,6 +194,7 @@ export const sortDailyTeachers = (
     const availableTeachers: TeacherType[] = []; // regular teachers free this hour
     const unavailableTeachers: TeacherType[] = []; // teachers busy this hour
     const freeDayTeachers: TeacherType[] = []; // regular teachers not teaching on this day
+    const outsideHoursTeachers: TeacherType[] = []; // teachers working today but outside their hours
 
     for (const teacher of allTeachers) {
         // skip the column's header teacher as it should not appear in its own dropdown
@@ -202,7 +214,12 @@ export const sortDailyTeachers = (
 
             if (teachesToday) {
                 if (!scheduledThisHour) {
-                    availableTeachers.push(teacher);
+                    const bounds = teacherStartEndMap.get(teacher.id);
+                    if (bounds && (hour < bounds.min || hour > bounds.max)) {
+                        outsideHoursTeachers.push(teacher);
+                    } else {
+                        availableTeachers.push(teacher);
+                    }
                 } else {
                     unavailableTeachers.push(teacher);
                 }
@@ -262,16 +279,23 @@ export const sortDailyTeachers = (
 
     // Groups
     const groups: GroupOption[] = [
-        {
-            label: "הסרת ממלא מקום",
-            options: [{ value: EmptyValue, label: "🗑️" }],
-        },
+        ...(currentValue
+            ? [
+                  {
+                      label: "הסרת ממלא מקום",
+                      options: [{ value: EmptyValue, label: "🗑️" }],
+                      hideCount: true,
+                  },
+              ]
+            : []),
         {
             label: "מורה נוסף בשיעור",
+            collapsed: true,
             options: additionalLessonTeachers.map((t) => ({ value: t.id, label: t.name })),
         },
         {
             label: "מורים מילוי מקום",
+            collapsed: true,
             options: substituteTeachers.map((teacher) => ({
                 value: teacher.id,
                 label: teacher.name,
@@ -285,7 +309,7 @@ export const sortDailyTeachers = (
             })),
         },
         {
-            label: "מורים לא פנויים",
+            label: "מלמדים בכיתה או בקבוצה",
             collapsed: true,
             options: filteredUnavailableTeachers.map((teacher) => ({
                 value: teacher.id,
@@ -293,17 +317,24 @@ export const sortDailyTeachers = (
             })),
         },
         {
+            label: "לא התחילו / סיימו",
+            collapsed: true,
+            options: outsideHoursTeachers.map((t) => ({ value: t.id, label: t.name })),
+        },
+        {
             label: "מורים נוספים בתקן",
             collapsed: true,
             options: extraRegularTeachers.map((t) => ({ value: t.id, label: t.name })),
         },
         {
-            label: "מורים ביום חופשי",
+            label: "ביום חופשי",
             collapsed: true,
             options: freeDayTeachers.map((t) => ({ value: t.id, label: t.name })),
         },
         {
             label: "אפשרויות נוספות",
+            collapsed: true,
+            hideCount: true,
             options: dailySelectActivity,
         },
     ];
