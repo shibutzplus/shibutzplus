@@ -7,3 +7,13 @@
     box-sizing: border-box;
     position: relative;
 }
+
+.hide {
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    width: 100vw;
+    height: var(--padding-top-desktop);
+    background-color: var(--background-color);
+    z-index: 1;
+}

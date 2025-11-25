@@ -17,12 +17,10 @@ const PreviewEventHeader: React.FC<PreviewEventHeaderProps> = ({ type, column })
     useStickyHeader(headerRef);
 
     return (
-        <div
-            ref={headerRef}
-            className={styles.header}
-            style={{ backgroundColor: COLOR_BY_TYPE[type] }}
-        >
-            <div className={styles.headerText}>{selectedEventData || ""}</div>
+        <div ref={headerRef} className={styles.columnHeaderWrapper}>
+            <div className={styles.columnHeader} style={{ backgroundColor: COLOR_BY_TYPE[type] }}>
+                <div className={styles.headerText}>{selectedEventData || ""}</div>
+            </div>
         </div>
     );
 };

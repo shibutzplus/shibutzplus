@@ -6,7 +6,7 @@ import usePublish from "@/hooks/usePublish";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 
 const DailyPublishActionBtns: React.FC = () => {
-    const { isEditMode, changeDailyMode } = useDailyTableContext();
+    const { isEditMode, isLoadingEditPage, changeDailyMode } = useDailyTableContext();
 
     const {
         publishDailySchedule,
@@ -22,7 +22,7 @@ const DailyPublishActionBtns: React.FC = () => {
                     title="תצוגה מקדימה כפי שמורים רואים את המערכת"
                     Icon={isEditMode ? <Icons.eye size={20} /> : <Icons.edit size={20} />}
                     onClick={changeDailyMode}
-                    disabled={publishLoading}
+                    disabled={isLoadingEditPage}
                     hasBorder
                 />
             </span>

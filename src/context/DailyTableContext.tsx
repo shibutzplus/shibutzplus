@@ -24,12 +24,14 @@ import { deleteDailyColumnAction } from "@/app/actions/DELETE/deleteDailyColumnA
 import useDailyEventActions from "@/hooks/daily/useDailyEventActions";
 import { mapAnnualTeachers, populateDailyScheduleTable } from "@/services/daily/populate";
 import { createNewEmptyColumn } from "@/services/daily/setEmpty";
+import { useDailyEditMode } from "@/hooks/daily/useDailyEditMode";
 
 interface DailyTableContextType {
     mainDailyTable: DailySchedule;
     mapAvailableTeachers: AvailableTeachers;
     isLoading: boolean;
     isEditMode: boolean;
+    isLoadingEditPage: boolean;
     selectedDate: string;
     addNewEmptyColumn: (colType: ColumnType) => void;
     deleteColumn: (columnId: string) => Promise<boolean>;
@@ -100,8 +102,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [mapAvailableTeachers, setMapAvailableTeachers] = useState<AvailableTeachers>({});
 
-    const [isEditMode, setEditMode] = useState<boolean>(true);
-    const changeDailyMode = () => setEditMode((prev) => !prev);
+    const { isEditMode, isLoadingEditPage, changeDailyMode } = useDailyEditMode();
 
     // Select Date
     const { daysSelectOptions, selectedDate, handleDayChange } = useDailySelectedDate();
@@ -232,6 +233,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 mainDailyTable,
                 isLoading,
                 isEditMode,
+                isLoadingEditPage,
                 mapAvailableTeachers,
                 addNewEmptyColumn,
                 deleteColumn,

@@ -9,6 +9,8 @@ import { TableRows } from "@/models/constant/table";
 import EmptyTable from "@/components/empty/EmptyTable/EmptyTable";
 import { DailySchedule } from "@/models/types/dailySchedule";
 import { useSortColumns } from "./useSortColumns";
+import { useDailyTableContext } from "@/context/DailyTableContext";
+import LoadingPage from "@/components/loading/LoadingPage/LoadingPage";
 
 type DailyTableProps = {
     mainDailyTable: DailySchedule;
@@ -16,9 +18,12 @@ type DailyTableProps = {
 };
 
 const DailyTable: React.FC<DailyTableProps> = ({ mainDailyTable, selectedDate }) => {
+    const { isLoadingEditPage } = useDailyTableContext();
     const schedule = mainDailyTable[selectedDate];
     const tableColumns = schedule ? Object.keys(schedule) : [];
     const sortedTableColumns = useSortColumns(schedule, mainDailyTable, selectedDate, tableColumns);
+
+    if (isLoadingEditPage) return <LoadingPage />;
 
     return (
         <div className={styles.dailyTable}>

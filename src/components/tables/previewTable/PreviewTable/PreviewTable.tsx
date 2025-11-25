@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { motion } from "motion/react";
 import styles from "./PreviewTable.module.css";
 import HoursCol from "@/components/ui/table/HoursCol/HoursCol";
 import { TableRows } from "@/models/constant/table";
@@ -9,6 +10,8 @@ import PreviewCol from "../PreviewCol/PreviewCol";
 import SlidingPanel from "@/components/ui/SlidingPanel/SlidingPanel";
 import { DailySchedule } from "@/models/types/dailySchedule";
 import { AppType } from "@/models/types";
+import { useDailyTableContext } from "@/context/DailyTableContext";
+import LoadingPage from "@/components/loading/LoadingPage/LoadingPage";
 
 type PreviewTableProps = {
     mainDailyTable: DailySchedule;
@@ -29,6 +32,7 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
         ? sortDailyColumnIdsByType(tableColumns, mainDailyTable, selectedDate)
         : [];
 
+    const { isLoadingEditPage } = useDailyTableContext();
     const [isPanelOpen, setIsPanelOpen] = useState(false);
     const [selectedTeacherName, setSelectedTeacherName] = useState("");
 
@@ -41,20 +45,29 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
         setIsPanelOpen(false);
     };
 
+    if (isLoadingEditPage) return <LoadingPage />;
+
     return (
         <>
             <div className={styles.previewTable}>
+                <div className={styles.hide} />
                 <HoursCol hours={TableRows} />
                 {schedule && Object.keys(schedule).length > 0 ? (
-                    sortedTableColumns.map((colId) => (
-                        <PreviewCol
+                    sortedTableColumns.map((colId, index) => (
+                        <motion.div
                             key={colId}
-                            columnId={colId}
-                            appType={appType}
-                            selectedDate={selectedDate}
-                            mainDailyTable={mainDailyTable}
-                            onTeacherClick={handleTeacherClick}
-                        />
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.3, delay: index * 0.05 }}
+                        >
+                            <PreviewCol
+                                columnId={colId}
+                                appType={appType}
+                                selectedDate={selectedDate}
+                                mainDailyTable={mainDailyTable}
+                                onTeacherClick={handleTeacherClick}
+                            />
+                        </motion.div>
                     ))
                 ) : EmptyTable ? (
                     <EmptyTable />

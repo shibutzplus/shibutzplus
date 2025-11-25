@@ -75,6 +75,14 @@
     width: 100%;
 }
 
+.banner {
+    font-weight: 600;
+    border: 2px solid var(--inner-background-color-empty);
+    text-align: center;
+    padding: 5px 60px;
+    border-radius: var(--border-radius-cell);
+}
+
 .bottomNav {
     width: 100%;
     height: var(--header-height);
