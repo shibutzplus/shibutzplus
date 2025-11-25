@@ -72,6 +72,7 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
     useInitAnnualData({
         annualScheduleTable,
         setAnnualScheduleTable,
+        schoolId: school?.id,
     });
 
     useEffect(() => {
