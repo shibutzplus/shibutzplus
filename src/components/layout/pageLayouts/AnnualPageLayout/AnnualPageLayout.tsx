@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import styles from "./AnnualPageLayout.module.css";
 import Logo from "@/components/ui/Logo/Logo";
 import HamburgerNav, { HamburgerButton } from "@/components/navigation/HamburgerNav/HamburgerNav";
-import { useMobileSize } from "@/hooks/useMobileSize";
+import { useMobileSize } from "@/hooks/browser/useMobileSize";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import router from "@/routes";
 import { useAnnualTable } from "@/context/AnnualTableContext";

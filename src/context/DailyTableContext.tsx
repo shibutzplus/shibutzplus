@@ -22,11 +22,7 @@ import { infoToast } from "@/lib/toast";
 import { generateId } from "@/utils";
 import { deleteDailyColumnAction } from "@/app/actions/DELETE/deleteDailyColumnAction";
 import useDailyEventActions from "@/hooks/daily/useDailyEventActions";
-import {
-    mapAnnualTeachers,
-    populateDailyScheduleTable,
-    populateTable,
-} from "@/services/daily/populate";
+import { mapAnnualTeachers, populateDailyScheduleTable } from "@/services/daily/populate";
 import { createNewEmptyColumn } from "@/services/daily/setEmpty";
 
 interface DailyTableContextType {

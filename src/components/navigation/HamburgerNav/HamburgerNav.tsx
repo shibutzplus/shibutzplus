@@ -7,7 +7,7 @@ import { signOut, useSession } from "next-auth/react";
 import styles from "./HamburgerNav.module.css";
 import { STATUS_AUTH } from "@/models/constant/session";
 import Icons from "@/style/icons";
-import { useAccessibility } from "../../../hooks/useAccessibility";
+import { useAccessibility } from "../../../hooks/browser/useAccessibility";
 import routePath from "../../../routes";
 import { clearStorage, getStorageTeacher } from "@/lib/localStorage";
 import { clearSessionStorage } from "@/lib/sessionStorage";

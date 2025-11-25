@@ -19,6 +19,7 @@ import useInitData from "@/hooks/useInitData";
 import { setStorageClasses, setStorageSubjects, setStorageTeachers } from "@/lib/localStorage";
 import { infoToast } from "@/lib/toast";
 import { pushSyncUpdate } from "@/services/syncService";
+import { UPDATE_DETAIL } from "@/models/constant/sync";
 
 interface MainContextType {
     school: SchoolType | undefined;
@@ -87,7 +88,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
                 setStorageClasses(updatedClasses);
                 return updatedClasses;
             });
-            void pushSyncUpdate("detailsUpdate");
+            void pushSyncUpdate(UPDATE_DETAIL);
             return response.data;
         }
         if (!response.success && (response as any).errorCode === "23505") {
@@ -102,7 +103,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         if (response.success && response.data) {
             setClasses(response.data as ClassType[]);
             setStorageClasses(response.data as ClassType[]);
-            void pushSyncUpdate("detailsUpdate");
+            void pushSyncUpdate(UPDATE_DETAIL);
             return response.data;
         }
         return undefined;
@@ -114,7 +115,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
             setClasses(response.classes);
             setStorageClasses(response.classes);
             setAnnualAfterDelete(response.annualSchedules);
-            void pushSyncUpdate("detailsUpdate");
+            void pushSyncUpdate(UPDATE_DETAIL);
             return true;
         }
         return false;
@@ -129,7 +130,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
                 setStorageTeachers(updatedTeachers);
                 return updatedTeachers;
             });
-            void pushSyncUpdate("detailsUpdate");
+            void pushSyncUpdate(UPDATE_DETAIL);
             return response.data;
         }
         if (!response.success && (response as any).errorCode === "23505") {
@@ -143,7 +144,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         if (response.success && response.data) {
             setTeachers(response.data as TeacherType[]);
             setStorageTeachers(response.data as TeacherType[]);
-            void pushSyncUpdate("detailsUpdate");
+            void pushSyncUpdate(UPDATE_DETAIL);
             return response.data;
         }
         return undefined;
@@ -155,7 +156,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
             setTeachers(response.teachers);
             setStorageTeachers(response.teachers);
             setAnnualAfterDelete(response.annualSchedules);
-            void pushSyncUpdate("detailsUpdate");
+            void pushSyncUpdate(UPDATE_DETAIL);
             return true;
         }
         return false;
@@ -170,7 +171,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
                 setStorageSubjects(updatedSubjects);
                 return updatedSubjects;
             });
-            void pushSyncUpdate("detailsUpdate");
+            void pushSyncUpdate(UPDATE_DETAIL);
             return response.data;
         }
         if (!response.success && (response as any).errorCode === "23505") {
@@ -185,7 +186,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         if (response.success && response.data) {
             setSubjects(response.data as SubjectType[]);
             setStorageSubjects(response.data as SubjectType[]);
-            void pushSyncUpdate("detailsUpdate");
+            void pushSyncUpdate(UPDATE_DETAIL);
             return response.data;
         }
         return undefined;
@@ -197,7 +198,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
             setSubjects(response.subjects);
             setStorageSubjects(response.subjects);
             setAnnualAfterDelete(response.annualSchedules);
-            void pushSyncUpdate("detailsUpdate");
+            void pushSyncUpdate(UPDATE_DETAIL);
             return true;
         }
         return false;

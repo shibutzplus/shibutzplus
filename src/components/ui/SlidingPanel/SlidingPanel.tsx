@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from "react";
 import { IoCloseOutline } from "react-icons/io5";
-import { useAccessibility } from "@/hooks/useAccessibility";
+import { useAccessibility } from "@/hooks/browser/useAccessibility";
 import styles from "./SlidingPanel.module.css";
 
 interface SlidingPanelProps {
@@ -49,10 +49,10 @@ const SlidingPanel: React.FC<SlidingPanelProps> = ({
     return (
         <>
             {/* Backdrop with blur */}
-            <div 
-                className={`${styles.backdrop} ${isAnimating ? styles.backdropVisible : ""}`} 
-                onClick={onClose} 
-                aria-hidden="true" 
+            <div
+                className={`${styles.backdrop} ${isAnimating ? styles.backdropVisible : ""}`}
+                onClick={onClose}
+                aria-hidden="true"
             />
 
             {/* Sliding Panel */}

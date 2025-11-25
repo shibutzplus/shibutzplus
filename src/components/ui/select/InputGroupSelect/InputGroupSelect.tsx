@@ -5,7 +5,7 @@ import Select, { StylesConfig, components } from "react-select";
 import { GroupOption, SelectOption } from "@/models/types";
 import { customStyles } from "@/style/selectStyle";
 import { createNewSelectOption_btnText } from "@/utils/format";
-import { useMobileSelectScroll } from "@/hooks/useMobileSelectScroll";
+import { useMobileSelectScroll } from "@/hooks/scroll/useMobileSelectScroll";
 import AddToSelectBtn from "../../buttons/AddToSelectBtn/AddToSelectBtn";
 import styles from "./InputGroupSelect.module.css";
 import SelectLayout from "../SelectLayout/SelectLayout";

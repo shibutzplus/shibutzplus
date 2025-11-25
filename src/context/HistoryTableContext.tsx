@@ -12,7 +12,7 @@ import {
     generateDayOptions,
     clampDayToMonth,
 } from "@/utils/time";
-import { useQueryParam } from "@/hooks/useQueryParam";
+import { useQueryParam } from "@/hooks/browser/useQueryParam";
 import { DailySchedule } from "@/models/types/dailySchedule";
 import { useMainContext } from "./MainContext";
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";

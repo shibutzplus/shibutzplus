@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import styles from "./EditableHeader.module.css";
 import useDeletePopup from "@/hooks/useDeletePopup";
 import Icons from "@/style/icons";
-import { useStickyHeader } from "@/hooks/useStickyHeader";
+import { useStickyHeader } from "@/hooks/scroll/useStickyHeader";
 
 type EditableHeaderProps = {
     children: React.ReactNode;

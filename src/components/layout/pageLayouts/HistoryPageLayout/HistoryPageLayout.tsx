@@ -7,7 +7,7 @@ import Logo from "@/components/ui/Logo/Logo";
 import HamburgerNav, { HamburgerButton } from "@/components/navigation/HamburgerNav/HamburgerNav";
 import router from "@/routes";
 
-import { useMobileSize } from "@/hooks/useMobileSize";
+import { useMobileSize } from "@/hooks/browser/useMobileSize";
 
 type HistoryPageLayoutProps = {
     children: React.ReactNode;

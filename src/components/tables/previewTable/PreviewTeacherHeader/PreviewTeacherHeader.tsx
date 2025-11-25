@@ -2,7 +2,7 @@ import React from "react";
 import { ColumnType, DailyScheduleCell } from "@/models/types/dailySchedule";
 import styles from "./PreviewTeacherHeader.module.css";
 import { COLOR_BY_TYPE } from "@/models/constant/daily";
-import { useStickyHeader } from "@/hooks/useStickyHeader";
+import { useStickyHeader } from "@/hooks/scroll/useStickyHeader";
 import Icons from "@/style/icons";
 import { AppType } from "@/models/types";
 
