@@ -1,6 +1,11 @@
 import { GroupOption } from "@/models/types";
 import { AvailableTeachers, WeeklySchedule } from "@/models/types/annualSchedule";
-import { ColumnTypeValues, ColumnType, DailySchedule, DailyScheduleCell } from "@/models/types/dailySchedule";
+import {
+    ColumnTypeValues,
+    ColumnType,
+    DailySchedule,
+    DailyScheduleCell,
+} from "@/models/types/dailySchedule";
 import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import { dayToNumber } from "./time";
 import { ClassType } from "@/models/types/classes";
@@ -113,15 +118,13 @@ export const filterDailyHeaderTeachers = (
             teacher.id === selectedTeacher?.id || !flatTeachersSet.has(teacher.id);
 
         // If teachersTeachingTodayIds is provided, keep only teachers that teach today
-        const teachesToday =
-            !teachersTeachingTodayIds || teachersTeachingTodayIds.has(teacher.id);
+        const teachesToday = !teachersTeachingTodayIds || teachersTeachingTodayIds.has(teacher.id);
 
         return isRegular && isCurrentOrNotUsed && teachesToday;
     });
 
     return createSelectOptions(filteredTeachers);
 };
-
 
 // DailySchedule Dropdown: Build grouped teacher options (substitutes, available, unavailable) for a specific day/hour
 export const sortDailyTeachers = (
@@ -176,10 +179,10 @@ export const sortDailyTeachers = (
         });
     }
 
-    const substituteTeachers: TeacherType[] = [];   // substitute teachers
-    const availableTeachers: TeacherType[] = [];    // regular teachers free this hour
-    const unavailableTeachers: TeacherType[] = [];  // teachers busy this hour
-    const freeDayTeachers: TeacherType[] = [];      // regular teachers not teaching on this day
+    const substituteTeachers: TeacherType[] = []; // substitute teachers
+    const availableTeachers: TeacherType[] = []; // regular teachers free this hour
+    const unavailableTeachers: TeacherType[] = []; // teachers busy this hour
+    const freeDayTeachers: TeacherType[] = []; // regular teachers not teaching on this day
 
     for (const teacher of allTeachers) {
         // skip the column's header teacher as it should not appear in its own dropdown
@@ -214,13 +217,13 @@ export const sortDailyTeachers = (
 
     // Regular teachers with zero annual hours
     const extraRegularTeachers = allTeachers.filter(
-        (t) => t.role === TeacherRoleValues.REGULAR && !annualTeacherIds.has(t.id)
+        (t) => t.role === TeacherRoleValues.REGULAR && !annualTeacherIds.has(t.id),
     );
 
     // Label helper: add class name for annual-unavailable and "(מ\"מ)" for active daily subs
     const getUnavailableLabel = (t: TeacherType) => {
         const classId = teacherAtIndex?.[dayKey]?.[hourStr]?.[t.id];
-        const className = classId ? (classNameById[classId] || classId) : undefined;
+        const className = classId ? classNameById[classId] || classId : undefined;
         const base = className ? `${t.name} (${className})` : t.name;
         return subTeachersThisHour.has(t.id) ? `${base} (מ"מ)` : base;
     };
@@ -308,18 +311,17 @@ export const sortDailyTeachers = (
     return groups;
 };
 
-
 // Sort columns by issueTeacherType in order: [existingTeacher], [missingTeacher], [event]
 export const sortDailyColumnIdsByType = (
     columnIds: string[],
     schedule: DailySchedule,
-    selectedDate: string
+    selectedDate: string,
 ) => {
     const getTypeOrder = (type: ColumnType) => {
         switch (type) {
-            case ColumnTypeValues.existingTeacher:
-                return 1;
             case ColumnTypeValues.missingTeacher:
+                return 1;
+            case ColumnTypeValues.existingTeacher:
                 return 2;
             case ColumnTypeValues.event:
                 return 3;

@@ -30,8 +30,8 @@
     flex-direction: column;
     position: fixed;
     inset: 0 0 auto 0;
-    z-index: 10;
     width: 100%;
+    z-index: 20;
 }
 
 .topNavSection {

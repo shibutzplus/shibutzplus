@@ -41,6 +41,7 @@ const DailyCol: React.FC<DailyColProps> = ({ columnId, column }) => {
         </div>
     ) : (
         <div className={styles.dailyColumn} data-column-id={columnId}>
+            <div className={styles.hide} />
             <DailyTeacherHeader columnId={columnId} type={columnType} />
             <div style={{ width: "100%", height: TableDailyHeaderHeight }}></div>
             <div className={styles.rows}>

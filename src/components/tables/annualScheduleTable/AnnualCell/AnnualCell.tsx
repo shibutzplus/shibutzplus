@@ -87,6 +87,7 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
                     isSearchable
                     isAllowAddNew
                     isDisabled={isDisabled}
+                    isBold
                     onCreate={(v: string) => {
                         return onCreateTeacher(day, hour, v);
                     }}

@@ -35,6 +35,7 @@ export interface InputGroupMultiSelectProps {
     isDisabled?: boolean;
     hasBorder?: boolean;
     backgroundColor?: string;
+    isBold?: boolean;
     isClearable?: boolean;
     onCreate?: (value: string) => Promise<string | undefined>;
     onBeforeRemove?: (removedLabel: string | null, proceed: () => void) => void;
@@ -61,6 +62,7 @@ const InputGroupMultiSelect: React.FC<InputGroupMultiSelectProps> = ({
     hasBorder = false,
     backgroundColor = InputBackgroundColor,
     isClearable = false,
+    isBold = false,
     onCreate,
     onBeforeRemove,
 }) => {
@@ -180,6 +182,7 @@ const InputGroupMultiSelect: React.FC<InputGroupMultiSelectProps> = ({
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
+            fontWeight: isBold ? 600 : 500,
         }),
         multiValueLabel: (provided: any) => ({
             ...provided,

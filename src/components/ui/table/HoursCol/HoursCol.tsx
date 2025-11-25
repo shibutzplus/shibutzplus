@@ -10,8 +10,8 @@ const HoursCol: React.FC<Props> = ({ hours }) => {
 
     return (
         <div className={styles.overlay}>
-            <div className={styles.backgroundHidden} />
-            <div className={styles.topHidden} />
+            <div className={styles.hideBackground} />
+            <div className={styles.hideTop} />
             <div className={styles.hoursColumn}>
                 {hourNumbers.map((hour) => (
                     <div key={hour} className={styles.hourCell}>
