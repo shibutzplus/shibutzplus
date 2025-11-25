@@ -49,6 +49,8 @@
     --button-disabled-color: #b9b9b9;
     --button-disabled-background-color: #919191;
 
+    --hours-in-day: 10;
+
     --input-height: 40px;
 
     --border-primary: 1px solid var(--dark-border-color);
@@ -74,12 +76,12 @@
     --table-daily-col-width: 240px;
     --table-daily-header-height: 45px;
     --table-daily-cell-height: 96px;
-    --table-daily-full-height: calc(var(--table-daily-header-height) + var(--table-daily-cell-height) * 9 + (5px * 10));
+    --table-daily-full-height: calc(var(--table-daily-header-height) + var(--table-daily-cell-height) * var(--hours-in-day) + (5px * 10));
 
     --table-annual-col-width: 200px;
     --table-annual-header-height: 40px;
     --table-annual-cell-height: 96px;
-    --table-annual-full-height: calc(var(--table-daily-header-height) + var(--table-daily-cell-height) * 9 + (5px * 10));
+    --table-annual-full-height: calc(var(--table-daily-header-height) + var(--table-daily-cell-height) * var(--hours-in-day) + (5px * 10));
 
     --list-details-header-height: 50px;
     --list-details-full-height: calc(100vh - var(--header-height) - 1rem);

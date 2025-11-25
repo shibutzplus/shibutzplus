@@ -78,13 +78,13 @@ export const TableDailyColWidth: string = "240px";
 export const TableDailyHeaderHeight: string = "50px";
 export const TableDailyCellHeight: string = "96px";
 export const TableDailyFullHeight: string =
-    "calc(var(--table-daily-header-height) + var(--table-daily-cell-height) * 9 + (5px * 10))";
+    "calc(var(--table-daily-header-height) + var(--table-daily-cell-height) * var(--hours-in-day) + (5px * 10))";
 
 export const TableAnnualColWidth: string = "200px";
 export const TableAnnualHeaderHeight: string = "40px";
 export const TableAnnualCellHeight: string = "96px";
 export const TableAnnualFullHeight: string =
-    "calc(var(--table-daily-header-height) + var(--table-daily-cell-height) * 9 + (5px * 10))";
+    "calc(var(--table-daily-header-height) + var(--table-daily-cell-height) * var(--hours-in-day) + (5px * 10))";
 
 export const ListDetailsHeaderHeight: string = "50px";
 export const ListDetailsFullHeight: string = "calc(100vh - var(--header-height) - 1rem)";
