@@ -38,10 +38,20 @@ const ClassesList: React.FC = () => {
         );
     };
 
+    // First sort by name, then place classes items before groups items
     const sortedClasses = React.useMemo(
-        () => (classes !== undefined ? sortByHebrewName(classes) : undefined),
+        () => {
+            if (classes === undefined) return undefined;
+
+            const sortedByName = sortByHebrewName(classes);
+            const nonActivity = sortedByName.filter((item) => !item.activity);
+            const activity = sortedByName.filter((item) => item.activity);
+
+            return [...nonActivity, ...activity];
+        },
         [classes],
     );
+
 
     return (
         <TableList headThs={["שם הכיתה", "פעולות"]}>

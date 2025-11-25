@@ -20,7 +20,7 @@ type DailyTeacherCellProps = {
 };
 
 const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
-    const { teachers } = useMainContext();
+    const { teachers, classes } = useMainContext();
     const {
         mainDailyTable,
         mapAvailableTeachers,
@@ -45,6 +45,16 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
     );
 
     const day = getDayNameByDateString(selectedDate);
+
+    // build classId -> activity map
+    const classActivityById = useMemo(
+        () =>
+            Object.fromEntries(
+                (classes || []).map((cls) => [cls.id, !!cls.activity]),
+            ),
+        [classes],
+    );
+
     const sortedTeacherOptions = useMemo(
         () =>
             sortDailyTeachers(
@@ -57,6 +67,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
                 classNameById,
                 headerData?.headerTeacher?.id,
                 subTeacherData?.id || teacherText,
+                classActivityById,
             ),
         [
             teachers,
@@ -69,6 +80,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ cell, type }) => {
             headerData?.headerTeacher?.id,
             subTeacherData,
             teacherText,
+            classActivityById,
         ],
     );
 
