@@ -4,6 +4,7 @@ export type ClassType = {
   id: string;
   name: string;
   schoolId: string;
+  activity: boolean;
 }
 
 export type ClassRequest = {
