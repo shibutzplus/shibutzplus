@@ -12,7 +12,7 @@ export const ONE_WEEK = 7;
 export const ONE_DAY = 1;
 
 // Number of hours in a day
-export const HOURS_IN_DAY = 9;
+export const HOURS_IN_DAY = 10;
 
 // YYYY-MM-DD format
 export const getDateReturnString = (date: Date) => {
