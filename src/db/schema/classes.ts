@@ -1,4 +1,4 @@
-import { pgTable, text, varchar, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, text, varchar, timestamp, boolean } from 'drizzle-orm/pg-core'
 import { createId } from '@paralleldrive/cuid2';
 
 export const classes = pgTable('classes', {
@@ -7,6 +7,7 @@ export const classes = pgTable('classes', {
   schoolId: text('school_id').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  activity: boolean('activity').default(false).notNull(),
 });
 
 export type ClassSchema = typeof classes.$inferSelect;
