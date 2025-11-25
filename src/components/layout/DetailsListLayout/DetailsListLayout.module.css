@@ -22,8 +22,8 @@
     justify-content: space-between;
     width: 100%;
     height: var(--list-details-header-height);
-    background-color: var(--publish-color);
-    color: var(--bright-text-color);
+    background-color: var(--inner-background-color);
+    color: var(--dark-text-color);
     padding: 0 calc(var(--list-details-padding) + 15px);
     box-sizing: border-box;
 }

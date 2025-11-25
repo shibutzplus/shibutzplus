@@ -28,9 +28,9 @@
     height: var(--table-annual-header-height);
     text-align: center;
     width: var(--table-annual-col-width);
-    color: var(--bright-text-color);
+    color: var(--dark-text-color);
     font-weight: 600;
-    background-color: var(--publish-color);
+    background-color: var(--inner-background-color);
 }
 
 .hourCol {
