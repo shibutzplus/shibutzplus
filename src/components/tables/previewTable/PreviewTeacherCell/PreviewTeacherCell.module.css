@@ -21,4 +21,5 @@
 
 .missingSubTeacherName {
     color: var(--missing-teacher-color);
+    font-weight: 600;
 }
