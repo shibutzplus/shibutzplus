@@ -327,7 +327,7 @@ export const sortDailyTeachers = (
             })),
         },
         {
-            label: "מלמדים בכיתה או בקבוצה",
+            label: "מלמדים בכיתה",
             collapsed: true,
             options: filteredUnavailableTeachers.map((teacher) => ({
                 value: teacher.id,
@@ -335,7 +335,7 @@ export const sortDailyTeachers = (
             })),
         },
         {
-            label: "לא התחילו / סיימו",
+            label: "לא התחילו/סיימו את היום",
             collapsed: true,
             options: outsideHoursTeachers.map((t) => ({ value: t.id, label: t.name })),
         },
