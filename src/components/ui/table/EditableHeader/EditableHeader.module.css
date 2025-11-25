@@ -1,19 +1,32 @@
-.columnHeader {
-    border-radius: var(--border-radius-table) var(--border-radius-table) 0 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
+.columnHeaderWrapper {
     width: 100%;
     max-width: var(--table-daily-col-width);
-    padding: 0 15px;
-    text-align: right;
     height: var(--table-daily-header-height);
-    color: var(--bright-text-color);
-    will-change: transform;
+    background-color: var(--background-color);
     position: absolute;
     left: 0;
     z-index: 5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    will-change: transform;
+}
+
+.columnHeader {
+    position: relative;
+    top: 0;
+    left: 0;
+    border-radius: var(--border-radius-table) var(--border-radius-table) 0 0;
+    gap: 10px;
+    width: 100%;
+    padding: 0 15px;
+    text-align: right;
+    height: 100%;
+    color: var(--bright-text-color);
+    z-index: 5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .clearButton {
