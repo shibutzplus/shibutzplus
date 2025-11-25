@@ -3,18 +3,18 @@
 import React, { useEffect, useState } from "react";
 import InputRichText from "@/components/ui/inputs/InputRichText/InputRichText";
 import { usePortalContext } from "@/context/PortalContext";
-import { PortalScheduleType } from "@/models/types/portalSchedule";
+import { TeacherScheduleType } from "@/models/types/portalSchedule";
 import styles from "./PortalWriteRow.module.css";
 import { usePortalActions } from "@/hooks/usePortalActions";
 
 type PortalWriteRowProps = {
     hour: number;
-    row?: PortalScheduleType;
+    row?: TeacherScheduleType;
 };
 
 const PortalWriteRow: React.FC<PortalWriteRowProps> = ({ hour, row }) => {
     const { teacher } = usePortalContext();
-    // const { handleSave } = usePortalActions();
+    const { handleSave } = usePortalActions();
 
     const [instructions, setInstructions] = useState<string>(row?.instructions || "");
     const [prevInstructions, setPrevInstructions] = useState<string>(row?.instructions || "");
@@ -35,29 +35,29 @@ const PortalWriteRow: React.FC<PortalWriteRowProps> = ({ hour, row }) => {
         const issueTeacherId = row.issueTeacher?.id ?? undefined;
         const subTeacherId = row.subTeacher?.id ?? undefined;
 
-        // await handleSave(
-        //     row.DBid,
-        //     hour,
-        //     value === "" ? undefined : value,
-        //     schoolId,
-        //     issueTeacherId,
-        //     subTeacherId,
-        // );
+        await handleSave(
+            row.DBid,
+            hour,
+            value === "" ? undefined : value,
+            schoolId,
+            issueTeacherId,
+            subTeacherId,
+        );
     };
 
     // Returns text about replacement teacher or event
-    const replaceTeacher = () => {
-        if (row?.issueTeacher) {
-            if (teacher?.id === row?.issueTeacher?.id) {
-                if (row?.subTeacher) return `${row?.subTeacher?.name}`;
-                if (row?.event) return row?.event;
-                return "";
-            } else {
-                return `במקום ${row?.issueTeacher?.name}`;
-            }
-        }
-        return "";
-    };
+    // const replaceTeacher = () => {
+    //     if (row?.issueTeacher) {
+    //         if (teacher?.id === row?.issueTeacher?.id) {
+    //             if (row?.subTeacher) return `${row?.subTeacher?.name}`;
+    //             if (row?.event) return row?.event;
+    //             return "";
+    //         } else {
+    //             return `במקום ${row?.issueTeacher?.name}`;
+    //         }
+    //     }
+    //     return "";
+    // };
 
     // Decide what placeholder to show inside the input
     const getInstructionPlaceholder = () => {
@@ -85,7 +85,7 @@ const PortalWriteRow: React.FC<PortalWriteRowProps> = ({ hour, row }) => {
 
     return (
         <tr>
-            <td className={styles.hourCell} style={{ backgroundColor: "#fffbf5" }}>
+            {/* <td className={styles.hourCell} style={{ backgroundColor: "#fffbf5" }}>
                 {hour}
             </td>
             <td className={styles.cellClass}>
@@ -94,7 +94,7 @@ const PortalWriteRow: React.FC<PortalWriteRowProps> = ({ hour, row }) => {
                     <div className={styles.subjectName}>{row?.subject?.name ?? ""}</div>
                     <div className={styles.subTeacher}>{replaceTeacher()}</div>
                 </div>
-            </td>
+            </td> */}
             <td className={styles.cellMaterial}>
                 {row ? (
                     <InputRichText

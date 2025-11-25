@@ -3,9 +3,9 @@
 import React, { useEffect } from "react";
 import { NextPage } from "next";
 import styles from "./PublishedPortal.module.css";
-import PublishedSkeleton from "@/components/loading/skeleton/PublishedSkeleton/PublishedSkeleton";
 import PreviewTable from "@/components/tables/previewTable/PreviewTable/PreviewTable";
 import { usePortalContext } from "@/context/PortalContext";
+import DailySkeleton from "@/components/loading/skeleton/DailySkeleton/DailySkeleton";
 
 const PublishedPortalPage: NextPage = () => {
     const {
@@ -21,7 +21,7 @@ const PublishedPortalPage: NextPage = () => {
         fetchPublishScheduleData();
     }, [selectedDate, teacher?.id, schoolId]);
 
-    if (isPublishLoading) return <PublishedSkeleton />;
+    if (isPublishLoading) return <DailySkeleton />;
 
     return (
         <section className={styles.container}>

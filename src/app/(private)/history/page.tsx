@@ -5,13 +5,13 @@ import type { NextPage } from "next";
 import styles from "./history.module.css";
 import PreviewTable from "@/components/tables/previewTable/PreviewTable/PreviewTable";
 import { useHistoryTable } from "@/context/HistoryTableContext";
-import PublishedSkeleton from "@/components/loading/skeleton/PublishedSkeleton/PublishedSkeleton";
 import NotPublished from "@/components/empty/NotPublished/NotPublished";
+import DailySkeleton from "@/components/loading/skeleton/DailySkeleton/DailySkeleton";
 
 const HistorySchedulePage: NextPage = () => {
     const { mainDailyTable, selectedYearDate, isLoading } = useHistoryTable();
 
-    if (isLoading) return <PublishedSkeleton />;
+    if (isLoading) return <DailySkeleton />;
 
     return (
         <section className={styles.container}>

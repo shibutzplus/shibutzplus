@@ -8,11 +8,13 @@ import styles from "./DailySchedule.module.css";
 import DailyTable from "@/components/tables/dailyScheduleTable/DailyTable/DailyTable";
 import PreviewTable from "@/components/tables/previewTable/PreviewTable/PreviewTable";
 import EmptyTable from "@/components/empty/EmptyTable/EmptyTable";
+import LoadingPage from "@/components/loading/LoadingPage/LoadingPage";
 
 const DailySchedulePage: NextPage = () => {
-    const { isLoading, isEditMode, selectedDate, mainDailyTable } = useDailyTableContext();
+    const { isLoading, isEditMode, selectedDate, mainDailyTable, isLoadingEditPage } = useDailyTableContext();
 
     if (isLoading) return <DailySkeleton />;
+    if (isLoadingEditPage) return <LoadingPage />;
 
     return (
         <section className={styles.container}>

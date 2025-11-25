@@ -103,6 +103,7 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
                         const res = getPublishedDatesOptions(response.data.publishDates);
                         if (res.length === 0) {
                             setDatesOptions([]);
+                            setSelectedDate("");
                             return;
                         }
                         setDatesOptions(res);
@@ -116,6 +117,7 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
                 } catch (error) {
                     console.error("Error fetching publish dates:", error);
                     setDatesOptions([]);
+                    setSelectedDate("");
                 } finally {
                     setIsDatesLoading(false);
                 }
@@ -126,6 +128,17 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
         };
         blockRef.current && fetchPublishedDates();
     }, [teacher]);
+
+    // Initialize selectedDate when datesOptions becomes available
+    useEffect(() => {
+        if (datesOptions.length > 0 && !selectedDate) {
+            const initialDate =
+                chooseDefaultDate(datesOptions) ??
+                selectSelectedDate(datesOptions)?.value ??
+                datesOptions[0].value;
+            setSelectedDate(initialDate);
+        }
+    }, [datesOptions]);
 
     const handleRefreshDates = async (): Promise<{
         success: boolean;

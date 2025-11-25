@@ -1,8 +1,8 @@
 import React from "react";
-import PublishedSkeleton from "@/components/loading/skeleton/PublishedSkeleton/PublishedSkeleton";
+import DailySkeleton from "@/components/loading/skeleton/DailySkeleton/DailySkeleton";
 
-const HistoryLoading = () => {
-    return <PublishedSkeleton />;
+const SkeletonHistory: React.FC = () => {
+    return <DailySkeleton />;
 };
 
-export default HistoryLoading;
+export default SkeletonHistory;

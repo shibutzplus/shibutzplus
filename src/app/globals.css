@@ -61,7 +61,7 @@
 
     --border-radius-input: 4px;
     --border-radius-table: 20px;
-    --border-radius-cell: 10px;
+    --border-radius-cell: 6px;
 
     --header-height: 60px;
 
@@ -91,6 +91,8 @@
     --list-details-actions-width: 160px;
     --list-details-actions-width-mobile: 100px;
 
+    --table-teacher-details-col-width: 200px;
+    --table-teacher-cell-height: 86px;
 }
 
 html,

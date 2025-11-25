@@ -2,7 +2,7 @@ import React from "react";
 import { NextPage } from "next";
 import styles from "./PublishedSkeleton.module.css";
 import { TableRows } from "@/models/constant/table";
-
+//NOT IN USE
 const PublishedSkeleton: NextPage = () => {
     const ColsNumber = 6;
     return (

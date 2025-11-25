@@ -4,7 +4,7 @@ import { TableRows } from "@/models/constant/table";
 import PortalWriteRow from "../PortalWriteRow/PortalWriteRow";
 import { usePortalContext } from "@/context/PortalContext";
 import { usePortal } from "@/hooks/usePortal";
-
+// NOT IN USE
 type Props = {
     embedded?: boolean; // render inside modal Div
 };

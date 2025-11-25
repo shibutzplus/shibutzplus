@@ -10,8 +10,6 @@ import PreviewCol from "../PreviewCol/PreviewCol";
 import SlidingPanel from "@/components/ui/SlidingPanel/SlidingPanel";
 import { DailySchedule } from "@/models/types/dailySchedule";
 import { AppType } from "@/models/types";
-import { useDailyTableContext } from "@/context/DailyTableContext";
-import LoadingPage from "@/components/loading/LoadingPage/LoadingPage";
 
 type PreviewTableProps = {
     mainDailyTable: DailySchedule;
@@ -32,7 +30,6 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
         ? sortDailyColumnIdsByType(tableColumns, mainDailyTable, selectedDate)
         : [];
 
-    const { isLoadingEditPage } = useDailyTableContext();
     const [isPanelOpen, setIsPanelOpen] = useState(false);
     const [selectedTeacherName, setSelectedTeacherName] = useState("");
 
@@ -44,8 +41,6 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
     const handleClosePanel = () => {
         setIsPanelOpen(false);
     };
-
-    if (isLoadingEditPage) return <LoadingPage />;
 
     return (
         <>

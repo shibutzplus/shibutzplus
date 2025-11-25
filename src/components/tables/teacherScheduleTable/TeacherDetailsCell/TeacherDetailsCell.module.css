@@ -1,0 +1,35 @@
+.scheduleCell {
+  position: relative;
+  padding-right: 4px;
+  padding-bottom: 5px;
+  box-sizing: border-box;
+  width: var(--table-teacher-details-col-width);
+}
+
+.cellContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: var(--table-teacher-cell-height);
+  background-color: var(--tab-color);
+  border-radius: var(--border-radius-cell);
+  padding: 10px 15px;
+  box-sizing: border-box;
+}
+
+.emptyCell {
+  width: 100%;
+  height: var(--table-teacher-cell-height);
+  background-color: var(--inner-background-color-empty);
+  border-radius: var(--border-radius-cell);
+}
+
+.classAndSubject {
+  max-width: calc(var(--table-teacher-details-col-width) - 30px);
+  box-sizing: border-box;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}

@@ -2,12 +2,12 @@
 
 import React, { useEffect } from "react";
 import { NextPage } from "next";
-import PortalTable from "@/components/tables/teacherPortalTable/PortalTable/PortalTable";
 import TeacherPortalSkeleton from "@/components/loading/skeleton/TeacherPortalSkeleton/TeacherPortalSkeleton";
 import styles from "./teacherPortal.module.css";
 import { usePortalContext } from "@/context/PortalContext";
 import { useParams, useRouter } from "next/navigation";
 import router from "@/routes";
+import TeacherTable from "@/components/tables/teacherScheduleTable/TeacherTable/TeacherTable";
 
 const TeacherPortalPage: NextPage = () => {
     const { selectedDate, isPortalLoading, fetchPortalScheduleDate } = usePortalContext();
@@ -36,11 +36,9 @@ const TeacherPortalPage: NextPage = () => {
     if (isPortalLoading) return <TeacherPortalSkeleton />;
 
     return (
-        <section className={styles.content}>
-            <div className={styles.whiteBox}>
-                <PortalTable />
-            </div>
-        </section>
+        <div className={styles.container}>
+            <TeacherTable />
+        </div>
     );
 };
 
