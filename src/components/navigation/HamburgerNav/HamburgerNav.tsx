@@ -82,13 +82,6 @@ type LinkComponentProps = {
 const LinkComponent: React.FC<LinkComponentProps> = ({ link, onClose, currentPath }) => {
     const isActive = currentPath.startsWith(link.p);
 
-    // Open link in a new tab without closing the menu
-    const handleOpenNewTab = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        e.preventDefault();
-        window.open(link.p, "_blank", "noopener,noreferrer");
-    };
-
     return (
         <div className={styles.linkWrapper}>
             <Link
@@ -99,18 +92,6 @@ const LinkComponent: React.FC<LinkComponentProps> = ({ link, onClose, currentPat
                 {link.Icon}
                 <span>{link.name}</span>
             </Link>
-
-            {link.withExternal && (
-                <button
-                    type="button"
-                    className={styles.newTabBtn}
-                    onClick={handleOpenNewTab}
-                    aria-label={`Open ${link.name} in new tab`}
-                    title="פתח בטאב חדש"
-                >
-                    <Icons.newWindow size={18} style={{ color: "#707070ff" }} />
-                </button>
-            )}
         </div>
     );
 };
