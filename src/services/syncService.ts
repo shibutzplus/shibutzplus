@@ -1,6 +1,6 @@
 /**
  * Sync Service
- * Handles polling for updates from the sync API
+ * Handles push/poll for updates from the sync API
  */
 
 export type SyncChannel = "teacher" | "event" | "material" | "detailsUpdate";
@@ -26,17 +26,22 @@ export interface PollUpdatesParams {
  */
 export const pollUpdates = async (params: PollUpdatesParams): Promise<SyncPollResponse | null> => {
   try {
+    // Skip polling when running in development
+    if (process.env.NODE_ENV === "development") {
+      return null; // For debug comment out this block  
+    }
+
     const { since, channels } = params;
     const channelsParam = channels.join(",");
     const url = `/api/sync/poll?since=${since}&channels=${encodeURIComponent(channelsParam)}`;
-    
+
     const res = await fetch(url, { cache: "no-store" });
-    
+
     if (!res.ok) {
       console.error("Sync poll failed with status:", res.status);
       return null;
     }
-    
+
     const data: SyncPollResponse = await res.json();
     return data;
   } catch (error) {
@@ -54,13 +59,13 @@ export const checkForUpdates = async (
   params: PollUpdatesParams
 ): Promise<{ hasUpdates: boolean; latestTs: number }> => {
   const data = await pollUpdates(params);
-  
+
   if (!data) {
     return { hasUpdates: false, latestTs: params.since };
   }
-  
+
   const hasUpdates = data.latestTs > params.since;
-  
+
   return {
     hasUpdates,
     latestTs: data.latestTs,
@@ -92,6 +97,10 @@ export const getChannelsForPath = (
  */
 export const pushSyncUpdate = async (type: SyncChannel): Promise<void> => {
   try {
+    // Skip push when running in development
+    if (process.env.NODE_ENV === "development") {
+      return; // For debug comment out this block
+    }
     void fetch(`/api/sync/push?type=${type}`, { method: "POST", keepalive: true });
   } catch (error) {
     console.error("Error pushing sync update:", error);
