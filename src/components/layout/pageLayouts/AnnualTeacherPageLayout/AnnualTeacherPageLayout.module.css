@@ -1,0 +1,96 @@
+/* Mobile */
+.pageLayout {
+    width: 100%;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--background);
+}
+
+.headerContent {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--background);
+    border-bottom: var(--border-primary);
+    flex: 0 0 auto;
+    min-height: var(--header-height);
+}
+
+.mainContent {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    width: 100%;
+}
+
+.topNavLayout {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    inset: 0 0 auto 0;
+    width: 100%;
+    z-index: 20;
+}
+
+.topNavSection {
+    box-shadow: var(--box-shadow-primary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--header-height);
+    background: var(--top-color);
+}
+
+.topNavRight {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 50%;
+}
+
+.topNavLeft {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    gap: 20px;
+    width: 50%;
+    margin-left: 10px;
+}
+
+.bottomNav {
+    width: 100%;
+    height: var(--header-height);
+    background-color: var(--background-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: -1;
+}
+
+.selectContainer {
+    width: 100%;
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+
+    .topNavSection {
+        padding: 0 var(--padding-width-desktop);
+        gap: 3em;
+    }
+
+    .topNavRight {
+        width: 70%;
+    }
+
+    .topNavLeft {
+        margin-left: 0;
+        width: 30%;
+    }
+
+    .selectContainer {
+        width: var(--top-nav-select-width);
+    }
+
+}

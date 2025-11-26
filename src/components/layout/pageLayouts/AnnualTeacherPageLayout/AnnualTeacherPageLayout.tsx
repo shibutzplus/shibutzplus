@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import styles from "./AnnualPageLayout.module.css";
+import styles from "./AnnualTeacherPageLayout.module.css";
 import Logo from "@/components/ui/Logo/Logo";
 import HamburgerNav, { HamburgerButton } from "@/components/navigation/HamburgerNav/HamburgerNav";
 import { useMobileSize } from "@/hooks/browser/useMobileSize";
@@ -9,11 +9,11 @@ import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputS
 import router from "@/routes";
 import { useAnnualTable } from "@/context/AnnualTableContext";
 
-type AnnualPageLayoutProps = {
+type AnnualTeacherPageLayoutProps = {
     children: React.ReactNode;
 };
 
-export default function AnnualPageLayout({ children }: AnnualPageLayoutProps) {
+export default function AnnualTeacherPageLayout({ children }: AnnualTeacherPageLayoutProps) {
     const { classesSelectOptions, selectedClassId, handleClassChange, isSaving, isLoading } =
         useAnnualTable();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -29,7 +29,7 @@ export default function AnnualPageLayout({ children }: AnnualPageLayoutProps) {
                                 onClick={() => setIsMenuOpen((v) => !v)}
                                 isOpen={isMenuOpen}
                             />
-                            <h3>{router.annualSchedule.title}</h3>
+                            <h3>{router.annualByTeacher.title}</h3>
                             {!isMobile ? (
                                 <div className={styles.selectContainer}>
                                     <DynamicInputSelect
