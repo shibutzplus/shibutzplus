@@ -24,52 +24,44 @@ interface ILink {
     p: string;
     Icon: React.ReactNode;
     withDivider?: boolean;
-    withExternal?: boolean;
 }
 const links: ILink[] = [
     {
         name: routePath.dailySchedule.title,
         p: routePath.dailySchedule.p,
         Icon: <Icons.dailyCalendar size={24} />,
-        withExternal: false,
     },
     {
         name: routePath.history.title,
         p: routePath.history.p,
         Icon: <Icons.eye size={24} />,
         withDivider: true,
-        withExternal: false,
     },
     {
         name: routePath.teachers.title,
         p: routePath.teachers.p,
         Icon: <Icons.teacher size={24} />,
-        withExternal: false,
     },
     {
         name: routePath.substitute.title,
         p: routePath.substitute.p,
         Icon: <Icons.substituteTeacher size={24} />,
-        withExternal: false,
     },
     {
         name: routePath.subjects.title,
         p: routePath.subjects.p,
         Icon: <Icons.book size={24} />,
-        withExternal: false,
     },
     {
         name: routePath.classes.title,
         p: routePath.classes.p,
         Icon: <Icons.chair size={24} />,
         withDivider: true,
-        withExternal: false,
     },
     {
         name: routePath.annualSchedule.title,
         p: routePath.annualSchedule.p,
         Icon: <Icons.calendar size={24} />,
-        withExternal: false,
     },
 ];
 
@@ -131,6 +123,28 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
         onClose();
     };
 
+    const [teacherPortalPath, setTeacherPortalPath] = React.useState(routePath.teacherPortal.p);
+
+    useEffect(() => {
+        const teacher = getStorageTeacher();
+        if (teacher) {
+            setTeacherPortalPath(`${routePath.teacherPortal.p}/${teacher.schoolId}/${teacher.id}`);
+        }
+    }, []);
+
+    const publicLinks: ILink[] = [
+        {
+            name: "המערכת שלי",
+            p: teacherPortalPath,
+            Icon: <Icons.teacher size={24} />,
+        },
+        {
+            name: "מערכת בית ספרית",
+            p: routePath.publishedPortal.p,
+            Icon: <Icons.calendar size={24} />,
+        },
+    ];
+
     return (
         <div ref={overlayRef} className={`${styles.overlay} ${isOpen ? styles.open : ""}`}>
             <div
@@ -146,26 +160,22 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                 </button>
 
                 <div className={styles.menuContent}>
-                    {isPrivate ? (
-                        <section className={styles.menuSection}>
-                            <ul>
-                                {links.map((link, index) => (
-                                    <li
-                                        key={index}
-                                        className={
-                                            link.withDivider ? styles.withDivider : undefined
-                                        }
-                                    >
-                                        <LinkComponent
-                                            link={link}
-                                            onClose={onClose}
-                                            currentPath={pathname}
-                                        />
-                                    </li>
-                                ))}
-                            </ul>
-                        </section>
-                    ) : null}
+                    <section className={styles.menuSection}>
+                        <ul>
+                            {(isPrivate ? links : publicLinks).map((link, index) => (
+                                <li
+                                    key={index}
+                                    className={link.withDivider ? styles.withDivider : undefined}
+                                >
+                                    <LinkComponent
+                                        link={link}
+                                        onClose={onClose}
+                                        currentPath={pathname}
+                                    />
+                                </li>
+                            ))}
+                        </ul>
+                    </section>
 
                     <div className={styles.bottomSection}>
                         <section className={styles.menuSection}>
