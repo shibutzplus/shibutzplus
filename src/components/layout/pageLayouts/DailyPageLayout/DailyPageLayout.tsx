@@ -48,11 +48,7 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
                                         />
                                     </div>
 
-                                    {isEditMode ? (
-                                        <DailyActionBtns position="left" />
-                                    ) : (
-                                        <div className={styles.banner}>מצב צפייה מקדימה</div>
-                                    )}
+                                    {isEditMode ? <DailyActionBtns position="left" /> : null}
                                 </div>
                             ) : null}
                         </div>

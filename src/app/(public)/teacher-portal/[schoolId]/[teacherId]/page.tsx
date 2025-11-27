@@ -8,13 +8,14 @@ import { usePortalContext } from "@/context/PortalContext";
 import { useParams, useRouter } from "next/navigation";
 import router from "@/routes";
 import TeacherTable from "@/components/tables/teacherScheduleTable/TeacherTable/TeacherTable";
+import { useTeacherTableContext } from "@/context/TeacherTableContext";
 
 const TeacherPortalPage: NextPage = () => {
-    const { selectedDate, isPortalLoading, fetchPortalScheduleDate } = usePortalContext();
+    const { selectedDate, teacher, setTeacherAndSchool } = usePortalContext();
+    const { isPortalLoading, fetchTeacherScheduleDate } = useTeacherTableContext();
 
     const params = useParams();
     const route = useRouter();
-    const { teacher, setTeacherAndSchool } = usePortalContext();
     const schoolId = params.schoolId as string | undefined;
     const teacherId = params.teacherId as string | undefined;
 
@@ -30,14 +31,14 @@ const TeacherPortalPage: NextPage = () => {
     }, [teacherId, schoolId]);
 
     useEffect(() => {
-        fetchPortalScheduleDate(teacher);
+        fetchTeacherScheduleDate(teacher);
     }, [selectedDate, teacher?.id, schoolId]);
 
     if (isPortalLoading) return <TeacherPortalSkeleton />;
 
     return (
         <div className={styles.container}>
-            <TeacherTable />
+            <TeacherTable teacher={teacher} selectedDate={selectedDate} />
         </div>
     );
 };

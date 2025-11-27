@@ -16,6 +16,7 @@ import { usePathname } from "next/navigation";
 import router from "@/routes";
 import MobileNavLayout from "../../MobileNavLayout/MobileNavLayout";
 import { TeacherRoleValues } from "@/models/types/teachers";
+import { useTeacherTableContext } from "@/context/TeacherTableContext";
 
 type PortalPageLayoutProps = {
     children: React.ReactNode;
@@ -30,11 +31,10 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
         isDatesLoading,
         handleDayChange,
         handleRefreshDates,
-        handlePortalRefresh,
-        isPortalLoading,
         handlePublishedRefresh,
         isPublishLoading,
     } = usePortalContext();
+    const { isPortalLoading, handlePortalRefresh } = useTeacherTableContext();
     const { hasUpdate, resetUpdate } = usePollingUpdates();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const isMobile = useMobileSize();

@@ -9,9 +9,15 @@ type PreviewTeacherRowProps = {
     hour: number;
     row?: TeacherScheduleType;
     teacher: TeacherType;
+    selectedDate: string;
 };
 
-const PreviewTeacherRow: React.FC<PreviewTeacherRowProps> = ({ hour, row, teacher }) => {
+const PreviewTeacherRow: React.FC<PreviewTeacherRowProps> = ({
+    hour,
+    row,
+    teacher,
+    selectedDate,
+}) => {
     return (
         <tr className={styles.teacherRow}>
             <td className={styles.hoursColumn}>
@@ -20,7 +26,11 @@ const PreviewTeacherRow: React.FC<PreviewTeacherRowProps> = ({ hour, row, teache
             <td className={styles.emptyCell}></td>
             <td className={styles.scheduleCell}>
                 <PreviewTeacherDetailsCell row={row} teacher={teacher} />
-                <PreviewTeacherInstructionsCell row={row} />
+                <PreviewTeacherInstructionsCell
+                    row={row}
+                    teacher={teacher}
+                    selectedDate={selectedDate}
+                />
             </td>
         </tr>
     );

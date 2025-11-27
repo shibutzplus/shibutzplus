@@ -6,6 +6,7 @@ import { useStickyHeader } from "@/hooks/scroll/useStickyHeader";
 import Icons from "@/style/icons";
 import { AppType } from "@/models/types";
 import { TeacherType } from "@/models/types/teachers";
+import { useTeacherTableContext } from "@/context/TeacherTableContext";
 
 type PreviewTeacherHeaderProps = {
     type: ColumnType;
@@ -22,13 +23,15 @@ const PreviewTeacherHeader: React.FC<PreviewTeacherHeaderProps> = ({
     appType,
     onTeacherClick,
 }) => {
+    const { fetchTeacherScheduleDate } = useTeacherTableContext();
     const selectedTeacherData = column?.["1"]?.headerCol?.headerTeacher;
     const isClickable = !!selectedTeacherData?.name;
     const headerRef = React.useRef<HTMLDivElement>(null);
     useStickyHeader(headerRef);
 
-    const handleClick = () => {
+    const handleClick = async () => {
         if (isClickable && selectedTeacherData?.name && onTeacherClick) {
+            await fetchTeacherScheduleDate(selectedTeacherData);
             onTeacherClick(selectedTeacherData);
         }
     };

@@ -3,14 +3,14 @@
 import React from "react";
 import styles from "./TeacherDetailsCell.module.css";
 import { TeacherScheduleType } from "@/models/types/portalSchedule";
-import { usePortalContext } from "@/context/PortalContext";
+import { TeacherType } from "@/models/types/teachers";
 
 type TeacherDetailsCellProps = {
     row?: TeacherScheduleType;
+    teacher?: TeacherType;
 };
 
-const TeacherDetailsCell: React.FC<TeacherDetailsCellProps> = ({ row }) => {
-    const { teacher } = usePortalContext();
+const TeacherDetailsCell: React.FC<TeacherDetailsCellProps> = ({ row, teacher }) => {
     const displayReplaceTeacher = () => {
         if (row?.issueTeacher) {
             if (teacher?.id === row?.issueTeacher?.id) {

@@ -79,6 +79,7 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
                     isSearchable
                     isDisabled={isDisabled}
                     onBeforeRemove={confirmRemove}
+                    isBold
                 />
             </div>
         </td>

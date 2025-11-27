@@ -24,12 +24,12 @@ interface PortalContextType {
     datesOptions: SelectOption[];
     handleRefreshDates: () => Promise<{ success: boolean; error: string; selected: string }>;
 
-    isPortalLoading: boolean;
-    isSavingLoading: boolean;
-    mainPortalTable: PortalSchedule;
-    fetchPortalScheduleDate: (teacher?: TeacherType) => Promise<boolean>;
-    handlePortalRefresh: (teacher?: TeacherType) => Promise<void>;
-    saveInstractions: (instructions: string, row?: TeacherScheduleType) => Promise<void>;
+    // isPortalLoading: boolean;
+    // isSavingLoading: boolean;
+    // mainPortalTable: PortalSchedule;
+    // fetchPortalScheduleDate: (teacher?: TeacherType) => Promise<boolean>;
+    // handlePortalRefresh: (teacher?: TeacherType) => Promise<void>;
+    // saveInstractions: (instructions: string, row?: TeacherScheduleType) => Promise<void>;
 
     isPublishLoading: boolean;
     mainPublishTable: DailySchedule;
@@ -187,14 +187,14 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
         }
     };
 
-    const {
-        fetchPortalScheduleDate,
-        handlePortalRefresh,
-        saveInstractions,
-        mainPortalTable,
-        isPortalLoading,
-        isSavingLoading,
-    } = usePortal(schoolId, selectedDate);
+    // const {
+    //     fetchPortalScheduleDate,
+    //     handlePortalRefresh,
+    //     saveInstractions,
+    //     mainPortalTable,
+    //     isPortalLoading,
+    //     isSavingLoading,
+    // } = usePortal(schoolId, selectedDate);
 
     const { fetchPublishScheduleData, handlePublishedRefresh, mainPublishTable, isPublishLoading } =
         usePublished(schoolId, selectedDate, teacher);
@@ -209,12 +209,12 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
         datesOptions,
         handleRefreshDates,
 
-        isPortalLoading,
-        isSavingLoading,
-        mainPortalTable,
-        handlePortalRefresh,
-        fetchPortalScheduleDate,
-        saveInstractions,
+        // isPortalLoading,
+        // isSavingLoading,
+        // mainPortalTable,
+        // handlePortalRefresh,
+        // fetchPortalScheduleDate,
+        // saveInstractions,
 
         isPublishLoading,
         mainPublishTable,

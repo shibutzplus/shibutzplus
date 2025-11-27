@@ -11,7 +11,8 @@ import EmptyTable from "@/components/empty/EmptyTable/EmptyTable";
 import LoadingPage from "@/components/loading/LoadingPage/LoadingPage";
 
 const DailySchedulePage: NextPage = () => {
-    const { isLoading, isEditMode, selectedDate, mainDailyTable, isLoadingEditPage } = useDailyTableContext();
+    const { isLoading, isEditMode, selectedDate, mainDailyTable, isLoadingEditPage } =
+        useDailyTableContext();
 
     if (isLoading) return <DailySkeleton />;
     if (isLoadingEditPage) return <LoadingPage />;

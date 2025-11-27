@@ -4,15 +4,22 @@ import React, { useEffect, useState } from "react";
 import styles from "./TeacherInstructionsCell.module.css";
 import { TeacherScheduleType } from "@/models/types/portalSchedule";
 import InputRichText from "@/components/ui/inputs/InputRichText/InputRichText";
-import { usePortalContext } from "@/context/PortalContext";
 import { getInstructionPlaceholder } from "@/utils/portal";
+import { useTeacherTableContext } from "@/context/TeacherTableContext";
+import { TeacherType } from "@/models/types/teachers";
 
 type TeacherInstructionsCellProps = {
     row: TeacherScheduleType | undefined;
+    teacher?: TeacherType;
+    selectedDate: string;
 };
 
-const TeacherInstructionsCell: React.FC<TeacherInstructionsCellProps> = ({ row }) => {
-    const { selectedDate, teacher, saveInstractions, isSavingLoading } = usePortalContext();
+const TeacherInstructionsCell: React.FC<TeacherInstructionsCellProps> = ({
+    row,
+    teacher,
+    selectedDate,
+}) => {
+    const { saveInstractions, isSavingLoading } = useTeacherTableContext();
     const [instructions, setInstructions] = useState<string>(row?.instructions || "");
     const [prevInstructions, setPrevInstructions] = useState<string>(row?.instructions || "");
 

@@ -4,30 +4,33 @@ import TeacherDetailsCell from "../TeacherDetailsCell/TeacherDetailsCell";
 import TeacherInstructionsCell from "../TeacherInstructionsCell/TeacherInstructionsCell";
 import { TeacherScheduleType } from "@/models/types/portalSchedule";
 import { useMobileSize } from "@/hooks/browser/useMobileSize";
+import { TeacherType } from "@/models/types/teachers";
 
 type TeacherRowProps = {
     hour: number;
     row?: TeacherScheduleType;
+    teacher?: TeacherType;
+    selectedDate: string;
 };
 
-const TeacherRow: React.FC<TeacherRowProps> = ({ hour, row }) => {
+const TeacherRow: React.FC<TeacherRowProps> = ({ hour, row, teacher, selectedDate }) => {
     const isMobile = useMobileSize();
 
     let scheduleCell = (
         <>
             <td className={styles.scheduleDetailsCell}>
-                <TeacherDetailsCell row={row} />
+                <TeacherDetailsCell row={row} teacher={teacher} />
             </td>
             <td className={styles.scheduleInstructionsCell}>
-                <TeacherInstructionsCell row={row} />
+                <TeacherInstructionsCell row={row} teacher={teacher} selectedDate={selectedDate} />
             </td>
         </>
     );
     if (isMobile)
         scheduleCell = (
             <td className={styles.scheduleCell}>
-                <TeacherDetailsCell row={row} />
-                <TeacherInstructionsCell row={row} />
+                <TeacherDetailsCell row={row} teacher={teacher} />
+                <TeacherInstructionsCell row={row} teacher={teacher} selectedDate={selectedDate} />
             </td>
         );
 

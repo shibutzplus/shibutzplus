@@ -5,28 +5,18 @@ import { TableRows } from "@/models/constant/table";
 import TeacherHeader from "../TeacherHeader/TeacherHeader";
 import TeacherRow from "../TeacherRow/TeacherRow";
 import styles from "./TeacherTable.module.css";
-import { usePortalContext } from "@/context/PortalContext";
+import { useTeacherTableContext } from "@/context/TeacherTableContext";
+import { TeacherType } from "@/models/types/teachers";
 
-const TeacherTable: React.FC = () => {
-    const { selectedDate, mainPortalTable } = usePortalContext();
+type TeacherTableProps = {
+    teacher?: TeacherType;
+    selectedDate: string;
+    onlyMobileVersion?: boolean;
+};
+
+const TeacherTable: React.FC<TeacherTableProps> = ({ teacher, selectedDate, onlyMobileVersion }) => {
+    const { mainPortalTable } = useTeacherTableContext();
     const dayTable = selectedDate ? mainPortalTable[selectedDate] : undefined;
-    const isDayLoaded = dayTable !== undefined;
-    const hasData = isDayLoaded && Object.keys(dayTable).length > 0; //
-
-    //     if (!hasData) {
-    //     // If the day is not loaded yet, do not show the "no changes" text
-    //     if (!isDayLoaded) {if (embedded) {if (isPortalLoading) {return <div className={styles.loader}></div>;}
-    //             return null;}return null;}
-    //     // In embedded mode show a small preloader while loading, otherwise show nothing
-    //     if (embedded) {if (isPortalLoading) {return <div className={styles.loader}></div>;}return null;}
-    //     // Regular screen "no data" message (only after the day was loaded)
-    //     // return (
-    //     //     <NotPublishedLayout
-    //     //         title=""
-    //     //         subTitle={["אין לך שינויים במערכת ליום זה"]}
-    //     //     />
-    //     // );
-    // }
 
     return (
         <table className={styles.scheduleTable}>
@@ -34,7 +24,15 @@ const TeacherTable: React.FC = () => {
             <tbody className={styles.scheduleTableBody}>
                 {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => {
                     const row = dayTable?.[String(hour)];
-                    return <TeacherRow key={hour} hour={hour} row={row} />;
+                    return (
+                        <TeacherRow
+                            key={hour}
+                            hour={hour}
+                            row={row}
+                            teacher={teacher}
+                            selectedDate={selectedDate}
+                        />
+                    );
                 })}
             </tbody>
         </table>
