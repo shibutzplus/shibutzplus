@@ -6,6 +6,7 @@
     padding: 0 10px;
     box-sizing: border-box;
     position: relative;
+    /* height: calc(100vh - var(--header-height) - 1rem); */
 }
 
 .hide {

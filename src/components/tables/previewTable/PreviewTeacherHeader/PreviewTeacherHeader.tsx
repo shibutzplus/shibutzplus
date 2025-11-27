@@ -35,9 +35,10 @@ const PreviewTeacherHeader: React.FC<PreviewTeacherHeaderProps> = ({
     const handleClick = async () => {
         if (isClickable && selectedTeacherData?.name && onTeacherClick) {
             setIsClicked(true);
-            await fetchTeacherScheduleDate(selectedTeacherData, selectedDate);
-            setTimeout(() => setIsClicked(false), 500);
             onTeacherClick(selectedTeacherData);
+            await fetchTeacherScheduleDate(selectedTeacherData, selectedDate);
+            setIsClicked(false);
+            // setTimeout(() => setIsClicked(false), 500);
         }
     };
 

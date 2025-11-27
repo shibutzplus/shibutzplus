@@ -72,9 +72,9 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
                 ) : null}
             </div>
 
-            <SlidingPanel isOpen={isPanelOpen} onClose={handleClosePanel}>
+            <SlidingPanel isOpen={isPanelOpen} onClose={handleClosePanel} title={teacher?.name || ""}>
                 {teacher ? (
-                    <TeacherTable teacher={teacher} selectedDate={selectedDate} />
+                    <TeacherTable teacher={teacher} selectedDate={selectedDate} onlyMobile />
                 ) : null}
             </SlidingPanel>
         </TeacherTableProvider>
