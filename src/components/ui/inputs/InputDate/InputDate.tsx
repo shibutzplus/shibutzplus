@@ -24,7 +24,7 @@ const InputDate: React.FC = () => {
         handleMonthChange(String(Number(m))); // "09" -> "9"
         handleDayChange(String(Number(d))); // "02" -> "2"
     };
-    console.log("inputValue", inputValue);
+
     return (
         <input
             id="history-date"

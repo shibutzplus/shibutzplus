@@ -16,8 +16,9 @@
 }
 
 .eventText {
-    font-size: 16px;
-    text-align: center;
-    word-break: break-word;
+    overflow-wrap: break-word;
     white-space: pre-wrap;
+    word-break: break-word;
+    width: var(--table-daily-col-inner-width);
+
 }
