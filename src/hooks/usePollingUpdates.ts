@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { successToast } from "@/lib/toast";
+import { successToast, errorToast } from "@/lib/toast";
 import router from "@/routes";
 import { pollUpdates, getChannelsForPath } from "@/services/syncService";
 
@@ -19,12 +19,12 @@ type UsePollingUpdatesReturn = {
  */
 export const usePollingUpdates = (): UsePollingUpdatesReturn => {
     const pathname = usePathname();
-    
+
     // Alert state for incoming updates
     const [hasUpdate, setHasUpdate] = useState(false);
     const [lastTs, setLastTs] = useState<number>(() => Date.now());
     const lastTsRef = useRef<number>(lastTs);
-    
+
     useEffect(() => {
         lastTsRef.current = lastTs;
     }, [lastTs]);
@@ -41,9 +41,9 @@ export const usePollingUpdates = (): UsePollingUpdatesReturn => {
         const checkUpdates = async () => {
             const since = lastTsRef.current;
             const data = await pollUpdates({ since, channels });
-            
+
             if (data && mounted && data.latestTs > since) {
-                successToast("נמצאו עדכונים חדשים, יש ללחוץ על רענון כדי לראותם");
+                errorToast("נמצאו עדכונים חדשים, יש ללחוץ על רענון כדי לראותם", Infinity);
                 setHasUpdate(true);
                 setLastTs(data.latestTs);
             }
