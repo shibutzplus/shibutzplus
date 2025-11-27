@@ -1,0 +1,25 @@
+.scheduleCell {
+  position: relative;
+  padding: 4px;
+  box-sizing: border-box;
+  vertical-align: top;
+}
+
+.cellContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  min-width: var(--table-annual-col-width);
+  width: 100%;
+  min-height: var(--table-annual-cell-height);
+  background-color: var(--tab-color);
+  border-radius: var(--border-radius-cell);
+}
+
+.cellContent.viewOnly {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}

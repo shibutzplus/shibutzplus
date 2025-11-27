@@ -17,6 +17,7 @@ import {
 } from "@/lib/localStorage";
 import { isCacheFresh } from "@/utils/time";
 import { pollUpdates } from "@/services/syncService";
+import { sortByHebrewName } from "@/utils/sort";
 
 interface useInitDataProps {
     school: SchoolType | undefined;
@@ -73,7 +74,7 @@ const useInitData = ({
                 const lastSeen = Number((typeof window !== "undefined" && localStorage.getItem(SYNC_TS_KEY)) || 0);
                 const since = Math.max(0, lastSeen - 1);
                 let changed = false;
-                
+
                 const data = await pollUpdates({ since, channels: ["detailsUpdate"] });
                 if (data) {
                     const latest = data.latestTs;
@@ -124,16 +125,19 @@ const useInitData = ({
                     setSchool(schoolRes.data);
                 }
                 if (teachersRes && teachersRes.success && teachersRes.data) {
-                    setTeachers(teachersRes.data);
-                    setStorageTeachers(teachersRes.data);
+                    const sortedTeachers = sortByHebrewName(teachersRes.data);
+                    setTeachers(sortedTeachers);
+                    setStorageTeachers(sortedTeachers);
                 }
                 if (subjectsRes && subjectsRes.success && subjectsRes.data) {
-                    setSubjects(subjectsRes.data);
-                    setStorageSubjects(subjectsRes.data);
+                    const sortedSubjects = sortByHebrewName(subjectsRes.data);
+                    setSubjects(sortedSubjects);
+                    setStorageSubjects(sortedSubjects);
                 }
                 if (classesRes && classesRes.success && classesRes.data) {
-                    setClasses(classesRes.data);
-                    setStorageClasses(classesRes.data);
+                    const sortedClasses = sortByHebrewName(classesRes.data);
+                    setClasses(sortedClasses);
+                    setStorageClasses(sortedClasses);
                 }
 
                 // Update cache timestamp only when real change detected

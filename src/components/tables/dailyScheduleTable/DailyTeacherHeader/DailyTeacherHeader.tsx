@@ -99,6 +99,7 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId, type 
                 backgroundColor="transparent"
                 color={BrightTextColor}
                 colorHover={BrightTextColorHover}
+                placeholderColor={BrightTextColor}
                 isBold
             />
         </EditableHeader>

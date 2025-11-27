@@ -14,7 +14,7 @@ import {
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { addAnnualScheduleAction } from "@/app/actions/POST/addAnnualScheduleAction";
-import { deleteAnnualScheduleAction } from "@/app/actions/DELETE/deleteAnnualScheduleAction";
+import { deleteAnnualByClassAction } from "@/app/actions/DELETE/deleteAnnualByClassAction";
 import useInitAnnualData from "@/hooks/useInitAnnualData";
 import { SelectMethod } from "@/models/types/actions";
 import { dayToNumber } from "@/utils/time";
@@ -28,17 +28,19 @@ import {
 } from "@/services/annual/initialize";
 import { getSelectedClass } from "@/services/annual/get";
 
-interface AnnualTableContextType {
+interface AnnualByClassContextType {
     annualScheduleTable: AnnualScheduleType[] | undefined;
+    setAnnualScheduleTable: React.Dispatch<React.SetStateAction<AnnualScheduleType[] | undefined>>;
     selectedClassId: string;
-    isLoading: boolean;
-    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-    classesSelectOptions: () => SelectOption[];
-    handleClassChange: (value: string) => void;
-    setIsSaving: React.Dispatch<React.SetStateAction<boolean>>;
-    isSaving: boolean;
+    setSelectedClassId: React.Dispatch<React.SetStateAction<string>>;
     schedule: WeeklySchedule;
     setSchedule: React.Dispatch<React.SetStateAction<WeeklySchedule>>;
+    isLoading: boolean;
+    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+    isSaving: boolean;
+    setIsSaving: React.Dispatch<React.SetStateAction<boolean>>;
+    handleClassChange: (value: string) => void;
+    classesSelectOptions: () => { value: string; label: string }[];
     handleAddNewRow: (
         type: AnnualInputCellType,
         elementIds: string[],
@@ -49,17 +51,19 @@ interface AnnualTableContextType {
     ) => Promise<void>;
 }
 
-const AnnualTableContext = createContext<AnnualTableContextType | undefined>(undefined);
-export const useAnnualTable = () => {
-    const context = useContext(AnnualTableContext);
-    if (context === undefined) {
-        throw new Error("useAnnualTable must be used within an AnnualTableProvider");
+const AnnualByClassContext = createContext<AnnualByClassContextType | undefined>(undefined);
+
+export const useAnnualByClass = () => {
+    const context = useContext(AnnualByClassContext);
+    if (!context) {
+        throw new Error("useAnnualByClass must be used within an AnnualByClassProvider");
     }
     return context;
 };
-export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+
+export const AnnualByClassProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const { classes, school, teachers, subjects, annualAfterDelete } = useMainContext();
-    const [selectedClassId, setSelectedClassId] = useState<string>(classes?.[0]?.id || "");
+    const [selectedClassId, setSelectedClassId] = useState<string>("");
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [annualScheduleTable, setAnnualScheduleTable] = useState<
@@ -76,10 +80,13 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
     });
 
     useEffect(() => {
-        if (classes && classes?.length > 0 && selectedClassId === "") {
-            setSelectedClassId(classes[0].id);
+        if (classes && classes.length > 0) {
+            const isValid = classes.some((c) => c.id === selectedClassId);
+            if (!isValid && selectedClassId !== "") {
+                setSelectedClassId("");
+            }
         }
-    }, [classes]);
+    }, [classes, selectedClassId]);
 
     useEffect(() => {
         if (annualAfterDelete) {
@@ -110,6 +117,7 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
         return undefined;
     };
 
+
     const deleteAnnualScheduleItem = async (
         day: number,
         hour: number,
@@ -117,7 +125,7 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
         schoolId: string,
     ) => {
         if (!school?.id) return;
-        const response = await deleteAnnualScheduleAction(day, hour, classId, schoolId);
+        const response = await deleteAnnualByClassAction(day, hour, classId, schoolId);
         if (response.success && response.deleted) {
             const deletedIds = response.deleted.map((item) => item.id);
             setAnnualScheduleTable((prev) => {
@@ -130,7 +138,9 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
     };
 
     const handleClassChange = (value: string) => {
-        setSelectedClassId(value);
+        if (value) {
+            setSelectedClassId(value);
+        }
     };
 
     const addToQueue = (rows: AnnualScheduleRequest[]) => {
@@ -190,7 +200,16 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
         newSchedule = setNewScheduleTemplate(newSchedule, selectedClassId, day, hour);
 
         // If not already filled, fill it and get the IDs
-        newSchedule[selectedClassId][day][hour][type] = elementIds;
+        if (type === "teachers" || type === "subjects") {
+            newSchedule[selectedClassId][day][hour][type] = elementIds;
+        } else if (type === "classes") {
+            // In Class Context, we usually don't set classId via this method, but if we did:
+            if (elementIds.length > 0) {
+                newSchedule[selectedClassId][day][hour].classId = elementIds[0];
+            } else {
+                newSchedule[selectedClassId][day][hour].classId = undefined;
+            }
+        }
         const teacherIds = schedule[selectedClassId][day][hour].teachers;
         const subjectIds = schedule[selectedClassId][day][hour].subjects;
         setSchedule(newSchedule);
@@ -236,19 +255,25 @@ export const AnnualTableProvider: React.FC<{ children: ReactNode }> = ({ childre
         addToQueue(requests);
     };
 
-    const value: AnnualTableContextType = {
-        annualScheduleTable,
-        selectedClassId,
-        classesSelectOptions,
-        handleClassChange,
-        setIsSaving,
-        isSaving,
-        setIsLoading,
-        isLoading,
-        schedule,
-        setSchedule,
-        handleAddNewRow,
-    };
-
-    return <AnnualTableContext.Provider value={value}>{children}</AnnualTableContext.Provider>;
+    return (
+        <AnnualByClassContext.Provider
+            value={{
+                annualScheduleTable,
+                setAnnualScheduleTable,
+                selectedClassId,
+                setSelectedClassId,
+                schedule,
+                setSchedule,
+                isLoading,
+                setIsLoading,
+                isSaving,
+                setIsSaving,
+                handleClassChange,
+                classesSelectOptions,
+                handleAddNewRow,
+            }}
+        >
+            {children}
+        </AnnualByClassContext.Provider>
+    );
 };

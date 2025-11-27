@@ -7,30 +7,45 @@ import { TeacherRequest, TeacherRoleValues, TeacherType } from "@/models/types/t
 import { ClassType } from "@/models/types/classes";
 import { TableRows } from "@/models/constant/table";
 import { useMainContext } from "@/context/MainContext";
-import { useAnnualTable } from "@/context/AnnualTableContext";
 import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import AnnualHeader from "../AnnualHeader/AnnualHeader";
 import AnnualRow from "../AnnualRow/AnnualRow";
-import styles from "./AnnualTable.module.css";
+import styles from "./AnnualClassTable.module.css";
+import { AnnualInputCellType } from "@/models/types/annualSchedule";
+import { SelectMethod } from "@/models/types/actions";
 
-type AnnualTableProps = {
+type AnnualClassTableProps = {
     schedule: WeeklySchedule;
     selectedClassId: string;
     subjects: SubjectType[] | undefined;
     teachers: TeacherType[] | undefined;
     classes: ClassType[] | undefined;
+    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+    setIsSaving: React.Dispatch<React.SetStateAction<boolean>>;
+    isSaving: boolean;
+    handleAddNewRow: (
+        type: AnnualInputCellType,
+        elementIds: string[],
+        day: string,
+        hour: number,
+        method: SelectMethod,
+        newElementObj?: TeacherType | SubjectType,
+    ) => Promise<void>;
 };
 
-const AnnualTable: React.FC<AnnualTableProps> = ({
+const AnnualClassTable: React.FC<AnnualClassTableProps> = ({
     schedule,
     selectedClassId,
     subjects,
     teachers,
     classes,
+    setIsLoading,
+    setIsSaving,
+    isSaving,
+    handleAddNewRow,
 }) => {
     const { school, addNewTeacher, addNewSubject } = useMainContext();
-    const { setIsLoading, setIsSaving, isSaving, handleAddNewRow } = useAnnualTable();
 
     const isDisabled = isSaving || !schedule || !subjects || !classes;
 
@@ -99,6 +114,7 @@ const AnnualTable: React.FC<AnnualTableProps> = ({
                         classes={classes || []}
                         onCreateSubject={handleCreateSubject}
                         onCreateTeacher={handleCreateTeacher}
+                        handleAddNewRow={handleAddNewRow}
                     />
                 ))}
             </tbody>
@@ -106,4 +122,4 @@ const AnnualTable: React.FC<AnnualTableProps> = ({
     );
 };
 
-export default AnnualTable;
+export default AnnualClassTable;

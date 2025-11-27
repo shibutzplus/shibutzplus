@@ -59,8 +59,13 @@ const links: ILink[] = [
         withDivider: true,
     },
     {
-        name: routePath.annualSchedule.title,
-        p: routePath.annualSchedule.p,
+        name: routePath.annualByClass.title,
+        p: routePath.annualByClass.p,
+        Icon: <Icons.calendar size={24} />,
+    },
+    {
+        name: routePath.annualByTeacher.title,
+        p: routePath.annualByTeacher.p,
         Icon: <Icons.calendar size={24} />,
     },
 ];

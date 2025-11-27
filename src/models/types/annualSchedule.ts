@@ -49,4 +49,4 @@ export type AvailableTeachers = {
     };
 };
 
-export type AnnualInputCellType = "teachers" | "subjects";
+export type AnnualInputCellType = "teachers" | "subjects" | "classes";

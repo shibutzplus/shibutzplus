@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useMemo } from "react";
-import Select, { StylesConfig } from "react-select";
+import React, { useEffect, useState } from "react";
+import Select, { ActionMeta, OnChangeValue, StylesConfig } from "react-select";
 import { SelectOption } from "@/models/types";
 import { customStyles } from "@/style/selectStyle";
 import SelectLayout from "../SelectLayout/SelectLayout";
-import { InputBackgroundColor, InputColor, InputColorHover } from "@/style/root";
+import { InputBackgroundColor, InputColor, InputColorHover, PlaceholderColor } from "@/style/root";
+import { SelectMethod } from "@/models/types/actions";
 
 /**
  * Sign-Up
@@ -20,15 +21,18 @@ type InputSelectProps = {
     error?: string;
     id?: string;
     value?: string;
-    onChange: (value: string) => void;
+    onChange: (value: string, method?: SelectMethod) => void;
     placeholder?: string;
     isSearchable?: boolean;
     isDisabled?: boolean;
     hasBorder?: boolean;
+    isClearable?: boolean;
     backgroundColor?: string;
     color?: string;
+    placeholderColor?: string;
     colorHover?: string;
     isBold?: boolean;
+    onBeforeRemove?: (removedLabel: string | null, proceed: () => void) => void;
 };
 
 const InputSelect: React.FC<InputSelectProps> = ({
@@ -42,20 +46,51 @@ const InputSelect: React.FC<InputSelectProps> = ({
     isSearchable = true,
     isDisabled = false,
     hasBorder = false,
+    isClearable = false,
     backgroundColor = InputBackgroundColor,
     color = InputColor,
+    placeholderColor = PlaceholderColor,
     colorHover = InputColorHover,
     isBold = false,
+    onBeforeRemove,
 }) => {
-    // derive selected option directly from props
-    const selectedOption = useMemo(
-        () => (value ? (options.find((o) => o.value === value) ?? null) : null),
-        [value, options],
-    );
+    const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
+    const [isMounted, setIsMounted] = useState(false);
 
-    const handleChange = (opt: SelectOption | null) => {
-        const next = opt?.value ?? "";
-        if ((value ?? "") !== next) onChange(next);
+    // Sync selected option from incoming value
+    useEffect(() => {
+        if (!value) {
+            setSelectedOption(null);
+            return;
+        }
+        const selected = options.find((o) => o.value === value) ?? null;
+        setSelectedOption(selected);
+    }, [value, options]);
+
+    // Client-only portal target for menus to avoid SSR warning
+    useEffect(() => {
+        if (!isMounted) setIsMounted(true);
+    }, [isMounted]);
+
+    const handleChange = (
+        opt: OnChangeValue<SelectOption, false>,
+        meta: ActionMeta<SelectOption>,
+    ) => {
+        const nextOption = opt ?? null;
+        const next = nextOption?.value ?? "";
+
+        // Intercept clear/remove actions to allow confirmation
+        if (onBeforeRemove && (meta.action === "clear" || meta.action === "remove-value")) {
+            const removedLabel = selectedOption?.label ?? null;
+
+            return onBeforeRemove(removedLabel, () => {
+                setSelectedOption(nextOption);
+                onChange(next, meta.action as SelectMethod);
+            });
+        }
+
+        setSelectedOption(nextOption);
+        onChange(next, meta.action as SelectMethod);
     };
 
     const baseStyles = customStyles(
@@ -64,6 +99,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
         isDisabled ? false : true,
         backgroundColor,
         color,
+        placeholderColor,
         colorHover,
     );
     const stylesOverride: StylesConfig<SelectOption, false> = {
@@ -98,7 +134,15 @@ const InputSelect: React.FC<InputSelectProps> = ({
                     : provided;
             return {
                 ...base,
-                marginLeft: -10,
+                color: InputColor,
+                cursor: "pointer",
+                borderRadius: "50%",
+                width: 35,
+                height: 35,
+                marginLeft: -5,
+                "&:hover": {
+                    color: "red",
+                },
             };
         },
     };
@@ -111,9 +155,13 @@ const InputSelect: React.FC<InputSelectProps> = ({
                 onChange={handleChange}
                 options={options}
                 isSearchable={isSearchable}
-                isClearable={false}
+                isClearable={isClearable}
                 isDisabled={isDisabled}
                 placeholder={placeholder}
+                closeMenuOnSelect={true}
+                hideSelectedOptions={false}
+                backspaceRemovesValue
+                menuPortalTarget={isMounted ? document.body : null}
                 menuPlacement="auto"
                 noOptionsMessage={() => <div>לא נמצאו אפשרויות</div>}
                 styles={stylesOverride}

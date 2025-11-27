@@ -1,21 +1,21 @@
 "use client";
 
 import React, { useState } from "react";
-import styles from "./AnnualPageLayout.module.css";
+import styles from "./AnnualTeacherPageLayout.module.css";
 import Logo from "@/components/ui/Logo/Logo";
 import HamburgerNav, { HamburgerButton } from "@/components/navigation/HamburgerNav/HamburgerNav";
 import { useMobileSize } from "@/hooks/browser/useMobileSize";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import router from "@/routes";
-import { useAnnualTable } from "@/context/AnnualTableContext";
+import { useAnnualByTeacher } from "@/context/AnnualByTeacherContext";
 
-type AnnualPageLayoutProps = {
+type AnnualTeacherPageLayoutProps = {
     children: React.ReactNode;
 };
 
-export default function AnnualPageLayout({ children }: AnnualPageLayoutProps) {
-    const { classesSelectOptions, selectedClassId, handleClassChange, isSaving, isLoading } =
-        useAnnualTable();
+export default function AnnualTeacherPageLayout({ children }: AnnualTeacherPageLayoutProps) {
+    const { teachersSelectOptions, selectedTeacherId, handleTeacherChange, isSaving, isLoading } =
+        useAnnualByTeacher();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const isMobile = useMobileSize();
 
@@ -29,16 +29,16 @@ export default function AnnualPageLayout({ children }: AnnualPageLayoutProps) {
                                 onClick={() => setIsMenuOpen((v) => !v)}
                                 isOpen={isMenuOpen}
                             />
-                            <h3>{router.annualSchedule.title}</h3>
+                            <h3>{router.annualByTeacher.title}</h3>
                             {!isMobile ? (
                                 <div className={styles.selectContainer}>
                                     <DynamicInputSelect
-                                        options={classesSelectOptions()}
-                                        value={selectedClassId}
-                                        onChange={handleClassChange}
+                                        options={teachersSelectOptions()}
+                                        value={selectedTeacherId}
+                                        onChange={handleTeacherChange}
                                         isSearchable={false}
                                         isDisabled={isSaving || isLoading}
-                                        placeholder="בחר כיתה..."
+                                        placeholder="בחרו מורה..."
                                         hasBorder
                                     />
                                 </div>
@@ -51,12 +51,12 @@ export default function AnnualPageLayout({ children }: AnnualPageLayoutProps) {
                     {isMobile ? (
                         <div className={styles.bottomNav}>
                             <DynamicInputSelect
-                                options={classesSelectOptions()}
-                                value={selectedClassId}
-                                onChange={handleClassChange}
+                                options={teachersSelectOptions()}
+                                value={selectedTeacherId}
+                                onChange={handleTeacherChange}
                                 isSearchable={false}
                                 isDisabled={isSaving || isLoading}
-                                placeholder="בחר כיתה..."
+                                placeholder="בחר מורה..."
                                 hasBorder
                             />
                         </div>

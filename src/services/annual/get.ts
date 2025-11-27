@@ -5,6 +5,10 @@ export const getSelectedClass = (classes: ClassType[] | undefined, selectedClass
     return classes?.find((c) => c.id === selectedClassId);
 };
 
+export const getSelectedTeacher = (teachers: any[] | undefined, selectedTeacherId: string) => {
+    return teachers?.find((t) => t.id === selectedTeacherId);
+};
+
 // NOT IN USE
 export const getUniqueCellsFromQueue = (queueRows: AnnualScheduleRequest[]) => {
     const cells = queueRows.map((row) => ({
