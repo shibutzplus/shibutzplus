@@ -17,7 +17,6 @@ const AnnualSchedulePage: NextPage = () => {
         setSchedule,
         annualScheduleTable,
         setIsLoading,
-        setIsSaving,
         isSaving,
         handleAddNewRow,
     } = useAnnualByTeacher();
@@ -55,7 +54,6 @@ const AnnualSchedulePage: NextPage = () => {
                     teachers={teachers}
                     classes={classes}
                     setIsLoading={setIsLoading}
-                    setIsSaving={setIsSaving}
                     isSaving={isSaving}
                     handleAddNewRow={handleAddNewRow}
                 />

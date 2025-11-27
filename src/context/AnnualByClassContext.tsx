@@ -27,7 +27,6 @@ import {
     setNewScheduleTemplate,
 } from "@/services/annual/initialize";
 import { getSelectedClass } from "@/services/annual/get";
-import { SingleValue } from "react-select";
 
 interface AnnualByClassContextType {
     annualScheduleTable: AnnualScheduleType[] | undefined;

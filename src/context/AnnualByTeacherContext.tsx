@@ -1,7 +1,12 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { WeeklySchedule, AnnualScheduleType, AnnualInputCellType, AnnualScheduleRequest } from "@/models/types/annualSchedule";
+import {
+    WeeklySchedule,
+    AnnualScheduleType,
+    AnnualInputCellType,
+    AnnualScheduleRequest,
+} from "@/models/types/annualSchedule";
 import { useMainContext } from "./MainContext";
 import { createSelectOptions } from "@/utils/format";
 import { TeacherType } from "@/models/types/teachers";
@@ -15,10 +20,9 @@ import { deleteAnnualByTeacherAction } from "@/app/actions/DELETE/deleteAnnualBy
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { dayToNumber } from "@/utils/time";
-import { createAnnualRequests, createPairs, setNewScheduleTemplate } from "@/services/annual/initialize";
-import { getSelectedTeacher } from "@/services/annual/get";
+import { createAnnualRequests, createPairs } from "@/services/annual/initialize";
 
-type Ctx = {
+interface AnnualByTeacherContextType {
     selectedTeacherId?: string;
     setSelectedTeacherId: (id?: string) => void;
     annualScheduleTable: AnnualScheduleType[] | undefined;
@@ -39,9 +43,17 @@ type Ctx = {
         method: SelectMethod,
         newElementObj?: any, // Using any here to match the signature flexibility needed, or specify TeacherType | SubjectType | ClassType
     ) => Promise<void>;
-};
+}
 
-const AnnualByTeacherContext = createContext<Ctx | undefined>(undefined);
+const AnnualByTeacherContext = createContext<AnnualByTeacherContextType | undefined>(undefined);
+
+export const useAnnualByTeacher = () => {
+    const context = useContext(AnnualByTeacherContext);
+    if (!context) {
+        throw new Error("useAnnualByTeacher must be used within an AnnualByTeacherProvider");
+    }
+    return context;
+};
 
 export const AnnualByTeacherProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { teachers, school, subjects, classes } = useMainContext();
@@ -51,7 +63,9 @@ export const AnnualByTeacherProvider: React.FC<{ children: React.ReactNode }> = 
     const [schedule, setSchedule] = useState<WeeklySchedule>({});
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [annualScheduleTable, setAnnualScheduleTable] = useState<AnnualScheduleType[] | undefined>(undefined);
+    const [annualScheduleTable, setAnnualScheduleTable] = useState<
+        AnnualScheduleType[] | undefined
+    >(undefined);
     const [queueRows, setQueueRows] = useState<AnnualScheduleRequest[]>([]);
 
     useInitAnnualData({
@@ -112,6 +126,12 @@ export const AnnualByTeacherProvider: React.FC<{ children: React.ReactNode }> = 
             return response.deleted;
         }
         return undefined;
+    };
+
+    const handleTeacherChange = (value: string) => {
+        if (value) {
+            setSelectedTeacherId(value);
+        }
     };
 
     const addToQueue = (rows: AnnualScheduleRequest[]) => {
@@ -216,10 +236,10 @@ export const AnnualByTeacherProvider: React.FC<{ children: React.ReactNode }> = 
         }
 
         // We need to find the Class object
-        const selectedClassObj = classes?.find(c => c.id === classId);
+        const selectedClassObj = classes?.find((c) => c.id === classId);
 
         // We need the Teacher object
-        const selectedTeacherObj = teachers?.find(t => t.id === selectedTeacherId);
+        const selectedTeacherObj = teachers?.find((t) => t.id === selectedTeacherId);
 
         if (!selectedClassObj || !selectedTeacherObj) return;
 
@@ -235,10 +255,6 @@ export const AnnualByTeacherProvider: React.FC<{ children: React.ReactNode }> = 
             hour,
         );
         addToQueue(requests);
-    };
-
-    const handleTeacherChange = (value: string) => {
-        setSelectedTeacherId(value);
     };
 
     return (
@@ -262,10 +278,4 @@ export const AnnualByTeacherProvider: React.FC<{ children: React.ReactNode }> = 
             {children}
         </AnnualByTeacherContext.Provider>
     );
-};
-
-export const useAnnualByTeacher = () => {
-    const ctx = useContext(AnnualByTeacherContext);
-    if (!ctx) throw new Error("useAnnualByTeacher must be used within AnnualByTeacherProvider");
-    return ctx;
 };

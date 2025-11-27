@@ -16,8 +16,6 @@ type AnnualRowProps = {
     teachers: TeacherType[];
     classes: ClassType[];
     isDisabled: boolean;
-    onCreateSubject: (day: string, hour: number, value: string) => Promise<string | undefined>;
-    onCreateTeacher: (day: string, hour: number, value: string) => Promise<string | undefined>;
     handleAddNewRow: (
         type: AnnualInputCellType,
         elementIds: string[],
