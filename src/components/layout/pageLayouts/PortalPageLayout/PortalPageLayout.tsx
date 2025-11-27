@@ -48,7 +48,7 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
     const handleRefresh = async () => {
         await handleRefreshDates();
 
-        if (pathname.includes(router.teacherPortal.p)) await handlePortalRefresh();
+        if (pathname.includes(router.teacherPortal.p)) await handlePortalRefresh(teacher);
         else await handlePublishedRefresh();
 
         // reset update badge after successful refresh

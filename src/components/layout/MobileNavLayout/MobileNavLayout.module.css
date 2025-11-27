@@ -3,7 +3,7 @@
     bottom: var(--padding-top-mobile);
     left: 50%;
     transform: translateX(-50%);
-    z-index: 10;
+    z-index: 30;
     width: 95%;
     background-color: var(--top-color);
     box-shadow: var(--box-shadow-primary);

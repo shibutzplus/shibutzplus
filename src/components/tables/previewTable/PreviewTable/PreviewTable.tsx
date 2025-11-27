@@ -10,6 +10,9 @@ import PreviewCol from "../PreviewCol/PreviewCol";
 import SlidingPanel from "@/components/ui/SlidingPanel/SlidingPanel";
 import { DailySchedule } from "@/models/types/dailySchedule";
 import { AppType } from "@/models/types";
+import { useDailyTableContext } from "@/context/DailyTableContext";
+import { TeacherType } from "@/models/types/teachers";
+import PreviewTeacherTable from "../../previewTeacherTable/PreviewTeacherTable/PreviewTeacherTable";
 
 type PreviewTableProps = {
     mainDailyTable: DailySchedule;
@@ -24,17 +27,19 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
     EmptyTable,
     appType = "private",
 }) => {
+    const { fetchPortalScheduleDate } = useDailyTableContext();
     const schedule = mainDailyTable[selectedDate];
     const tableColumns = schedule ? Object.keys(schedule) : [];
     const sortedTableColumns = schedule
         ? sortDailyColumnIdsByType(tableColumns, mainDailyTable, selectedDate)
         : [];
 
-    const [isPanelOpen, setIsPanelOpen] = useState(false);
-    const [selectedTeacherName, setSelectedTeacherName] = useState("");
+    const [isPanelOpen, setIsPanelOpen] = useState<boolean>(false);
+    const [teacher, setTeacher] = useState<TeacherType>();
 
-    const handleTeacherClick = (teacherName: string) => {
-        setSelectedTeacherName(teacherName);
+    const handleTeacherClick = async (teacher: TeacherType) => {
+        await fetchPortalScheduleDate(teacher);
+        setTeacher(teacher);
         setIsPanelOpen(true);
     };
 
@@ -70,7 +75,7 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
             </div>
 
             <SlidingPanel isOpen={isPanelOpen} onClose={handleClosePanel}>
-                <h2>{selectedTeacherName}</h2>
+                {teacher ? <PreviewTeacherTable teacher={teacher} /> : null}
             </SlidingPanel>
         </>
     );

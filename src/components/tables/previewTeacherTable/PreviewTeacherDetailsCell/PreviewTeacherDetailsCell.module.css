@@ -31,18 +31,3 @@
 .subTeacher {
   font-weight: 600;
 }
-
-/* Desktop */
-@media (min-width: 1024px) {
-  .cellContent {
-    flex-direction: column;
-    align-items: unset;
-    gap: 10px;
-    height: var(--table-teacher-cell-height);
-    padding: 10px 15px;
-  }
-
-  .emptyCell {
-    height: var(--table-teacher-cell-height);
-  }
-}

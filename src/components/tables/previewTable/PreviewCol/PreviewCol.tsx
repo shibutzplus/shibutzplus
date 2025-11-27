@@ -7,13 +7,14 @@ import PreviewEventCell from "../PreviewEventCell/PreviewEventCell";
 import PreviewTeacherHeader from "../PreviewTeacherHeader/PreviewTeacherHeader";
 import PreviewTeacherCell from "../PreviewTeacherCell/PreviewTeacherCell";
 import { AppType } from "@/models/types";
+import { TeacherType } from "@/models/types/teachers";
 
 type PreviewColProps = {
     columnId: string;
     appType: AppType;
     mainDailyTable: DailySchedule;
     selectedDate: string;
-    onTeacherClick?: (teacherName: string) => void;
+    onTeacherClick?: (teacher: TeacherType) => Promise<void>;
 };
 
 const PreviewCol: React.FC<PreviewColProps> = ({

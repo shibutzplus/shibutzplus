@@ -1,16 +1,16 @@
 "use client";
 
 import React from "react";
-import styles from "./TeacherDetailsCell.module.css";
+import styles from "./PreviewTeacherDetailsCell.module.css";
 import { TeacherScheduleType } from "@/models/types/portalSchedule";
-import { usePortalContext } from "@/context/PortalContext";
+import { TeacherType } from "@/models/types/teachers";
 
-type TeacherDetailsCellProps = {
+type PreviewTeacherDetailsCellProps = {
     row?: TeacherScheduleType;
+    teacher: TeacherType;
 };
 
-const TeacherDetailsCell: React.FC<TeacherDetailsCellProps> = ({ row }) => {
-    const { teacher } = usePortalContext();
+const PreviewTeacherDetailsCell: React.FC<PreviewTeacherDetailsCellProps> = ({ row, teacher }) => {
     const displayReplaceTeacher = () => {
         if (row?.issueTeacher) {
             if (teacher?.id === row?.issueTeacher?.id) {
@@ -35,4 +35,4 @@ const TeacherDetailsCell: React.FC<TeacherDetailsCellProps> = ({ row }) => {
         </div>
     );
 };
-export default TeacherDetailsCell;
+export default PreviewTeacherDetailsCell;

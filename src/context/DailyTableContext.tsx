@@ -25,6 +25,8 @@ import useDailyEventActions from "@/hooks/daily/useDailyEventActions";
 import { mapAnnualTeachers, populateDailyScheduleTable } from "@/services/daily/populate";
 import { createNewEmptyColumn } from "@/services/daily/setEmpty";
 import { useDailyEditMode } from "@/hooks/daily/useDailyEditMode";
+import { usePortal } from "@/hooks/portal/usePortal";
+import { PortalSchedule } from "@/models/types/portalSchedule";
 
 interface DailyTableContextType {
     mainDailyTable: DailySchedule;
@@ -80,6 +82,10 @@ interface DailyTableContextType {
     daysSelectOptions: () => SelectOption[];
     handleDayChange: (value: string) => void;
     changeDailyMode: () => void;
+
+    fetchPortalScheduleDate: (teacher?: TeacherType) => Promise<boolean>;
+    mainPortalTable: PortalSchedule;
+    isPortalLoading: boolean;
 }
 
 const DailyTableContext = createContext<DailyTableContextType | undefined>(undefined);
@@ -106,6 +112,12 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
 
     // Select Date
     const { daysSelectOptions, selectedDate, handleDayChange } = useDailySelectedDate();
+
+    // Preview teacher table
+    const { fetchPortalScheduleDate, mainPortalTable, isPortalLoading } = usePortal(
+        school?.id,
+        selectedDate,
+    );
 
     const setMainAndStorageTable = (newSchedule: DailySchedule) => {
         setMainDailyTable({ ...newSchedule });
@@ -247,6 +259,9 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 updateEventCell,
                 deleteEventCell,
                 changeDailyMode,
+                fetchPortalScheduleDate,
+                mainPortalTable,
+                isPortalLoading,
             }}
         >
             {children}

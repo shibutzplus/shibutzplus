@@ -5,11 +5,12 @@ import { COLOR_BY_TYPE } from "@/models/constant/daily";
 import { useStickyHeader } from "@/hooks/scroll/useStickyHeader";
 import Icons from "@/style/icons";
 import { AppType } from "@/models/types";
+import { TeacherType } from "@/models/types/teachers";
 
 type PreviewTeacherHeaderProps = {
     type: ColumnType;
     appType: AppType;
-    onTeacherClick?: (teacherName: string) => void;
+    onTeacherClick?: (teacher: TeacherType) => Promise<void>;
     column: {
         [hour: string]: DailyScheduleCell;
     };
@@ -28,25 +29,26 @@ const PreviewTeacherHeader: React.FC<PreviewTeacherHeaderProps> = ({
 
     const handleClick = () => {
         if (isClickable && selectedTeacherData?.name && onTeacherClick) {
-            onTeacherClick(selectedTeacherData.name);
+            onTeacherClick(selectedTeacherData);
         }
     };
 
     return (
         <div
             ref={headerRef}
-            className={`${styles.header} ${isClickable ? styles.clickable : ""}`}
-            style={{ backgroundColor: COLOR_BY_TYPE[type] }}
+            className={`${styles.columnHeaderWrapper} ${isClickable ? styles.clickable : ""}`}
         >
-            {appType === "private" && isClickable && (
-                <Icons.eye
-                    className={styles.eyeIcon}
-                    onClick={handleClick}
-                    size={20}
-                    title="לחצו על שם המורה כדי לראות או להזין את חומרי הלימוד"
-                />
-            )}
-            <div className={styles.headerText}>{selectedTeacherData?.name || ""}</div>
+            <div className={styles.columnHeader} style={{ backgroundColor: COLOR_BY_TYPE[type] }}>
+                {appType === "private" && isClickable && (
+                    <Icons.eye
+                        className={styles.eyeIcon}
+                        onClick={handleClick}
+                        size={20}
+                        title="לחצו על שם המורה כדי לראות או להזין את חומרי הלימוד"
+                    />
+                )}
+                <div className={styles.headerText}>{selectedTeacherData?.name || ""}</div>
+            </div>
         </div>
     );
 };

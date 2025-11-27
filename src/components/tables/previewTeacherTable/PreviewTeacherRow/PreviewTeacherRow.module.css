@@ -25,23 +25,6 @@
     margin: auto;
 }
 
-.scheduleDetailsCell {
-    position: relative;
-    padding-right: 4px;
-    padding-bottom: 5px;
-    box-sizing: border-box;
-    width: var(--table-teacher-details-col-width);
-}
-
-.scheduleInstructionsCell {
-    position: relative;
-    padding-left: 4px;
-    padding-right: 4px;
-    padding-bottom: 5px;
-    box-sizing: border-box;
-    width: 80%;
-}
-
 .scheduleCell {
     position: relative;
     padding: 4px;

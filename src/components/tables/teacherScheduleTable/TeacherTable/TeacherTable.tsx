@@ -7,13 +7,26 @@ import TeacherRow from "../TeacherRow/TeacherRow";
 import styles from "./TeacherTable.module.css";
 import { usePortalContext } from "@/context/PortalContext";
 
-type TeacherTableProps = {};
-
-const TeacherTable: React.FC<TeacherTableProps> = ({}) => {
+const TeacherTable: React.FC = () => {
     const { selectedDate, mainPortalTable } = usePortalContext();
     const dayTable = selectedDate ? mainPortalTable[selectedDate] : undefined;
     const isDayLoaded = dayTable !== undefined;
-    const hasData = isDayLoaded && Object.keys(dayTable).length > 0;
+    const hasData = isDayLoaded && Object.keys(dayTable).length > 0; //
+
+    //     if (!hasData) {
+    //     // If the day is not loaded yet, do not show the "no changes" text
+    //     if (!isDayLoaded) {if (embedded) {if (isPortalLoading) {return <div className={styles.loader}></div>;}
+    //             return null;}return null;}
+    //     // In embedded mode show a small preloader while loading, otherwise show nothing
+    //     if (embedded) {if (isPortalLoading) {return <div className={styles.loader}></div>;}return null;}
+    //     // Regular screen "no data" message (only after the day was loaded)
+    //     // return (
+    //     //     <NotPublishedLayout
+    //     //         title=""
+    //     //         subTitle={["אין לך שינויים במערכת ליום זה"]}
+    //     //     />
+    //     // );
+    // }
 
     return (
         <table className={styles.scheduleTable}>

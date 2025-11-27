@@ -1,6 +1,6 @@
 .previewTable {
     display: flex;
-    gap: 7px;
+    gap: var(--table-cols-gap);
     overflow: scroll;
     min-width: 100%;
     padding: 0 10px;
