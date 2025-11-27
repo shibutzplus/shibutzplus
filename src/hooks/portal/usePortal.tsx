@@ -7,12 +7,12 @@ import messages from "@/resources/messages";
 import { populatePortalTable } from "@/services/portalTeacherService";
 import { useState } from "react";
 
-export const usePortal = (schoolId?: string, selectedDate?: string, teacher?: TeacherType) => {
+export const usePortal = (schoolId?: string, selectedDate?: string) => {
     const [mainPortalTable, setMainPortalTable] = useState<PortalSchedule>({});
     const [isPortalLoading, setIsPortalLoading] = useState<boolean>(true);
     const [isSavingLoading, setIsSavingLoading] = useState<boolean>(false);
 
-    const fetchPortalScheduleDate = async () => {
+    const fetchPortalScheduleDate = async (teacher?: TeacherType) => {
         if (!teacher || !selectedDate || !schoolId) return false;
         try {
             setIsPortalLoading(true);
@@ -36,8 +36,8 @@ export const usePortal = (schoolId?: string, selectedDate?: string, teacher?: Te
         }
     };
 
-    const handlePortalRefresh = async () => {
-        const datesRes = await fetchPortalScheduleDate();
+    const handlePortalRefresh = async (teacher?: TeacherType) => {
+        const datesRes = await fetchPortalScheduleDate(teacher);
         if (!datesRes) {
             errorToast("בעיה בטעינת המידע, נסו שוב");
             return;

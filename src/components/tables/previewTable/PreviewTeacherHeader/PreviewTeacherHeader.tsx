@@ -5,11 +5,12 @@ import { COLOR_BY_TYPE } from "@/models/constant/daily";
 import { useStickyHeader } from "@/hooks/scroll/useStickyHeader";
 import Icons from "@/style/icons";
 import { AppType } from "@/models/types";
+import { TeacherType } from "@/models/types/teachers";
 
 type PreviewTeacherHeaderProps = {
     type: ColumnType;
     appType: AppType;
-    onTeacherClick?: (teacherName: string) => void;
+    onTeacherClick?: (teacher: TeacherType) => Promise<void>;
     column: {
         [hour: string]: DailyScheduleCell;
     };
@@ -28,7 +29,7 @@ const PreviewTeacherHeader: React.FC<PreviewTeacherHeaderProps> = ({
 
     const handleClick = () => {
         if (isClickable && selectedTeacherData?.name && onTeacherClick) {
-            onTeacherClick(selectedTeacherData.name);
+            onTeacherClick(selectedTeacherData);
         }
     };
 

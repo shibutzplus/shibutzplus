@@ -27,8 +27,8 @@ interface PortalContextType {
     isPortalLoading: boolean;
     isSavingLoading: boolean;
     mainPortalTable: PortalSchedule;
-    fetchPortalScheduleDate: () => Promise<boolean>;
-    handlePortalRefresh: () => Promise<void>;
+    fetchPortalScheduleDate: (teacher?: TeacherType) => Promise<boolean>;
+    handlePortalRefresh: (teacher?: TeacherType) => Promise<void>;
     saveInstractions: (instructions: string, row?: TeacherScheduleType) => Promise<void>;
 
     isPublishLoading: boolean;
@@ -194,7 +194,7 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
         mainPortalTable,
         isPortalLoading,
         isSavingLoading,
-    } = usePortal(schoolId, selectedDate, teacher);
+    } = usePortal(schoolId, selectedDate);
 
     const { fetchPublishScheduleData, handlePublishedRefresh, mainPublishTable, isPublishLoading } =
         usePublished(schoolId, selectedDate, teacher);

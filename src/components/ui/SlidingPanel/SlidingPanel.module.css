@@ -83,7 +83,7 @@
   height: 100%;
   overflow-y: auto;
   padding: 40px;
-  padding-top: 80px;
+  padding-top: 0;
 }
 
 /* Responsive: 50% width on medium screens and up */

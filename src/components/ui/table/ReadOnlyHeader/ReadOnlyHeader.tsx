@@ -15,7 +15,7 @@ type Tr = {
     type?: DailyScheduleType;
     teacherId?: string;
 };
-//MOVE TO ANNUAL HEADER
+
 const ReadOnlyHeader: React.FC<ReadOnlyHeaderProps> = ({
     trs,
     emptyTrs = 0,
