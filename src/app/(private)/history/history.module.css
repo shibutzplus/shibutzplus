@@ -1,4 +1,4 @@
-/* Mobile */
+/* Desktop First (Default) */
 .container {
   width: 100%;
   margin: 0 auto;
@@ -7,10 +7,7 @@
   padding-bottom: var(--padding-top-desktop);
 }
 
-/* Desktop */
-@media (min-width: 1024px) {
-  .container {
-    padding-top: calc(var(--header-height) + var(--padding-top-desktop));
-    padding-bottom: var(--padding-top-desktop);
-  }
+/* Mobile Overrides */
+@media (max-width: 1024px) {
+  /* Add overrides here if needed */
 }
