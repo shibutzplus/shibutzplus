@@ -56,7 +56,7 @@ const PreviewTeacherHeader: React.FC<PreviewTeacherHeaderProps> = ({
             >
                 <div className={styles.headerText}>{selectedTeacherData?.name || ""}</div>
                 {appType === "private" && isClickable && (
-                    <Icons.eye className={styles.eyeIcon} size={20} />
+                    <Icons.eye className={styles.eyeIcon} size={22} />
                 )}
             </div>
         </div>

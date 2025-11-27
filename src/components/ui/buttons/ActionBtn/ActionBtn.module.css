@@ -1,6 +1,5 @@
-/* Mobile */
 .topButton {
-    width: 150px;
+    width: 160px;
     height: var(--input-height);
     padding: 0.7rem 2px 0.7rem 0;
     padding-left: 0;
@@ -8,7 +7,7 @@
     background-color: var(--top-color);
     border: var(--border-primary);
     border-radius: 10px;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: bold;
     transition: all 0.1s ease;
     position: relative;
@@ -24,11 +23,9 @@
     cursor: pointer;
 }
 
-/* Desktop */
-@media (min-width: 768px) {
+@media (max-width: 470px) {
     .topButton {
-        width: 160px;
-        padding-left: 5px;
-        font-size: 14px;
+        width: 130px;
+        font-size: 12px;
     }
 }

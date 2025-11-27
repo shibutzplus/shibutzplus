@@ -1,10 +1,13 @@
 .hoursColumn {
     width: 30px;
+    min-width: 30px;
+    max-width: 30px;
 }
 
 .emptyCell {
     background-color: var(--background-color) !important;
     width: 5px !important;
+    min-width: 5px !important;
 }
 
 .hourCell {
@@ -12,8 +15,9 @@
     font-weight: bold;
     text-align: center;
     vertical-align: middle;
-    width: 30px;
-    height: 30px;
+    width: 75%;
+    height: 75%;
+    aspect-ratio: 1;
     display: flex;
     align-items: center;
     justify-content: center;

@@ -1,4 +1,4 @@
-/* Mobile */
+/* Desktop First (Wide > 1130px) */
 .pageLayout {
     width: 100%;
     height: 100dvh;
@@ -22,7 +22,7 @@
     min-height: 0;
     overflow: auto;
     width: 100%;
-    margin-bottom: calc(var(--header-height) + var(--padding-width-mobile));
+    margin-bottom: 0;
 }
 
 .topNavLayout {
@@ -41,38 +41,47 @@
     justify-content: space-between;
     height: var(--header-height);
     background: var(--top-color);
+    padding: 0 var(--padding-width-desktop);
+    gap: 2em;
 }
 
 .topNavRight {
     display: flex;
     align-items: center;
-    gap: 5px;
-    width: 50%;
+    gap: 15px;
+    width: 70%;
 }
 
 .topNavLeft {
     display: flex;
     justify-content: end;
     align-items: center;
-    gap: 9px;
-    width: 50%;
-    margin-left: 10px;
+    gap: 20px;
+    width: 30%;
+    margin-left: 0;
 }
 
 .topNavSelectContainer {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 15px;
 }
 
-.topNavBtnContainer {
+.desktopActionBtns {
     display: flex;
-    align-items: center;
-    gap: 9px;
+    gap: 15px;
+}
+
+.mobileActionBtns {
+    display: none;
 }
 
 .selectContainer {
-    width: 100%;
+    width: var(--top-nav-select-width);
+}
+
+.mobileSelectContainer {
+    width: 70%;
 }
 
 .banner {
@@ -91,49 +100,50 @@
     align-items: center;
     justify-content: center;
     z-index: -1;
-    padding: 0 var(--padding-width-mobile);
+    padding: none;
     box-sizing: border-box;
+    display: none;
 }
 
-/* Desktop */
-@media (min-width: 1024px) {
-    .pageLayout {
-        height: 100dvh;
+/* Intermediate (601px - 1130px) */
+@media (max-width: 1130px) {
+    .desktopActionBtns {
+        display: none;
+    }
+
+    .mobileActionBtns {
+        display: block;
     }
 
     .mainContent {
-        margin-bottom: 0;
+        margin-bottom: calc(var(--header-height) + var(--padding-width-mobile));
     }
+}
 
+/* Mobile (<= 600px) */
+@media (max-width: 600px) {
     .topNavSection {
-        padding: 0 var(--padding-width-desktop);
-        gap: 2em;
+        padding: 0;
+        gap: 0;
     }
 
     .topNavRight {
-        width: 70%;
-        gap: 15px;
+        width: 50%;
+        gap: 5px;
     }
 
     .topNavLeft {
-        margin-left: 0;
-        width: 30%;
-        gap: 20px;
+        width: 50%;
+        margin-left: 10px;
+        gap: 9px;
     }
 
     .topNavSelectContainer {
-        gap: 15px;
-    }
-
-    .topNavBtnContainer {
-        gap: 15px;
+        display: none;
     }
 
     .bottomNav {
-        padding: none;
-    }
-
-    .selectContainer {
-        width: var(--top-nav-select-width);
+        display: flex;
+        padding: 0 var(--padding-width-mobile);
     }
 }

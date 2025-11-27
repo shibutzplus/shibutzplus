@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import styles from "./DailyPageLayout.module.css";
 import Logo from "@/components/ui/Logo/Logo";
 import HamburgerNav, { HamburgerButton } from "@/components/navigation/HamburgerNav/HamburgerNav";
-import { useMobileSize } from "@/hooks/browser/useMobileSize";
 import router from "@/routes";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
@@ -21,7 +20,6 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
         useDailyTableContext();
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const isMobile = useMobileSize();
 
     return (
         <>
@@ -34,31 +32,33 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
                                 isOpen={isMenuOpen}
                             />
                             <h3>{router.dailySchedule.title}</h3>
-                            {!isMobile ? (
-                                <div className={styles.topNavSelectContainer}>
-                                    <div className={styles.selectContainer}>
-                                        <DynamicInputSelect
-                                            options={daysSelectOptions()}
-                                            value={selectedDate}
-                                            isDisabled={isLoading || !isEditMode}
-                                            onChange={handleDayChange}
-                                            isSearchable={false}
-                                            placeholder="בחרו יום..."
-                                            hasBorder
-                                        />
-                                    </div>
-
-                                    {isEditMode ? <DailyActionBtns position="left" /> : null}
+                            <div className={styles.topNavSelectContainer}>
+                                <div className={styles.selectContainer}>
+                                    <DynamicInputSelect
+                                        options={daysSelectOptions()}
+                                        value={selectedDate}
+                                        isDisabled={isLoading || !isEditMode}
+                                        onChange={handleDayChange}
+                                        isSearchable={false}
+                                        placeholder="בחרו יום..."
+                                        hasBorder
+                                    />
                                 </div>
-                            ) : null}
+
+                                {isEditMode ? (
+                                    <div className={styles.desktopActionBtns}>
+                                        <DailyActionBtns position="left" />
+                                    </div>
+                                ) : null}
+                            </div>
                         </div>
                         <div className={styles.topNavLeft}>
                             <DailyPublishActionBtns />
                             <Logo size="S" />
                         </div>
                     </section>
-                    {isMobile ? (
-                        <div className={styles.bottomNav}>
+                    <div className={styles.bottomNav}>
+                        <div className={styles.mobileSelectContainer}>
                             <DynamicInputSelect
                                 options={daysSelectOptions()}
                                 value={selectedDate}
@@ -69,15 +69,15 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
                                 hasBorder
                             />
                         </div>
-                    ) : null}
+                    </div>
                 </header>
                 <main className={styles.mainContent}>{children}</main>
             </div>
-            {isMobile ? (
+            <div className={styles.mobileActionBtns}>
                 <MobileNavLayout>
                     <DailyActionBtns position="top" />
                 </MobileNavLayout>
-            ) : null}
+            </div>
             <HamburgerNav
                 hamburgerType="private"
                 isOpen={isMenuOpen}

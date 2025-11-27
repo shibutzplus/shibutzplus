@@ -36,9 +36,9 @@ const DailyPublishActionBtns: React.FC = () => {
                 />
             </span>
 
-            <span title="פרסום">
+            <span title={isDisabled ? "המערכת פורסמה" : "פרסום המערכת היומית"}>
                 <IconBtn
-                    Icon={isDisabled ? <Icons.success2 size={20} /> : <Icons.publish size={20} />}
+                    Icon={<Icons.publish size={20} />}
                     isLoading={publishLoading}
                     onClick={publishDailySchedule}
                     disabled={isDisabled}
