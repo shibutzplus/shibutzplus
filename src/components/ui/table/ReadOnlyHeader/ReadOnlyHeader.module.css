@@ -1,5 +1,6 @@
 /* Mobile */
-.thead {
+.theadWithoutHeader,
+.theadWithHeader {
     position: sticky;
     top: calc(var(--header-height) + var(--header-height) + var(--padding-top-mobile));
     z-index: 100;
@@ -7,7 +8,16 @@
     z-index: 5;
 }
 
-.thead::before {
+.theadWithHeader {
+    top: calc(var(--header-height) + var(--header-height) + var(--padding-top-mobile));
+}
+
+.theadWithoutHeader {
+    top: 0;
+}
+
+.theadWithoutHeader::before,
+.theadWithHeader::before {
     content: "";
     position: absolute;
     top: calc(var(--padding-top-desktop) * -1);

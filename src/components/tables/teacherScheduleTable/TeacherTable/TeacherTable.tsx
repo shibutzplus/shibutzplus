@@ -11,16 +11,16 @@ import { TeacherType } from "@/models/types/teachers";
 type TeacherTableProps = {
     teacher?: TeacherType;
     selectedDate: string;
-    onlyMobileVersion?: boolean;
+    onlyMobile?: boolean;
 };
 
-const TeacherTable: React.FC<TeacherTableProps> = ({ teacher, selectedDate, onlyMobileVersion }) => {
+const TeacherTable: React.FC<TeacherTableProps> = ({ teacher, selectedDate, onlyMobile }) => {
     const { mainPortalTable } = useTeacherTableContext();
     const dayTable = selectedDate ? mainPortalTable[selectedDate] : undefined;
 
     return (
         <table className={styles.scheduleTable}>
-            <TeacherHeader />
+            <TeacherHeader onlyMobile={onlyMobile} />
             <tbody className={styles.scheduleTableBody}>
                 {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => {
                     const row = dayTable?.[String(hour)];
@@ -31,6 +31,7 @@ const TeacherTable: React.FC<TeacherTableProps> = ({ teacher, selectedDate, only
                             row={row}
                             teacher={teacher}
                             selectedDate={selectedDate}
+                            onlyMobile={onlyMobile}
                         />
                     );
                 })}

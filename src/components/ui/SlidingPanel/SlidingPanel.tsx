@@ -5,16 +5,18 @@ import { IoCloseOutline } from "react-icons/io5";
 import { useAccessibility } from "@/hooks/browser/useAccessibility";
 import styles from "./SlidingPanel.module.css";
 
-interface SlidingPanelProps {
+type SlidingPanelProps = {
     isOpen: boolean;
     onClose: () => void;
+    title: string;
     children: React.ReactNode;
     position?: "left" | "right";
-}
+};
 
 const SlidingPanel: React.FC<SlidingPanelProps> = ({
     isOpen,
     onClose,
+    title,
     children,
     position = "left",
 }) => {
@@ -62,12 +64,16 @@ const SlidingPanel: React.FC<SlidingPanelProps> = ({
                 role="dialog"
                 aria-modal="true"
             >
-                {/* Close button */}
-                <button onClick={onClose} className={styles.closeButton} aria-label="Close panel">
-                    <IoCloseOutline className={styles.closeIcon} />
-                </button>
-
-                {/* Panel content */}
+                <header className={styles.panelHeader}>
+                    <button
+                        onClick={onClose}
+                        className={styles.closeButton}
+                        aria-label="Close panel"
+                    >
+                        <IoCloseOutline className={styles.closeIcon} />
+                    </button>
+                    <h3>{title}</h3>
+                </header>
                 <div className={styles.content}>{children}</div>
             </div>
         </>

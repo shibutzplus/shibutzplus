@@ -11,9 +11,10 @@ type TeacherRowProps = {
     row?: TeacherScheduleType;
     teacher?: TeacherType;
     selectedDate: string;
+    onlyMobile?: boolean;
 };
 
-const TeacherRow: React.FC<TeacherRowProps> = ({ hour, row, teacher, selectedDate }) => {
+const TeacherRow: React.FC<TeacherRowProps> = ({ hour, row, teacher, selectedDate, onlyMobile }) => {
     const isMobile = useMobileSize();
 
     let scheduleCell = (
@@ -26,7 +27,7 @@ const TeacherRow: React.FC<TeacherRowProps> = ({ hour, row, teacher, selectedDat
             </td>
         </>
     );
-    if (isMobile)
+    if (onlyMobile || isMobile)
         scheduleCell = (
             <td className={styles.scheduleCell}>
                 <TeacherDetailsCell row={row} teacher={teacher} />
