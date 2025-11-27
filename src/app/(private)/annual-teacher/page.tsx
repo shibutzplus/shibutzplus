@@ -6,7 +6,7 @@ import styles from "./annualSchedule.module.css";
 import AnnualTeacherTable from "@/components/tables/annualByTeacherTable/AnnualTeacherTable/AnnualTeacherTable";
 import { useMainContext } from "@/context/MainContext";
 import { useAnnualByTeacher } from "@/context/AnnualByTeacherContext";
-import { populateAnnualScheduleForTeacher } from "@/services/annual/populate";
+import { populateAllTeachersSchedule } from "@/services/annual/populate";
 import { initializeEmptyAnnualSchedule } from "@/services/annual/initialize";
 
 const AnnualSchedulePage: NextPage = () => {
@@ -33,14 +33,13 @@ const AnnualSchedulePage: NextPage = () => {
             Object.keys(schedule).length === 0
         ) {
             let newSchedule = {};
+            // Initialize empty schedule for all teachers
             teachers.forEach((teacher) => {
                 newSchedule = initializeEmptyAnnualSchedule(newSchedule, teacher.id);
-                newSchedule = populateAnnualScheduleForTeacher(
-                    annualScheduleTable,
-                    teacher.id,
-                    newSchedule,
-                );
             });
+            // Populate schedule for all teachers in one pass
+            newSchedule = populateAllTeachersSchedule(annualScheduleTable, newSchedule);
+
             setSchedule(newSchedule);
             blockRef.current = false;
         }
