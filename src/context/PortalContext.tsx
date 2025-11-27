@@ -9,10 +9,10 @@ import { getPublishedDatesOptions as getPublishedDatesOptions } from "@/resource
 import { chooseDefaultDate } from "@/utils/time";
 import { selectSelectedDate } from "@/services/portalTeacherService";
 import { getStorageTeacher } from "@/lib/localStorage";
-import { PortalSchedule } from "@/models/types/portalSchedule";
+import { PortalSchedule, TeacherScheduleType } from "@/models/types/portalSchedule";
 import { DailySchedule } from "@/models/types/dailySchedule";
-import { usePortal } from "@/hooks/usePortal";
-import { usePublished } from "@/hooks/usePublished";
+import { usePortal } from "@/hooks/portal/usePortal";
+import { usePublished } from "@/hooks/portal/usePublished";
 
 interface PortalContextType {
     teacher: TeacherType | undefined;
@@ -25,9 +25,11 @@ interface PortalContextType {
     handleRefreshDates: () => Promise<{ success: boolean; error: string; selected: string }>;
 
     isPortalLoading: boolean;
+    isSavingLoading: boolean;
     mainPortalTable: PortalSchedule;
     fetchPortalScheduleDate: () => Promise<boolean>;
     handlePortalRefresh: () => Promise<void>;
+    saveInstractions: (instructions: string, row?: TeacherScheduleType) => Promise<void>;
 
     isPublishLoading: boolean;
     mainPublishTable: DailySchedule;
@@ -185,8 +187,14 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
         }
     };
 
-    const { fetchPortalScheduleDate, handlePortalRefresh, mainPortalTable, isPortalLoading } =
-        usePortal(schoolId, selectedDate, teacher);
+    const {
+        fetchPortalScheduleDate,
+        handlePortalRefresh,
+        saveInstractions,
+        mainPortalTable,
+        isPortalLoading,
+        isSavingLoading,
+    } = usePortal(schoolId, selectedDate, teacher);
 
     const { fetchPublishScheduleData, handlePublishedRefresh, mainPublishTable, isPublishLoading } =
         usePublished(schoolId, selectedDate, teacher);
@@ -202,9 +210,11 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
         handleRefreshDates,
 
         isPortalLoading,
+        isSavingLoading,
         mainPortalTable,
         handlePortalRefresh,
         fetchPortalScheduleDate,
+        saveInstractions,
 
         isPublishLoading,
         mainPublishTable,

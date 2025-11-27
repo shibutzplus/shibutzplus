@@ -7,7 +7,7 @@ import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { NewAnnualScheduleSchema } from "@/db/schema";
 import { eq } from "drizzle-orm";
-// TODO: not in use
+// NOT IN USE
 export async function updateAnnualScheduleAction(
     id: string,
     scheduleData: AnnualScheduleRequest,

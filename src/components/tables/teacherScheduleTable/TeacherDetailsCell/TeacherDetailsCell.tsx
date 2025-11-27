@@ -25,16 +25,14 @@ const TeacherDetailsCell: React.FC<TeacherDetailsCellProps> = ({ row }) => {
     };
 
     return (
-        <td className={styles.scheduleCell}>
-            <div className={`${row ? styles.cellContent : styles.emptyCell}`}>
-                <div className={styles.classAndSubject}>
-                    {row?.class?.name && row?.subject?.name
-                        ? `${row.class.name} | ${row.subject.name}`
-                        : ""}
-                </div>
-                <div className={styles.subTeacher}>{displayReplaceTeacher()}</div>
+        <div className={`${row ? styles.cellContent : styles.emptyCell}`}>
+            <div className={styles.classAndSubject}>
+                {row?.class?.name && row?.subject?.name
+                    ? `${row.class.name} | ${row.subject.name}`
+                    : ""}
             </div>
-        </td>
+            <div className={styles.subTeacher}>{displayReplaceTeacher()}</div>
+        </div>
     );
 };
 export default TeacherDetailsCell;

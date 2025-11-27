@@ -1,13 +1,16 @@
 import getTeacherFullScheduleAction from "@/app/actions/GET/getTeacherFullScheduleAction";
+import { updateDailyInstructionAction } from "@/app/actions/PUT/updateDailyInstractionAction";
 import { errorToast } from "@/lib/toast";
-import { PortalSchedule } from "@/models/types/portalSchedule";
+import { PortalSchedule, TeacherScheduleType } from "@/models/types/portalSchedule";
 import { TeacherType } from "@/models/types/teachers";
+import messages from "@/resources/messages";
 import { populatePortalTable } from "@/services/portalTeacherService";
 import { useState } from "react";
 
 export const usePortal = (schoolId?: string, selectedDate?: string, teacher?: TeacherType) => {
     const [mainPortalTable, setMainPortalTable] = useState<PortalSchedule>({});
     const [isPortalLoading, setIsPortalLoading] = useState<boolean>(true);
+    const [isSavingLoading, setIsSavingLoading] = useState<boolean>(false);
 
     const fetchPortalScheduleDate = async () => {
         if (!teacher || !selectedDate || !schoolId) return false;
@@ -41,10 +44,44 @@ export const usePortal = (schoolId?: string, selectedDate?: string, teacher?: Te
         }
     };
 
+    const saveInstractions = async (instructions: string, row?: TeacherScheduleType) => {
+        if (!row || !selectedDate) return;
+        const schoolId = row.schoolId ?? row.school?.id;
+        const issueTeacherId = row.issueTeacher?.id ?? undefined;
+        const subTeacherId = row.subTeacher?.id ?? undefined;
+
+        try {
+            setIsSavingLoading(true);
+            const response = await updateDailyInstructionAction(
+                selectedDate,
+                row.DBid,
+                instructions,
+                row.hour,
+                schoolId,
+                issueTeacherId,
+                subTeacherId,
+            );
+            if (response.success) {
+                const portalSchedule = { ...mainPortalTable };
+                portalSchedule[selectedDate][`${row.hour}`].instructions = instructions;
+                setMainPortalTable(portalSchedule);
+            } else {
+                errorToast(messages.dailySchedule.error);
+            }
+        } catch (error) {
+            console.error("Error updating daily schedule entry:", error);
+            errorToast(messages.dailySchedule.error);
+        } finally {
+            setIsSavingLoading(false);
+        }
+    };
+
     return {
         mainPortalTable,
         isPortalLoading,
+        isSavingLoading,
         fetchPortalScheduleDate,
         handlePortalRefresh,
+        saveInstractions,
     };
 };

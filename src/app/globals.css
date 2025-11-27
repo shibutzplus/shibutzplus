@@ -93,6 +93,8 @@
 
     --table-teacher-details-col-width: 200px;
     --table-teacher-cell-height: 86px;
+
+    --table-cols-gap: 3px;
 }
 
 html,

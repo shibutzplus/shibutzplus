@@ -5,7 +5,6 @@ import InputRichText from "@/components/ui/inputs/InputRichText/InputRichText";
 import { usePortalContext } from "@/context/PortalContext";
 import { TeacherScheduleType } from "@/models/types/portalSchedule";
 import styles from "./PortalWriteRow.module.css";
-import { usePortalActions } from "@/hooks/usePortalActions";
 
 type PortalWriteRowProps = {
     hour: number;
@@ -14,7 +13,7 @@ type PortalWriteRowProps = {
 
 const PortalWriteRow: React.FC<PortalWriteRowProps> = ({ hour, row }) => {
     const { teacher } = usePortalContext();
-    const { handleSave } = usePortalActions();
+    // const { handleSave } = usePortalActions();
 
     const [instructions, setInstructions] = useState<string>(row?.instructions || "");
     const [prevInstructions, setPrevInstructions] = useState<string>(row?.instructions || "");
@@ -35,14 +34,14 @@ const PortalWriteRow: React.FC<PortalWriteRowProps> = ({ hour, row }) => {
         const issueTeacherId = row.issueTeacher?.id ?? undefined;
         const subTeacherId = row.subTeacher?.id ?? undefined;
 
-        await handleSave(
-            row.DBid,
-            hour,
-            value === "" ? undefined : value,
-            schoolId,
-            issueTeacherId,
-            subTeacherId,
-        );
+        // await handleSave(
+        //     row.DBid,
+        //     hour,
+        //     value === "" ? undefined : value,
+        //     schoolId,
+        //     issueTeacherId,
+        //     subTeacherId,
+        // );
     };
 
     // Returns text about replacement teacher or event

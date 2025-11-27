@@ -1,5 +1,5 @@
 .hoursColumn {
-    width: 30px;
+    width: 15px;
 }
 
 .emptyCell {
@@ -8,19 +8,62 @@
 }
 
 .hourCell {
-    padding: 12px;
+    padding: 10px;
     font-weight: bold;
     text-align: center;
     vertical-align: middle;
-    width: 30px;
-    height: 30px;
+    width: 15px;
+    height: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 600;
     color: var(--dark-text-color);
     background-color: var(--top-color);
     border-radius: 50%;
     margin: auto;
+}
+
+.scheduleDetailsCell {
+    position: relative;
+    padding-right: 4px;
+    padding-bottom: 5px;
+    box-sizing: border-box;
+    width: var(--table-teacher-details-col-width);
+}
+
+.scheduleInstructionsCell {
+    position: relative;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-bottom: 5px;
+    box-sizing: border-box;
+    width: 80%;
+}
+
+.scheduleCell {
+    position: relative;
+    padding: 4px;
+    box-sizing: border-box;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+    .hoursColumn {
+        width: 30px;
+    }
+
+    .hourCell {
+        padding: 12px;
+        width: 30px;
+        height: 30px;
+        font-size: 14px;
+    }
 }
