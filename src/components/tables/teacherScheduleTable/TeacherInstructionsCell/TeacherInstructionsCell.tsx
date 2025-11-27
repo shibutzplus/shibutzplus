@@ -35,7 +35,7 @@ const TeacherInstructionsCell: React.FC<TeacherInstructionsCellProps> = ({
         const value = html.trim();
         if (value === prevInstructions) return;
         setPrevInstructions(value);
-        saveInstractions(value, row);
+        saveInstractions(value, row, selectedDate);
     };
 
     return (

@@ -247,9 +247,6 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 updateEventCell,
                 deleteEventCell,
                 changeDailyMode,
-                // fetchPortalScheduleDate,
-                // mainPortalTable,
-                // isPortalLoading,
             }}
         >
             {children}

@@ -11,6 +11,7 @@ import { useTeacherTableContext } from "@/context/TeacherTableContext";
 type PreviewTeacherHeaderProps = {
     type: ColumnType;
     appType: AppType;
+    selectedDate: string;
     onTeacherClick?: (teacher: TeacherType) => Promise<void>;
     column: {
         [hour: string]: DailyScheduleCell;
@@ -21,6 +22,7 @@ const PreviewTeacherHeader: React.FC<PreviewTeacherHeaderProps> = ({
     type,
     column,
     appType,
+    selectedDate,
     onTeacherClick,
 }) => {
     const { fetchTeacherScheduleDate } = useTeacherTableContext();
@@ -33,6 +35,7 @@ const PreviewTeacherHeader: React.FC<PreviewTeacherHeaderProps> = ({
     const handleClick = async () => {
         if (isClickable && selectedTeacherData?.name && onTeacherClick) {
             setIsClicked(true);
+            await fetchTeacherScheduleDate(selectedTeacherData, selectedDate);
             setTimeout(() => setIsClicked(false), 500);
             onTeacherClick(selectedTeacherData);
         }
@@ -47,7 +50,9 @@ const PreviewTeacherHeader: React.FC<PreviewTeacherHeaderProps> = ({
                 className={`${styles.columnHeader} ${isClicked ? styles.clicked : ""}`}
                 style={{ backgroundColor: COLOR_BY_TYPE[type] }}
                 onClick={handleClick}
-                title={isClickable ? "לחצו על שם המורה כדי לראות או להזין את חומרי הלימוד" : undefined}
+                title={
+                    isClickable ? "לחצו על שם המורה כדי לראות או להזין את חומרי הלימוד" : undefined
+                }
             >
                 <div className={styles.headerText}>{selectedTeacherData?.name || ""}</div>
                 {appType === "private" && isClickable && (

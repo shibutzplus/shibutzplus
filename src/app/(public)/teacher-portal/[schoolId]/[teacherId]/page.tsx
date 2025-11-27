@@ -31,7 +31,7 @@ const TeacherPortalPage: NextPage = () => {
     }, [teacherId, schoolId]);
 
     useEffect(() => {
-        fetchTeacherScheduleDate(teacher);
+        fetchTeacherScheduleDate(teacher, selectedDate);
     }, [selectedDate, teacher?.id, schoolId]);
 
     if (isPortalLoading) return <TeacherPortalSkeleton />;

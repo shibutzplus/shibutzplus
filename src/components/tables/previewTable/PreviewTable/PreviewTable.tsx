@@ -11,8 +11,8 @@ import SlidingPanel from "@/components/ui/SlidingPanel/SlidingPanel";
 import { DailySchedule } from "@/models/types/dailySchedule";
 import { AppType } from "@/models/types";
 import { TeacherType } from "@/models/types/teachers";
-import PreviewTeacherTable from "../../previewTeacherTable/PreviewTeacherTable/PreviewTeacherTable";
 import { TeacherTableProvider } from "@/context/TeacherTableContext";
+import TeacherTable from "../../teacherScheduleTable/TeacherTable/TeacherTable";
 
 type PreviewTableProps = {
     mainDailyTable: DailySchedule;
@@ -74,7 +74,7 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
 
             <SlidingPanel isOpen={isPanelOpen} onClose={handleClosePanel}>
                 {teacher ? (
-                    <PreviewTeacherTable teacher={teacher} selectedDate={selectedDate} />
+                    <TeacherTable teacher={teacher} selectedDate={selectedDate} />
                 ) : null}
             </SlidingPanel>
         </TeacherTableProvider>

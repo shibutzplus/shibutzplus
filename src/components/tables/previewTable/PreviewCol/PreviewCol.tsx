@@ -54,6 +54,7 @@ const PreviewCol: React.FC<PreviewColProps> = ({
                 column={column}
                 appType={appType}
                 type={columnType}
+                selectedDate={selectedDate}
                 onTeacherClick={onTeacherClick}
             />
             <div style={{ width: "100%", height: "50px" }}></div>

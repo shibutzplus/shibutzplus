@@ -6,7 +6,7 @@ import { TeacherType } from "@/models/types/teachers";
 import messages from "@/resources/messages";
 import { populatePortalTable } from "@/services/portalTeacherService";
 import { useState } from "react";
-
+// NOT IN USE
 export const usePortal = (schoolId?: string, selectedDate?: string) => {
     const [mainPortalTable, setMainPortalTable] = useState<PortalSchedule>({});
     const [isPortalLoading, setIsPortalLoading] = useState<boolean>(true);

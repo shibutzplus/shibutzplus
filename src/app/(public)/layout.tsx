@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PortalProvider } from "@/context/PortalContext";
 import PortalPageLayout from "@/components/layout/pageLayouts/PortalPageLayout/PortalPageLayout";
+import { TeacherTableProvider } from "@/context/TeacherTableContext";
 
 export const metadata: Metadata = {
     title: "המערכת שלי | שיבוץ+",
@@ -10,7 +11,10 @@ export const metadata: Metadata = {
 export default function Layout({ children }: { children: React.ReactNode }) {
     return (
         <PortalProvider>
-            <PortalPageLayout>{children}</PortalPageLayout>
+            {/* TODO: TeacherTableProvider only need to be on teacher-portal but PortalPageLayout need it */}
+            <TeacherTableProvider>
+                <PortalPageLayout>{children}</PortalPageLayout>
+            </TeacherTableProvider>
         </PortalProvider>
     );
 }
