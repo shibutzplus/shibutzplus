@@ -1,0 +1,10 @@
+/* Mobile */
+.scheduleTable {
+    width: 100%;
+    background-color: var(--inner-background-color);
+    border-radius: var(--border-radius-table);
+    border-collapse: collapse;
+}
+
+/* Desktop */
+@media (min-width: 1024px) {}

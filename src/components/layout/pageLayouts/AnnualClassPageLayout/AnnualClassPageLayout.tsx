@@ -7,7 +7,7 @@ import HamburgerNav, { HamburgerButton } from "@/components/navigation/Hamburger
 import { useMobileSize } from "@/hooks/browser/useMobileSize";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import router from "@/routes";
-import { useAnnualTable } from "@/context/AnnualTableContext";
+import { useAnnualByClass } from "@/context/AnnualByClassContext";
 
 type AnnualClassPageLayoutProps = {
     children: React.ReactNode;
@@ -15,7 +15,7 @@ type AnnualClassPageLayoutProps = {
 
 export default function AnnualClassPageLayout({ children }: AnnualClassPageLayoutProps) {
     const { classesSelectOptions, selectedClassId, handleClassChange, isSaving, isLoading } =
-        useAnnualTable();
+        useAnnualByClass();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const isMobile = useMobileSize();
 

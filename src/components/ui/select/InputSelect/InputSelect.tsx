@@ -5,7 +5,7 @@ import Select, { StylesConfig } from "react-select";
 import { SelectOption } from "@/models/types";
 import { customStyles } from "@/style/selectStyle";
 import SelectLayout from "../SelectLayout/SelectLayout";
-import { InputBackgroundColor, InputColor, InputColorHover } from "@/style/root";
+import { InputBackgroundColor, InputColor, InputColorHover, SelectBackgroundColorHover } from "@/style/root";
 
 /**
  * Sign-Up
@@ -29,6 +29,7 @@ type InputSelectProps = {
     color?: string;
     colorHover?: string;
     isBold?: boolean;
+    isClearable?: boolean;
 };
 
 const InputSelect: React.FC<InputSelectProps> = ({
@@ -46,6 +47,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
     color = InputColor,
     colorHover = InputColorHover,
     isBold = false,
+    isClearable = false,
 }) => {
     // derive selected option directly from props
     const selectedOption = useMemo(
@@ -98,7 +100,15 @@ const InputSelect: React.FC<InputSelectProps> = ({
                     : provided;
             return {
                 ...base,
-                marginLeft: -10,
+                color: InputColor,
+                cursor: "pointer",
+                borderRadius: "50%",
+                width: 35,
+                height: 35,
+                marginLeft: -5,
+                "&:hover": {
+                    color: "red",
+                },
             };
         },
     };
@@ -111,7 +121,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
                 onChange={handleChange}
                 options={options}
                 isSearchable={isSearchable}
-                isClearable={false}
+                isClearable={isClearable}
                 isDisabled={isDisabled}
                 placeholder={placeholder}
                 menuPlacement="auto"

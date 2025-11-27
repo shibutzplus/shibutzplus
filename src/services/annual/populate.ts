@@ -37,3 +37,44 @@ export const populateAnnualSchedule = (
     }
     return newSchedule;
 };
+
+export const populateAnnualScheduleForTeacher = (
+    annualScheduleTable: AnnualScheduleType[] | undefined,
+    selectedTeacherId: string,
+    newSchedule: WeeklySchedule,
+) => {
+    // If annualScheduleTable has data for this teacher, populate the schedule
+    if (annualScheduleTable && annualScheduleTable.length > 0) {
+        let teacherEntries = annualScheduleTable.filter(
+            (entry) => entry.teacher?.id === selectedTeacherId,
+        );
+
+        teacherEntries.forEach((entry) => {
+            // Convert day number (1-7) to day name (0-based index)
+            const dayName = DAYS_OF_WEEK[entry.day - 1];
+
+            if (dayName && newSchedule[selectedTeacherId] && newSchedule[selectedTeacherId][dayName]) {
+                if (!newSchedule[selectedTeacherId][dayName][entry.hour]) {
+                    newSchedule[selectedTeacherId][dayName][entry.hour] = {
+                        teachers: [],
+                        subjects: [],
+                        classId: entry.class?.id,
+                    };
+                } else if (!newSchedule[selectedTeacherId][dayName][entry.hour].classId) {
+                    newSchedule[selectedTeacherId][dayName][entry.hour].classId = entry.class?.id;
+                }
+
+                const cell = newSchedule[selectedTeacherId][dayName][entry.hour];
+                // In teacher view, we might want to see the class and subject.
+                // The cell structure has 'teachers', 'subjects', 'classId'.
+                // We can populate 'teachers' with the teacherId (self) just for consistency,
+                // or leave it. But AnnualCell uses it.
+                if (entry.teacher?.id && !cell.teachers.includes(entry.teacher.id))
+                    cell.teachers.push(entry.teacher.id);
+                if (entry.subject?.id && !cell.subjects.includes(entry.subject.id))
+                    cell.subjects.push(entry.subject.id);
+            }
+        });
+    }
+    return newSchedule;
+};

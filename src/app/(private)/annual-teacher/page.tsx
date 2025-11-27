@@ -3,45 +3,66 @@
 import React, { useEffect, useRef } from "react";
 import { NextPage } from "next";
 import styles from "./annualSchedule.module.css";
-import AnnualTable from "@/components/tables/annualScheduleTable/AnnualTable/AnnualTable";
+import AnnualTeacherTable from "@/components/tables/annualByTeacherTable/AnnualTeacherTable/AnnualTeacherTable";
 import { useMainContext } from "@/context/MainContext";
-import { useAnnualTable } from "@/context/AnnualTableContext";
-import { populateAnnualSchedule } from "@/services/annual/populate";
+import { useAnnualByTeacher } from "@/context/AnnualByTeacherContext";
+import { populateAnnualScheduleForTeacher } from "@/services/annual/populate";
 import { initializeEmptyAnnualSchedule } from "@/services/annual/initialize";
 
 const AnnualSchedulePage: NextPage = () => {
     const { classes, teachers, subjects } = useMainContext();
-    const { annualScheduleTable, selectedClassId, schedule, setSchedule } = useAnnualTable();
+    const {
+        selectedTeacherId,
+        schedule,
+        setSchedule,
+        annualScheduleTable,
+        setIsLoading,
+        setIsSaving,
+        isSaving,
+        handleAddNewRow,
+    } = useAnnualByTeacher();
 
-    // Initialize and populate schedule for all classes on first render
+    // Initialize and populate schedule for all teachers on first render
     const blockRef = useRef<boolean>(true);
     useEffect(() => {
         if (
             blockRef.current &&
-            classes &&
-            classes.length > 0 &&
+            teachers &&
+            teachers.length > 0 &&
             annualScheduleTable &&
             Object.keys(schedule).length === 0
         ) {
             let newSchedule = {};
-            classes.forEach((cls) => {
-                newSchedule = initializeEmptyAnnualSchedule(newSchedule, cls.id);
-                newSchedule = populateAnnualSchedule(annualScheduleTable, cls.id, newSchedule);
+            teachers.forEach((teacher) => {
+                newSchedule = initializeEmptyAnnualSchedule(newSchedule, teacher.id);
+                newSchedule = populateAnnualScheduleForTeacher(
+                    annualScheduleTable,
+                    teacher.id,
+                    newSchedule,
+                );
             });
             setSchedule(newSchedule);
             blockRef.current = false;
         }
-    }, [classes, annualScheduleTable]);
+    }, [teachers, annualScheduleTable]);
 
     return (
         <div className={styles.container}>
-            <AnnualTable
-                schedule={schedule}
-                selectedClassId={selectedClassId}
-                subjects={subjects}
-                teachers={teachers}
-                classes={classes}
-            />
+            {selectedTeacherId ? (
+                <AnnualTeacherTable
+                    schedule={schedule}
+                    selectedClassId={selectedTeacherId}
+                    subjects={subjects}
+                    teachers={teachers}
+                    classes={classes}
+                    setIsLoading={setIsLoading}
+                    setIsSaving={setIsSaving}
+                    isSaving={isSaving}
+                    handleAddNewRow={handleAddNewRow}
+                />
+            ) : (
+                <div className={styles.placeholder}>בחרו מורה כדי להציג את המערכת</div>
+            )}
         </div>
     );
 };

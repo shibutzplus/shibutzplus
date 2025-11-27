@@ -188,7 +188,6 @@ const InputGroupMultiSelect: React.FC<InputGroupMultiSelectProps> = ({
             ...provided,
             color: DarkTextColor,
             fontSize: FontSize,
-            padding: "7px 15px",
         }),
         multiValueRemove: (provided: any) => ({
             ...provided,
@@ -197,9 +196,9 @@ const InputGroupMultiSelect: React.FC<InputGroupMultiSelectProps> = ({
             borderRadius: "50%",
             width: 20,
             height: 20,
+            marginLeft: -5,
             "&:hover": {
                 backgroundColor: SelectBackgroundColorHover,
-                color: SelectBackgroundColor,
             },
         }),
     };

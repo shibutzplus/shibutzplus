@@ -7,7 +7,7 @@ import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { and, eq } from "drizzle-orm";
 
-export async function deleteAnnualScheduleAction(
+export async function deleteAnnualByClassAction(
     day: number,
     hour: number,
     classId: string,
