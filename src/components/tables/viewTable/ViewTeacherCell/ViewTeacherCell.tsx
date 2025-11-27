@@ -24,12 +24,16 @@ const ViewTeacherCell: React.FC<ViewTeacherCellProps> = ({ cellData }) => {
     return (
         <div className={styles.teacherCell}>
             {cellData.class && <div className={styles.className}>{cellData.class.name}</div>}
-            {cellData.subject && <div className={styles.subjectName}>{cellData.subject.name}</div>}
+
+            {!cellData.class?.activity && cellData.subject && (
+                <div className={styles.subjectName}>{cellData.subject.name}</div>
+            )}
+
             {cellData.subTeacher ? (
                 <div className={styles.subTeacherName}>מ"מ: {cellData.subTeacher?.name}</div>
             ) : cellData.event ? (
                 <div className={styles.subTeacherName}>{cellData.event}</div>
-            ) : cellData.issueTeacherType === ColumnTypeValues.missingTeacher ? (
+            ) : cellData.issueTeacherType === ColumnTypeValues.missingTeacher && !cellData.class?.activity ? (
                 <div className={styles.missingSubTeacherName}>אין מילוי מקום</div>
             ) : null}
         </div>
