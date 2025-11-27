@@ -27,11 +27,13 @@ const PreviewTeacherHeader: React.FC<PreviewTeacherHeaderProps> = ({
     const selectedTeacherData = column?.["1"]?.headerCol?.headerTeacher;
     const isClickable = !!selectedTeacherData?.name;
     const headerRef = React.useRef<HTMLDivElement>(null);
+    const [isClicked, setIsClicked] = React.useState(false);
     useStickyHeader(headerRef);
 
     const handleClick = async () => {
         if (isClickable && selectedTeacherData?.name && onTeacherClick) {
-            await fetchTeacherScheduleDate(selectedTeacherData);
+            setIsClicked(true);
+            setTimeout(() => setIsClicked(false), 500);
             onTeacherClick(selectedTeacherData);
         }
     };
@@ -41,16 +43,16 @@ const PreviewTeacherHeader: React.FC<PreviewTeacherHeaderProps> = ({
             ref={headerRef}
             className={`${styles.columnHeaderWrapper} ${isClickable ? styles.clickable : ""}`}
         >
-            <div className={styles.columnHeader} style={{ backgroundColor: COLOR_BY_TYPE[type] }}>
-                {appType === "private" && isClickable && (
-                    <Icons.eye
-                        className={styles.eyeIcon}
-                        onClick={handleClick}
-                        size={20}
-                        title="לחצו על שם המורה כדי לראות או להזין את חומרי הלימוד"
-                    />
-                )}
+            <div
+                className={`${styles.columnHeader} ${isClicked ? styles.clicked : ""}`}
+                style={{ backgroundColor: COLOR_BY_TYPE[type] }}
+                onClick={handleClick}
+                title={isClickable ? "לחצו על שם המורה כדי לראות או להזין את חומרי הלימוד" : undefined}
+            >
                 <div className={styles.headerText}>{selectedTeacherData?.name || ""}</div>
+                {appType === "private" && isClickable && (
+                    <Icons.eye className={styles.eyeIcon} size={20} />
+                )}
             </div>
         </div>
     );
