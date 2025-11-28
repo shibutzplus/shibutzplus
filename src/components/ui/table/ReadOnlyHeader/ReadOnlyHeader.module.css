@@ -36,7 +36,6 @@
 .trHeader {
     height: var(--table-annual-header-height);
     text-align: center;
-    width: var(--table-annual-col-width);
     color: var(--dark-text-color);
     font-weight: 600;
     background-color: var(--inner-background-color);
@@ -46,9 +45,9 @@
     border-top-right-radius: 10px;
     border-top-left-radius: 10px;
     background-color: var(--inner-background-color);
-    width: 30px;
-    min-width: 30px;
-    max-width: 30px;
+    width: 40px;
+    min-width: 40px;
+    max-width: 40px;
 }
 
 .trHeader:nth-child(3) {
