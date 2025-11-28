@@ -16,5 +16,5 @@
     width: 100vw;
     height: var(--padding-top-desktop);
     background-color: var(--background-color);
-    z-index: 1;
+    z-index: 15;
 }

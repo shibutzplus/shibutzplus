@@ -41,7 +41,8 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
                                         onChange={handleDayChange}
                                         isSearchable={false}
                                         placeholder="בחרו יום..."
-                                        hasBorder
+                                        hasBorder={isEditMode}
+                                        isBold={!isEditMode}
                                     />
                                 </div>
 
@@ -62,21 +63,31 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
                             <DynamicInputSelect
                                 options={daysSelectOptions()}
                                 value={selectedDate}
-                                isDisabled={isLoading}
+                                isDisabled={isLoading || !isEditMode}
                                 onChange={handleDayChange}
                                 isSearchable={false}
                                 placeholder="בחר יום..."
-                                hasBorder
+                                hasBorder={isEditMode}
+                                isBold={!isEditMode}
+                                isCentered
                             />
                         </div>
                     </div>
                 </header>
-                <main className={styles.mainContent}>{children}</main>
+                <main
+                    className={
+                        styles.mainContent + (!isEditMode ? " " + styles.fullHeight : "")
+                    }
+                >
+                    {children}
+                </main>
             </div>
             <div className={styles.mobileActionBtns}>
-                <MobileNavLayout>
-                    <DailyActionBtns position="top" />
-                </MobileNavLayout>
+                {isEditMode ? (
+                    <MobileNavLayout>
+                        <DailyActionBtns position="top" />
+                    </MobileNavLayout>
+                ) : null}
             </div>
             <HamburgerNav
                 hamburgerType="private"

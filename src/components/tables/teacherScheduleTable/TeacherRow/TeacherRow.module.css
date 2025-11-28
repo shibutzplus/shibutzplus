@@ -1,23 +1,18 @@
-.hoursColumn {
-    width: 15px;
-}
-
 .emptyCell {
     background-color: var(--background-color) !important;
     width: 5px !important;
 }
 
 .hourCell {
-    padding: 10px;
-    font-weight: bold;
     text-align: center;
     vertical-align: middle;
-    width: 15px;
-    height: 15px;
+    width: 75%;
+    flex-shrink: 0;
+    aspect-ratio: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--dark-text-color);
     background-color: var(--top-color);
@@ -52,18 +47,4 @@
     align-items: center;
     justify-content: center;
     gap: 4px;
-}
-
-/* Desktop */
-@media (min-width: 1024px) {
-    .hoursColumn {
-        width: 30px;
-    }
-
-    .hourCell {
-        padding: 12px;
-        width: 30px;
-        height: 30px;
-        font-size: 14px;
-    }
 }

@@ -25,6 +25,10 @@
     margin-bottom: 0;
 }
 
+.fullHeight {
+    margin-bottom: 0 !important;
+}
+
 .topNavLayout {
     display: flex;
     flex-direction: column;
@@ -78,6 +82,7 @@
 
 .selectContainer {
     width: var(--top-nav-select-width);
+    transform: translateY(1px);
 }
 
 .mobileSelectContainer {

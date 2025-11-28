@@ -14,12 +14,11 @@ const DailyPublishActionBtns: React.FC = () => {
         onShareLink,
         isDisabled,
     } = usePublish();
-    //TODO: why we have both span with title and IconBtn with title?
+
     return (
         <div className={styles.topNavBtnContainer}>
-            <span title="תצוגה מקדימה">
+            <span title={isEditMode ? "תצוגה מורה/בדיקה" : "חזרה לשיבוץ"}>
                 <IconBtn
-                    title="תצוגה מקדימה כפי שמורים רואים את המערכת"
                     Icon={isEditMode ? <Icons.eye size={20} /> : <Icons.edit size={20} />}
                     onClick={changeDailyMode}
                     disabled={isLoadingEditPage}

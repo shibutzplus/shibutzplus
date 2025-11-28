@@ -33,6 +33,7 @@ type InputSelectProps = {
     colorHover?: string;
     isBold?: boolean;
     onBeforeRemove?: (removedLabel: string | null, proceed: () => void) => void;
+    isCentered?: boolean;
 };
 
 const InputSelect: React.FC<InputSelectProps> = ({
@@ -53,6 +54,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
     colorHover = InputColorHover,
     isBold = false,
     onBeforeRemove,
+    isCentered = false,
 }) => {
     const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
     const [isMounted, setIsMounted] = useState(false);
@@ -112,6 +114,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
             return {
                 ...base,
                 overflow: "visible",
+                justifyContent: isCentered ? "center" : "flex-start",
             };
         },
         singleValue: (provided: any) => {
@@ -125,6 +128,8 @@ const InputSelect: React.FC<InputSelectProps> = ({
                 overflow: "visible",
                 whiteSpace: "nowrap",
                 fontWeight: isBold ? 600 : 500,
+                textAlign: isCentered ? "center" : "left",
+                width: isCentered ? "100%" : "auto",
             };
         },
         clearIndicator: (provided: any) => {

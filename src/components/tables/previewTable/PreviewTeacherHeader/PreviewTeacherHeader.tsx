@@ -38,7 +38,6 @@ const PreviewTeacherHeader: React.FC<PreviewTeacherHeaderProps> = ({
             onTeacherClick(selectedTeacherData);
             await fetchTeacherScheduleDate(selectedTeacherData, selectedDate);
             setIsClicked(false);
-            // setTimeout(() => setIsClicked(false), 500);
         }
     };
 
