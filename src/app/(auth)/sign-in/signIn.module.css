@@ -1,4 +1,4 @@
-/* Mobile */
+/* Desktop First */
 .container {
     position: fixed;
     top: 0;
@@ -16,15 +16,15 @@
 .mainSection {
     display: flex;
     flex-direction: column;
-    gap: 2em;
+    gap: 3em;
     width: 90%;
-    margin-bottom: 10vh;
+    margin: 0 auto 20vh auto;
 }
 
 .formContainer {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 3rem;
 }
 
 .googleButton {
@@ -42,47 +42,22 @@
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
-    margin-bottom: 1rem;
-    margin: 0 auto 1rem auto;
+    margin: 0 auto;
+}
+
+.googleButton:hover {
+    background-color: var(--top-color-hover);
+    box-shadow: var(--box-shadow-btn);
+}
+
+.googleButton:active {
+    background-color: var(--top-color);
 }
 
 .error {
     color: var(--error-color);
     margin-top: 1rem;
     font-size: 0.9rem;
-    text-align: center;
-}
-
-.contact {
-    margin-top: 2rem;
-    text-align: center;
-}
-
-.contactLink {
-    color: var(--dark-text-color);
-    text-decoration: none;
-    font-weight: 500;
-    text-decoration: underline !important;
-}
-
-.illustrationContainer {
-    display: block;
-    position: absolute;
-    bottom: 1%;
-    left: 32%;
-    z-index: 0;
-    opacity: 0.9;
-}
-
-.illustration {
-    width: 55vw;
-    height: auto;
-}
-
-.registerLink {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     text-align: center;
 }
 
@@ -99,48 +74,23 @@
     color: #007bff;
 }
 
+.problemLink:hover .emailLine {
+    color: #3399ff;
+}
 
-
-/* Desktop */
-@media (min-width: 1024px) {
+/* Mobile Overrides */
+@media (max-width: 1024px) {
     .mainSection {
-        gap: 3em;
-        margin: 0 auto 20vh auto;
+        gap: 2em;
+        margin: 0 auto 10vh auto;
     }
 
     .formContainer {
-        gap: 3rem;
+        gap: 1.5rem;
     }
 
     .googleButton {
-        width: 320px;
-        margin: 0 auto;
-    }
-
-    .googleButton:hover {
-        background-color: var(--top-color-hover);
-        box-shadow: var(--box-shadow-btn);
-    }
-
-    .googleButton:active {
-        background-color: var(--top-color);
-    }
-
-    .contactLink:hover {
-        color: var(--dark-text-color-hover) !important;
-    }
-
-    .illustrationContainer {
-        bottom: 1%;
-        left: 2%;
-    }
-
-    .illustration {
-        width: 35vw;
-    }
-
-    .problemLink:hover .emailLine {
-        color: #3399ff;
+        margin: 0 auto 1rem auto;
     }
 }
 

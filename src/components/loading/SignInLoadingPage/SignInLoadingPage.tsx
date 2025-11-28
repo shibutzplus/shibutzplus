@@ -1,15 +1,13 @@
 import React from "react";
 import styles from "./SignInLoadingPage.module.css";
-import Loading from "@/components/loading/Loading/Loading";
-import Logo from "@/components/ui/Logo/Logo";
+import Preloader from "@/components/ui/Preloader/Preloader";
 
 const SignInLoadingPage: React.FC = () => {
     return (
         <main className={styles.container} aria-busy="true" aria-live="polite">
             <section className={styles.loadingSection}>
-                <Logo size="S" />
+                <Preloader />
                 <p className={styles.loading}>מתחבר למערכת...</p>
-                <Loading />
             </section>
         </main>
     );
