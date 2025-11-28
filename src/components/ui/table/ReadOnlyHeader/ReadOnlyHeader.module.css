@@ -36,7 +36,8 @@
 .emptyTrHeader {
     background-color: var(--background-color) !important;
     height: var(--table-annual-header-height);
-    width: 7px;
+    width: 10px;
+    min-width: 10px;
 }
 
 .trHeader {

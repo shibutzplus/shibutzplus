@@ -11,7 +11,7 @@ import { DailySchedule } from "@/models/types/dailySchedule";
 import { useSortColumns } from "./useSortColumns";
 import SlidingPanel from "@/components/ui/SlidingPanel/SlidingPanel";
 import TeacherTable from "../../teacherScheduleTable/TeacherTable/TeacherTable";
-import { TeacherTableProvider } from "@/context/TeacherTableContext";
+import { TeacherTableProvider, useTeacherTableContext } from "@/context/TeacherTableContext";
 import { TeacherType } from "@/models/types/teachers";
 
 type DailyTableProps = {
@@ -72,16 +72,28 @@ const DailyTable: React.FC<DailyTableProps> = ({ mainDailyTable, selectedDate })
                     title={teacher?.name || ""}
                 >
                     {teacher ? (
-                        <TeacherTable
+                        <TeacherPanelFetcher
                             teacher={teacher}
                             selectedDate={selectedDate}
-                            isInsidePanel
                         />
                     ) : null}
                 </SlidingPanel>
             </TeacherTableProvider>
         </div>
     );
+};
+
+const TeacherPanelFetcher: React.FC<{ teacher: TeacherType; selectedDate: string }> = ({
+    teacher,
+    selectedDate,
+}) => {
+    const { fetchTeacherScheduleDate } = useTeacherTableContext();
+
+    React.useEffect(() => {
+        fetchTeacherScheduleDate(teacher, selectedDate);
+    }, [teacher, selectedDate]);
+
+    return <TeacherTable teacher={teacher} selectedDate={selectedDate} isInsidePanel />;
 };
 
 export default DailyTable;

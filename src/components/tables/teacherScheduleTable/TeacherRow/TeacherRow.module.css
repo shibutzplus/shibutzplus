@@ -1,6 +1,15 @@
+.hoursColumn {
+    width: 40px;
+    min-width: 40px;
+    max-width: 40px;
+    padding: 0;
+    margin: 0;
+}
+
 .emptyCell {
     background-color: var(--background-color) !important;
-    width: 5px !important;
+    width: 10px !important;
+    min-width: 10px !important;
 }
 
 .hourCell {
