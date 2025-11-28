@@ -44,3 +44,19 @@
 .clearButton:active {
     transform: translateY(1px);
 }
+
+.eyeButton {
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s ease;
+    margin-right: 5px;
+}
+
+.eyeButton:hover {
+    color: var(--bright-text-color-hover);
+    cursor: pointer;
+}
+
+.eyeButton:active {
+    transform: translateY(1px);
+}

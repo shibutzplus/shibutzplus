@@ -7,15 +7,17 @@ import DailyEventHeader from "../DailyEventHeader/DailyEventHeader";
 import DailyEventCell from "../DailyEventCell/DailyEventCell";
 import LoadingDots from "@/components/loading/LoadingDots/LoadingDots";
 import { TableDailyHeaderHeight } from "@/style/root";
+import { TeacherType } from "@/models/types/teachers";
 
 type DailyColProps = {
     columnId: string;
     column: {
         [hour: string]: DailyScheduleCell;
     };
+    onTeacherClick?: (teacher: TeacherType) => void;
 };
 
-const DailyCol: React.FC<DailyColProps> = ({ columnId, column }) => {
+const DailyCol: React.FC<DailyColProps> = ({ columnId, column, onTeacherClick }) => {
     const [columnType, setColumnType] = useState<ColumnType>("event");
     const colFirtsObj = column["1"];
 
@@ -42,7 +44,11 @@ const DailyCol: React.FC<DailyColProps> = ({ columnId, column }) => {
     ) : (
         <div className={styles.dailyColumn} data-column-id={columnId}>
             <div className={styles.hide} />
-            <DailyTeacherHeader columnId={columnId} type={columnType} />
+            <DailyTeacherHeader
+                columnId={columnId}
+                type={columnType}
+                onTeacherClick={onTeacherClick}
+            />
             <div style={{ width: "100%", height: TableDailyHeaderHeight }}></div>
             <div className={styles.rows}>
                 {colFirtsObj ? (

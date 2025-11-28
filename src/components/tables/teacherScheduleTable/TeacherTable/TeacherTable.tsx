@@ -12,15 +12,16 @@ type TeacherTableProps = {
     teacher?: TeacherType;
     selectedDate: string;
     onlyMobile?: boolean;
+    isInsidePanel?: boolean;
 };
 
-const TeacherTable: React.FC<TeacherTableProps> = ({ teacher, selectedDate, onlyMobile }) => {
+const TeacherTable: React.FC<TeacherTableProps> = ({ teacher, selectedDate, onlyMobile, isInsidePanel }) => {
     const { mainPortalTable } = useTeacherTableContext();
     const dayTable = selectedDate ? mainPortalTable[selectedDate] : undefined;
 
     return (
         <table className={styles.scheduleTable}>
-            <TeacherHeader onlyMobile={onlyMobile} />
+            <TeacherHeader onlyMobile={onlyMobile} isInsidePanel={isInsidePanel} />
             <tbody className={styles.scheduleTableBody}>
                 {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => {
                     const row = dayTable?.[String(hour)];

@@ -1,3 +1,4 @@
+/* Mobile */
 .theadWithoutHeader,
 .theadWithHeader {
     position: sticky;
@@ -13,6 +14,11 @@
 
 .theadWithoutHeader {
     top: 0;
+}
+
+.theadInsidePanel {
+    top: 0 !important;
+    z-index: 10;
 }
 
 .theadWithoutHeader::before,
@@ -56,4 +62,11 @@
 
 .trHeader:last-child {
     border-top-left-radius: var(--border-radius-table);
+}
+
+/* Desktop */
+@media (min-width: 600px) {
+    .thead {
+        top: calc(var(--header-height) + var(--padding-top-desktop));
+    }
 }

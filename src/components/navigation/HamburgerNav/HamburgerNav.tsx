@@ -34,7 +34,7 @@ const links: ILink[] = [
     {
         name: routePath.history.title,
         p: routePath.history.p,
-        Icon: <Icons.eye size={24} />,
+        Icon: <Icons.history size={24} />,
         withDivider: true,
     },
     {

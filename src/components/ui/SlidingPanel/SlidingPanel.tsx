@@ -65,6 +65,7 @@ const SlidingPanel: React.FC<SlidingPanelProps> = ({
                 aria-modal="true"
             >
                 <header className={styles.panelHeader}>
+                    <h3>{title}</h3>
                     <button
                         onClick={onClose}
                         className={styles.closeButton}
@@ -72,7 +73,6 @@ const SlidingPanel: React.FC<SlidingPanelProps> = ({
                     >
                         <IoCloseOutline className={styles.closeIcon} />
                     </button>
-                    <h3>{title}</h3>
                 </header>
                 <div className={styles.content}>{children}</div>
             </div>

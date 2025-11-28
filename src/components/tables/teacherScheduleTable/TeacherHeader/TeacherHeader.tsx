@@ -4,11 +4,12 @@ import { useMobileSize } from "@/hooks/browser/useMobileSize";
 
 type TeacherHeaderProps = {
     onlyMobile?: boolean;
+    isInsidePanel?: boolean;
 };
 
-const TeacherHeader: React.FC<TeacherHeaderProps> = ({ onlyMobile = false }) => {
+const TeacherHeader: React.FC<TeacherHeaderProps> = ({ onlyMobile = false, isInsidePanel = false }) => {
     const isMobile = useMobileSize();
-    const trs = onlyMobile ? [""] : isMobile ? [""] : ["פרטים", "חומרי לימוד"];
+    const trs = onlyMobile ? ["חומרי לימוד"] : isMobile ? ["חומרי לימוד"] : ["פרטים", "חומרי לימוד"];
     return (
         <ReadOnlyHeader
             trs={trs}
@@ -16,6 +17,7 @@ const TeacherHeader: React.FC<TeacherHeaderProps> = ({ onlyMobile = false }) => 
             textPlaceholder={(text) => text}
             hasHour
             hasHeader={!onlyMobile}
+            isInsidePanel={isInsidePanel}
         />
     );
 };

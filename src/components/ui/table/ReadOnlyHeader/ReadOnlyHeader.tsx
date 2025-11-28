@@ -8,6 +8,7 @@ type ReadOnlyHeaderProps = {
     textPlaceholder: (text: string) => string;
     hasHour?: boolean;
     hasHeader?: boolean;
+    isInsidePanel?: boolean;
 };
 
 type Tr = {
@@ -23,9 +24,10 @@ const ReadOnlyHeader: React.FC<ReadOnlyHeaderProps> = ({
     textPlaceholder,
     hasHour = false,
     hasHeader = false,
+    isInsidePanel = false,
 }) => {
     return (
-        <thead className={`${hasHeader ? styles.theadWithHeader : styles.theadWithoutHeader}`}>
+        <thead className={`${hasHeader ? styles.theadWithHeader : styles.theadWithoutHeader} ${isInsidePanel ? styles.theadInsidePanel : ""}`}>
             <tr>
                 {hasHour ? <th className={styles.hourCol}>{/* "Hour" column */}</th> : null}
                 {Array.from({ length: emptyTrs }, (_, i) => i).map((i) => (
