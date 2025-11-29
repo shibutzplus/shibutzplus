@@ -4,8 +4,13 @@ import messages from "@/resources/messages";
 import { classSchema } from "@/models/validation/class";
 import AddListRow from "@/components/ui/list/AddListRow/AddListRow";
 
-const AddClassRow: React.FC = () => {
+type AddClassRowProps = {
+    onSearch?: (value: string) => void;
+};
+
+const AddClassRow: React.FC<AddClassRowProps> = ({ onSearch }) => {
     const { school, addNewClass } = useMainContext();
+
     return (
         <AddListRow
             schema={classSchema}
@@ -17,11 +22,12 @@ const AddClassRow: React.FC = () => {
             }
             field={{
                 key: "name",
-                placeholder: "לדוגמה: כיתה א1",
+                placeholder: "לדוגמה: יא 2",
             }}
             initialValues={{ name: "" }}
             errorMessages={{ name: messages.classes.createError }}
             buttonLabel="הוספה"
+            onInputChange={onSearch}
         />
     );
 };

@@ -112,6 +112,7 @@ function ListRow<T extends Record<string, any>>({
                     type={field.inputType || "text"}
                 />
             </div>
+            <div className={styles.redColumn}></div>
 
             <div className={styles.actions}>
                 {hasLink && (
@@ -123,11 +124,7 @@ function ListRow<T extends Record<string, any>>({
                     />
                 )}
 
-                <IconBtn
-                    onClick={handleUpdate}
-                    isLoading={isEditLoading}
-                    Icon={isEdit ? <Icons.save /> : <Icons.edit />}
-                />
+                <IconBtn onClick={handleUpdate} isLoading={isEditLoading} Icon={isEdit ? <Icons.save /> : <Icons.edit />} />
                 <IconBtn onClick={() => onDelete(item)} isLoading={false} Icon={<Icons.delete />} />
             </div>
         </div>

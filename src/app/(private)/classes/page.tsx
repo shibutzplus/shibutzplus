@@ -12,21 +12,37 @@ import ListSkeleton from "@/components/loading/skeleton/ListSkeleton/ListSkeleto
 
 const ClassesPage: NextPage = () => {
     const { classes } = useMainContext();
+    const [searchTerm, setSearchTerm] = React.useState("");
 
     const sortedClasses = React.useMemo(
-        () => (classes !== undefined ? sortByHebrewName(classes) : undefined),
-        [classes],
+        () => {
+            if (!classes) return undefined;
+            const filtered = classes.filter(c => c.name.includes(searchTerm));
+            return sortByHebrewName(filtered);
+        },
+        [classes, searchTerm],
     );
 
     return (
         <DetailsListLayout<ClassType>
             titles={["שם הכיתה", "פעולות"]}
-            emptyText="עדיין לא נוספו כיתות לרשימה"
+            emptyText={
+                searchTerm ? (
+                    <div style={{ textAlign: "center" }}>
+                        לא נמצאה התאמה לחיפוש.
+                        <br />
+                        <br />
+                        להוספת כיתה חדשה, לחצו על הוספה
+                    </div>
+                ) : (
+                    "עדיין לא נוספו כיתות לרשימה"
+                )
+            }
             details={sortedClasses}
         >
-            <AddClassRow />
-            {sortedClasses?.map((classItem) => (
-                <ClassRow key={classItem.id} classItem={classItem} />
+            <AddClassRow onSearch={setSearchTerm} />
+            {sortedClasses?.map((cls: ClassType) => (
+                <ClassRow key={cls.id} classItem={cls} />
             ))}
         </DetailsListLayout>
     );

@@ -5,7 +5,11 @@ import AddListRow from "@/components/ui/list/AddListRow/AddListRow";
 import { teacherSchema } from "@/models/validation/teacher";
 import { TeacherRoleValues } from "@/models/types/teachers";
 
-const AddTeacherRow: React.FC = () => {
+type AddTeacherRowProps = {
+    onSearch?: (value: string) => void;
+};
+
+const AddTeacherRow: React.FC<AddTeacherRowProps> = ({ onSearch }) => {
     const { school, addNewTeacher } = useMainContext();
 
     return (
@@ -25,6 +29,7 @@ const AddTeacherRow: React.FC = () => {
             initialValues={{ name: "" }}
             errorMessages={{ name: messages.teachers.createError }}
             buttonLabel="הוספה"
+            onInputChange={onSearch}
         />
     );
 };

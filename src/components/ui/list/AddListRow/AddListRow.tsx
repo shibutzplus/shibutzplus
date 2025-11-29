@@ -19,6 +19,7 @@ export type AddListRowProps<T> = {
     buttonLabel?: string;
     buttonIcon?: React.ReactNode;
     onSuccess?: () => void;
+    onInputChange?: (value: string) => void;
 };
 
 function AddListRow<T extends Record<string, any>>({
@@ -30,13 +31,18 @@ function AddListRow<T extends Record<string, any>>({
     buttonLabel = "הוספה",
     buttonIcon = <Icons.plus />,
     onSuccess,
+    onInputChange,
 }: AddListRowProps<T>) {
     const [values, setValues] = useState<T>(initialValues);
     const [isLoading, setIsLoading] = useState(false);
     const [validationErrors, setValidationErrors] = useState<{ [K in keyof T]?: string }>({});
 
     const handleInputChange = (key: keyof T) => (e: React.ChangeEvent<HTMLInputElement>) => {
-        setValues((prev) => ({ ...prev, [key]: e.target.value }));
+        const value = e.target.value;
+        setValues((prev) => ({ ...prev, [key]: value }));
+        if (onInputChange) {
+            onInputChange(value);
+        }
     };
 
     const handleSubmitAdd = async (e: React.MouseEvent) => {
@@ -60,6 +66,9 @@ function AddListRow<T extends Record<string, any>>({
             if (response) {
                 setValues(initialValues);
                 if (onSuccess) onSuccess();
+                if (onInputChange) {
+                    onInputChange((initialValues[field.key] as string) || "");
+                }
             } else {
                 infoToast(Object.values(errorMessages)[0] || "בעיה בהוספה");
             }
@@ -83,7 +92,7 @@ function AddListRow<T extends Record<string, any>>({
                     placeholder={field.placeholder}
                     error={validationErrors[field.key]}
                     type={field.inputType || "text"}
-                    style={{minWidth: 200, width: "100%"}}
+                    style={{ minWidth: 200, width: "100%" }}
                     onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
                         if (e.key === "Enter") {
                             e.preventDefault();

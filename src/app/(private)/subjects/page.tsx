@@ -11,19 +11,35 @@ import { sortByHebrewName } from "@/utils/sort";
 
 const SubjectsPage: NextPage = () => {
     const { subjects } = useMainContext();
+    const [searchTerm, setSearchTerm] = React.useState("");
 
     const sortedSubjects = React.useMemo(
-        () => (subjects !== undefined ? sortByHebrewName(subjects) : undefined),
-        [subjects],
+        () => {
+            if (!subjects) return undefined;
+            const filtered = subjects.filter(s => s.name.includes(searchTerm));
+            return sortByHebrewName(filtered);
+        },
+        [subjects, searchTerm],
     );
 
     return (
         <DetailsListLayout<SubjectType>
             titles={["שם המקצוע", "פעולות"]}
-            emptyText="עדיין לא נוספו מקצועות לרשימה"
+            emptyText={
+                searchTerm ? (
+                    <div style={{ textAlign: "center" }}>
+                        לא נמצאה התאמה לחיפוש.
+                        <br />
+                        <br />
+                        להוספת מקצוע חדש, לחצו על הוספה
+                    </div>
+                ) : (
+                    "עדיין לא נוספו מקצועות לרשימה"
+                )
+            }
             details={sortedSubjects}
         >
-            <AddSubjectRow />
+            <AddSubjectRow onSearch={setSearchTerm} />
             {sortedSubjects?.map((subject: SubjectType) => (
                 <SubjectRow key={subject.id} subject={subject} />
             ))}
