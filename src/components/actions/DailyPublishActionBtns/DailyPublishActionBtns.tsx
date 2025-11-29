@@ -17,7 +17,7 @@ const DailyPublishActionBtns: React.FC = () => {
 
     return (
         <div className={styles.topNavBtnContainer}>
-            <span title={isEditMode ? "בדיקה" : "חזרה לשיבוץ"}>
+            <span title={isEditMode ? "צפיה מקדימה / בדיקה" : "חזרה לשיבוץ"}>
                 <IconBtn
                     Icon={isEditMode ? <Icons.validate size={24} /> : <Icons.edit size={20} />}
                     onClick={changeDailyMode}
