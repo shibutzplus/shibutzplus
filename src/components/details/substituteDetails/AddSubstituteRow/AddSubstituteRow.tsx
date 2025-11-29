@@ -26,6 +26,7 @@ const AddSubstituteRow: React.FC<AddSubstituteRowProps> = ({ onSearch }) => {
             field={{
                 key: "name",
                 placeholder: "לדוגמה: ישראל ישראלי",
+                maxLength: 20,
             }}
             initialValues={{ name: "" }}
             errorMessages={{ name: messages.teachers.createError }}

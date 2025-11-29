@@ -23,6 +23,7 @@ const AddClassRow: React.FC<AddClassRowProps> = ({ onSearch }) => {
             field={{
                 key: "name",
                 placeholder: "לדוגמה: יא 2",
+                maxLength: 20,
             }}
             initialValues={{ name: "" }}
             errorMessages={{ name: messages.classes.createError }}
