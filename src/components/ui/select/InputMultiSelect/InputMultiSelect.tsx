@@ -7,18 +7,8 @@ import { SelectMethod } from "@/models/types/actions";
 import { createNewSelectOption_btnText } from "@/utils/format";
 import SelectLayout from "../SelectLayout/SelectLayout";
 import { customStyles } from "@/style/selectStyle";
-import {
-    BorderRadiusInput,
-    DarkTextColor,
-    FontSize,
-    InputBackgroundColor,
-    SelectBackgroundColor,
-    SelectBackgroundColorHover,
-} from "@/style/root";
+import { BorderRadiusInput, DarkTextColor, FontSize, InputBackgroundColor, } from "@/style/root";
 
-/**
- * AnnualCell - Subject
- */
 export type InputMultiSelectProps = {
     label?: string;
     options: SelectOption[];
@@ -33,6 +23,7 @@ export type InputMultiSelectProps = {
     hasBorder?: boolean;
     isClearable?: boolean;
     backgroundColor?: string;
+    isBold?: boolean;
     onCreate?: (value: string) => Promise<string | undefined>;
     onBeforeRemove?: (removedLabel: string | null, proceed: () => void) => void;
 };
@@ -51,6 +42,7 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
     hasBorder = false,
     backgroundColor = InputBackgroundColor,
     isClearable = false,
+    isBold = false,
     onCreate,
     onBeforeRemove,
 }) => {
@@ -135,15 +127,20 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
     const baseStyles = customStyles(error || "", hasBorder, true, backgroundColor);
     const stylesOverride: StylesConfig<SelectOption, true, GroupOption> = {
         ...(baseStyles as StylesConfig<SelectOption, true, GroupOption>),
+        valueContainer: (provided: any) => ({
+            ...provided,
+            flexWrap: "wrap",
+        }),
         multiValue: (provided: any) => ({
             ...provided,
             backgroundColor: InputBackgroundColor,
             borderRadius: BorderRadiusInput,
-            width: "90%",
             boxSizing: "border-box",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
+            fontWeight: isBold ? 600 : 500,
+            margin: "0px 5px",
         }),
         multiValueLabel: (provided: any) => ({
             ...provided,
@@ -152,16 +149,32 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
         }),
         multiValueRemove: (provided: any) => ({
             ...provided,
-            color: SelectBackgroundColor,
-            cursor: "pointer",
-            borderRadius: "50%",
-            width: 20,
-            height: 20,
-            marginLeft: -5,
             "&:hover": {
-                backgroundColor: SelectBackgroundColorHover,
+                backgroundColor: "transparent",
+                color: "red",
             },
         }),
+        clearIndicator: (provided: any) => {
+            const base =
+                typeof baseStyles.clearIndicator === "function"
+                    ? baseStyles.clearIndicator(provided)
+                    : provided;
+            return {
+                ...base,
+                color: DarkTextColor,
+                cursor: "pointer",
+                borderRadius: "50%",
+                width: 30,
+                height: 30,
+                marginLeft: -5,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                "&:hover": {
+                    color: "red",
+                },
+            };
+        },
     };
 
     return (
@@ -194,17 +207,26 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
                 }
                 onKeyDown={(e: React.KeyboardEvent) => {
                     if (
-                        isAllowAddNew &&
                         e.key === "Enter" &&
                         typeof e.target === "object" &&
                         e.target &&
                         "value" in e.target
                     ) {
                         const inputValue = (e.target as HTMLInputElement).value;
-                        const exists = options.some(
-                            (opt) => opt.label.toLowerCase() === inputValue.toLowerCase(),
+                        const labelTrimmed = inputValue.trim();
+                        if (!labelTrimmed) return;
+
+                        // Check if any option matches the input (loose match)
+                        const hasMatch = options.some((opt) =>
+                            opt.label.toLowerCase().includes(labelTrimmed.toLowerCase()),
                         );
-                        if (!exists && inputValue.trim().length > 0) {
+
+                        if (hasMatch) {
+                            // Let react-select handle the selection of the highlighted option
+                            return;
+                        }
+
+                        if (isAllowAddNew) {
                             e.preventDefault();
                             handleOnCreate(inputValue);
                         }

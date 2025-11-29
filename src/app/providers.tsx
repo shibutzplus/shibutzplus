@@ -18,7 +18,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                         transform: "translate(-50%, -50%)",
                     }}
                     toastOptions={{
-                        duration: 7000,
+                        duration: 5000,
                         style: {
                             background: TabColor,
                             color: DarkTextColor,

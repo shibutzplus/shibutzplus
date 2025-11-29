@@ -1,10 +1,10 @@
 import { toast } from "react-hot-toast"
 import { ClosableToast } from "@/components/ui/toasts/ClosableToast"
 
-export const successToast = (message: string, duration = 7000) =>
+export const successToast = (message: string, duration = 5000) =>
     toast((t) => <ClosableToast t={t} message={message} variant="default" />, { duration })
 
-export const errorToast = (message: string, duration = 7000) =>
+export const errorToast = (message: string, duration = 5000) =>
     toast(
         (t) => <ClosableToast t={t} message={message} variant="error" />,
         {
@@ -16,5 +16,5 @@ export const errorToast = (message: string, duration = 7000) =>
         }
     )
 
-export const infoToast = (message: string, duration = 7000) =>
+export const infoToast = (message: string, duration = 5000) =>
     toast((t) => <ClosableToast t={t} message={message} variant="default" />, { duration })

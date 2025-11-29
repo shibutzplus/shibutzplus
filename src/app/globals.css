@@ -1,6 +1,6 @@
 :root {
     --background-color: #FCFDFF;
-    --inner-background-color: #e3e9eb;
+    --inner-background-color: #E1E1EA;
     --inner-background-color-empty: #ffffff;
 
     --top-color: #FFFFFF;
@@ -80,6 +80,7 @@
     --table-daily-full-height: calc(var(--table-daily-header-height) + var(--table-daily-cell-height) * var(--hours-in-day) + (5px * 11));
 
     --table-annual-col-width: 200px;
+    --table-annual-col-width-mobile: 230px;
     --table-annual-header-height: 40px;
     --table-annual-cell-height: 96px;
     --table-annual-full-height: calc(var(--table-daily-header-height) + var(--table-daily-cell-height) * var(--hours-in-day) + (5px * 10));

@@ -115,8 +115,20 @@ const InputSelect: React.FC<InputSelectProps> = ({
                 ...base,
                 overflow: "visible",
                 justifyContent: isCentered ? "center" : "flex-start",
+                flex: "0 1 auto", // Shrink to fit content
             };
         },
+        indicatorsContainer: (provided: any) => ({
+            ...provided,
+            flex: 1,
+            display: "flex",
+            justifyContent: "flex-start", // Align items to the right (start)
+        }),
+        dropdownIndicator: (provided: any) => ({
+            ...provided,
+            marginRight: "auto", // Push to the left (end)
+            padding: 10,
+        }),
         singleValue: (provided: any) => {
             const base =
                 typeof baseStyles.singleValue === "function"
@@ -142,14 +154,18 @@ const InputSelect: React.FC<InputSelectProps> = ({
                 color: InputColor,
                 cursor: "pointer",
                 borderRadius: "50%",
-                width: 35,
-                height: 35,
+                width: 30,
+                height: 30,
                 marginLeft: -5,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
                 "&:hover": {
                     color: "red",
                 },
             };
         },
+
     };
 
     return (
