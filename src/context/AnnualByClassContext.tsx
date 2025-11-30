@@ -20,7 +20,7 @@ import { SelectMethod } from "@/models/types/actions";
 import { dayToNumber } from "@/utils/time";
 import { TeacherType } from "@/models/types/teachers";
 import { SubjectType } from "@/models/types/subjects";
-import { sortByHebrewName } from "@/utils/sort";
+
 import {
     createAnnualRequests,
     createPairs,
@@ -101,7 +101,13 @@ export const AnnualByClassProvider: React.FC<{ children: ReactNode }> = ({ child
     }, [queueRows]);
 
     const classesSelectOptions = () => {
-        return createSelectOptions<ClassType>(sortByHebrewName(classes || []));
+        const sortedClasses = [...(classes || [])].sort((a, b) => {
+            if (a.activity !== b.activity) {
+                return a.activity ? 1 : -1;
+            }
+            return a.name.localeCompare(b.name, "he", { numeric: true });
+        });
+        return createSelectOptions<ClassType>(sortedClasses);
     };
 
     const addNewAnnualScheduleItem = async (newScheduleItem: AnnualScheduleRequest) => {

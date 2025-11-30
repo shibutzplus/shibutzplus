@@ -15,7 +15,6 @@ type HistoryPageLayoutProps = {
 
 export default function HistoryPageLayout({ children }: HistoryPageLayoutProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const isMobile = useMobileSize();
 
     return (
         <>
@@ -28,21 +27,14 @@ export default function HistoryPageLayout({ children }: HistoryPageLayoutProps) 
                                 isOpen={isMenuOpen}
                             />
                             <h3>{router.history.title}</h3>
-                            {!isMobile ? (
-                                <div className={styles.selectContainer}>
-                                    <InputDate />
-                                </div>
-                            ) : null}
+                            <div className={styles.selectContainer}>
+                                <InputDate />
+                            </div>
                         </div>
                         <div className={styles.topNavLeft}>
                             <Logo size="S" />
                         </div>
                     </section>
-                    {isMobile ? (
-                        <div className={styles.bottomNav}>
-                            <InputDate />
-                        </div>
-                    ) : null}
                 </header>
                 <main className={styles.mainContent}>{children}</main>
             </div>

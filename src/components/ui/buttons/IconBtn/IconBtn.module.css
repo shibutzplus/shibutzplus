@@ -26,5 +26,5 @@
 .iconBtn:disabled {
     cursor: default;
     opacity: 0.5;
-    color: var(--event-color);
+    color: gray;
 }

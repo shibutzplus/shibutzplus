@@ -12,7 +12,7 @@ import {
     IoBook,
 } from "react-icons/io5";
 import { IoMdRefresh } from "react-icons/io";
-import { RiEdit2Fill, RiDeleteBin6Line } from "react-icons/ri";
+import { RiEdit2Fill, RiDeleteBin6Line, RiPassValidLine } from "react-icons/ri";
 import { BsMegaphoneFill, BsCalendar4Event } from "react-icons/bs";
 import {
     MdOutlineImageNotSupported,
@@ -67,6 +67,8 @@ const Icons = {
     refresh: IoMdRefresh,
     success1: IoCheckmarkCircle,
     success2: FiCheckCircle,
+    validate: RiPassValidLine,
+    users: IoPeopleOutline,
 };
 
 export default Icons;

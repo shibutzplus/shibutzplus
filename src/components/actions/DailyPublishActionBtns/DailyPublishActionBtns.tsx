@@ -14,13 +14,12 @@ const DailyPublishActionBtns: React.FC = () => {
         onShareLink,
         isDisabled,
     } = usePublish();
-    //TODO: why we have both span with title and IconBtn with title?
+
     return (
         <div className={styles.topNavBtnContainer}>
-            <span title="תצוגה מקדימה">
+            <span title={isEditMode ? "צפיה מקדימה / בדיקה" : "חזרה לשיבוץ"}>
                 <IconBtn
-                    title="תצוגה מקדימה כפי שמורים רואים את המערכת"
-                    Icon={isEditMode ? <Icons.eye size={20} /> : <Icons.edit size={20} />}
+                    Icon={isEditMode ? <Icons.validate size={24} /> : <Icons.edit size={20} />}
                     onClick={changeDailyMode}
                     disabled={isLoadingEditPage}
                     hasBorder
@@ -36,9 +35,9 @@ const DailyPublishActionBtns: React.FC = () => {
                 />
             </span>
 
-            <span title="פרסום">
+            <span title={isDisabled ? "המערכת פורסמה" : "פרסום המערכת היומית"}>
                 <IconBtn
-                    Icon={isDisabled ? <Icons.success2 size={20} /> : <Icons.publish size={20} />}
+                    Icon={<Icons.publish size={20} />}
                     isLoading={publishLoading}
                     onClick={publishDailySchedule}
                     disabled={isDisabled}

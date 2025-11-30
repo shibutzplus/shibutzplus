@@ -56,7 +56,7 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
                             key={colId}
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.3, delay: index * 0.05 }}
+                            transition={{ duration: 0.3, delay: index * 0.02 }}
                         >
                             <PreviewCol
                                 columnId={colId}
@@ -74,7 +74,7 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
 
             <SlidingPanel isOpen={isPanelOpen} onClose={handleClosePanel} title={teacher?.name || ""}>
                 {teacher ? (
-                    <TeacherTable teacher={teacher} selectedDate={selectedDate} onlyMobile />
+                    <TeacherTable teacher={teacher} selectedDate={selectedDate} isInsidePanel />
                 ) : null}
             </SlidingPanel>
         </TeacherTableProvider>

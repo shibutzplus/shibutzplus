@@ -2,13 +2,13 @@
     width: 40px;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     box-sizing: border-box;
     position: sticky;
-    top: 0;
     right: 0;
     height: var(--table-daily-full-height);
-    z-index: 15;
+    z-index: 10;
+    /* Must to be lower than DailyTable & previewTable css "hide" z-index */
 }
 
 .hideBackground {
@@ -22,32 +22,44 @@
 }
 
 .hideTop {
-    position: fixed;
-    top: 60px;
-    right: 10px;
-    width: 40px;
-    --c: 50px;
-    height: 65px;
-    aspect-ratio: 3/2;
-    mask: radial-gradient(70% var(--c) at bottom, #0000 calc(100% - 2px), #000);
+    position: absolute;
+    top: 0;
+    width: 30px;
+    height: 50px;
     background-color: var(--background-color);
+    z-index: 20;
+    --r: 15px;
+    mask: radial-gradient(var(--r) at bottom, #0000 98%, #000) no-repeat;
+    -webkit-mask: radial-gradient(var(--r) at bottom, #0000 98%, #000) no-repeat;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
 }
 
 .hoursColumn {
-    width: 40px;
+    width: 30px;
+    min-width: 30px;
+    max-width: 30px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: calc(var(--table-daily-header-height) + (var(--table-daily-cell-height) / 2) - 10px);
+    margin-top: calc(var(--table-daily-header-height) + 5px);
     background-color: var(--inner-background-color);
-    gap: calc(var(--table-daily-cell-height) - 25px);
-    height: var(--table-daily-full-height);
-    border-radius: 0 0 40px 40px;
+    gap: 5px;
+    height: calc(var(--table-daily-full-height) - var(--table-daily-header-height) - 5px);
+    border-radius: 40px;
+    z-index: 1;
+}
+
+.hourRowContainer {
+    height: var(--table-daily-cell-height);
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .hourCell {
-    width: 30px;
-    height: 30px;
+    width: 24px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;

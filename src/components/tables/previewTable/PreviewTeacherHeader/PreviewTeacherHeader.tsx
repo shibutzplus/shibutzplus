@@ -38,7 +38,6 @@ const PreviewTeacherHeader: React.FC<PreviewTeacherHeaderProps> = ({
             onTeacherClick(selectedTeacherData);
             await fetchTeacherScheduleDate(selectedTeacherData, selectedDate);
             setIsClicked(false);
-            // setTimeout(() => setIsClicked(false), 500);
         }
     };
 
@@ -55,10 +54,10 @@ const PreviewTeacherHeader: React.FC<PreviewTeacherHeaderProps> = ({
                     isClickable ? "לחצו על שם המורה כדי לראות או להזין את חומרי הלימוד" : undefined
                 }
             >
-                <div className={styles.headerText}>{selectedTeacherData?.name || ""}</div>
                 {appType === "private" && isClickable && (
-                    <Icons.eye className={styles.eyeIcon} size={20} />
+                    <Icons.eye className={styles.eyeIcon} size={22} />
                 )}
+                <div className={styles.headerText}>{selectedTeacherData?.name || ""}</div>
             </div>
         </div>
     );

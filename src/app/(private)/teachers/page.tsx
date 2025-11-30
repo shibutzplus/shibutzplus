@@ -12,22 +12,35 @@ import { sortByHebrewName } from "@/utils/sort";
 
 const TeachersPage: NextPage = () => {
     const { teachers } = useMainContext();
+    const [searchTerm, setSearchTerm] = React.useState("");
 
     const sortedTeachers = React.useMemo(
-        () =>
-            teachers !== undefined
-                ? filterTeachersByRole(sortByHebrewName(teachers), TeacherRoleValues.REGULAR)
-                : undefined,
-        [teachers],
+        () => {
+            if (!teachers) return undefined;
+            const filtered = teachers.filter(t => t.name.includes(searchTerm));
+            return filterTeachersByRole(sortByHebrewName(filtered), TeacherRoleValues.REGULAR);
+        },
+        [teachers, searchTerm],
     );
 
     return (
         <DetailsListLayout<TeacherType>
             titles={["שם המורה", "פעולות"]}
-            emptyText="עדיין לא נוספו מורים לרשימה"
+            emptyText={
+                searchTerm ? (
+                    <div style={{ textAlign: "center" }}>
+                        לא נמצאה התאמה לחיפוש.
+                        <br />
+                        <br />
+                        להוספת מורה חדש, לחצו על הוספה
+                    </div>
+                ) : (
+                    "עדיין לא נוספו מורים לרשימה"
+                )
+            }
             details={sortedTeachers}
         >
-            <AddTeacherRow />
+            <AddTeacherRow onSearch={setSearchTerm} />
             {sortedTeachers?.map((teacher: TeacherType) => (
                 <TeacherRow key={teacher.id} teacher={teacher} />
             ))}

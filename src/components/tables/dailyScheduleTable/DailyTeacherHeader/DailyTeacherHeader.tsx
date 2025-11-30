@@ -10,13 +10,15 @@ import messages from "@/resources/messages";
 import EditableHeader from "../../../ui/table/EditableHeader/EditableHeader";
 import { BrightTextColor, BrightTextColorHover } from "@/style/root";
 import { COLOR_BY_TYPE } from "@/models/constant/daily";
+import { TeacherType } from "@/models/types/teachers";
 
 type DailyTeacherHeaderProps = {
     columnId: string;
     type: ColumnType;
+    onTeacherClick?: (teacher: TeacherType) => void;
 };
 
-const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId, type }) => {
+const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId, type, onTeacherClick }) => {
     const { teachers } = useMainContext();
     const {
         mainDailyTable,
@@ -88,6 +90,11 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId, type 
             color={COLOR_BY_TYPE[type]}
             deleteLabel={selectedTeacherData?.name || "המורה"}
             deleteCol={deleteCol}
+            onEyeClick={
+                selectedTeacherData?.id && onTeacherClick
+                    ? () => onTeacherClick(selectedTeacherData)
+                    : undefined
+            }
         >
             <DynamicInputSelect
                 options={filteredTeacherOptions}

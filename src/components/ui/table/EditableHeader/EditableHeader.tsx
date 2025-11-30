@@ -9,6 +9,7 @@ type EditableHeaderProps = {
     color: string;
     deleteLabel?: string;
     deleteCol: () => Promise<void>;
+    onEyeClick?: (e: React.MouseEvent) => void;
 };
 
 const EditableHeader: React.FC<EditableHeaderProps> = ({
@@ -16,6 +17,7 @@ const EditableHeader: React.FC<EditableHeaderProps> = ({
     color,
     deleteLabel,
     deleteCol,
+    onEyeClick,
 }) => {
     const { handleOpenPopup } = useDeletePopup();
     const headerRef = useRef<HTMLDivElement | null>(null);
@@ -35,6 +37,13 @@ const EditableHeader: React.FC<EditableHeaderProps> = ({
                     onClick={handleDeleteColumn}
                     size={20}
                 />
+                {onEyeClick && (
+                    <Icons.eye
+                        className={styles.eyeButton}
+                        onClick={onEyeClick}
+                        size={24}
+                    />
+                )}
                 {children}
             </div>
         </div>
