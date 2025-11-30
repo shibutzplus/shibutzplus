@@ -7,6 +7,14 @@
     margin-bottom: calc(var(--header-height) + 1em);
 }
 
+.loaderContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+    width: 100%;
+}
+
 /* Desktop */
 @media (min-width: 600px) {
     .scheduleTable {
