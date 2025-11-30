@@ -73,7 +73,14 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
                     isClearable
                 />
                 <DynamicInputSelect
-                    options={createSelectOptions<ClassType>(sortByHebrewName(classes || []))}
+                    options={createSelectOptions<ClassType>(
+                        [...(classes || [])].sort((a, b) => {
+                            if (a.activity !== b.activity) {
+                                return a.activity ? 1 : -1;
+                            }
+                            return a.name.localeCompare(b.name, "he", { numeric: true });
+                        }),
+                    )}
                     value={schedule[selectedClassId]?.[day]?.[hour]?.classId ?? ""}
                     onChange={handleClassChange}
                     placeholder="כיתה"

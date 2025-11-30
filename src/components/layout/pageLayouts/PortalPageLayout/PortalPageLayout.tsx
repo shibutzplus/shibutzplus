@@ -37,8 +37,6 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
     const { isPortalLoading, handlePortalRefresh } = useTeacherTableContext();
     const { hasUpdate, resetUpdate } = usePollingUpdates();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const isMobile = useMobileSize();
-
     const isRegularTeacher = teacher?.role === TeacherRoleValues.REGULAR;
 
     const isLoading = pathname.includes(router.teacherPortal.p)
@@ -66,19 +64,17 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
                                 isOpen={isMenuOpen}
                             />
                             <h3 className={styles.greeting}>{greetingTeacher(teacher)}</h3>
-                            {!isMobile ? (
-                                <div className={styles.selectContainer}>
-                                    <DynamicInputSelect
-                                        options={datesOptions}
-                                        value={selectedDate}
-                                        isDisabled={isLoading}
-                                        onChange={handleDayChange}
-                                        isSearchable={false}
-                                        placeholder="בחר יום..."
-                                        hasBorder
-                                    />
-                                </div>
-                            ) : null}
+                            <div className={styles.topSelectContainer}>
+                                <DynamicInputSelect
+                                    options={datesOptions}
+                                    value={selectedDate}
+                                    isDisabled={isLoading}
+                                    onChange={handleDayChange}
+                                    isSearchable={false}
+                                    placeholder="בחר יום..."
+                                    hasBorder
+                                />
+                            </div>
                             <div
                                 className={`${styles.refreshContainer} ${hasUpdate ? styles.refreshAlert : ""}`}
                             >
@@ -91,16 +87,18 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
                             </div>
                         </div>
                         <div className={styles.topNavLeft}>
-                            {!isMobile && isRegularTeacher ? (
+                            {isRegularTeacher ? (
                                 <div>
                                     <PortalNav />
                                 </div>
                             ) : null}
-                            <Logo size="S" />
+                            <div className={styles.logoContainer}>
+                                <Logo size="S" />
+                            </div>
                         </div>
                     </section>
-                    {isMobile ? (
-                        <div className={styles.bottomNav}>
+                    <div className={styles.bottomNav}>
+                        <div className={styles.bottomSelectContainer}>
                             <DynamicInputSelect
                                 options={datesOptions}
                                 value={selectedDate}
@@ -111,15 +109,10 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
                                 hasBorder
                             />
                         </div>
-                    ) : null}
+                    </div>
                 </header>
                 <main className={styles.mainContent}>{children}</main>
             </div>
-            {isMobile && isRegularTeacher ? (
-                <MobileNavLayout>
-                    <PortalNav />
-                </MobileNavLayout>
-            ) : null}
             <HamburgerNav
                 hamburgerType="public"
                 isOpen={isMenuOpen}

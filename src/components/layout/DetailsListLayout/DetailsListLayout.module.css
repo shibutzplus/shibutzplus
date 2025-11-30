@@ -1,7 +1,7 @@
 /* Desktop First */
 .container {
     position: relative;
-    width: 40vw;
+    width: 800px;
     height: calc(var(--list-details-full-height) - var(--padding-top-desktop));
     display: flex;
     flex-direction: column;
@@ -82,14 +82,9 @@
 }
 
 /* Mobile */
-@media (max-width: 1024px) {
+@media (max-width: 850px) {
     .container {
         width: 95vw;
-        height: var(--list-details-full-height);
-        margin-top: 0.5rem;
     }
 
-    .header {
-        padding: 0px calc(var(--list-details-padding) + 20px);
-    }
 }

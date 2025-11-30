@@ -4,7 +4,7 @@
     --inner-background-color-bright: #F3F3F7;
     --inner-background-color-empty: #ffffff;
 
-    --top-color: #FFFFFF;
+    --top-color: #fdfbfb;
     --top-color-hover: #f7f7f7;
 
     --bright-text-color: #FFFFFF;
@@ -64,7 +64,7 @@
     --border-radius-table: 20px;
     --border-radius-cell: 6px;
 
-    --header-height: 60px;
+    --header-height: 55px;
 
     --padding-top-desktop: 1rem;
     --padding-top-mobile: 0.2rem;
@@ -95,7 +95,7 @@
     --list-details-actions-width-mobile: 100px;
 
     --table-teacher-details-col-width: 200px;
-    --table-teacher-cell-height: 86px;
+    --table-teacher-cell-height: 120px;
 
     --table-cols-gap: 3px;
 }

@@ -3,42 +3,21 @@
 import React from "react";
 import styles from "./Logo.module.css";
 import Image from "next/image";
-import { useMobileSize } from "@/hooks/browser/useMobileSize";
+
 
 type LogoProps = {
-    size?: "S" | "M" | "L";
+    size?: "S" | "L";
+    isVisible?: boolean;
 };
 
-const Logo: React.FC<LogoProps> = ({ size = "M" }) => {
-    const isMobile = useMobileSize();
-    const placeholderSize = {
-        width: isMobile
-            ? size === "S"
-                ? 30
-                : size === "M"
-                  ? 60
-                  : 80
-            : size === "S"
-              ? 40
-              : size === "M"
-                ? 60
-                : 80,
-        height: isMobile
-            ? size === "S"
-                ? 30
-                : size === "M"
-                  ? 60
-                  : 80
-            : size === "S"
-              ? 40
-              : size === "M"
-                ? 60
-                : 80,
-    };
-    const imageSize = size === "S" ? 40 : size === "M" ? 40 : 60;
+const Logo: React.FC<LogoProps> = ({ size = "S", isVisible = true }) => {
+    if (!isVisible) return null;
+
+    const sizeClass = styles[`size${size}`];
+    const imageSize = size === "S" ? 40 : 80;
 
     return (
-        <div className={styles.iconPlaceholder} style={placeholderSize}>
+        <div className={`${styles.iconPlaceholder} ${sizeClass}`}>
             <Image
                 src="/logo.webp"
                 alt="ShibutzPlus Logo"

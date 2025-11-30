@@ -65,7 +65,7 @@ const SlidingPanel: React.FC<SlidingPanelProps> = ({
                 aria-modal="true"
             >
                 <header className={styles.panelHeader}>
-                    <h3>{title}</h3>
+                    <h3>שינויים במערכת - {title}</h3>
                     <button
                         onClick={onClose}
                         className={styles.closeButton}
