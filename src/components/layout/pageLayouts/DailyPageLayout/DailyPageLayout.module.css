@@ -7,16 +7,6 @@
     background-color: var(--background);
 }
 
-.headerContent {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    background: var(--background);
-    border-bottom: var(--border-primary);
-    flex: 0 0 auto;
-    min-height: var(--header-height);
-}
-
 .mainContent {
     flex: 1 1 auto;
     min-height: 0;
@@ -60,8 +50,9 @@
     display: flex;
     justify-content: end;
     align-items: center;
-    gap: 20px;
-    width: 30%;
+    width: 230px;
+    min-width: 230px;
+    max-width: 230px;
     margin-left: 0;
 }
 
@@ -85,19 +76,11 @@
     transform: translateY(1px);
 }
 
-.mobileSelectContainer {
-    width: 70%;
+.dateSelectContainer {
+    width: 250px;
 }
 
-.banner {
-    font-weight: 600;
-    border: 2px solid var(--inner-background-color-empty);
-    text-align: center;
-    padding: 5px 60px;
-    border-radius: var(--border-radius-cell);
-}
-
-.bottomNav {
+.dateNav {
     width: 100%;
     height: var(--header-height);
     background-color: var(--background-color);
@@ -117,14 +100,6 @@
     white-space: nowrap;
 }
 
-.previewDateLabelMobile {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--dark-text-color);
-    text-align: center;
-    width: 100%;
-}
-
 .titleContainer {
     display: flex;
     flex-direction: column;
@@ -136,8 +111,8 @@
     display: none;
 }
 
-/* Intermediate (601px - 1130px) */
-@media (max-width: 1130px) {
+/* Intermediate (671px - 1160px) */
+@media (max-width: 1160px) {
     .desktopActionBtns {
         display: none;
     }
@@ -151,34 +126,16 @@
     }
 }
 
-/* Mobile (<= 600px) */
-@media (max-width: 600px) {
-    .topNavSection {
-        padding: 0;
-        gap: 0;
-        height: auto;
-        min-height: var(--header-height);
-        padding-bottom: 5px;
-    }
-
-    .topNavRight {
-        width: 50%;
-        gap: 5px;
-    }
-
-    .topNavLeft {
-        width: 50%;
-        margin-left: 10px;
-        gap: 9px;
-    }
+/* Mobile (<= 670px) */
+@media (max-width: 670px) {
 
     .topNavSelectContainer {
         display: none;
     }
 
-    .bottomNav {
+    .dateNav {
         display: flex;
-        padding: 0 var(--padding-width-mobile);
+        padding-top: 5px;
     }
 
     .previewDateLabelMobileTop {
@@ -187,5 +144,19 @@
         font-weight: 400;
         color: var(--dark-text-color);
         margin-top: 5px;
+    }
+}
+
+
+/* Mobile (<= 380px) */
+@media (max-width: 380px) {
+    .topNavLeft {
+        display: flex;
+        justify-content: end;
+        align-items: center;
+        width: 150px;
+        min-width: 150px;
+        max-width: 150px;
+        margin-left: 0;
     }
 }
