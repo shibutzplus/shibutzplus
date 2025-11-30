@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import styles from "./PortalPageLayout.module.css";
 import Logo from "@/components/ui/Logo/Logo";
 import HamburgerNav, { HamburgerButton } from "@/components/navigation/HamburgerNav/HamburgerNav";
-import { useMobileSize } from "@/hooks/browser/useMobileSize";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import { usePortalContext } from "@/context/PortalContext";
 import PortalNav from "@/components/navigation/PortalNav/PortalNav";
@@ -14,7 +13,6 @@ import Icons from "@/style/icons";
 import { usePollingUpdates } from "@/hooks/usePollingUpdates";
 import { usePathname } from "next/navigation";
 import router from "@/routes";
-import MobileNavLayout from "../../MobileNavLayout/MobileNavLayout";
 import { TeacherRoleValues } from "@/models/types/teachers";
 import { useTeacherTableContext } from "@/context/TeacherTableContext";
 
