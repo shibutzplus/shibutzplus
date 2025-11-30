@@ -1,6 +1,5 @@
 import React from "react";
 import ReadOnlyHeader from "@/components/ui/table/ReadOnlyHeader/ReadOnlyHeader";
-import { useMobileSize } from "@/hooks/browser/useMobileSize";
 
 type TeacherHeaderProps = {
     onlyMobile?: boolean;
@@ -8,8 +7,7 @@ type TeacherHeaderProps = {
 };
 
 const TeacherHeader: React.FC<TeacherHeaderProps> = ({ onlyMobile = false, isInsidePanel = false }) => {
-    const isMobile = useMobileSize();
-    const trs = onlyMobile ? ["חומרי לימוד"] : isMobile ? ["חומרי לימוד"] : ["כיתה", "חומרי לימוד"];
+    const trs = onlyMobile ? ["חומרי לימוד"] : ["כיתה", "חומרי לימוד"];
     return (
         <ReadOnlyHeader
             trs={trs}
