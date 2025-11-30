@@ -1,3 +1,4 @@
+/* Mobile First */
 .hoursColumn {
     width: 40px;
     min-width: 40px;
@@ -31,19 +32,22 @@
 
 .scheduleDetailsCell {
     position: relative;
-    padding-right: 4px;
-    padding-bottom: 5px;
-    box-sizing: border-box;
-    width: var(--table-teacher-details-col-width);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
 }
 
+/* Mobile First: Default width is 100% and has padding-bottom */
 .scheduleInstructionsCell {
     position: relative;
     padding-left: 4px;
     padding-right: 4px;
-    padding-bottom: 5px;
+    padding-bottom: 20px;
     box-sizing: border-box;
-    width: 85%;
+    width: 100%;
 }
 
 .scheduleCell {
@@ -60,4 +64,38 @@
 
 .teacherRow {
     height: var(--table-teacher-cell-height);
+}
+
+.mobileDetails {
+    display: block;
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+.desktopOnly {
+    display: none !important;
+}
+
+/* Desktop */
+@media (min-width: 601px) {
+    .desktopOnly {
+        display: table-cell !important;
+    }
+
+    .mobileDetails {
+        display: none;
+    }
+
+    .scheduleInstructionsCell {
+        width: 85%;
+        padding-bottom: 5px;
+    }
+
+    .scheduleDetailsCell {
+        display: table-cell;
+        padding-right: 4px;
+        padding-bottom: 5px;
+        box-sizing: border-box;
+        width: var(--table-teacher-details-col-width);
+    }
 }
