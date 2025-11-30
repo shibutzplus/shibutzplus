@@ -1,4 +1,4 @@
-/* Mobile */
+/* Desktop (Default) */
 .emptyTable {
     position: fixed;
     top: 30vh;
@@ -9,8 +9,7 @@
     align-items: center;
     gap: 20px;
     max-height: calc(100vh - var(--header-height));
-    color: var(--dark-border-color);
-    width: 50vw;
+    color: gray;
     text-align: center;
 }
 
@@ -21,19 +20,19 @@
 
 .actions {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     gap: 15px;
     font-weight: 600;
 }
 
-/* Desktop */
-@media (min-width: 1024px) {
+/* Mobile */
+@media (max-width: 600px) {
     .emptyTable {
-        width: none;
+        width: 50vw;
     }
 
     .actions {
-        flex-direction: row;
+        flex-direction: column;
     }
 }

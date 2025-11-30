@@ -28,7 +28,7 @@ const DailySchedulePage: NextPage = () => {
     if (isLoadingEditPage) return <LoadingPage />;
 
     return (
-        <section className={styles.container}>
+        <section className={`${styles.container} ${!isEditMode ? styles.previewContainer : ""}`}>
             {isEditMode ? (
                 <DailyTable mainDailyTable={mainDailyTable} selectedDate={selectedDate} />
             ) : (

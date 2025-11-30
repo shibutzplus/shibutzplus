@@ -2,6 +2,7 @@
   position: relative;
   padding: 4px;
   box-sizing: border-box;
+  width: 16.66%;
   vertical-align: top;
 }
 
@@ -22,4 +23,11 @@
   align-items: center;
   text-align: center;
   gap: 12px;
+}
+
+@media (max-width: 600px) {
+  .scheduleCell {
+    width: var(--table-annual-col-width-mobile);
+    min-width: var(--table-annual-col-width-mobile);
+  }
 }

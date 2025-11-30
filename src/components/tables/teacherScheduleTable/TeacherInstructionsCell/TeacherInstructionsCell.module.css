@@ -21,7 +21,7 @@
 }
 
 /* Desktop */
-@media (min-width: 1024px) {
+@media (min-width: 600px) {
   .cellContent {
     justify-content: flex-start;
     min-height: var(--table-teacher-cell-height);

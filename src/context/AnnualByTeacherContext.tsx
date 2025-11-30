@@ -215,7 +215,7 @@ export const AnnualByTeacherProvider: React.FC<{ children: React.ReactNode }> = 
         setSchedule(newSchedule);
 
         // 1) Handle deletions first
-        if (method === "remove-value") {
+        if (method === "remove-value" || method === "clear") {
             const dayNum = dayToNumber(day);
             // If class or subjects are removed, we clear the cell for this teacher
             if (!classId || subjectIds.length === 0) {

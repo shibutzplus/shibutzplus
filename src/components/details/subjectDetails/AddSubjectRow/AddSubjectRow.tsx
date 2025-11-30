@@ -4,7 +4,11 @@ import messages from "@/resources/messages";
 import { subjectSchema } from "@/models/validation/subject";
 import AddListRow from "@/components/ui/list/AddListRow/AddListRow";
 
-const AddSubjectRow: React.FC = () => {
+type AddSubjectRowProps = {
+    onSearch?: (value: string) => void;
+};
+
+const AddSubjectRow: React.FC<AddSubjectRowProps> = ({ onSearch }) => {
     const { school, addNewSubject } = useMainContext();
     return (
         <AddListRow
@@ -18,10 +22,12 @@ const AddSubjectRow: React.FC = () => {
             field={{
                 key: "name",
                 placeholder: "לדוגמה: מתמטיקה",
+                maxLength: 20,
             }}
             initialValues={{ name: "" }}
             errorMessages={{ name: messages.subjects.createError }}
             buttonLabel="הוספה"
+            onInputChange={onSearch}
         />
     );
 };
