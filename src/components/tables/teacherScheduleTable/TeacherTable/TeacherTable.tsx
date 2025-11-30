@@ -8,19 +8,32 @@ import styles from "./TeacherTable.module.css";
 import { useTeacherTableContext } from "@/context/TeacherTableContext";
 import { TeacherType } from "@/models/types/teachers";
 
+import NotPublished from "@/components/empty/NotPublished/NotPublished";
+import Preloader from "@/components/ui/Preloader/Preloader";
+
 type TeacherTableProps = {
     teacher?: TeacherType;
     selectedDate: string;
-    onlyMobileVersion?: boolean;
+    onlyMobile?: boolean;
+    isInsidePanel?: boolean;
 };
 
-const TeacherTable: React.FC<TeacherTableProps> = ({ teacher, selectedDate, onlyMobileVersion }) => {
-    const { mainPortalTable } = useTeacherTableContext();
+const TeacherTable: React.FC<TeacherTableProps> = ({ teacher, selectedDate, onlyMobile, isInsidePanel }) => {
+    const { mainPortalTable, isPortalLoading } = useTeacherTableContext();
     const dayTable = selectedDate ? mainPortalTable[selectedDate] : undefined;
+
+    if (isPortalLoading)
+        return (
+            <div className={styles.loaderContainer}>
+                <Preloader />
+            </div>
+        );
+
+    if (!dayTable || Object.keys(dayTable).length === 0) return <NotPublished />;
 
     return (
         <table className={styles.scheduleTable}>
-            <TeacherHeader />
+            <TeacherHeader onlyMobile={onlyMobile} isInsidePanel={isInsidePanel} />
             <tbody className={styles.scheduleTableBody}>
                 {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => {
                     const row = dayTable?.[String(hour)];
@@ -31,6 +44,7 @@ const TeacherTable: React.FC<TeacherTableProps> = ({ teacher, selectedDate, only
                             row={row}
                             teacher={teacher}
                             selectedDate={selectedDate}
+                            onlyMobile={onlyMobile}
                         />
                     );
                 })}

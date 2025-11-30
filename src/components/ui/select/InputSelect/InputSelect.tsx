@@ -11,8 +11,7 @@ import { SelectMethod } from "@/models/types/actions";
 /**
  * Sign-Up
  * Teachers Sign-In
- * TopActions (Annual, Daily, Teacher Portal)
- * Annual Schedule Cell
+ * Annual By Teacher 
  * Daily Schedule Header
  */
 type InputSelectProps = {
@@ -33,6 +32,7 @@ type InputSelectProps = {
     colorHover?: string;
     isBold?: boolean;
     onBeforeRemove?: (removedLabel: string | null, proceed: () => void) => void;
+    isCentered?: boolean;
 };
 
 const InputSelect: React.FC<InputSelectProps> = ({
@@ -53,6 +53,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
     colorHover = InputColorHover,
     isBold = false,
     onBeforeRemove,
+    isCentered = false,
 }) => {
     const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
     const [isMounted, setIsMounted] = useState(false);
@@ -104,6 +105,16 @@ const InputSelect: React.FC<InputSelectProps> = ({
     );
     const stylesOverride: StylesConfig<SelectOption, false> = {
         ...(baseStyles as StylesConfig<SelectOption, false>),
+        control: (provided: any) => {
+            const base =
+                typeof baseStyles.control === "function"
+                    ? baseStyles.control(provided)
+                    : provided;
+            return {
+                ...base,
+                flexWrap: "nowrap", // Prevent wrapping of indicators
+            };
+        },
         valueContainer: (provided: any) => {
             const base =
                 typeof baseStyles.valueContainer === "function"
@@ -111,9 +122,26 @@ const InputSelect: React.FC<InputSelectProps> = ({
                     : provided;
             return {
                 ...base,
-                overflow: "visible",
+                overflow: "hidden",
+                justifyContent: isCentered ? "center" : "flex-start",
+                flex: "1 1 auto",
+                flexWrap: "nowrap",
+                display: "grid",
+                gridTemplateColumns: "1fr auto",
+                minWidth: 0, // Allow shrinking below content size
             };
         },
+        indicatorsContainer: (provided: any) => ({
+            ...provided,
+            flexShrink: 0,
+            display: "flex",
+            justifyContent: "flex-start",
+        }),
+        dropdownIndicator: (provided: any) => ({
+            ...provided,
+            marginRight: "auto",
+            padding: 10,
+        }),
         singleValue: (provided: any) => {
             const base =
                 typeof baseStyles.singleValue === "function"
@@ -121,12 +149,23 @@ const InputSelect: React.FC<InputSelectProps> = ({
                     : provided;
             return {
                 ...base,
-                maxWidth: "none",
-                overflow: "visible",
+                maxWidth: "100%",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
                 whiteSpace: "nowrap",
                 fontWeight: isBold ? 600 : 500,
+                textAlign: isCentered ? "center" : "right",
+                width: isCentered ? "100%" : "auto",
+                gridArea: "1/1/2/3",
+                minWidth: 0, // Allow truncation in grid
             };
         },
+        input: (provided: any) => ({
+            ...provided,
+            gridArea: "1/1/2/3",
+            visibility: "visible",
+            minWidth: 0,
+        }),
         clearIndicator: (provided: any) => {
             const base =
                 typeof baseStyles.clearIndicator === "function"
@@ -137,14 +176,18 @@ const InputSelect: React.FC<InputSelectProps> = ({
                 color: InputColor,
                 cursor: "pointer",
                 borderRadius: "50%",
-                width: 35,
-                height: 35,
+                width: 30,
+                height: 30,
                 marginLeft: -5,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
                 "&:hover": {
                     color: "red",
                 },
             };
         },
+
     };
 
     return (

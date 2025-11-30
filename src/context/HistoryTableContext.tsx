@@ -3,16 +3,12 @@
 import React, { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react";
 import { SelectOption } from "@/models/types";
 import {
-    isYYYYMMDD,
     getCurrentDateComponents,
-    parseDateString,
     buildDateString,
-    getTodayString,
     getSchoolYearInitialMonth,
     generateDayOptions,
     clampDayToMonth,
 } from "@/utils/time";
-import { useQueryParam } from "@/hooks/browser/useQueryParam";
 import { DailySchedule } from "@/models/types/dailySchedule";
 import { useMainContext } from "./MainContext";
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
@@ -47,26 +43,12 @@ interface HistoryTableProviderProps {
 
 export const HistoryTableProvider: React.FC<HistoryTableProviderProps> = ({ children }) => {
     const { school, teachers } = useMainContext();
-    const { getDateQ, setDateQ } = useQueryParam();
-    const dateQ = getDateQ(); // YYYY-MM-DD or empty string
-
     const { year: currentYear, month: currentMonth, day: currentDay } = getCurrentDateComponents();
     const initialMonth = getSchoolYearInitialMonth();
-    const todayStr = getTodayString();
 
-    // Ensure URL has a valid ?date on first loads and when invalid values appear
-    useEffect(() => {
-        if (!dateQ || !isYYYYMMDD(dateQ)) {
-            setDateQ(todayStr);
-        }
-    }, []);
-
-    // derive initial state from ?date= if valid; otherwise fall back to defaults
-    const parsedDate = dateQ && isYYYYMMDD(dateQ) ? parseDateString(dateQ) : null;
-
-    const [selectedYear, setSelectedYear] = useState<string>(parsedDate?.year || currentYear);
-    const [selectedMonth, setSelectedMonth] = useState<string>(parsedDate?.month || initialMonth);
-    const [selectedDay, setSelectedDay] = useState<string>(parsedDate?.day || currentDay);
+    const [selectedYear, setSelectedYear] = useState<string>(currentYear);
+    const [selectedMonth, setSelectedMonth] = useState<string>(currentMonth);
+    const [selectedDay, setSelectedDay] = useState<string>(currentDay);
 
     const [mainDailyTable, setMainDailyTable] = useState<DailySchedule>({});
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -86,25 +68,9 @@ export const HistoryTableProvider: React.FC<HistoryTableProviderProps> = ({ chil
         if (clampedDay !== selectedDay) setSelectedDay(clampedDay);
     }, [selectedYear, selectedMonth, selectedDay]);
 
-    // Keep context in sync if ?date= changes (URL -> state)
-    useEffect(() => {
-        if (!parsedDate) return;
-        setSelectedYear(parsedDate.year);
-        setSelectedMonth(parsedDate.month);
-        setSelectedDay(parsedDate.day);
-    }, [dateQ]);
-
     const selectedYearDate = useMemo(() => {
         return buildDateString(selectedYear, selectedMonth, selectedDay);
     }, [selectedYear, selectedMonth, selectedDay]);
-
-    // Reflect selectedYearDate into the URL (?date=YYYY-MM-DD) (state -> URL)
-    useEffect(() => {
-        const currentQ = getDateQ();
-        if (selectedYearDate && currentQ !== selectedYearDate) {
-            setDateQ(selectedYearDate);
-        }
-    }, [selectedYearDate]);
 
     const handleYearChange = (val: string) => setSelectedYear(val);
     const handleMonthChange = (val: string) => setSelectedMonth(val);

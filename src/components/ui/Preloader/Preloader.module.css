@@ -1,0 +1,132 @@
+.wrapper {
+    position: relative;
+    width: fit-content;
+    height: fit-content;
+    display: flex;
+    align-items: center;
+
+    --size: 46px;
+    --square-size: 17px;
+    --offset: 21px;
+    --border-width: 4px;
+}
+
+.plusSign {
+    position: absolute;
+    left: -9px;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 24px;
+    height: 24px;
+    background-color: transparent;
+    border-radius: 50%;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    animation: fadeIn 1s ease-in-out 0.5s forwards;
+}
+
+.plusSign::before {
+    content: '';
+    position: absolute;
+    width: 17px;
+    height: var(--border-width);
+    background-color: #164361;
+    border-radius: 2px;
+}
+
+.plusSign::after {
+    content: '';
+    position: absolute;
+    height: 17px;
+    width: var(--border-width);
+    background-color: #164361;
+    border-radius: 2px;
+}
+
+.loaderContainer {
+    width: var(--size);
+    height: var(--size);
+    position: relative;
+    border: var(--border-width) solid #164361;
+    box-sizing: border-box;
+    background-color: var(--inner-background-color-empty, #ffffff);
+    border-radius: 7px;
+    overflow: hidden;
+    opacity: 0;
+    animation: fadeIn 1s ease-in-out 0.5s forwards;
+    -webkit-mask: radial-gradient(circle at -9px 50%, transparent 11px, black 11.5px);
+    mask: radial-gradient(circle at -9px 50%, transparent 11px, black 11.5px);
+}
+
+.hLine {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: var(--border-width);
+    background-color: #164361;
+    transform: translateY(-50%);
+    z-index: 1;
+}
+
+.vLine {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    height: 100%;
+    width: var(--border-width);
+    background-color: #164361;
+    transform: translateX(-50%);
+    z-index: 1;
+}
+
+.animSquare {
+    width: var(--square-size);
+    height: var(--square-size);
+    background-color: var(--publish-color, #C5B5E3);
+    position: absolute;
+    top: 0;
+    left: 0;
+    animation: moveSquare 1.5s step-end infinite;
+    z-index: 10;
+}
+
+@keyframes moveSquare {
+    0% {
+        top: 0;
+        left: 0;
+    }
+
+    25% {
+        top: 0;
+        left: var(--offset);
+    }
+
+    50% {
+        top: var(--offset);
+        left: var(--offset);
+    }
+
+    75% {
+        top: var(--offset);
+        left: 0;
+    }
+
+    100% {
+        top: 0;
+        left: 0;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}

@@ -10,6 +10,7 @@ const router: Record<string, IRoute> = {
     signIn: { id: "signIn", p: "/sign-in", private: false, title: "כניסה" },
     signUp: { id: "signUp", p: "/sign-up", private: false, title: "הרשמה" },
     classes: { id: "classes", p: "/classes", private: true, title: "כיתות" },
+    groups: { id: "groups", p: "/groups", private: true, title: "קבוצות עבודה" },
     teachers: { id: "teachers", p: "/teachers", private: true, title: "מורים" },
     subjects: { id: "subjects", p: "/subjects", private: true, title: "מקצועות" },
     substitute: { id: "substitute", p: "/substitute", private: true, title: "מורים מילוי מקום" },

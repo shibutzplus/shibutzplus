@@ -1,12 +1,13 @@
-/* Mobile */
+/* Desktop First */
 .tableListSection {
     background-color: var(--inner-background-color);
-    width: 95%;
+    width: 100%;
     min-height: calc(100vh - var(--header-height) - 1rem);
     margin: 0 auto;
     box-sizing: border-box;
-    padding: 0;
+    padding: 0 5vw;
     border-radius: var(--border-radius-table);
+    overflow-y: auto;
 }
 
 .tableList {
@@ -39,11 +40,11 @@
     border-bottom: var(--border-primary);
 }
 
-/* Desktop */
-@media (min-width: 1024px) {
+/* Mobile */
+@media (max-width: 1024px) {
     .tableListSection {
-        overflow-y: auto;
-        width: 100%;
-        padding: 0 5vw;
+        width: 95%;
+        padding: 0;
+        overflow-y: visible;
     }
 }
