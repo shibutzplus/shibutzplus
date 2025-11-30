@@ -5,7 +5,7 @@ import EmptyList from "@/components/empty/EmptyList/EmptyList";
 
 type DetailsListLayoutProps<T> = {
     titles: [string, string];
-    emptyText: string;
+    emptyText: string | React.ReactNode;
     details: T[] | undefined;
     children: React.ReactNode[];
 };
@@ -24,7 +24,9 @@ const DetailsListLayout = <T,>({
                 ))}
             </header>
             <section className={styles.listSection}>
-                {children[0]}
+                <div className={styles.addRowWrapper}>
+                    {children[0]}
+                </div>
                 <section className={styles.list}>
                     {details === undefined ? (
                         <ListRowLoading />

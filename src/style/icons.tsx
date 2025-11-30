@@ -68,6 +68,7 @@ const Icons = {
     success1: IoCheckmarkCircle,
     success2: FiCheckCircle,
     validate: RiPassValidLine,
+    users: IoPeopleOutline,
 };
 
 export default Icons;

@@ -1,4 +1,4 @@
-/* Mobile */
+/* Mobile First (Used mainly by teacher portal) */
 .theadWithoutHeader,
 .theadWithHeader {
     position: sticky;
@@ -45,7 +45,7 @@
     text-align: center;
     color: var(--dark-text-color);
     font-weight: 600;
-    background-color: var(--inner-background-color);
+    background-color: #E1E1EA;
 }
 
 .hourCol {
@@ -67,7 +67,9 @@
 
 /* Desktop */
 @media (min-width: 600px) {
-    .thead {
+
+    .theadWithHeader,
+    .theadWithoutHeader {
         top: calc(var(--header-height) + var(--padding-top-desktop));
     }
 }

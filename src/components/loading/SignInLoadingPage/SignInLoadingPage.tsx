@@ -5,10 +5,10 @@ import Preloader from "@/components/ui/Preloader/Preloader";
 const SignInLoadingPage: React.FC = () => {
     return (
         <main className={styles.container} aria-busy="true" aria-live="polite">
-            <section className={styles.loadingSection}>
+            <div className={styles.preloaderWrapper}>
                 <Preloader />
-                <p className={styles.loading}>מתחבר למערכת...</p>
-            </section>
+            </div>
+            <p className={styles.loading}>מתחבר למערכת...</p>
         </main>
     );
 };

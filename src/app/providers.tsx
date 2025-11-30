@@ -18,7 +18,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                         transform: "translate(-50%, -50%)",
                     }}
                     toastOptions={{
-                        duration: 7000,
+                        duration: 5000,
                         style: {
                             background: TabColor,
                             color: DarkTextColor,
@@ -28,7 +28,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                             minWidth: "310px",
                             lineHeight: "2rem",
                             borderRadius: BorderRadiusCell,
-                            boxShadow: BoxShadowPrimary,
+                            boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.5)",
                         },
                     }}
                 />

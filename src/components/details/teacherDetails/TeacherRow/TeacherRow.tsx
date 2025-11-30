@@ -8,6 +8,7 @@ import useDeletePopup from "@/hooks/useDeletePopup";
 import useSubmit from "@/hooks/useSubmit";
 import messages from "@/resources/messages";
 import { PopupAction } from "@/context/PopupContext";
+import { generateSchoolUrl } from "@/utils";
 
 type TeacherRowProps = {
     teacher: TeacherType;
@@ -18,7 +19,7 @@ const TeacherRow: React.FC<TeacherRowProps> = ({ teacher }) => {
     const { deleteTeacher, school, updateTeacher } = useMainContext();
 
     const { handleSubmitDelete } = useSubmit(
-        () => {},
+        () => { },
         messages.teachers.deleteSuccess,
         messages.teachers.deleteError,
         messages.teachers.invalid,
@@ -54,6 +55,7 @@ const TeacherRow: React.FC<TeacherRowProps> = ({ teacher }) => {
                 role: TeacherRoleValues.REGULAR,
                 schoolId: teacher.schoolId,
             })}
+            hasLink={generateSchoolUrl(teacher.schoolId, teacher.id)}
         />
     );
 };

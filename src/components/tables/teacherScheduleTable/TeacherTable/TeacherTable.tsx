@@ -8,6 +8,9 @@ import styles from "./TeacherTable.module.css";
 import { useTeacherTableContext } from "@/context/TeacherTableContext";
 import { TeacherType } from "@/models/types/teachers";
 
+import NotPublished from "@/components/empty/NotPublished/NotPublished";
+import Preloader from "@/components/ui/Preloader/Preloader";
+
 type TeacherTableProps = {
     teacher?: TeacherType;
     selectedDate: string;
@@ -16,8 +19,17 @@ type TeacherTableProps = {
 };
 
 const TeacherTable: React.FC<TeacherTableProps> = ({ teacher, selectedDate, onlyMobile, isInsidePanel }) => {
-    const { mainPortalTable } = useTeacherTableContext();
+    const { mainPortalTable, isPortalLoading } = useTeacherTableContext();
     const dayTable = selectedDate ? mainPortalTable[selectedDate] : undefined;
+
+    if (isPortalLoading)
+        return (
+            <div className={styles.loaderContainer}>
+                <Preloader />
+            </div>
+        );
+
+    if (!dayTable || Object.keys(dayTable).length === 0) return <NotPublished />;
 
     return (
         <table className={styles.scheduleTable}>

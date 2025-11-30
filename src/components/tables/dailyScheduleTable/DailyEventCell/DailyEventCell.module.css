@@ -1,10 +1,10 @@
-.cellContent{
+.cellContent {
     width: 100%;
     gap: 10px;
     min-height: var(--table-daily-cell-height);
     background-color: var(--tab-color);
     border-radius: var(--border-radius-cell);
-    padding: 10px 15px;
+    padding: 10px 15px 0 15px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;

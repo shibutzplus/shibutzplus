@@ -23,29 +23,31 @@ const PortalNav: React.FC = () => {
             <button
                 type="button"
                 aria-label="המערכת שלי"
+                title="המערכת שלי"
                 onClick={pushToTeacherPortalWrite}
                 className={`${styles.topBtn} ${pathname.includes(router.teacherPortal.p) ? styles.active : ""}`}
             >
                 {pathname.includes(router.teacherPortal.p) ? (
-                    <Icons.teacherSolid size={16} style={{ marginInlineEnd: "4px" }} />
+                    <Icons.teacherSolid size={18} style={{ marginInlineEnd: "4px" }} />
                 ) : (
-                    <Icons.teacher size={16} style={{ marginInlineEnd: "4px" }} />
+                    <Icons.teacher size={18} style={{ marginInlineEnd: "4px" }} />
                 )}
-                המערכת שלי
+                <span className={styles.btnText}>המערכת שלי</span>
             </button>
 
             <button
                 type="button"
                 aria-label="מערכת בית ספרית"
+                title="מערכת בית ספרית"
                 onClick={pushToDailySchedulePortal}
                 className={`${styles.topBtn} ${pathname.includes(router.publishedPortal.p) ? styles.active : ""}`}
             >
                 {pathname.includes(router.publishedPortal.p) ? (
-                    <Icons.calendarFill size={16} style={{ marginInlineEnd: "4px" }} />
+                    <Icons.calendarFill size={18} style={{ marginInlineEnd: "4px" }} />
                 ) : (
-                    <Icons.calendar size={16} style={{ marginInlineEnd: "4px" }} />
+                    <Icons.calendar size={18} style={{ marginInlineEnd: "4px" }} />
                 )}
-                מערכת בית ספרית
+                <span className={styles.btnText}>מערכת בית ספרית</span>
             </button>
         </div>
     );

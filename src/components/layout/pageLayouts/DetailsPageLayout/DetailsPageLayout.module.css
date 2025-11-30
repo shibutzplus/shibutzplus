@@ -1,4 +1,4 @@
-/* Mobile */
+/* Desktop First */
 .pageLayout {
     width: 100%;
     height: 100dvh;
@@ -23,13 +23,15 @@
     justify-content: space-between;
     height: var(--header-height);
     background: var(--top-color);
+    padding: 0 var(--padding-width-desktop);
+    gap: 3em;
 }
 
 .topNavRight {
     display: flex;
     align-items: center;
     gap: 15px;
-    width: 50%;
+    width: 90%;
 }
 
 .topNavLeft {
@@ -37,8 +39,8 @@
     justify-content: end;
     align-items: center;
     gap: 20px;
-    width: 50%;
-    margin-left: 10px;
+    width: 30%;
+    margin-left: 0;
 }
 
 .mainContent {
@@ -49,22 +51,19 @@
     margin-top: var(--header-height);
 }
 
-
-/* Desktop */
-@media (min-width: 1024px) {
-
+/* Mobile */
+@media (max-width: 1024px) {
     .topNavSection {
-        padding: 0 var(--padding-width-desktop);
-        gap: 3em;
+        padding: 0;
+        gap: 0;
     }
 
     .topNavRight {
-        width: 70%;
+        width: 90%;
     }
 
     .topNavLeft {
-        margin-left: 0;
-        width: 30%;
+        width: 10%;
+        margin-left: 10px;
     }
-
 }

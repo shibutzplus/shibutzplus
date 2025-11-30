@@ -56,6 +56,11 @@ const links: ILink[] = [
         name: routePath.classes.title,
         p: routePath.classes.p,
         Icon: <Icons.chair size={24} />,
+    },
+    {
+        name: routePath.groups.title,
+        p: routePath.groups.p,
+        Icon: <Icons.users size={24} />,
         withDivider: true,
     },
     {

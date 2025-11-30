@@ -3,7 +3,6 @@ import styles from "./TeacherRow.module.css";
 import TeacherDetailsCell from "../TeacherDetailsCell/TeacherDetailsCell";
 import TeacherInstructionsCell from "../TeacherInstructionsCell/TeacherInstructionsCell";
 import { TeacherScheduleType } from "@/models/types/portalSchedule";
-import { useMobileSize } from "@/hooks/browser/useMobileSize";
 import { TeacherType } from "@/models/types/teachers";
 
 type TeacherRowProps = {
@@ -15,33 +14,25 @@ type TeacherRowProps = {
 };
 
 const TeacherRow: React.FC<TeacherRowProps> = ({ hour, row, teacher, selectedDate, onlyMobile }) => {
-    const isMobile = useMobileSize();
-
-    let scheduleCell = (
-        <>
-            <td className={styles.scheduleDetailsCell}>
-                <TeacherDetailsCell row={row} teacher={teacher} />
-            </td>
-            <td className={styles.scheduleInstructionsCell}>
-                <TeacherInstructionsCell row={row} teacher={teacher} selectedDate={selectedDate} />
-            </td>
-        </>
-    );
-    if (onlyMobile || isMobile)
-        scheduleCell = (
-            <td className={styles.scheduleCell}>
-                <TeacherDetailsCell row={row} teacher={teacher} />
-                <TeacherInstructionsCell row={row} teacher={teacher} selectedDate={selectedDate} />
-            </td>
-        );
-
     return (
         <tr className={styles.teacherRow}>
             <td className={styles.hoursColumn}>
                 <div className={styles.hourCell}>{hour}</div>
             </td>
             <td className={styles.emptyCell}></td>
-            {scheduleCell}
+
+            {!onlyMobile && (
+                <td className={`${styles.scheduleDetailsCell} ${styles.desktopOnly}`}>
+                    <TeacherDetailsCell row={row} teacher={teacher} />
+                </td>
+            )}
+
+            <td className={styles.scheduleInstructionsCell}>
+                <div className={styles.mobileDetails} style={onlyMobile ? { display: "block" } : undefined}>
+                    <TeacherDetailsCell row={row} teacher={teacher} />
+                </div>
+                <TeacherInstructionsCell row={row} teacher={teacher} selectedDate={selectedDate} />
+            </td>
         </tr>
     );
 };

@@ -8,7 +8,7 @@
 }
 
 /* Desktop */
-@media (min-width: 1024px) {
+@media (min-width: 600px) {
   .container {
     width: calc(100% - (var(--padding-width-desktop) * 2));
     margin: 0 auto;

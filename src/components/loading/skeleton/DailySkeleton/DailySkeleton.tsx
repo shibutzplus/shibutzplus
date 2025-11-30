@@ -20,14 +20,6 @@ const DailySkeleton: NextPage = () => {
                             ))}
                         </div>
                     </div>
-                    <div className={styles.dailyColumn}>
-                        <div className={styles.headerSkeleton} />
-                        <div className={styles.rows}>
-                            {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => (
-                                <div key={hour} className={styles.rowSkeleton} />
-                            ))}
-                        </div>
-                    </div>
                     <div className={styles.loadingContainer}>
                         <Loading size="L" color="var(--skeleton-input-color)" />
                     </div>
