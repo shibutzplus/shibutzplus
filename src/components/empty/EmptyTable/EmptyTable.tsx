@@ -22,7 +22,7 @@ const EmptyTable: React.FC = () => {
                         borderLeft: `10px solid ${MissingTeacherColorDisabled}`,
                         color: MissingTeacherColorDisabled,
                     }}
-                    func={() => {}}
+                    func={() => { }}
                 />
                 <ActionBtn
                     Icon={<Icons.addTeacher size={16} />}
@@ -33,7 +33,7 @@ const EmptyTable: React.FC = () => {
                         borderLeft: `10px solid ${ExistingTeacherColorDisabled}`,
                         color: ExistingTeacherColorDisabled,
                     }}
-                    func={() => {}}
+                    func={() => { }}
                 />
                 <ActionBtn
                     Icon={<Icons.event size={16} />}
@@ -44,7 +44,7 @@ const EmptyTable: React.FC = () => {
                         borderLeft: `10px solid ${EventColorDisabled}`,
                         color: EventColorDisabled,
                     }}
-                    func={() => {}}
+                    func={() => { }}
                 />
             </section>
         </section>

@@ -6,9 +6,10 @@ import AddListRow from "@/components/ui/list/AddListRow/AddListRow";
 
 type AddClassRowProps = {
     onSearch?: (value: string) => void;
+    isGroup?: boolean;
 };
 
-const AddClassRow: React.FC<AddClassRowProps> = ({ onSearch }) => {
+const AddClassRow: React.FC<AddClassRowProps> = ({ onSearch, isGroup }) => {
     const { school, addNewClass } = useMainContext();
 
     return (
@@ -17,12 +18,14 @@ const AddClassRow: React.FC<AddClassRowProps> = ({ onSearch }) => {
             addFunction={(values) =>
                 addNewClass({
                     ...values,
+                    activity: isGroup,
                     schoolId: school?.id || "",
                 })
             }
             field={{
                 key: "name",
-                placeholder: "לדוגמה: יא 2",
+                placeholder: isGroup ? "לדוגמה: פרטני או שהייה" : "לדוגמה: כיתה א1",
+                maxLength: 20,
             }}
             initialValues={{ name: "" }}
             errorMessages={{ name: messages.classes.createError }}

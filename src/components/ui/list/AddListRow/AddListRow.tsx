@@ -13,6 +13,7 @@ export type AddListRowProps<T> = {
         key: keyof T;
         placeholder: string;
         inputType?: string;
+        maxLength?: number;
     };
     initialValues: T;
     errorMessages?: { [field in keyof T]?: string };
@@ -92,6 +93,7 @@ function AddListRow<T extends Record<string, any>>({
                     placeholder={field.placeholder}
                     error={validationErrors[field.key]}
                     type={field.inputType || "text"}
+                    maxLength={field.maxLength}
                     style={{ minWidth: 200, width: "100%" }}
                     onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
                         if (e.key === "Enter") {

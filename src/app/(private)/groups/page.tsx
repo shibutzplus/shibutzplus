@@ -8,16 +8,16 @@ import AddClassRow from "@/components/details/classDetails/AddClassRow/AddClassR
 import ClassRow from "@/components/details/classDetails/ClassRow/ClassRow";
 import { sortByHebrewName } from "@/utils/sort";
 import { ClassType } from "@/models/types/classes";
-import ListSkeleton from "@/components/loading/skeleton/ListSkeleton/ListSkeleton";
 
-const ClassesPage: NextPage = () => {
+const GroupsPage: NextPage = () => {
     const { classes } = useMainContext();
     const [searchTerm, setSearchTerm] = React.useState("");
 
-    const sortedClasses = React.useMemo(
+    const sortedGroups = React.useMemo(
         () => {
             if (!classes) return undefined;
-            const filtered = classes.filter(c => !c.activity && c.name.includes(searchTerm));
+            // Filter for activity=true (groups)
+            const filtered = classes.filter(c => c.activity && c.name.includes(searchTerm));
             return sortByHebrewName(filtered);
         },
         [classes, searchTerm],
@@ -25,27 +25,27 @@ const ClassesPage: NextPage = () => {
 
     return (
         <DetailsListLayout<ClassType>
-            titles={["שם הכיתה", "פעולות"]}
+            titles={["שם הקבוצה", "פעולות"]}
             emptyText={
                 searchTerm ? (
                     <div style={{ textAlign: "center" }}>
                         לא נמצאה התאמה לחיפוש.
                         <br />
                         <br />
-                        להוספת כיתה חדשה, לחצו על הוספה
+                        להוספת קבוצה חדשה, לחצו על הוספה
                     </div>
                 ) : (
-                    "עדיין לא נוספו כיתות לרשימה"
+                    "עדיין לא נוספו קבוצות לרשימה"
                 )
             }
-            details={sortedClasses}
+            details={sortedGroups}
         >
-            <AddClassRow onSearch={setSearchTerm} />
-            {sortedClasses?.map((cls: ClassType) => (
+            <AddClassRow onSearch={setSearchTerm} isGroup />
+            {sortedGroups?.map((cls: ClassType) => (
                 <ClassRow key={cls.id} classItem={cls} />
             ))}
         </DetailsListLayout>
     );
 };
 
-export default ClassesPage;
+export default GroupsPage;
