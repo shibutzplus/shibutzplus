@@ -2,7 +2,7 @@
 
 import React from "react";
 import { NextPage } from "next";
-import DailySkeleton from "@/components/loading/skeleton/DailySkeleton/DailySkeleton";
+import Preloader from "@/components/ui/Preloader/Preloader";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import styles from "./DailySchedule.module.css";
 import DailyTable from "@/components/tables/dailyScheduleTable/DailyTable/DailyTable";
@@ -14,11 +14,21 @@ const DailySchedulePage: NextPage = () => {
     const { isLoading, isEditMode, selectedDate, mainDailyTable, isLoadingEditPage } =
         useDailyTableContext();
 
-    if (isLoading) return <DailySkeleton />;
+    if (isLoading)
+        return (
+            <div style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)'
+            }}>
+                <Preloader />
+            </div>
+        );
     if (isLoadingEditPage) return <LoadingPage />;
 
     return (
-        <section className={styles.container}>
+        <section className={`${styles.container} ${!isEditMode ? styles.previewContainer : ""}`}>
             {isEditMode ? (
                 <DailyTable mainDailyTable={mainDailyTable} selectedDate={selectedDate} />
             ) : (

@@ -5,11 +5,12 @@
     background-color: var(--background-color);
     position: absolute;
     left: 0;
-    z-index: 5;
     display: flex;
     justify-content: center;
     align-items: center;
     will-change: transform;
+    z-index: 16;
+    /* Must to be higher than DailyTable & previewTable css "hide" z-index */
 }
 
 .columnHeader {
@@ -41,5 +42,21 @@
 }
 
 .clearButton:active {
+    transform: translateY(1px);
+}
+
+.eyeButton {
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s ease;
+    margin-right: 5px;
+}
+
+.eyeButton:hover {
+    color: var(--bright-text-color-hover);
+    cursor: pointer;
+}
+
+.eyeButton:active {
     transform: translateY(1px);
 }

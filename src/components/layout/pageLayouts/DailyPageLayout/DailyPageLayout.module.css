@@ -25,6 +25,10 @@
     margin-bottom: 0;
 }
 
+.fullHeight {
+    margin-bottom: 0 !important;
+}
+
 .topNavLayout {
     display: flex;
     flex-direction: column;
@@ -78,6 +82,7 @@
 
 .selectContainer {
     width: var(--top-nav-select-width);
+    transform: translateY(1px);
 }
 
 .mobileSelectContainer {
@@ -105,6 +110,32 @@
     display: none;
 }
 
+.previewDateLabel {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--dark-text-color);
+    white-space: nowrap;
+}
+
+.previewDateLabelMobile {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--dark-text-color);
+    text-align: center;
+    width: 100%;
+}
+
+.titleContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.previewDateLabelMobileTop {
+    display: none;
+}
+
 /* Intermediate (601px - 1130px) */
 @media (max-width: 1130px) {
     .desktopActionBtns {
@@ -125,6 +156,9 @@
     .topNavSection {
         padding: 0;
         gap: 0;
+        height: auto;
+        min-height: var(--header-height);
+        padding-bottom: 5px;
     }
 
     .topNavRight {
@@ -145,5 +179,13 @@
     .bottomNav {
         display: flex;
         padding: 0 var(--padding-width-mobile);
+    }
+
+    .previewDateLabelMobileTop {
+        display: block;
+        font-size: 13px;
+        font-weight: 400;
+        color: var(--dark-text-color);
+        margin-top: 5px;
     }
 }

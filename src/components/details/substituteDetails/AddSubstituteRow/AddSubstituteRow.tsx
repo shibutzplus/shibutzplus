@@ -7,7 +7,11 @@ import { teacherSchema } from "@/models/validation/teacher";
 import AddListRow from "@/components/ui/list/AddListRow/AddListRow";
 import messages from "@/resources/messages";
 
-const AddSubstituteRow: React.FC = () => {
+type AddSubstituteRowProps = {
+    onSearch?: (value: string) => void;
+};
+
+const AddSubstituteRow: React.FC<AddSubstituteRowProps> = ({ onSearch }) => {
     const { school, addNewTeacher } = useMainContext();
     return (
         <AddListRow
@@ -22,10 +26,12 @@ const AddSubstituteRow: React.FC = () => {
             field={{
                 key: "name",
                 placeholder: "לדוגמה: ישראל ישראלי",
+                maxLength: 20,
             }}
             initialValues={{ name: "" }}
             errorMessages={{ name: messages.teachers.createError }}
             buttonLabel="הוספה"
+            onInputChange={onSearch}
         />
     );
 };

@@ -1,4 +1,4 @@
-/* Mobile */
+/* Mobile First (Used mainly by teacher portal) */
 .scheduleTable {
     width: 100%;
     background-color: var(--inner-background-color);
@@ -7,8 +7,30 @@
     margin-bottom: calc(var(--header-height) + 1em);
 }
 
+.loaderContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+    width: 100%;
+}
+
+@media (max-width: 600px) {
+    .scheduleTable thead th:nth-child(3) {
+        display: none;
+    }
+
+    .scheduleTable thead th:nth-child(4) {
+        border-top-right-radius: var(--border-radius-table);
+    }
+
+    .scheduleTable tbody tr:last-child td:last-child {
+        border-bottom-right-radius: var(--border-radius-table);
+    }
+}
+
 /* Desktop */
-@media (min-width: 1024px) {
+@media (min-width: 601px) {
     .scheduleTable {
         margin-bottom: 0;
     }

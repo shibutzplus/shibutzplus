@@ -1,11 +1,11 @@
-/* Mobile */
+/* Desktop First */
 .addListRow {
     width: 95%;
     background-color: var(--tab-color);
     display: flex;
     justify-content: space-between;
-    gap: 1rem;
-    padding: var(--list-details-row-padding-mobile);
+    gap: 3rem;
+    padding: var(--list-details-row-padding);
     box-sizing: border-box;
     border-radius: var(--border-radius-cell);
 }
@@ -16,27 +16,27 @@
 }
 
 .addListBtn {
-    width: var(--list-details-actions-width-mobile);
+    width: var(--list-details-actions-width);
 }
 
 .smallBtn {
-    min-width: none;
+    min-width: var(--list-details-actions-width);
     height: var(--input-height);
+    display: inline-flex !important;
 }
 
-/* Desktop */
-@media (min-width: 1024px) {
+/* Mobile */
+@media (max-width: 1024px) {
     .addListRow {
-        padding: var(--list-details-row-padding);
-        gap: 3rem;
+        gap: 1rem;
+        padding: var(--list-details-row-padding-mobile);
     }
 
     .addListBtn {
-        width: var(--list-details-actions-width);
+        width: var(--list-details-actions-width-mobile);
     }
 
     .smallBtn {
-        min-width: var(--list-details-actions-width);
-        display: inline-flex !important;
+        min-width: 0;
     }
 }

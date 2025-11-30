@@ -42,11 +42,11 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
     const { handleOpenPopup } = useDeletePopup();
 
     const handleSubjectChange = (value: string, method?: SelectMethod) => {
-        handleAddNewRow("subjects", [value], day, hour, method || "select-option");
+        handleAddNewRow("subjects", value ? [value] : [], day, hour, method || "select-option");
     };
 
     const handleClassChange = (value: string, method?: SelectMethod) => {
-        handleAddNewRow("classes", [value], day, hour, method || "select-option");
+        handleAddNewRow("classes", value ? [value] : [], day, hour, method || "select-option");
     };
 
     const confirmRemove = (what: string | null, proceed: () => void) => {
@@ -70,15 +70,24 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
                     isSearchable
                     isDisabled={isDisabled}
                     onBeforeRemove={confirmRemove}
+                    isClearable
                 />
                 <DynamicInputSelect
-                    options={createSelectOptions<ClassType>(sortByHebrewName(classes || []))}
+                    options={createSelectOptions<ClassType>(
+                        [...(classes || [])].sort((a, b) => {
+                            if (a.activity !== b.activity) {
+                                return a.activity ? 1 : -1;
+                            }
+                            return a.name.localeCompare(b.name, "he", { numeric: true });
+                        }),
+                    )}
                     value={schedule[selectedClassId]?.[day]?.[hour]?.classId ?? ""}
                     onChange={handleClassChange}
                     placeholder="כיתה"
                     isSearchable
                     isDisabled={isDisabled}
                     onBeforeRemove={confirmRemove}
+                    isClearable
                     isBold
                 />
             </div>

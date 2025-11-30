@@ -1,9 +1,10 @@
 :root {
     --background-color: #FCFDFF;
-    --inner-background-color: #e3e9eb;
+    --inner-background-color: #E1E1EA;
+    --inner-background-color-bright: #F3F3F7;
     --inner-background-color-empty: #ffffff;
 
-    --top-color: #FFFFFF;
+    --top-color: #fdfbfb;
     --top-color-hover: #f7f7f7;
 
     --bright-text-color: #FFFFFF;
@@ -63,7 +64,7 @@
     --border-radius-table: 20px;
     --border-radius-cell: 6px;
 
-    --header-height: 60px;
+    --header-height: 55px;
 
     --padding-top-desktop: 1rem;
     --padding-top-mobile: 0.2rem;
@@ -77,9 +78,10 @@
     --table-daily-col-inner-width: calc(var(--table-daily-col-width) - 40px);
     --table-daily-header-height: 45px;
     --table-daily-cell-height: 96px;
-    --table-daily-full-height: calc(var(--table-daily-header-height) + var(--table-daily-cell-height) * var(--hours-in-day) + (5px * 10));
+    --table-daily-full-height: calc(var(--table-daily-header-height) + var(--table-daily-cell-height) * var(--hours-in-day) + (5px * 11));
 
     --table-annual-col-width: 200px;
+    --table-annual-col-width-mobile: 230px;
     --table-annual-header-height: 40px;
     --table-annual-cell-height: 96px;
     --table-annual-full-height: calc(var(--table-daily-header-height) + var(--table-daily-cell-height) * var(--hours-in-day) + (5px * 10));
@@ -93,7 +95,7 @@
     --list-details-actions-width-mobile: 100px;
 
     --table-teacher-details-col-width: 200px;
-    --table-teacher-cell-height: 86px;
+    --table-teacher-cell-height: 120px;
 
     --table-cols-gap: 3px;
 }

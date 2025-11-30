@@ -26,7 +26,7 @@ const DailyEventCell: React.FC<DailyEventCellProps> = ({ columnId, cell }) => {
         const event = value.trim();
         if (event === prevInfo) return;
 
-        if (!headerData) {
+        if (!headerData?.headerEvent) {
             errorToast("יש להזין כותרת לפני הוספת אירועים", Infinity);
             setInfo("");
             setPrevInfo("");
