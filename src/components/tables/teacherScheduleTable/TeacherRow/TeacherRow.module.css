@@ -43,7 +43,7 @@
     padding-right: 4px;
     padding-bottom: 5px;
     box-sizing: border-box;
-    width: 80%;
+    width: 85%;
 }
 
 .scheduleCell {
@@ -56,4 +56,8 @@
     align-items: center;
     justify-content: center;
     gap: 4px;
+}
+
+.teacherRow {
+    height: var(--table-teacher-cell-height);
 }

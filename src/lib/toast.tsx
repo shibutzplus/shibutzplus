@@ -2,7 +2,13 @@ import { toast } from "react-hot-toast"
 import { ClosableToast } from "@/components/ui/toasts/ClosableToast"
 
 export const successToast = (message: string, duration = 5000) =>
-    toast((t) => <ClosableToast t={t} message={message} variant="default" />, { duration })
+    toast((t) => <ClosableToast t={t} message={message} variant="default" />, {
+        duration,
+        style: {
+            background: "#f8fff8",
+            color: "#14532d",
+        },
+    })
 
 export const errorToast = (message: string, duration = 5000) =>
     toast(
