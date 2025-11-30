@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import PopupModal from "@/components/ui/PopupModal/PopupModal";
+import PopupModal from "@/components/popups/PopupModal/PopupModal";
 import { PopupSize } from "@/models/types/ui";
 
 export type PopupType = "deleteTeacher" | "deleteClass" | "deleteSubject" | "deleteDailyCol";

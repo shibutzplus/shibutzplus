@@ -1,3 +1,4 @@
+/*
 "use server";
 
 import { db, schema, executeQuery } from "@/db";
@@ -7,7 +8,7 @@ import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { NewAnnualScheduleSchema } from "@/db/schema";
 import { eq } from "drizzle-orm";
-
+// NOT IN USE
 export async function updateAnnualScheduleAction(
     id: string,
     scheduleData: AnnualScheduleRequest,
@@ -75,3 +76,4 @@ export async function updateAnnualScheduleAction(
         };
     }
 }
+*/

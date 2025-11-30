@@ -1,0 +1,33 @@
+.dailyColumn {
+    background-color: var(--inner-background-color);
+    width: var(--table-daily-col-width);
+    min-width: var(--table-daily-col-width);
+    max-width: var(--table-daily-col-width);
+    height: var(--table-daily-full-height);
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
+    border-radius: var(--border-radius-table);
+    overflow: hidden;
+    position: relative;
+}
+
+.rows {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    padding: 5px;
+    gap: 5px;
+}
+
+.cell {
+    height: var(--table-daily-cell-height);
+    width: 100%;
+    background-color: var(--tab-color);
+    color: var(--dark-text-color);
+    border-radius: var(--border-radius-cell);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

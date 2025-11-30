@@ -2,11 +2,11 @@
 
 TODO
 - portal - leave empty hours that has no information (gray + small height)
-- portal - UI improve for the table and input
 - text for 'create new teacher' in the select
 - mete title tab with the page description
 - portal - query param of the selected date in the teacher page
 - portal - maybe we should not delete the school id on logout
+- react markdown for the event cell
 
 BUGs
 - role teacher not allow to enter the big system, need alert on that
@@ -17,28 +17,28 @@ FOR LATER
 -- @tanstack/react-query for cache and efficency
 - daily - position columns need helper table and delete the 'position' from the daily-schadule table
 -- portal - cahce and efficency 
-- lists - add search
 - improve preformance by converting the teachers classes and subjects array to Dictionary
-- helper/guide box for the user to understand the system
 - daily - select header colors
 - daily - react motion for change position
 - annual - populate the table from an excel file
 - DB addition - school - hours: int (9)
 - DB addition - school - days: int (6)
 - text per gender (he / she) 
-- connect page
 - settings page
 - profile page
 - if there was a new value, it wont reflact on the publish page (websocket)
 
 WONT DO
+- lists - add search
+- helper/guide box for the user to understand the system
 - hamburger open by default and responsive to the screen
 - side nav split into sections with title
 -- portal - on "my schadule" minimze the instraction and only show on click (show only the hour class and subject)
 - list of all the published days (new page)
 - portal - fix calendar icon (to black)
-- react markdown for the event cell
 
+v- connect page
+v- portal - UI improve for the table and input
 v- daily - if refresh you dont see in the select option the available teachers
 v- portal wont render with the new instraction if other teacher update the detials (need refrsh button or websocket)
 v-- daily - filter not working good - I can put teacher on the same hour for 2 columns 

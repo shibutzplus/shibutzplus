@@ -1,0 +1,90 @@
+/* Desktop First */
+.container {
+    position: relative;
+    width: 800px;
+    height: calc(var(--list-details-full-height) - var(--padding-top-desktop));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0;
+    margin: 0 auto;
+    margin-top: var(--padding-top-desktop);
+    background-color: var(--inner-background-color-bright);
+    border-radius: var(--border-radius-table);
+    overflow: hidden;
+}
+
+.header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: var(--list-details-header-height);
+    background-color: var(--inner-background-color-bright);
+    color: var(--dark-text-color);
+    padding: 10px calc(var(--list-details-padding) + 40px) 0;
+    padding-left: calc(var(--list-details-padding) + 70px);
+    box-sizing: border-box;
+}
+
+.header h2 {
+    font-size: 18px;
+    padding: 0;
+    margin: 0;
+}
+
+.listSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    height: calc(100% - var(--list-details-header-height));
+    /* overflow-y: auto; Removed - outer container shouldn't scroll */
+    margin-top: 0.5rem;
+}
+
+.addRowWrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding-left: 6px;
+    /* Compensate for scrollbar width */
+    box-sizing: border-box;
+}
+
+.list {
+    margin: 1rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.3rem;
+    width: 100%;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+}
+
+/* Custom Scrollbar */
+.list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.list::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+/* Mobile */
+@media (max-width: 850px) {
+    .container {
+        width: 95vw;
+    }
+
+}

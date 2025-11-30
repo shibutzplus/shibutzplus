@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { STATUS_LOADING, STATUS_UNAUTH } from "@/models/constant/session";
 import { DEFAULT_ERROR_REDIRECT } from "@/routes/protectedAuth";
-import LoadingPage from "../layout/loading/LoadingPage/LoadingPage";
+import LoadingPage from "../loading/LoadingPage/LoadingPage";
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
     const { status } = useSession();

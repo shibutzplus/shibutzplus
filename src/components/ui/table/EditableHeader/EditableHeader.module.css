@@ -1,11 +1,33 @@
-.columnHeader {
+.columnHeaderWrapper {
+    width: 100%;
+    max-width: var(--table-daily-col-width);
+    height: var(--table-daily-header-height);
+    background-color: var(--background-color);
+    position: absolute;
+    left: 0;
     display: flex;
     justify-content: center;
     align-items: center;
+    will-change: transform;
+    z-index: 16;
+    /* Must to be higher than DailyTable & previewTable css "hide" z-index */
+}
+
+.columnHeader {
+    position: relative;
+    top: 0;
+    left: 0;
+    border-radius: var(--border-radius-table) var(--border-radius-table) 0 0;
     gap: 10px;
     width: 100%;
     padding: 0 15px;
     text-align: right;
+    height: 100%;
+    color: var(--bright-text-color);
+    z-index: 5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .clearButton {
@@ -15,9 +37,26 @@
 }
 
 .clearButton:hover {
-    color: gray;
+    color: var(--bright-text-color-hover);
+    cursor: pointer;
 }
 
 .clearButton:active {
+    transform: translateY(1px);
+}
+
+.eyeButton {
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s ease;
+    margin-right: 5px;
+}
+
+.eyeButton:hover {
+    color: var(--bright-text-color-hover);
+    cursor: pointer;
+}
+
+.eyeButton:active {
     transform: translateY(1px);
 }

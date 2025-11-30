@@ -16,6 +16,7 @@
 .input {
   width: 100%;
   padding: 10px 16px;
+  height: var(--input-height);
   border: 1px solid var(--input-border);
   border-radius: 4px;
   font-size: 16px;
