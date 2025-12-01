@@ -1,20 +1,26 @@
 "use client";
 
 import React, { useState } from "react";
-import styles from "./AnnualClassPageLayout.module.css";
+import styles from "./AnnualViewPageLayout.module.css";
 import Logo from "@/components/ui/Logo/Logo";
 import HamburgerNav, { HamburgerButton } from "@/components/navigation/HamburgerNav/HamburgerNav";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
-import router from "@/routes";
-import { useAnnualByClass } from "@/context/AnnualByClassContext";
+import { useAnnualView } from "@/context/AnnualViewContext";
 
-type AnnualClassPageLayoutProps = {
+type AnnualViewPageLayoutProps = {
     children: React.ReactNode;
 };
 
-export default function AnnualClassPageLayout({ children }: AnnualClassPageLayoutProps) {
-    const { classesSelectOptions, selectedClassId, handleClassChange, isSaving, isLoading } =
-        useAnnualByClass();
+export default function AnnualViewPageLayout({ children }: AnnualViewPageLayoutProps) {
+    const {
+        classesSelectOptions,
+        selectedClassId,
+        handleClassChange,
+        teachersSelectOptions,
+        selectedTeacherId,
+        handleTeacherChange,
+        isLoading
+    } = useAnnualView();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     return (
@@ -27,16 +33,29 @@ export default function AnnualClassPageLayout({ children }: AnnualClassPageLayou
                                 onClick={() => setIsMenuOpen((v) => !v)}
                                 isOpen={isMenuOpen}
                             />
-                            <h3 className={styles.pageTitle}>{router.annualByClass.title}</h3>
+                            <h3 className={styles.pageTitle}>מערכת שנתית</h3>
                             <div className={styles.selectContainer}>
                                 <DynamicInputSelect
                                     options={classesSelectOptions()}
                                     value={selectedClassId}
                                     onChange={handleClassChange}
                                     isSearchable={true}
-                                    isDisabled={isSaving || isLoading}
+                                    isDisabled={isLoading}
                                     placeholder="בחר כיתה..."
                                     hasBorder
+                                    isClearable
+                                />
+                            </div>
+                            <div className={styles.selectContainer}>
+                                <DynamicInputSelect
+                                    options={teachersSelectOptions()}
+                                    value={selectedTeacherId}
+                                    onChange={handleTeacherChange}
+                                    isSearchable={true}
+                                    isDisabled={isLoading}
+                                    placeholder="בחר מורה..."
+                                    hasBorder
+                                    isClearable
                                 />
                             </div>
                         </div>
@@ -50,10 +69,23 @@ export default function AnnualClassPageLayout({ children }: AnnualClassPageLayou
                                 options={classesSelectOptions()}
                                 value={selectedClassId}
                                 onChange={handleClassChange}
-                                isSearchable={true}
-                                isDisabled={isSaving || isLoading}
+                                isSearchable={false}
+                                isDisabled={isLoading}
                                 placeholder="בחר כיתה..."
                                 hasBorder
+                                isClearable
+                            />
+                        </div>
+                        <div className={styles.mobileSelectContainer}>
+                            <DynamicInputSelect
+                                options={teachersSelectOptions()}
+                                value={selectedTeacherId}
+                                onChange={handleTeacherChange}
+                                isSearchable={true}
+                                isDisabled={isLoading}
+                                placeholder="בחר מורה..."
+                                hasBorder
+                                isClearable
                             />
                         </div>
                     </div>

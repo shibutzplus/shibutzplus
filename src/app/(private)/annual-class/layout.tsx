@@ -5,7 +5,7 @@ import AnnualSkeleton from "@/components/loading/skeleton/AnnualSkeleton/AnnualS
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
-    title: "מערכת שבועית לפי כיתה | שיבוץ+",
+    title: "מערכת שנתית לפי כיתה | שיבוץ+",
     robots: "noindex, nofollow",
 };
 
