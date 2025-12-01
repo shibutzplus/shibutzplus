@@ -32,6 +32,11 @@ const links: ILink[] = [
         Icon: <Icons.dailyCalendar size={24} />,
     },
     {
+        name: routePath.annualView.title,
+        p: routePath.annualView.p,
+        Icon: <Icons.calendar size={24} />,
+    },
+    {
         name: routePath.history.title,
         p: routePath.history.p,
         Icon: <Icons.history size={24} />,
