@@ -1,4 +1,3 @@
-/* Mobile */
 .pageLayout {
     width: 100%;
     height: 100dvh;
@@ -17,6 +16,7 @@
 }
 
 .topNavSection {
+    padding: 0 var(--padding-width-desktop);
     box-shadow: var(--box-shadow-primary);
     display: flex;
     align-items: center;
@@ -36,9 +36,8 @@
     display: flex;
     justify-content: end;
     align-items: center;
-    gap: 20px;
-    width: 50%;
-    margin-left: 10px;
+    width: 40px;
+    margin-left: 0;
 }
 
 .mainContent {
@@ -47,24 +46,4 @@
     overflow: auto;
     width: 100%;
     margin-top: var(--header-height);
-}
-
-
-/* Desktop */
-@media (min-width: 1024px) {
-
-    .topNavSection {
-        padding: 0 var(--padding-width-desktop);
-        gap: 3em;
-    }
-
-    .topNavRight {
-        width: 70%;
-    }
-
-    .topNavLeft {
-        margin-left: 0;
-        width: 30%;
-    }
-
 }

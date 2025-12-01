@@ -1,22 +1,18 @@
 .topButtonsContainer {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    width: 100%;
     gap: 15px;
 }
 
 .topBtn {
-    font-size: 16px;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
     width: 40px;
     /* Default width for icon only */
     height: var(--input-height);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    font-size: 16px;
     background-color: transparent;
     color: var(--dark-text-color);
     border-radius: var(--border-radius-cell);
@@ -39,7 +35,7 @@
     font-weight: 600;
 }
 
-@media (min-width: 850px) {
+@media (min-width: 880px) {
     .topBtn {
         width: 190px;
         border: none;

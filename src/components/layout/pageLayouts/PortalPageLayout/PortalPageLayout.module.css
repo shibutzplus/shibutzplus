@@ -7,13 +7,6 @@
     background-color: var(--background);
 }
 
-.headerContent {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    width: 100%;
-}
-
 .topNavLayout {
     display: flex;
     flex-direction: column;
@@ -45,7 +38,6 @@
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    gap: 15px;
     flex: 0 0 auto;
 }
 
@@ -53,7 +45,7 @@
     display: none;
 }
 
-.bottomNav {
+.DateNav {
     width: 100%;
     height: var(--header-height);
     background-color: var(--background-color);
@@ -62,13 +54,13 @@
     justify-content: center;
     z-index: -1;
     margin: 0 auto;
+    padding-top: 5px;
 }
 
-.bottomSelectContainer {
-    width: 250px;
+.dateSelectContainer {
+    width: 220px;
 }
 
-/* Hide top select on mobile */
 .topSelectContainer {
     display: none;
 }
@@ -90,18 +82,6 @@
 
 /* Tablet and Desktop (>= 600px) */
 @media (min-width: 600px) {
-    .topNavSection {
-        padding: 0 var(--padding-width-desktop);
-        gap: 2em;
-    }
-
-    .topNavRight {
-        width: 430px;
-        min-width: 430px;
-        max-width: 430px;
-        flex-shrink: 0;
-    }
-
     .topNavLeft {
         margin-left: 0;
         gap: 20px;
@@ -111,20 +91,14 @@
         display: block;
     }
 
-    /* Show top select, hide bottom nav */
     .topSelectContainer {
         display: block;
         width: 200px;
     }
 
-    .bottomNav {
+    .DateNav {
         display: none;
     }
 }
 
-/* Desktop (>= 850px) */
-@media (min-width: 850px) {
-    .topNavSection {
-        gap: 3em;
-    }
-}
+/* Note: Works together with PortalNav */

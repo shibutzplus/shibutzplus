@@ -3,11 +3,7 @@
 import React, { useState } from "react";
 import styles from "./HistoryPageLayout.module.css";
 import InputDate from "@/components/ui/inputs/InputDate/InputDate";
-import Logo from "@/components/ui/Logo/Logo";
-import HamburgerNav, { HamburgerButton } from "@/components/navigation/HamburgerNav/HamburgerNav";
 import router from "@/routes";
-
-import { useMobileSize } from "@/hooks/browser/useMobileSize";
 import PageLayout from "../../PageLayout/PageLayout";
 
 type HistoryPageLayoutProps = {

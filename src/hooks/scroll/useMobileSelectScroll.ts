@@ -1,13 +1,14 @@
-import { useCallback, useRef, useEffect } from "react";
-import { useMobileSize } from "../browser/useMobileSize";
-//TODO: why I need it?
+import { useCallback, useRef } from "react";
+import { MobileBreakpoint } from "@/style/root";
 /**
- * Custom hook for handling smooth scroll behavior on mobile select inputs
- * Scrolls the select element to the top of the screen when focused on mobile
- * to provide better UX with mobile keyboard and dropdown options
+ * 
+ * Q: Why we need it?
+ * A: On mobile devices, when opening a select input (especially at the bottom of the screen), 
+ *    the virtual keyboard pops up and might hide the input or the dropdown options. 
+ *    This hook scrolls the page to position the select element at the top of the visible area, 
+ *    ensuring it remains visible and leaving space below for the keyboard and options.
  */
 export function useMobileSelectScroll() {
-    const isMobile = useMobileSize();
     const selectRef = useRef<any>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -27,7 +28,8 @@ export function useMobileSelectScroll() {
     }, []);
 
     const handleMenuOpen = useCallback(() => {
-        if (!isMobile) return;
+        // Check if mobile directly
+        if (typeof window === "undefined" || window.innerWidth >= MobileBreakpoint) return;
 
         // Small delay to ensure the menu is opening and keyboard might be appearing
         setTimeout(() => {
@@ -79,7 +81,7 @@ export function useMobileSelectScroll() {
                 }
             }
         }, 200); // Delay to account for keyboard animation and menu opening
-    }, [isMobile, scrollToElement]);
+    }, [scrollToElement]);
 
     return { selectRef, containerRef, handleMenuOpen };
 }

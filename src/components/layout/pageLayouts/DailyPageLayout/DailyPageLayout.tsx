@@ -31,56 +31,51 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
             HeaderRightActions={
                 <>
                     <div className={styles.titleContainer}>
-                        <h3>{router.dailySchedule.title}</h3>
-                        {!isEditMode && (
-                            <span className={styles.previewDateLabelMobileTop}>
-                                {mobileDateLabel}
-                            </span>
-                        )}
-                    </div>
-                    <div className={styles.topNavSelectContainer}>
-                        <div className={styles.selectContainer}>
-                            {isEditMode ? (
-                                <DynamicInputSelect
-                                    options={daysSelectOptions()}
-                                    value={selectedDate}
-                                    isDisabled={isLoading}
-                                    onChange={handleDayChange}
-                                    isSearchable={false}
-                                    placeholder="בחרו יום..."
-                                    hasBorder={true}
-                                    isBold={false}
-                                />
-                            ) : (
-                                <div className={styles.previewDateLabel}>{dateLabel}</div>
-                            )}
-                        </div>
-
-                        {isEditMode ? (
-                            <div className={styles.desktopActionBtns}>
-                                <DailyActionBtns position="left" />
+                                <h3>
+                                    {router.dailySchedule.title}
+                                    {!isEditMode && (
+                                        <span className={styles.previewModeLabel}> (תצוגת בדיקה)</span>
+                                    )}
+                                </h3>
                             </div>
-                        ) : null}
-                    </div>
+                            <div className={styles.topNavSelectContainer}>
+                                <div className={styles.selectContainer}>
+                                    <DynamicInputSelect
+                                        options={daysSelectOptions()}
+                                        value={selectedDate}
+                                        isDisabled={isLoading}
+                                        onChange={handleDayChange}
+                                        isSearchable={false}
+                                        placeholder="בחרו יום..."
+                                        hasBorder={true}
+                                        isBold={false}
+                                    />
+                                </div>
+
+                                {isEditMode ? (
+                                    <div className={styles.desktopActionBtns}>
+                                        <DailyActionBtns position="left" />
+                                    </div>
+                                ) : null}
+                            </div>
                 </>
             }
-            HeaderLeftActions={<DailyPublishActionBtns />}
+            HeaderLeftActions={<>                            <DailyPublishActionBtns />
+                            <div style={{ width: "40px" }} /></>}
             BottomActions={
-                isEditMode && (
-                    <div className={styles.mobileSelectContainer}>
-                        <DynamicInputSelect
-                            options={daysSelectOptions()}
-                            value={selectedDate}
-                            isDisabled={isLoading}
-                            onChange={handleDayChange}
-                            isSearchable={false}
-                            placeholder="בחר יום..."
-                            hasBorder={true}
-                            isBold={false}
-                            isCentered
-                        />
-                    </div>
-                )
+                <div className={styles.dateSelectContainer}>
+                            <DynamicInputSelect
+                                options={daysSelectOptions()}
+                                value={selectedDate}
+                                isDisabled={isLoading}
+                                onChange={handleDayChange}
+                                isSearchable={false}
+                                placeholder="בחר יום..."
+                                hasBorder={true}
+                                isBold={false}
+                                isCentered
+                            />
+                        </div>
             }
             MobileActions={
                 isEditMode ? (
@@ -90,6 +85,7 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
                 ) : null
             }
         >
+            {/* dateNav */}
             {/* className={styles.mainContent + (!isEditMode ? " " + styles.fullHeight : "")} */}
             {children}
         </PageLayout>
