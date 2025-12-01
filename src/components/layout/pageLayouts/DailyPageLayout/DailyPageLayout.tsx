@@ -21,10 +21,6 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-    const selectedOption = daysSelectOptions().find((opt) => opt.value === selectedDate);
-    const dateLabel = selectedOption ? selectedOption.label : selectedDate;
-    const mobileDateLabel = dateLabel.replace(" (היום)", "").replace(" (מחר)", "");
-
     return (
         <>
             <div className={styles.pageLayout}>
@@ -36,29 +32,25 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
                                 isOpen={isMenuOpen}
                             />
                             <div className={styles.titleContainer}>
-                                <h3>{router.dailySchedule.title}</h3>
-                                {!isEditMode && (
-                                    <span className={styles.previewDateLabelMobileTop}>
-                                        {mobileDateLabel}
-                                    </span>
-                                )}
+                                <h3>
+                                    {router.dailySchedule.title}
+                                    {!isEditMode && (
+                                        <span className={styles.previewModeLabel}> (תצוגת בדיקה)</span>
+                                    )}
+                                </h3>
                             </div>
                             <div className={styles.topNavSelectContainer}>
                                 <div className={styles.selectContainer}>
-                                    {isEditMode ? (
-                                        <DynamicInputSelect
-                                            options={daysSelectOptions()}
-                                            value={selectedDate}
-                                            isDisabled={isLoading}
-                                            onChange={handleDayChange}
-                                            isSearchable={false}
-                                            placeholder="בחרו יום..."
-                                            hasBorder={true}
-                                            isBold={false}
-                                        />
-                                    ) : (
-                                        <div className={styles.previewDateLabel}>{dateLabel}</div>
-                                    )}
+                                    <DynamicInputSelect
+                                        options={daysSelectOptions()}
+                                        value={selectedDate}
+                                        isDisabled={isLoading}
+                                        onChange={handleDayChange}
+                                        isSearchable={false}
+                                        placeholder="בחרו יום..."
+                                        hasBorder={true}
+                                        isBold={false}
+                                    />
                                 </div>
 
                                 {isEditMode ? (
@@ -74,23 +66,21 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
                             <Logo />
                         </div>
                     </section>
-                    {isEditMode && (
-                        <div className={styles.dateNav}>
-                            <div className={styles.dateSelectContainer}>
-                                <DynamicInputSelect
-                                    options={daysSelectOptions()}
-                                    value={selectedDate}
-                                    isDisabled={isLoading}
-                                    onChange={handleDayChange}
-                                    isSearchable={false}
-                                    placeholder="בחר יום..."
-                                    hasBorder={true}
-                                    isBold={false}
-                                    isCentered
-                                />
-                            </div>
+                    <div className={styles.dateNav}>
+                        <div className={styles.dateSelectContainer}>
+                            <DynamicInputSelect
+                                options={daysSelectOptions()}
+                                value={selectedDate}
+                                isDisabled={isLoading}
+                                onChange={handleDayChange}
+                                isSearchable={false}
+                                placeholder="בחר יום..."
+                                hasBorder={true}
+                                isBold={false}
+                                isCentered
+                            />
                         </div>
-                    )}
+                    </div>
                 </header>
                 <main
                     className={
