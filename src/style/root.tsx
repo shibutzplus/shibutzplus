@@ -95,3 +95,5 @@ export const ListDetailsActionsWidth: string = "160px";
 export const ListDetailsActionsWidthMobile: string = "100px";
 
 export const FontSize: string = "16px";
+
+export const MobileBreakpoint: number = 768;
