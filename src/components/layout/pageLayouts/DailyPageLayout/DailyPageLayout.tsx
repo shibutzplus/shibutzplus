@@ -70,12 +70,13 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
                         </div>
                         <div className={styles.topNavLeft}>
                             <DailyPublishActionBtns />
+                            <div style={{ width: "40px" }} />
                             <Logo />
                         </div>
                     </section>
                     {isEditMode && (
-                        <div className={styles.bottomNav}>
-                            <div className={styles.mobileSelectContainer}>
+                        <div className={styles.dateNav}>
+                            <div className={styles.dateSelectContainer}>
                                 <DynamicInputSelect
                                     options={daysSelectOptions()}
                                     value={selectedDate}

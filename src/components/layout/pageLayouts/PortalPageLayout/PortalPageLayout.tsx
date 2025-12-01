@@ -95,8 +95,8 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
                             </div>
                         </div>
                     </section>
-                    <div className={styles.bottomNav}>
-                        <div className={styles.bottomSelectContainer}>
+                    <div className={styles.DateNav}>
+                        <div className={styles.dateSelectContainer}>
                             <DynamicInputSelect
                                 options={datesOptions}
                                 value={selectedDate}

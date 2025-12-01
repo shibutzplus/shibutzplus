@@ -42,6 +42,7 @@ const EditableHeader: React.FC<EditableHeaderProps> = ({
                         className={styles.eyeButton}
                         onClick={onEyeClick}
                         size={24}
+                        title="לחצו כאן כדי לראות או להזין את חומרי הלימוד"
                     />
                 )}
                 {children}
