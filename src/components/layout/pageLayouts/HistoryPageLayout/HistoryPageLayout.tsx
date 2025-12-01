@@ -14,6 +14,7 @@ export default function HistoryPageLayout({ children }: HistoryPageLayoutProps) 
     return (
         <PageLayout
             appType="private"
+            leftSideWidth={40}
             HeaderRightActions={
                 <>
                     <h3>{router.history.title}</h3>

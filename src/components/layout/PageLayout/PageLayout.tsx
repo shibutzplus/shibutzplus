@@ -14,6 +14,8 @@ type PageLayoutProps = {
     BottomActions?: React.ReactNode;
     MobileActions?: React.ReactNode;
     isFullHeight?: boolean;
+    hasMobileLogo?: boolean;
+    leftSideWidth?: number;
 };
 
 export default function PageLayout({
@@ -24,6 +26,8 @@ export default function PageLayout({
     BottomActions,
     MobileActions,
     isFullHeight = true,
+    hasMobileLogo = true,
+    leftSideWidth = 230,
 }: PageLayoutProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -39,12 +43,14 @@ export default function PageLayout({
                             />
                             {HeaderRightActions}
                         </div>
-                        <div className={styles.topNavLeft}>
+                        <div className={styles.topNavLeft} style={{ width: leftSideWidth }}>
                             {HeaderLeftActions}
-                            <Logo />
+                            <div className={hasMobileLogo ? styles.logo : styles.noLogo}>
+                                <Logo />
+                            </div>
                         </div>
                     </section>
-                    {BottomActions ? <div className={styles.bottomNav}>{BottomActions}</div> : null}
+                    {BottomActions ? <div className={styles.dateNav}>{BottomActions}</div> : null}
                 </header>
                 <main
                     className={`${styles.mainContent} ${isFullHeight ? styles.fullHeight : styles.notFullHeight}`}

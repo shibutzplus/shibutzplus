@@ -1,65 +1,4 @@
-/* Desktop First */
-.pageLayout {
-    width: 100%;
-    height: 100dvh;
-    display: flex;
-    flex-direction: column;
-    background-color: var(--background);
-}
-
-.mainContent {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow: auto;
-    width: 100%;
-}
-
-.topNavLayout {
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    inset: 0 0 auto 0;
-    width: 100%;
-    z-index: 20;
-}
-
-.topNavSection {
-    box-shadow: var(--box-shadow-primary);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: var(--header-height);
-    background: var(--top-color);
-    padding: 0 var(--padding-width-desktop);
-    gap: 3em;
-}
-
-.topNavRight {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    width: 80%;
-}
-
-.topNavLeft {
-    display: flex;
-    justify-content: end;
-    align-items: center;
-    width: 50px;
-    margin-left: 0;
-}
-
-.bottomNav {
-    width: 100%;
-    height: var(--header-height);
-    background-color: var(--background-color);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: -1;
-    padding-top: 5px;
-}
-
+/* Desktop */
 .selectContainer {
     width: var(--top-nav-select-width);
     display: block;
@@ -74,25 +13,8 @@
 }
 
 /* Mobile */
-@media (max-width: 600px) {
-    .topNavSection {
-        padding: 0;
-        gap: 0;
-    }
-
-    .topNavRight {
-        width: 70%;
-    }
-
-    .topNavLeft {
-        margin-left: 10px;
-    }
-
+@media (max-width: 720px) {
     .selectContainer {
         display: none;
-    }
-
-    .bottomNav {
-        display: flex;
     }
 }

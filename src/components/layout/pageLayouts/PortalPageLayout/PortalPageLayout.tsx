@@ -33,7 +33,6 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
     } = usePortalContext();
     const { isPortalLoading, handlePortalRefresh } = useTeacherTableContext();
     const { hasUpdate, resetUpdate } = usePollingUpdates();
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const isRegularTeacher = teacher?.role === TeacherRoleValues.REGULAR;
 
     const isLoading = pathname.includes(router.teacherPortal.p)
@@ -53,6 +52,7 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
     return (
         <PageLayout
             appType="public"
+            hasMobileLogo={false}
             HeaderRightActions={
                 <>
                     <h3 className={styles.greeting}>{greetingTeacher(teacher)}</h3>
@@ -86,9 +86,6 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
                     </div>
                 ) : null
             }
-            // <div className={styles.logoContainer}>
-            //     <Logo size="S" />
-            // </div>
             BottomActions={
                 <div className={styles.dateSelectContainer}>
                     <DynamicInputSelect

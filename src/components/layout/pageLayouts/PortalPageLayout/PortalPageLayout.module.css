@@ -1,22 +1,22 @@
 /* Mobile (< 600px) */
-.pageLayout {
+/* .pageLayout {
     width: 100%;
     height: 100dvh;
     display: flex;
     flex-direction: column;
     background-color: var(--background);
-}
+} */
 
-.topNavLayout {
+/* .topNavLayout {
     display: flex;
     flex-direction: column;
     position: fixed;
     inset: 0 0 auto 0;
     width: 100%;
     z-index: 20;
-}
+} */
 
-.topNavSection {
+/* .topNavSection {
     box-shadow: var(--box-shadow-primary);
     display: flex;
     align-items: center;
@@ -24,28 +24,24 @@
     height: var(--header-height);
     background: var(--top-color);
     padding: 0 10px;
-}
+} */
 
-.topNavRight {
+/* .topNavRight {
     display: flex;
     align-items: center;
     gap: 15px;
     flex: 1;
     min-width: 0;
-}
+} */
 
-.topNavLeft {
+/* .topNavLeft {
     display: flex;
     justify-content: flex-end;
     align-items: center;
     flex: 0 0 auto;
-}
+} */
 
-.logoContainer {
-    display: none;
-}
-
-.DateNav {
+/* .DateNav {
     width: 100%;
     height: var(--header-height);
     background-color: var(--background-color);
@@ -55,7 +51,7 @@
     z-index: -1;
     margin: 0 auto;
     padding-top: 5px;
-}
+} */
 
 .dateSelectContainer {
     width: 220px;
@@ -73,32 +69,28 @@
     text-overflow: ellipsis;
 }
 
-.mainContent {
+/* .mainContent {
     flex: 1 1 auto;
     min-height: 0;
     overflow: auto;
     width: 100%;
-}
+} */
 
 /* Tablet and Desktop (>= 600px) */
 @media (min-width: 600px) {
-    .topNavLeft {
+    /* .topNavLeft {
         margin-left: 0;
         gap: 20px;
-    }
-
-    .logoContainer {
-        display: block;
-    }
+    } */
 
     .topSelectContainer {
         display: block;
         width: 200px;
     }
-
+/* 
     .DateNav {
         display: none;
-    }
+    } */
 }
 
 /* Note: Works together with PortalNav */

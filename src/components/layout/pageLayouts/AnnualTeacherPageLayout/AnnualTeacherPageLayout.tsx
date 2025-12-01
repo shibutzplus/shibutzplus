@@ -20,6 +20,7 @@ export default function AnnualTeacherPageLayout({ children }: AnnualTeacherPageL
     return (
         <PageLayout
             appType="private"
+            leftSideWidth={50}
             HeaderRightActions={
                 <>
                     <h3 className={styles.pageTitle}>{router.annualByTeacher.title}</h3>

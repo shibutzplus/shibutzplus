@@ -1,9 +1,4 @@
-"use client";
-
-import React, { useState } from "react";
-import styles from "./DetailsPageLayout.module.css";
-import Logo from "@/components/ui/Logo/Logo";
-import HamburgerNav, { HamburgerButton } from "@/components/navigation/HamburgerNav/HamburgerNav";
+import React from "react";
 import PageLayout from "../../PageLayout/PageLayout";
 
 type DetailsPageLayoutProps = {
@@ -13,7 +8,7 @@ type DetailsPageLayoutProps = {
 
 export default function DetailsPageLayout({ children, pageTitle }: DetailsPageLayoutProps) {
     return (
-        <PageLayout appType="private" HeaderRightActions={<h3>{pageTitle}</h3>}>
+        <PageLayout appType="private" leftSideWidth={50} HeaderRightActions={<h3>{pageTitle}</h3>}>
             {children}
         </PageLayout>
     );
