@@ -1,6 +1,8 @@
 .previewColumn {
     background-color: var(--inner-background-color);
+    width: var(--table-daily-col-width);
     min-width: var(--table-daily-col-width);
+    max-width: var(--table-daily-col-width);
     height: var(--table-daily-full-height);
     display: flex;
     flex-direction: column;

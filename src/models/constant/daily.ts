@@ -10,4 +10,5 @@ export const COLOR_BY_TYPE = {
     missingTeacher: MissingTeacherColor,
     existingTeacher: ExistingTeacherColor,
     event: EventColor,
+    empty: "transparent",
 } as const;

@@ -18,7 +18,7 @@ type DailyColProps = {
 };
 
 const DailyCol: React.FC<DailyColProps> = ({ columnId, column, onTeacherClick }) => {
-    const [columnType, setColumnType] = useState<ColumnType>("event");
+    const [columnType, setColumnType] = useState<ColumnType>("event"); //TODO: need to be "empty"
     const colFirtsObj = column["1"];
 
     useEffect(() => {

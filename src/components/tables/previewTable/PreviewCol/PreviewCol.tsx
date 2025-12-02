@@ -8,6 +8,7 @@ import PreviewTeacherHeader from "../PreviewTeacherHeader/PreviewTeacherHeader";
 import PreviewTeacherCell from "../PreviewTeacherCell/PreviewTeacherCell";
 import { AppType } from "@/models/types";
 import { TeacherType } from "@/models/types/teachers";
+import { TableDailyHeaderHeight } from "@/style/root";
 
 type PreviewColProps = {
     columnId: string;
@@ -37,19 +38,20 @@ const PreviewCol: React.FC<PreviewColProps> = ({
     return columnType === "event" ? (
         <div className={styles.previewColumn} data-column-id={columnId}>
             <PreviewEventHeader type={columnType} column={column} />
-            <div style={{ width: "100%", height: "50px" }}></div>
+            <div style={{ width: "100%", height: TableDailyHeaderHeight }}></div>
             <div className={styles.rows}>
                 {colFirstObj ? (
                     Object.entries(column).map(([hour, cell]) => (
                         <PreviewEventCell key={hour} cell={cell} columnId={columnId} />
                     ))
                 ) : (
-                    <LoadingDots size="S" color="var(--background-color)" />
+                    <LoadingDots size="S" />
                 )}
             </div>
         </div>
     ) : (
         <div className={styles.previewColumn} data-column-id={columnId}>
+            <div className={styles.hide} />
             <PreviewTeacherHeader
                 column={column}
                 appType={appType}
@@ -57,7 +59,7 @@ const PreviewCol: React.FC<PreviewColProps> = ({
                 selectedDate={selectedDate}
                 onTeacherClick={onTeacherClick}
             />
-            <div style={{ width: "100%", height: "50px" }}></div>
+            <div style={{ width: "100%", height: TableDailyHeaderHeight }}></div>
             <div className={styles.rows}>
                 {colFirstObj ? (
                     Object.entries(column).map(([hour, cell]) => (
@@ -69,7 +71,7 @@ const PreviewCol: React.FC<PreviewColProps> = ({
                         />
                     ))
                 ) : (
-                    <LoadingDots size="S" color="var(--background-color)" />
+                    <LoadingDots size="S" />
                 )}
             </div>
         </div>

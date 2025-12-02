@@ -11,6 +11,7 @@ import EditableHeader from "../../../ui/table/EditableHeader/EditableHeader";
 import { BrightTextColor, BrightTextColorHover } from "@/style/root";
 import { COLOR_BY_TYPE } from "@/models/constant/daily";
 import { TeacherType } from "@/models/types/teachers";
+import { useTeacherTableContext } from "@/context/TeacherTableContext";
 
 type DailyTeacherHeaderProps = {
     columnId: string;
@@ -18,7 +19,11 @@ type DailyTeacherHeaderProps = {
     onTeacherClick?: (teacher: TeacherType) => void;
 };
 
-const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId, type, onTeacherClick }) => {
+const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
+    columnId,
+    type,
+    onTeacherClick,
+}) => {
     const { teachers } = useMainContext();
     const {
         mainDailyTable,
@@ -27,6 +32,7 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId, type,
         deleteColumn,
         mapAvailableTeachers,
     } = useDailyTableContext();
+    const { fetchTeacherScheduleDate } = useTeacherTableContext();
     const [isLoading, setIsLoading] = useState(false);
 
     const selectedTeacherData =
@@ -78,10 +84,17 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId, type,
         );
     }, [teachers, mainDailyTable, selectedTeacherData, teachersTeachingTodayIds]);
 
-    const deleteCol = async () => {
+    const handleDeleteColumn = async () => {
         const response = await deleteColumn(columnId);
         if (!response) {
             errorToast(messages.dailySchedule.deleteError);
+        }
+    };
+
+    const handleTeacherClick = async () => {
+        if (selectedTeacherData?.name && onTeacherClick) {
+            onTeacherClick(selectedTeacherData);
+            await fetchTeacherScheduleDate(selectedTeacherData, selectedDate);
         }
     };
 
@@ -89,12 +102,8 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId, type,
         <EditableHeader
             color={COLOR_BY_TYPE[type]}
             deleteLabel={selectedTeacherData?.name || "המורה"}
-            deleteCol={deleteCol}
-            onEyeClick={
-                selectedTeacherData?.id && onTeacherClick
-                    ? () => onTeacherClick(selectedTeacherData)
-                    : undefined
-            }
+            deleteCol={handleDeleteColumn}
+            onEyeClick={handleTeacherClick}
         >
             <DynamicInputSelect
                 options={filteredTeacherOptions}

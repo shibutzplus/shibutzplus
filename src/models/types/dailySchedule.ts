@@ -98,6 +98,7 @@ export const ColumnTypeValues = {
     existingTeacher: "existingTeacher" as const,
     missingTeacher: "missingTeacher" as const,
     event: "event" as const,
+    empty: "empty" as const,
 };
 export type ColumnType = keyof typeof ColumnTypeValues;
 
