@@ -28,7 +28,6 @@ const DailyTable: React.FC<DailyTableProps> = ({
 
     return (
         <div className={styles.dailyTable}>
-            <div className={styles.hide} />
             {schedule && Object.keys(schedule).length > 0 && <HoursCol hours={TableRows} />}
             <AnimatePresence mode="popLayout">
                 {schedule && Object.keys(schedule).length > 0 ? (

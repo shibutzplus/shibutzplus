@@ -21,7 +21,7 @@ const EditableHeader: React.FC<EditableHeaderProps> = ({
 }) => {
     const { handleOpenPopup } = useDeletePopup();
     const headerRef = useRef<HTMLDivElement | null>(null);
-    useStickyHeader(headerRef);
+    useStickyHeader(headerRef, { enabled: true, topOffset: 0 });
 
     const handleDeleteColumn = (e: React.MouseEvent) => {
         e.stopPropagation();

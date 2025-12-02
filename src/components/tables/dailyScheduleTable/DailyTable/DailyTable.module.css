@@ -6,22 +6,6 @@
     padding: 0 10px;
     box-sizing: border-box;
     position: relative;
-}
-
-.hide {
-    position: fixed;
-    top: var(--header-height);
-    left: 0;
-    width: 100vw;
-    height: var(--padding-top-desktop);
-    background-color: var(--background-color);
-    z-index: 17;
-    background-color: red;
-}
-
-/* Mobile */
-@media (max-width: 720px) {
-    .hide {
-        height: calc(var(--padding-top-desktop) + var(--header-height) - 13px);
-    }
+    height: calc(100vh - var(--header-height) - (var(--padding-top-desktop) * 2));
+    max-height: calc(100vh - var(--header-height) - (var(--padding-top-desktop) * 2));
 }
