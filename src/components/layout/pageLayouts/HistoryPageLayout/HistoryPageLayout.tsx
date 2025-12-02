@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import styles from "./HistoryPageLayout.module.css";
 import InputDate from "@/components/ui/inputs/InputDate/InputDate";
 import router from "@/routes";

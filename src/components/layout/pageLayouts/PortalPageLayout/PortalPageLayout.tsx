@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import styles from "./PortalPageLayout.module.css";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import { usePortalContext } from "@/context/PortalContext";

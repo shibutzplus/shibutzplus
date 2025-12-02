@@ -1,9 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import styles from "./AnnualClassPageLayout.module.css";
-import Logo from "@/components/ui/Logo/Logo";
-import HamburgerNav, { HamburgerButton } from "@/components/navigation/HamburgerNav/HamburgerNav";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import router from "@/routes";
 import { useAnnualByClass } from "@/context/AnnualByClassContext";
