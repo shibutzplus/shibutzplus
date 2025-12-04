@@ -46,3 +46,12 @@
         min-width: var(--table-annual-col-width-mobile);
     }
 }
+
+@media (min-width: 1280px) {
+
+    .subject,
+    .teacher,
+    .class {
+        font-size: 18px;
+    }
+}
