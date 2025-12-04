@@ -11,6 +11,8 @@
     align-items: center;
     will-change: transform;
     z-index: 16;
+    box-shadow: -1px 0px 0px 0px var(--background-color),
+        1px 0px 0px 0px var(--background-color);
 }
 
 .columnHeader {

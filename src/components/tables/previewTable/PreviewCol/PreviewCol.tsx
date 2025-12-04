@@ -38,7 +38,6 @@ const PreviewCol: React.FC<PreviewColProps> = ({
     return columnType === "event" ? (
         <div className={styles.previewColumn} data-column-id={columnId}>
             <PreviewEventHeader type={columnType} column={column} />
-            <div style={{ width: "100%", height: TableDailyHeaderHeight }}></div>
             <div className={styles.rows}>
                 {colFirstObj ? (
                     Object.entries(column).map(([hour, cell]) => (
@@ -59,7 +58,6 @@ const PreviewCol: React.FC<PreviewColProps> = ({
                 selectedDate={selectedDate}
                 onTeacherClick={onTeacherClick}
             />
-            <div style={{ width: "100%", height: TableDailyHeaderHeight }}></div>
             <div className={styles.rows}>
                 {colFirstObj ? (
                     Object.entries(column).map(([hour, cell]) => (

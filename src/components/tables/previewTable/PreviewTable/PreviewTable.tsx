@@ -34,7 +34,6 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
 
     return (
         <div className={styles.previewTable}>
-            <div className={styles.hide} />
             <HoursCol hours={TableRows} />
             {schedule && Object.keys(schedule).length > 0 ? (
                 sortedTableColumns.map((colId, index) => (
