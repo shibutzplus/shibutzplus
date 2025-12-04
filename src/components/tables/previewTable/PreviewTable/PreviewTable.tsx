@@ -14,7 +14,7 @@ import { TeacherType } from "@/models/types/teachers";
 type PreviewTableProps = {
     mainDailyTable: DailySchedule;
     selectedDate: string;
-    onTeacherClick: (teacher: TeacherType) => Promise<void>;
+    onTeacherClick?: (teacher: TeacherType) => Promise<void>;
     appType?: AppType;
     EmptyTable?: React.FC;
 };

@@ -8,7 +8,6 @@ import PreviewTeacherHeader from "../PreviewTeacherHeader/PreviewTeacherHeader";
 import PreviewTeacherCell from "../PreviewTeacherCell/PreviewTeacherCell";
 import { AppType } from "@/models/types";
 import { TeacherType } from "@/models/types/teachers";
-import { TableDailyHeaderHeight } from "@/style/root";
 
 type PreviewColProps = {
     columnId: string;
