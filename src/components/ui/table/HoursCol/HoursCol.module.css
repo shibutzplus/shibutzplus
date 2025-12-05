@@ -7,7 +7,7 @@
     position: sticky;
     right: 0;
     height: var(--table-daily-full-height);
-    z-index: 10;
+    z-index: 20;
     /* Must to be lower than DailyTable & previewTable css "hide" z-index */
 }
 
@@ -23,15 +23,16 @@
 
 .hideTop {
     position: absolute;
-    top: 0;
+    top: -10px;
     width: 30px;
-    height: 50px;
+    height: 75px;
     background-color: var(--background-color);
     z-index: 20;
-    --r: 15px;
+    /* Proview the U shape */
     mask: radial-gradient(var(--r) at bottom, #0000 98%, #000) no-repeat;
     -webkit-mask: radial-gradient(var(--r) at bottom, #0000 98%, #000) no-repeat;
     filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+    --r: 15px;
 }
 
 .hoursColumn {

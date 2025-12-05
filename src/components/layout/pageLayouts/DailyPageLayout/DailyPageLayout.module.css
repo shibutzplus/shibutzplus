@@ -36,8 +36,8 @@
     justify-content: center;
 }
 
-/* Intermediate (671px - 1160px) */
-@media (max-width: 1160px) {
+/* Intermediate (671px - 1130px) */
+@media (max-width: 1130px) {
     .desktopActionBtns {
         display: none;
     }

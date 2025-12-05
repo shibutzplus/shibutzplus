@@ -35,8 +35,8 @@ const InputTextArea: React.FC<InputTextAreaProps> = ({
     let text = e.currentTarget.value;
 
     const lines = text.split("\n");
-    if (lines.length > 4) {
-      text = lines.slice(0, 4).join("\n");
+    if (lines.length > 3) {
+      text = lines.slice(0, 3).join("\n");
       e.currentTarget.value = text;
     }
 

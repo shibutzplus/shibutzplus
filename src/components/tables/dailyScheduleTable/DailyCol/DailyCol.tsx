@@ -18,7 +18,7 @@ type DailyColProps = {
 };
 
 const DailyCol: React.FC<DailyColProps> = ({ columnId, column, onTeacherClick }) => {
-    const [columnType, setColumnType] = useState<ColumnType>("event");
+    const [columnType, setColumnType] = useState<ColumnType>("event"); //TODO: need to be "empty"
     const colFirtsObj = column["1"];
 
     useEffect(() => {
@@ -30,7 +30,6 @@ const DailyCol: React.FC<DailyColProps> = ({ columnId, column, onTeacherClick })
     return columnType === "event" ? (
         <div className={styles.dailyColumn} data-column-id={columnId}>
             <DailyEventHeader columnId={columnId} type={columnType} />
-            <div style={{ width: "100%", height: TableDailyHeaderHeight }}></div>
             <div className={styles.rows}>
                 {colFirtsObj ? (
                     Object.entries(column).map(([hour, cell]) => (
@@ -43,13 +42,11 @@ const DailyCol: React.FC<DailyColProps> = ({ columnId, column, onTeacherClick })
         </div>
     ) : (
         <div className={styles.dailyColumn} data-column-id={columnId}>
-            <div className={styles.hide} />
             <DailyTeacherHeader
                 columnId={columnId}
                 type={columnType}
                 onTeacherClick={onTeacherClick}
             />
-            <div style={{ width: "100%", height: TableDailyHeaderHeight }}></div>
             <div className={styles.rows}>
                 {colFirtsObj ? (
                     Object.entries(column).map(([hour, cell]) => (

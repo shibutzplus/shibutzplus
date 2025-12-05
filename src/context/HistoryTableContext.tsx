@@ -16,7 +16,7 @@ import { populateDailyScheduleTable } from "@/services/daily/populate";
 import { infoToast } from "@/lib/toast";
 
 interface HistoryTableContextType {
-    selectedYearDate: string;
+    selectedYearDate: string; // YYYY-MM-DD format (same as daily context)
     selectedYear: string;
     selectedMonth: string; // "1".."12"
     selectedDay: string; // "1".."31"
