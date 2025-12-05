@@ -19,7 +19,7 @@ const DailyPublishActionBtns: React.FC = () => {
         <div className={styles.topNavBtnContainer}>
             <span title={isEditMode ? "תצוגה מקדימה / בדיקה" : "חזרה לשיבוץ"}>
                 <IconBtn
-                    Icon={isEditMode ? <Icons.validate size={24} /> : <Icons.edit size={20} />}
+                    Icon={isEditMode ? <Icons.eye size={24} /> : <Icons.eyeOff size={20} />}
                     onClick={changeDailyMode}
                     disabled={isLoadingEditPage}
                     hasBorder
