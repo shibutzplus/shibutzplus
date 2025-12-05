@@ -116,7 +116,6 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
                 color={BrightTextColor}
                 colorHover={BrightTextColorHover}
                 placeholderColor={BrightTextColor}
-                isBold
             />
         </EditableHeader>
     );
