@@ -32,7 +32,7 @@ const AnnualViewPage: NextPage = () => {
                     setIsLoading={setIsLoading as React.Dispatch<React.SetStateAction<boolean>>}
                 />
             ) : (
-                <div className={styles.placeholder}>בחרו כיתה או מורה כדי להציג את המערכת</div>
+                <div className={styles.placeholder}>בחרו כיתה ו/או מורה כדי להציג את המערכת</div>
             )}
         </div>
     );

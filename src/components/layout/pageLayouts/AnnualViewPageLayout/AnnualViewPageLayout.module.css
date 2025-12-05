@@ -56,12 +56,6 @@
     transform: translateY(1px);
 }
 
-.pageTitle {
-    margin: 0;
-    font-size: 1.2rem;
-    font-weight: 600;
-}
-
 .bottomNav {
     display: none;
 }

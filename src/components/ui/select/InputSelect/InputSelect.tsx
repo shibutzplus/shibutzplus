@@ -141,6 +141,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
             ...provided,
             marginRight: "auto",
             padding: 10,
+            color: color,
         }),
         singleValue: (provided: any) => {
             const base =

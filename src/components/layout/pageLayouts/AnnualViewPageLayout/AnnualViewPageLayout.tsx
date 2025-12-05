@@ -54,7 +54,7 @@ export default function AnnualViewPageLayout({ children }: AnnualViewPageLayoutP
                 </>
             }
             BottomActions={
-                <>
+                <div className={styles.bottomNav}>
                     <div className={styles.mobileSelectContainer}>
                         <DynamicInputSelect
                             options={classesSelectOptions()}
@@ -79,7 +79,7 @@ export default function AnnualViewPageLayout({ children }: AnnualViewPageLayoutP
                             isClearable
                         />
                     </div>
-                </>
+                </div>
             }
         >
             {children}
