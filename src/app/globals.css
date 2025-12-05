@@ -1,7 +1,7 @@
 :root {
     --background-color: #FCFDFF;
     --inner-background-color: #E1E1EA;
-    --inner-background-color-bright: #F3F3F7;
+    --inner-background-color-bright: #F3F3FA;
     --inner-background-color-empty: #ffffff;
 
     --top-color: #fdfbfb;
@@ -125,4 +125,9 @@ body {
 a {
     color: inherit;
     text-decoration: none;
+}
+
+h3 {
+    font-size: 18px;
+    color: var(--dark-text-color);
 }
