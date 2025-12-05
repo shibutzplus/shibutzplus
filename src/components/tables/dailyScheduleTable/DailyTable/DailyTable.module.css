@@ -9,6 +9,9 @@
     right: 0;
     height: calc(100dvh - var(--header-height) - (var(--padding-top-desktop) * 2));
     max-height: calc(100dvh - var(--header-height) - (var(--padding-top-desktop) * 2));
+    /* Prevent browser bounce scroll behavior  */
+    overflow: auto;
+    overscroll-behavior: contain;
 }
 
 /* Mobile */

@@ -14,8 +14,8 @@
 /* Mobile */
 @media (max-width: 720px) {
     .previewTable {
-        height: calc(100dvh - (var(--header-height) * 3) - (var(--padding-top-mobile) * 3));
-        max-height: calc(100dvh - (var(--header-height) * 3) - (var(--padding-top-mobile) * 3));
+        height: calc(100dvh - (var(--header-height) * 2) - (var(--padding-top-mobile) * 3));
+        max-height: calc(100dvh - (var(--header-height) * 2) - (var(--padding-top-mobile) * 3));
         padding: 0 5px;
     }
 }
