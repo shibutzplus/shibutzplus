@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 import { useMainContext } from "./MainContext";
 import { createSelectOptions } from "@/utils/format";
 import { ClassType } from "@/models/types/classes";
-import { TeacherType } from "@/models/types/teachers";
+import { TeacherType, TeacherRoleValues } from "@/models/types/teachers";
 import {
     AnnualScheduleType,
     WeeklySchedule,
@@ -100,9 +100,9 @@ export const AnnualViewProvider: React.FC<{ children: ReactNode }> = ({ children
     };
 
     const teachersSelectOptions = () => {
-        const sortedTeachers = [...(teachers || [])].sort((a, b) =>
-            a.name.localeCompare(b.name, "he"),
-        );
+        const sortedTeachers = [...(teachers || [])]
+            .filter((t) => t.role === TeacherRoleValues.REGULAR)
+            .sort((a, b) => a.name.localeCompare(b.name, "he"));
         return createSelectOptions<TeacherType>(sortedTeachers);
     };
 

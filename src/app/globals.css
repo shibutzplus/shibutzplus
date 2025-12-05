@@ -4,6 +4,7 @@
     --inner-background-color-bright: #F3F3F7;
     --inner-background-color-empty: #FFFFFF;
 
+
     --top-color: #fdfbfb;
     --top-color-hover: #f7f7f7;
 
@@ -125,4 +126,9 @@ body {
 a {
     color: inherit;
     text-decoration: none;
+}
+
+h3 {
+    font-size: 18px;
+    color: var(--dark-text-color);
 }

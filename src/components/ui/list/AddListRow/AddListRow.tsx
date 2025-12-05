@@ -41,6 +41,7 @@ function AddListRow<T extends Record<string, any>>({
     const handleInputChange = (key: keyof T) => (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setValues((prev) => ({ ...prev, [key]: value }));
+        setValidationErrors((prev) => ({ ...prev, [key]: undefined }));
         if (onInputChange) {
             onInputChange(value);
         }
