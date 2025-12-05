@@ -32,10 +32,15 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
         ? sortDailyColumnIdsByType(tableColumns, mainDailyTable, selectedDate)
         : [];
 
+    const isEmpty = !schedule || Object.keys(schedule).length === 0;
+
     return (
-        <div className={styles.previewTable}>
-            <HoursCol hours={TableRows} />
-            {schedule && Object.keys(schedule).length > 0 ? (
+        <div
+            className={styles.previewTable}
+            style={isEmpty ? { overflow: "hidden" } : undefined}
+        >
+            {!isEmpty && <HoursCol hours={TableRows} />}
+            {!isEmpty ? (
                 sortedTableColumns.map((colId, index) => (
                     <motion.div
                         key={colId}
