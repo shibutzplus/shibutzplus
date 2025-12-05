@@ -1,16 +1,20 @@
-// Server component layout: defines metadata and wraps children with the client layout
 import type { Metadata } from "next";
-import DailyScheduleLayoutClient from "./layoutClient";
+import { DailyTableProvider } from "@/context/DailyTableContext";
+import DailyPageLayout from "@/components/layout/pageLayouts/DailyPageLayout/DailyPageLayout";
+import DailySkeleton from "@/components/loading/skeleton/DailySkeleton/DailySkeleton";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
-  title: "שיבוץ יומי | שיבוץ+",
-  robots: "noindex, nofollow",
+    title: "שיבוץ יומי | שיבוץ+",
+    robots: "noindex, nofollow",
 };
 
-export default function DailyScheduleLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return <DailyScheduleLayoutClient>{children}</DailyScheduleLayoutClient>;
+export default function Layout({ children }: { children: React.ReactNode }) {
+    return (
+        <Suspense fallback={<DailySkeleton />}>
+            <DailyTableProvider>
+                <DailyPageLayout>{children}</DailyPageLayout>
+            </DailyTableProvider>
+        </Suspense>
+    );
 }

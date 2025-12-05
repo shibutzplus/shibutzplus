@@ -1,7 +1,7 @@
-// Server component layout: defines metadata and wraps children with the client layout
 import React from "react";
-import PrivatePageLayout from "@/components/layout/PrivatePageLayout/PrivatePageLayout";
+import router from "@/routes";
+import DetailsPageLayout from "@/components/layout/pageLayouts/DetailsPageLayout/DetailsPageLayout";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-    return <PrivatePageLayout>{children}</PrivatePageLayout>;
+    return <DetailsPageLayout pageTitle={router.teachers.title}>{children}</DetailsPageLayout>;
 }

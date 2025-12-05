@@ -1,0 +1,47 @@
+.topButtonsContainer {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.topBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 40px;
+    /* Default width for icon only */
+    height: var(--input-height);
+    font-size: 16px;
+    background-color: transparent;
+    color: var(--dark-text-color);
+    border-radius: var(--border-radius-cell);
+    border: var(--border-primary);
+    cursor: pointer;
+    transition: all 0.1s ease-in-out;
+}
+
+.btnText {
+    display: none;
+}
+
+.topBtn:hover {
+    background-color: var(--inner-background-color);
+    font-weight: 600;
+}
+
+.topBtn.active {
+    background-color: var(--skeleton-input-color);
+    font-weight: 600;
+}
+
+@media (min-width: 880px) {
+    .topBtn {
+        width: 190px;
+        border: none;
+    }
+
+    .btnText {
+        display: inline;
+    }
+}

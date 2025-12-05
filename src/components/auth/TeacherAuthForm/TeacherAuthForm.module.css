@@ -13,14 +13,14 @@
 .title {
   font-size: 2.5rem;
   font-weight: 700;
-  color: #1a202c;
+  color: var(--dark-text-color);
   margin-bottom: 1rem;
   text-align: center;
 }
 
 .subtitle {
   font-size: 1.1rem;
-  color: #718096;
+  color: var(--dark-text-color-active);
   margin-bottom: 2.5rem;
   text-align: center;
   line-height: 1.6;

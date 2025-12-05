@@ -1,0 +1,19 @@
+.selectContainer {
+    width: 100%;
+}
+
+.label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+
+.errorText {
+    color: #e53935;
+    font-size: 13px;
+    margin-top: 4px;
+    margin-right: 2px;
+    font-weight: 500;
+}

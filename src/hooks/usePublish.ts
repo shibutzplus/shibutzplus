@@ -5,8 +5,6 @@ import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { generateSchoolUrl } from "@/utils";
 import { useEffect, useState } from "react";
-import { useShareTextOrLink } from "./useShareTextOrLink";
-import routePath from "@/routes";
 import { getSessionPublishDates, setSessionPublishDates } from "@/lib/sessionStorage";
 
 const usePublish = () => {
@@ -15,7 +13,6 @@ const usePublish = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [btnTitle, setBtnTitle] = useState<string>("פרסום המערכת");
     const [isDisabled, setIsDisabled] = useState<boolean>(false);
-    const share = useShareTextOrLink();
 
     useEffect(() => {
         if (selectedDate && school) {
@@ -66,16 +63,7 @@ const usePublish = () => {
         }
     };
 
-    // Open history in a new tab with selected date
-    const onOpenHistory = () => {
-        if (!selectedDate || !school) return;
-        const base = new URL(routePath.history.p, window.location.origin);
-        base.searchParams.set("date", selectedDate);
-        base.searchParams.set("schoolId", school.id);
-        window.open(base.toString(), "_blank", "noopener,noreferrer");
-    };
-
-    return { publishDailySchedule, isLoading, onShareLink, onOpenHistory, btnTitle, isDisabled };
+    return { publishDailySchedule, isLoading, onShareLink, btnTitle, isDisabled };
 };
 
 export default usePublish;

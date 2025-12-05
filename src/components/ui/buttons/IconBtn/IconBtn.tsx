@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./IconBtn.module.css";
-import Loading from "@/components/core/Loading/Loading";
+import Loading from "@/components/loading/Loading/Loading";
 
 type IconBtnProps = {
     Icon: React.ReactNode;

@@ -7,9 +7,9 @@ import { useEffect, useState, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import GoogleIcon from "@/components/ui/assets/googleIcon";
-import Loading from "@/components/core/Loading/Loading";
-import HeroSection from "@/components/layout/HeroSection/HeroSection";
-import SignInLoadingPage from "@/components/layout/loading/SignInLoadingPage/SignInLoadingPage";
+import Loading from "@/components/loading/Loading/Loading";
+import HeroSection from "@/components/auth/HeroSection/HeroSection";
+import SignInLoadingPage from "@/components/loading/SignInLoadingPage/SignInLoadingPage";
 import { signInWithGoogle } from "@/app/actions/POST/signInAction";
 import { DEFAULT_REDIRECT } from "@/routes/protectedAuth";
 import routes from "@/routes";
@@ -85,7 +85,8 @@ const SignInContent: React.FC = () => {
 
     // Select school for Power User
     const handlePickSchool = (schoolId: string) => {
-        const target = (session?.user as any)?.status === "annual" ? DEFAULT_REDIRECT : routes.dailySchedule.p;
+        const target =
+            (session?.user as any)?.status === "annual" ? DEFAULT_REDIRECT : routes.dailySchedule.p;
         hasNavigatedRef.current = true;
         setShowSchoolPicker(false);
         setIsLoading(true);
@@ -130,12 +131,12 @@ const SignInContent: React.FC = () => {
                         <GoogleIcon /> משתמש רשום - התחברות
                     </button>
                     {error && <p className={styles.error}>{error}</p>}
-                    <div className={styles.registerLink}>
+                    <footer className={styles.registerLink}>
                         <Link href={EmailLink} className={styles.problemLink}>
                             <span>צרו קשר</span>
                             <span className={styles.emailLine}>shibutzplus@gmail.com</span>
                         </Link>
-                    </div>
+                    </footer>
                 </div>
             </section>
 

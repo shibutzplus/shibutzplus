@@ -1,3 +1,4 @@
+import { SelectOption } from "@/models/types";
 import { DailyScheduleType } from "@/models/types/dailySchedule";
 
 export const DAYS_OF_WEEK = ["א", "ב", "ג", "ד", "ה", "ו", "ש"];
@@ -11,7 +12,7 @@ export const ONE_WEEK = 7;
 export const ONE_DAY = 1;
 
 // Number of hours in a day
-export const HOURS_IN_DAY = 9;
+export const HOURS_IN_DAY = 10;
 
 // YYYY-MM-DD format
 export const getDateReturnString = (date: Date) => {
@@ -27,7 +28,6 @@ export const formatTMDintoDMY = (date: string) => {
 export const isYYYYMMDD = (s: string) => {
     return /^\d{4}-\d{2}-\d{2}$/.test(s);
 };
-
 
 export const getStringReturnDate = (date: string) => {
     return new Date(date);
@@ -179,4 +179,94 @@ export const pad2 = (n: number) => {
 
 export const daysInMonth = (year: number, month1to12: number) => {
     return new Date(year, month1to12, 0).getDate();
+};
+
+// -- Date Component Utilities -- //
+
+// Get current date components as strings
+export const getCurrentDateComponents = () => {
+    const now = new Date();
+    const year = `${now.getFullYear()}`;
+    const month = `${now.getMonth() + 1}`; // 1-12
+    const day = `${now.getDate()}`;
+    return { year, month, day };
+};
+
+// Parse YYYY-MM-DD string into components
+export const parseDateString = (dateStr: string) => {
+    if (!isYYYYMMDD(dateStr)) return null;
+
+    const year = dateStr.slice(0, 4);
+    const month = String(parseInt(dateStr.slice(5, 7), 10)); // "1".."12"
+    const day = String(parseInt(dateStr.slice(8, 10), 10)); // "1".."31"
+
+    return { year, month, day };
+};
+
+// Build YYYY-MM-DD string from components
+export const buildDateString = (year: string, month: string, day: string) => {
+    const yNum = parseInt(year, 10);
+    const mNum = parseInt(month, 10);
+    const dNum = parseInt(day, 10);
+    return `${yNum}-${pad2(mNum)}-${pad2(dNum)}`;
+};
+
+// Get today's date as YYYY-MM-DD string
+export const getTodayString = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1;
+    const day = now.getDate();
+    return `${year}-${pad2(month)}-${pad2(day)}`;
+};
+
+// Get initial month for school year (fallback to September if July/August)
+export const getSchoolYearInitialMonth = () => {
+    const currentMonth = new Date().getMonth() + 1; // 1-12
+    return currentMonth === 7 || currentMonth === 8 ? "9" : `${currentMonth}`;
+};
+
+// Generate day options for select dropdown
+export const generateDayOptions = (year: string, month: string) => {
+    const yNum = parseInt(year, 10);
+    const mNum = parseInt(month, 10);
+    const maxDays = daysInMonth(yNum, mNum);
+
+    return Array.from({ length: maxDays }, (_, i) => {
+        const d = i + 1;
+        return { value: `${d}`, label: `${d}` };
+    });
+};
+
+// Validate and clamp day to valid range for given month/year
+export const clampDayToMonth = (day: string, year: string, month: string) => {
+    const dNum = parseInt(day, 10);
+    const yNum = parseInt(year, 10);
+    const mNum = parseInt(month, 10);
+    const maxDays = daysInMonth(yNum, mNum);
+
+    return dNum > maxDays ? `${maxDays}` : day;
+};
+
+//TODO: check if whats going on here and if there is another functio that already does this
+// Choose default date based on current time (before/after 16:00)
+// - Before 16:00: prefer today if exists, else first available
+// - After 16:00: prefer tomorrow if exists, else today, else first available
+export const chooseDefaultDate = (options: SelectOption[]): string | undefined => {
+    if (!options || options.length === 0) return "";
+    const now = new Date();
+    const hour = now.getHours();
+    const today = getDateReturnString(now);
+    const tomorrow = getDateReturnString(new Date(now.getTime() + 24 * 60 * 60 * 1000));
+
+    const has = (val: string | undefined) => !!val && options.some((o) => o.value === val);
+
+    if (hour < 16) {
+        if (has(today)) return today;
+        return options[0].value;
+    } else {
+        if (has(tomorrow)) return tomorrow;
+        if (has(today)) return today;
+        return options[0].value;
+    }
 };

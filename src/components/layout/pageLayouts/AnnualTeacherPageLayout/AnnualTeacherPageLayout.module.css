@@ -1,0 +1,20 @@
+/* Desktop */
+.selectContainer {
+    width: var(--top-nav-select-width);
+    display: block;
+}
+
+.mobileSelectContainer {
+    width: 250px;
+}
+
+.pageTitle {
+    white-space: nowrap;
+}
+
+/* Mobile */
+@media (max-width: 720px) {
+    .selectContainer {
+        display: none;
+    }
+}

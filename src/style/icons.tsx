@@ -12,15 +12,22 @@ import {
     IoBook,
 } from "react-icons/io5";
 import { IoMdRefresh } from "react-icons/io";
-import { RiEdit2Fill, RiDeleteBin6Line } from "react-icons/ri";
+import { RiEdit2Fill, RiDeleteBin6Line, RiPassValidLine } from "react-icons/ri";
 import { BsMegaphoneFill, BsCalendar4Event } from "react-icons/bs";
-import { MdOutlineImageNotSupported, MdOutlineContentCopy, MdPersonAdd, MdPerson, MdSwapHoriz, MdOpenInNew, } from "react-icons/md";
+import {
+    MdOutlineImageNotSupported,
+    MdOutlineContentCopy,
+    MdPersonAdd,
+    MdPerson,
+    MdSwapHoriz,
+    MdOpenInNew,
+} from "react-icons/md";
 import { FaPlus, FaList } from "react-icons/fa6";
 import { FaSave, FaLink, FaShareAlt, FaQuestion } from "react-icons/fa";
 import { PiChairLight } from "react-icons/pi";
 import { GoHistory } from "react-icons/go";
 import { IoPersonOutline, IoCheckmarkCircle } from "react-icons/io5";
-import { LuEye } from "react-icons/lu";
+import { LuEye, LuEyeOff } from "react-icons/lu";
 import { FiCheckCircle } from "react-icons/fi";
 import { GrSchedule } from "react-icons/gr";
 
@@ -40,6 +47,7 @@ const Icons = {
     emptyList: FaList,
     event: BsCalendar4Event,
     eye: LuEye,
+    eyeOff: LuEyeOff,
     faq: FaQuestion,
     history: GoHistory,
     home: IoHomeOutline,
@@ -60,6 +68,8 @@ const Icons = {
     refresh: IoMdRefresh,
     success1: IoCheckmarkCircle,
     success2: FiCheckCircle,
+    validate: RiPassValidLine,
+    users: IoPeopleOutline,
 };
 
 export default Icons;

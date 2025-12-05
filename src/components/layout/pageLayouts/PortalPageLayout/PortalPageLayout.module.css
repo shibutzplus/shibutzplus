@@ -1,0 +1,24 @@
+/* Mobile (< 600px) */
+.dateSelectContainer {
+    width: 220px;
+}
+
+.topSelectContainer {
+    display: none;
+}
+
+.greeting {
+    width: fit-content;
+    max-width: 130px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Tablet and Desktop  */
+@media (min-width: 720px) {
+    .topSelectContainer {
+        display: block;
+        width: 200px;
+    }
+}

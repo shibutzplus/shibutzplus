@@ -1,7 +1,6 @@
 .wrapper {
     width: 100%;
     height: 100%;
-    padding: 6px 0px;
     box-sizing: border-box;
     position: relative;
     text-align: right;
@@ -9,13 +8,12 @@
 
 .placeholder {
     position: absolute;
-    top: 6px;
+    top: 0;
     color: var(--placeholder-color);
     pointer-events: none;
     font-size: 16px;
     line-height: 22px;
     z-index: 1;
-    direction: ltr;
     white-space: pre-line;
 }
 
@@ -46,7 +44,7 @@
 }
 
 .editor:focus {
-    outline: 1px solid var(--input-border);
+    outline: none;
 }
 
 .placeholder {

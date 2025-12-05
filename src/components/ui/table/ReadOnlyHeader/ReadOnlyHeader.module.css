@@ -1,15 +1,75 @@
+/* Mobile First (Used mainly by teacher portal) */
+.theadWithoutHeader,
+.theadWithHeader {
+    position: sticky;
+    top: calc(var(--header-height) + var(--header-height) + var(--padding-top-mobile));
+    z-index: 100;
+    background-color: var(--background);
+    z-index: 5;
+}
+
+.theadWithHeader {
+    top: calc(var(--header-height) + var(--header-height) + var(--padding-top-mobile));
+}
+
+.theadWithoutHeader {
+    top: 0;
+}
+
+.theadInsidePanel {
+    top: 0 !important;
+    z-index: 10;
+}
+
+.theadWithoutHeader::before,
+.theadWithHeader::before {
+    content: "";
+    position: absolute;
+    top: calc(var(--padding-top-desktop) * -1);
+    left: 0;
+    width: 100%;
+    height: calc(var(--padding-top-desktop) * 2);
+    background-color: var(--background-color);
+    z-index: -1;
+}
+
 .emptyTrHeader {
-    background-color: var(--table-headers-color);
-    border-left: var(--border-primary);
-    padding: 12px;
-    text-align: center;
-    width: var(--annual-table-min-col-width);
+    background-color: var(--background-color) !important;
+    height: var(--table-annual-header-height);
+    width: 10px;
+    min-width: 10px;
 }
 
 .trHeader {
-    padding: 12px;
+    height: var(--table-annual-header-height);
     text-align: center;
-    min-width: var(--annual-table-min-col-width);
+    color: var(--dark-text-color);
     font-weight: 600;
-    border-left: var(--border-primary);
+    background-color: #E1E1EA;
+}
+
+.hourCol {
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+    background-color: var(--inner-background-color);
+    width: 40px;
+    min-width: 40px;
+    max-width: 40px;
+}
+
+.trHeader:nth-child(3) {
+    border-top-right-radius: var(--border-radius-table);
+}
+
+.trHeader:last-child {
+    border-top-left-radius: var(--border-radius-table);
+}
+
+/* Desktop */
+@media (min-width: 600px) {
+
+    .theadWithHeader,
+    .theadWithoutHeader {
+        top: calc(var(--header-height) + var(--padding-top-desktop));
+    }
 }

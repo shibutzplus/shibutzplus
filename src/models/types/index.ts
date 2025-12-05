@@ -11,3 +11,5 @@ export type GroupOption = {
 };
 
 export type Pair = [string, string];
+
+export type AppType = "public" | "private";

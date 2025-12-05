@@ -1,0 +1,87 @@
+/* Desktop First (Wide > 1130px) */
+.topNavLeft {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    width: 230px;
+    min-width: 230px;
+    max-width: 230px;
+    margin-left: 0;
+}
+
+.topNavSelectContainer {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.desktopActionBtns {
+    display: flex;
+    gap: 15px;
+}
+
+.selectContainer {
+    width: var(--top-nav-select-width);
+    transform: translateY(1px);
+}
+
+.dateSelectContainer {
+    width: 250px;
+}
+
+.titleContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+/* Intermediate (671px - 1130px) */
+@media (max-width: 1130px) {
+    .desktopActionBtns {
+        display: none;
+    }
+
+    .mobileActionBtns {
+        display: block;
+    }
+
+    .mainContent {
+        margin-bottom: calc(var(--header-height) + var(--padding-width-mobile));
+    }
+}
+
+
+/* Mobile (<= 720px) */
+@media (max-width: 720px) {
+
+    .topNavSelectContainer {
+        display: none;
+    }
+
+    .dateNav {
+        display: flex;
+        padding-top: 5px;
+    }
+}
+
+
+/* Mobile (<= 380px) */
+@media (max-width: 380px) {
+    .topNavLeft {
+        display: flex;
+        justify-content: end;
+        align-items: center;
+        width: 150px;
+        min-width: 150px;
+        max-width: 150px;
+        margin-left: 0;
+    }
+}
+
+/* Mobile (<= 550px) */
+@media (max-width: 550px) {
+    .previewModeLabel {
+        display: none;
+    }
+}
