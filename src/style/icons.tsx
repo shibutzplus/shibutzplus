@@ -27,7 +27,7 @@ import { FaSave, FaLink, FaShareAlt, FaQuestion } from "react-icons/fa";
 import { PiChairLight } from "react-icons/pi";
 import { GoHistory } from "react-icons/go";
 import { IoPersonOutline, IoCheckmarkCircle } from "react-icons/io5";
-import { LuEye } from "react-icons/lu";
+import { LuEye, LuEyeOff } from "react-icons/lu";
 import { FiCheckCircle } from "react-icons/fi";
 import { GrSchedule } from "react-icons/gr";
 
@@ -47,6 +47,7 @@ const Icons = {
     emptyList: FaList,
     event: BsCalendar4Event,
     eye: LuEye,
+    eyeOff: LuEyeOff,
     faq: FaQuestion,
     history: GoHistory,
     home: IoHomeOutline,

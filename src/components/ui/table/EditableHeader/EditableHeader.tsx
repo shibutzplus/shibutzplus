@@ -36,13 +36,14 @@ const EditableHeader: React.FC<EditableHeaderProps> = ({
                     className={styles.clearButton}
                     onClick={handleDeleteColumn}
                     size={20}
+                    title="מחיקת עמודה"
                 />
                 {onEyeClick && (
                     <Icons.eye
                         className={styles.eyeButton}
                         onClick={onEyeClick}
                         size={24}
-                        title="לחצו כאן כדי לראות או להזין את חומרי הלימוד"
+                        title="לחצו כאן כדי לצפות או להזין את חומרי הלימוד"
                     />
                 )}
                 {children}
