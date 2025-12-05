@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { NextPage } from "next";
 import Preloader from "@/components/ui/Preloader/Preloader";
 import { useDailyTableContext } from "@/context/DailyTableContext";
@@ -9,36 +9,71 @@ import DailyTable from "@/components/tables/dailyScheduleTable/DailyTable/DailyT
 import PreviewTable from "@/components/tables/previewTable/PreviewTable/PreviewTable";
 import EmptyTable from "@/components/empty/EmptyTable/EmptyTable";
 import LoadingPage from "@/components/loading/LoadingPage/LoadingPage";
+import { TeacherTableProvider } from "@/context/TeacherTableContext";
+import SlidingPanel from "@/components/ui/SlidingPanel/SlidingPanel";
+import TeacherTable from "@/components/tables/teacherScheduleTable/TeacherTable/TeacherTable";
+import { TeacherType } from "@/models/types/teachers";
 
 const DailySchedulePage: NextPage = () => {
     const { isLoading, isEditMode, selectedDate, mainDailyTable, isLoadingEditPage } =
         useDailyTableContext();
 
+    const [isPanelOpen, setIsPanelOpen] = useState<boolean>(false);
+    const [teacher, setTeacher] = useState<TeacherType>();
+
+    const handleTeacherClick = async (teacher: TeacherType) => {
+        setTeacher(teacher);
+        setIsPanelOpen(true);
+    };
+
+    const handleClosePanel = () => {
+        setIsPanelOpen(false);
+    };
+
     if (isLoading)
         return (
-            <div style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)'
-            }}>
+            <div
+                style={{
+                    position: "absolute",
+                    top: "40%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                }}
+            >
                 <Preloader />
             </div>
         );
     if (isLoadingEditPage) return <LoadingPage />;
 
     return (
-        <section className={`${styles.container} ${!isEditMode ? styles.previewContainer : ""}`}>
-            {isEditMode ? (
-                <DailyTable mainDailyTable={mainDailyTable} selectedDate={selectedDate} />
-            ) : (
-                <PreviewTable
-                    mainDailyTable={mainDailyTable}
-                    selectedDate={selectedDate}
-                    EmptyTable={EmptyTable}
-                />
-            )}
-        </section>
+        <TeacherTableProvider>
+            <section className={styles.container}>
+                {isEditMode ? (
+                    <DailyTable
+                        mainDailyTable={mainDailyTable}
+                        selectedDate={selectedDate}
+                        onTeacherClick={handleTeacherClick}
+                    />
+                ) : (
+                    <PreviewTable
+                        mainDailyTable={mainDailyTable}
+                        selectedDate={selectedDate}
+                        EmptyTable={EmptyTable}
+                        onTeacherClick={handleTeacherClick}
+                    />
+                )}
+
+                <SlidingPanel
+                    isOpen={isPanelOpen}
+                    onClose={handleClosePanel}
+                    title={teacher?.name || ""}
+                >
+                    {teacher ? (
+                        <TeacherTable teacher={teacher} selectedDate={selectedDate} isInsidePanel />
+                    ) : null}
+                </SlidingPanel>
+            </section>
+        </TeacherTableProvider>
     );
 };
 

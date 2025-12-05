@@ -1,0 +1,143 @@
+/* Desktop */
+.pageLayout {
+    width: 100%;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--background);
+}
+
+.mainContent {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    width: 100%;
+}
+
+.fullHeight {
+    margin-bottom: 0 !important;
+}
+
+.notFullHeight {
+    margin-bottom: 0;
+}
+
+.topNavLayout {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    inset: 0 0 auto 0;
+    width: 100%;
+    z-index: 20;
+}
+
+.topNavSection {
+    box-shadow: var(--box-shadow-primary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--header-height);
+    background: var(--top-color);
+    padding: 0 var(--padding-width-desktop);
+    gap: 3em;
+}
+
+.topNavRight {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 80%;
+}
+
+.topNavLeft {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    gap: 20px;
+    margin-left: 0;
+}
+
+/* portal has flex: 0 0 auto; */
+/* portal not have width: 30%; */
+/* portal not have margin-left: 0; */
+
+
+.dateNav {
+    width: 100%;
+    height: var(--header-height);
+    background-color: var(--background-color);
+    align-items: center;
+    justify-content: center;
+    z-index: -1;
+    padding: none;
+    padding-top: 5px;
+    box-sizing: border-box;
+    display: none;
+}
+
+.mobileActionBtns {
+    display: none;
+}
+
+.logo {
+    display: inline-block;
+}
+
+.noLogo {
+    display: inline-block;
+}
+
+/* Intermediate (601px - 1130px) */
+@media (max-width: 1130px) {
+
+    .mobileActionBtns {
+        display: block;
+    }
+
+    .fullHeight {
+        margin-bottom: 0 !important;
+    }
+
+    .notFullHeight {
+        margin-bottom: calc(var(--header-height) + var(--padding-width-mobile));
+    }
+}
+
+/* Mobile (<= 720px) */
+@media (max-width: 720px) {
+
+    .dateNav {
+        display: flex;
+        padding: 0 var(--padding-width-mobile);
+    }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .topNavSection {
+        padding: 0;
+        gap: 0;
+        height: auto;
+        min-height: var(--header-height);
+        padding-bottom: 5px;
+    }
+
+    .topNavRight {
+        width: 50%;
+        gap: 10px;
+    }
+
+    .topNavLeft {
+        width: 50%;
+        margin-left: 10px;
+        gap: 9px;
+    }
+
+
+    /* potal has display: none; */
+    /* anuual not have padding: 0 var(--padding-width-mobile); */
+
+    .noLogo {
+        display: none;
+    }
+}

@@ -1,9 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import styles from "./PortalPageLayout.module.css";
-import Logo from "@/components/ui/Logo/Logo";
-import HamburgerNav, { HamburgerButton } from "@/components/navigation/HamburgerNav/HamburgerNav";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import { usePortalContext } from "@/context/PortalContext";
 import PortalNav from "@/components/navigation/PortalNav/PortalNav";
@@ -15,6 +13,7 @@ import { usePathname } from "next/navigation";
 import router from "@/routes";
 import { TeacherRoleValues } from "@/models/types/teachers";
 import { useTeacherTableContext } from "@/context/TeacherTableContext";
+import PageLayout from "../../PageLayout/PageLayout";
 
 type PortalPageLayoutProps = {
     children: React.ReactNode;
@@ -34,7 +33,6 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
     } = usePortalContext();
     const { isPortalLoading, handlePortalRefresh } = useTeacherTableContext();
     const { hasUpdate, resetUpdate } = usePollingUpdates();
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const isRegularTeacher = teacher?.role === TeacherRoleValues.REGULAR;
 
     const isLoading = pathname.includes(router.teacherPortal.p)
@@ -52,70 +50,57 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
     };
 
     return (
-        <>
-            <div className={styles.pageLayout}>
-                <header className={styles.topNavLayout}>
-                    <section className={styles.topNavSection}>
-                        <div className={styles.topNavRight}>
-                            <HamburgerButton
-                                onClick={() => setIsMenuOpen((v) => !v)}
-                                isOpen={isMenuOpen}
-                            />
-                            <h3 className={styles.greeting}>{greetingTeacher(teacher)}</h3>
-                            <div className={styles.topSelectContainer}>
-                                <DynamicInputSelect
-                                    options={datesOptions}
-                                    value={selectedDate}
-                                    isDisabled={isLoading}
-                                    onChange={handleDayChange}
-                                    isSearchable={false}
-                                    placeholder="בחר יום..."
-                                    hasBorder
-                                />
-                            </div>
-                            <div
-                                className={`${styles.refreshContainer} ${hasUpdate ? styles.refreshAlert : ""}`}
-                            >
-                                <IconBtn
-                                    Icon={<Icons.refresh size={26} />}
-                                    onClick={handleRefresh}
-                                    disabled={isLoading}
-                                    isLoading={isLoading}
-                                />
-                            </div>
-                        </div>
-                        <div className={styles.topNavLeft}>
-                            {isRegularTeacher ? (
-                                <div>
-                                    <PortalNav />
-                                </div>
-                            ) : null}
-                            <div className={styles.logoContainer}>
-                                <Logo size="S" />
-                            </div>
-                        </div>
-                    </section>
-                    <div className={styles.DateNav}>
-                        <div className={styles.dateSelectContainer}>
-                            <DynamicInputSelect
-                                options={datesOptions}
-                                value={selectedDate}
-                                isDisabled={isLoading}
-                                onChange={handleDayChange}
-                                isSearchable={false}
-                                placeholder="בחר יום..."
-                                hasBorder
-                            />
-                        </div>
+        <PageLayout
+            appType="public"
+            hasMobileLogo={false}
+            HeaderRightActions={
+                <>
+                    <h3 className={styles.greeting}>{greetingTeacher(teacher)}</h3>
+                    <div className={styles.topSelectContainer}>
+                        <DynamicInputSelect
+                            options={datesOptions}
+                            value={selectedDate}
+                            isDisabled={isLoading}
+                            onChange={handleDayChange}
+                            isSearchable={false}
+                            placeholder="בחר יום..."
+                            hasBorder
+                        />
                     </div>
-                </header>
-                <main className={styles.mainContent}>{children}</main>
-            </div>
-            <HamburgerNav
-                hamburgerType="public"
-                isOpen={isMenuOpen}
-                onClose={() => setIsMenuOpen(false)}
-            />
-        </>
+                    <div
+                        className={`${styles.refreshContainer} ${hasUpdate ? styles.refreshAlert : ""}`}
+                    >
+                        <IconBtn
+                            Icon={<Icons.refresh size={26} />}
+                            onClick={handleRefresh}
+                            disabled={isLoading}
+                            isLoading={isLoading}
+                        />
+                    </div>
+                </>
+            }
+            HeaderLeftActions={
+                isRegularTeacher ? (
+                    <div>
+                        <PortalNav />
+                    </div>
+                ) : null
+            }
+            BottomActions={
+                <div className={styles.dateSelectContainer}>
+                    <DynamicInputSelect
+                        options={datesOptions}
+                        value={selectedDate}
+                        isDisabled={isLoading}
+                        onChange={handleDayChange}
+                        isSearchable={false}
+                        placeholder="בחר יום..."
+                        hasBorder
+                    />
+                </div>
+            }
+        >
+            {children}
+        </PageLayout>
     );
 }

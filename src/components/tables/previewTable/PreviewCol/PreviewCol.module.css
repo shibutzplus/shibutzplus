@@ -1,13 +1,16 @@
 .previewColumn {
     background-color: var(--inner-background-color);
+    width: var(--table-daily-col-width);
     min-width: var(--table-daily-col-width);
-    height: var(--table-daily-full-height);
+    max-width: var(--table-daily-col-width);
     display: flex;
     flex-direction: column;
     padding: 0;
     margin: 0;
-    border-radius: var(--border-radius-table);
-    overflow: hidden;
+    border-start-start-radius: var(--border-radius-table);
+    border-start-end-radius: var(--border-radius-table);
+    border-end-end-radius: var(--border-radius-cell);
+    border-end-start-radius: var(--border-radius-cell);
     position: relative;
 }
 
@@ -17,15 +20,6 @@
     box-sizing: border-box;
     padding: 5px;
     gap: 5px;
-}
-
-.cell {
-    height: var(--table-daily-cell-height);
-    width: 100%;
-    background-color: var(--tab-color);
-    color: var(--dark-text-color);
-    border-radius: var(--border-radius-cell);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    margin-top: var(--table-daily-header-height);
+    overflow: hidden;
 }

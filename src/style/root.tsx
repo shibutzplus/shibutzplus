@@ -1,5 +1,7 @@
 export const BackgroundColor: string = "#FCFDFF";
-export const InnerBackgroundColor: string = "#F2F6F9";
+export const InnerBackgroundColor: string = "#E1E1EA";
+export const InnerBackgroundColorBright: string = "#F3F3F7";
+export const InnerBackgroundColorEmpty: string = "#FFFFFF";
 
 export const TopColor: string = "#FFFFFF";
 export const TopColorHover: string = "#f7f7f7";
@@ -53,6 +55,8 @@ export const ButtonHoverBackgroundColor: string = "#333";
 export const ButtonDisabledColor: string = "#b9b9b9";
 export const ButtonDisabledBackgroundColor: string = "#919191";
 
+
+export const HoursInDay: string = "10";
 export const InputHeight: string = "40px";
 
 export const BorderPrimary: string = "1px solid var(--dark-border-color)";
@@ -63,24 +67,26 @@ export const BoxShadowBtn: string = "0px 4px 4px #00000005";
 
 export const BorderRadiusInput: string = "4px";
 export const BorderRadiusTable: string = "20px";
-export const BorderRadiusCell: string = "10px";
+export const BorderRadiusCell: string = "6px";
 
-export const HeaderHeight: string = "60px";
+export const HeaderHeight: string = "55px";
 
 export const PaddingTopDesktop: string = "1rem";
 export const PaddingTopMobile: string = "0.2rem";
 export const PaddingWidthDesktop: string = "10px";
 export const PaddingWidthMobile: string = "5px";
 
-export const TopNavSelectWidth: string = "300px";
+export const TopNavSelectWidth: string = "250px";
 
 export const TableDailyColWidth: string = "240px";
-export const TableDailyHeaderHeight: string = "50px";
-export const TableDailyCellHeight: string = "96px";
+export const TableDailyColInnerWidth: string = "calc(var(--table-daily-col-width) - 40px)";
+export const TableDailyHeaderHeight: string = "45px";
+export const TableDailyCellHeight: string = "90px";
 export const TableDailyFullHeight: string =
-    "calc(var(--table-daily-header-height) + var(--table-daily-cell-height) * var(--hours-in-day) + (5px * 10))";
+    "calc(var(--table-daily-header-height) + var(--table-daily-cell-height) * var(--hours-in-day) + (5px * 11))";
 
 export const TableAnnualColWidth: string = "200px";
+export const TableAnnualColWidthMobile: string = "230px";
 export const TableAnnualHeaderHeight: string = "40px";
 export const TableAnnualCellHeight: string = "96px";
 export const TableAnnualFullHeight: string =

@@ -20,6 +20,13 @@ const InputText: React.FC<InputTextProps> = ({
     hasBorder = true,
     ...props
 }) => {
+    const isControlled = props.value !== undefined;
+    // Check for empty string or null/undefined, but allow 0
+    const isEmpty = isControlled ? (!props.value && props.value !== 0) : false;
+
+    // Hide error if empty
+    const showError = error && !isEmpty;
+
     return (
         <div className={styles.inputContainer}>
             {label && (
@@ -31,7 +38,7 @@ const InputText: React.FC<InputTextProps> = ({
                 id={id}
                 className={`
                     ${readonly ? styles.readonly : styles.input} 
-                    ${error ? styles.inputError : ""} 
+                    ${showError ? styles.inputError : ""} 
                     ${!hasBorder ? styles.noBorder : ""} 
                     ${className || ""}
                 `}
@@ -39,7 +46,7 @@ const InputText: React.FC<InputTextProps> = ({
                 readOnly={readonly}
                 {...props}
             />
-            {error && <p className={styles.errorText}>{error}</p>}
+            {showError && <p className={styles.errorText}>{error}</p>}
         </div>
     );
 };

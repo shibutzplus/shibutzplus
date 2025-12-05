@@ -51,7 +51,7 @@ const PreviewTeacherHeader: React.FC<PreviewTeacherHeaderProps> = ({
                 style={{ backgroundColor: COLOR_BY_TYPE[type] }}
                 onClick={handleClick}
                 title={
-                    isClickable ? "לחצו כאן כדי לראות או להזין את חומרי הלימוד" : undefined
+                    isClickable ? "לחצו כאן כדי לצפות או להזין את חומרי הלימוד" : undefined
                 }
             >
                 {appType === "private" && isClickable && (
