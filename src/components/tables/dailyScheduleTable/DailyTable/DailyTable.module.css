@@ -1,15 +1,13 @@
 .dailyTable {
     display: flex;
     gap: var(--table-cols-gap);
-    overflow: scroll;
-    min-width: 100vw;
+
+    width: 100%;
     padding: 0 10px;
     box-sizing: border-box;
     position: relative;
     right: 0;
-    height: calc(100dvh - var(--header-height) - (var(--padding-top-desktop) * 2));
-    max-height: calc(100dvh - var(--header-height) - (var(--padding-top-desktop) * 2));
-    /* Prevent browser bounce scroll behavior  */
+    height: 100%;
     overflow: auto;
     overscroll-behavior: contain;
 }
@@ -17,8 +15,6 @@
 /* Mobile */
 @media (max-width: 720px) {
     .dailyTable {
-        height: calc(100dvh - (var(--header-height) * 3) - (var(--padding-top-mobile) * 3));
-        max-height: calc(100dvh - (var(--header-height) * 3) - (var(--padding-top-mobile) * 3));
         padding: 0 5px;
     }
 }
