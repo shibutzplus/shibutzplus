@@ -52,7 +52,6 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
     return (
         <PageLayout
             appType="public"
-            hasMobileLogo={false}
             HeaderRightActions={
                 <>
                     <h3 className={styles.greeting}>{greetingTeacher(teacher)}</h3>

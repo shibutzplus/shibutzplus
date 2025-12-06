@@ -10,6 +10,12 @@
     justify-content: center;
     gap: 15px;
     height: var(--header-height);
-    padding: 0 var(--padding-width-mobile);
+    padding: 0 var(--padding-width);
     box-sizing: border-box;
+}
+
+@media (max-width: 450px) {
+    .mobileNav button svg {
+        display: none;
+    }
 }

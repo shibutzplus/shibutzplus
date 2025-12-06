@@ -38,7 +38,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     id,
     value,
     onChange,
-    placeholder = "בחר אופציה...",
+    placeholder = "בחרו ערך...",
     isSearchable = true,
     isAllowAddNew = false,
     isDisabled = false,

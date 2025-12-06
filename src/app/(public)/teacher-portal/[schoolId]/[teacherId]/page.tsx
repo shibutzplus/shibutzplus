@@ -11,7 +11,7 @@ import TeacherTable from "@/components/tables/teacherScheduleTable/TeacherTable/
 import { useTeacherTableContext } from "@/context/TeacherTableContext";
 
 const TeacherPortalPage: NextPage = () => {
-    const { selectedDate, teacher, setTeacherAndSchool } = usePortalContext();
+    const { selectedDate, teacher, setTeacherAndSchool, isDatesLoading } = usePortalContext();
     const { isPortalLoading, fetchTeacherScheduleDate } = useTeacherTableContext();
 
     const params = useParams();
@@ -34,7 +34,7 @@ const TeacherPortalPage: NextPage = () => {
         fetchTeacherScheduleDate(teacher, selectedDate);
     }, [selectedDate, teacher?.id, schoolId]);
 
-    if (isPortalLoading) return <TeacherPortalSkeleton />;
+    if (!teacher || isDatesLoading || isPortalLoading) return <TeacherPortalSkeleton />;
 
     return (
         <div className={styles.container}>

@@ -1,6 +1,6 @@
 /* Mobile */
 .container {
-  width: calc(100% - (var(--padding-width-desktop) * 2));
+  width: calc(100% - (var(--padding-width) * 2));
   margin: 0 auto;
   box-sizing: border-box;
   padding-top: calc(var(--header-height) + var(--header-height) + var(--padding-top-mobile));
@@ -10,7 +10,7 @@
 /* Desktop */
 @media (min-width: 600px) {
   .container {
-    width: calc(100% - (var(--padding-width-desktop) * 2));
+    width: calc(100% - (var(--padding-width) * 2));
     margin: 0 auto;
     box-sizing: border-box;
     padding-top: calc(var(--header-height) + var(--padding-top-desktop));

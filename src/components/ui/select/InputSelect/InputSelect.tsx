@@ -42,7 +42,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
     id,
     value,
     onChange,
-    placeholder = "בחר אופציה...",
+    placeholder = "בחרו ערך...",
     isSearchable = true,
     isDisabled = false,
     hasBorder = false,

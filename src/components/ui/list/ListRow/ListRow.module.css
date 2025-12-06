@@ -1,4 +1,4 @@
-/* Desktop First */
+/* > 800 */
 .listRow {
     width: 95%;
     background-color: var(--tab-color);
@@ -23,8 +23,8 @@
     gap: 0;
 }
 
-/* Mobile */
-@media (max-width: 1024px) {
+/* <= 800 */
+@media (max-width: 800px) {
     .listRow {
         width: 95%;
         gap: 1rem;

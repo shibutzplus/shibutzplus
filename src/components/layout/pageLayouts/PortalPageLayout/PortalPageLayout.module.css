@@ -1,12 +1,3 @@
-/* Mobile (< 600px) */
-.dateSelectContainer {
-    width: 220px;
-}
-
-.topSelectContainer {
-    display: none;
-}
-
 .greeting {
     width: fit-content;
     max-width: 130px;

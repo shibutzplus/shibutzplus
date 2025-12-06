@@ -35,7 +35,7 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
     id,
     value = [],
     onChange,
-    placeholder = "בחר אופציה...",
+    placeholder = "בחרו ערך...",
     isSearchable = true,
     isAllowAddNew = false,
     isDisabled = false,

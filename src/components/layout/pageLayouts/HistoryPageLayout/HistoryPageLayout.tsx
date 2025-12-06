@@ -17,7 +17,8 @@ export default function HistoryPageLayout({ children }: HistoryPageLayoutProps) 
             leftSideWidth={40}
             HeaderRightActions={
                 <>
-                    <h3>{router.history.title}</h3>
+                    <h3 className={styles.pageTitleLong}>{router.history.title}</h3>
+                    <h3 className={styles.pageTitleShort}>היסטוריה</h3>
                     <div className={styles.selectContainer}>
                         <InputDate />
                     </div>

@@ -1,34 +1,4 @@
-/* Desktop First (Wide > 1130px) */
-.topNavLeft {
-    display: flex;
-    justify-content: end;
-    align-items: center;
-    width: 230px;
-    min-width: 230px;
-    max-width: 230px;
-    margin-left: 0;
-}
-
-.topNavSelectContainer {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.desktopActionBtns {
-    display: flex;
-    gap: 15px;
-}
-
-.selectContainer {
-    width: var(--top-nav-select-width);
-    transform: translateY(1px);
-}
-
-.dateSelectContainer {
-    width: 250px;
-}
-
+/* Desktop > 1270px */
 .titleContainer {
     display: flex;
     flex-direction: column;
@@ -36,51 +6,81 @@
     justify-content: center;
 }
 
-/* Intermediate (671px - 1130px) */
-@media (max-width: 1130px) {
-    .desktopActionBtns {
+.contentWithBottomMargin {
+    height: 100%;
+}
+
+.contentFullHeight {
+    height: 100%;
+}
+
+.bar1DateContainer {
+    width: 250px;
+    min-width: 250px;
+    max-width: 250px;
+}
+
+.bar2DateContainer {
+    width: 250px;
+    min-width: 250px;
+    max-width: 250px;
+    display: none;
+}
+
+.spacer {
+    width: 15px;
+}
+
+.topBarActionBtns {
+    display: flex;
+    gap: 15px;
+}
+
+.bottomBarActionBtns {
+    display: none;
+}
+
+/* <= 1270px */
+@media (max-width: 1270px) {
+    .topBarActionBtns {
         display: none;
     }
 
-    .mobileActionBtns {
+    .spacer {
+        display: none;
+    }
+
+    .bottomBarActionBtns {
         display: block;
     }
 
-    .mainContent {
-        margin-bottom: calc(var(--header-height) + var(--padding-width-mobile));
+    .contentWithBottomMargin {
+        margin-bottom: calc(var(--header-height) + var(--padding-width));
     }
 }
 
 
-/* Mobile (<= 720px) */
-@media (max-width: 720px) {
+/* <= 715px */
+@media (max-width: 715px) {
 
-    .topNavSelectContainer {
+    .bar1DateContainer,
+    .spacer {
         display: none;
     }
 
-    .dateNav {
+    .bar2DateContainer {
+        display: block;
+    }
+
+    .bar2DateSection {
         display: flex;
-        padding-top: 5px;
+        justify-content: center;
+        padding-top: 10px;
     }
 }
 
-
-/* Mobile (<= 380px) */
-@media (max-width: 380px) {
-    .topNavLeft {
-        display: flex;
-        justify-content: end;
-        align-items: center;
-        width: 150px;
-        min-width: 150px;
-        max-width: 150px;
-        margin-left: 0;
-    }
-}
-
-/* Mobile (<= 550px) */
-@media (max-width: 550px) {
+/* <= 830px */
+@media (max-width: 830px) {
     .previewModeLabel {
         display: none;
     }

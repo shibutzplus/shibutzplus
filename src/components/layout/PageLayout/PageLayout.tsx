@@ -13,8 +13,6 @@ type PageLayoutProps = {
     HeaderLeftActions?: React.ReactNode;
     BottomActions?: React.ReactNode;
     MobileActions?: React.ReactNode;
-    isFullHeight?: boolean;
-    hasMobileLogo?: boolean;
     leftSideWidth?: number;
 };
 
@@ -25,8 +23,6 @@ export default function PageLayout({
     HeaderLeftActions,
     BottomActions,
     MobileActions,
-    isFullHeight = true,
-    hasMobileLogo = true,
     leftSideWidth = 230,
 }: PageLayoutProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -34,8 +30,8 @@ export default function PageLayout({
     return (
         <>
             <div className={styles.pageLayout}>
-                <header className={styles.topNavLayout}>
-                    <section className={styles.topNavSection}>
+                <header className={styles.topBarLayout}>
+                    <section className={styles.topBarSection}>
                         <div className={styles.topNavRight}>
                             <HamburgerButton
                                 onClick={() => setIsMenuOpen((v) => !v)}
@@ -45,20 +41,20 @@ export default function PageLayout({
                         </div>
                         <div className={styles.topNavLeft} style={{ width: leftSideWidth }}>
                             {HeaderLeftActions}
-                            <div className={hasMobileLogo ? styles.logo : styles.noLogo}>
+                            <div className={styles.logo}>
                                 <Logo />
                             </div>
                         </div>
                     </section>
-                    {BottomActions ? <div className={styles.dateNav}>{BottomActions}</div> : null}
+                    {BottomActions}
                 </header>
                 <main
-                    className={`${styles.mainContent} ${isFullHeight ? styles.fullHeight : styles.notFullHeight}`}
+                    className={styles.mainContent}
                 >
                     {children}
                 </main>
             </div>
-            {MobileActions ? <div className={styles.mobileActionBtns}>{MobileActions}</div> : null}
+            {MobileActions}
             <HamburgerNav
                 hamburgerType={appType}
                 isOpen={isMenuOpen}

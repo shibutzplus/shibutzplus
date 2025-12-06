@@ -21,8 +21,6 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
     return (
         <PageLayout
             appType="private"
-            isFullHeight={!isEditMode}
-            hasMobileLogo={false}
             HeaderRightActions={
                 <>
                     <div className={styles.titleContainer}>
@@ -33,53 +31,63 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
                             )}
                         </h3>
                     </div>
-                    <div className={styles.topNavSelectContainer}>
-                        <div className={styles.selectContainer}>
-                            <DynamicInputSelect
-                                options={daysSelectOptions()}
-                                value={selectedDate}
-                                isDisabled={isLoading}
-                                onChange={handleDayChange}
-                                isSearchable={false}
-                                placeholder="בחרו יום..."
-                                hasBorder={true}
-                                isBold={false}
-                            />
-                        </div>
-
-                        {isEditMode ? (
-                            <div className={styles.desktopActionBtns}>
-                                <DailyActionBtns position="left" />
-                            </div>
-                        ) : null}
+                    <div className={styles.bar1DateContainer}>
+                        <DynamicInputSelect
+                            options={daysSelectOptions()}
+                            value={selectedDate}
+                            isDisabled={isLoading}
+                            onChange={handleDayChange}
+                            isSearchable={false}
+                            placeholder="בחרו יום..."
+                            hasBorder={true}
+                            isBold={false}
+                        />
                     </div>
+
+                    <div className={styles.spacer} />
+
+                    {isEditMode ? (
+                        <div className={styles.topBarActionBtns}>
+                            <DailyActionBtns position="left" />
+                        </div>
+                    ) : null}
                 </>
             }
             HeaderLeftActions={<DailyPublishActionBtns />}
             BottomActions={
-                <div className={styles.dateSelectContainer}>
-                    <DynamicInputSelect
-                        options={daysSelectOptions()}
-                        value={selectedDate}
-                        isDisabled={isLoading}
-                        onChange={handleDayChange}
-                        isSearchable={false}
-                        placeholder="בחר יום..."
-                        hasBorder={true}
-                        isBold={false}
-                        isCentered
-                    />
+                <div className={styles.bar2DateSection}>
+                    <div className={styles.bar2DateContainer}>
+                        <DynamicInputSelect
+                            options={daysSelectOptions()}
+                            value={selectedDate}
+                            isDisabled={isLoading}
+                            onChange={handleDayChange}
+                            isSearchable={false}
+                            placeholder="בחר יום..."
+                            hasBorder={true}
+                            isBold={false}
+                            isCentered
+                        />
+                    </div>
                 </div>
             }
             MobileActions={
                 isEditMode ? (
-                    <MobileNavLayout>
-                        <DailyActionBtns position="top" />
-                    </MobileNavLayout>
+                    <div className={styles.bottomBarActionBtns}>
+                        <MobileNavLayout>
+                            <DailyActionBtns position="top" />
+                        </MobileNavLayout>
+                    </div>
                 ) : null
             }
         >
-            {children}
+            <div
+                className={
+                    isEditMode ? styles.contentWithBottomMargin : styles.contentFullHeight
+                }
+            >
+                {children}
+            </div>
         </PageLayout>
     );
 }

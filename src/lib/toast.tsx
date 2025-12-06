@@ -5,8 +5,7 @@ export const successToast = (message: string, duration = 5000) =>
     toast((t) => <ClosableToast t={t} message={message} variant="default" />, {
         duration,
         style: {
-            background: "#e0f8e0",
-            color: "#14532d",
+            background: "#F3F3F7",
             boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.5)",
         },
     })

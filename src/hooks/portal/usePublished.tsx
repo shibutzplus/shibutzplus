@@ -6,7 +6,7 @@ import { populateDailyScheduleTable } from "@/services/daily/populate";
 import { useState } from "react";
 
 export const usePublished = (schoolId?: string, selectedDate?: string, teacher?: TeacherType) => {
-    const [isPublishLoading, setIsPublishLoading] = useState<boolean>(true);
+    const [isPublishLoading, setIsPublishLoading] = useState<boolean>(false);
     const [mainPublishTable, setMainPublishTable] = useState<DailySchedule>({});
 
     const fetchPublishScheduleData = async () => {

@@ -1,22 +1,6 @@
-/* Desktop First (Wide > 1130px) */
 .container {
     width: 100%;
     margin: 0 auto;
     box-sizing: border-box;
-    padding-top: calc(var(--header-height) + var(--padding-top-desktop));
-    padding-bottom: var(--padding-top-desktop);
-}
-
-/* Intermediate (601px - 1130px) */
-@media (max-width: 1130px) {
-    .container {
-        padding-bottom: var(--padding-top-mobile);
-    }
-}
-
-/* Mobile (<= 670px) */
-@media (max-width: 670px) {
-    .container {
-        padding-top: calc(var(--header-height) + var(--header-height) + var(--padding-top-mobile));
-    }
+    padding-top: var(--padding-top-desktop);
 }
