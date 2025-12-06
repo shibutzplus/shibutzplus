@@ -12,8 +12,9 @@
     min-height: 0;
     overflow: auto;
     width: 100%;
-    background-color: pink;
 }
+
+/*     background-color: pink; */
 
 .topBarLayout {
     display: flex;
@@ -50,8 +51,30 @@
     display: inline-block;
 }
 
+/* <= 800px */
+@media (max-width: 800px) {
+    .topNavRight {
+        width: 100%;
+    }
+}
+
+/* Props Mode: Hide Logo early <= 530px */
+@media (max-width: 530px) {
+    .hideLogo .logo {
+        display: none;
+    }
+}
+
 /* Mobile <= 440px */
 @media (max-width: 440px) {
+    .topBarSection {
+        padding: 0 var(--padding-width-mobile);
+    }
+
+    .topNavRight {
+        gap: 10px;
+    }
+
     .logo {
         display: none;
     }

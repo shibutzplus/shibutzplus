@@ -14,6 +14,8 @@ type PageLayoutProps = {
     BottomActions?: React.ReactNode;
     MobileActions?: React.ReactNode;
     leftSideWidth?: number;
+    hideLogo?: boolean;
+    contentClassName?: string;
 };
 
 export default function PageLayout({
@@ -24,12 +26,14 @@ export default function PageLayout({
     BottomActions,
     MobileActions,
     leftSideWidth = 230,
+    hideLogo = false,
+    contentClassName = "",
 }: PageLayoutProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     return (
         <>
-            <div className={styles.pageLayout}>
+            <div className={`${styles.pageLayout} ${hideLogo ? styles.hideLogo : ""}`}>
                 <header className={styles.topBarLayout}>
                     <section className={styles.topBarSection}>
                         <div className={styles.topNavRight}>
@@ -49,7 +53,7 @@ export default function PageLayout({
                     {BottomActions}
                 </header>
                 <main
-                    className={styles.mainContent}
+                    className={`${styles.mainContent} ${contentClassName}`}
                 >
                     {children}
                 </main>

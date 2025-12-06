@@ -67,6 +67,7 @@
     --padding-top-mobile: 0.2rem;
 
     --padding-width: 10px;
+    --padding-width-mobile: 5px;
 
     --table-daily-col-width: 240px;
     --table-daily-col-inner-width: calc(var(--table-daily-col-width) - 40px);

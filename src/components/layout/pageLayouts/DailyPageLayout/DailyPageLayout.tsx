@@ -80,14 +80,11 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
                     </div>
                 ) : null
             }
+            contentClassName={
+                isEditMode ? styles.contentWithBottomMargin : styles.contentFullHeight
+            }
         >
-            <div
-                className={
-                    isEditMode ? styles.contentWithBottomMargin : styles.contentFullHeight
-                }
-            >
-                {children}
-            </div>
+            {children}
         </PageLayout>
     );
 }
