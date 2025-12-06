@@ -82,7 +82,6 @@ const DailyEventCell: React.FC<DailyEventCellProps> = ({ columnId, cell }) => {
                 onBlur={(e) => handleChange(e.target.value)}
                 placeholder="מה מתוכנן?"
                 disabled={isLoading}
-                rows={3}
                 autoGrow
             />
         </div>
