@@ -19,7 +19,7 @@ export type ListRowProps<T> = {
     getId: (item: T) => string;
     getInitialValue: (item: T) => string;
     updateExtraFields?: (item: T) => Partial<T>;
-    link?: string;
+    hasLink?: string;
 };
 
 function ListRow<T extends Record<string, any>>({
@@ -31,7 +31,7 @@ function ListRow<T extends Record<string, any>>({
     getId,
     getInitialValue,
     updateExtraFields,
-    link,
+    hasLink,
 }: ListRowProps<T>) {
     const [isEdit, setIsEdit] = useState(false);
     const [isEditLoading, setIsEditLoading] = useState(false);
@@ -78,18 +78,18 @@ function ListRow<T extends Record<string, any>>({
 
     const shareURL = async () => {
         const teacherName = getInitialValue(item);
-        const text = `${teacherName}, קישור להתחברות:\n${link}`;
+        const text = `${teacherName}, קישור להתחברות:\n${hasLink}`;
         try {
             await navigator.clipboard.writeText(text);
-            successToast(`הקישור עבור ${teacherName} הועתק בהצלחה, אפשר לשלוח למורה.`, 3000);
+            successToast(`הקישור עבור ${teacherName} הועתק בהצלחה`);
         } catch {
             errorToast("לא ניתן להעתיק את הקישור, אנא פנו לתמיכה");
         }
     };
 
     return (
-        <tr className={styles.listRow}>
-            <td className={styles.nameCell}>
+        <div className={styles.listRow}>
+            <div className={styles.nameCell}>
                 <InputText
                     key="editName"
                     id={String(field.key)}
@@ -99,7 +99,8 @@ function ListRow<T extends Record<string, any>>({
                     // Save also on Enter keypress when editing
                     onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
                         const isComposing =
-                            (e.nativeEvent && (e.nativeEvent as any).isComposing) || e.key === "Process";
+                            (e.nativeEvent && (e.nativeEvent as any).isComposing) ||
+                            e.key === "Process";
                         if (e.key === "Enter" && isEdit && !isEditLoading && !isComposing) {
                             e.preventDefault();
                             void handleUpdate();
@@ -110,10 +111,11 @@ function ListRow<T extends Record<string, any>>({
                     readonly={!isEdit}
                     type={field.inputType || "text"}
                 />
-            </td>
+            </div>
+            <div className={styles.redColumn}></div>
 
-            <td className={styles.actions}>
-                {link && (
+            <div className={styles.actions}>
+                {hasLink && (
                     <IconBtn
                         onClick={shareURL}
                         isLoading={false}
@@ -122,14 +124,10 @@ function ListRow<T extends Record<string, any>>({
                     />
                 )}
 
-                <IconBtn
-                    onClick={handleUpdate}
-                    isLoading={isEditLoading}
-                    Icon={isEdit ? <Icons.save /> : <Icons.edit />}
-                />
+                <IconBtn onClick={handleUpdate} isLoading={isEditLoading} Icon={isEdit ? <Icons.save /> : <Icons.edit />} />
                 <IconBtn onClick={() => onDelete(item)} isLoading={false} Icon={<Icons.delete />} />
-            </td>
-        </tr>
+            </div>
+        </div>
     );
 }
 

@@ -1,0 +1,41 @@
+/* > 720px */
+.pageTitle {
+    white-space: nowrap;
+}
+
+.bar1Container {
+    width: 230px;
+    min-width: 230px;
+    max-width: 230px;
+}
+
+.bar2Container {
+    width: 230px;
+    min-width: 230px;
+    max-width: 230px;
+    display: none;
+}
+
+/* <= 720px */
+@media (max-width: 720px) {
+
+    .bar1Container {
+        display: none;
+    }
+
+    .bar2Container {
+        display: flex;
+        justify-content: center;
+        padding: 10px 20px;
+        width: 100%;
+        max-width: 100%;
+        gap: 15px;
+        align-items: center;
+    }
+
+    .bar2SelectContainer {
+        width: 100%;
+        max-width: 230px;
+        flex: 1;
+    }
+}

@@ -16,6 +16,8 @@ import {
     setCacheTimestamp, setStorageClasses, setStorageSubjects, setStorageTeachers,
 } from "@/lib/localStorage";
 import { isCacheFresh } from "@/utils/time";
+import { checkForUpdates } from "@/services/syncService";
+import { sortByHebrewName } from "@/utils/sort";
 
 interface useInitDataProps {
     school: SchoolType | undefined;
@@ -70,20 +72,15 @@ const useInitData = ({
 
                 // single poll for any data change across entities
                 const lastSeen = Number((typeof window !== "undefined" && localStorage.getItem(SYNC_TS_KEY)) || 0);
-                const since = Math.max(0, lastSeen - 1);
                 let changed = false;
-                try {
-                    const res = await fetch(`/api/sync/poll?since=${since}&channels=detailsUpdate`, { cache: "no-store" });
-                    if (res.ok) {
-                        const data = await res.json();
-                        const latest = Number(data?.latestTs || 0);
-                        changed = latest > lastSeen;
-                        if (changed && typeof window !== "undefined") {
-                            localStorage.setItem(SYNC_TS_KEY, String(latest));
-                        }
+
+                const { hasUpdates, latestTs } = await checkForUpdates({ since: lastSeen, channels: ["detailsUpdate"] });
+
+                if (hasUpdates) {
+                    changed = true;
+                    if (typeof window !== "undefined") {
+                        localStorage.setItem(SYNC_TS_KEY, String(latestTs));
                     }
-                } catch {
-                    // ignore polling errors, fall back to cache logic below
                 }
 
                 if (!classes) {
@@ -127,16 +124,19 @@ const useInitData = ({
                     setSchool(schoolRes.data);
                 }
                 if (teachersRes && teachersRes.success && teachersRes.data) {
-                    setTeachers(teachersRes.data);
-                    setStorageTeachers(teachersRes.data);
+                    const sortedTeachers = sortByHebrewName(teachersRes.data);
+                    setTeachers(sortedTeachers);
+                    setStorageTeachers(sortedTeachers);
                 }
                 if (subjectsRes && subjectsRes.success && subjectsRes.data) {
-                    setSubjects(subjectsRes.data);
-                    setStorageSubjects(subjectsRes.data);
+                    const sortedSubjects = sortByHebrewName(subjectsRes.data);
+                    setSubjects(sortedSubjects);
+                    setStorageSubjects(sortedSubjects);
                 }
                 if (classesRes && classesRes.success && classesRes.data) {
-                    setClasses(classesRes.data);
-                    setStorageClasses(classesRes.data);
+                    const sortedClasses = sortByHebrewName(classesRes.data);
+                    setClasses(sortedClasses);
+                    setStorageClasses(sortedClasses);
                 }
 
                 // Update cache timestamp only when real change detected
