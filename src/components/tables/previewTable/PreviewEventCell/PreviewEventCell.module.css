@@ -5,20 +5,23 @@
 .innerCellContent {
     width: 100%;
     gap: 10px;
-    height: var(--table-daily-cell-height);
+    min-height: var(--table-daily-cell-height);
+    max-height: var(--table-daily-cell-height);
     background-color: var(--tab-color);
     border-radius: var(--border-radius-cell);
-    padding: 15px;
+    padding: 10px 15px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    overflow-y: auto;
 }
 
 .eventText {
     overflow-wrap: break-word;
     white-space: pre-wrap;
     word-break: break-word;
-    width: var(--table-daily-col-inner-width);
-
+    width: 100%;
+    line-height: 1.5em;
+    font-size: 16px;
 }

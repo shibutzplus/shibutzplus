@@ -32,7 +32,7 @@ export const DarkBorderColor: string = "#CECECE";
 
 export const PublishColor: string = "#9D8CDB";
 export const ExistingTeacherColor: string = "#80B0FF";
-export const MissingTeacherColor: string = "#FF8080";
+export const MissingTeacherColor: string = "#ED7A7A";
 export const EventColor: string = "#6EBE6A";
 
 export const MissingTeacherColorDisabled: string = "#EAEAEA";

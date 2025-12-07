@@ -44,17 +44,20 @@ const PreviewTeacherHeader: React.FC<PreviewTeacherHeaderProps> = ({
     return (
         <div
             ref={headerRef}
-            className={`${styles.columnHeaderWrapper} ${isClickable ? styles.clickable : ""}`}
+            className={`${styles.columnHeaderWrapper} ${isClickable && appType === "private" ? styles.clickable : ""
+                }`}
         >
             <div
                 className={`${styles.columnHeader} ${isClicked ? styles.clicked : ""}`}
                 style={{ backgroundColor: COLOR_BY_TYPE[type] }}
                 onClick={handleClick}
                 title={
-                    isClickable ? "לחצו כאן כדי לצפות או להזין את חומרי הלימוד" : undefined
+                    appType === "private"
+                        ? "לחצו כאן כדי לצפות או להזין את חומרי הלימוד"
+                        : undefined
                 }
             >
-                {appType === "private" && isClickable && (
+                {appType === "private" && (
                     <Icons.eye className={styles.eyeIcon} size={22} />
                 )}
                 <div className={styles.headerText}>{selectedTeacherData?.name || ""}</div>

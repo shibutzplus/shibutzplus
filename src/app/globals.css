@@ -27,7 +27,7 @@
 
     --preloader-color: #9D8CDB;
     --existing-teacher-color: #80B0FF;
-    --missing-teacher-color: #FF8080;
+    --missing-teacher-color: #ED7A7A;
     --event-color: #6EBE6A;
 
     --error-color: #e53935;
@@ -64,16 +64,16 @@
     --header-height: 55px;
 
     --padding-top-desktop: 1rem;
-    --padding-bottom-desktop: 1rem;
+    --padding-bottom-desktop: 0.5rem;
     --padding-top-mobile: 0.2rem;
 
     --padding-width: 10px;
     --padding-width-mobile: 5px;
 
-    --table-daily-col-width: 240px;
+    --table-daily-col-width: 250px;
     --table-daily-col-inner-width: calc(var(--table-daily-col-width) - 40px);
     --table-daily-header-height: 45px;
-    --table-daily-cell-height: 90px;
+    --table-daily-cell-height: 110px;
     --table-daily-full-height: calc(var(--table-daily-header-height) + var(--table-daily-cell-height) * var(--hours-in-day) + (5px * 11));
     --table-daily-btn-width: 60px;
 

@@ -32,14 +32,6 @@ const InputTextArea: React.FC<InputTextAreaProps> = ({
   }, [value, autoGrow]);
 
   const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    let text = e.currentTarget.value;
-
-    const lines = text.split("\n");
-    if (lines.length > 3) {
-      text = lines.slice(0, 3).join("\n");
-      e.currentTarget.value = text;
-    }
-
     if (autoGrow) resize(e.currentTarget);
     onInput?.(e);
   };
