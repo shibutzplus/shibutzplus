@@ -3,13 +3,13 @@
     min-height: 100dvh;
     position: relative;
     padding-bottom: 15px;
-    padding-top: calc(var(--padding-top-desktop) + var(--header-height));
+    padding-top: var(--padding-top-desktop);
 }
 
 .dailyTable {
     display: flex;
     gap: 7px;
-    overflow: scroll;
+    overflow: hidden;
     min-width: 100%;
     padding: 0 10px;
     box-sizing: border-box;
@@ -50,7 +50,7 @@
     animation: pulse 1.5s ease-in-out infinite;
 }
 
-.loadingContainer{
+.loadingContainer {
     height: 80vh;
     display: flex;
     justify-content: center;

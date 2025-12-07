@@ -2,17 +2,17 @@
 
 import React, { useEffect } from "react";
 import { NextPage } from "next";
-import TeacherPortalSkeleton from "@/components/loading/skeleton/TeacherPortalSkeleton/TeacherPortalSkeleton";
 import styles from "./teacherPortal.module.css";
 import { usePortalContext } from "@/context/PortalContext";
 import { useParams, useRouter } from "next/navigation";
 import router from "@/routes";
 import TeacherTable from "@/components/tables/teacherScheduleTable/TeacherTable/TeacherTable";
 import { useTeacherTableContext } from "@/context/TeacherTableContext";
+import TeacherPortalSkeleton from "@/components/loading/skeleton/TeacherPortalSkeleton/TeacherPortalSkeleton";
 
 const TeacherPortalPage: NextPage = () => {
-    const { selectedDate, teacher, setTeacherAndSchool, isDatesLoading } = usePortalContext();
-    const { isPortalLoading, fetchTeacherScheduleDate } = useTeacherTableContext();
+    const { selectedDate, teacher, setTeacherAndSchool } = usePortalContext();
+    const { fetchTeacherScheduleDate } = useTeacherTableContext();
 
     const params = useParams();
     const route = useRouter();
@@ -34,7 +34,7 @@ const TeacherPortalPage: NextPage = () => {
         fetchTeacherScheduleDate(teacher, selectedDate);
     }, [selectedDate, teacher?.id, schoolId]);
 
-    if (!teacher || isDatesLoading || isPortalLoading) return <TeacherPortalSkeleton />;
+    if (!teacher) return <TeacherPortalSkeleton />;
 
     return (
         <div className={styles.container}>

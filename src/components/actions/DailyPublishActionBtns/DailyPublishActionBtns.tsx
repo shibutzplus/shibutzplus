@@ -17,21 +17,21 @@ const DailyPublishActionBtns: React.FC = () => {
 
     return (
         <div className={styles.topNavBtnContainer}>
-            <span title={isEditMode ? "תצוגה מקדימה / בדיקה" : "חזרה לשיבוץ"}>
-                <IconBtn
-                    Icon={isEditMode ? <Icons.eye size={24} /> : <Icons.eyeOff size={20} />}
-                    onClick={changeDailyMode}
-                    disabled={isLoadingEditPage}
-                    hasBorder
-                />
-            </span>
-
             <span title={isDisabled ? "המערכת פורסמה" : "פרסום המערכת היומית"}>
                 <IconBtn
                     Icon={<Icons.publish size={20} />}
                     isLoading={publishLoading}
                     onClick={publishDailySchedule}
                     disabled={isDisabled}
+                    hasBorder
+                />
+            </span>
+
+            <span title={isEditMode ? "תצוגה מקדימה / בדיקה" : "חזרה לשיבוץ"}>
+                <IconBtn
+                    Icon={isEditMode ? <Icons.eye size={24} /> : <Icons.eyeOff size={20} />}
+                    onClick={changeDailyMode}
+                    disabled={isLoadingEditPage}
                     hasBorder
                 />
             </span>
