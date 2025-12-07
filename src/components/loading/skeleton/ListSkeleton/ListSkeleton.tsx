@@ -12,10 +12,9 @@ const ListSkeleton: React.FC<ListSkeletonProps> = ({ titles, hasAdditionalBtn = 
         <PageSkeleton>
             <main className={styles.container}>
                 <header className={styles.header}>
-                    <div className={styles.headerRow}>
-                        <div className={styles.headerName}>{titles[0]}</div>
-                        <div className={styles.headerActions}>{titles[1]}</div>
-                    </div>
+                    {titles.map((title, index) => (
+                        <h2 key={index}>{title}</h2>
+                    ))}
                 </header>
                 <section className={styles.listSection}>
                     {/* Add Row Skeleton */}

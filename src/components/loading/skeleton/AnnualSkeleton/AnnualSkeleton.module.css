@@ -1,0 +1,149 @@
+/* Mobile */
+.container {
+    width: calc(100% - (var(--padding-width) * 2));
+    margin: 0 auto;
+    box-sizing: border-box;
+    padding-top: calc(var(--header-height) + var(--header-height) + var(--padding-top-mobile));
+    padding-bottom: var(--padding-top-mobile);
+}
+
+.scheduleTable {
+    width: 100%;
+    background-color: var(--inner-background-color);
+    border-radius: var(--border-radius-table);
+    border-collapse: collapse;
+}
+
+.thead {
+    position: sticky;
+    top: calc(var(--header-height) + var(--header-height) + var(--padding-top-mobile));
+    z-index: 100;
+    background-color: var(--skeleton-input-color);
+    z-index: 5;
+}
+
+.thead::before {
+    content: "";
+    position: absolute;
+    top: calc(var(--padding-top-desktop) * -1);
+    left: 0;
+    width: 100%;
+    height: calc(var(--padding-top-desktop) * 2);
+    background-color: var(--background-color);
+    z-index: -1;
+}
+
+.hourCol {
+    border-top-right-radius: var(--border-radius-table);
+    border-top-left-radius: var(--border-radius-table);
+    background-color: var(--inner-background-color);
+}
+
+.emptyTrHeader {
+    background-color: var(--background-color) !important;
+    height: var(--table-annual-header-height);
+    width: 7px;
+}
+
+.trHeader {
+    height: var(--table-annual-header-height);
+    text-align: center;
+    width: var(--table-annual-col-width);
+    color: var(--bright-text-color);
+    font-weight: 600;
+    background-color: var(--skeleton-header-color);
+}
+
+.trHeader:nth-child(3) {
+    border-top-right-radius: var(--border-radius-table);
+}
+
+.trHeader:last-child {
+    border-top-left-radius: var(--border-radius-table);
+}
+
+.hoursColumn {
+    width: 30px;
+    min-width: 30px;
+    max-width: 30px;
+}
+
+.emptyCell {
+    background-color: var(--background-color) !important;
+    width: 5px !important;
+}
+
+.hourCell {
+    text-align: center;
+    vertical-align: middle;
+    width: 75%;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--dark-text-color);
+    background-color: var(--top-color);
+    border-radius: 50%;
+    margin: auto;
+}
+
+.scheduleCell {
+    position: relative;
+    padding: 8px;
+    border: var(--border-secondary);
+    vertical-align: top;
+    min-width: var(--annual-table-min-col-width);
+    max-width: 0;
+    height: 80px;
+}
+
+.cellContent {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 4px;
+}
+
+.thSkeleton,
+.tdSkeleton {
+    height: 20px;
+    background-color: var(--skeleton-input-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        background-color: var(--skeleton-input-color);
+    }
+
+    50% {
+        background-color: var(--skeleton-input-color-bright);
+    }
+}
+
+.tdSkeleton {
+    height: 38px;
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+    .container {
+        width: calc(100% - (var(--padding-width) * 2));
+        margin: 0 auto;
+        box-sizing: border-box;
+        padding-top: calc(var(--header-height) + var(--padding-top-desktop));
+        padding-bottom: var(--padding-top-desktop);
+    }
+
+    .thead {
+        top: calc(var(--header-height) + var(--padding-top-desktop));
+    }
+}

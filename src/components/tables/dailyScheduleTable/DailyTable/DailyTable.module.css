@@ -12,7 +12,7 @@
     overscroll-behavior: contain;
 }
 
-/* <720 */
+/* Mobile */
 @media (max-width: 720px) {
     .dailyTable {
         padding: 0 5px;

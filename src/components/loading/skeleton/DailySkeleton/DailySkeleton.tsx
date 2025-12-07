@@ -8,20 +8,21 @@ import PageSkeleton from "../PageSkeleton/PageSkeleton";
 
 const DailySkeleton: NextPage = () => {
     return (
-        <PageSkeleton hideHeader={true}>
+        <PageSkeleton>
             <section className={styles.container}>
                 <div className={styles.dailyTable}>
                     <HoursCol hours={TableRows} />
-                    {Array.from({ length: 1 }).map((_, colIndex) => (
-                        <div key={colIndex} className={styles.dailyColumn}>
-                            <div className={styles.headerSkeleton} />
-                            <div className={styles.rows}>
-                                {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => (
-                                    <div key={hour} className={styles.rowSkeleton} />
-                                ))}
-                            </div>
+                    <div className={styles.dailyColumn}>
+                        <div className={styles.headerSkeleton} />
+                        <div className={styles.rows}>
+                            {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => (
+                                <div key={hour} className={styles.rowSkeleton} />
+                            ))}
                         </div>
-                    ))}
+                    </div>
+                    <div className={styles.loadingContainer}>
+                        <Loading size="L" color="var(--skeleton-input-color)" />
+                    </div>
                 </div>
             </section>
         </PageSkeleton>

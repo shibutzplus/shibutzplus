@@ -1,4 +1,4 @@
-/* > 1024px */
+/* Desktop First */
 .container {
     position: fixed;
     top: 0;
@@ -78,7 +78,7 @@
     color: #3399ff;
 }
 
-/* < 1024px */
+/* Mobile Overrides */
 @media (max-width: 1024px) {
     .mainSection {
         gap: 2em;

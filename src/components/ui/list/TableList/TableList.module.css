@@ -1,4 +1,4 @@
-/* > 1024 */
+/* Desktop First */
 .tableListSection {
     background-color: var(--inner-background-color);
     width: 100%;
@@ -40,7 +40,7 @@
     border-bottom: var(--border-primary);
 }
 
-/* < 1024 */
+/* Mobile */
 @media (max-width: 1024px) {
     .tableListSection {
         width: 95%;

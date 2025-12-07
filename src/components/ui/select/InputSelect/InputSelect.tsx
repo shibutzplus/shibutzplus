@@ -158,7 +158,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 whiteSpace: "nowrap",
-                fontWeight: isBold ? 600 : 400,
+                fontWeight: isBold ? 600 : 500,
                 textAlign: isCentered ? "center" : "right",
                 width: isCentered ? "100%" : "auto",
                 gridArea: "1/1/2/3",
