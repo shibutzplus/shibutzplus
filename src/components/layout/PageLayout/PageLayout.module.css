@@ -49,12 +49,6 @@
     display: inline-block;
 }
 
-/* Preview Mode */
-.dailyPreviewMode .topBarSection {
-    background-color: var(--table-daily-preview-bg-color) !important;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.20) !important;
-}
-
 /* <= 800px */
 @media (max-width: 800px) {
     .topNavRight {

@@ -25,8 +25,6 @@ const PublishedPortalPage: NextPage = () => {
 
     if (isDatesLoading || isPublishLoading) return <DailySkeleton />;
 
-    if (!schoolId) return <NotPublished />;
-
     return (
         <section className={styles.container}>
             <PreviewTable

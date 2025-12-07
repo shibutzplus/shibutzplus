@@ -21,7 +21,6 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
     return (
         <PageLayout
             appType="private"
-            dailyPreviewMode={!isEditMode}
             HeaderRightActions={
                 <>
                     <div className={styles.titleContainer}>
