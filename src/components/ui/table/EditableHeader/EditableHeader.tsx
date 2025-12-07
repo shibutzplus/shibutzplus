@@ -38,14 +38,14 @@ const EditableHeader: React.FC<EditableHeaderProps> = ({
                     size={20}
                     title="מחיקת עמודה"
                 />
-                {onEyeClick && (
+                {/* {onEyeClick && (
                     <Icons.eye
                         className={styles.eyeButton}
                         onClick={onEyeClick}
                         size={24}
                         title="לחצו כאן כדי לצפות או להזין את חומרי הלימוד"
                     />
-                )}
+                )} */}
                 {children}
             </div>
         </div>

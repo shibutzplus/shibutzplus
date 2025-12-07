@@ -21,6 +21,7 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
     return (
         <PageLayout
             appType="private"
+            dailyPreviewMode={!isEditMode}
             HeaderRightActions={
                 <>
                     <div className={styles.titleContainer}>
@@ -40,6 +41,7 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
                             isSearchable={false}
                             placeholder="בחרו יום..."
                             hasBorder={true}
+                            backgroundColor="transparent"
                             isBold={false}
                         />
                     </div>

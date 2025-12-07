@@ -1,9 +1,8 @@
-/* Mobile First (Used mainly by teacher portal) */
+/* < 600px */
 .scheduleTable {
     width: 100%;
     background-color: var(--inner-background-color);
     border-radius: var(--border-radius-table);
-    border-collapse: collapse;
     border-collapse: collapse;
 }
 
@@ -29,7 +28,7 @@
     }
 }
 
-/* Desktop */
+/* > 600px */
 @media (min-width: 601px) {
     .scheduleTable {
         margin-bottom: 0;

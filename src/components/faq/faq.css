@@ -161,7 +161,7 @@ a {
     }
 }
 
-/* Mobile */
+/* < 600px */
 @media (max-width: 600px) {
     .faq-container {
         padding: 20px;

@@ -1,4 +1,4 @@
-/* Desktop (Default) */
+/* > 600px */
 .emptyTable {
     position: fixed;
     top: 30vh;
@@ -26,7 +26,7 @@
     font-weight: 600;
 }
 
-/* Mobile */
+/* < 600px */
 @media (max-width: 600px) {
     .emptyTable {
         width: 50vw;
