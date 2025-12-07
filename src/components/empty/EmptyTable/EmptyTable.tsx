@@ -8,45 +8,55 @@ import {
     MissingTeacherColorDisabled,
 } from "@/style/root";
 
-const EmptyTable: React.FC = () => {
+type EmptyTableProps = {
+    message?: string;
+    showIcons?: boolean;
+};
+
+const EmptyTable: React.FC<EmptyTableProps> = ({
+    message = "יש ללחוץ על כפתורי השיבוץ כדי לעדכן מערכת יומית",
+    showIcons = true,
+}) => {
     return (
         <section className={styles.emptyTable}>
-            <p className={styles.text}>יש ללחוץ על כפתורי השיבוץ כדי לעדכן מערכת יומית</p>
-            <section className={styles.actions}>
-                <ActionBtn
-                    Icon={<Icons.addTeacher size={16} />}
-                    label="שיבוץ למורה חסר"
-                    isDisabled={true}
-                    style={{
-                        borderColor: MissingTeacherColorDisabled,
-                        borderLeft: `10px solid ${MissingTeacherColorDisabled}`,
-                        color: MissingTeacherColorDisabled,
-                    }}
-                    func={() => { }}
-                />
-                <ActionBtn
-                    Icon={<Icons.addTeacher size={16} />}
-                    label="שיבוץ למורה נוכח"
-                    isDisabled={true}
-                    style={{
-                        borderColor: ExistingTeacherColorDisabled,
-                        borderLeft: `10px solid ${ExistingTeacherColorDisabled}`,
-                        color: ExistingTeacherColorDisabled,
-                    }}
-                    func={() => { }}
-                />
-                <ActionBtn
-                    Icon={<Icons.event size={16} />}
-                    label="שיבוץ ארוע"
-                    isDisabled={true}
-                    style={{
-                        borderColor: EventColorDisabled,
-                        borderLeft: `10px solid ${EventColorDisabled}`,
-                        color: EventColorDisabled,
-                    }}
-                    func={() => { }}
-                />
-            </section>
+            <p className={styles.text}>{message}</p>
+            {showIcons && (
+                <section className={styles.actions}>
+                    <ActionBtn
+                        Icon={<Icons.addTeacher size={16} />}
+                        label="שיבוץ למורה חסר"
+                        isDisabled={true}
+                        style={{
+                            borderColor: MissingTeacherColorDisabled,
+                            borderLeft: `10px solid ${MissingTeacherColorDisabled}`,
+                            color: MissingTeacherColorDisabled,
+                        }}
+                        func={() => { }}
+                    />
+                    <ActionBtn
+                        Icon={<Icons.addTeacher size={16} />}
+                        label="שיבוץ למורה נוכח"
+                        isDisabled={true}
+                        style={{
+                            borderColor: ExistingTeacherColorDisabled,
+                            borderLeft: `10px solid ${ExistingTeacherColorDisabled}`,
+                            color: ExistingTeacherColorDisabled,
+                        }}
+                        func={() => { }}
+                    />
+                    <ActionBtn
+                        Icon={<Icons.event size={16} />}
+                        label="שיבוץ ארוע"
+                        isDisabled={true}
+                        style={{
+                            borderColor: EventColorDisabled,
+                            borderLeft: `10px solid ${EventColorDisabled}`,
+                            color: EventColorDisabled,
+                        }}
+                        func={() => { }}
+                    />
+                </section>
+            )}
         </section>
     );
 };

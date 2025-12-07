@@ -58,9 +58,13 @@ const DailySchedulePage: NextPage = () => {
                     <PreviewTable
                         mainDailyTable={mainDailyTable}
                         selectedDate={selectedDate}
-                        EmptyTable={EmptyTable}
+                        EmptyTable={() => (
+                            <EmptyTable
+                                message="מערכת השעות להיום טרם הוזנה"
+                                showIcons={false}
+                            />
+                        )}
                         onTeacherClick={handleTeacherClick}
-                        HoursPreviewStyle={true}
                     />
                 )}
 
