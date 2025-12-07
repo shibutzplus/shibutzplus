@@ -74,3 +74,12 @@
     background-color: var(--top-color);
     border-radius: 50%;
 }
+
+.previewMode {
+    background-color: var(--table-daily-preview-bg-color);
+    border: 1px solid var(--border-color, #e0e0e0);
+}
+
+.previewMode .hourCell {
+    background-color: #FEF9F5;
+}
