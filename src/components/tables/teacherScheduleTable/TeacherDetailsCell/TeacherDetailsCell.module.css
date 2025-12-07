@@ -1,4 +1,4 @@
-/* Mobile */
+/* < 600 */
 .cellContent {
   display: flex;
   flex-direction: row;
@@ -32,7 +32,7 @@
   font-weight: 600;
 }
 
-/* Desktop */
+/* > 600 */
 @media (min-width: 600px) {
   .cellContent {
     flex-direction: column;
