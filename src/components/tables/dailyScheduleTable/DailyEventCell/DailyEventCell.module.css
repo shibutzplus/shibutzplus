@@ -9,4 +9,6 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    max-height: var(--table-daily-cell-height);
+    overflow-y: auto;
 }

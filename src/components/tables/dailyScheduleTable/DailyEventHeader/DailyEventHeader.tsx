@@ -56,6 +56,7 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, type }) =
                 defaultValue={selectedEventData || ""}
                 backgroundColor="transparent"
                 hasBorder={false}
+                fontSize="18px"
             />
         </EditableHeader>
     );
