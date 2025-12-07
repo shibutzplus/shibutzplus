@@ -1,4 +1,4 @@
-/* Desktop > 1270px */
+/* Desktop > 1300px */
 .titleContainer {
     display: flex;
     flex-direction: column;
@@ -34,8 +34,8 @@
     display: none;
 }
 
-/* <= 1270px */
-@media (max-width: 1270px) {
+/* <= 1300px */
+@media (max-width: 1300px) {
     .topBarActionBtns {
         display: none;
     }
@@ -54,8 +54,8 @@
 }
 
 
-/* <= 715px */
-@media (max-width: 715px) {
+/* <= 750px */
+@media (max-width: 750px) {
 
     .bar1DateContainer,
     .spacer {
