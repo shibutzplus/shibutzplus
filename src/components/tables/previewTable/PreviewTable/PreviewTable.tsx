@@ -17,7 +17,6 @@ type PreviewTableProps = {
     onTeacherClick?: (teacher: TeacherType) => Promise<void>;
     appType?: AppType;
     EmptyTable?: React.FC;
-    HoursPreviewStyle?: boolean;
 };
 
 const PreviewTable: React.FC<PreviewTableProps> = ({
@@ -26,7 +25,6 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
     onTeacherClick,
     EmptyTable,
     appType = "private",
-    HoursPreviewStyle = false,
 }) => {
     const schedule = mainDailyTable[selectedDate];
     const tableColumns = schedule ? Object.keys(schedule) : [];
@@ -41,7 +39,7 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
             className={styles.previewTable}
             style={isEmpty ? { overflow: "hidden" } : undefined}
         >
-            {!isEmpty && <HoursCol hours={TableRows} isPreviewMode={HoursPreviewStyle} />}
+            {!isEmpty && <HoursCol hours={TableRows} />}
             {!isEmpty ? (
                 sortedTableColumns.map((colId, index) => (
                     <motion.div

@@ -65,7 +65,6 @@ const DailySchedulePage: NextPage = () => {
                             />
                         )}
                         onTeacherClick={handleTeacherClick}
-                        HoursPreviewStyle={true}
                     />
                 )}
 
