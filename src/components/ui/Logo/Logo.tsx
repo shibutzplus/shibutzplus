@@ -12,9 +12,10 @@ import { getStorageTeacher } from "@/lib/localStorage";
 type LogoProps = {
     size?: "XS" | "S" | "L";
     isVisible?: boolean;
+    disableLink?: boolean;
 };
 
-const Logo: React.FC<LogoProps> = ({ size = "S", isVisible = true }) => {
+const Logo: React.FC<LogoProps> = ({ size = "S", isVisible = true, disableLink = false }) => {
     const pathname = usePathname();
     const [linkTo, setLinkTo] = React.useState<string>(router.dailySchedule.p);
 
@@ -45,15 +46,27 @@ const Logo: React.FC<LogoProps> = ({ size = "S", isVisible = true }) => {
     const sizeClass = styles[`size${size}`];
     const imageSize = size === "S" ? 40 : size === "L" ? 80 : 30;
 
+    const content = (
+        <Image
+            src="/logo.webp"
+            alt="ShibutzPlus Logo"
+            width={imageSize}
+            height={imageSize}
+            className={styles.logo}
+        />
+    );
+
+    if (disableLink) {
+        return (
+            <div className={`${styles.iconPlaceholder} ${sizeClass}`}>
+                {content}
+            </div>
+        );
+    }
+
     return (
         <Link href={linkTo} className={`${styles.iconPlaceholder} ${sizeClass}`}>
-            <Image
-                src="/logo.webp"
-                alt="ShibutzPlus Logo"
-                width={imageSize}
-                height={imageSize}
-                className={styles.logo}
-            />
+            {content}
         </Link>
     );
 };

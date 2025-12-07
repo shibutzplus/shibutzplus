@@ -52,7 +52,7 @@ const linkGroups: ILinkGroup[] = [
     },
 
     {
-        title: "הוספת פרטים",
+        title: "הגדרות בית הספר",
         type: "private",
         isCollapse: true,
         links: [
@@ -84,17 +84,17 @@ const linkGroups: ILinkGroup[] = [
         ],
     },
     {
-        title: "בנית מערכת שנתית",
+        title: "בניית מערכת שנתית",
         type: "private",
         isCollapse: true,
         links: [
             {
-                name: routePath.annualByClass.title,
+                name: "לפי כיתה",
                 p: routePath.annualByClass.p,
                 Icon: <Icons.calendar size={24} />,
             },
             {
-                name: routePath.annualByTeacher.title,
+                name: "לפי מורה",
                 p: routePath.annualByTeacher.p,
                 Icon: <Icons.calendar size={24} />,
             },
@@ -202,12 +202,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
             }),
         }));
 
-    const [expandedGroups, setExpandedGroups] = React.useState<string[]>(
-        linkGroups
-            .filter((g) => g.isCollapse)
-            .map((g) => g.title || "")
-            .filter(Boolean),
-    );
+    const [expandedGroups, setExpandedGroups] = React.useState<string[]>([]);
 
     const toggleGroup = (title: string) => {
         setExpandedGroups((prev) =>
@@ -226,8 +221,8 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                 id="mobile-menu"
             >
                 <div className={styles.navHeader}>
-                    <div onClick={onClose}>
-                        <Logo size="XS" />
+                    <div onClick={onClose} className={styles.logoContainer}>
+                        <Logo size="XS" disableLink={true} />
                     </div>
                     <button
                         className={styles.closeButton}
@@ -277,6 +272,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                                                         ease: "easeInOut",
                                                     }}
                                                     style={{ overflow: "hidden" }}
+                                                    className={styles.nestedList}
                                                 >
                                                     {group.links.map((link, linkIndex) => (
                                                         <li key={linkIndex}>
