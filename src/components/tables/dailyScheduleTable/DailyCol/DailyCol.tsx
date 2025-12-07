@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { useColumnAnimation } from "@/hooks/useColumnAnimation";
 import styles from "./DailyCol.module.css";
 import DailyTeacherHeader from "../DailyTeacherHeader/DailyTeacherHeader";
-import { ColumnType, DailyScheduleCell } from "@/models/types/dailySchedule";
+import { DailyScheduleCell } from "@/models/types/dailySchedule";
 import DailyTeacherCell from "../DailyTeacherCell/DailyTeacherCell";
 import DailyEventHeader from "../DailyEventHeader/DailyEventHeader";
 import DailyEventCell from "../DailyEventCell/DailyEventCell";
@@ -16,40 +17,20 @@ type DailyColProps = {
 };
 
 const DailyCol: React.FC<DailyColProps> = ({ columnId, column, onTeacherClick }) => {
-    // Animation state
-    const [displayColumn, setDisplayColumn] = useState(column);
-    const [isFadingOut, setIsFadingOut] = useState(false);
-
+    const { displayColumn, isFadingOut } = useColumnAnimation(column);
     const colFirstObj = displayColumn["1"];
     const columnType = colFirstObj?.headerCol?.type || "event";
-
-    useEffect(() => {
-        // If column data changed
-        if (JSON.stringify(column) !== JSON.stringify(displayColumn)) {
-            if (columnType !== "event") {
-                setIsFadingOut(true);
-
-                const timer = setTimeout(() => {
-                    setDisplayColumn(column);
-                    setIsFadingOut(false);
-                }, 300);
-                return () => clearTimeout(timer);
-            } else {
-                setDisplayColumn(column);
-            }
-        }
-    }, [column, displayColumn, columnType]);
-
     const animClass = isFadingOut ? styles.fadeOut : styles.fadeIn;
 
     return columnType === "event" ? (
         <div className={styles.dailyColumn} data-column-id={columnId}>
             <DailyEventHeader columnId={columnId} type={columnType} />
             <div className={`${styles.rows} ${animClass}`}>
-                {colFirstObj &&
-                    Object.entries(displayColumn).map(([hour, cell]) => (
-                        <DailyEventCell key={hour} cell={cell} columnId={columnId} />
-                    ))}
+                {colFirstObj
+                    ? Object.entries(displayColumn).map(([hour, cell]) => (
+                          <DailyEventCell key={hour} cell={cell} columnId={columnId} />
+                      ))
+                    : null}
             </div>
         </div>
     ) : (
@@ -60,15 +41,16 @@ const DailyCol: React.FC<DailyColProps> = ({ columnId, column, onTeacherClick })
                 onTeacherClick={onTeacherClick}
             />
             <div className={`${styles.rows} ${animClass}`}>
-                {colFirstObj &&
-                    Object.entries(displayColumn).map(([hour, cell]) => (
-                        <DailyTeacherCell
-                            key={hour}
-                            cell={cell}
-                            columnId={columnId}
-                            type={columnType}
-                        />
-                    ))}
+                {colFirstObj
+                    ? Object.entries(displayColumn).map(([hour, cell]) => (
+                          <DailyTeacherCell
+                              key={hour}
+                              cell={cell}
+                              columnId={columnId}
+                              type={columnType}
+                          />
+                      ))
+                    : null}
             </div>
         </div>
     );

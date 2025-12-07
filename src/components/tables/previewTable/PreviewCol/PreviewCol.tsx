@@ -37,10 +37,11 @@ const PreviewCol: React.FC<PreviewColProps> = ({
         <div className={styles.previewColumn} data-column-id={columnId}>
             <PreviewEventHeader type={columnType} column={column} />
             <div className={styles.rows}>
-                {colFirstObj &&
-                    Object.entries(column).map(([hour, cell]) => (
-                        <PreviewEventCell key={hour} cell={cell} columnId={columnId} />
-                    ))}
+                {colFirstObj
+                    ? Object.entries(column).map(([hour, cell]) => (
+                          <PreviewEventCell key={hour} cell={cell} columnId={columnId} />
+                      ))
+                    : null}
             </div>
         </div>
     ) : (
@@ -53,15 +54,16 @@ const PreviewCol: React.FC<PreviewColProps> = ({
                 onTeacherClick={onTeacherClick}
             />
             <div className={styles.rows}>
-                {colFirstObj &&
-                    Object.entries(column).map(([hour, cell]) => (
-                        <PreviewTeacherCell
-                            key={hour}
-                            cell={cell}
-                            columnId={columnId}
-                            type={columnType}
-                        />
-                    ))}
+                {colFirstObj
+                    ? Object.entries(column).map(([hour, cell]) => (
+                          <PreviewTeacherCell
+                              key={hour}
+                              cell={cell}
+                              columnId={columnId}
+                              type={columnType}
+                          />
+                      ))
+                    : null}
             </div>
         </div>
     );
