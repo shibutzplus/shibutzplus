@@ -60,7 +60,6 @@ const DailySchedulePage: NextPage = () => {
                         selectedDate={selectedDate}
                         EmptyTable={EmptyTable}
                         onTeacherClick={handleTeacherClick}
-                        HoursPreviewStyle={true}
                     />
                 )}
 
