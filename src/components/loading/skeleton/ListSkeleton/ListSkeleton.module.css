@@ -1,4 +1,4 @@
-/* Mobile */
+/* < 1024px */
 .container {
     position: relative;
     width: 95vw;
@@ -159,7 +159,7 @@
     }
 }
 
-/* Desktop */
+/* > 1024px */
 @media (min-width: 1024px) {
     .container {
         width: 790px;
