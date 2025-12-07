@@ -39,10 +39,14 @@
     transform: translateX(-280px);
 }
 
+.navHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
 .closeButton {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
     background: none;
     border: none;
     color: #333;
@@ -66,8 +70,40 @@
 }
 
 .menuSection {
-    margin-top: 3rem;
+    margin-top: 1rem;
     flex: 1;
+}
+
+.group {
+    margin-bottom: 1rem;
+}
+
+.groupHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    padding: 0.25rem 0;
+}
+
+.groupTitle {
+    font-size: 12px;
+    font-weight: 600;
+    color: #888;
+    margin: 0;
+    padding-right: 0.5rem;
+}
+
+.groupArrow {
+    color: #888;
+    display: flex;
+    align-items: center;
+}
+
+.groupDivider {
+    height: 1px;
+    background-color: #eee;
+    margin: 1rem 0;
 }
 
 .menuSection ul {
@@ -76,13 +112,7 @@
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 6px;
-}
-
-.menuSection li.withDivider {
-    border-bottom: 1px solid #eee;
-    margin-bottom: 0.5rem;
-    padding-bottom: 0.5rem;
+    gap: 2px;
 }
 
 .navLink {

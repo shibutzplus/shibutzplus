@@ -4,14 +4,13 @@ import React from "react";
 import styles from "./Logo.module.css";
 import Image from "next/image";
 
-
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import router from "@/routes";
 import { getStorageTeacher } from "@/lib/localStorage";
 
 type LogoProps = {
-    size?: "S" | "L";
+    size?: "XS" | "S" | "L";
     isVisible?: boolean;
 };
 
@@ -44,7 +43,7 @@ const Logo: React.FC<LogoProps> = ({ size = "S", isVisible = true }) => {
     if (!isVisible) return null;
 
     const sizeClass = styles[`size${size}`];
-    const imageSize = size === "S" ? 40 : 80;
+    const imageSize = size === "S" ? 40 : size === "L" ? 80 : 30;
 
     return (
         <Link href={linkTo} className={`${styles.iconPlaceholder} ${sizeClass}`}>

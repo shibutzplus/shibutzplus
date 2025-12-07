@@ -3,80 +3,119 @@
 import React, { useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import styles from "./HamburgerNav.module.css";
-import { STATUS_AUTH } from "@/models/constant/session";
 import Icons from "@/style/icons";
+import { motion, AnimatePresence } from "motion/react";
 import { useAccessibility } from "../../../hooks/browser/useAccessibility";
 import routePath from "../../../routes";
 import { clearStorage, getStorageTeacher } from "@/lib/localStorage";
 import { clearSessionStorage } from "@/lib/sessionStorage";
 import { AppType } from "@/models/types";
+import Logo from "../../ui/Logo/Logo";
 
-type HamburgerNavProps = {
-    isOpen: boolean;
-    onClose: () => void;
-    hamburgerType: AppType;
-};
-
-interface ILink {
+export interface ILink {
     name: string;
     p: string;
     Icon: React.ReactNode;
-    withDivider?: boolean;
 }
-const links: ILink[] = [
+
+interface ILinkGroup {
+    title: string;
+    links: ILink[];
+    type: "private" | "public";
+    isCollapse?: boolean;
+}
+
+const linkGroups: ILinkGroup[] = [
     {
-        name: routePath.dailySchedule.title,
-        p: routePath.dailySchedule.p,
-        Icon: <Icons.dailyCalendar size={24} />,
+        title: "מערכת שעות",
+        type: "private",
+        isCollapse: false,
+        links: [
+            {
+                name: routePath.dailySchedule.title,
+                p: routePath.dailySchedule.p,
+                Icon: <Icons.dailyCalendar size={24} />,
+            },
+            {
+                name: routePath.annualView.title,
+                p: routePath.annualView.p,
+                Icon: <Icons.calendar size={24} />,
+            },
+            {
+                name: routePath.history.title,
+                p: routePath.history.p,
+                Icon: <Icons.history size={24} />,
+            },
+        ],
+    },
+
+    {
+        title: "הוספת פרטים",
+        type: "private",
+        isCollapse: true,
+        links: [
+            {
+                name: routePath.teachers.title,
+                p: routePath.teachers.p,
+                Icon: <Icons.teacher size={24} />,
+            },
+            {
+                name: routePath.substitute.title,
+                p: routePath.substitute.p,
+                Icon: <Icons.substituteTeacher size={24} />,
+            },
+            {
+                name: routePath.subjects.title,
+                p: routePath.subjects.p,
+                Icon: <Icons.book size={24} />,
+            },
+            {
+                name: routePath.classes.title,
+                p: routePath.classes.p,
+                Icon: <Icons.chair size={24} />,
+            },
+            {
+                name: routePath.groups.title,
+                p: routePath.groups.p,
+                Icon: <Icons.users size={24} />,
+            },
+        ],
     },
     {
-        name: routePath.annualView.title,
-        p: routePath.annualView.p,
-        Icon: <Icons.calendar size={24} />,
+        title: "בנית מערכת שנתית",
+        type: "private",
+        isCollapse: true,
+        links: [
+            {
+                name: routePath.annualByClass.title,
+                p: routePath.annualByClass.p,
+                Icon: <Icons.calendar size={24} />,
+            },
+            {
+                name: routePath.annualByTeacher.title,
+                p: routePath.annualByTeacher.p,
+                Icon: <Icons.calendar size={24} />,
+            },
+        ],
     },
     {
-        name: routePath.history.title,
-        p: routePath.history.p,
-        Icon: <Icons.history size={24} />,
-        withDivider: true,
-    },
-    {
-        name: routePath.teachers.title,
-        p: routePath.teachers.p,
-        Icon: <Icons.teacher size={24} />,
-    },
-    {
-        name: routePath.substitute.title,
-        p: routePath.substitute.p,
-        Icon: <Icons.substituteTeacher size={24} />,
-    },
-    {
-        name: routePath.subjects.title,
-        p: routePath.subjects.p,
-        Icon: <Icons.book size={24} />,
-    },
-    {
-        name: routePath.classes.title,
-        p: routePath.classes.p,
-        Icon: <Icons.chair size={24} />,
-    },
-    {
-        name: routePath.groups.title,
-        p: routePath.groups.p,
-        Icon: <Icons.users size={24} />,
-        withDivider: true,
-    },
-    {
-        name: routePath.annualByClass.title,
-        p: routePath.annualByClass.p,
-        Icon: <Icons.calendar size={24} />,
-    },
-    {
-        name: routePath.annualByTeacher.title,
-        p: routePath.annualByTeacher.p,
-        Icon: <Icons.calendar size={24} />,
+        title: "מסכים למורים",
+        type: "public",
+        isCollapse: false,
+        links: [
+            {
+                name: "המערכת שלי",
+                p: routePath.teacherPortal.p,
+                Icon: <Icons.teacher size={24} />,
+            },
+            {
+                name: "מערכת בית ספרית",
+                p: routePath.publishedPortal.p,
+                Icon: <Icons.calendar size={24} />,
+            },
+        ],
     },
 ];
 
@@ -102,13 +141,17 @@ const LinkComponent: React.FC<LinkComponentProps> = ({ link, onClose, currentPat
         </div>
     );
 };
+type HamburgerNavProps = {
+    isOpen: boolean;
+    onClose: () => void;
+    hamburgerType: AppType;
+};
 
 const HamburgerNav: React.FC<HamburgerNavProps> = ({
     isOpen,
     onClose,
     hamburgerType = "private",
 }) => {
-    const { status } = useSession();
     const pathname = usePathname();
     const navRef = useRef<HTMLDivElement>(null);
     const overlayRef = useRef<HTMLDivElement>(null);
@@ -138,27 +181,39 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
         onClose();
     };
 
-    const [teacherPortalPath, setTeacherPortalPath] = React.useState(routePath.teacherPortal.p);
+    const teacher = getStorageTeacher();
 
-    useEffect(() => {
-        const teacher = getStorageTeacher();
-        if (teacher) {
-            setTeacherPortalPath(`${routePath.teacherPortal.p}/${teacher.schoolId}/${teacher.id}`);
-        }
-    }, []);
+    const displayedGroups = linkGroups
+        .filter((group) => {
+            if (hamburgerType === "private") return group.type === "private";
+            if (hamburgerType === "public") return group.type === "public";
+            return false;
+        })
+        .map((group) => ({
+            ...group,
+            links: group.links.map((link) => {
+                if (link.p === routePath.teacherPortal.p && teacher) {
+                    return {
+                        ...link,
+                        p: `${routePath.teacherPortal.p}/${teacher.schoolId}/${teacher.id}`,
+                    };
+                }
+                return link;
+            }),
+        }));
 
-    const publicLinks: ILink[] = [
-        {
-            name: "המערכת שלי",
-            p: teacherPortalPath,
-            Icon: <Icons.teacher size={24} />,
-        },
-        {
-            name: "מערכת בית ספרית",
-            p: routePath.publishedPortal.p,
-            Icon: <Icons.calendar size={24} />,
-        },
-    ];
+    const [expandedGroups, setExpandedGroups] = React.useState<string[]>(
+        linkGroups
+            .filter((g) => g.isCollapse)
+            .map((g) => g.title || "")
+            .filter(Boolean),
+    );
+
+    const toggleGroup = (title: string) => {
+        setExpandedGroups((prev) =>
+            prev.includes(title) ? prev.filter((t) => t !== title) : [...prev, title],
+        );
+    };
 
     return (
         <div ref={overlayRef} className={`${styles.overlay} ${isOpen ? styles.open : ""}`}>
@@ -170,26 +225,91 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                 aria-label="Navigation menu"
                 id="mobile-menu"
             >
-                <button className={styles.closeButton} onClick={onClose} aria-label="Close menu">
-                    <Icons.close size={24} />
-                </button>
+                <div className={styles.navHeader}>
+                    <div onClick={onClose}>
+                        <Logo size="XS" />
+                    </div>
+                    <button
+                        className={styles.closeButton}
+                        onClick={onClose}
+                        aria-label="Close menu"
+                    >
+                        <Icons.close size={24} />
+                    </button>
+                </div>
 
                 <div className={styles.menuContent}>
                     <section className={styles.menuSection}>
-                        <ul>
-                            {(isPrivate ? links : publicLinks).map((link, index) => (
-                                <li
-                                    key={index}
-                                    className={link.withDivider ? styles.withDivider : undefined}
-                                >
-                                    <LinkComponent
-                                        link={link}
-                                        onClose={onClose}
-                                        currentPath={pathname}
-                                    />
-                                </li>
-                            ))}
-                        </ul>
+                        {displayedGroups.map((group, groupIndex) => {
+                            const isCollapsible = group.isCollapse;
+                            const isExpanded =
+                                isCollapsible && group.title
+                                    ? expandedGroups.includes(group.title)
+                                    : true;
+
+                            return (
+                                <div key={groupIndex} className={styles.group}>
+                                    {isCollapsible && group.title && (
+                                        <div
+                                            className={styles.groupHeader}
+                                            onClick={() => toggleGroup(group.title!)}
+                                        >
+                                            <h3 className={styles.groupTitle}>{group.title}</h3>
+                                            <motion.div
+                                                animate={{ rotate: isExpanded ? 180 : 0 }}
+                                                transition={{ duration: 0.2 }}
+                                                className={styles.groupArrow}
+                                            >
+                                                <Icons.arrowDown size={16} />
+                                            </motion.div>
+                                        </div>
+                                    )}
+
+                                    {isCollapsible ? (
+                                        <AnimatePresence initial={false}>
+                                            {isExpanded && (
+                                                <motion.ul
+                                                    initial={{ height: 0, opacity: 0 }}
+                                                    animate={{ height: "auto", opacity: 1 }}
+                                                    exit={{ height: 0, opacity: 0 }}
+                                                    transition={{
+                                                        duration: 0.3,
+                                                        ease: "easeInOut",
+                                                    }}
+                                                    style={{ overflow: "hidden" }}
+                                                >
+                                                    {group.links.map((link, linkIndex) => (
+                                                        <li key={linkIndex}>
+                                                            <LinkComponent
+                                                                link={link}
+                                                                onClose={onClose}
+                                                                currentPath={pathname}
+                                                            />
+                                                        </li>
+                                                    ))}
+                                                </motion.ul>
+                                            )}
+                                        </AnimatePresence>
+                                    ) : (
+                                        <ul>
+                                            {group.links.map((link, linkIndex) => (
+                                                <li key={linkIndex}>
+                                                    <LinkComponent
+                                                        link={link}
+                                                        onClose={onClose}
+                                                        currentPath={pathname}
+                                                    />
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+
+                                    {groupIndex < displayedGroups.length - 1 && (
+                                        <div className={styles.groupDivider} />
+                                    )}
+                                </div>
+                            );
+                        })}
                     </section>
 
                     <div className={styles.bottomSection}>
