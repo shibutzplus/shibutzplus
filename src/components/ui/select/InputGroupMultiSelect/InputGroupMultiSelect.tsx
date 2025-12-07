@@ -48,7 +48,7 @@ const InputGroupMultiSelect: React.FC<InputGroupMultiSelectProps> = ({
     id,
     value = [],
     onChange,
-    placeholder = "בחר אופציה...",
+    placeholder = "בחרו ערך...",
     isSearchable = true,
     isAllowAddNew = false,
     isDisabled = false,

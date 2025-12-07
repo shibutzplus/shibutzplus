@@ -38,8 +38,8 @@ const ClassesPage: NextPage = () => {
                 )
             }
             details={sortedClasses}
+            headerAction={<AddClassRow onSearch={setSearchTerm} />}
         >
-            <AddClassRow onSearch={setSearchTerm} />
             {sortedClasses?.map((cls: ClassType) => (
                 <ClassRow key={cls.id} classItem={cls} />
             ))}

@@ -1,21 +1,11 @@
 .previewTable {
     display: flex;
     gap: var(--table-cols-gap);
-    overflow: scroll;
+    overflow: auto;
     min-width: 100%;
     padding: 0 10px;
     box-sizing: border-box;
     position: relative;
     right: 0;
-    height: calc(100dvh - var(--header-height) - (var(--padding-top-desktop) * 2));
-    max-height: calc(100dvh - var(--header-height) - (var(--padding-top-desktop) * 2));
-}
-
-/* Mobile */
-@media (max-width: 720px) {
-    .previewTable {
-        height: calc(100dvh - (var(--header-height) * 2) - (var(--padding-top-mobile) * 3));
-        max-height: calc(100dvh - (var(--header-height) * 2) - (var(--padding-top-mobile) * 3));
-        padding: 0 5px;
-    }
+    height: 100%;
 }

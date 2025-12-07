@@ -30,8 +30,8 @@ const AddSubstituteRow: React.FC<AddSubstituteRowProps> = ({ onSearch }) => {
             }}
             initialValues={{ name: "" }}
             errorMessages={{ name: messages.teachers.createError }}
-            buttonLabel="הוספה"
             onInputChange={onSearch}
+            suppressErrorToast={true}
         />
     );
 };

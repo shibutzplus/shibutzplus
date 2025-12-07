@@ -6,6 +6,7 @@ import styles from "./PublishedPortal.module.css";
 import PreviewTable from "@/components/tables/previewTable/PreviewTable/PreviewTable";
 import { usePortalContext } from "@/context/PortalContext";
 import DailySkeleton from "@/components/loading/skeleton/DailySkeleton/DailySkeleton";
+import NotPublished from "@/components/empty/NotPublished/NotPublished";
 
 const PublishedPortalPage: NextPage = () => {
     const {
@@ -15,13 +16,16 @@ const PublishedPortalPage: NextPage = () => {
         mainPublishTable,
         isPublishLoading,
         fetchPublishScheduleData,
+        isDatesLoading,
     } = usePortalContext();
 
     useEffect(() => {
         fetchPublishScheduleData();
     }, [selectedDate, teacher?.id, schoolId]);
 
-    if (isPublishLoading) return <DailySkeleton />;
+    if (isDatesLoading || isPublishLoading) return <DailySkeleton />;
+
+    if (!schoolId) return <NotPublished />;
 
     return (
         <section className={styles.container}>
@@ -29,6 +33,7 @@ const PublishedPortalPage: NextPage = () => {
                 mainDailyTable={mainPublishTable}
                 selectedDate={selectedDate}
                 appType="public"
+                EmptyTable={NotPublished}
             />
         </section>
     );

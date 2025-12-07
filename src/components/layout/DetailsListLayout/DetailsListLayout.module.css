@@ -1,89 +1,86 @@
-/* Desktop First */
+/* > 800 */
 .container {
     position: relative;
-    width: 800px;
+    width: 790px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 0;
-    margin: 20px auto;
-    margin-top: calc(var(--header-height) + var(--padding-top-desktop));
+    max-height: calc(100vh - var(--header-height) - 40px);
+    margin: var(--padding-top-desktop) auto 20px;
     background-color: var(--inner-background-color-bright);
     border-radius: var(--border-radius-table);
     overflow: hidden;
 }
 
 .header {
-    position: relative;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
+    justify-content: center;
     height: var(--list-details-header-height);
     background-color: var(--inner-background-color-bright);
     color: var(--dark-text-color);
-    padding: 10px calc(var(--list-details-padding) + 40px) 0;
-    padding-left: calc(var(--list-details-padding) + 70px);
+    flex-shrink: 0;
+    width: 100%;
+    padding-left: var(--scrollbar-width, 0px);
+}
+
+.headerRow {
+    width: 95%;
+    display: flex;
+    justify-content: space-between;
+    gap: 3rem;
+    padding: var(--list-details-row-padding);
+    align-items: center;
     box-sizing: border-box;
 }
 
-.header h2 {
+.headerName {
+    width: 100%;
     font-size: 18px;
-    padding: 0;
+    font-weight: bold;
     margin: 0;
 }
 
-.listSection {
+.headerActions {
+    min-width: var(--list-details-actions-width);
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    width: 100%;
-    height: calc(100% - var(--list-details-header-height));
-    /* overflow-y: auto; Removed - outer container shouldn't scroll */
-    margin-top: 0.5rem;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
 }
 
 .addRowWrapper {
-    width: 100%;
     display: flex;
     justify-content: center;
-    padding-left: 6px;
-    /* Compensate for scrollbar width */
-    box-sizing: border-box;
+    margin-top: 0.5rem;
+    flex-shrink: 0;
+    width: 100%;
+    padding-left: var(--scrollbar-width, 0px);
 }
 
 .list {
-    margin: 1rem 0;
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
     gap: 0.3rem;
-    width: 100%;
+    margin: 1rem 0;
     overflow-y: auto;
-    scrollbar-gutter: stable;
+    width: 100%;
 }
 
-/* Custom Scrollbar */
-.list::-webkit-scrollbar {
-    width: 6px;
-}
-
-.list::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.list::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 3px;
-}
-
-/* Mobile */
-@media (max-width: 850px) {
+/* <= 800 */
+@media (max-width: 800px) {
     .container {
         width: 95vw;
     }
 
+    .headerRow {
+        width: 95%;
+        gap: 1rem;
+        padding: var(--list-details-row-padding-mobile);
+    }
+
+    .headerActions {
+        min-width: var(--list-details-actions-width-mobile);
+    }
 }

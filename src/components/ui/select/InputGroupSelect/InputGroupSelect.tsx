@@ -29,6 +29,7 @@ export interface InputGroupSelectProps {
     backgroundColor?: string;
     isClearable?: boolean;
     onCreate?: (value: string) => Promise<void>;
+    menuWidth?: string;
 }
 
 const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
@@ -38,7 +39,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     id,
     value,
     onChange,
-    placeholder = "בחר אופציה...",
+    placeholder = "בחרו ערך...",
     isSearchable = true,
     isAllowAddNew = false,
     isDisabled = false,
@@ -46,6 +47,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     backgroundColor = InputBackgroundColor,
     isClearable = false,
     onCreate,
+    menuWidth,
 }) => {
     const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -109,6 +111,15 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
                 minHeight: 32,
             };
         },
+        menu: (prov: any) => {
+            const b =
+                typeof (baseStyles as any).menu === "function" ? (baseStyles as any).menu(prov) : prov;
+            return {
+                ...b,
+                width: menuWidth || b.width,
+                minWidth: menuWidth ? "auto" : b.minWidth,
+            };
+        },
         option: (prov: any) => ({
             ...prov,
             padding: "8px 8px",
@@ -170,6 +181,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
                 isDisabled={isDisabled}
                 placeholder={placeholder}
                 menuPlacement="auto"
+                menuPortalTarget={typeof document !== "undefined" ? document.body : null}
                 onMenuOpen={() => {
                     handleMenuOpen();
                     setIsMenuOpen(true);

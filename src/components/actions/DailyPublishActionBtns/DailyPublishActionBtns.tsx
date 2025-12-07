@@ -26,21 +26,21 @@ const DailyPublishActionBtns: React.FC = () => {
                 />
             </span>
 
-            <span title="שיתוף קישור למורים מן המניין">
-                <IconBtn
-                    Icon={<Icons.share size={16} />}
-                    onClick={onShareLink}
-                    disabled={publishLoading}
-                    hasBorder
-                />
-            </span>
-
             <span title={isDisabled ? "המערכת פורסמה" : "פרסום המערכת היומית"}>
                 <IconBtn
                     Icon={<Icons.publish size={20} />}
                     isLoading={publishLoading}
                     onClick={publishDailySchedule}
                     disabled={isDisabled}
+                    hasBorder
+                />
+            </span>
+
+            <span title="שיתוף קישור למורים מן המניין">
+                <IconBtn
+                    Icon={<Icons.share size={16} />}
+                    onClick={onShareLink}
+                    disabled={publishLoading}
                     hasBorder
                 />
             </span>

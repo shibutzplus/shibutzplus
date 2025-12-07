@@ -1,3 +1,4 @@
+/* > 880px */
 .topButtonsContainer {
     display: flex;
     align-items: center;
@@ -9,20 +10,19 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    width: 40px;
-    /* Default width for icon only */
+    width: 165px;
     height: var(--input-height);
     font-size: 16px;
     background-color: transparent;
     color: var(--dark-text-color);
     border-radius: var(--border-radius-cell);
-    border: var(--border-primary);
+    border: none;
     cursor: pointer;
     transition: all 0.1s ease-in-out;
 }
 
 .btnText {
-    display: none;
+    display: inline;
 }
 
 .topBtn:hover {
@@ -35,13 +35,56 @@
     font-weight: 600;
 }
 
-@media (min-width: 880px) {
+/* <= 900px */
+@media (max-width: 900px) {
     .topBtn {
-        width: 190px;
-        border: none;
+        width: 60px;
+        border: var(--border-primary);
     }
 
     .btnText {
-        display: inline;
+        display: none;
+    }
+}
+
+/* <= 690px (Bottom Bar Mode) */
+@media (max-width: 690px) {
+    .topButtonsContainer {
+        gap: 50px;
+    }
+
+    .topBtn {
+        width: 100%;
+        min-width: 140px;
+    }
+
+    .btnText {
+        display: block;
+    }
+
+    .topBtn svg {
+        display: none;
+    }
+}
+
+/* <= 440px (Bottom Bar Mode - Smaller Font) */
+@media (max-width: 440px) {
+    .topButtonsContainer {
+        gap: 20px;
+    }
+
+    .topBtn {
+        width: 100%;
+        height: 30px;
+    }
+
+    .btnText {
+        display: block;
+        font-size: 13px;
+        white-space: nowrap;
+    }
+
+    .topBtn svg {
+        display: none !important;
     }
 }

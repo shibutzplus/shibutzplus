@@ -4,22 +4,18 @@
     --inner-background-color-bright: #F3F3F7;
     --inner-background-color-empty: #FFFFFF;
 
-
     --top-color: #fdfbfb;
     --top-color-hover: #f7f7f7;
 
     --bright-text-color: #FFFFFF;
     --bright-text-color-hover: #e2e2e2;
-    --bright-text-color-active: #c7c7c7;
 
     --dark-text-color: #494949;
-    --dark-text-color-hover: #585757;
     --dark-text-color-active: #585858;
 
     --placeholder-color: #CECECE;
     --input-background-color: #FFFFFF;
     --input-color: #494949;
-    --input-color-hover: #535252;
     --input-border: #e0e0e0;
     --input-border-focus: #494949;
 
@@ -29,9 +25,9 @@
     --bright-border-color: #e0e0e0;
     --dark-border-color: #CECECE;
 
-    --publish-color: #9D8CDB;
+    --preloader-color: #9D8CDB;
     --existing-teacher-color: #80B0FF;
-    --missing-teacher-color: #FF8080;
+    --missing-teacher-color: #ED7A7A;
     --event-color: #6EBE6A;
 
     --error-color: #e53935;
@@ -68,18 +64,18 @@
     --header-height: 55px;
 
     --padding-top-desktop: 1rem;
+    --padding-bottom-desktop: 0.5rem;
     --padding-top-mobile: 0.2rem;
 
-    --padding-width-desktop: 10px;
+    --padding-width: 10px;
     --padding-width-mobile: 5px;
 
-    --top-nav-select-width: 250px;
-
-    --table-daily-col-width: 240px;
+    --table-daily-col-width: 250px;
     --table-daily-col-inner-width: calc(var(--table-daily-col-width) - 40px);
     --table-daily-header-height: 45px;
-    --table-daily-cell-height: 90px;
+    --table-daily-cell-height: 110px;
     --table-daily-full-height: calc(var(--table-daily-header-height) + var(--table-daily-cell-height) * var(--hours-in-day) + (5px * 11));
+    --table-daily-btn-width: 60px;
 
     --table-annual-col-width: 200px;
     --table-annual-col-width-mobile: 230px;

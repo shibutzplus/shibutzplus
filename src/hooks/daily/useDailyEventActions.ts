@@ -28,8 +28,10 @@ const useDailyEventActions = (
     const populateEventColumn = async (columnId: string, eventTitle: string) => {
         const alreadyExists = mainDailyTable[selectedDate]?.[columnId];
         let updatedSchedule: DailySchedule = { ...mainDailyTable };
+        let isUpdateSuccess = false;
 
-        if (alreadyExists && alreadyExists["1"]?.headerCol?.headerEvent === eventTitle) {
+        // Try to update existing column first
+        if (alreadyExists && alreadyExists["1"]?.headerCol?.type === ColumnTypeValues.event) {
             const response = await updateDailyEventHeaderAction(selectedDate, columnId, eventTitle);
             if (response.success) {
                 updatedSchedule = updateAllEventHeader(
@@ -38,11 +40,15 @@ const useDailyEventActions = (
                     columnId,
                     eventTitle,
                 );
+                isUpdateSuccess = true;
             } else {
-                console.error("Failed to update daily event cell:", response.message);
-                return;
+                // If update failed (e.g. not found in DB), we will fall through to create
+                console.warn("Update failed, attempting to create new column", response.message);
             }
-        } else {
+        }
+
+        // If update was skipped or failed, treat as new column creation
+        if (!isUpdateSuccess) {
             clearColumn(selectedDate, columnId);
             updatedSchedule = initDailySchedule(updatedSchedule, selectedDate, columnId);
             // Create a new entry in DB

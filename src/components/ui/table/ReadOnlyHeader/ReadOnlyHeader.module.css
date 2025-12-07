@@ -1,19 +1,11 @@
-/* Mobile First (Used mainly by teacher portal) */
+/* > 720px */
 .theadWithoutHeader,
 .theadWithHeader {
     position: sticky;
-    top: calc(var(--header-height) + var(--header-height) + var(--padding-top-mobile));
+    top: var(--padding-top-desktop);
     z-index: 100;
     background-color: var(--background);
     z-index: 5;
-}
-
-.theadWithHeader {
-    top: calc(var(--header-height) + var(--header-height) + var(--padding-top-mobile));
-}
-
-.theadWithoutHeader {
-    top: 0;
 }
 
 .theadInsidePanel {
@@ -63,13 +55,4 @@
 
 .trHeader:last-child {
     border-top-left-radius: var(--border-radius-table);
-}
-
-/* Desktop */
-@media (min-width: 600px) {
-
-    .theadWithHeader,
-    .theadWithoutHeader {
-        top: calc(var(--header-height) + var(--padding-top-desktop));
-    }
 }

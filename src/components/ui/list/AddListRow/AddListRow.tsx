@@ -21,6 +21,7 @@ export type AddListRowProps<T> = {
     buttonIcon?: React.ReactNode;
     onSuccess?: () => void;
     onInputChange?: (value: string) => void;
+    suppressErrorToast?: boolean;
 };
 
 function AddListRow<T extends Record<string, any>>({
@@ -33,6 +34,7 @@ function AddListRow<T extends Record<string, any>>({
     buttonIcon = <Icons.plus />,
     onSuccess,
     onInputChange,
+    suppressErrorToast = false,
 }: AddListRowProps<T>) {
     const [values, setValues] = useState<T>(initialValues);
     const [isLoading, setIsLoading] = useState(false);
@@ -51,6 +53,7 @@ function AddListRow<T extends Record<string, any>>({
         e.stopPropagation();
         setIsLoading(true);
         setValidationErrors({});
+        console.log("AddListRow: suppressErrorToast =", suppressErrorToast);
 
         try {
             const validationResult = schema.safeParse(values);
@@ -72,11 +75,15 @@ function AddListRow<T extends Record<string, any>>({
                     onInputChange((initialValues[field.key] as string) || "");
                 }
             } else {
-                infoToast(Object.values(errorMessages)[0] || "בעיה בהוספה");
+                if (!suppressErrorToast) {
+                    infoToast(Object.values(errorMessages)[0] || "בעיה בהוספה");
+                }
             }
         } catch (error) {
             console.error(error);
-            infoToast(Object.values(errorMessages)[0] || "בעיה בהוספה");
+            if (!suppressErrorToast) {
+                infoToast(Object.values(errorMessages)[0] || "בעיה בהוספה");
+            }
         } finally {
             setIsLoading(false);
         }

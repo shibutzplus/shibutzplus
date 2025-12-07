@@ -31,6 +31,7 @@ const AddTeacherRow: React.FC<AddTeacherRowProps> = ({ onSearch }) => {
             errorMessages={{ name: messages.teachers.createError }}
             buttonLabel="הוספה"
             onInputChange={onSearch}
+            suppressErrorToast={true}
         />
     );
 };

@@ -39,8 +39,8 @@ const SubstitutePage: NextPage = () => {
                 )
             }
             details={sortedTeachers}
+            headerAction={<AddSubstituteRow onSearch={setSearchTerm} />}
         >
-            <AddSubstituteRow onSearch={setSearchTerm} />
             {sortedTeachers?.map((teacher: TeacherType) => (
                 <SubstituteRow key={teacher.id} teacher={teacher} />
             ))}

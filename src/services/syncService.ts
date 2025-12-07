@@ -24,9 +24,9 @@ export interface PollUpdatesParams {
  * @param params - Parameters for polling (since timestamp and channels to listen to)
  * @returns Promise with the poll response data
  */
-export const pollUpdates = async (params: PollUpdatesParams): Promise<SyncPollResponse | null> => {
+const pollUpdates = async (params: PollUpdatesParams): Promise<SyncPollResponse | null> => {
   try {
-    // Skip polling when running in development
+    // Skip polling when running in development (dont forget to do it also for push updates)
     if (process.env.NODE_ENV === "development") {
       return null; // For debug comment out this block  
     }
@@ -97,7 +97,7 @@ export const getChannelsForPath = (
  */
 export const pushSyncUpdate = async (type: SyncChannel): Promise<void> => {
   try {
-    // Skip push when running in development
+    // Skip push when running in development (dont forget to do it also for polling updates)
     if (process.env.NODE_ENV === "development") {
       return; // For debug comment out this block
     }

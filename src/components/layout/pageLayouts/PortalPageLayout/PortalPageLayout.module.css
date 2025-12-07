@@ -1,24 +1,81 @@
-/* Mobile (< 600px) */
-.dateSelectContainer {
-    width: 220px;
-}
-
-.topSelectContainer {
-    display: none;
-}
-
-.greeting {
+/* > 690px */
+.greetingAndName {
     width: fit-content;
+    min-width: 130px;
     max-width: 130px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-/* Tablet and Desktop  */
-@media (min-width: 720px) {
-    .topSelectContainer {
+.DateContainer {
+    display: block;
+    width: 190px;
+    min-width: 190px;
+    max-width: 190px;
+}
+
+.refreshContainer {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.refreshAlert {
+    color: rgba(255, 0, 0, 0.566);
+    animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.topBarNav {
+    display: block;
+}
+
+.bottomBarNav {
+    display: none;
+}
+
+/* <= 690px */
+@media (max-width: 690px) {
+
+    .greetingAndName {
+        white-space: wrap;
+    }
+
+    .topBarNav {
+        display: none;
+    }
+
+    .bottomBarNav {
         display: block;
-        width: 200px;
+    }
+
+    .mainContentWithBottomNav {
+        margin-bottom: var(--header-height);
+    }
+}
+
+/* <= 470px */
+@media (max-width: 470px) {
+
+    .greetingAndName {
+        font-size: 14px;
+        width: fit-content;
+        min-width: 0;
+        text-overflow: unset;
     }
 }

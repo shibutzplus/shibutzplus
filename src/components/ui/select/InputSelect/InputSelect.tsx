@@ -33,6 +33,7 @@ type InputSelectProps = {
     isBold?: boolean;
     onBeforeRemove?: (removedLabel: string | null, proceed: () => void) => void;
     isCentered?: boolean;
+    fontSize?: string;
 };
 
 const InputSelect: React.FC<InputSelectProps> = ({
@@ -42,7 +43,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
     id,
     value,
     onChange,
-    placeholder = "בחר אופציה...",
+    placeholder = "בחרו ערך...",
     isSearchable = true,
     isDisabled = false,
     hasBorder = false,
@@ -54,6 +55,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
     isBold = false,
     onBeforeRemove,
     isCentered = false,
+    fontSize,
 }) => {
     const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
     const [isMounted, setIsMounted] = useState(false);
@@ -112,6 +114,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
                     : provided;
             return {
                 ...base,
+                fontSize: fontSize || base.fontSize,
                 flexWrap: "nowrap", // Prevent wrapping of indicators
             };
         },
@@ -150,6 +153,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
                     : provided;
             return {
                 ...base,
+                fontSize: fontSize || base.fontSize,
                 maxWidth: "100%",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
@@ -163,10 +167,31 @@ const InputSelect: React.FC<InputSelectProps> = ({
         },
         input: (provided: any) => ({
             ...provided,
+            fontSize: fontSize || provided.fontSize,
             gridArea: "1/1/2/3",
             visibility: "visible",
             minWidth: 0,
         }),
+        placeholder: (provided: any) => {
+            const base =
+                typeof baseStyles.placeholder === "function"
+                    ? baseStyles.placeholder(provided)
+                    : provided;
+            return {
+                ...base,
+                fontSize: fontSize || base.fontSize,
+            };
+        },
+        option: (provided: any, state: any) => {
+            const base =
+                typeof baseStyles.option === "function"
+                    ? baseStyles.option(provided, state)
+                    : provided;
+            return {
+                ...base,
+                fontSize: fontSize || base.fontSize,
+            };
+        },
         clearIndicator: (provided: any) => {
             const base =
                 typeof baseStyles.clearIndicator === "function"

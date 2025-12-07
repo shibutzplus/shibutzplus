@@ -36,7 +36,7 @@
 @media (min-width: 1024px) {
 
     .topNavSection {
-        padding: 0 var(--padding-width-desktop);
+        padding: 0 var(--padding-width);
         gap: 3em;
     }
 }

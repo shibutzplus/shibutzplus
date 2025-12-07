@@ -2,4 +2,9 @@
     display: flex;
     align-items: center;
     gap: 15px;
+    --table-daily-btn-width: 60px;
+}
+
+.topNavBtnContainer button {
+    width: var(--table-daily-btn-width) !important;
 }
