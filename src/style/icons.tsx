@@ -10,6 +10,7 @@ import {
     IoCloseOutline,
     IoBookOutline,
     IoBook,
+    IoChevronDown,
 } from "react-icons/io5";
 import { IoMdRefresh } from "react-icons/io";
 import { RiEdit2Fill, RiDeleteBin6Line, RiPassValidLine } from "react-icons/ri";
@@ -33,6 +34,7 @@ import { GrSchedule } from "react-icons/gr";
 
 const Icons = {
     addTeacher: MdPersonAdd,
+    arrowDown: IoChevronDown,
     book: IoBookOutline,
     bookFill: IoBook,
     calendar: IoCalendarOutline,

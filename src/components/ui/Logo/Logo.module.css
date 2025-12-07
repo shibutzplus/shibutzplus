@@ -5,6 +5,11 @@
     cursor: default;
 }
 
+.sizeXS {
+    width: 30px;
+    height: 30px;
+}
+
 .sizeS {
     width: 40px;
     height: 40px;
