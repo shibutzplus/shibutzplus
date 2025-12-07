@@ -19,10 +19,10 @@ type TeacherTableProps = {
 };
 
 const TeacherTable: React.FC<TeacherTableProps> = ({ teacher, selectedDate, onlyMobile, isInsidePanel }) => {
-    const { mainPortalTable, isPortalLoading, hasFetched } = useTeacherTableContext();
+    const { mainPortalTable, isPortalLoading } = useTeacherTableContext();
     const dayTable = selectedDate ? mainPortalTable[selectedDate] : undefined;
 
-    if (!hasFetched || isPortalLoading)
+    if (isPortalLoading)
         return (
             <div className={styles.loaderContainer}>
                 <Preloader />

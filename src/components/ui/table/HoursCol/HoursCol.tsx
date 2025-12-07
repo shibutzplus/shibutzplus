@@ -9,9 +9,10 @@ import { useStickyHeader } from "@/hooks/scroll/useStickyHeader";
 
 type Props = {
     hours: number;
+    isPreviewMode?: boolean;
 };
 
-const HoursCol: React.FC<Props> = ({ hours }) => {
+const HoursCol: React.FC<Props> = ({ hours, isPreviewMode = false }) => {
     const hourNumbers = Array.from({ length: hours }, (_, index) => index + 1);
     const hideTopRef = useRef<HTMLDivElement>(null);
 
@@ -23,7 +24,7 @@ const HoursCol: React.FC<Props> = ({ hours }) => {
 
             <div ref={hideTopRef} className={styles.hideTop} />
             <div
-                className={styles.hoursColumn}
+                className={`${styles.hoursColumn} ${isPreviewMode ? styles.previewMode : ""}`}
             >
                 {hourNumbers.map((hour) => (
                     <div key={hour} className={styles.hourRowContainer}>

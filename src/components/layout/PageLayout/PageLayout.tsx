@@ -16,6 +16,7 @@ type PageLayoutProps = {
     leftSideWidth?: number;
     hideLogo?: boolean;
     contentClassName?: string;
+    dailyPreviewMode?: boolean;
 };
 
 export default function PageLayout({
@@ -28,13 +29,15 @@ export default function PageLayout({
     leftSideWidth = 230,
     hideLogo = false,
     contentClassName = "",
+    dailyPreviewMode = false,
 }: PageLayoutProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     return (
         <>
             <div
-                className={`${styles.pageLayout} ${hideLogo ? styles.hideLogo : ""}`}
+                className={`${styles.pageLayout} ${hideLogo ? styles.hideLogo : ""} ${dailyPreviewMode ? styles.dailyPreviewMode : ""
+                    }`}
             >
                 <header className={styles.topBarLayout}>
                     <section className={styles.topBarSection}>

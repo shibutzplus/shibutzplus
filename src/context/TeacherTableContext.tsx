@@ -24,7 +24,6 @@ interface TeacherTableContextType {
         row?: TeacherScheduleType,
         selectedDate?: string,
     ) => Promise<void>;
-    hasFetched: boolean;
 }
 
 const TeacherTableContext = createContext<TeacherTableContextType | undefined>(undefined);
@@ -45,7 +44,6 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
     const [mainPortalTable, setMainPortalTable] = useState<PortalSchedule>({});
     const [isPortalLoading, setIsPortalLoading] = useState<boolean>(false);
     const [isSavingLoading, setIsSavingLoading] = useState<boolean>(false);
-    const [hasFetched, setHasFetched] = useState<boolean>(false);
 
     const fetchTeacherScheduleDate = async (
         teacher?: TeacherType,
@@ -71,7 +69,6 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
             return false;
         } finally {
             setIsPortalLoading(false);
-            setHasFetched(true);
         }
     };
 
@@ -125,7 +122,6 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
         handlePortalRefresh,
         fetchTeacherScheduleDate,
         saveInstractions,
-        hasFetched,
     };
 
     return <TeacherTableContext.Provider value={value}>{children}</TeacherTableContext.Provider>;
