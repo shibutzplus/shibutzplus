@@ -30,28 +30,30 @@
 
 .subject {
     font-weight: bold;
-    font-size: 16px;
+    font-size: 18px;
     color: var(--dark-text-color);
 }
 
 .teacher,
 .class {
-    font-size: 16px;
+    font-size: 18px;
     color: #555;
 }
 
-@media (max-width: 600px) {
-    .scheduleCell {
-        width: var(--table-annual-col-width-mobile);
-        min-width: var(--table-annual-col-width-mobile);
-    }
-}
-
-@media (min-width: 1280px) {
+/* < 1280px */
+@media (max-width: 1280px) {
 
     .subject,
     .teacher,
     .class {
-        font-size: 18px;
+        font-size: 16px;
+    }
+}
+
+/* < 720px - Scroll starts here */
+@media (max-width: 720px) {
+    .scheduleCell {
+        width: var(--table-annual-col-width-mobile);
+        min-width: var(--table-annual-col-width-mobile);
     }
 }

@@ -29,8 +29,8 @@ const AddClassRow: React.FC<AddClassRowProps> = ({ onSearch, isGroup }) => {
             }}
             initialValues={{ name: "" }}
             errorMessages={{ name: messages.classes.createError }}
-            buttonLabel="הוספה"
             onInputChange={onSearch}
+            suppressErrorToast={true}
         />
     );
 };

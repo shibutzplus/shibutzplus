@@ -303,12 +303,12 @@ export const sortDailyTeachers = (
     const groups: GroupOption[] = [
         ...(currentValue
             ? [
-                  {
-                      label: "הסרת ממלא מקום",
-                      options: [{ value: EmptyValue, label: "🗑️" }],
-                      hideCount: true,
-                  },
-              ]
+                {
+                    label: "הסרת ממלא מקום",
+                    options: [{ value: EmptyValue, label: "🗑️" }],
+                    hideCount: true,
+                },
+            ]
             : []),
         {
             label: "מורה נוסף בשיעור",
@@ -353,7 +353,7 @@ export const sortDailyTeachers = (
             })),
         },
         {
-            label: "לא התחילו/סיימו את היום",
+            label: "לא התחילו/סיימו היום",
             collapsed: true,
             options: outsideHoursTeachers.map((t) => ({ value: t.id, label: t.name })),
         },

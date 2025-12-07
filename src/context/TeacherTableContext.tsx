@@ -42,7 +42,7 @@ type TeacherTableProviderProps = {
 
 export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ children }) => {
     const [mainPortalTable, setMainPortalTable] = useState<PortalSchedule>({});
-    const [isPortalLoading, setIsPortalLoading] = useState<boolean>(true);
+    const [isPortalLoading, setIsPortalLoading] = useState<boolean>(false);
     const [isSavingLoading, setIsSavingLoading] = useState<boolean>(false);
 
     const fetchTeacherScheduleDate = async (

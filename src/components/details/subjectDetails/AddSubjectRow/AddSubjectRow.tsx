@@ -26,8 +26,8 @@ const AddSubjectRow: React.FC<AddSubjectRowProps> = ({ onSearch }) => {
             }}
             initialValues={{ name: "" }}
             errorMessages={{ name: messages.subjects.createError }}
-            buttonLabel="הוספה"
             onInputChange={onSearch}
+            suppressErrorToast={true}
         />
     );
 };

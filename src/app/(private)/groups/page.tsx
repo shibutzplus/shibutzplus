@@ -39,8 +39,8 @@ const GroupsPage: NextPage = () => {
                 )
             }
             details={sortedGroups}
+            headerAction={<AddClassRow onSearch={setSearchTerm} isGroup />}
         >
-            <AddClassRow onSearch={setSearchTerm} isGroup />
             {sortedGroups?.map((cls: ClassType) => (
                 <ClassRow key={cls.id} classItem={cls} />
             ))}

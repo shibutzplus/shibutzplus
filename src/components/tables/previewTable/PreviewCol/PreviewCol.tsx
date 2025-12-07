@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "./PreviewCol.module.css";
 import { ColumnType, DailySchedule } from "@/models/types/dailySchedule";
-import LoadingDots from "@/components/loading/LoadingDots/LoadingDots";
 import PreviewEventHeader from "../PreviewEventHeader/PreviewEventHeader";
 import PreviewEventCell from "../PreviewEventCell/PreviewEventCell";
 import PreviewTeacherHeader from "../PreviewTeacherHeader/PreviewTeacherHeader";
@@ -38,18 +37,15 @@ const PreviewCol: React.FC<PreviewColProps> = ({
         <div className={styles.previewColumn} data-column-id={columnId}>
             <PreviewEventHeader type={columnType} column={column} />
             <div className={styles.rows}>
-                {colFirstObj ? (
-                    Object.entries(column).map(([hour, cell]) => (
-                        <PreviewEventCell key={hour} cell={cell} columnId={columnId} />
-                    ))
-                ) : (
-                    <LoadingDots size="S" />
-                )}
+                {colFirstObj
+                    ? Object.entries(column).map(([hour, cell]) => (
+                          <PreviewEventCell key={hour} cell={cell} columnId={columnId} />
+                      ))
+                    : null}
             </div>
         </div>
     ) : (
         <div className={styles.previewColumn} data-column-id={columnId}>
-            <div className={styles.hide} />
             <PreviewTeacherHeader
                 column={column}
                 appType={appType}
@@ -58,18 +54,16 @@ const PreviewCol: React.FC<PreviewColProps> = ({
                 onTeacherClick={onTeacherClick}
             />
             <div className={styles.rows}>
-                {colFirstObj ? (
-                    Object.entries(column).map(([hour, cell]) => (
-                        <PreviewTeacherCell
-                            key={hour}
-                            cell={cell}
-                            columnId={columnId}
-                            type={columnType}
-                        />
-                    ))
-                ) : (
-                    <LoadingDots size="S" />
-                )}
+                {colFirstObj
+                    ? Object.entries(column).map(([hour, cell]) => (
+                          <PreviewTeacherCell
+                              key={hour}
+                              cell={cell}
+                              columnId={columnId}
+                              type={columnType}
+                          />
+                      ))
+                    : null}
             </div>
         </div>
     );

@@ -16,7 +16,7 @@ import {
     setCacheTimestamp, setStorageClasses, setStorageSubjects, setStorageTeachers,
 } from "@/lib/localStorage";
 import { isCacheFresh } from "@/utils/time";
-import { pollUpdates } from "@/services/syncService";
+import { checkForUpdates } from "@/services/syncService";
 import { sortByHebrewName } from "@/utils/sort";
 
 interface useInitDataProps {
@@ -72,15 +72,14 @@ const useInitData = ({
 
                 // single poll for any data change across entities
                 const lastSeen = Number((typeof window !== "undefined" && localStorage.getItem(SYNC_TS_KEY)) || 0);
-                const since = Math.max(0, lastSeen - 1);
                 let changed = false;
 
-                const data = await pollUpdates({ since, channels: ["detailsUpdate"] });
-                if (data) {
-                    const latest = data.latestTs;
-                    changed = latest > lastSeen;
-                    if (changed && typeof window !== "undefined") {
-                        localStorage.setItem(SYNC_TS_KEY, String(latest));
+                const { hasUpdates, latestTs } = await checkForUpdates({ since: lastSeen, channels: ["detailsUpdate"] });
+
+                if (hasUpdates) {
+                    changed = true;
+                    if (typeof window !== "undefined") {
+                        localStorage.setItem(SYNC_TS_KEY, String(latestTs));
                     }
                 }
 

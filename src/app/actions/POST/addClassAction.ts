@@ -32,10 +32,11 @@ export async function addClassAction(
     } catch (error: any) {
         const pgCode = error?.code ?? error?.cause?.code ?? error?.originalError?.code;
         if (pgCode === "23505") {
+            const entityName = classData.activity ? "קבוצה" : "כיתה";
             return {
                 success: false,
                 errorCode: "23505",
-                message: "כיתה בשם הזה כבר קיימת בבית הספר",
+                message: `${entityName} בשם הזה כבר קיימת בבית הספר`,
             };
         }
         return { success: false, message: messages.common.serverError };

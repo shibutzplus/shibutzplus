@@ -21,7 +21,8 @@ export default function AnnualTeacherPageLayout({ children }: AnnualTeacherPageL
             leftSideWidth={50}
             HeaderRightActions={
                 <>
-                    <h3 className={styles.pageTitle}>{router.annualByTeacher.title}</h3>
+                    <h3 className={styles.pageTitleLong}>{router.annualByTeacher.title}</h3>
+                    <h3 className={styles.pageTitleShort}>מערכת לפי מורה</h3>
                     <div className={styles.selectContainer}>
                         <DynamicInputSelect
                             options={teachersSelectOptions()}
@@ -34,19 +35,6 @@ export default function AnnualTeacherPageLayout({ children }: AnnualTeacherPageL
                         />
                     </div>
                 </>
-            }
-            BottomActions={
-                <div className={styles.mobileSelectContainer}>
-                    <DynamicInputSelect
-                        options={teachersSelectOptions()}
-                        value={selectedTeacherId}
-                        onChange={handleTeacherChange}
-                        isSearchable={false}
-                        isDisabled={isSaving || isLoading}
-                        placeholder="בחר מורה..."
-                        hasBorder
-                    />
-                </div>
             }
         >
             {children}

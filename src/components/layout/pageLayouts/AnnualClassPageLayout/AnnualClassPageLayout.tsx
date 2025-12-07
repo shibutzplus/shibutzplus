@@ -21,7 +21,8 @@ export default function AnnualClassPageLayout({ children }: AnnualClassPageLayou
             leftSideWidth={50}
             HeaderRightActions={
                 <>
-                    <h3 className={styles.pageTitle}>{router.annualByClass.title}</h3>
+                    <h3 className={styles.pageTitleLong}>{router.annualByClass.title}</h3>
+                    <h3 className={styles.pageTitleShort}>מערכת לפי כיתה</h3>
                     <div className={styles.selectContainer}>
                         <DynamicInputSelect
                             options={classesSelectOptions()}
@@ -34,19 +35,6 @@ export default function AnnualClassPageLayout({ children }: AnnualClassPageLayou
                         />
                     </div>
                 </>
-            }
-            BottomActions={
-                <div className={styles.mobileSelectContainer}>
-                    <DynamicInputSelect
-                        options={classesSelectOptions()}
-                        value={selectedClassId}
-                        onChange={handleClassChange}
-                        isSearchable={false}
-                        isDisabled={isSaving || isLoading}
-                        placeholder="בחר כיתה..."
-                        hasBorder
-                    />
-                </div>
             }
         >
             {children}

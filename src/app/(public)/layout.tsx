@@ -13,7 +13,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <PortalProvider>
             {/* TODO: TeacherTableProvider only need to be on teacher-portal but PortalPageLayout need it */}
             <TeacherTableProvider>
-                <PortalPageLayout>{children}</PortalPageLayout>
+                {children}
             </TeacherTableProvider>
         </PortalProvider>
     );

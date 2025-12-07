@@ -45,22 +45,40 @@ export const customStyles = (
         menuPosition: "absolute",
         menu: (provided: any) => ({
             ...provided,
-            zIndex: 9999,
+            zIndex: 99999,
             borderRadius: BorderRadiusInput,
             boxShadow: BoxShadowPrimary,
             border: BorderSecondary,
         }),
         menuPortal: (provided: any) => ({
             ...provided,
-            zIndex: 9999,
+            zIndex: 99999,
+        }),
+        menuList: (provided: any) => ({
+            ...provided,
+            padding: "5px",
+            "::-webkit-scrollbar": {
+                width: "6px",
+                height: "6px",
+            },
+            "::-webkit-scrollbar-thumb": {
+                background: "#d4d4d4",
+                borderRadius: "3px",
+            },
+            "::-webkit-scrollbar-thumb:hover": {
+                background: "#bcbcbc",
+            },
+            "::-webkit-scrollbar-track": {
+                background: "transparent",
+            },
         }),
         option: (provided: any, state: any) => ({
             ...provided,
             backgroundColor: state.isSelected
                 ? SelectBackgroundColor
                 : state.isFocused
-                  ? SelectBackgroundColorHover
-                  : InputBackgroundColor,
+                    ? SelectBackgroundColorHover
+                    : InputBackgroundColor,
             color: state.isSelected ? InputBackgroundColor : InputColor,
             padding: "10px 12px",
             fontSize: FontSize,

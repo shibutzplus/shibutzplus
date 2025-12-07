@@ -1,16 +1,8 @@
-/* Mobile */
 .container {
   width: 100%;
+  height: 100%;
   margin: 0 auto;
   box-sizing: border-box;
-  padding-top: calc(var(--header-height) + var(--header-height) + var(--padding-top-mobile));
-  padding-bottom: var(--padding-top-mobile);
-}
-
-/* Desktop */
-@media (min-width: 600px) {
-  .container {
-    padding-top: calc(var(--header-height) + var(--padding-top-desktop));
-    padding-bottom: var(--padding-top-desktop);
-  }
+  padding-top: var(--padding-top-desktop);
+  padding-bottom: var(--padding-bottom-desktop);
 }

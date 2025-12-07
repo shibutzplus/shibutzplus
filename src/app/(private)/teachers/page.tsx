@@ -39,8 +39,8 @@ const TeachersPage: NextPage = () => {
                 )
             }
             details={sortedTeachers}
+            headerAction={<AddTeacherRow onSearch={setSearchTerm} />}
         >
-            <AddTeacherRow onSearch={setSearchTerm} />
             {sortedTeachers?.map((teacher: TeacherType) => (
                 <TeacherRow key={teacher.id} teacher={teacher} />
             ))}

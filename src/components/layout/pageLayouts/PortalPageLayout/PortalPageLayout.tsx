@@ -7,6 +7,7 @@ import { usePortalContext } from "@/context/PortalContext";
 import PortalNav from "@/components/navigation/PortalNav/PortalNav";
 import { greetingTeacher } from "@/utils";
 import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
+import MobileNavLayout from "../../MobileNavLayout/MobileNavLayout";
 import Icons from "@/style/icons";
 import { usePollingUpdates } from "@/hooks/usePollingUpdates";
 import { usePathname } from "next/navigation";
@@ -52,11 +53,11 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
     return (
         <PageLayout
             appType="public"
-            hasMobileLogo={false}
+            hideLogo
             HeaderRightActions={
                 <>
-                    <h3 className={styles.greeting}>{greetingTeacher(teacher)}</h3>
-                    <div className={styles.topSelectContainer}>
+                    <h3 className={styles.greetingAndName}>{greetingTeacher(teacher)}</h3>
+                    <div className={styles.DateContainer}>
                         <DynamicInputSelect
                             options={datesOptions}
                             value={selectedDate}
@@ -80,25 +81,22 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
                 </>
             }
             HeaderLeftActions={
-                isRegularTeacher ? (
-                    <div>
+                !teacher || isRegularTeacher ? (
+                    <div className={styles.topBarNav}>
                         <PortalNav />
                     </div>
                 ) : null
             }
-            BottomActions={
-                <div className={styles.dateSelectContainer}>
-                    <DynamicInputSelect
-                        options={datesOptions}
-                        value={selectedDate}
-                        isDisabled={isLoading}
-                        onChange={handleDayChange}
-                        isSearchable={false}
-                        placeholder="בחר יום..."
-                        hasBorder
-                    />
-                </div>
+            MobileActions={
+                !teacher || isRegularTeacher ? (
+                    <div className={styles.bottomBarNav}>
+                        <MobileNavLayout>
+                            <PortalNav />
+                        </MobileNavLayout>
+                    </div>
+                ) : null
             }
+            contentClassName={styles.mainContentWithBottomNav}
         >
             {children}
         </PageLayout>

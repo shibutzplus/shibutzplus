@@ -86,7 +86,7 @@
 .animSquare {
     width: var(--square-size);
     height: var(--square-size);
-    background-color: var(--publish-color, #C5B5E3);
+    background-color: var(--preloader-color, #C5B5E3);
     position: absolute;
     top: 0;
     left: 0;

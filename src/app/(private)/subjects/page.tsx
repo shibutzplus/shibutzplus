@@ -38,8 +38,8 @@ const SubjectsPage: NextPage = () => {
                 )
             }
             details={sortedSubjects}
+            headerAction={<AddSubjectRow onSearch={setSearchTerm} />}
         >
-            <AddSubjectRow onSearch={setSearchTerm} />
             {sortedSubjects?.map((subject: SubjectType) => (
                 <SubjectRow key={subject.id} subject={subject} />
             ))}

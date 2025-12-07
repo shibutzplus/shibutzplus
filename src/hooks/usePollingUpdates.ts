@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { successToast, errorToast } from "@/lib/toast";
 import router from "@/routes";
-import { pollUpdates, getChannelsForPath } from "@/services/syncService";
+import { checkForUpdates, getChannelsForPath } from "@/services/syncService";
 
 const POLL_INTERVAL_MS = 30000; // 30 seconds
 
@@ -40,12 +40,12 @@ export const usePollingUpdates = (): UsePollingUpdatesReturn => {
 
         const checkUpdates = async () => {
             const since = lastTsRef.current;
-            const data = await pollUpdates({ since, channels });
+            const { hasUpdates, latestTs } = await checkForUpdates({ since, channels });
 
-            if (data && mounted && data.latestTs > since) {
+            if (mounted && hasUpdates) {
                 errorToast("נמצאו עדכונים חדשים, יש ללחוץ על רענון כדי לראותם", Infinity);
                 setHasUpdate(true);
-                setLastTs(data.latestTs);
+                setLastTs(latestTs);
             }
         };
 
