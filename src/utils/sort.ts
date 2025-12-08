@@ -195,7 +195,8 @@ export const sortDailyTeachers = (
     const availableTeachers: TeacherType[] = []; // regular teachers free this hour
     const unavailableTeachers: TeacherType[] = []; // teachers busy this hour
     const freeDayTeachers: TeacherType[] = []; // regular teachers not teaching on this day
-    const outsideHoursTeachers: TeacherType[] = []; // teachers working today but outside their hours
+    const notStartedTeachers: TeacherType[] = []; // teachers not started yet
+    const finishedTeachers: TeacherType[] = []; // teachers already finished
 
     for (const teacher of allTeachers) {
         // skip the column's header teacher as it should not appear in its own dropdown
@@ -216,8 +217,14 @@ export const sortDailyTeachers = (
             if (teachesToday) {
                 if (!scheduledThisHour) {
                     const bounds = teacherStartEndMap.get(teacher.id);
-                    if (bounds && (hour < bounds.min || hour > bounds.max)) {
-                        outsideHoursTeachers.push(teacher);
+                    if (bounds) {
+                        if (hour < bounds.min) {
+                            notStartedTeachers.push(teacher);
+                        } else if (hour > bounds.max) {
+                            finishedTeachers.push(teacher);
+                        } else {
+                            availableTeachers.push(teacher);
+                        }
                     } else {
                         availableTeachers.push(teacher);
                     }
@@ -316,7 +323,7 @@ export const sortDailyTeachers = (
             options: additionalLessonTeachers.map((t) => ({ value: t.id, label: t.name })),
         },
         {
-            label: "מורים למילוי מקום",
+            label: "מורים מילוי מקום",
             collapsed: true,
             options: substituteTeachers.map((teacher) => ({
                 value: teacher.id,
@@ -353,9 +360,14 @@ export const sortDailyTeachers = (
             })),
         },
         {
-            label: "לא התחילו/סיימו היום",
+            label: "לא התחילו את היום",
             collapsed: true,
-            options: outsideHoursTeachers.map((t) => ({ value: t.id, label: t.name })),
+            options: notStartedTeachers.map((t) => ({ value: t.id, label: t.name })),
+        },
+        {
+            label: "סיימו את יום העבודה",
+            collapsed: true,
+            options: finishedTeachers.map((t) => ({ value: t.id, label: t.name })),
         },
         {
             label: "ביום חופשי",
@@ -365,7 +377,7 @@ export const sortDailyTeachers = (
         {
             label: "אפשרויות נוספות",
             collapsed: true,
-            hideCount: true,
+            hideCount: false,
             options: dailySelectActivity,
         },
     ];

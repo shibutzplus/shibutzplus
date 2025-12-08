@@ -30,6 +30,7 @@ export interface InputGroupSelectProps {
     isClearable?: boolean;
     onCreate?: (value: string) => Promise<void>;
     menuWidth?: string;
+    color?: string;
 }
 
 const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
@@ -48,6 +49,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     isClearable = false,
     onCreate,
     menuWidth,
+    color,
 }) => {
     const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -96,7 +98,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     const selectRef = useRef<any>(null);
     const { selectRef: mobileScrollRef, containerRef, handleMenuOpen } = useMobileSelectScroll();
 
-    const baseStyles = customStyles(error || "", hasBorder, true, backgroundColor);
+    const baseStyles = customStyles(error || "", hasBorder, true, backgroundColor, color);
     const stylesOverride: StylesConfig<SelectOption, false, GroupOption> = {
         ...(baseStyles as StylesConfig<SelectOption, false, GroupOption>),
         control: (prov: any, state: any) => {
@@ -122,13 +124,15 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
         },
         option: (prov: any) => ({
             ...prov,
-            padding: "8px 8px",
+            padding: "8px 18px 8px 8px",
+            fontSize: "16px",
         }),
         groupHeading: (prov: any) => ({
             ...prov,
             paddingTop: "8px",
             paddingBottom: "8px",
-            fontSize: "14px",
+            paddingRight: "5px",
+            fontSize: "15px",
             backgroundColor: TabColor,
         }),
     };

@@ -33,7 +33,7 @@ const PreviewTeacherCell: React.FC<PreviewTeacherCellProps> = ({ cell }) => {
     return (
         <div className={styles.cellContent}>
             <div className={styles.innerCellContent}>
-                <span>
+                <span className={classData?.activity ? styles.activityText : ""}>
                     {classData && classData.name}
                     {subjectData && !classData?.activity && " | " + subjectData.name}
                 </span>

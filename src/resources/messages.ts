@@ -49,15 +49,17 @@ const messages = {
         updateError: "בעיה בעדכון המקצוע אנא נסו שוב",
     },
     classes: {
-        success: "רשימת כיתות נטענה בהצלחה",
-        error: "בעיה בטעינת רשימת הכיתות אנא נסו שוב",
-        createSuccess: "כיתה נוספה בהצלחה",
-        createError: "בעיה בהוספת כיתה אנא נסו שוב",
-        deleteSuccess: "כיתה נמחקה בהצלחה",
-        deleteError: "בעיה במחיקת כיתה אנא נסו שוב",
+        success: "רשימת כיתות/קבוצות נטענה בהצלחה",
+        error: "בעיה בטעינת רשימת כיתות/קבוצות אנא נסו שוב",
+        createClassSuccess: "כיתה נוספה בהצלחה",
+        createGroupSuccess: "קבוצה נוספה בהצלחה",
+        createError: "בעיה בהוספת כיתה/קבוצה אנא נסו שוב",
+        deleteClassSuccess: "כיתה נמחקה בהצלחה",
+        deleteGroupSuccess: "קבוצה נמחקה בהצלחה",
+        deleteError: "בעיה במחיקת כיתה/קבוצה אנא נסו שוב",
         invalid: "חסרים פרמטרים",
-        updateSuccess: "כיתה עודכנה בהצלחה",
-        updateError: "בעיה בעדכון כיתה אנא נסו שוב",
+        updateClassSuccess: "כיתה/קבוצה עודכנה בהצלחה",
+        updateError: "בעיה בעדכון כיתה/קבוצה אנא נסו שוב",
     },
     annualSchedule: {
         success: "מערכת שנתית נטענה בהצלחה",
@@ -83,7 +85,6 @@ const messages = {
     publish: {
         success: "המערכת היומית פורסמה וזמינה למורים",
         error: "בעיה בפרסום המערכת אנא נסו שוב",
-        alreadyPublished: "יום זה כבר פורסם",
     }
 }
 
