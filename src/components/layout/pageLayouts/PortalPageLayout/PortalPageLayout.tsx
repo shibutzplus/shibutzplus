@@ -96,7 +96,9 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
                     </div>
                 ) : null
             }
-            contentClassName={styles.mainContentWithBottomNav}
+            contentClassName={
+                !teacher || isRegularTeacher ? styles.mainContentWithBottomNav : ""
+            }
         >
             {children}
         </PageLayout>
