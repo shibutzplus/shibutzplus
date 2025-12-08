@@ -18,6 +18,7 @@ import {
 } from "@/lib/sessionStorage";
 import { AppType } from "@/models/types";
 import Logo from "../../ui/Logo/Logo";
+import { TeacherRoleValues } from "@/models/types/teachers";
 
 export interface ILink {
     name: string;
@@ -28,7 +29,7 @@ export interface ILink {
 interface ILinkGroup {
     title: string;
     links: ILink[];
-    type: "private" | "public";
+    type: "private" | "public" | "substitute";
     isCollapse?: boolean;
 }
 
@@ -122,6 +123,18 @@ const linkGroups: ILinkGroup[] = [
             },
         ],
     },
+    {
+        title: "מסכים למורי ממלאי מקום",
+        type: "substitute",
+        isCollapse: false,
+        links: [
+            {
+                name: "המערכת שלי",
+                p: routePath.teacherPortal.p,
+                Icon: <Icons.teacher size={24} />,
+            },
+        ],
+    },
 ];
 
 type LinkComponentProps = {
@@ -187,11 +200,15 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
     };
 
     const teacher = getStorageTeacher();
+    const isSubstituteTeacher = teacher?.role === TeacherRoleValues.SUBSTITUTE;
 
     const displayedGroups = linkGroups
         .filter((group) => {
             if (hamburgerType === "private") return group.type === "private";
-            if (hamburgerType === "public") return group.type === "public";
+            if (hamburgerType === "public") {
+                if (isSubstituteTeacher) return group.type === "substitute";
+                return group.type === "public";
+            }
             return false;
         })
         .map((group) => ({
