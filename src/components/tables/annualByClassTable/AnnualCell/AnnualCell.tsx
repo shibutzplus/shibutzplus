@@ -91,16 +91,26 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
         );
     };
 
+    const filteredSubjects = useMemo(() => {
+        const selectedClassObj = classes.find((c) => c.id === selectedClassId);
+        if (selectedClassObj?.activity) {
+            return subjects.filter((s) => s.name === selectedClassObj.name);
+        }
+        return sortByHebrewName(subjects.filter((s) => !s.activity) || []);
+    }, [classes, selectedClassId, subjects]);
+
+    const isActivity = classes.find((c) => c.id === selectedClassId)?.activity;
+
     return (
         <td className={styles.scheduleCell}>
             <div className={styles.cellContent}>
                 <DynamicInputMultiSelect
-                    options={createSelectOptions<SubjectType>(sortByHebrewName(subjects || []))}
+                    options={createSelectOptions<SubjectType>(filteredSubjects)}
                     value={schedule[selectedClassId]?.[day]?.[hour]?.subjects ?? []}
                     onChange={handleSubjectChange}
                     placeholder="מקצוע"
                     isSearchable
-                    isAllowAddNew
+                    isAllowAddNew={!isActivity}
                     isDisabled={isDisabled}
                     onCreate={(value: string) => onCreateSubject(day, hour, value)}
                     onBeforeRemove={confirmRemove}

@@ -4,13 +4,8 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 import { useMainContext } from "./MainContext";
 import { createSelectOptions } from "@/utils/format";
 import { ClassType } from "@/models/types/classes";
-import { Pair, SelectOption } from "@/models/types";
-import {
-    AnnualInputCellType,
-    AnnualScheduleRequest,
-    AnnualScheduleType,
-    WeeklySchedule,
-} from "@/models/types/annualSchedule";
+import { Pair } from "@/models/types";
+import { AnnualInputCellType, AnnualScheduleRequest, AnnualScheduleType, WeeklySchedule, } from "@/models/types/annualSchedule";
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { addAnnualScheduleAction } from "@/app/actions/POST/addAnnualScheduleAction";
@@ -20,12 +15,7 @@ import { SelectMethod } from "@/models/types/actions";
 import { dayToNumber } from "@/utils/time";
 import { TeacherType } from "@/models/types/teachers";
 import { SubjectType } from "@/models/types/subjects";
-
-import {
-    createAnnualRequests,
-    createPairs,
-    setNewScheduleTemplate,
-} from "@/services/annual/initialize";
+import { createAnnualRequests, createPairs, setNewScheduleTemplate, } from "@/services/annual/initialize";
 import { getSelectedClass } from "@/services/annual/get";
 
 interface AnnualByClassContextType {
@@ -231,13 +221,6 @@ export const AnnualByClassProvider: React.FC<{ children: ReactNode }> = ({ child
 
         // 2) Incomplete pair → do nothing yet (no warning)
         if (subjectIds.length === 0 || teacherIds.length === 0) {
-            return;
-        }
-
-        // when both sides exist and subjects > teachers dont update yet
-        if (subjectIds.length > teacherIds.length) {
-            //TODO
-            //    infoToast("שימו ❤️, יש יותר מקצועות ממורים בשיעור אחד.");
             return;
         }
 

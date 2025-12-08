@@ -15,7 +15,7 @@ import { DEFAULT_REDIRECT } from "@/routes/protectedAuth";
 import routes from "@/routes";
 import { EmailLink } from "@/models/constant";
 import { STATUS_AUTH, STATUS_LOADING, STATUS_UNAUTH } from "@/models/constant/session";
-import { infoToast } from "@/lib/toast";
+import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { getSchoolsMinAction } from "@/app/actions/GET/getSchoolsMinAction";
 
@@ -35,7 +35,7 @@ const SignInContent: React.FC = () => {
 
     useEffect(() => {
         if (googleError === "AccessDenied") {
-            infoToast(messages.auth.accessDenied);
+            errorToast(messages.auth.accessDenied);
             router.replace(window.location.pathname);
         }
     }, [googleError, router]);
