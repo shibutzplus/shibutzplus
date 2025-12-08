@@ -123,6 +123,39 @@ export const mapAnnualTeachers = (data: AnnualScheduleType[]) => {
 };
 
 /**
+ * Maps annual schedule data into a structured format of teacher locations (which class they are in).
+ *
+ * This function processes a list of annual schedule entries and organizes them by day and hour.
+ * It creates a mapping where each key corresponds to a day, containing an object of hours.
+ * Each hour maps to an object where keys are teacher IDs and values are class IDs.
+ * This is used to display where a teacher is teaching when they are unavailable.
+ * @returns A structured object: { [day]: { [hour]: { [teacherId]: classId } } }
+ */
+export const mapAnnualTeacherClasses = (data: AnnualScheduleType[]) => {
+    const teacherClassMap: any = {};
+
+    data.forEach((schedule) => {
+        const day = schedule.day.toString();
+        const hour = schedule.hour.toString();
+        const teacherId = schedule.teacher?.id;
+        const classId = schedule.class?.id;
+
+        if (!teacherId || !classId) return;
+
+        if (!teacherClassMap[day]) {
+            teacherClassMap[day] = {};
+        }
+        if (!teacherClassMap[day][hour]) {
+            teacherClassMap[day][hour] = {};
+        }
+
+        teacherClassMap[day][hour][teacherId] = classId;
+    });
+
+    return teacherClassMap;
+};
+
+/**
  * Populates the main daily schedule table with data for a specific date.
  *
  * This function takes the current `mainDailyTable`, a `selectedDate`, and an array of `dataColumns`

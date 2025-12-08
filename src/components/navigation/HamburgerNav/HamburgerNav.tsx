@@ -10,7 +10,12 @@ import { motion, AnimatePresence } from "motion/react";
 import { useAccessibility } from "../../../hooks/browser/useAccessibility";
 import routePath from "../../../routes";
 import { clearStorage, getStorageTeacher } from "@/lib/localStorage";
-import { clearSessionStorage } from "@/lib/sessionStorage";
+import {
+    clearSessionStorage,
+    getSessionStorage,
+    SESSION_KEYS,
+    setSessionStorage,
+} from "@/lib/sessionStorage";
 import { AppType } from "@/models/types";
 import Logo from "../../ui/Logo/Logo";
 
@@ -204,10 +209,21 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
 
     const [expandedGroups, setExpandedGroups] = React.useState<string[]>([]);
 
+    useEffect(() => {
+        const stored = getSessionStorage<string[]>(SESSION_KEYS.HAMBURGER_EXPANDED_GROUPS);
+        if (stored) {
+            setExpandedGroups(stored);
+        }
+    }, []);
+
     const toggleGroup = (title: string) => {
-        setExpandedGroups((prev) =>
-            prev.includes(title) ? prev.filter((t) => t !== title) : [...prev, title],
-        );
+        setExpandedGroups((prev) => {
+            const newState = prev.includes(title)
+                ? prev.filter((t) => t !== title)
+                : [...prev, title];
+            setSessionStorage(SESSION_KEYS.HAMBURGER_EXPANDED_GROUPS, newState);
+            return newState;
+        });
     };
 
     return (

@@ -5,7 +5,7 @@ import { NextPage } from "next";
 import styles from "./PublishedPortal.module.css";
 import PreviewTable from "@/components/tables/previewTable/PreviewTable/PreviewTable";
 import { usePortalContext } from "@/context/PortalContext";
-import DailySkeleton from "@/components/loading/skeleton/DailySkeleton/DailySkeleton";
+import Preloader from "@/components/ui/Preloader/Preloader";
 import NotPublished from "@/components/empty/NotPublished/NotPublished";
 
 const PublishedPortalPage: NextPage = () => {
@@ -23,7 +23,21 @@ const PublishedPortalPage: NextPage = () => {
         fetchPublishScheduleData();
     }, [selectedDate, teacher?.id, schoolId]);
 
-    if (isDatesLoading || isPublishLoading) return <DailySkeleton />;
+    if (isDatesLoading || isPublishLoading) {
+        return (
+            <div style={{ position: "relative", width: "100%", height: "100%" }}>
+                <Preloader
+                    style={{
+                        position: "fixed",
+                        top: "40%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        zIndex: 10,
+                    }}
+                />
+            </div>
+        );
+    }
 
     return (
         <section className={styles.container}>

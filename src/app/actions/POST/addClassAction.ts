@@ -26,7 +26,7 @@ export async function addClassAction(
 
         return {
             success: true,
-            message: messages.classes.createSuccess,
+            message: messages.classes.createClassSuccess,
             data: newClass,
         };
     } catch (error: any) {

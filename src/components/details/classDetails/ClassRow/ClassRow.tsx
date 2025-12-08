@@ -17,8 +17,10 @@ const ClassRow: React.FC<ClassRowProps> = ({ classItem }) => {
     const { handleOpenPopup } = useDeletePopup();
 
     const { handleSubmitDelete, isLoading } = useSubmit(
-        () => {},
-        messages.classes.deleteSuccess,
+        () => { },
+        classItem.activity
+            ? messages.classes.deleteGroupSuccess
+            : messages.classes.deleteClassSuccess,
         messages.classes.deleteError,
         messages.classes.invalid,
     );
@@ -29,9 +31,10 @@ const ClassRow: React.FC<ClassRowProps> = ({ classItem }) => {
     };
 
     const handleDeleteClass = (classItem: ClassType) => {
+        const entityName = classItem.activity ? "הקבוצה" : "הכיתה";
         handleOpenPopup(
             PopupAction.deleteClass,
-            `האם אתה בטוח שברצונך למחוק את הכיתה ${classItem.name}`,
+            `האם אתה בטוח שברצונך למחוק את ${entityName} ${classItem.name}`,
             () => handleDeleteClassFromState(classItem.id),
         );
     };

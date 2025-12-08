@@ -27,6 +27,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
         selectedDate,
         updateTeacherCell,
         clearTeacherCell,
+        teacherClassMap,
     } = useDailyTableContext();
     //TODO
     // const { teacherAtIndex, classNameById } = useAnnualTable();
@@ -51,6 +52,11 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
         [classes],
     );
 
+    const classNameById = useMemo(
+        () => Object.fromEntries((classes || []).map((cls) => [cls.id, cls.name])),
+        [classes],
+    );
+
     const sortedTeacherOptions = useMemo(
         () =>
             sortDailyTeachers(
@@ -59,8 +65,8 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
                 mainDailyTable[selectedDate],
                 day,
                 Number(hour),
-                {},
-                {},
+                teacherClassMap,
+                classNameById,
                 headerData?.headerTeacher?.id,
                 subTeacherData?.id || teacherText,
                 classActivityById,
@@ -70,9 +76,11 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
             mapAvailableTeachers,
             mainDailyTable,
             selectedDate,
+            mainDailyTable,
+            selectedDate,
             hour,
-            {},
-            {},
+            teacherClassMap,
+            classNameById,
             headerData?.headerTeacher?.id,
             subTeacherData,
             teacherText,
@@ -153,11 +161,18 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
             {classData && subjectData ? (
                 <div className={styles.innerCellContent}>
                     <Tooltip
-                        content={classData.name + " | " + subjectData.name}
+                        content={
+                            classData.name +
+                            (!classData?.activity ? " | " + subjectData.name : "")
+                        }
                         on={["click", "scroll"]}
                     >
-                        <div className={styles.classAndSubject}>
-                            {classData.name} | {subjectData.name}
+                        <div
+                            className={`${styles.classAndSubject} ${classData.activity ? styles.activityText : ""
+                                }`}
+                        >
+                            {classData.name}
+                            {!classData?.activity && " | " + subjectData.name}
                         </div>
                     </Tooltip>
                     <div className={styles.teacherSelect}>
@@ -173,6 +188,9 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
                             backgroundColor="transparent"
                             onCreate={(value: string) => handleTeacherChange("create", value)}
                             menuWidth="210px"
+                            color={
+                                classData?.activity ? "var(--disabled-text-color)" : undefined
+                            }
                         />
                     </div>
                 </div>

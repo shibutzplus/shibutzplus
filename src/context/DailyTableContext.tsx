@@ -15,20 +15,25 @@ import { getSessionDailyTable, setSessionDailyTable } from "@/lib/sessionStorage
 import { TeacherType } from "@/models/types/teachers";
 import useDailyTeacherActions from "@/hooks/daily/useDailyTeacherActions";
 import { getAnnualScheduleAction } from "@/app/actions/GET/getAnnualScheduleAction";
-import { AvailableTeachers } from "@/models/types/annualSchedule";
+import { AvailableTeachers, TeacherClassMap } from "@/models/types/annualSchedule";
 import { getTomorrowOption } from "@/resources/dayOptions";
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
 import { infoToast } from "@/lib/toast";
 import { generateId } from "@/utils";
 import { deleteDailyColumnAction } from "@/app/actions/DELETE/deleteDailyColumnAction";
 import useDailyEventActions from "@/hooks/daily/useDailyEventActions";
-import { mapAnnualTeachers, populateDailyScheduleTable } from "@/services/daily/populate";
+import {
+    mapAnnualTeachers,
+    populateDailyScheduleTable,
+    mapAnnualTeacherClasses,
+} from "@/services/daily/populate";
 import { createNewEmptyColumn } from "@/services/daily/setEmpty";
 import { useDailyEditMode } from "@/hooks/daily/useDailyEditMode";
 
 interface DailyTableContextType {
     mainDailyTable: DailySchedule;
     mapAvailableTeachers: AvailableTeachers;
+    teacherClassMap: TeacherClassMap;
     isLoading: boolean;
     isEditMode: boolean;
     isLoadingEditPage: boolean;
@@ -101,6 +106,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     const [mainDailyTable, setMainDailyTable] = useState<DailySchedule>({});
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [mapAvailableTeachers, setMapAvailableTeachers] = useState<AvailableTeachers>({});
+    const [teacherClassMap, setTeacherClassMap] = useState<TeacherClassMap>({});
 
     const { isEditMode, isLoadingEditPage, changeDailyMode } = useDailyEditMode();
 
@@ -141,7 +147,10 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 const response = await getAnnualScheduleAction(school.id);
                 if (response.success && response.data) {
                     const teacherMapping: AvailableTeachers = mapAnnualTeachers(response.data);
+                    const classMapping: TeacherClassMap = mapAnnualTeacherClasses(response.data);
+
                     setMapAvailableTeachers(teacherMapping);
+                    setTeacherClassMap(classMapping);
                 }
             } catch (error) {
                 console.error("Error fetching annual schedule:", error);
@@ -235,6 +244,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 isEditMode,
                 isLoadingEditPage,
                 mapAvailableTeachers,
+                teacherClassMap,
                 addNewEmptyColumn,
                 deleteColumn,
                 daysSelectOptions,

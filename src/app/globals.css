@@ -14,6 +14,7 @@
     --dark-text-color-active: #585858;
 
     --placeholder-color: #CECECE;
+    --disabled-text-color: #AFAFAF;
     --input-background-color: #FFFFFF;
     --input-color: #494949;
     --input-border: #e0e0e0;
@@ -76,7 +77,6 @@
     --table-daily-cell-height: 110px;
     --table-daily-full-height: calc(var(--table-daily-header-height) + var(--table-daily-cell-height) * var(--hours-in-day) + (5px * 11));
     --table-daily-btn-width: 60px;
-    --table-daily-preview-bg-color: #FAF0E6;
 
     --table-annual-col-width: 200px;
     --table-annual-col-width-mobile: 230px;

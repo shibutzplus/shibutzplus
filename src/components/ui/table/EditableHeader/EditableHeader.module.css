@@ -19,9 +19,9 @@
     top: 0;
     left: 0;
     border-radius: var(--border-radius-table) var(--border-radius-table) 0 0;
-    gap: 10px;
+    gap: 5px;
     width: 100%;
-    padding: 0 15px;
+    padding: 0 20px 0 5px;
     text-align: right;
     height: 100%;
     color: var(--bright-text-color);
@@ -31,33 +31,17 @@
     align-items: center;
 }
 
-.clearButton {
+.deleteButton {
     cursor: pointer;
     font-size: 16px;
     transition: all 0.2s ease;
 }
 
-.clearButton:hover {
+.deleteButton:hover {
     color: var(--bright-text-color-hover);
     cursor: pointer;
 }
 
-.clearButton:active {
-    transform: translateY(1px);
-}
-
-.eyeButton {
-    cursor: pointer;
-    font-size: 16px;
-    transition: all 0.2s ease;
-    margin-right: 5px;
-}
-
-.eyeButton:hover {
-    color: var(--bright-text-color-hover);
-    cursor: pointer;
-}
-
-.eyeButton:active {
+.deleteButton:active {
     transform: translateY(1px);
 }

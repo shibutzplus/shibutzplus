@@ -177,9 +177,18 @@ export const sortDailyTeachers = (
     // Track teachers already assigned in other daily columns for this hour
     const dailyAssignedTeacherIds = new Set<string>();
     const subTeachersThisHour = new Set<string>(); // teachers assigned as a sub
+    const missingTeacherIds = new Set<string>();
 
     if (dailyDay) {
         Object.values(dailyDay).forEach((dailyColumn) => {
+            const headerCell = dailyColumn["1"];
+            if (
+                headerCell?.headerCol?.type === ColumnTypeValues.missingTeacher &&
+                headerCell.headerCol.headerTeacher?.id
+            ) {
+                missingTeacherIds.add(headerCell.headerCol.headerTeacher.id);
+            }
+
             const column = dailyColumn[hourStr];
             if (!column) return;
 
@@ -195,9 +204,12 @@ export const sortDailyTeachers = (
     const availableTeachers: TeacherType[] = []; // regular teachers free this hour
     const unavailableTeachers: TeacherType[] = []; // teachers busy this hour
     const freeDayTeachers: TeacherType[] = []; // regular teachers not teaching on this day
-    const outsideHoursTeachers: TeacherType[] = []; // teachers working today but outside their hours
+    const notStartedTeachers: TeacherType[] = []; // teachers not started yet
+    const finishedTeachers: TeacherType[] = []; // teachers already finished
 
     for (const teacher of allTeachers) {
+        if (missingTeacherIds.has(teacher.id)) continue;
+
         // skip the column's header teacher as it should not appear in its own dropdown
         if (currentHeaderTeacherId && teacher.id === currentHeaderTeacherId) continue;
 
@@ -216,8 +228,14 @@ export const sortDailyTeachers = (
             if (teachesToday) {
                 if (!scheduledThisHour) {
                     const bounds = teacherStartEndMap.get(teacher.id);
-                    if (bounds && (hour < bounds.min || hour > bounds.max)) {
-                        outsideHoursTeachers.push(teacher);
+                    if (bounds) {
+                        if (hour < bounds.min) {
+                            notStartedTeachers.push(teacher);
+                        } else if (hour > bounds.max) {
+                            finishedTeachers.push(teacher);
+                        } else {
+                            availableTeachers.push(teacher);
+                        }
                     } else {
                         availableTeachers.push(teacher);
                     }
@@ -283,9 +301,20 @@ export const sortDailyTeachers = (
     const additionalIds = new Set(additionalLessonTeachers.map((t) => t.id));
     const filteredUnavailableTeachers = unavailableTeachers.filter((t) => !additionalIds.has(t.id));
 
-    const activityTeachers = filteredUnavailableTeachers.filter(
-        (t) => !subTeachersThisHour.has(t.id) && isTeacherInActivityClass(t.id),
-    );
+    const activityTeachers = filteredUnavailableTeachers
+        .filter((t) => !subTeachersThisHour.has(t.id) && isTeacherInActivityClass(t.id))
+        .sort((a, b) => {
+            const classIdA = teacherAtIndex?.[dayKey]?.[hourStr]?.[a.id];
+            const classNameA = classIdA ? classNameById[classIdA] || classIdA : "";
+
+            const classIdB = teacherAtIndex?.[dayKey]?.[hourStr]?.[b.id];
+            const classNameB = classIdB ? classNameById[classIdB] || classIdB : "";
+
+            const groupCompare = classNameA.localeCompare(classNameB, "he", { numeric: true });
+            if (groupCompare !== 0) return groupCompare;
+
+            return a.name.localeCompare(b.name, "he", { numeric: true });
+        });
 
     const nonActivityClassTeachers = filteredUnavailableTeachers
         .filter((t) => !subTeachersThisHour.has(t.id) && !isTeacherInActivityClass(t.id))
@@ -316,7 +345,7 @@ export const sortDailyTeachers = (
             options: additionalLessonTeachers.map((t) => ({ value: t.id, label: t.name })),
         },
         {
-            label: "מורים למילוי מקום",
+            label: "מורים מילוי מקום",
             collapsed: true,
             options: substituteTeachers.map((teacher) => ({
                 value: teacher.id,
@@ -353,9 +382,14 @@ export const sortDailyTeachers = (
             })),
         },
         {
-            label: "לא התחילו/סיימו היום",
+            label: "לא התחילו את היום",
             collapsed: true,
-            options: outsideHoursTeachers.map((t) => ({ value: t.id, label: t.name })),
+            options: notStartedTeachers.map((t) => ({ value: t.id, label: t.name })),
+        },
+        {
+            label: "סיימו את יום העבודה",
+            collapsed: true,
+            options: finishedTeachers.map((t) => ({ value: t.id, label: t.name })),
         },
         {
             label: "ביום חופשי",
@@ -365,7 +399,7 @@ export const sortDailyTeachers = (
         {
             label: "אפשרויות נוספות",
             collapsed: true,
-            hideCount: true,
+            hideCount: false,
             options: dailySelectActivity,
         },
     ];

@@ -49,4 +49,12 @@ export type AvailableTeachers = {
     };
 };
 
+export type TeacherClassMap = {
+    [day: string]: {
+        [hour: string]: {
+            [teacherId: string]: string; // value is classId
+        };
+    };
+};
+
 export type AnnualInputCellType = "teachers" | "subjects" | "classes";

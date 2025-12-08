@@ -23,3 +23,7 @@
     color: var(--missing-teacher-color);
     font-weight: 600;
 }
+
+.activityText {
+    color: var(--disabled-text-color);
+}
