@@ -38,7 +38,7 @@ const PreviewTeacherCell: React.FC<PreviewTeacherCellProps> = ({ cell }) => {
                     {subjectData && !classData?.activity && " | " + subjectData.name}
                 </span>
                 {subTeacherData ? (
-                    <div className={styles.subTeacherName}>מ"מ: {subTeacherData.name}</div>
+                    <div className={styles.subTeacherName}>{subTeacherData.name}</div>
                 ) : teacherText ? (
                     <div className={styles.subTeacherName}>{teacherText}</div>
                 ) : isMissingTeacher && !classData?.activity ? (

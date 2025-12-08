@@ -7,7 +7,7 @@ type TeacherHeaderProps = {
 };
 
 const TeacherHeader: React.FC<TeacherHeaderProps> = ({ onlyMobile = false, isInsidePanel = false }) => {
-    const trs = onlyMobile ? ["חומרי לימוד"] : ["כיתה", "חומרי לימוד"];
+    const trs = onlyMobile ? ["חומר לימוד"] : ["ממלא מקום", "חומר לימוד"];
     return (
         <ReadOnlyHeader
             trs={trs}

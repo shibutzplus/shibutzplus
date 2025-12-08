@@ -135,6 +135,10 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
             fontSize: "15px",
             backgroundColor: TabColor,
         }),
+        singleValue: (prov: any) => ({
+            ...prov,
+            fontWeight: "bold",
+        }),
     };
 
     // Custom Group: always render heading, hide children (options) when collapsed
