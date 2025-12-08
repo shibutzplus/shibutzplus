@@ -15,10 +15,9 @@ interface TeacherTableContextType {
     mainPortalTable: PortalSchedule;
     fetchTeacherScheduleDate: (
         teacher?: TeacherType,
-        schoolId?: string,
         selectedDate?: string,
     ) => Promise<boolean>;
-    handlePortalRefresh: (teacher?: TeacherType) => Promise<void>;
+    handlePortalRefresh: (teacher?: TeacherType, selectedDate?: string) => Promise<void>;
     saveInstractions: (
         instructions: string,
         row?: TeacherScheduleType,
@@ -75,8 +74,8 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
         }
     };
 
-    const handlePortalRefresh = async (teacher?: TeacherType) => {
-        const datesRes = await fetchTeacherScheduleDate(teacher);
+    const handlePortalRefresh = async (teacher?: TeacherType, selectedDate?: string) => {
+        const datesRes = await fetchTeacherScheduleDate(teacher, selectedDate);
         if (!datesRes) {
             errorToast("בעיה בטעינת המידע, נסו שוב");
             return;
