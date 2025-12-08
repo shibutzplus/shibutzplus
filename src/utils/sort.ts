@@ -177,9 +177,18 @@ export const sortDailyTeachers = (
     // Track teachers already assigned in other daily columns for this hour
     const dailyAssignedTeacherIds = new Set<string>();
     const subTeachersThisHour = new Set<string>(); // teachers assigned as a sub
+    const missingTeacherIds = new Set<string>();
 
     if (dailyDay) {
         Object.values(dailyDay).forEach((dailyColumn) => {
+            const headerCell = dailyColumn["1"];
+            if (
+                headerCell?.headerCol?.type === ColumnTypeValues.missingTeacher &&
+                headerCell.headerCol.headerTeacher?.id
+            ) {
+                missingTeacherIds.add(headerCell.headerCol.headerTeacher.id);
+            }
+
             const column = dailyColumn[hourStr];
             if (!column) return;
 
@@ -199,6 +208,8 @@ export const sortDailyTeachers = (
     const finishedTeachers: TeacherType[] = []; // teachers already finished
 
     for (const teacher of allTeachers) {
+        if (missingTeacherIds.has(teacher.id)) continue;
+
         // skip the column's header teacher as it should not appear in its own dropdown
         if (currentHeaderTeacherId && teacher.id === currentHeaderTeacherId) continue;
 
