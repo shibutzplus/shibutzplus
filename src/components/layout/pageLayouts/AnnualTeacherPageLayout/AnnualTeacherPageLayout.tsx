@@ -28,7 +28,7 @@ export default function AnnualTeacherPageLayout({ children }: AnnualTeacherPageL
                             options={teachersSelectOptions()}
                             value={selectedTeacherId}
                             onChange={handleTeacherChange}
-                            isSearchable={false}
+                            isSearchable={true}
                             isDisabled={isSaving || isLoading}
                             placeholder="בחרו מורה..."
                             hasBorder

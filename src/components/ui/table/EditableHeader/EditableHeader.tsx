@@ -17,7 +17,6 @@ const EditableHeader: React.FC<EditableHeaderProps> = ({
     color,
     deleteLabel,
     deleteCol,
-    onEyeClick,
 }) => {
     const { handleOpenPopup } = useDeletePopup();
     const headerRef = useRef<HTMLDivElement | null>(null);
@@ -33,19 +32,11 @@ const EditableHeader: React.FC<EditableHeaderProps> = ({
         <div ref={headerRef} className={styles.columnHeaderWrapper}>
             <div className={styles.columnHeader} style={{ backgroundColor: color }}>
                 <Icons.delete
-                    className={styles.clearButton}
+                    className={styles.deleteButton}
                     onClick={handleDeleteColumn}
                     size={20}
                     title="מחיקת עמודה"
                 />
-                {/* {onEyeClick && (
-                    <Icons.eye
-                        className={styles.eyeButton}
-                        onClick={onEyeClick}
-                        size={24}
-                        title="לחצו כאן כדי לצפות או להזין את חומרי הלימוד"
-                    />
-                )} */}
                 {children}
             </div>
         </div>

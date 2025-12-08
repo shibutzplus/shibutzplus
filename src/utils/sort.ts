@@ -290,9 +290,20 @@ export const sortDailyTeachers = (
     const additionalIds = new Set(additionalLessonTeachers.map((t) => t.id));
     const filteredUnavailableTeachers = unavailableTeachers.filter((t) => !additionalIds.has(t.id));
 
-    const activityTeachers = filteredUnavailableTeachers.filter(
-        (t) => !subTeachersThisHour.has(t.id) && isTeacherInActivityClass(t.id),
-    );
+    const activityTeachers = filteredUnavailableTeachers
+        .filter((t) => !subTeachersThisHour.has(t.id) && isTeacherInActivityClass(t.id))
+        .sort((a, b) => {
+            const classIdA = teacherAtIndex?.[dayKey]?.[hourStr]?.[a.id];
+            const classNameA = classIdA ? classNameById[classIdA] || classIdA : "";
+
+            const classIdB = teacherAtIndex?.[dayKey]?.[hourStr]?.[b.id];
+            const classNameB = classIdB ? classNameById[classIdB] || classIdB : "";
+
+            const groupCompare = classNameA.localeCompare(classNameB, "he", { numeric: true });
+            if (groupCompare !== 0) return groupCompare;
+
+            return a.name.localeCompare(b.name, "he", { numeric: true });
+        });
 
     const nonActivityClassTeachers = filteredUnavailableTeachers
         .filter((t) => !subTeachersThisHour.has(t.id) && !isTeacherInActivityClass(t.id))

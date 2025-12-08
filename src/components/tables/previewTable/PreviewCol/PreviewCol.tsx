@@ -39,8 +39,8 @@ const PreviewCol: React.FC<PreviewColProps> = ({
             <div className={styles.rows}>
                 {colFirstObj
                     ? Object.entries(column).map(([hour, cell]) => (
-                          <PreviewEventCell key={hour} cell={cell} columnId={columnId} />
-                      ))
+                        <PreviewEventCell key={hour} cell={cell} columnId={columnId} />
+                    ))
                     : null}
             </div>
         </div>
@@ -56,13 +56,14 @@ const PreviewCol: React.FC<PreviewColProps> = ({
             <div className={styles.rows}>
                 {colFirstObj
                     ? Object.entries(column).map(([hour, cell]) => (
-                          <PreviewTeacherCell
-                              key={hour}
-                              cell={cell}
-                              columnId={columnId}
-                              type={columnType}
-                          />
-                      ))
+                        <PreviewTeacherCell
+                            key={hour}
+                            cell={cell}
+                            columnId={columnId}
+                            type={columnType}
+                            appType={appType}
+                        />
+                    ))
                     : null}
             </div>
         </div>

@@ -47,6 +47,22 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
 
     const handleClassChange = (value: string, method?: SelectMethod) => {
         handleAddNewRow("classes", value ? [value] : [], day, hour, method || "select-option");
+
+        if (value) {
+            const selectedClassObj = classes.find((c) => c.id === value);
+            if (selectedClassObj?.activity) {
+                const matchingSubject = subjects.find((s) => s.name === selectedClassObj.name);
+                if (matchingSubject) {
+                    handleAddNewRow(
+                        "subjects",
+                        [matchingSubject.id],
+                        day,
+                        hour,
+                        method || "select-option",
+                    );
+                }
+            }
+        }
     };
 
     const confirmRemove = (what: string | null, proceed: () => void) => {

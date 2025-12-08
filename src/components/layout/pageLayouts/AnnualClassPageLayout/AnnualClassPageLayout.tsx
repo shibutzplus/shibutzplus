@@ -28,7 +28,7 @@ export default function AnnualClassPageLayout({ children }: AnnualClassPageLayou
                             options={classesSelectOptions()}
                             value={selectedClassId}
                             onChange={handleClassChange}
-                            isSearchable={false}
+                            isSearchable={true}
                             isDisabled={isSaving || isLoading}
                             placeholder="בחר כיתה..."
                             hasBorder

@@ -54,6 +54,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
+    const [inputValue, setInputValue] = useState("");
 
     useEffect(() => {
         if (value) {
@@ -144,7 +145,8 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     // Custom Group: always render heading, hide children (options) when collapsed
     const Group = (props: any) => {
         const { data } = props;
-        const isCollapsed = collapsedGroups[data.label] ?? false;
+        const isCollapsed =
+            inputValue.trim().length > 0 ? false : (collapsedGroups[data.label] ?? false);
 
         const toggle = () => {
             setCollapsedGroups((prev) => ({
@@ -195,6 +197,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
                     setIsMenuOpen(true);
                 }}
                 onMenuClose={() => setIsMenuOpen(false)}
+                onInputChange={(val) => setInputValue(val)}
                 components={{ Group }}
                 noOptionsMessage={({ inputValue }) =>
                     isAllowAddNew && inputValue.trim() !== "" ? (

@@ -3,18 +3,29 @@ import styles from "./PreviewTeacherCell.module.css";
 import { ColumnType, ColumnTypeValues, DailyScheduleCell } from "@/models/types/dailySchedule";
 import EmptyCell from "@/components/ui/table/EmptyCell/EmptyCell";
 
+import { AppType } from "@/models/types";
+
 type PreviewTeacherCellProps = {
     columnId: string;
     cell: DailyScheduleCell;
     type: ColumnType;
+    appType?: AppType;
 };
 
-const PreviewTeacherCell: React.FC<PreviewTeacherCellProps> = ({ cell }) => {
+const PreviewTeacherCell: React.FC<PreviewTeacherCellProps> = ({ cell, appType }) => {
     const classData = cell?.class;
     const subjectData = cell?.subject;
     const subTeacherData = cell?.subTeacher;
     const teacherText = cell?.event;
     const isMissingTeacher = cell?.headerCol?.type === ColumnTypeValues.missingTeacher;
+
+    if (appType === "public" && classData?.activity) {
+        return (
+            <div className={styles.cellContent}>
+                <EmptyCell />
+            </div>
+        );
+    }
 
     // If there is no sub teacher and no event, and there is also no class/subject to show
     // return an empty cell.
