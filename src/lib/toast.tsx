@@ -22,6 +22,3 @@ export const errorToast = (message: string, duration = 5000) =>
             },
         }
     )
-
-export const infoToast = (message: string, duration = 5000) =>
-    toast((t) => <ClosableToast t={t} message={message} variant="default" />, { duration })

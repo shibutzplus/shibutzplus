@@ -13,7 +13,7 @@ import { DailySchedule } from "@/models/types/dailySchedule";
 import { useMainContext } from "./MainContext";
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
 import { populateDailyScheduleTable } from "@/services/daily/populate";
-import { infoToast } from "@/lib/toast";
+import { successToast } from "@/lib/toast";
 
 interface HistoryTableContextType {
     selectedYearDate: string; // YYYY-MM-DD format (same as daily context)
@@ -91,7 +91,7 @@ export const HistoryTableProvider: React.FC<HistoryTableProviderProps> = ({ chil
                     );
                     if (newSchedule) setMainDailyTable(newSchedule);
                 } else {
-                    infoToast("החיבור למשתמש נותק, יש להיכנס מחדש למערכת.");
+                    successToast("החיבור למשתמש נותק, יש להיכנס מחדש למערכת.");
                 }
             } catch (error) {
                 console.error("Error fetching daily schedule data:", error);

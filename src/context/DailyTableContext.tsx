@@ -18,7 +18,7 @@ import { getAnnualScheduleAction } from "@/app/actions/GET/getAnnualScheduleActi
 import { AvailableTeachers, TeacherClassMap } from "@/models/types/annualSchedule";
 import { getTomorrowOption } from "@/resources/dayOptions";
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
-import { infoToast } from "@/lib/toast";
+import { successToast } from "@/lib/toast";
 import { generateId } from "@/utils";
 import { deleteDailyColumnAction } from "@/app/actions/DELETE/deleteDailyColumnAction";
 import useDailyEventActions from "@/hooks/daily/useDailyEventActions";
@@ -178,7 +178,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                     );
                     if (newSchedule) setMainAndStorageTable(newSchedule);
                 } else {
-                    infoToast("החיבור למשתמש נותק, יש להיכנס מחדש למערכת.");
+                    successToast("החיבור למשתמש נותק, יש להיכנס מחדש למערכת.");
                 }
             } catch (error) {
                 console.error("Error fetching daily schedule data:", error);

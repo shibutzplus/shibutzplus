@@ -46,6 +46,7 @@ const AnnualViewCell: React.FC<AnnualViewCellProps> = ({
     const getSubjectName = (id: string) => subjects.find((s) => s.id === id)?.name || "";
     const getTeacherName = (id: string) => teachers.find((t) => t.id === id)?.name || "";
     const getClassName = (id: string) => classes.find((c) => c.id === id)?.name || "";
+    const isActivityClass = (id: string) => classes.find((c) => c.id === id)?.activity;
 
     // Logic for display based on selection:
     // 1. Only Class Selected: Show Subject + Teacher
@@ -58,7 +59,7 @@ const AnnualViewCell: React.FC<AnnualViewCellProps> = ({
         // Scenario 1: Only Class Selected -> Subject + Teacher
         content = (
             <>
-                {subjectIds.map((sid, idx) => (
+                {!isActivityClass(selectedClassId) && subjectIds.map((sid, idx) => (
                     <div key={sid} className={styles.subject}>
                         {getSubjectName(sid)}
                     </div>
@@ -79,7 +80,7 @@ const AnnualViewCell: React.FC<AnnualViewCellProps> = ({
                         {getClassName(classId)}
                     </div>
                 )}
-                {subjectIds.map((sid, idx) => (
+                {!isActivityClass(classId || "") && subjectIds.map((sid, idx) => (
                     <div key={sid} className={styles.subject}>
                         {getSubjectName(sid)}
                     </div>
