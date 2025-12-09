@@ -1,27 +1,26 @@
-import React from "react";
+import React, { useRef } from "react";
 import styles from "./EditableHeader.module.css";
 import useDeletePopup from "@/hooks/useDeletePopup";
-import { errorToast } from "@/lib/toast";
-import messages from "@/resources/messages";
-import { useDailyTableContext } from "@/context/DailyTableContext";
 import Icons from "@/style/icons";
+import { useStickyHeader } from "@/hooks/scroll/useStickyHeader";
 
 type EditableHeaderProps = {
     children: React.ReactNode;
-    columnId: string;
+    color: string;
     deleteLabel?: string;
+    deleteCol: () => Promise<void>;
+    onEyeClick?: (e: React.MouseEvent) => void;
 };
 
-const EditableHeader: React.FC<EditableHeaderProps> = ({ children, columnId, deleteLabel }) => {
-    const { deleteColumn } = useDailyTableContext();
+const EditableHeader: React.FC<EditableHeaderProps> = ({
+    children,
+    color,
+    deleteLabel,
+    deleteCol,
+}) => {
     const { handleOpenPopup } = useDeletePopup();
-
-    const deleteCol = async () => {
-        const response = await deleteColumn(columnId);
-        if (!response) {
-            errorToast(messages.dailySchedule.deleteError);
-        }
-    };
+    const headerRef = useRef<HTMLDivElement | null>(null);
+    useStickyHeader(headerRef, { enabled: true, topOffset: 0 });
 
     const handleDeleteColumn = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -30,9 +29,16 @@ const EditableHeader: React.FC<EditableHeaderProps> = ({ children, columnId, del
     };
 
     return (
-        <div className={styles.columnHeader}>
-            <Icons.delete className={styles.clearButton} onClick={handleDeleteColumn} />
-            {children}
+        <div ref={headerRef} className={styles.columnHeaderWrapper}>
+            <div className={styles.columnHeader} style={{ backgroundColor: color }}>
+                <Icons.delete
+                    className={styles.deleteButton}
+                    onClick={handleDeleteColumn}
+                    size={20}
+                    title="מחיקת עמודה"
+                />
+                {children}
+            </div>
         </div>
     );
 };

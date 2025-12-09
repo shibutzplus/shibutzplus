@@ -1,0 +1,41 @@
+.columnHeaderWrapper {
+    width: 100%;
+    max-width: var(--table-daily-col-width);
+    height: var(--table-daily-header-height);
+    background-color: var(--background-color);
+    position: absolute;
+    left: 0;
+    z-index: 5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    will-change: transform;
+    z-index: 16;
+    box-shadow: -1px 0px 0px 0px var(--background-color),
+        1px 0px 0px 0px var(--background-color);
+}
+
+.columnHeader {
+    position: relative;
+    top: 0;
+    left: 0;
+    border-radius: var(--border-radius-table) var(--border-radius-table) 0 0;
+    gap: 10px;
+    width: 100%;
+    padding: 0 15px;
+    text-align: right;
+    height: 100%;
+    color: var(--bright-text-color);
+    z-index: 5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.headerText {
+    color: var(--bright-text-color);
+    font-size: 18px;
+    font-weight: 600;
+    text-align: center;
+    word-break: break-word;
+}

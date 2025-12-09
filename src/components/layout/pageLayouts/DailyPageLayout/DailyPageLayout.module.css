@@ -1,0 +1,81 @@
+/* Desktop > 1335px */
+.titleContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+
+
+.bar1DateContainer {
+    width: 250px;
+    min-width: 250px;
+    max-width: 250px;
+}
+
+.bar2DateContainer {
+    width: 250px;
+    min-width: 250px;
+    max-width: 250px;
+    display: none;
+}
+
+.spacer {
+    width: 15px;
+}
+
+.topBarActionBtns {
+    display: flex;
+    gap: 15px;
+}
+
+.bottomBarActionBtns {
+    display: none;
+}
+
+/* <= 1335px */
+@media (max-width: 1335px) {
+    .topBarActionBtns {
+        display: none;
+    }
+
+    .spacer {
+        display: none;
+    }
+
+    .bottomBarActionBtns {
+        display: block;
+    }
+
+    .contentWithBottomMargin {
+        margin-bottom: var(--header-height);
+    }
+}
+
+
+/* <= 785px */
+@media (max-width: 785px) {
+
+    .bar1DateContainer,
+    .spacer {
+        display: none;
+    }
+
+    .bar2DateContainer {
+        display: block;
+    }
+
+    .bar2DateSection {
+        display: flex;
+        justify-content: center;
+        padding-top: 10px;
+    }
+}
+
+/* <= 885px */
+@media (max-width: 885px) {
+    .previewModeLabel {
+        display: none;
+    }
+}

@@ -1,4 +1,4 @@
-/* Mobile */
+/* < 768 */
 .btn {
     border: 1px solid var(--input-border);
     background-color: transparent;
@@ -32,7 +32,7 @@
     font-size: 14px;
 }
 
-/* Desktop */
+/* > 768 */
 @media (min-width: 768px) {
     .btn {
         padding: 12px 20px;

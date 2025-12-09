@@ -1,0 +1,32 @@
+/* < 1024px */
+.emptyTable {
+    position: fixed;
+    top: 30vh;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    max-height: calc(100vh - var(--header-height));
+    width: 50vw;
+    text-align: center;
+}
+
+.dateText {
+    font-size: 18px;
+    font-weight: 600;
+    color: #666;
+}
+
+.text {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+/* > 1024px */
+@media (min-width: 1024px) {
+    .emptyTable {
+        width: none;
+    }
+}

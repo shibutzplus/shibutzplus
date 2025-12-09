@@ -1,0 +1,62 @@
+.greetingAndName {
+    width: fit-content;
+    min-width: 170px;
+    max-width: 170px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.titleContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    line-height: normal;
+    gap: 5px;
+}
+
+.subTitle {
+    font-size: 16px;
+    font-weight: 400;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.refreshContainer {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #555;
+}
+
+.refreshAlert {
+    color: rgba(255, 0, 0, 0.566);
+    animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* <= 470px */
+@media (max-width: 470px) {
+
+    .greetingAndName {
+        font-size: 16px;
+        width: fit-content;
+        min-width: 0;
+        text-overflow: unset;
+    }
+}

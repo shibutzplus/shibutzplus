@@ -27,7 +27,6 @@ export async function updateDailyEventHeaderAction(
                     and(
                         eq(schema.dailySchedule.date, date),
                         eq(schema.dailySchedule.columnId, columnId),
-                        eq(schema.dailySchedule.issueTeacherType, ColumnTypeValues.event),
                     ),
                 )
                 .returning();

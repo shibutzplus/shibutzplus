@@ -1,8 +1,8 @@
 import React from "react";
-import PublishedSkeleton from "@/components/layout/skeleton/PublishedSkeleton/PublishedSkeleton";
+import DailySkeleton from "@/components/loading/skeleton/DailySkeleton/DailySkeleton";
 
 const SkeletonPublishedPortal: React.FC = () => {
-    return <PublishedSkeleton />;
+    return <DailySkeleton />;
 };
 
 export default SkeletonPublishedPortal;

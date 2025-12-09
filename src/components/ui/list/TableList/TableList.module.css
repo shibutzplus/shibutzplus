@@ -1,9 +1,13 @@
-/* Mobile */
+/* > 1024 */
 .tableListSection {
-    background-color: var(--background);
-    width: 100vw;
-    padding: 0;
-    border-radius: var(--box-border-radius);
+    background-color: var(--inner-background-color);
+    width: 100%;
+    min-height: calc(100vh - var(--header-height) - 1rem);
+    margin: 0 auto;
+    box-sizing: border-box;
+    padding: 0 5vw;
+    border-radius: var(--border-radius-table);
+    overflow-y: auto;
 }
 
 .tableList {
@@ -36,11 +40,11 @@
     border-bottom: var(--border-primary);
 }
 
-/* Desktop */
-@media (min-width: 768px) {
+/* < 1024 */
+@media (max-width: 1024px) {
     .tableListSection {
-        overflow-y: auto;
-        width: 100%;
-        padding: 0 5vw;
+        width: 95%;
+        padding: 0;
+        overflow-y: visible;
     }
 }
