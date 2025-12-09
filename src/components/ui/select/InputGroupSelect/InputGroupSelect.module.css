@@ -1,34 +1,3 @@
-.selectContainer {
-  width: 100%;
-}
-
-.label {
-  font-size: 15px;
-  font-weight: 600;
-  margin-bottom: 4px;
-  display: block;
-  color: var(--text-primary, #333);
-}
-
-.errorText {
-  color: #e53935;
-  font-size: 13px;
-  margin-top: 4px;
-  margin-right: 2px;
-  font-weight: 500;
-}
-
-.addBtn{
-  background-color: var(--button-bg);
-  color: var(--button-color);
-  padding: 5px 0;
-  border-radius: var(--btn-border-radius);
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
-}
-
-
 
 .groupStyles {
   display: flex;

@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./SubmitBtn.module.css";
-import Loading from "@/components/core/Loading/Loading";
+import Loading from "@/components/loading/Loading/Loading";
 
 interface SubmitBtnProps {
     type: "submit" | "button" | "reset";

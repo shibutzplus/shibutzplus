@@ -1,0 +1,21 @@
+.mobileNav {
+    position: fixed;
+    bottom: 0;
+    z-index: 20;
+    width: 100%;
+    background-color: var(--top-color);
+    border-top: var(--border-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    height: var(--header-height);
+    padding: 0 var(--padding-width);
+    box-sizing: border-box;
+}
+
+@media (max-width: 450px) {
+    .mobileNav button svg {
+        display: none;
+    }
+}

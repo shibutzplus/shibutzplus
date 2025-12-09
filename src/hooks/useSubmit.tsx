@@ -62,7 +62,7 @@ function useSubmit<T extends { schoolId: string }>(
             }
 
             const res = await deleteFunction(schoolId, idToDelete);
-            successToast(res ? successMessage : errorMessage);
+            successToast(res ? successMessage : errorMessage, 3000);
         } catch (error) {
             console.error(error);
             errorToast(errorMessage);

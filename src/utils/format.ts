@@ -17,6 +17,7 @@ export const filterTeachersByRole = (teachers: TeacherType[], role: TeacherRole)
     return teachers.filter((teacher) => teacher.role === role);
 };
 
+// TODO: in use?
 export const getPageTitleFromUrl = (pathname: string) => {
     const currentPath = pathname.split("/").filter(Boolean)[0] || "";
     const routeKey = Object.keys(routePath).find(
@@ -38,7 +39,7 @@ export const createNewSelectOption_btnText = (inputValue: string, template?: str
     return template?.replace("{0}", inputValue) || inputValue;
 };
 
-// TODO: not in use
+// NOT IN USE
 export const convertContentToHTML = (text: string) => {
     const lines = text.split("\n");
     let html: string[] = [];
@@ -82,14 +83,21 @@ export const convertContentToHTML = (text: string) => {
 export const convertHTMLToContent = (html: string) => {
     // Handle anchor tags - convert to markdown format
     // More flexible regex to handle various attribute orders and formats
-    html = html.replace(/<a\s+[^>]*?href\s*=\s*["']([^"']*?)["'][^>]*?>(.*?)<\/a>/gi, (match, href, text) => {
-        // Decode HTML entities in the URL
-        const decodedHref = href.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"');
-        const cleanText = text.trim();
-        
-        // Always return markdown link format [text](url)
-        return `[${cleanText}](${decodedHref})`;
-    });
+    html = html.replace(
+        /<a\s+[^>]*?href\s*=\s*["']([^"']*?)["'][^>]*?>(.*?)<\/a>/gi,
+        (match, href, text) => {
+            // Decode HTML entities in the URL
+            const decodedHref = href
+                .replace(/&amp;/g, "&")
+                .replace(/&lt;/g, "<")
+                .replace(/&gt;/g, ">")
+                .replace(/&quot;/g, '"');
+            const cleanText = text.trim();
+
+            // Always return markdown link format [text](url)
+            return `[${cleanText}](${decodedHref})`;
+        },
+    );
 
     html = html.replace(/<br\s*\/?>/gi, "\n");
 
@@ -112,7 +120,10 @@ export const convertHTMLToContent = (html: string) => {
         return (
             "\n" +
             items
-                .map((item: string) => "* " + item.replace(/<li>([\s\S]*?)<\/li>/, "$1").trim() + "\n")
+                .map(
+                    (item: string) =>
+                        "* " + item.replace(/<li>([\s\S]*?)<\/li>/, "$1").trim() + "\n",
+                )
                 .join("") +
             "\n"
         );
