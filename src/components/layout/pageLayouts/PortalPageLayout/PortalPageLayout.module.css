@@ -1,18 +1,26 @@
-/* > 690px */
 .greetingAndName {
     width: fit-content;
-    min-width: 130px;
-    max-width: 130px;
+    min-width: 170px;
+    max-width: 170px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.DateContainer {
-    display: block;
-    width: 200px;
-    min-width: 200px;
-    max-width: 200px;
+.titleContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    line-height: normal;
+    gap: 5px;
+}
+
+.subTitle {
+    font-size: 16px;
+    font-weight: 400;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .refreshContainer {
@@ -20,6 +28,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    color: #555;
 }
 
 .refreshAlert {
@@ -41,39 +50,11 @@
     }
 }
 
-.topBarNav {
-    display: block;
-}
-
-.bottomBarNav {
-    display: none;
-}
-
-/* <= 690px */
-@media (max-width: 690px) {
-
-    .greetingAndName {
-        white-space: wrap;
-    }
-
-    .topBarNav {
-        display: none;
-    }
-
-    .bottomBarNav {
-        display: block;
-    }
-
-    .mainContentWithBottomNav {
-        margin-bottom: var(--header-height);
-    }
-}
-
 /* <= 470px */
 @media (max-width: 470px) {
 
     .greetingAndName {
-        font-size: 14px;
+        font-size: 16px;
         width: fit-content;
         min-width: 0;
         text-overflow: unset;

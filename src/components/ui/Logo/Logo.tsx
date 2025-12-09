@@ -26,7 +26,7 @@ const Logo: React.FC<LogoProps> = ({ size = "S", isVisible = true, disableLink =
             pathname.includes(router.teacherSignIn.p) ||
             pathname.includes("/faqTeachers");
 
-        let newLink = isPublic ? "/faqTeachers" : "/faqManager";
+        let newLink = isPublic ? "/faqTeachers" : router.dailySchedule.p;
 
         if (pathname.includes("/faqTeachers")) {
             const teacher = getStorageTeacher();

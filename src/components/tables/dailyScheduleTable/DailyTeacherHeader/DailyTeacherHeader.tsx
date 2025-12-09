@@ -81,8 +81,9 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
             mainDailyTable,
             selectedTeacherData,
             teachersTeachingTodayIds,
+            selectedDate,
         );
-    }, [teachers, mainDailyTable, selectedTeacherData, teachersTeachingTodayIds]);
+    }, [teachers, mainDailyTable, selectedTeacherData, teachersTeachingTodayIds, selectedDate]);
 
     const handleDeleteColumn = async () => {
         const response = await deleteColumn(columnId);

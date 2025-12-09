@@ -10,8 +10,10 @@ import TeacherTable from "@/components/tables/teacherScheduleTable/TeacherTable/
 import { useTeacherTableContext } from "@/context/TeacherTableContext";
 import TeacherPortalSkeleton from "@/components/loading/skeleton/TeacherPortalSkeleton/TeacherPortalSkeleton";
 
+import NotPublished from "@/components/empty/NotPublished/NotPublished";
+
 const TeacherPortalPage: NextPage = () => {
-    const { selectedDate, teacher, setTeacherAndSchool } = usePortalContext();
+    const { selectedDate, teacher, setTeacherAndSchool, datesOptions, isDatesLoading } = usePortalContext();
     const { fetchTeacherScheduleDate } = useTeacherTableContext();
 
     const params = useParams();
@@ -30,11 +32,23 @@ const TeacherPortalPage: NextPage = () => {
         if (!teacher) setTeacher();
     }, [teacherId, schoolId]);
 
-    useEffect(() => {
-        fetchTeacherScheduleDate(teacher, selectedDate);
-    }, [selectedDate, teacher?.id, schoolId]);
+    const isValidDate = datesOptions.some((d) => d.value === selectedDate);
 
-    if (!teacher) return <TeacherPortalSkeleton />;
+    useEffect(() => {
+        if (isValidDate) {
+            fetchTeacherScheduleDate(teacher, selectedDate);
+        }
+    }, [selectedDate, teacher?.id, schoolId, datesOptions]);
+
+    if (!teacher || isDatesLoading) return <TeacherPortalSkeleton />;
+
+    if (!isValidDate) {
+        return (
+            <div className={styles.container}>
+                <NotPublished />
+            </div>
+        );
+    }
 
     return (
         <div className={styles.container}>

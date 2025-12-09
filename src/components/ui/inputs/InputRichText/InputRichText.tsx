@@ -33,6 +33,27 @@ const InputRichText: React.FC<InputRichTextProps> = ({
     importantPlaceholder = false,
     maxLines,
 }) => {
+    const extensions = React.useMemo(() => [
+        StarterKit.configure({
+            blockquote: false,
+            bulletList: false,
+            orderedList: false,
+            code: false,
+            codeBlock: false,
+            italic: false,
+            strike: false,
+            heading: false,
+            horizontalRule: false,
+        }),
+        Link.configure({
+            openOnClick: true,
+            autolink: true,
+            HTMLAttributes: { rel: "noopener noreferrer", target: "_blank" },
+            validate: (href) => /^(https?:\/\/|mailto:|tel:)/i.test(href || ""),
+        }),
+        Placeholder.configure({ placeholder: placeholder || "" }),
+    ], [placeholder]);
+
     const countLines = (html: string): number => {
         const tempDiv = document.createElement("div");
         tempDiv.innerHTML = html;
@@ -41,26 +62,7 @@ const InputRichText: React.FC<InputRichTextProps> = ({
     };
     const editor = useEditor({
         immediatelyRender: false,
-        extensions: [
-            StarterKit.configure({
-                blockquote: false,
-                bulletList: false,
-                orderedList: false,
-                code: false,
-                codeBlock: false,
-                italic: false,
-                strike: false,
-                heading: false,
-                horizontalRule: false,
-            }),
-            Link.configure({
-                openOnClick: true,
-                autolink: true,
-                HTMLAttributes: { rel: "noopener noreferrer", target: "_blank" },
-                validate: (href) => /^(https?:\/\/|mailto:|tel:)/i.test(href || ""),
-            }),
-            Placeholder.configure({ placeholder: placeholder || "" }),
-        ],
+        extensions,
         content: value || "",
         onUpdate: ({ editor }) => {
             const html = editor.getHTML();

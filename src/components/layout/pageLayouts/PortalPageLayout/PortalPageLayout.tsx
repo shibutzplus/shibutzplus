@@ -2,12 +2,12 @@
 
 import React from "react";
 import styles from "./PortalPageLayout.module.css";
-import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import { usePortalContext } from "@/context/PortalContext";
 import PortalNav from "@/components/navigation/PortalNav/PortalNav";
 import { greetingTeacher } from "@/utils";
+import { AUTO_SWITCH_TIME, getTodayDateString, getTomorrowDateString } from "@/utils/time";
 import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
-import MobileNavLayout from "../../MobileNavLayout/MobileNavLayout";
+
 import Icons from "@/style/icons";
 import { usePollingUpdates } from "@/hooks/usePollingUpdates";
 import { usePathname } from "next/navigation";
@@ -24,30 +24,99 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
     const pathname = usePathname();
     const {
         teacher,
-        datesOptions,
         selectedDate,
         isDatesLoading,
-        handleDayChange,
         handleRefreshDates,
         handlePublishedRefresh,
         isPublishLoading,
+        datesOptions,
     } = usePortalContext();
     const { isPortalLoading, handlePortalRefresh } = useTeacherTableContext();
     const { hasUpdate, resetUpdate } = usePollingUpdates();
     const isRegularTeacher = teacher?.role === TeacherRoleValues.REGULAR;
 
+    // Check if we switch "Tomorrow"
     const isLoading = pathname.includes(router.teacherPortal.p)
         ? isPortalLoading || isDatesLoading
         : isPublishLoading || isDatesLoading;
 
     const handleRefresh = async () => {
-        await handleRefreshDates();
+        const res = await handleRefreshDates();
 
-        if (pathname.includes(router.teacherPortal.p)) await handlePortalRefresh(teacher, selectedDate);
-        else await handlePublishedRefresh();
+        // Use the FRESH options returned by handleRefreshDates
+        const effectiveDate = res.selected || selectedDate;
+        const freshOptions = res.options || [];
+        const isValidDate = freshOptions.some(d => d.value === effectiveDate);
+
+        if (pathname.includes(router.teacherPortal.p)) {
+            if (isValidDate) await handlePortalRefresh(teacher, effectiveDate);
+        }
+        // For School Portal (publish-portal), the change in selectedDate (via context)
+        // will trigger the useEffect there to refetch. Accessing handlePublishedRefresh here
+        // would use stale "dateToFetch" from closure since confirm hasn't re-rendered yet.
 
         // reset update badge after successful refresh
         resetUpdate();
+    };
+
+    // -- Auto Refresh at 16:00 -- //
+    React.useEffect(() => {
+        if (!teacher) return;
+
+        const checkAutoSwitch = () => {
+            const now = new Date();
+            const [switchHour, switchMinute] = AUTO_SWITCH_TIME.split(":").map(Number);
+            const target = new Date(now);
+            target.setHours(switchHour, switchMinute, 0, 0);
+
+            let delay = target.getTime() - now.getTime();
+
+            if (delay < 0) {
+                // The requirement: "When we enter the system a refresh timeout is set for next 4 PM (today or tomorrow)"
+                // If it's already past 16:00, schedule for tomorrow 16:00
+                target.setDate(target.getDate() + 1);
+                delay = target.getTime() - now.getTime();
+            }
+
+            const timeoutId = setTimeout(() => {
+                handleRefresh();
+                // Re-schedule for next day (optional, if user keeps page open for > 24h)
+                checkAutoSwitch();
+            }, delay);
+
+            return () => clearTimeout(timeoutId);
+        };
+
+        const cleanup = checkAutoSwitch();
+        return cleanup;
+    }, [teacher]);
+
+    // -- Title Logic -- //
+    const getTitle = () => {
+        const today = getTodayDateString();
+        const tomorrow = getTomorrowDateString();
+        const isToday = selectedDate === today;
+        const isTomorrow = selectedDate === tomorrow;
+
+        let suffix = "";
+        if (isToday) suffix = "להיום";
+        else if (isTomorrow) suffix = "למחר";
+        else {
+            // Fallback: DD/MM
+            const [y, m, d] = selectedDate.split("-");
+            // selectedDate is YYYY-MM-DD
+            if (d && m) suffix = `${d}/${m}`;
+        }
+
+        const isTeacherPortal = pathname.includes(router.teacherPortal.p);
+        const baseTitle = isTeacherPortal ? "המערכת שלי" : "מערכת בית ספרית";
+
+        return (
+            <div className={styles.titleContainer}>
+                <div>{greetingTeacher(teacher)}</div>
+                <div className={styles.subTitle}>{`${baseTitle} ${suffix}`}</div>
+            </div>
+        );
     };
 
     return (
@@ -56,18 +125,8 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
             hideLogo
             HeaderRightActions={
                 <>
-                    <h3 className={styles.greetingAndName}>{greetingTeacher(teacher)}</h3>
-                    <div className={styles.DateContainer}>
-                        <DynamicInputSelect
-                            options={datesOptions}
-                            value={selectedDate}
-                            isDisabled={isLoading}
-                            onChange={handleDayChange}
-                            isSearchable={false}
-                            placeholder="בחר יום..."
-                            hasBorder
-                        />
-                    </div>
+                    <h3 className={styles.greetingAndName}>{getTitle()}</h3>
+
                     <div
                         className={`${styles.refreshContainer} ${hasUpdate ? styles.refreshAlert : ""}`}
                     >
@@ -76,29 +135,15 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
                             onClick={handleRefresh}
                             disabled={isLoading}
                             isLoading={isLoading}
+                            title="בדקו אם יש עדכונים במערכת השעות"
                         />
                     </div>
                 </>
             }
             HeaderLeftActions={
-                !teacher || isRegularTeacher ? (
-                    <div className={styles.topBarNav}>
-                        <PortalNav />
-                    </div>
-                ) : null
+                !teacher || isRegularTeacher ? <PortalNav /> : null
             }
-            MobileActions={
-                !teacher || isRegularTeacher ? (
-                    <div className={styles.bottomBarNav}>
-                        <MobileNavLayout>
-                            <PortalNav />
-                        </MobileNavLayout>
-                    </div>
-                ) : null
-            }
-            contentClassName={
-                !teacher || isRegularTeacher ? styles.mainContentWithBottomNav : ""
-            }
+            contentClassName=""
         >
             {children}
         </PageLayout>
