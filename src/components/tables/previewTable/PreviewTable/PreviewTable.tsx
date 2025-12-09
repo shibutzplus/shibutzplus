@@ -16,7 +16,7 @@ type PreviewTableProps = {
     selectedDate: string;
     onTeacherClick?: (teacher: TeacherType) => Promise<void>;
     appType?: AppType;
-    EmptyTable?: React.FC;
+    EmptyTable?: React.FC<{ date?: string }>;
 };
 
 const PreviewTable: React.FC<PreviewTableProps> = ({
@@ -58,7 +58,7 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
                     </motion.div>
                 ))
             ) : EmptyTable ? (
-                <EmptyTable />
+                <EmptyTable date={selectedDate} />
             ) : null}
         </div>
     );

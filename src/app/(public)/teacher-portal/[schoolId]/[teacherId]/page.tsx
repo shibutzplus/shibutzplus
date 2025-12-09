@@ -45,7 +45,7 @@ const TeacherPortalPage: NextPage = () => {
     if (!isValidDate) {
         return (
             <div className={styles.container}>
-                <NotPublished />
+                <NotPublished date={selectedDate} />
             </div>
         );
     }
