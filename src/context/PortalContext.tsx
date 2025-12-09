@@ -20,7 +20,7 @@ interface PortalContextType {
     handleDayChange: (value: string) => void;
     setTeacherAndSchool: (schoolId?: string, teacherId?: string) => Promise<boolean>;
     datesOptions: SelectOption[];
-    handleRefreshDates: () => Promise<{ success: boolean; error: string; selected: string }>;
+    handleRefreshDates: () => Promise<{ success: boolean; error: string; selected: string; options: SelectOption[] }>;
 
     isPublishLoading: boolean;
     mainPublishTable: DailySchedule;
@@ -88,6 +88,7 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
     const blockRef = useRef<boolean>(true);
     useEffect(() => {
         const fetchPublishedDates = async () => {
+
             if (teacher) {
                 setIsDatesLoading(true);
                 try {
@@ -96,14 +97,14 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
                         const res = getPublishedDatesOptions(response.data.publishDates);
                         if (res.length === 0) {
                             setDatesOptions([]);
-                            setSelectedDate("");
+                            setSelectedDate(chooseDefaultDate());
                             return;
                         }
                         setDatesOptions(res);
                         handleDayChange(
                             chooseDefaultDate(res) ??
-                                selectSelectedDate(res)?.value ??
-                                res[0].value,
+                            selectSelectedDate(res)?.value ??
+                            res[0].value,
                         );
                         blockRef.current = false;
                     }
@@ -137,11 +138,12 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
         success: boolean;
         error: string;
         selected: string;
+        options: SelectOption[];
     }> => {
         if (!teacher) {
             setDatesOptions([]);
             setSelectedDate("");
-            return { success: false, error: "", selected: "" };
+            return { success: false, error: "", selected: "", options: [] };
         }
 
         setIsDatesLoading(true);
@@ -152,34 +154,43 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
                 setDatesOptions(options);
 
                 // Keep current if still valid; otherwise choose by time-based rule
+                // Prioritize time-based default (Today/Tomorrow) if available in options
+                // This ensures auto-refresh (and manual refresh) switches to the correct day when time passes.
+                const timeBasedDate = chooseDefaultDate(options);
                 const keepCurrent = !!selectedDate && options.some((o) => o.value === selectedDate);
-                const nextSelected = options.length
-                    ? keepCurrent
+
+                const nextSelected = timeBasedDate
+                    ? timeBasedDate
+                    : keepCurrent
                         ? selectedDate!
-                        : (chooseDefaultDate(options) ??
-                          selectSelectedDate(options)?.value ??
-                          options[0].value)
-                    : "";
+                        : options.length > 0
+                            ? options[0].value
+                            : chooseDefaultDate();
 
                 setSelectedDate(nextSelected);
-                return { success: true, error: "", selected: nextSelected };
+                return { success: true, error: "", selected: nextSelected, options };
             } else {
                 setDatesOptions([]);
-                setSelectedDate("");
-                return { success: false, error: response.message || "", selected: "" };
+                setSelectedDate(chooseDefaultDate());
+                return { success: false, error: response.message || "", selected: "", options: [] };
             }
         } catch (err) {
             console.error("Error refreshing publish dates:", err);
             setDatesOptions([]);
             setSelectedDate("");
-            return { success: false, error: "", selected: "" };
+            return { success: false, error: "", selected: "", options: [] };
         } finally {
             setIsDatesLoading(false);
         }
     };
 
+    const isValidPublishDate = datesOptions.some((d) => d.value === selectedDate);
+    const dateToFetch = isValidPublishDate ? selectedDate : "";
+
+
+
     const { fetchPublishScheduleData, handlePublishedRefresh, mainPublishTable, isPublishLoading } =
-        usePublished(schoolId, selectedDate, teacher);
+        usePublished(schoolId, dateToFetch, teacher);
 
     const value: PortalContextType = {
         teacher,

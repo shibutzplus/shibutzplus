@@ -1,4 +1,4 @@
-/* > 880px */
+/* > 900px */
 .topButtonsContainer {
     display: flex;
     align-items: center;
@@ -35,8 +35,8 @@
     font-weight: 600;
 }
 
-/* <= 900px */
-@media (max-width: 900px) {
+/* <= 720px */
+@media (max-width: 720px) {
     .topBtn {
         width: 60px;
         border: var(--border-primary);
@@ -44,47 +44,5 @@
 
     .btnText {
         display: none;
-    }
-}
-
-/* <= 690px (Bottom Bar Mode) */
-@media (max-width: 690px) {
-    .topButtonsContainer {
-        gap: 50px;
-    }
-
-    .topBtn {
-        width: 100%;
-        min-width: 140px;
-    }
-
-    .btnText {
-        display: block;
-    }
-
-    .topBtn svg {
-        display: none;
-    }
-}
-
-/* <= 440px (Bottom Bar Mode - Smaller Font) */
-@media (max-width: 440px) {
-    .topButtonsContainer {
-        gap: 20px;
-    }
-
-    .topBtn {
-        width: 100%;
-        height: 30px;
-    }
-
-    .btnText {
-        display: block;
-        font-size: 13px;
-        white-space: nowrap;
-    }
-
-    .topBtn svg {
-        display: none !important;
     }
 }

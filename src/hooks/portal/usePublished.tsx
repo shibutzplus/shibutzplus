@@ -13,7 +13,7 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
         if (!schoolId || !teacher || !selectedDate) return false;
         try {
             setIsPublishLoading(true);
-            const response = await getDailyScheduleAction(schoolId, selectedDate);
+            const response = await getDailyScheduleAction(schoolId, selectedDate, { isPrivate: false });
             if (response.success && response.data && teacher) {
                 const newSchedule = await populateDailyScheduleTable(
                     mainPublishTable,

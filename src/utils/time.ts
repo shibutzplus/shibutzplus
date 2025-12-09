@@ -3,7 +3,7 @@ import { DailyScheduleType } from "@/models/types/dailySchedule";
 
 export const DAYS_OF_WEEK = ["א", "ב", "ג", "ד", "ה", "ו", "ש"];
 export const DAYS_OF_WORK_WEEK = ["א", "ב", "ג", "ד", "ה", "ו"];
-export const DAYS_OF_WEEK_FORMAT = ["יום א", "יום ב", "יום ג", "יום ד", "יום ה", "יום ו", "יום ש"];
+export const DAYS_OF_WEEK_FORMAT = ["יום א", "יום ב", "יום ג", "יום ד", "יום ה", "יום ו", "יום שבת"];
 export const SUNDAY_NUMBER = 0;
 export const SATURDAY_NUMBER = 6;
 
@@ -13,6 +13,9 @@ export const ONE_DAY = 1;
 
 // Number of hours in a day
 export const HOURS_IN_DAY = 10;
+
+// Global auto-switch time configuration (HH:MM)
+export const AUTO_SWITCH_TIME = "16:00";
 
 // YYYY-MM-DD format
 export const getDateReturnString = (date: Date) => {
@@ -248,25 +251,29 @@ export const clampDayToMonth = (day: string, year: string, month: string) => {
     return dNum > maxDays ? `${maxDays}` : day;
 };
 
-//TODO: check if whats going on here and if there is another functio that already does this
-// Choose default date based on current time (before/after 16:00)
-// - Before 16:00: prefer today if exists, else first available
-// - After 16:00: prefer tomorrow if exists, else today, else first available
-export const chooseDefaultDate = (options: SelectOption[]): string | undefined => {
-    if (!options || options.length === 0) return "";
+// Choose default date based on current time (before/after AUTO_SWITCH_TIME)
+// - Before switch time: prefer today if exists, else first available
+// - After switch time: prefer tomorrow if exists, else today, else first available
+// Choose default date based on current time (before/after AUTO_SWITCH_TIME)
+// - Before switch time: prefer today if exists.
+// - After switch time: prefer tomorrow if exists, else today.
+// - If options empty/undefined: return today/tomorrow based on time.
+export const chooseDefaultDate = (options?: SelectOption[]): string => {
     const now = new Date();
-    const hour = now.getHours();
-    const today = getDateReturnString(now);
-    const tomorrow = getDateReturnString(new Date(now.getTime() + 24 * 60 * 60 * 1000));
+    const today = getTodayDateString();
+    const tomorrow = getTomorrowDateString();
 
-    const has = (val: string | undefined) => !!val && options.some((o) => o.value === val);
+    const [switchHour, switchMinute] = AUTO_SWITCH_TIME.split(":").map(Number);
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
 
-    if (hour < 16) {
-        if (has(today)) return today;
-        return options[0].value;
-    } else {
-        if (has(tomorrow)) return tomorrow;
-        if (has(today)) return today;
-        return options[0].value;
-    }
+    const isAfterSwitch =
+        currentHour > switchHour || (currentHour === switchHour && currentMinute >= switchMinute);
+
+    // Default time-based date (when no options or fallback needed)
+    const defaultTimeBased = isAfterSwitch ? tomorrow : today;
+
+    // Simplified: Always return the time-based default (Today/Tomorrow) based on the switch time.
+    // If this date is not in options, PortalContext will handle it as an "Empty Schedule" (NotPublished).
+    return defaultTimeBased;
 };

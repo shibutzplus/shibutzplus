@@ -96,21 +96,35 @@ export const filterDailyHeaderTeachers = (
     alreadySelectedTeachers: DailySchedule,
     selectedTeacher?: TeacherType,
     teachersTeachingTodayIds?: Set<string>,
+    selectedDate?: string,
 ) => {
     const flatTeachersSet = new Set<string>();
 
     if (!teachers) return [];
 
-    // Collect all teachers already selected as header in any daily column
-    Object.values(alreadySelectedTeachers).forEach((day) => {
-        Object.values(day).forEach((hour) => {
-            Object.values(hour).forEach((teacher) => {
-                if (teacher.headerCol?.headerTeacher?.id) {
-                    flatTeachersSet.add(teacher.headerCol.headerTeacher.id);
+    // Collect all teachers already selected as header in any daily column for the CURRENT DATE
+    if (selectedDate && alreadySelectedTeachers[selectedDate]) {
+        Object.values(alreadySelectedTeachers[selectedDate]).forEach((dailyCol) => {
+            // Check the header cell (hour "1")
+            const headerTeacher = dailyCol["1"]?.headerCol?.headerTeacher;
+            if (headerTeacher?.id) {
+                flatTeachersSet.add(headerTeacher.id);
+            }
+        });
+    } else if (!selectedDate) {
+        // Fallback or legacy behavior (if needed, though we should always have selectedDate)
+        Object.values(alreadySelectedTeachers).forEach((day) => {
+            Object.values(day).forEach((dailyCol) => {
+                // Determine if 'dailyCol' is Column or HourMap...
+                // Based on types: DailySchedule[day] is Record<columnId, Record<hour, Cell>>
+                // So dailyCol here is Record<hour, Cell> which represents one column
+                const headerTeacher = dailyCol["1"]?.headerCol?.headerTeacher;
+                if (headerTeacher?.id) {
+                    flatTeachersSet.add(headerTeacher.id);
                 }
             });
         });
-    });
+    }
 
     const filteredTeachers = teachers.filter((teacher) => {
         const isRegular = teacher.role === TeacherRoleValues.REGULAR;

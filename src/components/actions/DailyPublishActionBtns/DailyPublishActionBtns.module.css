@@ -26,6 +26,7 @@
     cursor: pointer;
     width: auto !important;
     transition: all 0.2s;
+    margin-left: 25px;
 }
 
 .topNavBtnContainer .publishBtn:hover {
@@ -41,12 +42,14 @@
     font-weight: 700;
     font-size: 15px;
     padding: 0 10px;
+    margin-left: 25px;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 505px) {
     .topNavBtnContainer .publishBtn {
         width: var(--table-daily-btn-width) !important;
         padding: 0;
+        margin-left: 0;
     }
 
     .publishBtn span {
