@@ -29,7 +29,7 @@ const TeacherTable: React.FC<TeacherTableProps> = ({ teacher, selectedDate, only
             </div>
         );
 
-    if (!dayTable || Object.keys(dayTable).length === 0) return <NotPublished />;
+    if (!dayTable || Object.keys(dayTable).length === 0) return <NotPublished date={selectedDate} />;
 
     return (
         <table className={styles.scheduleTable}>

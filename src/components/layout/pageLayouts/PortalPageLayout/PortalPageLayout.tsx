@@ -100,7 +100,7 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
 
         let suffix = "";
         if (isToday) suffix = "להיום";
-        else if (isTomorrow) suffix = "למחר";
+        else if (isTomorrow) suffix = "מחר";
         else {
             // Fallback: DD/MM
             const [y, m, d] = selectedDate.split("-");
@@ -109,7 +109,7 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
         }
 
         const isTeacherPortal = pathname.includes(router.teacherPortal.p);
-        const baseTitle = isTeacherPortal ? "המערכת שלי" : "מערכת בית ספרית";
+        const baseTitle = isTeacherPortal ? "המערכת שלך" : "המערכת";
 
         return (
             <div className={styles.titleContainer}>
