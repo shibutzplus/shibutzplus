@@ -8,14 +8,14 @@
 "use client";
 
 import styles from "../teacherSignIn.module.css";
-import HeroSection from "@/components/layout/HeroSection/HeroSection";
+import HeroSection from "@/components/auth/HeroSection/HeroSection";
 import TeacherAuthForm from "@/components/auth/TeacherAuthForm/TeacherAuthForm";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import router from "@/routes";
 import { SelectOption } from "@/models/types";
 import { getTeachersAction } from "@/app/actions/GET/getTeachersAction";
-import SignInLoadingPage from "@/components/layout/loading/SignInLoadingPage/SignInLoadingPage";
+import SignInLoadingPage from "@/components/loading/SignInLoadingPage/SignInLoadingPage";
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { TeacherType } from "@/models/types/teachers";
@@ -49,7 +49,8 @@ export default function TeacherSignInPage() {
                 }));
                 setTeachers(teacherOptions);
                 setTeachersFull(response.data);
-            } else {    // Back to login page on error
+            } else {
+                // Back to login page on error
                 route.push(`${router.teacherSignIn.p}`);
             }
         } catch (error) {
@@ -92,7 +93,7 @@ export default function TeacherSignInPage() {
         // Important: check first no-teacher in url
         if (!teacherId) {
             const storedTeacherData = getStorageTeacher?.();
-            if (storedTeacherData?.role === "substitute") removeStorageTeacher();  // Clear local storage only if substitute
+            if (storedTeacherData?.role === "substitute") removeStorageTeacher(); // Clear local storage only if substitute
             setIsLoading(false);
             setIsLoadingTeachers(true);
             fetchTeachers();
@@ -133,17 +134,17 @@ export default function TeacherSignInPage() {
     return (
         <main className={styles.container}>
             <div className={styles.mainSection}>
-                <HeroSection title="מערכת השעות האישית שלכם" description="" />
+                <HeroSection
+                    title="מערכת השעות האישית שלכם"
+                    description={`בית ספר ${schoolName}`}
+                />
                 <div className={styles.formContainer}>
-                    <div className={styles.formInner}>
-                        {schoolName && <h2 className={styles.schoolName}>בית ספר {schoolName}</h2>}
-                        <TeacherAuthForm
-                            schoolId={schoolId}
-                            teachers={teachers}
-                            teachersFull={teachersFull}
-                            isLoadingTeachers={isLoadingTeachers}
-                        />
-                    </div>
+                    <TeacherAuthForm
+                        schoolId={schoolId}
+                        teachers={teachers}
+                        teachersFull={teachersFull}
+                        isLoadingTeachers={isLoadingTeachers}
+                    />
                 </div>
                 <footer className={styles.copyright}>&copy; שיבוץ+, כל הזכויות שמורות. 2025</footer>
             </div>

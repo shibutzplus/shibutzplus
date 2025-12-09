@@ -1,0 +1,27 @@
+.iconPlaceholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: default;
+}
+
+.sizeXS {
+    width: 30px;
+    height: 30px;
+}
+
+.sizeS {
+    width: 40px;
+    height: 40px;
+}
+
+.sizeL {
+    width: 80px;
+    height: 80px;
+}
+
+.logo {
+    object-fit: contain;
+    max-width: 100%;
+    max-height: 100%;
+}

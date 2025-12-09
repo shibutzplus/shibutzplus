@@ -22,8 +22,9 @@ export async function publishDailyScheduleAction(
         // Don't add duplicate dates
         const publishDates = Array.isArray(school.publishDates) ? school.publishDates : [];
         if (publishDates.includes(date)) {
+            console.error("Error publishing daily schedule: Date already published");
             // Wont show to the user
-            return { success: true, message: messages.publish.alreadyPublished };
+            return { success: true };
         }
 
         // queue (FIFO) maintain maximum 6 elements

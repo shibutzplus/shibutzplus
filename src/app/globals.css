@@ -1,77 +1,103 @@
 :root {
-    /* Base colors */
-    --background: #fdfbfb;
-    --foreground: #171717;
+    --background-color: #FCFDFF;
+    --inner-background-color: #E1E1EA;
+    --inner-background-color-bright: #F3F3F7;
+    --inner-background-color-empty: #FFFFFF;
 
-    --school-section-bg: #f9f9f9;
-    --title-color: #333;
-    --subtitle-color: #666;
-    --feature-icon-bg: #f0f0f0;
-    --description-text: #666;
+    --link-color: #0000EE;
 
-        /* Form elements */
-    --input-color: #171717;
-    --input-hover-color: #3c3c3c;
+    --top-color: #fdfbfb;
+    --top-color-hover: #f7f7f7;
+
+    --bright-text-color: #FFFFFF;
+    --bright-text-color-hover: #e2e2e2;
+
+    --dark-text-color: #494949;
+    --dark-text-color-active: #585858;
+
+    --placeholder-color: #CECECE;
+    --disabled-text-color: #AFAFAF;
+    --input-background-color: #FFFFFF;
+    --input-color: #494949;
     --input-border: #e0e0e0;
-    --input-focus-border: #000;
-    --input-shadow: #0000000d;
-    --input-focus-shadow: #0000001a;
-    --placeholder-color: #aaa;
+    --input-border-focus: #494949;
 
-    /* Button colors */
-    --button-color: #fff;
-    --button-bg: #000;
-    --button-hover-bg: #333;
-    --button-disabled-bg: #666;
-    --loading-color: #c3c0c0;
+    --tab-color: #FFFFFF;
+    --tab-color-hover: #0000000d;
 
-    /* Link colors */
-    --link-color: #4a90e2;
+    --bright-border-color: #e0e0e0;
+    --dark-border-color: #CECECE;
 
-    /* Error colors */
+    --preloader-color: #9D8CDB;
+    --existing-teacher-color: #80B0FF;
+    --missing-teacher-color: #ED7A7A;
+    --event-color: #6EBE6A;
+
     --error-color: #e53935;
 
-    /* Table colors */
-    --table-headers-color: #fffbf5;
-    --empty-cell-color: #fcfcfc;
-    --daily-btns-color: #606060;
-    --daily-template-color: #d6d5d5;
-    --separator-color: #888;
-    --daily-btns-color: #606060;
+    --shadow-background: #00000080;
 
-    /* Box shadows */
-    --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    --daily-btns-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --input-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    --header-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    --input-focus-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    --error-box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.2);
-    --mobile-nav-box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
-
-    --border-primary: 1px solid #ddd;
-    --border-heavy-primary: 2px solid #ddd;
-    --border-primary-focus: 1px solid #c7c7c7;
-    --border-inline-start: 1px solid #e5e5e5;
-
+    --skeleton-header-color: #e0e0e0;
     --skeleton-input-color: #ececec;
     --skeleton-input-color-bright: #f2f0f0;
 
-    --black-shadow-background: #00000080;
+    --loading-color: #575757;
 
-    /* Size */
-    --header-height: 50px;
+    /* Button colors */
+    --button-color: #FFFFFF;
+    --button-background-color: #000;
+    --button-hover-background-color: #333;
+    --button-disabled-color: #b9b9b9;
+    --button-disabled-background-color: #919191;
 
-    --table-header-height: 50px;
-    --table-hour-cell-width: 30px;
+    --hours-in-day: 10;
 
-    --annual-table-min-col-width: 180px;
+    --input-height: 40px;
 
-    --daily-table-cell-min-width: 240px;
-    --daily-table-cell-min-height: 80px;
-    --daily-table-cell-height: 120px;
+    --border-primary: 1px solid var(--dark-border-color);
+    --border-secondary: 1px solid var(--bright-border-color);
 
-    --box-border-radius: 10px;
-    --btn-border-radius: 4px;
+    --box-shadow-primary: 0px 4px 4px #00000010;
+    --box-shadow-btn: 0px 4px 4px #00000005;
+
+    --border-radius-input: 4px;
+    --border-radius-table: 20px;
+    --border-radius-cell: 6px;
+
+    --header-height: 55px;
+
+    --padding-top-desktop: 1rem;
+    --padding-bottom-desktop: 0.5rem;
+    --padding-top-mobile: 0.2rem;
+
+    --padding-width: 10px;
+    --padding-width-mobile: 5px;
+
+    --table-daily-col-width: 250px;
+    --table-daily-col-inner-width: calc(var(--table-daily-col-width) - 40px);
+    --table-daily-header-height: 45px;
+    --table-daily-cell-height: 110px;
+    --table-daily-full-height: calc(var(--table-daily-header-height) + var(--table-daily-cell-height) * var(--hours-in-day) + (5px * 11));
+    --table-daily-btn-width: 60px;
+
+    --table-annual-col-width: 200px;
+    --table-annual-col-width-mobile: 230px;
+    --table-annual-header-height: 40px;
+    --table-annual-cell-height: 96px;
+    --table-annual-full-height: calc(var(--table-daily-header-height) + var(--table-daily-cell-height) * var(--hours-in-day) + (5px * 10));
+
+    --list-details-header-height: 50px;
+    --list-details-full-height: calc(100vh - var(--header-height) - 1rem);
+    --list-details-padding: 1rem;
+    --list-details-row-padding: 7px 1rem;
+    --list-details-row-padding-mobile: 5px 0.5rem;
+    --list-details-actions-width: 160px;
+    --list-details-actions-width-mobile: 100px;
+
+    --table-teacher-details-col-width: 200px;
+    --table-teacher-cell-height: 120px;
+
+    --table-cols-gap: 3px;
 }
 
 html,
@@ -82,8 +108,8 @@ body {
 }
 
 body {
-    color: var(--foreground);
-    background-color: var(--background);
+    color: var(--dark-text-color);
+    background-color: var(--background-color);
     font-family: Arial, Helvetica, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -101,8 +127,7 @@ a {
     text-decoration: none;
 }
 
-/* Hide double scrollbars in DailySchedule Table. In Chrome/Safari/Edge (WebKit-based browsers) */
-[class*="scrollableContent"]::-webkit-scrollbar {
-    display: none;
+h3 {
+    font-size: 18px;
+    color: var(--dark-text-color);
 }
-

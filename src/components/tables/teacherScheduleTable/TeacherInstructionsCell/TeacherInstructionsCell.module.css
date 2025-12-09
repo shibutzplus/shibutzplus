@@ -1,0 +1,31 @@
+/* < 600 */
+.cellContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  min-height: var(--table-teacher-cell-height);
+  max-height: 250px;
+  background-color: var(--tab-color);
+  border-radius: var(--border-radius-cell);
+  padding: 10px 15px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.emptyCell {
+  width: 100%;
+  height: var(--table-teacher-cell-height);
+  background-color: var(--inner-background-color-empty);
+  border-radius: var(--border-radius-cell);
+}
+
+/* > 600 */
+@media (min-width: 600px) {
+  .cellContent {
+    justify-content: flex-start;
+    min-height: var(--table-teacher-cell-height);
+    max-height: var(--table-teacher-cell-height);
+    overflow-y: scroll;
+  }
+}

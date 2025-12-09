@@ -1,0 +1,43 @@
+"use client";
+
+import React from "react";
+import styles from "./AnnualClassPageLayout.module.css";
+import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
+import router from "@/routes";
+import { useAnnualByClass } from "@/context/AnnualByClassContext";
+import PageLayout from "../../PageLayout/PageLayout";
+
+type AnnualClassPageLayoutProps = {
+    children: React.ReactNode;
+};
+
+export default function AnnualClassPageLayout({ children }: AnnualClassPageLayoutProps) {
+    const { classesSelectOptions, selectedClassId, handleClassChange, isSaving, isLoading } =
+        useAnnualByClass();
+
+    return (
+        <PageLayout
+            appType="private"
+            leftSideWidth={50}
+            HeaderRightActions={
+                <>
+                    <h3 className={styles.pageTitleLong}>{router.annualByClass.title}</h3>
+                    <h3 className={styles.pageTitleShort}>מערכת לפי כיתה</h3>
+                    <div className={styles.selectContainer}>
+                        <DynamicInputSelect
+                            options={classesSelectOptions()}
+                            value={selectedClassId}
+                            onChange={handleClassChange}
+                            isSearchable={true}
+                            isDisabled={isSaving || isLoading}
+                            placeholder="בחרו כיתה/קבוצה..."
+                            hasBorder
+                        />
+                    </div>
+                </>
+            }
+        >
+            {children}
+        </PageLayout>
+    );
+}

@@ -2,22 +2,20 @@ import React, { useState } from "react";
 import styles from "./DailyEventCell.module.css";
 import InputTextArea from "../../../ui/inputs/InputTextArea/InputTextArea";
 import messages from "@/resources/messages";
-import { CellContext } from "@tanstack/react-table";
-import { TeacherRow } from "@/models/types/table";
-import { useDailyTableContext } from "@/context/DailyTableContext";
 import { errorToast } from "@/lib/toast";
+import { useDailyTableContext } from "@/context/DailyTableContext";
+import { DailyScheduleCell } from "@/models/types/dailySchedule";
 
-type DailyEventCellProps = { cell: CellContext<TeacherRow, unknown> };
+type DailyEventCellProps = { columnId: string; cell: DailyScheduleCell };
 
-const DailyEventCell: React.FC<DailyEventCellProps> = ({ cell }) => {
+const DailyEventCell: React.FC<DailyEventCellProps> = ({ columnId, cell }) => {
     const { mainDailyTable, addEventCell, updateEventCell, deleteEventCell, selectedDate } =
         useDailyTableContext();
     const [isLoading, setIsLoading] = useState(false);
 
-    const columnId = cell?.column?.id;
-    const hour = cell?.row?.original?.hour.toString();
-    const eventData = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.event;
-    const headerData = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.headerCol;
+    const hour = cell?.hour;
+    const eventData = cell?.event;
+    const headerData = cell?.headerCol;
 
     const [info, setInfo] = useState<string>(eventData || "");
     const [prevInfo, setPrevInfo] = useState<string>(eventData || "");
@@ -28,7 +26,7 @@ const DailyEventCell: React.FC<DailyEventCellProps> = ({ cell }) => {
         const event = value.trim();
         if (event === prevInfo) return;
 
-        if (!headerData) {
+        if (!headerData?.headerEvent) {
             errorToast("יש להזין כותרת לפני הוספת אירועים", Infinity);
             setInfo("");
             setPrevInfo("");
@@ -45,12 +43,12 @@ const DailyEventCell: React.FC<DailyEventCellProps> = ({ cell }) => {
 
             let response;
             if (event === "") {
-                const existingId = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.DBid;
+                const existingId = cellData?.DBid;
                 if (existingId) {
                     response = await deleteEventCell(cellData, columnId, existingId);
                 }
             } else if (eventData) {
-                const existingId = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.DBid;
+                const existingId = cellData?.DBid;
                 if (existingId) {
                     response = await updateEventCell(cellData, columnId, existingId, event);
                 }
@@ -84,7 +82,6 @@ const DailyEventCell: React.FC<DailyEventCellProps> = ({ cell }) => {
                 onBlur={(e) => handleChange(e.target.value)}
                 placeholder="מה מתוכנן?"
                 disabled={isLoading}
-                rows={1}
                 autoGrow
             />
         </div>
