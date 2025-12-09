@@ -1,3 +1,23 @@
+.selectContainer {
+    width: 100%;
+}
+
+.label {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    display: block;
+    color: var(--text-primary, #333);
+}
+
+.errorText {
+    color: #e53935;
+    font-size: 13px;
+    margin-top: 4px;
+    margin-right: 2px;
+    font-weight: 500;
+}
+
 
 .groupStyles {
     display: flex;

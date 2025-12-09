@@ -3,7 +3,7 @@ import { SchoolType } from "./school";
 import { SubjectType } from "./subjects";
 import { TeacherType } from "./teachers";
 
-export type TeacherScheduleType = {
+export type PortalScheduleType = {
     DBid: string;
     columnId: string;
     hour: number; // 1-7
@@ -19,6 +19,6 @@ export type TeacherScheduleType = {
 
 export type PortalSchedule = {
     [day: string]: {
-        [hour: string]: TeacherScheduleType;
+        [hour: string]: PortalScheduleType;
     };
 };

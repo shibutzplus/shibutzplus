@@ -2,37 +2,22 @@ import React, { useState, useMemo } from "react";
 import { filterDailyHeaderTeachers } from "@/utils/sort";
 import DynamicInputSelect from "../../../ui/select/InputSelect/DynamicInputSelect";
 import { useDailyTableContext } from "@/context/DailyTableContext";
-import { ColumnType } from "@/models/types/dailySchedule";
+import { ColumnTypeValues } from "@/models/types/dailySchedule";
 import { getDayNumberByDateString } from "@/utils/time";
 import { useMainContext } from "@/context/MainContext";
 import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import EditableHeader from "../../../ui/table/EditableHeader/EditableHeader";
-import { BrightTextColor, BrightTextColorHover } from "@/style/root";
-import { COLOR_BY_TYPE } from "@/models/constant/daily";
-import { TeacherType } from "@/models/types/teachers";
-import { useTeacherTableContext } from "@/context/TeacherTableContext";
 
 type DailyTeacherHeaderProps = {
     columnId: string;
-    type: ColumnType;
-    onTeacherClick?: (teacher: TeacherType) => void;
+    type: typeof ColumnTypeValues.missingTeacher | typeof ColumnTypeValues.existingTeacher;
 };
 
-const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
-    columnId,
-    type,
-    onTeacherClick,
-}) => {
+const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({ columnId, type }) => {
     const { teachers } = useMainContext();
-    const {
-        mainDailyTable,
-        selectedDate,
-        populateTeacherColumn,
-        deleteColumn,
-        mapAvailableTeachers,
-    } = useDailyTableContext();
-    const { fetchTeacherScheduleDate } = useTeacherTableContext();
+    const { mainDailyTable, selectedDate, populateTeacherColumn, mapAvailableTeachers } =
+        useDailyTableContext();
     const [isLoading, setIsLoading] = useState(false);
 
     const selectedTeacherData =
@@ -43,13 +28,7 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
         if (!teacherId) return;
         setIsLoading(true);
         const dayNumber = getDayNumberByDateString(selectedDate);
-        const response = await populateTeacherColumn(
-            selectedDate,
-            columnId,
-            dayNumber,
-            teacherId,
-            type,
-        );
+        const response = await populateTeacherColumn(columnId, dayNumber, teacherId, type);
         if (response) {
             if (response.length === 0) {
                 successToast(messages.dailySchedule.noScheduleFound);
@@ -81,31 +60,11 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
             mainDailyTable,
             selectedTeacherData,
             teachersTeachingTodayIds,
-            selectedDate,
         );
-    }, [teachers, mainDailyTable, selectedTeacherData, teachersTeachingTodayIds, selectedDate]);
-
-    const handleDeleteColumn = async () => {
-        const response = await deleteColumn(columnId);
-        if (!response) {
-            errorToast(messages.dailySchedule.deleteError);
-        }
-    };
-
-    const handleTeacherClick = async () => {
-        if (selectedTeacherData?.name && onTeacherClick) {
-            onTeacherClick(selectedTeacherData);
-            await fetchTeacherScheduleDate(selectedTeacherData, selectedDate);
-        }
-    };
+    }, [teachers, mainDailyTable, selectedTeacherData, teachersTeachingTodayIds]);
 
     return (
-        <EditableHeader
-            color={COLOR_BY_TYPE[type]}
-            deleteLabel={selectedTeacherData?.name || "המורה"}
-            deleteCol={handleDeleteColumn}
-            onEyeClick={handleTeacherClick}
-        >
+        <EditableHeader columnId={columnId} deleteLabel={selectedTeacherData?.name || "המורה"}>
             <DynamicInputSelect
                 options={filteredTeacherOptions}
                 value={selectedTeacherData?.id || ""}
@@ -114,10 +73,6 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
                 isSearchable
                 isDisabled={isLoading}
                 backgroundColor="transparent"
-                color={BrightTextColor}
-                colorHover={BrightTextColorHover}
-                placeholderColor={BrightTextColor}
-                fontSize="18px"
             />
         </EditableHeader>
     );

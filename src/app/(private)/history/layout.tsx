@@ -1,20 +1,12 @@
-import React, { Suspense } from "react";
-import { HistoryTableProvider } from "@/context/HistoryTableContext";
-import { Metadata } from "next";
-import HistoryPageLayout from "@/components/layout/pageLayouts/HistoryPageLayout/HistoryPageLayout";
-import DailySkeleton from "@/components/loading/skeleton/DailySkeleton/DailySkeleton";
+// Server component layout: defines metadata and wraps children with the client layout
+import type { Metadata } from "next";
+import HistoryLayoutClient from "./layoutClient";
 
 export const metadata: Metadata = {
-    title: "היסטוריה | שיבוץ+",
-    robots: "noindex, nofollow",
+  title: "היסטוריה | שיבוץ+",
+  robots: "noindex, nofollow",
 };
 
 export default function HistoryLayout({ children }: { children: React.ReactNode }) {
-    return (
-        <Suspense fallback={<DailySkeleton />}>
-            <HistoryTableProvider>
-                <HistoryPageLayout>{children}</HistoryPageLayout>
-            </HistoryTableProvider>
-        </Suspense>
-    );
+  return <HistoryLayoutClient>{children}</HistoryLayoutClient>;
 }

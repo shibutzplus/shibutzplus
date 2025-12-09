@@ -1,53 +1,47 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { NextPage } from "next";
 import styles from "./PublishedPortal.module.css";
-import PreviewTable from "@/components/tables/previewTable/PreviewTable/PreviewTable";
-import { usePortalContext } from "@/context/PortalContext";
-import Preloader from "@/components/ui/Preloader/Preloader";
-import NotPublished from "@/components/empty/NotPublished/NotPublished";
+import ViewTable from "@/components/tables/viewTable/ViewTable/ViewTable";
+import PublishedSkeleton from "@/components/layout/skeleton/PublishedSkeleton/PublishedSkeleton";
+import { usePortal } from "@/context/PortalContext";
+import { errorToast } from "@/lib/toast";
 
 const PublishedPortalPage: NextPage = () => {
-    const {
-        selectedDate,
-        teacher,
-        schoolId,
-        mainPublishTable,
-        isPublishLoading,
-        fetchPublishScheduleData,
-        isDatesLoading,
-    } = usePortalContext();
+    const { isPublishLoading, selectedDate, mainPublishTable, fetchPublishScheduleData } =
+        usePortal();
 
+    const blockRef = useRef<boolean>(true);
     useEffect(() => {
-        fetchPublishScheduleData();
-    }, [selectedDate, teacher?.id, schoolId]);
+        blockRef.current = true;
+        const fetchData = async () => {
+            if (blockRef.current) {
+                const response = await fetchPublishScheduleData();
+                if (response.success)
+                    blockRef.current = false;
+                else if (response.error !== "") {
+                    errorToast(response.error);
+                }
+            }
+        };
+        fetchData();
+    }, [selectedDate]);
 
-    if (isDatesLoading || isPublishLoading) {
-        return (
-            <div style={{ position: "relative", width: "100%", height: "100%" }}>
-                <Preloader
-                    style={{
-                        position: "fixed",
-                        top: "40%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                        zIndex: 10,
-                    }}
-                />
-            </div>
-        );
-    }
+
+    if (isPublishLoading) return <PublishedSkeleton />;
 
     return (
-        <section className={styles.container}>
-            <PreviewTable
-                mainDailyTable={mainPublishTable}
-                selectedDate={selectedDate}
-                appType="public"
-                EmptyTable={NotPublished}
-            />
-        </section>
+        <div className={styles.content}>
+            <div className={styles.tableWrapper}>
+                <ViewTable
+                    scheduleData={mainPublishTable}
+                    noScheduleTitle=""
+                    noScheduleSubTitle={["אין לך שינויים במערכת ליום זה"]}
+                    hasMobileNav
+                />
+            </div>
+        </div>
     );
 };
 

@@ -1,0 +1,224 @@
+.content {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.whiteBox {
+    background: var(--background);
+    width: 100%;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.tableContainer {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    height: calc(100dvh - var(--header-height) - 62px);
+}
+
+.scheduleTable {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    background: var(--background);
+}
+
+.scheduleTable thead th {
+    background: var(--table-headers-color);
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 44px;
+    padding: 8px 12px;
+    border-bottom: var(--border-primary);
+    border-inline-start: var(--border-inline-start);
+    white-space: nowrap;
+}
+
+.scheduleTable thead th:first-child {
+    border-inline-start: none;
+}
+
+.scheduleTable td {
+    padding: 1px 8px;
+    height: 85px;
+}
+
+.scheduleTable th:nth-child(1),
+.scheduleTable td:nth-child(1) {
+    width: 30px;
+    min-width: 30px;
+    max-width: 30px;
+}
+
+.scheduleTable th:nth-child(2),
+.scheduleTable td:nth-child(2) {
+    width: 90px;
+    min-width: 70px;
+    max-width: 100px;
+}
+
+.thContainer {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.thSkeletonClass,
+.thSkeletonInstractions,
+.tdSkeleton,
+.tdSkeletonInstraction1,
+.tdSkeletonInstraction2 {
+    height: 20px;
+    background-color: var(--skeleton-input-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        background-color: var(--skeleton-input-color);
+    }
+
+    50% {
+        background-color: var(--skeleton-input-color-bright);
+    }
+}
+
+.thSkeletonClass,
+.thSkeletonInstractions {
+    margin: 10px 0;
+}
+
+.thSkeletonClass {
+    width: 110px;
+}
+
+.thSkeletonInstractions {
+    width: 50vw;
+}
+
+.tdSkeleton {
+    width: 100%;
+}
+
+.tdSkeletonInstraction1 {
+    margin: 19px 10px 0 0;
+    width: 40vw;
+}
+
+.tdSkeletonInstraction2 {
+    margin: 10px 10px 0 0;
+    width: 20vw;
+}
+
+.hourCell {
+    border: var(--border-primary);
+    padding: 12px;
+    font-weight: bold;
+    text-align: center;
+    width: 60px;
+    vertical-align: middle;
+}
+
+.scheduleCell,
+.scheduleCellInput {
+    position: relative;
+    border: var(--border-primary);
+    vertical-align: top;
+    height: 100%;
+    min-height: 36px;
+}
+
+.scheduleCellInput {
+    min-width: 25vw;
+}
+
+.cellContent {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    height: 100%;
+    line-height: 22px;
+    gap: 10px;
+}
+
+
+/* Desktop */
+@media (min-width: 768px) {
+    .tableContainer {
+        height: calc(100dvh - var(--header-height) - 8px);
+    }
+
+    .scheduleTable thead th {
+        line-height: 40px;
+        padding: 6px 10px;
+    }
+
+    .scheduleTable td {
+        padding: 2px 6px;
+        box-sizing: border-box;
+    }
+
+    .scheduleTable th:nth-child(1),
+    .scheduleTable td:nth-child(1) {
+        width: 50px;
+        min-width: 50px;
+        max-width: 50px;
+    }
+
+    .scheduleTable th:nth-child(2),
+    .scheduleTable td:nth-child(2) {
+        width: 150px;
+        min-width: 150px;
+        max-width: 150px;
+    }
+
+    .cellContent {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        line-height: 26px;
+    }
+
+    .thSkeletonClass,
+    .thSkeletonInstractions {
+        margin: 10px 0;
+    }
+
+    .thSkeletonClass {
+        width: 110px;
+    }
+
+    .thSkeletonInstractions {
+        width: 20vw;
+    }
+
+    .tdSkeleton {
+        width: 110px;
+    }
+
+    .tdSkeletonInstraction1 {
+        margin: 19px 10px 0 0;
+        width: 30vw;
+    }
+
+    .tdSkeletonInstraction2 {
+        margin: 10px 10px 0 0;
+        width: 15vw;
+    }
+}

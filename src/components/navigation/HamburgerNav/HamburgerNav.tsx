@@ -1,150 +1,92 @@
-"use client";
+"use client"
 
 import React, { useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import styles from "./HamburgerNav.module.css";
+import { STATUS_AUTH } from "@/models/constant/session";
 import Icons from "@/style/icons";
-import { motion, AnimatePresence } from "motion/react";
-import { useAccessibility } from "../../../hooks/browser/useAccessibility";
+import { useAccessibility } from "../../../hooks/useAccessibility";
 import routePath from "../../../routes";
 import { clearStorage, getStorageTeacher } from "@/lib/localStorage";
-import {
-    clearSessionStorage,
-    getSessionStorage,
-    SESSION_KEYS,
-    setSessionStorage,
-} from "@/lib/sessionStorage";
-import { AppType } from "@/models/types";
-import Logo from "../../ui/Logo/Logo";
-import { TeacherRoleValues } from "@/models/types/teachers";
+import { clearSessionStorage } from "@/lib/sessionStorage";
 
-export interface ILink {
-    name: string;
-    p: string;
-    Icon: React.ReactNode;
+type HamburgerNavProps = {
+    isOpen: boolean
+    onClose: () => void
+    variant?: "admin" | "portal"
 }
 
-interface ILinkGroup {
-    title: string;
-    links: ILink[];
-    type: "private" | "public" | "substitute";
-    isCollapse?: boolean;
+interface ILink {
+    name: string
+    p: string
+    Icon: React.ReactNode
+    withDivider?: boolean
+    withExternal?: boolean
 }
-
-const linkGroups: ILinkGroup[] = [
+const links: ILink[] = [
     {
-        title: "מערכת שעות",
-        type: "private",
-        isCollapse: false,
-        links: [
-            {
-                name: routePath.dailySchedule.title,
-                p: routePath.dailySchedule.p,
-                Icon: <Icons.dailyCalendar size={24} />,
-            },
-            {
-                name: routePath.annualView.title,
-                p: routePath.annualView.p,
-                Icon: <Icons.calendar size={24} />,
-            },
-            {
-                name: routePath.history.title,
-                p: routePath.history.p,
-                Icon: <Icons.history size={24} />,
-            },
-        ],
-    },
-
-    {
-        title: "הגדרות בית הספר",
-        type: "private",
-        isCollapse: true,
-        links: [
-            {
-                name: routePath.teachers.title,
-                p: routePath.teachers.p,
-                Icon: <Icons.teacher size={24} />,
-            },
-            {
-                name: routePath.substitute.title,
-                p: routePath.substitute.p,
-                Icon: <Icons.substituteTeacher size={24} />,
-            },
-            {
-                name: routePath.subjects.title,
-                p: routePath.subjects.p,
-                Icon: <Icons.book size={24} />,
-            },
-            {
-                name: routePath.classes.title,
-                p: routePath.classes.p,
-                Icon: <Icons.chair size={24} />,
-            },
-            {
-                name: routePath.groups.title,
-                p: routePath.groups.p,
-                Icon: <Icons.users size={24} />,
-            },
-        ],
+        name: routePath.dailySchedule.title,
+        p: routePath.dailySchedule.p,
+        Icon: <Icons.dailyCalendar size={24} />,
+        withExternal: false,
     },
     {
-        title: "בניית מערכת שנתית",
-        type: "private",
-        isCollapse: true,
-        links: [
-            {
-                name: "לפי כיתה",
-                p: routePath.annualByClass.p,
-                Icon: <Icons.calendar size={24} />,
-            },
-            {
-                name: "לפי מורה",
-                p: routePath.annualByTeacher.p,
-                Icon: <Icons.calendar size={24} />,
-            },
-        ],
+        name: routePath.history.title,
+        p: routePath.history.p,
+        Icon: <Icons.eye size={24} />,
+        withDivider: true,
+        withExternal: false,
     },
     {
-        title: "מסכים למורים",
-        type: "public",
-        isCollapse: false,
-        links: [
-            {
-                name: "המערכת שלי",
-                p: routePath.teacherPortal.p,
-                Icon: <Icons.teacher size={24} />,
-            },
-            {
-                name: "מערכת בית ספרית",
-                p: routePath.publishedPortal.p,
-                Icon: <Icons.calendar size={24} />,
-            },
-        ],
+        name: routePath.teachers.title,
+        p: routePath.teachers.p,
+        Icon: <Icons.teacher size={24} />,
+        withExternal: false,
     },
     {
-        title: "מסכים למורי ממלאי מקום",
-        type: "substitute",
-        isCollapse: false,
-        links: [
-            {
-                name: "המערכת שלי",
-                p: routePath.teacherPortal.p,
-                Icon: <Icons.teacher size={24} />,
-            },
-        ],
+        name: routePath.substitute.title,
+        p: routePath.substitute.p,
+        Icon: <Icons.substituteTeacher size={24} />,
+        withExternal: false,
     },
-];
+    {
+        name: routePath.subjects.title,
+        p: routePath.subjects.p,
+        Icon: <Icons.book size={24} />,
+        withExternal: false,
+    },
+    {
+        name: routePath.classes.title,
+        p: routePath.classes.p,
+        Icon: <Icons.chair size={24} />,
+        withDivider: true,
+        withExternal: false,
+    },
+    {
+        name: routePath.annualSchedule.title,
+        p: routePath.annualSchedule.p,
+        Icon: <Icons.calendar size={24} />,
+        withExternal: false,
+    },
+]
 
 type LinkComponentProps = {
-    link: ILink;
-    onClose: () => void;
-    currentPath: string;
-};
+    link: ILink
+    onClose: () => void
+    currentPath: string
+}
 
 const LinkComponent: React.FC<LinkComponentProps> = ({ link, onClose, currentPath }) => {
-    const isActive = currentPath.startsWith(link.p);
+    const isActive = currentPath.startsWith(link.p)
+
+    // Open link in a new tab without closing the menu
+    const handleOpenNewTab = (e: React.MouseEvent) => {
+        e.stopPropagation()
+        e.preventDefault()
+        window.open(link.p, "_blank", "noopener,noreferrer")
+    }
 
     return (
         <div className={styles.linkWrapper}>
@@ -156,92 +98,54 @@ const LinkComponent: React.FC<LinkComponentProps> = ({ link, onClose, currentPat
                 {link.Icon}
                 <span>{link.name}</span>
             </Link>
+
+            {link.withExternal && (
+                <button
+                    type="button"
+                    className={styles.newTabBtn}
+                    onClick={handleOpenNewTab}
+                    aria-label={`Open ${link.name} in new tab`}
+                    title="פתח בטאב חדש"
+                >
+                    <Icons.newWindow size={18} style={{ color: "#707070ff" }} />
+                </button>
+            )}
         </div>
-    );
-};
-type HamburgerNavProps = {
-    isOpen: boolean;
-    onClose: () => void;
-    hamburgerType: AppType;
-};
+    )
+}
 
-const HamburgerNav: React.FC<HamburgerNavProps> = ({
-    isOpen,
-    onClose,
-    hamburgerType = "private",
-}) => {
-    const pathname = usePathname();
-    const navRef = useRef<HTMLDivElement>(null);
-    const overlayRef = useRef<HTMLDivElement>(null);
-    const route = useRouter();
+const HamburgerNav: React.FC<HamburgerNavProps> = ({ isOpen, onClose, variant = "admin" }) => {
+    const { status } = useSession()
+    const pathname = usePathname()
+    const navRef = useRef<HTMLDivElement>(null)
+    const overlayRef = useRef<HTMLDivElement>(null)
+    const route = useRouter()
 
-    useAccessibility({ isOpen, navRef, onClose });
+    useAccessibility({ isOpen, navRef, onClose })
 
     useEffect(() => {
-        if (!overlayRef.current) return;
-        if (!isOpen) overlayRef.current.setAttribute("inert", "");
-        else overlayRef.current.removeAttribute("inert");
-    }, [isOpen]);
+        if (!overlayRef.current) return
+        if (!isOpen) overlayRef.current.setAttribute("inert", "")
+        else overlayRef.current.removeAttribute("inert")
+    }, [isOpen])
 
-    const isPrivate = hamburgerType === "private";
+    const showAdminLinks = variant === "admin"
 
     const handleLogout = () => {
-        clearSessionStorage();
-        if (isPrivate) {
-            clearStorage();
-            signOut({ callbackUrl: routePath.signIn.p });
+        clearSessionStorage()
+        if (variant === "admin") {
+            clearStorage()
+            signOut({ callbackUrl: routePath.signIn.p })
         } else {
             // Read schoolId from teacher stored in localStorage
-            const schoolId = getStorageTeacher()?.schoolId;
-            if (schoolId) route.push(`${routePath.teacherSignIn.p}/${schoolId}?auth=logout`);
-            else route.push(`${routePath.teacherSignIn.p}?auth=logout`);
+            const schoolId = getStorageTeacher()?.schoolId
+            if (schoolId)
+                route.push(`${routePath.teacherSignIn.p}/${schoolId}?auth=logout`)
+            else
+                route.push(`${routePath.teacherSignIn.p}?auth=logout`)
         }
-        onClose();
-    };
-
-    const teacher = getStorageTeacher();
-    const isSubstituteTeacher = teacher?.role === TeacherRoleValues.SUBSTITUTE;
-
-    const displayedGroups = linkGroups
-        .filter((group) => {
-            if (hamburgerType === "private") return group.type === "private";
-            if (hamburgerType === "public") {
-                if (isSubstituteTeacher) return group.type === "substitute";
-                return group.type === "public";
-            }
-            return false;
-        })
-        .map((group) => ({
-            ...group,
-            links: group.links.map((link) => {
-                if (link.p === routePath.teacherPortal.p && teacher) {
-                    return {
-                        ...link,
-                        p: `${routePath.teacherPortal.p}/${teacher.schoolId}/${teacher.id}`,
-                    };
-                }
-                return link;
-            }),
-        }));
-
-    const [expandedGroups, setExpandedGroups] = React.useState<string[]>([]);
-
-    useEffect(() => {
-        const stored = getSessionStorage<string[]>(SESSION_KEYS.HAMBURGER_EXPANDED_GROUPS);
-        if (stored) {
-            setExpandedGroups(stored);
-        }
-    }, []);
-
-    const toggleGroup = (title: string) => {
-        setExpandedGroups((prev) => {
-            const newState = prev.includes(title)
-                ? prev.filter((t) => t !== title)
-                : [...prev, title];
-            setSessionStorage(SESSION_KEYS.HAMBURGER_EXPANDED_GROUPS, newState);
-            return newState;
-        });
-    };
+        onClose()
+    }
 
     return (
         <div ref={overlayRef} className={`${styles.overlay} ${isOpen ? styles.open : ""}`}>
@@ -253,98 +157,27 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                 aria-label="Navigation menu"
                 id="mobile-menu"
             >
-                <div className={styles.navHeader}>
-                    <div onClick={onClose} className={styles.logoContainer}>
-                        <Logo size="XS" disableLink={true} />
-                    </div>
-                    <button
-                        className={styles.closeButton}
-                        onClick={onClose}
-                        aria-label="Close menu"
-                    >
-                        <Icons.close size={24} />
-                    </button>
-                </div>
+                <button className={styles.closeButton} onClick={onClose} aria-label="Close menu">
+                    <Icons.close size={24} />
+                </button>
 
                 <div className={styles.menuContent}>
-                    <section className={styles.menuSection}>
-                        {displayedGroups.map((group, groupIndex) => {
-                            const isCollapsible = group.isCollapse;
-                            const isExpanded =
-                                isCollapsible && group.title
-                                    ? expandedGroups.includes(group.title)
-                                    : true;
-
-                            return (
-                                <div key={groupIndex} className={styles.group}>
-                                    {isCollapsible && group.title && (
-                                        <div
-                                            className={styles.groupHeader}
-                                            onClick={() => toggleGroup(group.title!)}
-                                        >
-                                            <h3 className={styles.groupTitle}>{group.title}</h3>
-                                            <motion.div
-                                                animate={{ rotate: isExpanded ? 180 : 0 }}
-                                                transition={{ duration: 0.2 }}
-                                                className={styles.groupArrow}
-                                            >
-                                                <Icons.arrowDown size={16} />
-                                            </motion.div>
-                                        </div>
-                                    )}
-
-                                    {isCollapsible ? (
-                                        <AnimatePresence initial={false}>
-                                            {isExpanded && (
-                                                <motion.ul
-                                                    initial={{ height: 0, opacity: 0 }}
-                                                    animate={{ height: "auto", opacity: 1 }}
-                                                    exit={{ height: 0, opacity: 0 }}
-                                                    transition={{
-                                                        duration: 0.3,
-                                                        ease: "easeInOut",
-                                                    }}
-                                                    style={{ overflow: "hidden" }}
-                                                    className={styles.nestedList}
-                                                >
-                                                    {group.links.map((link, linkIndex) => (
-                                                        <li key={linkIndex}>
-                                                            <LinkComponent
-                                                                link={link}
-                                                                onClose={onClose}
-                                                                currentPath={pathname}
-                                                            />
-                                                        </li>
-                                                    ))}
-                                                </motion.ul>
-                                            )}
-                                        </AnimatePresence>
-                                    ) : (
-                                        <ul>
-                                            {group.links.map((link, linkIndex) => (
-                                                <li key={linkIndex}>
-                                                    <LinkComponent
-                                                        link={link}
-                                                        onClose={onClose}
-                                                        currentPath={pathname}
-                                                    />
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    )}
-
-                                    {groupIndex < displayedGroups.length - 1 && (
-                                        <div className={styles.groupDivider} />
-                                    )}
-                                </div>
-                            );
-                        })}
-                    </section>
+                    {showAdminLinks && (
+                        <section className={styles.menuSection}>
+                            <ul>
+                                {links.map((link, index) => (
+                                    <li key={index} className={link.withDivider ? styles.withDivider : undefined}>
+                                        <LinkComponent link={link} onClose={onClose} currentPath={pathname} />
+                                    </li>
+                                ))}
+                            </ul>
+                        </section>
+                    )}
 
                     <div className={styles.bottomSection}>
                         <section className={styles.menuSection}>
                             <Link
-                                href={isPrivate ? "/faqManager" : "/faqTeachers"}
+                                href={variant === "admin" ? "/faqManager" : "/faqTeachers"}
                                 className={styles.navLink}
                                 onClick={onClose}
                                 aria-label="שאלות נפוצות"
@@ -354,11 +187,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                             </Link>
                         </section>
                         <section className={styles.logoutSection}>
-                            <div
-                                onClick={handleLogout}
-                                className={styles.navLink}
-                                aria-label="Logout"
-                            >
+                            <div onClick={handleLogout} className={styles.navLink} aria-label="Logout">
                                 <Icons.logOut size={24} />
                                 <span>יציאה מהמערכת</span>
                             </div>
@@ -367,8 +196,8 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                 </div>
             </div>
         </div>
-    );
-};
+    )
+}
 
 export const HamburgerButton: React.FC<{ onClick: () => void; isOpen: boolean }> = ({
     onClick,
@@ -384,7 +213,7 @@ export const HamburgerButton: React.FC<{ onClick: () => void; isOpen: boolean }>
         >
             <Icons.menu size={24} />
         </button>
-    );
-};
+    )
+}
 
-export default HamburgerNav;
+export default HamburgerNav

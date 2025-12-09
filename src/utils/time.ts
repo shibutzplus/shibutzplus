@@ -1,9 +1,8 @@
-import { SelectOption } from "@/models/types";
 import { DailyScheduleType } from "@/models/types/dailySchedule";
 
 export const DAYS_OF_WEEK = ["א", "ב", "ג", "ד", "ה", "ו", "ש"];
 export const DAYS_OF_WORK_WEEK = ["א", "ב", "ג", "ד", "ה", "ו"];
-export const DAYS_OF_WEEK_FORMAT = ["יום א", "יום ב", "יום ג", "יום ד", "יום ה", "יום ו", "יום שבת"];
+export const DAYS_OF_WEEK_FORMAT = ["יום א", "יום ב", "יום ג", "יום ד", "יום ה", "יום ו", "יום ש"];
 export const SUNDAY_NUMBER = 0;
 export const SATURDAY_NUMBER = 6;
 
@@ -12,10 +11,7 @@ export const ONE_WEEK = 7;
 export const ONE_DAY = 1;
 
 // Number of hours in a day
-export const HOURS_IN_DAY = 10;
-
-// Global auto-switch time configuration (HH:MM)
-export const AUTO_SWITCH_TIME = "16:00";
+export const HOURS_IN_DAY = 9;
 
 // YYYY-MM-DD format
 export const getDateReturnString = (date: Date) => {
@@ -31,6 +27,7 @@ export const formatTMDintoDMY = (date: string) => {
 export const isYYYYMMDD = (s: string) => {
     return /^\d{4}-\d{2}-\d{2}$/.test(s);
 };
+
 
 export const getStringReturnDate = (date: string) => {
     return new Date(date);
@@ -182,98 +179,4 @@ export const pad2 = (n: number) => {
 
 export const daysInMonth = (year: number, month1to12: number) => {
     return new Date(year, month1to12, 0).getDate();
-};
-
-// -- Date Component Utilities -- //
-
-// Get current date components as strings
-export const getCurrentDateComponents = () => {
-    const now = new Date();
-    const year = `${now.getFullYear()}`;
-    const month = `${now.getMonth() + 1}`; // 1-12
-    const day = `${now.getDate()}`;
-    return { year, month, day };
-};
-
-// Parse YYYY-MM-DD string into components
-export const parseDateString = (dateStr: string) => {
-    if (!isYYYYMMDD(dateStr)) return null;
-
-    const year = dateStr.slice(0, 4);
-    const month = String(parseInt(dateStr.slice(5, 7), 10)); // "1".."12"
-    const day = String(parseInt(dateStr.slice(8, 10), 10)); // "1".."31"
-
-    return { year, month, day };
-};
-
-// Build YYYY-MM-DD string from components
-export const buildDateString = (year: string, month: string, day: string) => {
-    const yNum = parseInt(year, 10);
-    const mNum = parseInt(month, 10);
-    const dNum = parseInt(day, 10);
-    return `${yNum}-${pad2(mNum)}-${pad2(dNum)}`;
-};
-
-// Get today's date as YYYY-MM-DD string
-export const getTodayString = () => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth() + 1;
-    const day = now.getDate();
-    return `${year}-${pad2(month)}-${pad2(day)}`;
-};
-
-// Get initial month for school year (fallback to September if July/August)
-export const getSchoolYearInitialMonth = () => {
-    const currentMonth = new Date().getMonth() + 1; // 1-12
-    return currentMonth === 7 || currentMonth === 8 ? "9" : `${currentMonth}`;
-};
-
-// Generate day options for select dropdown
-export const generateDayOptions = (year: string, month: string) => {
-    const yNum = parseInt(year, 10);
-    const mNum = parseInt(month, 10);
-    const maxDays = daysInMonth(yNum, mNum);
-
-    return Array.from({ length: maxDays }, (_, i) => {
-        const d = i + 1;
-        return { value: `${d}`, label: `${d}` };
-    });
-};
-
-// Validate and clamp day to valid range for given month/year
-export const clampDayToMonth = (day: string, year: string, month: string) => {
-    const dNum = parseInt(day, 10);
-    const yNum = parseInt(year, 10);
-    const mNum = parseInt(month, 10);
-    const maxDays = daysInMonth(yNum, mNum);
-
-    return dNum > maxDays ? `${maxDays}` : day;
-};
-
-// Choose default date based on current time (before/after AUTO_SWITCH_TIME)
-// - Before switch time: prefer today if exists, else first available
-// - After switch time: prefer tomorrow if exists, else today, else first available
-// Choose default date based on current time (before/after AUTO_SWITCH_TIME)
-// - Before switch time: prefer today if exists.
-// - After switch time: prefer tomorrow if exists, else today.
-// - If options empty/undefined: return today/tomorrow based on time.
-export const chooseDefaultDate = (options?: SelectOption[]): string => {
-    const now = new Date();
-    const today = getTodayDateString();
-    const tomorrow = getTomorrowDateString();
-
-    const [switchHour, switchMinute] = AUTO_SWITCH_TIME.split(":").map(Number);
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
-
-    const isAfterSwitch =
-        currentHour > switchHour || (currentHour === switchHour && currentMinute >= switchMinute);
-
-    // Default time-based date (when no options or fallback needed)
-    const defaultTimeBased = isAfterSwitch ? tomorrow : today;
-
-    // Simplified: Always return the time-based default (Today/Tomorrow) based on the switch time.
-    // If this date is not in options, PortalContext will handle it as an "Empty Schedule" (NotPublished).
-    return defaultTimeBased;
 };

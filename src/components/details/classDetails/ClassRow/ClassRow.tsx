@@ -3,42 +3,14 @@ import { useMainContext } from "@/context/MainContext";
 import { ClassType } from "@/models/types/classes";
 import { classSchema } from "@/models/validation/class";
 import ListRow from "@/components/ui/list/ListRow/ListRow";
-import useDeletePopup from "@/hooks/useDeletePopup";
-import useSubmit from "@/hooks/useSubmit";
-import messages from "@/resources/messages";
-import { PopupAction } from "@/context/PopupContext";
 
 type ClassRowProps = {
     classItem: ClassType;
+    handleDeleteClass: (classItem: ClassType) => void;
 };
 
-const ClassRow: React.FC<ClassRowProps> = ({ classItem }) => {
-    const { updateClass, school, deleteClass } = useMainContext();
-    const { handleOpenPopup } = useDeletePopup();
-
-    const { handleSubmitDelete, isLoading } = useSubmit(
-        () => { },
-        classItem.activity
-            ? messages.classes.deleteGroupSuccess
-            : messages.classes.deleteClassSuccess,
-        messages.classes.deleteError,
-        messages.classes.invalid,
-    );
-
-    const handleDeleteClassFromState = async (classId: string) => {
-        if (!school?.id) return;
-        await handleSubmitDelete(school.id, classId, deleteClass);
-    };
-
-    const handleDeleteClass = (classItem: ClassType) => {
-        const entityName = classItem.activity ? "הקבוצה" : "הכיתה";
-        handleOpenPopup(
-            PopupAction.deleteClass,
-            `האם אתה בטוח שברצונך למחוק את ${entityName} ${classItem.name}`,
-            () => handleDeleteClassFromState(classItem.id),
-        );
-    };
-
+const ClassRow: React.FC<ClassRowProps> = ({ classItem, handleDeleteClass }) => {
+    const { updateClass } = useMainContext();
     return (
         <ListRow
             item={classItem}

@@ -4,6 +4,11 @@ import { redis } from "@/lib/redis"
 export async function GET(req: Request) {
   try {
 
+    // Skip poll in local development (For debug comment out this block)
+    if (process.env.NODE_ENV === "development" || req.headers.get("host")?.includes("localhost")) {
+      return Response.json({ latestTs: 0, count: 0, items: [] })
+    }
+
     const url = new URL(req.url)
     const since = Number(url.searchParams.get("since") || 0)
     const allow = (url.searchParams.get("channels") || "teacher,event,material,detailsUpdate").split(",")

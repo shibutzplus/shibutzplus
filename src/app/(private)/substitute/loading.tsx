@@ -1,8 +1,8 @@
 import React from "react";
-import ListSkeleton from "@/components/loading/skeleton/ListSkeleton/ListSkeleton";
+import ListSkeleton from "@/components/layout/skeleton/ListSkeleton/ListSkeleton";
 
 const Loading: React.FC = () => {
-    return <ListSkeleton titles={["שם המורה", "פעולות"]} hasAdditionalBtn />;
+    return <ListSkeleton headThs={["שם המורה", "פעולות"]} hasAdditionalBtn />;
 };
 
 export default Loading;

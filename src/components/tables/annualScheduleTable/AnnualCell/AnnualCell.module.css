@@ -1,0 +1,22 @@
+.scheduleCell {
+    position: relative;
+    padding: 4px;
+    border: var(--border-primary);
+    vertical-align: top;
+    max-width: 0;
+    height: 80px;
+}
+
+.cellContent {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.cellContent.viewOnly {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+

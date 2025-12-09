@@ -1,30 +1,21 @@
-.iconBtn {
+.iconBtn{
     border: none;
     background-color: transparent;
     font-size: 20px;
     cursor: pointer;
-    width: var(--input-height);
-    height: var(--input-height);
-    border-radius: var(--border-radius-cell);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--description-text);
-    transition: all 0.1s ease;
 }
 
-.hasBorder {
-    border: var(--border-primary);
+.hasBorder{
+    border: 1px solid var(--input-border);
 }
 
-.iconBtn:not(:disabled):hover {
-    transform: translateY(-1px);
-    background-color: var(--top-color-hover);
-    cursor: pointer;
-}
-
-.iconBtn:disabled {
-    cursor: default;
-    opacity: 0.5;
-    color: gray;
+.iconBtn:hover{
+    background-color: var(--feature-icon-bg);
 }

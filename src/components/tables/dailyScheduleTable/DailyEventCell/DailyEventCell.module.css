@@ -1,14 +1,8 @@
-.cellContent {
-    width: 100%;
-    gap: 10px;
-    min-height: var(--table-daily-cell-height);
-    background-color: var(--tab-color);
-    border-radius: var(--border-radius-cell);
-    padding: 10px 15px 0 15px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    max-height: var(--table-daily-cell-height);
-    overflow-y: auto;
+.cellContent{
+  width: 100%;
+  margin: 0;
+  height: auto;
+  min-height: 1.5em;
+  max-height: 100px;
+  padding: 10px 10px;
 }

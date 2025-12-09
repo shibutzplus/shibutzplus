@@ -1,12 +1,9 @@
 import { GroupOption } from "@/models/types";
 import { AvailableTeachers, WeeklySchedule } from "@/models/types/annualSchedule";
-import {
-    ColumnTypeValues,
-    ColumnType,
-    DailySchedule,
-    DailyScheduleCell,
-} from "@/models/types/dailySchedule";
+import { ColumnTypeValues, ColumnType, DailySchedule, DailyScheduleCell } from "@/models/types/dailySchedule";
+import { TeacherRow } from "@/models/types/table";
 import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
+import { ColumnDef } from "@tanstack/react-table";
 import { dayToNumber } from "./time";
 import { ClassType } from "@/models/types/classes";
 import { createSelectOptions } from "./format";
@@ -28,6 +25,29 @@ export const sortByHebrewName = <T extends Record<string, any>>(
         const nameB = String(b[nameKey]);
         return nameA.localeCompare(nameB, "he", { numeric: true });
     });
+};
+
+// Sort columns by issueTeacherType in order: [existingTeacher], [missingTeacher], [event]
+export const sortColumnsByIssueTeacherType = (filteredCols: ColumnDef<TeacherRow>[]) => {
+    const getTypeOrder = (type: ColumnType) => {
+        switch (type) {
+            case ColumnTypeValues.missingTeacher:
+                return 1;
+            case ColumnTypeValues.existingTeacher:
+                return 2;
+            case ColumnTypeValues.event:
+                return 3;
+            default:
+                return 4;
+        }
+    };
+
+    const sortedCols = filteredCols.sort((a, b) => {
+        const aType = a.meta?.type as ColumnType;
+        const bType = b.meta?.type as ColumnType;
+        return getTypeOrder(aType) - getTypeOrder(bType);
+    });
+    return sortedCols;
 };
 
 // Annual Schedule: Build grouped teacher options (available vs unavailable) for a class at a specific day/hour in the annual schedule
@@ -96,35 +116,21 @@ export const filterDailyHeaderTeachers = (
     alreadySelectedTeachers: DailySchedule,
     selectedTeacher?: TeacherType,
     teachersTeachingTodayIds?: Set<string>,
-    selectedDate?: string,
 ) => {
     const flatTeachersSet = new Set<string>();
 
     if (!teachers) return [];
 
-    // Collect all teachers already selected as header in any daily column for the CURRENT DATE
-    if (selectedDate && alreadySelectedTeachers[selectedDate]) {
-        Object.values(alreadySelectedTeachers[selectedDate]).forEach((dailyCol) => {
-            // Check the header cell (hour "1")
-            const headerTeacher = dailyCol["1"]?.headerCol?.headerTeacher;
-            if (headerTeacher?.id) {
-                flatTeachersSet.add(headerTeacher.id);
-            }
-        });
-    } else if (!selectedDate) {
-        // Fallback or legacy behavior (if needed, though we should always have selectedDate)
-        Object.values(alreadySelectedTeachers).forEach((day) => {
-            Object.values(day).forEach((dailyCol) => {
-                // Determine if 'dailyCol' is Column or HourMap...
-                // Based on types: DailySchedule[day] is Record<columnId, Record<hour, Cell>>
-                // So dailyCol here is Record<hour, Cell> which represents one column
-                const headerTeacher = dailyCol["1"]?.headerCol?.headerTeacher;
-                if (headerTeacher?.id) {
-                    flatTeachersSet.add(headerTeacher.id);
+    // Collect all teachers already selected as header in any daily column
+    Object.values(alreadySelectedTeachers).forEach((day) => {
+        Object.values(day).forEach((hour) => {
+            Object.values(hour).forEach((teacher) => {
+                if (teacher.headerCol?.headerTeacher?.id) {
+                    flatTeachersSet.add(teacher.headerCol.headerTeacher.id);
                 }
             });
         });
-    }
+    });
 
     const filteredTeachers = teachers.filter((teacher) => {
         const isRegular = teacher.role === TeacherRoleValues.REGULAR;
@@ -132,13 +138,15 @@ export const filterDailyHeaderTeachers = (
             teacher.id === selectedTeacher?.id || !flatTeachersSet.has(teacher.id);
 
         // If teachersTeachingTodayIds is provided, keep only teachers that teach today
-        const teachesToday = !teachersTeachingTodayIds || teachersTeachingTodayIds.has(teacher.id);
+        const teachesToday =
+            !teachersTeachingTodayIds || teachersTeachingTodayIds.has(teacher.id);
 
         return isRegular && isCurrentOrNotUsed && teachesToday;
     });
 
     return createSelectOptions(filteredTeachers);
 };
+
 
 // DailySchedule Dropdown: Build grouped teacher options (substitutes, available, unavailable) for a specific day/hour
 export const sortDailyTeachers = (
@@ -191,18 +199,9 @@ export const sortDailyTeachers = (
     // Track teachers already assigned in other daily columns for this hour
     const dailyAssignedTeacherIds = new Set<string>();
     const subTeachersThisHour = new Set<string>(); // teachers assigned as a sub
-    const missingTeacherIds = new Set<string>();
 
     if (dailyDay) {
         Object.values(dailyDay).forEach((dailyColumn) => {
-            const headerCell = dailyColumn["1"];
-            if (
-                headerCell?.headerCol?.type === ColumnTypeValues.missingTeacher &&
-                headerCell.headerCol.headerTeacher?.id
-            ) {
-                missingTeacherIds.add(headerCell.headerCol.headerTeacher.id);
-            }
-
             const column = dailyColumn[hourStr];
             if (!column) return;
 
@@ -214,16 +213,13 @@ export const sortDailyTeachers = (
         });
     }
 
-    const substituteTeachers: TeacherType[] = []; // substitute teachers
-    const availableTeachers: TeacherType[] = []; // regular teachers free this hour
-    const unavailableTeachers: TeacherType[] = []; // teachers busy this hour
-    const freeDayTeachers: TeacherType[] = []; // regular teachers not teaching on this day
-    const notStartedTeachers: TeacherType[] = []; // teachers not started yet
-    const finishedTeachers: TeacherType[] = []; // teachers already finished
+    const substituteTeachers: TeacherType[] = [];   // substitute teachers
+    const availableTeachers: TeacherType[] = [];    // regular teachers free this hour
+    const unavailableTeachers: TeacherType[] = [];  // teachers busy this hour
+    const freeDayTeachers: TeacherType[] = [];      // regular teachers not teaching on this day
+    const outsideHoursTeachers: TeacherType[] = []; // teachers working today but outside their hours
 
     for (const teacher of allTeachers) {
-        if (missingTeacherIds.has(teacher.id)) continue;
-
         // skip the column's header teacher as it should not appear in its own dropdown
         if (currentHeaderTeacherId && teacher.id === currentHeaderTeacherId) continue;
 
@@ -242,14 +238,8 @@ export const sortDailyTeachers = (
             if (teachesToday) {
                 if (!scheduledThisHour) {
                     const bounds = teacherStartEndMap.get(teacher.id);
-                    if (bounds) {
-                        if (hour < bounds.min) {
-                            notStartedTeachers.push(teacher);
-                        } else if (hour > bounds.max) {
-                            finishedTeachers.push(teacher);
-                        } else {
-                            availableTeachers.push(teacher);
-                        }
+                    if (bounds && (hour < bounds.min || hour > bounds.max)) {
+                        outsideHoursTeachers.push(teacher);
                     } else {
                         availableTeachers.push(teacher);
                     }
@@ -267,13 +257,13 @@ export const sortDailyTeachers = (
 
     // Regular teachers with zero annual hours
     const extraRegularTeachers = allTeachers.filter(
-        (t) => t.role === TeacherRoleValues.REGULAR && !annualTeacherIds.has(t.id),
+        (t) => t.role === TeacherRoleValues.REGULAR && !annualTeacherIds.has(t.id)
     );
 
     // Label helper: add class name for annual-unavailable
     const getUnavailableLabel = (t: TeacherType) => {
         const classId = teacherAtIndex?.[dayKey]?.[hourStr]?.[t.id];
-        const className = classId ? classNameById[classId] || classId : undefined;
+        const className = classId ? (classNameById[classId] || classId) : undefined;
         return className ? `${t.name} (${className})` : t.name;
     };
 
@@ -315,20 +305,9 @@ export const sortDailyTeachers = (
     const additionalIds = new Set(additionalLessonTeachers.map((t) => t.id));
     const filteredUnavailableTeachers = unavailableTeachers.filter((t) => !additionalIds.has(t.id));
 
-    const activityTeachers = filteredUnavailableTeachers
-        .filter((t) => !subTeachersThisHour.has(t.id) && isTeacherInActivityClass(t.id))
-        .sort((a, b) => {
-            const classIdA = teacherAtIndex?.[dayKey]?.[hourStr]?.[a.id];
-            const classNameA = classIdA ? classNameById[classIdA] || classIdA : "";
-
-            const classIdB = teacherAtIndex?.[dayKey]?.[hourStr]?.[b.id];
-            const classNameB = classIdB ? classNameById[classIdB] || classIdB : "";
-
-            const groupCompare = classNameA.localeCompare(classNameB, "he", { numeric: true });
-            if (groupCompare !== 0) return groupCompare;
-
-            return a.name.localeCompare(b.name, "he", { numeric: true });
-        });
+    const activityTeachers = filteredUnavailableTeachers.filter(
+        (t) => !subTeachersThisHour.has(t.id) && isTeacherInActivityClass(t.id),
+    );
 
     const nonActivityClassTeachers = filteredUnavailableTeachers
         .filter((t) => !subTeachersThisHour.has(t.id) && !isTeacherInActivityClass(t.id))
@@ -344,22 +323,18 @@ export const sortDailyTeachers = (
 
     // Groups
     const groups: GroupOption[] = [
-        ...(currentValue
-            ? [
-                {
-                    label: "הסרת ממלא מקום",
-                    options: [{ value: EmptyValue, label: "🗑️" }],
-                    hideCount: true,
-                },
-            ]
-            : []),
+        ...(currentValue ? [{
+            label: "הסרת ממלא מקום",
+            options: [{ value: EmptyValue, label: "🗑️" }],
+            hideCount: true,
+        }] : []),
         {
             label: "מורה נוסף בשיעור",
             collapsed: true,
             options: additionalLessonTeachers.map((t) => ({ value: t.id, label: t.name })),
         },
         {
-            label: "מורים מילוי מקום",
+            label: "מורים למילוי מקום",
             collapsed: true,
             options: substituteTeachers.map((teacher) => ({
                 value: teacher.id,
@@ -396,14 +371,9 @@ export const sortDailyTeachers = (
             })),
         },
         {
-            label: "לא התחילו את היום",
+            label: "לא התחילו/סיימו את היום",
             collapsed: true,
-            options: notStartedTeachers.map((t) => ({ value: t.id, label: t.name })),
-        },
-        {
-            label: "סיימו את יום העבודה",
-            collapsed: true,
-            options: finishedTeachers.map((t) => ({ value: t.id, label: t.name })),
+            options: outsideHoursTeachers.map((t) => ({ value: t.id, label: t.name })),
         },
         {
             label: "ביום חופשי",
@@ -413,41 +383,10 @@ export const sortDailyTeachers = (
         {
             label: "אפשרויות נוספות",
             collapsed: true,
-            hideCount: false,
+            hideCount: true,
             options: dailySelectActivity,
         },
     ];
 
     return groups;
-};
-
-// Sort columns by issueTeacherType in order: [existingTeacher], [missingTeacher], [event]
-export const sortDailyColumnIdsByType = (
-    columnIds: string[],
-    schedule: DailySchedule,
-    selectedDate: string,
-) => {
-    const getTypeOrder = (type: ColumnType) => {
-        switch (type) {
-            case ColumnTypeValues.missingTeacher:
-                return 1;
-            case ColumnTypeValues.existingTeacher:
-                return 2;
-            case ColumnTypeValues.event:
-                return 3;
-            default:
-                return 4;
-        }
-    };
-
-    const getColumnType = (columnId: string): ColumnType => {
-        const column = schedule[selectedDate]?.[columnId];
-        return column?.["1"]?.headerCol?.type || ColumnTypeValues.existingTeacher;
-    };
-
-    return columnIds.sort((a, b) => {
-        const aType = getColumnType(a);
-        const bType = getColumnType(b);
-        return getTypeOrder(aType) - getTypeOrder(bType);
-    });
 };

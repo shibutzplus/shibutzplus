@@ -1,4 +1,4 @@
-/* > 1024px */
+/* Mobile */
 .container {
     position: fixed;
     top: 0;
@@ -16,15 +16,9 @@
 .mainSection {
     display: flex;
     flex-direction: column;
-    gap: 3em;
+    gap: 2em;
     width: 90%;
-    margin: 0 auto 20vh auto;
-}
-
-.formContainer {
-    display: flex;
-    flex-direction: column;
-    gap: 3rem;
+    margin-bottom: 10vh;
 }
 
 .googleButton {
@@ -34,24 +28,26 @@
     justify-content: center;
     gap: 0.75rem;
     padding: 1rem 1.5rem;
-    border: var(--border-primary);
+    border: var(--border-heavy-primary);
     border-radius: 8px;
-    background-color: var(--top_color);
-    color: var(--dark-text-color);
+    background-color: var(--background);
+    color: #3c4043;
     font-size: 18px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
-    margin: 0 auto;
+    margin-bottom: 1rem;
+    margin: 0 auto 1rem auto;
 }
 
 .googleButton:hover {
-    background-color: var(--top-color-hover);
-    box-shadow: var(--box-shadow-btn);
+    background-color: var(--background);
+    border-color: #c8c9ca;
+    box-shadow: var(--header-box-shadow);
 }
 
 .googleButton:active {
-    background-color: var(--top-color);
+    background-color: var(--background);
 }
 
 .error {
@@ -61,36 +57,58 @@
     text-align: center;
 }
 
+.registerLink {
+    margin-top: 2rem;
+    text-align: center;
+}
+
 .problemLink {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    color: var(--input-color);
+    text-decoration: none;
+    font-weight: 500;
+    text-decoration: underline !important;
+}
+
+.problemLink:hover {
+    color: var(--input-hover-color) !important;
+}
+
+.illustrationContainer {
+    display: block;
+    position: absolute;
+    bottom: 1%;
+    left: 32%;
+    z-index: 0;
+    opacity: 0.9;
+}
+
+.illustration {
+    width: 55vw;
+    height: auto;
 }
 
 .emailLine {
     display: block;
     margin-top: 0.75rem;
-    text-decoration: underline;
-    color: #007bff;
 }
 
-.problemLink:hover .emailLine {
-    color: #3399ff;
-}
-
-/* < 1024px */
-@media (max-width: 1024px) {
+/* Desktop */
+@media (min-width: 768px) {
     .mainSection {
-        gap: 2em;
-        margin: 0 auto 10vh auto;
+        gap: 3em;
+        margin: 0 auto 20vh auto;
     }
-
-    .formContainer {
-        gap: 1.5rem;
-    }
-
     .googleButton {
-        margin: 0 auto 1rem auto;
+        width: 320px;
+        margin: 0 auto;
+    }
+    .illustrationContainer {
+        bottom: 1%;
+        left: 2%;
+    }
+
+    .illustration {
+        width: 35vw;
     }
 }
 

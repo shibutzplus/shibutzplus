@@ -1,112 +1,74 @@
-import {
-    BorderRadiusInput,
-    BorderSecondary,
-    BoxShadowPrimary,
-    DarkBorderColor,
-    ErrorColor,
-    FontSize,
-    InputBackgroundColor,
-    InputColor,
-    InputColorHover,
-    InputHeight,
-    PlaceholderColor,
-    SelectBackgroundColor,
-    SelectBackgroundColorHover,
-} from "./root";
-
 export const customStyles = (
     error: any,
     hasBorder: boolean,
     hasArrow: boolean = true,
-    backgroundColor: string,
-    color: string = InputColor,
-    placeholderColor: string = PlaceholderColor,
-    colorHover: string = InputColorHover,
+    backgroundColor: string = "#fdfbfb",
+    noOptionsMsgColor: string = "#aaa",
 ) => {
     return {
-        control: (provided: any) => ({
+        control: (provided: any, state: any) => ({
             ...provided,
             width: "100%",
-            minHeight: InputHeight,
+            minHeight: "38px",
             borderWidth: hasBorder ? "1px" : "0px",
-            borderColor: DarkBorderColor,
+            borderColor: "#e0e0e0",
             boxShadow: "none",
-            fontSize: FontSize,
+            fontSize: "16px",
             backgroundColor: backgroundColor,
-            color: color,
+            color: "#aaa",
             transition: "all 0.2s ease",
             fontWeight: "normal",
             cursor: "pointer",
             "&:hover": {
-                borderColor: error ? ErrorColor : DarkBorderColor,
+                borderColor: error ? "#e53935" : "#ccc",
             },
         }),
         menuPlacement: "auto",
         menuPosition: "absolute",
         menu: (provided: any) => ({
             ...provided,
-            zIndex: 99999,
-            borderRadius: BorderRadiusInput,
-            boxShadow: BoxShadowPrimary,
-            border: BorderSecondary,
+            zIndex: 9999,
+            borderRadius: "4px",
+            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
+            border: "1px solid #ccc",
         }),
         menuPortal: (provided: any) => ({
             ...provided,
-            zIndex: 99999,
-        }),
-        menuList: (provided: any) => ({
-            ...provided,
-            padding: "5px",
-            "::-webkit-scrollbar": {
-                width: "6px",
-                height: "6px",
-            },
-            "::-webkit-scrollbar-thumb": {
-                background: "#d4d4d4",
-                borderRadius: "3px",
-            },
-            "::-webkit-scrollbar-thumb:hover": {
-                background: "#bcbcbc",
-            },
-            "::-webkit-scrollbar-track": {
-                background: "transparent",
-            },
+            zIndex: 9999,
         }),
         option: (provided: any, state: any) => ({
             ...provided,
             backgroundColor: state.isSelected
-                ? SelectBackgroundColor
+                ? "#4a90e2"
                 : state.isFocused
-                    ? SelectBackgroundColorHover
-                    : InputBackgroundColor,
-            color: state.isSelected ? InputBackgroundColor : InputColor,
+                    ? "rgba(74, 144, 226, 0.1)"
+                    : "#fdfbfb",
+            color: state.isSelected ? "white" : "#333",
             padding: "10px 12px",
-            fontSize: FontSize,
+            fontSize: "16px",
             cursor: "pointer",
             "&:hover": {
-                backgroundColor: state.isSelected
-                    ? SelectBackgroundColor
-                    : SelectBackgroundColorHover,
+                backgroundColor: state.isSelected ? "#4a90e2" : "rgba(74, 144, 226, 0.1)",
             },
         }),
         placeholder: (provided: any) => ({
             ...provided,
-            color: placeholderColor,
-            fontSize: FontSize,
+            color: "#aaa",
+            fontSize: "16px",
         }),
         singleValue: (provided: any) => ({
             ...provided,
-            color: color,
-            fontSize: FontSize,
+            color: "#333",
+            fontSize: "16px",
         }),
         input: (provided: any) => ({
             ...provided,
-            fontSize: FontSize,
-            color: color,
+            fontSize: "16px",
+            color: "#333",
         }),
         valueContainer: (provided: any) => ({
             ...provided,
-            padding: "2px 8px", /// "0px 0px"
+            padding: "2px 8px",
         }),
         indicatorSeparator: (provided: any) => ({
             ...provided,
@@ -114,25 +76,25 @@ export const customStyles = (
         }),
         dropdownIndicator: (provided: any) => ({
             ...provided,
-            color: color,
-            padding: "8px", /// "0 4px"
+            color: "#999",
+            padding: "8px",
             "&:hover": {
-                color: colorHover,
+                color: "#333",
             },
             display: hasArrow ? "block" : "none",
         }),
         clearIndicator: (provided: any) => ({
             ...provided,
-            color: color,
+            color: "#999",
             padding: "8px",
             "&:hover": {
-                color: colorHover,
+                color: "#333",
             },
         }),
         noOptionsMessage: (provided: any) => ({
             ...provided,
-            color: PlaceholderColor,
-            fontSize: FontSize,
+            color: noOptionsMsgColor,
+            fontSize: "16px",
         }),
     };
 };

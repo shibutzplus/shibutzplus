@@ -1,6 +1,0 @@
-.emptyCell {
-    height: var(--table-daily-cell-height);
-    width: 100%;
-    background-color: var(--inner-background-color-empty);
-    border-radius: var(--border-radius-cell);
-}

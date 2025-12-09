@@ -10,7 +10,6 @@ export type ClassType = {
 export type ClassRequest = {
   name: string;
   schoolId: string;
-  activity?: boolean;
 }
 
 export type GetClassesResponse = ActionResponse & {

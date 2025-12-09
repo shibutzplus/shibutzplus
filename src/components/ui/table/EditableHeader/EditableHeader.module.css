@@ -1,47 +1,23 @@
-.columnHeaderWrapper {
-    width: 100%;
-    max-width: var(--table-daily-col-width);
-    height: var(--table-daily-header-height);
-    background-color: var(--background-color);
-    position: absolute;
-    left: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    will-change: transform;
-    z-index: 16;
-    box-shadow: -1px 0px 0px 0px var(--background-color),
-        1px 0px 0px 0px var(--background-color);
-}
-
 .columnHeader {
-    position: relative;
-    top: 0;
-    left: 0;
-    border-radius: var(--border-radius-table) var(--border-radius-table) 0 0;
-    gap: 5px;
-    width: 100%;
-    padding: 0 20px 0 5px;
-    text-align: right;
-    height: 100%;
-    color: var(--bright-text-color);
-    z-index: 5;
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 0 15px;
+    text-align: right;
 }
 
-.deleteButton {
+.clearButton {
     cursor: pointer;
     font-size: 16px;
     transition: all 0.2s ease;
 }
 
-.deleteButton:hover {
-    color: var(--bright-text-color-hover);
-    cursor: pointer;
+.clearButton:hover {
+    color: gray;
 }
 
-.deleteButton:active {
+.clearButton:active {
     transform: translateY(1px);
 }

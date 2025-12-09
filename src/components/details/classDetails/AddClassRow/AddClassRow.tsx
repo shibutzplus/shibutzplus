@@ -4,33 +4,24 @@ import messages from "@/resources/messages";
 import { classSchema } from "@/models/validation/class";
 import AddListRow from "@/components/ui/list/AddListRow/AddListRow";
 
-type AddClassRowProps = {
-    onSearch?: (value: string) => void;
-    isGroup?: boolean;
-};
-
-const AddClassRow: React.FC<AddClassRowProps> = ({ onSearch, isGroup }) => {
+const AddClassRow: React.FC = () => {
     const { school, addNewClass } = useMainContext();
-
     return (
         <AddListRow
             schema={classSchema}
             addFunction={(values) =>
                 addNewClass({
                     ...values,
-                    activity: isGroup,
                     schoolId: school?.id || "",
                 })
             }
             field={{
                 key: "name",
-                placeholder: isGroup ? "לדוגמה: פרטני או שהייה" : "לדוגמה: כיתה א1",
-                maxLength: 20,
+                placeholder: "לדוגמה: כיתה א1",
             }}
             initialValues={{ name: "" }}
             errorMessages={{ name: messages.classes.createError }}
-            onInputChange={onSearch}
-            suppressErrorToast={true}
+            buttonLabel="הוספה"
         />
     );
 };

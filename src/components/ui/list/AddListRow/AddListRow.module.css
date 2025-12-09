@@ -1,55 +1,18 @@
-/* > 800 */
-.addListRow {
-    width: 95%;
-    background-color: var(--tab-color);
-    display: flex;
-    justify-content: space-between;
-    gap: 3rem;
-    padding: var(--list-details-row-padding);
-    box-sizing: border-box;
-    border-radius: var(--border-radius-cell);
-}
-
-.addListRowInput {
+.trAddListRow{
     width: 100%;
-    height: var(--input-height);
 }
 
-.addListBtn {
-    width: var(--list-details-actions-width);
+.trAddListRow td:first-child {
+    padding-right: 16px;
+    width: 100%;
+}
+.trAddListRow td:last-child {
+    padding-left: 16px;
 }
 
 .smallBtn {
-    min-width: var(--list-details-actions-width);
-    height: var(--input-height);
+    min-width: 100px;
+    width: 100% !important;
+    height: 38px;
     display: inline-flex !important;
-}
-
-/* <= 800 */
-@media (max-width: 800px) {
-    .addListRow {
-        gap: 1rem;
-        padding: var(--list-details-row-padding-mobile);
-    }
-
-    .addListRowInput {
-        flex: 1;
-        width: auto;
-        min-width: 0;
-    }
-
-    .addListBtn {
-        width: var(--list-details-actions-width-mobile);
-        min-width: var(--list-details-actions-width-mobile);
-    }
-
-    .smallBtn {
-        width: 100%;
-        min-width: 0;
-    }
-
-    /* Hide text inside the button, keep icon */
-    .smallBtn>span>span {
-        display: none;
-    }
 }

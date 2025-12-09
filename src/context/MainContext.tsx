@@ -17,9 +17,7 @@ import { deleteSubjectAction } from "@/app/actions/DELETE/deleteSubjectAction";
 import { deleteTeacherAction } from "@/app/actions/DELETE/deleteTeacherAction";
 import useInitData from "@/hooks/useInitData";
 import { setStorageClasses, setStorageSubjects, setStorageTeachers } from "@/lib/localStorage";
-import { errorToast } from "@/lib/toast";
-import { pushSyncUpdate } from "@/services/syncService";
-import { UPDATE_DETAIL } from "@/models/constant/sync";
+import { infoToast } from "@/lib/toast";
 
 interface MainContextType {
     school: SchoolType | undefined;
@@ -79,48 +77,6 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         setClasses,
     });
 
-    const addNewSubject = async (newSubject: SubjectRequest) => {
-        const response = await addSubjectAction(newSubject);
-        if (response.success && response.data) {
-            setSubjects((prev) => {
-                if (!response.data) return prev;
-                const updatedSubjects = prev ? [...prev, response.data] : [response.data];
-                setStorageSubjects(updatedSubjects);
-                return updatedSubjects;
-            });
-            void pushSyncUpdate(UPDATE_DETAIL);
-            return response.data;
-        }
-        if (!response.success && (response as any).errorCode === "23505") {
-            errorToast(response.message || "שגיאה ביצירת פריט");
-            return undefined;
-        }
-        return undefined;
-    };
-
-    const updateSubject = async (subjectId: string, subjectData: SubjectRequest) => {
-        const response = await updateSubjectAction(subjectId, subjectData);
-        if (response.success && response.data) {
-            setSubjects(response.data as SubjectType[]);
-            setStorageSubjects(response.data as SubjectType[]);
-            void pushSyncUpdate(UPDATE_DETAIL);
-            return response.data;
-        }
-        return undefined;
-    };
-
-    const deleteSubject = async (schoolId: string, subjectId: string) => {
-        const response = await deleteSubjectAction(schoolId, subjectId);
-        if (response.success && response.subjects && response.annualSchedules) {
-            setSubjects(response.subjects);
-            setStorageSubjects(response.subjects);
-            setAnnualAfterDelete(response.annualSchedules);
-            void pushSyncUpdate(UPDATE_DETAIL);
-            return true;
-        }
-        return false;
-    };
-
     const addNewClass = async (newClass: ClassRequest) => {
         const response = await addClassAction(newClass);
         if (response.success && response.data) {
@@ -130,72 +86,34 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
                 setStorageClasses(updatedClasses);
                 return updatedClasses;
             });
-
-            if (newClass.activity) {
-                await addNewSubject({
-                    name: newClass.name,
-                    schoolId: newClass.schoolId,
-                    activity: true
-                });
-            }
-
-            void pushSyncUpdate(UPDATE_DETAIL);
+            void fetch(`/api/sync/push?type=detailsUpdate`, { method: "POST", keepalive: true });
             return response.data;
         }
         if (!response.success && (response as any).errorCode === "23505") {
-            errorToast(response.message || "שגיאה ביצירת פריט");
+            infoToast(response.message);
             return undefined;
         }
         return undefined;
     };
 
     const updateClass = async (classId: string, classData: ClassRequest) => {
-        const originalClass = classes?.find((c) => c.id === classId);
-
         const response = await updateClassAction(classId, classData);
         if (response.success && response.data) {
             setClasses(response.data as ClassType[]);
             setStorageClasses(response.data as ClassType[]);
-
-            if (originalClass?.activity && originalClass.name !== classData.name) {
-                const subjectToUpdate = subjects?.find(
-                    (s) => s.name === originalClass.name && s.activity === true
-                );
-
-                if (subjectToUpdate) {
-                    await updateSubject(subjectToUpdate.id, {
-                        ...subjectToUpdate,
-                        name: classData.name
-                    });
-                }
-            }
-
-            void pushSyncUpdate(UPDATE_DETAIL);
+            void fetch(`/api/sync/push?type=detailsUpdate`, { method: "POST", keepalive: true });
             return response.data;
         }
         return undefined;
     };
 
     const deleteClass = async (schoolId: string, classId: string) => {
-        const classToDelete = classes?.find((c) => c.id === classId);
-
         const response = await deleteClassAction(schoolId, classId);
         if (response.success && response.classes && response.annualSchedules) {
             setClasses(response.classes);
             setStorageClasses(response.classes);
             setAnnualAfterDelete(response.annualSchedules);
-
-            if (classToDelete?.activity && classToDelete.name) {
-                const subjectToDelete = subjects?.find(
-                    (s) => s.name === classToDelete.name && s.activity === true
-                );
-
-                if (subjectToDelete) {
-                    await deleteSubject(schoolId, subjectToDelete.id);
-                }
-            }
-
-            void pushSyncUpdate(UPDATE_DETAIL);
+            void fetch(`/api/sync/push?type=detailsUpdate`, { method: "POST", keepalive: true });
             return true;
         }
         return false;
@@ -210,11 +128,11 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
                 setStorageTeachers(updatedTeachers);
                 return updatedTeachers;
             });
-            void pushSyncUpdate(UPDATE_DETAIL);
+            void fetch(`/api/sync/push?type=detailsUpdate`, { method: "POST", keepalive: true });
             return response.data;
         }
         if (!response.success && (response as any).errorCode === "23505") {
-            errorToast(response.message || "שגיאה ביצירת פריט");
+            infoToast(response.message);
             return undefined;
         }
     };
@@ -224,7 +142,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         if (response.success && response.data) {
             setTeachers(response.data as TeacherType[]);
             setStorageTeachers(response.data as TeacherType[]);
-            void pushSyncUpdate(UPDATE_DETAIL);
+            void fetch(`/api/sync/push?type=detailsUpdate`, { method: "POST", keepalive: true });
             return response.data;
         }
         return undefined;
@@ -236,7 +154,49 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
             setTeachers(response.teachers);
             setStorageTeachers(response.teachers);
             setAnnualAfterDelete(response.annualSchedules);
-            void pushSyncUpdate(UPDATE_DETAIL);
+            void fetch(`/api/sync/push?type=detailsUpdate`, { method: "POST", keepalive: true });
+            return true;
+        }
+        return false;
+    };
+
+    const addNewSubject = async (newSubject: SubjectRequest) => {
+        const response = await addSubjectAction(newSubject);
+        if (response.success && response.data) {
+            setSubjects((prev) => {
+                if (!response.data) return prev;
+                const updatedSubjects = prev ? [...prev, response.data] : [response.data];
+                setStorageSubjects(updatedSubjects);
+                return updatedSubjects;
+            });
+            void fetch(`/api/sync/push?type=detailsUpdate`, { method: "POST", keepalive: true });
+            return response.data;
+        }
+        if (!response.success && (response as any).errorCode === "23505") {
+            infoToast(response.message);
+            return undefined;
+        }
+        return undefined;
+    };
+
+    const updateSubject = async (subjectId: string, subjectData: SubjectRequest) => {
+        const response = await updateSubjectAction(subjectId, subjectData);
+        if (response.success && response.data) {
+            setSubjects(response.data as SubjectType[]);
+            setStorageSubjects(response.data as SubjectType[]);
+            void fetch(`/api/sync/push?type=detailsUpdate`, { method: "POST", keepalive: true });
+            return response.data;
+        }
+        return undefined;
+    };
+
+    const deleteSubject = async (schoolId: string, subjectId: string) => {
+        const response = await deleteSubjectAction(schoolId, subjectId);
+        if (response.success && response.subjects && response.annualSchedules) {
+            setSubjects(response.subjects);
+            setStorageSubjects(response.subjects);
+            setAnnualAfterDelete(response.annualSchedules);
+            void fetch(`/api/sync/push?type=detailsUpdate`, { method: "POST", keepalive: true });
             return true;
         }
         return false;
