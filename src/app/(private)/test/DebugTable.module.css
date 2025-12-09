@@ -1,0 +1,222 @@
+.pageContainer {
+    padding: 20px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #f8f9fa;
+    /* Light grey background for the whole page */
+    font-family: var(--font-geist-sans), sans-serif;
+}
+
+.controls {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.controlButton {
+    padding: 8px 16px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.controlButton:hover {
+    background-color: #f0f0f0;
+}
+
+/* Specific button colors */
+.btnRed {
+    background-color: #FEE2E2;
+    border-color: #F87171;
+    color: #B91C1C;
+}
+
+.btnBlue {
+    background-color: #DBEAFE;
+    border-color: #60A5FA;
+    color: #1E40AF;
+}
+
+.btnGreen {
+    background-color: #D1FAE5;
+    border-color: #34D399;
+    color: #065F46;
+}
+
+.tableContainer {
+    flex: 1;
+    overflow: auto;
+    border-radius: 8px;
+    /* Optional: rounds the scroll container */
+    max-width: 100%;
+    max-height: 80vh;
+    padding-bottom: 20px;
+    /* Space for shadow/overflow */
+}
+
+.table {
+    border-collapse: separate;
+    border-spacing: 10px;
+    /* Gap between cells */
+    table-layout: fixed;
+    /* margin: 0 auto; Removed to align table to start/right */
+}
+
+/* Common Header Styles */
+.headerCell {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    text-align: center;
+    color: white;
+    font-weight: 500;
+    border-radius: 12px 12px 0 0;
+    /* Rounded top */
+    padding: 12px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    height: 60px;
+    vertical-align: middle;
+}
+
+/* Header Colors */
+.headerRed {
+    background-color: #F87171;
+}
+
+.headerBlue {
+    background-color: #60A5FA;
+}
+
+.headerGreen {
+    background-color: #34D399;
+}
+
+/* Specific override for the corner */
+.cornerCell {
+    background-color: gray !important;
+    box-shadow: none;
+    color: #888;
+    z-index: 20;
+    font-size: 14px;
+    vertical-align: bottom;
+}
+
+/* Row Number Column (Sticky Right) */
+.rowNumberCell {
+    position: sticky;
+    right: 0;
+    z-index: 5;
+    background-color: gray;
+    /* Matches page background to hide scrolling content */
+    vertical-align: top;
+    padding-top: 20px;
+    height: 60px;
+    box-sizing: border-box;
+    /* Ensure padding doesn't add to height if not global default */
+}
+
+.rowNumberBadge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 50%;
+    color: #666;
+    font-weight: bold;
+    margin: 0 auto;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Content Cells */
+.dataCell {
+    background-color: white;
+    border-radius: 12px;
+    /* Card look */
+    padding: 12px;
+    vertical-align: top;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eaeaea;
+    height: 60px;
+    /* Fixed height for consistency */
+    transition: transform 0.2s;
+}
+
+.dataCell:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.cellContent {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    height: 100%;
+    justify-content: space-between;
+}
+
+.cellHeader {
+    font-size: 12px;
+    color: #888;
+    display: flex;
+    justify-content: space-between;
+}
+
+.cellBody {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+}
+
+.cellFooter {
+    font-size: 12px;
+    color: #aaa;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* New classes for elements previously inline */
+.headerContentWrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    overflow: hidden;
+}
+
+.inputSelectWrapper {
+    flex: 1;
+    min-width: 0;
+}
+
+.trashIcon {
+    opacity: 0.7;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.cellTextarea {
+    width: 100%;
+    resize: none;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 4px;
+    font-family: inherit;
+    outline: none;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.cellContentInner {
+    width: 100%;
+    overflow: hidden;
+}
