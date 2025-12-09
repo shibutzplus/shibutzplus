@@ -5,37 +5,14 @@ import { teacherSchema } from "@/models/validation/teacher";
 import ListRow from "@/components/ui/list/ListRow/ListRow";
 import { generateSchoolUrl } from "@/utils";
 import { TeacherRoleValues } from "@/models/types/teachers";
-import useDeletePopup from "@/hooks/useDeletePopup";
-import useSubmit from "@/hooks/useSubmit";
-import messages from "@/resources/messages";
-import { PopupAction } from "@/context/PopupContext";
 
 type SubstituteRowProps = {
     teacher: TeacherType;
+    handleDeleteTeacher: (teacher: TeacherType) => void;
 };
 
-const SubstituteRow: React.FC<SubstituteRowProps> = ({ teacher }) => {
-    const { deleteTeacher, school, updateTeacher } = useMainContext();
-    const { handleOpenPopup } = useDeletePopup();
-
-    const { handleSubmitDelete } = useSubmit(
-        () => {},
-        messages.teachers.deleteSuccess,
-        messages.teachers.deleteError,
-        messages.teachers.invalid,
-    );
-
-    const handleDeleteTeacherFromState = async (teacherId: string) => {
-        if (!school?.id) return;
-        await handleSubmitDelete(school.id, teacherId, deleteTeacher);
-    };
-
-    const handleDeleteTeacher = (teacher: TeacherType) => {
-        handleOpenPopup(PopupAction.deleteTeacher, `האם למחוק את המורה ${teacher.name}`, () =>
-            handleDeleteTeacherFromState(teacher.id),
-        );
-    };
-
+const SubstituteRow: React.FC<SubstituteRowProps> = ({ teacher, handleDeleteTeacher }) => {
+    const { updateTeacher } = useMainContext();
     return (
         <ListRow
             item={teacher}
@@ -55,7 +32,7 @@ const SubstituteRow: React.FC<SubstituteRowProps> = ({ teacher }) => {
                 role: TeacherRoleValues.SUBSTITUTE as import("@/models/types/teachers").TeacherRole,
                 schoolId: teacher.schoolId,
             })}
-            hasLink={generateSchoolUrl(teacher.schoolId, teacher.id)}
+            link={generateSchoolUrl(teacher.schoolId, teacher.id)}
         />
     );
 };

@@ -1,0 +1,7 @@
+.hourCell {
+    border: var(--border-primary);
+    padding: 12px;
+    font-weight: bold;
+    text-align: center;
+    vertical-align: middle;
+}

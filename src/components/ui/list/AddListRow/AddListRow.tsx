@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Btn from "@/components/ui/buttons/Btn/Btn";
 import InputText from "@/components/ui/inputs/InputText/InputText";
 import Icons from "@/style/icons";
-import { errorToast } from "@/lib/toast";
+import { infoToast } from "@/lib/toast";
 import styles from "./AddListRow.module.css";
 
 // T is the shape of the data to add (e.g., { name: string, schoolId: string })
@@ -13,15 +13,12 @@ export type AddListRowProps<T> = {
         key: keyof T;
         placeholder: string;
         inputType?: string;
-        maxLength?: number;
     };
     initialValues: T;
     errorMessages?: { [field in keyof T]?: string };
     buttonLabel?: string;
     buttonIcon?: React.ReactNode;
     onSuccess?: () => void;
-    onInputChange?: (value: string) => void;
-    suppressErrorToast?: boolean;
 };
 
 function AddListRow<T extends Record<string, any>>({
@@ -33,27 +30,19 @@ function AddListRow<T extends Record<string, any>>({
     buttonLabel = "הוספה",
     buttonIcon = <Icons.plus />,
     onSuccess,
-    onInputChange,
-    suppressErrorToast = false,
 }: AddListRowProps<T>) {
     const [values, setValues] = useState<T>(initialValues);
     const [isLoading, setIsLoading] = useState(false);
     const [validationErrors, setValidationErrors] = useState<{ [K in keyof T]?: string }>({});
 
     const handleInputChange = (key: keyof T) => (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        setValues((prev) => ({ ...prev, [key]: value }));
-        setValidationErrors((prev) => ({ ...prev, [key]: undefined }));
-        if (onInputChange) {
-            onInputChange(value);
-        }
+        setValues((prev) => ({ ...prev, [key]: e.target.value }));
     };
 
     const handleSubmitAdd = async (e: React.MouseEvent) => {
         e.stopPropagation();
         setIsLoading(true);
         setValidationErrors({});
-        console.log("AddListRow: suppressErrorToast =", suppressErrorToast);
 
         try {
             const validationResult = schema.safeParse(values);
@@ -71,27 +60,20 @@ function AddListRow<T extends Record<string, any>>({
             if (response) {
                 setValues(initialValues);
                 if (onSuccess) onSuccess();
-                if (onInputChange) {
-                    onInputChange((initialValues[field.key] as string) || "");
-                }
             } else {
-                if (!suppressErrorToast) {
-                    errorToast(Object.values(errorMessages)[0] || "בעיה בהוספה");
-                }
+                infoToast(Object.values(errorMessages)[0] || "בעיה בהוספה");
             }
         } catch (error) {
             console.error(error);
-            if (!suppressErrorToast) {
-                errorToast(Object.values(errorMessages)[0] || "בעיה בהוספה");
-            }
+            infoToast(Object.values(errorMessages)[0] || "בעיה בהוספה");
         } finally {
             setIsLoading(false);
         }
     };
 
     return (
-        <div className={styles.addListRow}>
-            <div key={String(field.key)} className={styles.addListRowInput}>
+        <tr className={styles.trAddListRow}>
+            <td key={String(field.key)}>
                 <InputText
                     key={String(field.key)}
                     id={String(field.key)}
@@ -101,8 +83,7 @@ function AddListRow<T extends Record<string, any>>({
                     placeholder={field.placeholder}
                     error={validationErrors[field.key]}
                     type={field.inputType || "text"}
-                    maxLength={field.maxLength}
-                    style={{ minWidth: 200, width: "100%" }}
+                    style={{minWidth: 200, width: "100%"}}
                     onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
                         if (e.key === "Enter") {
                             e.preventDefault();
@@ -111,8 +92,8 @@ function AddListRow<T extends Record<string, any>>({
                         }
                     }}
                 />
-            </div>
-            <div className={styles.addListBtn}>
+            </td>
+            <td>
                 <Btn
                     text={buttonLabel}
                     onClick={handleSubmitAdd}
@@ -120,8 +101,8 @@ function AddListRow<T extends Record<string, any>>({
                     Icon={buttonIcon}
                     className={styles.smallBtn}
                 />
-            </div>
-        </div>
+            </td>
+        </tr>
     );
 }
 

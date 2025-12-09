@@ -1,0 +1,19 @@
+.teacherCell {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 8px;
+    margin: 5px 0;
+    padding: 5px;
+    box-sizing: content-box;
+}
+
+.subTeacherName {
+    font-weight: bold;
+}
+
+.missingSubTeacherName {
+    font-weight: bold;
+    color: red;
+}

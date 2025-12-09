@@ -1,5 +1,19 @@
-/* Desktop */
-@media (min-width: 1024px) {}
+/* Mobile 320px - 767px -- 812px */
 
-/* Large Desktop */
-@media (min-width: 1280px) {}
+/* Desktop */
+@media (min-width: 768px) {
+}
+
+/* Desktop */
+@media (min-width: 1280px) {
+}
+
+/*OPTIONAL*/
+
+/* Desktop Full HD 1920px - 2559px -- 1080px*/
+@media screen and (min-width: 1920px) {
+}
+
+/* Desktop 2K 2560px -- 1440px*/
+@media screen and (min-width: 2560px) {
+}

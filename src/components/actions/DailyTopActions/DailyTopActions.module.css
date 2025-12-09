@@ -1,0 +1,77 @@
+/* Mobile */
+.actionsContainer {
+    margin-right: 10px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0;
+}
+
+.selectContainer {
+    min-width: fit-content;
+    width: 220px;
+}
+
+.topButtonsContainer {
+    display: none;
+}
+
+.leftSide {
+    display: none;
+}
+
+.hideOnMobile {
+    display: none;
+}
+
+/* Desktop */
+@media (min-width: 768px) {
+    .actionsContainer {
+        margin-right: 0;
+        gap: 1em;
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+
+    .selectContainer {
+        min-width: fit-content;
+        width: 230px;
+    }
+
+    .topButtonsContainer {
+        display: flex;
+        gap: 1em;
+        align-items: center;
+        flex-wrap: nowrap;
+        height: 40px;
+        min-width: fit-content;
+        justify-content: flex-start;
+    }
+
+    .leftSide {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-inline-start: auto;
+    }
+
+    .hideOnMobile {
+        display: inline-flex;
+    }
+}
+
+/* Desktop large screens */
+@media (min-width: 1380px) {
+    .actionsContainer {
+        gap: 3em;
+    }
+
+    .topButtonsContainer {
+        gap: 1.5em;
+    }
+
+    .leftSide {
+        gap: 30px;
+    }
+}

@@ -1,40 +1,28 @@
 import React from "react";
 import styles from "./ReadOnlyHeader.module.css";
-import { DailyScheduleType } from "@/models/types/dailySchedule";
+import { AnnualTableColors } from "@/style/tableColors";
 
 type ReadOnlyHeaderProps = {
     trs: any[];
     emptyTrs?: number;
     textPlaceholder: (text: string) => string;
     hasHour?: boolean;
-    hasHeader?: boolean;
-    isInsidePanel?: boolean;
 };
 
-type Tr = {
-    title: string;
-    color?: string;
-    type?: DailyScheduleType;
-    teacherId?: string;
-};
-
-const ReadOnlyHeader: React.FC<ReadOnlyHeaderProps> = ({
-    trs,
-    emptyTrs = 0,
-    textPlaceholder,
-    hasHour = false,
-    hasHeader = false,
-    isInsidePanel = false,
-}) => {
+const ReadOnlyHeader: React.FC<ReadOnlyHeaderProps> = ({ trs, emptyTrs = 0, textPlaceholder, hasHour = false }) => {
     return (
-        <thead className={`${hasHeader ? styles.theadWithHeader : styles.theadWithoutHeader} ${isInsidePanel ? styles.theadInsidePanel : ""}`}>
+        <thead>
             <tr>
-                {hasHour ? <th className={styles.hourCol}>{/* "Hour" column */}</th> : null}
+                {hasHour ? <th className={styles.emptyTrHeader}>{/* "Hour" column */}</th> : null}
                 {Array.from({ length: emptyTrs }, (_, i) => i).map((i) => (
                     <th key={i} className={styles.emptyTrHeader}></th>
                 ))}
-                {trs.map((tr: any) => (
-                    <th key={tr} className={`${styles.trHeader} ${tr as Tr}`}>
+                {trs.map((tr: string) => (
+                    <th
+                        key={tr}
+                        className={styles.trHeader}
+                        style={{ backgroundColor: AnnualTableColors[trs.indexOf(tr)] }}
+                    >
                         {textPlaceholder(tr)}
                     </th>
                 ))}

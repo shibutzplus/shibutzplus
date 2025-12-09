@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./ActionBtn.module.css";
-import Loading from "@/components/loading/Loading/Loading";
+import Loading from "@/components/core/Loading/Loading";
 
 const ActionBtn: React.FC<{
     type?: string;

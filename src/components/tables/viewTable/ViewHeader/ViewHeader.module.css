@@ -1,0 +1,26 @@
+.hourHeader{
+  background:#f5f5f5;
+  font-weight:bold;
+  text-align:center;
+  border:1px solid #ccc;
+  min-width:64px;
+  padding:10px;
+}
+
+.dayHeader{
+  font-weight:bold;
+  text-align:center;
+  border:1px solid #ccc;
+  min-width:200px;
+}
+
+.clickable{
+  user-select:none;
+}
+.clickable:hover{
+  filter: brightness(0.92);
+  cursor: pointer;
+}
+.clickable:focus{
+  outline-offset: -2px;
+}

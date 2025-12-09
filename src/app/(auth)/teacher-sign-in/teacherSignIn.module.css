@@ -21,11 +21,21 @@
     margin-bottom: 10vh;
 }
 
-.formContainer {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+.formInner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 280px; /* אותו רוחב כמו הדרופדאון */
+  margin: 0 auto;
 }
+
+.schoolName {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
 
 .copyright {
     text-align: center;

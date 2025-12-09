@@ -3,18 +3,13 @@ import InputText from "../../../ui/inputs/InputText/InputText";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import EditableHeader from "../../../ui/table/EditableHeader/EditableHeader";
 import { errorToast } from "@/lib/toast";
-import messages from "@/resources/messages";
-import { ColumnType } from "@/models/types/dailySchedule";
-import { COLOR_BY_TYPE } from "@/models/constant/daily";
 
 type DailyEventHeaderProps = {
     columnId: string;
-    type: ColumnType;
 };
 
-const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, type }) => {
-    const { populateEventColumn, deleteColumn, mainDailyTable, selectedDate } =
-        useDailyTableContext();
+const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId }) => {
+    const { populateEventColumn, mainDailyTable, selectedDate } = useDailyTableContext();
 
     const selectedEventData =
         mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.headerEvent;
@@ -37,26 +32,15 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, type }) =
         }
     };
 
-    const deleteCol = async () => {
-        const response = await deleteColumn(columnId);
-        if (!response) {
-            errorToast(messages.dailySchedule.deleteError);
-        }
-    };
 
     return (
-        <EditableHeader
-            deleteLabel={selectedEventData || "האירוע"}
-            color={COLOR_BY_TYPE[type]}
-            deleteCol={deleteCol}
-        >
+        <EditableHeader columnId={columnId} deleteLabel={selectedEventData || "האירוע"}>
             <InputText
                 placeholder="כותרת האירוע"
                 onBlur={handleChange}
                 defaultValue={selectedEventData || ""}
                 backgroundColor="transparent"
                 hasBorder={false}
-                fontSize="18px"
             />
         </EditableHeader>
     );

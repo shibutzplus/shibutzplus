@@ -7,10 +7,10 @@
 .button {
   position: relative;
   height: 45px;
-  background-color: var(--button-background-color);
-  color: var(--button-color);
+  background-color: var(--button-bg);
+  color: var(--background);
   border: none;
-  border-radius: var(--border-radius-input);
+  border-radius: var(--btn-border-radius);
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
@@ -22,7 +22,7 @@
 }
 
 .button:hover {
-  background-color: var(--button-hover-background-color);
+  background-color: var(--button-hover-bg);
   transform: translateY(-1px);
 }
 
@@ -31,14 +31,14 @@
 }
 
 .button:disabled {
-  color: var(--button-disabled-color);
-  background-color: var(--button-disabled-background-color);
+  background-color: var(--button-disabled-bg);
   cursor: not-allowed;
+  opacity: 0.8;
 }
 
 .error {
   color: var(--error-color);
-  margin-top: var(--padding-top-desktop);
+  margin-top: 1rem;
   font-size: 0.9rem;
   text-align: center;
 }

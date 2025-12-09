@@ -1,8 +1,11 @@
-.container {
-  width: 100%;
+.content {
+  overflow: hidden;
+  display: flex;
+}
+
+.tableWrapper {
+  flex: 1;
   height: 100%;
-  margin: 0 auto;
-  box-sizing: border-box;
-  padding-top: var(--padding-top-desktop);
-  padding-bottom: var(--padding-bottom-desktop);
+  overflow: hidden;
+  box-shadow: var(--header-box-shadow);
 }

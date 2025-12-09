@@ -1,27 +1,26 @@
 .cellContent {
     width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
 }
 
-.innerCellContent {
+.innerCellContent{
     width: 100%;
-    gap: 10px;
-    height: var(--table-daily-cell-height);
-    background-color: var(--tab-color);
-    border-radius: var(--border-radius-cell);
-    padding: 15px;
-    box-sizing: border-box;
+    padding: 0 15px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    gap: 15px;
 }
 
 .classAndSubject {
     max-width: 200px;
     padding-inline: 10px;
+    text-overflow: clip;
     box-sizing: border-box;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
 }
 
 .teacherSelect {
@@ -29,6 +28,9 @@
     width: 100%;
 }
 
-.activityText {
-    color: var(--disabled-text-color);
+.emptyCell{
+    width: 100%;
+    height: 100%;
+    background-color: var(--empty-cell-color);
 }
+

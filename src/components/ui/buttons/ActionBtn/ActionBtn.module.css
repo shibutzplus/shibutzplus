@@ -1,31 +1,33 @@
+/* Mobile */
 .topButton {
-    width: 160px;
-    height: var(--input-height);
-    padding: 0.7rem 2px 0.7rem 0;
+    width: 150px;
+    height: 40px;
+    padding: 0.7rem 0;
     padding-left: 0;
-    color: var(--dark-text-color);
-    background-color: var(--top-color);
     border: var(--border-primary);
-    border-radius: 10px;
-    font-size: 14px;
+    border-radius: 8px;
+    font-size: 12px;
     font-weight: bold;
-    transition: all 0.1s ease;
+    transition: all 0.2s ease;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
+    color: var(--daily-btns-color);
 }
 
 .topButton:not(:disabled):hover {
-    transform: translateY(-1px);
-    background-color: var(--top-color-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--daily-btns-box-shadow);
     cursor: pointer;
 }
 
-@media (max-width: 470px) {
+/* Desktop */
+@media (min-width: 768px) {
     .topButton {
-        width: 130px;
-        font-size: 12px;
+        width: 150px;
+        padding-left: 5px;
+        font-size: 14px;
     }
 }

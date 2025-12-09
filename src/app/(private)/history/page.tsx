@@ -1,66 +1,97 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { NextPage } from "next";
+import { useSearchParams } from "next/navigation";
 import styles from "./history.module.css";
-import PreviewTable from "@/components/tables/previewTable/PreviewTable/PreviewTable";
-import { useHistoryTable } from "@/context/HistoryTableContext";
-import NotPublished from "@/components/empty/NotPublished/NotPublished";
-import Preloader from "@/components/ui/Preloader/Preloader";
-import { TeacherTableProvider } from "@/context/TeacherTableContext";
-import SlidingPanel from "@/components/ui/SlidingPanel/SlidingPanel";
-import TeacherTable from "@/components/tables/teacherScheduleTable/TeacherTable/TeacherTable";
-import { TeacherType } from "@/models/types/teachers";
+import PublishedSkeleton from "@/components/layout/skeleton/PublishedSkeleton/PublishedSkeleton";
+import TeacherMaterial from "@/components/popups/TeacherMaterial/TeacherMaterial";
+import ViewTable from "@/components/tables/viewTable/ViewTable/ViewTable";
+import { useMainContext } from "@/context/MainContext";
+import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
+import { DailyScheduleType } from "@/models/types/dailySchedule";
+import { errorToast } from "@/lib/toast";
+import messages from "@/resources/messages";
 
 const HistorySchedulePage: NextPage = () => {
-    const { mainDailyTable, selectedYearDate, isLoading } = useHistoryTable();
+    const { school } = useMainContext();
+    const searchParams = useSearchParams();
 
-    const [isPanelOpen, setIsPanelOpen] = useState<boolean>(false);
-    const [teacher, setTeacher] = useState<TeacherType>();
+    // Read date only from URL
+    const dateFromQuery = searchParams.get("date") || "";
 
-    const handleTeacherClick = async (teacher: TeacherType) => {
-        setTeacher(teacher);
-        setIsPanelOpen(true);
+    const [currentDateData, setCurrentDateData] = useState<DailyScheduleType[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isTeacherModalOpen, setIsTeacherModalOpen] = useState(false);
+    const [selectedTeacher, setSelectedTeacher] = useState<{ id?: string; name: string; date: string } | null>(null);
+
+    const fetchDailyScheduleData = async () => {
+        // Guard: do not flip loading off before prerequisites exist
+        if (!school?.id || !dateFromQuery) {
+            setCurrentDateData([]);
+            return;
+        }
+
+        try {
+            setIsLoading(true);
+            const response = await getDailyScheduleAction(school.id, dateFromQuery, { isPrivate: false });
+            if (response.success && response.data) {
+                setCurrentDateData(response.data);
+            } else {
+                setCurrentDateData([]);
+                errorToast(response.message || messages.dailySchedule.error);
+            }
+        } catch (error) {
+            console.error("Error fetching daily schedule:", error);
+            setCurrentDateData([]);
+            errorToast(messages.dailySchedule.error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
-    const handleClosePanel = () => {
-        setIsPanelOpen(false);
+    // Fetch only when both school.id and date exist
+    useEffect(() => {
+        if (!school?.id || !dateFromQuery) return;
+        fetchDailyScheduleData();
+    }, [dateFromQuery, school?.id]);
+
+    const handleTeacherClick = (teacherName: string, teacherId?: string) => {
+        const date = dateFromQuery || "";
+        setSelectedTeacher({ id: teacherId, name: teacherName, date });
+        setIsTeacherModalOpen(true);
     };
 
-    if (isLoading)
+    // Keep skeleton until prerequisites exist or loading finishes
+    if (isLoading || !school?.id || !dateFromQuery) {
         return (
-            <div
-                style={{
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                }}
-            >
-                <Preloader />
+            <div className={styles.loadingWrapper}>
+                <PublishedSkeleton />
+                <div className={styles.loader}></div>
             </div>
         );
+    }
 
     return (
-        <TeacherTableProvider>
-            <section className={styles.container}>
-                <PreviewTable
-                    mainDailyTable={mainDailyTable}
-                    selectedDate={selectedYearDate}
-                    EmptyTable={NotPublished}
+        <div className={styles.content}>
+            <div className={styles.tableWrapper}>
+                <ViewTable
+                    scheduleData={currentDateData}
+                    noScheduleTitle="אין נתונים להצגה"
+                    noScheduleSubTitle={["לא פורסמה מערכת עבור יום זה"]}
                     onTeacherClick={handleTeacherClick}
+                    isManager={true}
                 />
-            </section>
-            <SlidingPanel
-                isOpen={isPanelOpen}
-                onClose={handleClosePanel}
-                title={teacher?.name || ""}
-            >
-                {teacher ? (
-                    <TeacherTable teacher={teacher} selectedDate={selectedYearDate} isInsidePanel />
-                ) : null}
-            </SlidingPanel>
-        </TeacherTableProvider>
+            </div>
+            <TeacherMaterial
+                isOpen={isTeacherModalOpen}
+                onClose={() => setIsTeacherModalOpen(false)}
+                teacherName={selectedTeacher?.name || ""}
+                date={selectedTeacher?.date || ""}
+                teacherId={selectedTeacher?.id}
+                schoolId={school?.id}
+            />
+        </div>
     );
 };
 

@@ -1,0 +1,115 @@
+/* Mobile */
+.container {
+    padding: 0;
+    width: 100%;
+    height: auto;
+    display: block;
+    background-color: var(--school-section-bg);
+}
+
+.whiteBox {
+    background-color: var(--background);
+    width: 100%;
+    height: auto;
+    border: var(--border-primary);
+}
+
+.scheduleTable {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--background);
+    min-width: 800px;
+}
+
+.emptyTrHeader {
+    background-color: var(--table-headers-color);
+    border-left: var(--border-primary);
+    padding: 12px;
+    text-align: center;
+    width: var(--annual-table-min-col-width);
+}
+
+.trHeader {
+    padding: 12px;
+    min-width: var(--annual-table-min-col-width);
+    font-weight: 600;
+    border-left: var(--border-primary);
+}
+
+.thSkeleton,
+.tdSkeleton {
+    height: 20px;
+    background-color: var(--skeleton-input-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        background-color: var(--skeleton-input-color);
+    }
+
+    50% {
+        background-color: var(--skeleton-input-color-bright);
+    }
+}
+
+.tdSkeleton{
+    height: 38px;
+}
+
+.hourCell {
+    border: var(--border-primary);
+    padding: 12px;
+    font-weight: bold;
+    text-align: center;
+    width: 60px;
+    vertical-align: middle;
+}
+
+.scheduleCell {
+    position: relative;
+    padding: 8px;
+    border: var(--border-primary);
+    vertical-align: top;
+    min-width: var(--annual-table-min-col-width);
+    max-width: 0;
+    height: 80px;
+}
+
+.cellContent {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+    .whiteBox {
+        overflow-x: auto;
+    }
+
+    .whiteBox table {
+        min-width: 700px;
+        width: max-content;
+    }
+
+    .scheduleTable th:first-child,
+    .scheduleTable td:first-child {
+        width: 50px;
+        min-width: 50px;
+        max-width: 50px;
+    }
+
+    .scheduleTable th:not(:first-child),
+    .scheduleTable td:not(:first-child) {
+        width: 230px;
+        min-width: 200px;
+        max-width: 300px;
+    }
+}

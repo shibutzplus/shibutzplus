@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./RadioGroup.module.css";
 import { SelectOption } from "@/models/types";
-//NOT IN USE
+
 interface RadioGroupProps {
   label?: string;
   name: string;

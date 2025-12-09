@@ -1,17 +1,8 @@
 import React from "react";
-import Preloader from "@/components/ui/Preloader/Preloader";
+import PublishedSkeleton from "@/components/layout/skeleton/PublishedSkeleton/PublishedSkeleton";
 
-const SkeletonHistory: React.FC = () => {
-    return (
-        <div style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)'
-        }}>
-            <Preloader />
-        </div>
-    );
+const HistoryLoading = () => {
+    return <PublishedSkeleton />;
 };
 
-export default SkeletonHistory;
+export default HistoryLoading;

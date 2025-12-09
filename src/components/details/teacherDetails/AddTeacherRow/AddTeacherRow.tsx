@@ -5,11 +5,7 @@ import AddListRow from "@/components/ui/list/AddListRow/AddListRow";
 import { teacherSchema } from "@/models/validation/teacher";
 import { TeacherRoleValues } from "@/models/types/teachers";
 
-type AddTeacherRowProps = {
-    onSearch?: (value: string) => void;
-};
-
-const AddTeacherRow: React.FC<AddTeacherRowProps> = ({ onSearch }) => {
+const AddTeacherRow: React.FC = () => {
     const { school, addNewTeacher } = useMainContext();
 
     return (
@@ -25,13 +21,10 @@ const AddTeacherRow: React.FC<AddTeacherRowProps> = ({ onSearch }) => {
             field={{
                 key: "name",
                 placeholder: "לדוגמה: ישראל ישראלי",
-                maxLength: 20,
             }}
             initialValues={{ name: "" }}
             errorMessages={{ name: messages.teachers.createError }}
             buttonLabel="הוספה"
-            onInputChange={onSearch}
-            suppressErrorToast={true}
         />
     );
 };

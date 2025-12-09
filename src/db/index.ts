@@ -1,4 +1,5 @@
 import { drizzle, type NeonHttpDatabase } from "drizzle-orm/neon-http";
+import { neonConfig } from "@neondatabase/serverless";
 import * as schema from "./schema";
 import { sql, executeQuery } from "./connectionPool";
 
@@ -12,12 +13,10 @@ declare global {
 
 // Create (or reuse in dev) a single Drizzle instance with optimized configuration
 export const db: DB =
-  global.__db ?? drizzle({
-    client: sql,
-    schema,
-    // *** debug ***
-    //logger: process.env.NODE_ENV === "development"
-    // *** debug ***
+  global.__db ?? drizzle({ 
+    client: sql, 
+    schema, 
+    logger: process.env.NODE_ENV === "development"
   });
 
 // Dev hot-reload friendly caching

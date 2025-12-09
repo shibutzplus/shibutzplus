@@ -45,6 +45,12 @@ export type GetDailyScheduleResponse = ActionResponse & {
     data?: DailyScheduleType[];
 };
 
+export interface ScheduleColumn {
+    id: string;
+    type: ColumnType;
+    title: string;
+}
+
 export type HeaderCol = {
     headerTeacher?: TeacherType;
     headerEvent?: string;
@@ -63,7 +69,7 @@ export type DailyScheduleCell = {
 
 export type DailySchedule = {
     [day: string]: {
-        [columnId: string]: {
+        [header: string]: {
             [hour: string]: DailyScheduleCell;
         };
     };
@@ -95,32 +101,8 @@ export const ActivityValues = {
 export type ActivityOptions = (typeof ActivityValues)[keyof typeof ActivityValues];
 
 export const ColumnTypeValues = {
-    existingTeacher: "existingTeacher" as const,
-    missingTeacher: "missingTeacher" as const,
-    event: "event" as const,
-    empty: "empty" as const,
+  existingTeacher: "existingTeacher" as const,
+  missingTeacher: "missingTeacher" as const,
+  event: "event" as const,
 };
 export type ColumnType = keyof typeof ColumnTypeValues;
-
-///---
-
-export type TableColumn = {
-    columnId: string;
-    type: ColumnType;
-};
-
-
-
-// export type TableCell = {
-//     columnId: string;
-//     hour: string;
-//     classData?: ClassType;
-//     subjectData?: SubjectType;
-//     subTeacherData?: TeacherType;
-//     eventData?: string;
-//     teacherText?: string;
-// };
-
-
-// headerData?: HeaderCol;
-// cells: TableCell[];

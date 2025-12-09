@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { usePopup } from "@/context/PopupContext";
 import DeleteSvg from "@/components/ui/assets/deleteBtn";
-import Loading from "@/components/loading/Loading/Loading";
+import Loading from "@/components/core/Loading/Loading";
 import styles from "./DeletePopup.module.css";
 
 interface DeletePopupProps {
