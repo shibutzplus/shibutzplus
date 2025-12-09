@@ -1,15 +1,17 @@
 "use client";
 
-import React from "react";
-import { motion, AnimatePresence } from "motion/react";
+import React, { useMemo } from "react";
 import styles from "./DailyTable.module.css";
-import DailyCol from "../DailyCol/DailyCol";
-import HoursCol from "@/components/ui/table/HoursCol/HoursCol";
 import { TableRows } from "@/models/constant/table";
 import EmptyTable from "@/components/empty/EmptyTable/EmptyTable";
-import { DailySchedule } from "@/models/types/dailySchedule";
+import { DailySchedule, ColumnType } from "@/models/types/dailySchedule";
 import { useSortColumns } from "./useSortColumns";
 import { TeacherType } from "@/models/types/teachers";
+import DailyTeacherHeader from "../DailyTeacherHeader/DailyTeacherHeader";
+import DailyEventHeader from "../DailyEventHeader/DailyEventHeader";
+import DailyTeacherCell from "../DailyTeacherCell/DailyTeacherCell";
+import DailyEventCell from "../DailyEventCell/DailyEventCell";
+import { COLOR_BY_TYPE } from "@/models/constant/daily";
 
 type DailyTableProps = {
     mainDailyTable: DailySchedule;
@@ -26,33 +28,134 @@ const DailyTable: React.FC<DailyTableProps> = ({
     const tableColumns = schedule ? Object.keys(schedule) : [];
     const sortedTableColumns = useSortColumns(schedule, mainDailyTable, selectedDate, tableColumns);
 
+    const rows = Array.from({ length: TableRows }, (_, i) => i + 1);
+
+    // Calculate column types once
+    const columnTypes = useMemo(() => {
+        const types: Record<string, ColumnType> = {};
+        if (!schedule) return types;
+
+        sortedTableColumns.forEach(colId => {
+            const columnData = schedule[colId];
+            if (!columnData) return;
+
+            const colFirstObj =
+                columnData["1"] ||
+                Object.values(columnData).find((cell) => cell?.headerCol?.type);
+
+            types[colId] = colFirstObj?.headerCol?.type || "event";
+        });
+        return types;
+    }, [schedule, sortedTableColumns]);
+
+    const getColorClass = (type: ColumnType) => {
+        switch (type) {
+            case "existingTeacher":
+                return styles.headerBlue;
+            case "missingTeacher":
+                return styles.headerRed;
+            case "event":
+                return styles.headerGreen;
+            default:
+                return styles.headerBlue;
+        }
+    };
+
+
+    if (!schedule || Object.keys(schedule).length === 0) {
+        return <EmptyTable />;
+    }
+
     return (
-        <div className={styles.dailyTable}>
-            {schedule && Object.keys(schedule).length > 0 && <HoursCol hours={TableRows} />}
-            <AnimatePresence mode="popLayout">
-                {schedule && Object.keys(schedule).length > 0 ? (
-                    sortedTableColumns
-                        .filter((colId) => tableColumns.includes(colId))
-                        .map((colId) => (
-                            <motion.div
-                                key={colId}
-                                layout
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, scale: 0.9 }}
-                                transition={{ duration: 0.3 }}
+        <div className={styles.tableContainer}>
+            <table className={styles.table}>
+                <thead>
+                    <tr>
+                        {/* Sticky Row Number Column Header (Corner) */}
+                        <th
+                            className={`${styles.headerCell} ${styles.cornerCell}`}
+                            style={{ width: "44px", minWidth: "44px", right: 0 }}
+                        >
+                            <div className={`${styles.headerInner} ${styles.headerGray}`}></div>
+                        </th>
+
+                        {sortedTableColumns.map((colId) => {
+                            const type = columnTypes[colId] || "event";
+                            const headerColorClass = getColorClass(type);
+
+                            return (
+                                <th
+                                    key={colId}
+                                    className={styles.headerCell}
+                                    style={{
+                                        width: "var(--table-daily-col-width)",
+                                        minWidth: "var(--table-daily-col-width)",
+                                        maxWidth: "var(--table-daily-col-width)",
+                                        // padding: 0, 
+                                        overflow: "visible",
+                                    }}
+                                >
+                                    <div className={`${styles.headerInner} ${headerColorClass}`}>
+                                        {type === "event" ? (
+                                            <DailyEventHeader columnId={colId} type={type} />
+                                        ) : (
+                                            <DailyTeacherHeader
+                                                columnId={colId}
+                                                type={type}
+                                                onTeacherClick={onTeacherClick}
+                                            />
+                                        )}
+                                    </div>
+                                </th>
+                            );
+                        })}
+                    </tr>
+                </thead>
+                <tbody>
+                    {rows.map((row) => (
+                        <tr key={row}>
+                            <td
+                                className={styles.rowNumberCell}
+                                style={{ width: "44px", minWidth: "44px", right: 0 }}
                             >
-                                <DailyCol
-                                    columnId={colId}
-                                    column={mainDailyTable[selectedDate][colId]}
-                                    onTeacherClick={onTeacherClick}
-                                />
-                            </motion.div>
-                        ))
-                ) : (
-                    <EmptyTable />
-                )}
-            </AnimatePresence>
+                                <div className={styles.rowNumberBadge}>
+                                    {row}
+                                </div>
+                            </td>
+
+                            {sortedTableColumns.map((colId) => {
+                                const type = columnTypes[colId] || "event";
+                                const cellData = schedule[colId][row]; // row is the hour index
+
+                                return (
+                                    <td
+                                        key={`${colId}-${row}`}
+                                        className={styles.dataCell}
+                                        style={{
+                                            width: "var(--table-daily-col-width)",
+                                            minWidth: "var(--table-daily-col-width)",
+                                            maxWidth: "var(--table-daily-col-width)",
+                                            padding: 0, // Reset padding if the component needs full control
+                                        }}
+                                    >
+                                        <div style={{ height: '100%', padding: '12px' }}>
+                                            {type === "event" ? (
+                                                <DailyEventCell cell={cellData} columnId={colId} />
+                                            ) : (
+                                                <DailyTeacherCell
+                                                    cell={cellData}
+                                                    columnId={colId}
+                                                    type={type}
+                                                />
+                                            )}
+                                        </div>
+                                    </td>
+                                );
+                            })}
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
     );
 };

@@ -7,11 +7,12 @@ import { getDayNumberByDateString } from "@/utils/time";
 import { useMainContext } from "@/context/MainContext";
 import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
-import EditableHeader from "../../../ui/table/EditableHeader/EditableHeader";
 import { BrightTextColor, BrightTextColorHover } from "@/style/root";
-import { COLOR_BY_TYPE } from "@/models/constant/daily";
 import { TeacherType } from "@/models/types/teachers";
 import { useTeacherTableContext } from "@/context/TeacherTableContext";
+import styles from "../DailyTable/DailyTable.module.css";
+import useDeletePopup from "@/hooks/useDeletePopup";
+import Icons from "@/style/icons";
 
 type DailyTeacherHeaderProps = {
     columnId: string;
@@ -34,6 +35,7 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
     } = useDailyTableContext();
     const { fetchTeacherScheduleDate } = useTeacherTableContext();
     const [isLoading, setIsLoading] = useState(false);
+    const { handleOpenPopup } = useDeletePopup();
 
     const selectedTeacherData =
         mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.headerTeacher;
@@ -92,6 +94,13 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
         }
     };
 
+    const handleDeleteClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        const label = selectedTeacherData?.name || "המורה";
+        const msg = `האם למחוק את ${label}?`;
+        handleOpenPopup("deleteDailyCol", msg, handleDeleteColumn);
+    };
+
     const handleTeacherClick = async () => {
         if (selectedTeacherData?.name && onTeacherClick) {
             onTeacherClick(selectedTeacherData);
@@ -100,27 +109,31 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
     };
 
     return (
-        <EditableHeader
-            color={COLOR_BY_TYPE[type]}
-            deleteLabel={selectedTeacherData?.name || "המורה"}
-            deleteCol={handleDeleteColumn}
-            onEyeClick={handleTeacherClick}
-        >
-            <DynamicInputSelect
-                options={filteredTeacherOptions}
-                value={selectedTeacherData?.id || ""}
-                onChange={handleTeacherChange}
-                placeholder="בחירת מורה"
-                isSearchable
-                isDisabled={isLoading}
-                backgroundColor="transparent"
-                color={BrightTextColor}
-                colorHover={BrightTextColorHover}
-                placeholderColor={BrightTextColor}
-                fontSize="18px"
+        <div className={styles.headerContentWrapper}>
+            <Icons.delete
+                className={styles.trashIcon}
+                onClick={handleDeleteClick}
+                size={16}
+                title="מחיקת עמודה"
             />
-        </EditableHeader>
+            <div className={styles.inputSelectWrapper}>
+                <DynamicInputSelect
+                    options={filteredTeacherOptions}
+                    value={selectedTeacherData?.id || ""}
+                    onChange={handleTeacherChange}
+                    placeholder="בחירת מורה"
+                    isSearchable
+                    isDisabled={isLoading}
+                    backgroundColor="transparent"
+                    color={BrightTextColor}
+                    colorHover={BrightTextColorHover}
+                    placeholderColor={BrightTextColor}
+                    fontSize="18px"
+                />
+            </div>
+        </div>
     );
 };
 
 export default DailyTeacherHeader;
+
