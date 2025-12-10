@@ -6,7 +6,6 @@ import EmptyTable from "@/components/empty/EmptyTable/EmptyTable";
 import { DailySchedule, ColumnType } from "@/models/types/dailySchedule";
 import { useSortColumns } from "./useSortColumns";
 import { TeacherType } from "@/models/types/teachers";
-import { useDailyTableContext } from "@/context/DailyTableContext";
 import DailyTeacherHeader from "../DailyTeacherHeader/DailyTeacherHeader";
 import DailyEventHeader from "../DailyEventHeader/DailyEventHeader";
 import DailyTeacherCell from "../DailyTeacherCell/DailyTeacherCell";
@@ -20,12 +19,14 @@ type AnimatedHeaderWrapperProps = {
     width: number | undefined;
     headerColorClass: string;
     children: React.ReactNode;
+    id?: string;
 };
 
-const AnimatedHeaderWrapper: React.FC<AnimatedHeaderWrapperProps> = ({ colIndex, width, headerColorClass, children }) => {
+const AnimatedHeaderWrapper: React.FC<AnimatedHeaderWrapperProps> = React.memo(({ colIndex, width, headerColorClass, children, id }) => {
     const isAnimating = width !== undefined;
     return (
         <th
+            id={id}
             className={`${styles.headerCell} ${styles.regularHeaderCell}`}
             style={isAnimating ? {
                 width: `${width}px`,
@@ -46,7 +47,7 @@ const AnimatedHeaderWrapper: React.FC<AnimatedHeaderWrapperProps> = ({ colIndex,
             </motion.div>
         </th>
     );
-};
+});
 
 type AnimatedCellWrapperProps = {
     colIndex: number;
@@ -54,7 +55,7 @@ type AnimatedCellWrapperProps = {
     children: React.ReactNode;
 };
 
-const AnimatedCellWrapper: React.FC<AnimatedCellWrapperProps> = ({ colIndex, width, children }) => {
+const AnimatedCellWrapper: React.FC<AnimatedCellWrapperProps> = React.memo(({ colIndex, width, children }) => {
     const isAnimating = width !== undefined;
     return (
         <td
@@ -77,7 +78,7 @@ const AnimatedCellWrapper: React.FC<AnimatedCellWrapperProps> = ({ colIndex, wid
             </motion.div>
         </td>
     );
-};
+});
 
 
 // --- Main Properties ---
@@ -96,6 +97,31 @@ const DailyTable: React.FC<DailyTableProps> = ({
     const schedule = mainDailyTable[selectedDate];
     const tableColumns = schedule ? Object.keys(schedule) : [];
     const sortedTableColumns = useSortColumns(schedule, mainDailyTable, selectedDate, tableColumns);
+
+    const prevSortedColumnsRef = React.useRef<string[]>([]);
+
+    React.useEffect(() => {
+        // Compare current columns with previous to find the new one
+        if (prevSortedColumnsRef.current.length < sortedTableColumns.length) {
+            const newColumns = sortedTableColumns.filter(colId => !prevSortedColumnsRef.current.includes(colId));
+
+            // Only scroll if exactly one new column is added (avoids scrolling on initial load or bulk updates)
+            if (newColumns.length === 1) {
+                const newColId = newColumns[0];
+                const elementId = `col-${newColId}`;
+
+                // Small delay to ensure the DOM is updated
+                setTimeout(() => {
+                    const element = document.getElementById(elementId);
+                    if (element) {
+                        element.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+                    }
+                }, 100);
+            }
+        }
+
+        prevSortedColumnsRef.current = sortedTableColumns;
+    }, [sortedTableColumns]);
 
     const rows = Array.from({ length: TableRows }, (_, i) => i + 1);
 
@@ -159,6 +185,7 @@ const DailyTable: React.FC<DailyTableProps> = ({
                             return (
                                 <AnimatedHeaderWrapper
                                     key={colId}
+                                    id={`col-${colId}`}
                                     colIndex={colIndex}
                                     width={width}
                                     headerColorClass={headerColorClass}

@@ -1,4 +1,4 @@
-import { useState, useRef, useLayoutEffect } from "react";
+import { useState, useRef, useLayoutEffect, useCallback } from "react";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 
 export const useColumnAnimation = (sortedTableColumns: string[], selectedDate: string) => {
@@ -15,7 +15,7 @@ export const useColumnAnimation = (sortedTableColumns: string[], selectedDate: s
         return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
     };
 
-    const handleColumnAnimation = (colId: string, direction: "add" | "remove") => {
+    const handleColumnAnimation = useCallback((colId: string, direction: "add" | "remove") => {
         // Get duration from CSS variable or default to 300ms
         const cssDuration = typeof window !== 'undefined' ? getComputedStyle(document.documentElement).getPropertyValue('--daily-delete-duration-ms') : "300";
         const duration = parseInt(cssDuration) || 300;
@@ -59,7 +59,7 @@ export const useColumnAnimation = (sortedTableColumns: string[], selectedDate: s
         };
 
         requestAnimationFrame(animate);
-    };
+    }, [deleteColumn]);
 
     // Detect added columns
     useLayoutEffect(() => {
