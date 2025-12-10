@@ -11,7 +11,6 @@ import DailyTeacherHeader from "../DailyTeacherHeader/DailyTeacherHeader";
 import DailyEventHeader from "../DailyEventHeader/DailyEventHeader";
 import DailyTeacherCell from "../DailyTeacherCell/DailyTeacherCell";
 import DailyEventCell from "../DailyEventCell/DailyEventCell";
-import { COLOR_BY_TYPE } from "@/models/constant/daily";
 
 type DailyTableProps = {
     mainDailyTable: DailySchedule;
@@ -74,7 +73,6 @@ const DailyTable: React.FC<DailyTableProps> = ({
                         {/* Sticky Row Number Column Header (Corner) */}
                         <th
                             className={`${styles.headerCell} ${styles.cornerCell}`}
-                            style={{ width: "44px", minWidth: "44px", right: 0 }}
                         >
                             <div className={`${styles.headerInner} ${styles.headerGray}`}></div>
                         </th>
@@ -86,14 +84,7 @@ const DailyTable: React.FC<DailyTableProps> = ({
                             return (
                                 <th
                                     key={colId}
-                                    className={styles.headerCell}
-                                    style={{
-                                        width: "var(--table-daily-col-width)",
-                                        minWidth: "var(--table-daily-col-width)",
-                                        maxWidth: "var(--table-daily-col-width)",
-                                        // padding: 0, 
-                                        overflow: "visible",
-                                    }}
+                                    className={`${styles.headerCell} ${styles.regularHeaderCell}`}
                                 >
                                     <div className={`${styles.headerInner} ${headerColorClass}`}>
                                         {type === "event" ? (
@@ -116,7 +107,6 @@ const DailyTable: React.FC<DailyTableProps> = ({
                         <tr key={row}>
                             <td
                                 className={styles.rowNumberCell}
-                                style={{ width: "44px", minWidth: "44px", right: 0 }}
                             >
                                 <div className={styles.rowNumberBadge}>
                                     {row}
@@ -130,15 +120,9 @@ const DailyTable: React.FC<DailyTableProps> = ({
                                 return (
                                     <td
                                         key={`${colId}-${row}`}
-                                        className={styles.dataCell}
-                                        style={{
-                                            width: "var(--table-daily-col-width)",
-                                            minWidth: "var(--table-daily-col-width)",
-                                            maxWidth: "var(--table-daily-col-width)",
-                                            padding: 0, // Reset padding if the component needs full control
-                                        }}
+                                        className={`${styles.dataCell} ${styles.regularDataCell}`}
                                     >
-                                        <div style={{ height: '100%', padding: '12px' }}>
+                                        <div className={styles.cellContent}>
                                             {type === "event" ? (
                                                 <DailyEventCell cell={cellData} columnId={colId} />
                                             ) : (
