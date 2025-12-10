@@ -68,9 +68,11 @@
     --padding-width: 10px;
     --padding-width-mobile: 5px;
 
-    --table-daily-col-width: 250px;
+    --table-gray-color: #E1E1EC;
+
+    --table-daily-col-width: 240px;
     --table-daily-header-height: 50px;
-    --table-daily-cell-height: 85px;
+    --table-daily-cell-height: 93px;
 
     --daily-btn-width: 60px;
 

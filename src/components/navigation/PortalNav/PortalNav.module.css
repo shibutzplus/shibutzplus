@@ -35,8 +35,8 @@
     font-weight: 600;
 }
 
-/* <= 720px */
-@media (max-width: 720px) {
+/* <= 660px */
+@media (max-width: 660px) {
     .topBtn {
         width: 60px;
         border: var(--border-primary);

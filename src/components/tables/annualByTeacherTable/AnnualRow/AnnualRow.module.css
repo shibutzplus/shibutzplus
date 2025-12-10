@@ -2,6 +2,7 @@
     width: 30px;
     min-width: 30px;
     max-width: 30px;
+    background-color: var(--table-gray-color);
 }
 
 .emptyCell {

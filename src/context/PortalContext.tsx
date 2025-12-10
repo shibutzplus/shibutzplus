@@ -23,9 +23,18 @@ interface PortalContextType {
     handleRefreshDates: () => Promise<{ success: boolean; error: string; selected: string; options: SelectOption[] }>;
 
     isPublishLoading: boolean;
+    hasFetched: boolean;
     mainPublishTable: DailySchedule;
-    fetchPublishScheduleData: () => Promise<boolean>;
-    handlePublishedRefresh: () => Promise<void>;
+    fetchPublishScheduleData: (
+        overrideSchoolId?: string,
+        overrideDate?: string,
+        overrideTeacher?: TeacherType
+    ) => Promise<boolean>;
+    handlePublishedRefresh: (
+        overrideSchoolId?: string,
+        overrideDate?: string,
+        overrideTeacher?: TeacherType
+    ) => Promise<void>;
 }
 
 const PortalContext = createContext<PortalContextType | undefined>(undefined);
@@ -189,7 +198,7 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
 
 
 
-    const { fetchPublishScheduleData, handlePublishedRefresh, mainPublishTable, isPublishLoading } =
+    const { fetchPublishScheduleData, handlePublishedRefresh, mainPublishTable, isPublishLoading, hasFetched } =
         usePublished(schoolId, dateToFetch, teacher);
 
     const value: PortalContextType = {
@@ -203,6 +212,7 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
         handleRefreshDates,
 
         isPublishLoading,
+        hasFetched,
         mainPublishTable,
         handlePublishedRefresh,
         fetchPublishScheduleData,

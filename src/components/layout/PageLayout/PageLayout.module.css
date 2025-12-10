@@ -65,9 +65,6 @@
 
 /* < 440px */
 @media (max-width: 440px) {
-    .topBarSection {
-        padding: 0 var(--padding-width-mobile);
-    }
 
     .topNavRight {
         gap: 10px;

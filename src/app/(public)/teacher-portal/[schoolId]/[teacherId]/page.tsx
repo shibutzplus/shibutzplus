@@ -40,7 +40,7 @@ const TeacherPortalPage: NextPage = () => {
         }
     }, [selectedDate, teacher?.id, schoolId, datesOptions]);
 
-    if (!teacher || isDatesLoading)
+    if (!teacher)
         return (
             <div
                 style={{

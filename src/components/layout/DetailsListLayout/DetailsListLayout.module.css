@@ -6,7 +6,7 @@
     flex-direction: column;
     max-height: calc(100vh - var(--header-height) - 40px);
     margin: var(--padding-top-desktop) auto 20px;
-    background-color: var(--inner-background-color-bright);
+    background-color: var(--table-gray-color);
     border-radius: var(--border-radius-table);
     overflow: hidden;
 }
@@ -15,7 +15,7 @@
     display: flex;
     justify-content: center;
     height: var(--list-details-header-height);
-    background-color: var(--inner-background-color-bright);
+    background-color: var(--table-gray-color);
     color: var(--dark-text-color);
     flex-shrink: 0;
     width: 100%;
