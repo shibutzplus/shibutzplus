@@ -347,7 +347,7 @@ export const sortDailyTeachers = (
         ...(currentValue
             ? [
                 {
-                    label: "הסרת ממלא מקום",
+                    label: "מחיקת השיבוץ",
                     options: [{ value: EmptyValue, label: "🗑️" }],
                     hideCount: true,
                 },
