@@ -46,7 +46,7 @@ const PublishedPortalPage: NextPage = () => {
                 mainDailyTable={mainPublishTable}
                 selectedDate={selectedDate}
                 appType="public"
-                EmptyTable={NotPublished}
+                EmptyTable={(props) => <NotPublished {...props} text="המערכת לא פורסמה" />}
             />
         </section>
     );

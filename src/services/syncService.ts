@@ -27,9 +27,9 @@ export interface PollUpdatesParams {
 const pollUpdates = async (params: PollUpdatesParams): Promise<SyncPollResponse | null> => {
   try {
     // Skip polling when running in development (dont forget to do it also for push updates)
-    //if (process.env.NODE_ENV === "development") {
-    //  return null; // For debug comment out this block  
-    //}
+    if (process.env.NODE_ENV === "development") {
+      return null; // For debug comment out this block  
+    }
 
     const { since, channels } = params;
     const channelsParam = channels.join(",");
@@ -98,9 +98,9 @@ export const getChannelsForPath = (
 export const pushSyncUpdate = async (type: SyncChannel): Promise<void> => {
   try {
     // Skip push when running in development (dont forget to do it also for polling updates)
-    //if (process.env.NODE_ENV === "development") {
-    //  return; // For debug comment out this block
-    //}
+    if (process.env.NODE_ENV === "development") {
+      return; // For debug comment out this block
+    }
     void fetch(`/api/sync/push?type=${type}`, { method: "POST", keepalive: true });
   } catch (error) {
     console.error("Error pushing sync update:", error);

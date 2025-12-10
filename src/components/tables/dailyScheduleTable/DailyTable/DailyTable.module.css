@@ -79,10 +79,10 @@
     right: 0;
     z-index: 20;
     background-color: var(--table-gray-color);
-    vertical-align: middle;
+    vertical-align: top;
     height: var(--table-daily-cell-height);
     box-sizing: border-box;
-    padding: 0;
+    padding: 40px 0 0 0;
     width: 44px;
     min-width: 44px;
     border-radius: 0;
@@ -120,7 +120,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 8px;
     width: 100%;
     overflow: hidden;
 }
@@ -133,6 +132,11 @@
 .trashIcon {
     cursor: pointer;
     flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.trashIcon:hover {
+    color: var(--bright-text-color-hover);
 }
 
 .regularHeaderCell {
