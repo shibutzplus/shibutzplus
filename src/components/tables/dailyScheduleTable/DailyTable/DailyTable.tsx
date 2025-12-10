@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useRef, useLayoutEffect } from "react";
+import { motion } from "motion/react";
 import styles from "./DailyTable.module.css";
 import { TableRows } from "@/models/constant/table";
 import EmptyTable from "@/components/empty/EmptyTable/EmptyTable";
@@ -32,7 +33,9 @@ const DailyTable: React.FC<DailyTableProps> = ({
 
     // Manual animation state: map of colId -> current width (px)
     const [animatingWidths, setAnimatingWidths] = useState<Record<string, number>>({});
-    const prevColumnsRef = useRef<string[]>([]);
+    // Initialize ref with initial columns to prevent animation on mount
+    const prevColumnsRef = useRef<string[]>(sortedTableColumns);
+    const prevDateRef = useRef<string>(selectedDate);
 
     const handleColumnAnimation = (colId: string, direction: "add" | "remove") => {
         // Get duration from CSS variable or default to 300ms
@@ -80,21 +83,29 @@ const DailyTable: React.FC<DailyTableProps> = ({
 
     // Detect added columns
     useLayoutEffect(() => {
+        // If date changed, reset state without animating
+        if (prevDateRef.current !== selectedDate) {
+            prevDateRef.current = selectedDate;
+            prevColumnsRef.current = sortedTableColumns;
+            return;
+        }
+
         const prevCols = prevColumnsRef.current;
         const newCols = sortedTableColumns.filter(id => !prevCols.includes(id));
 
         if (newCols.length > 0) {
-            newCols.forEach(colId => {
-                // Only animate if it's not already being animated (prevent double triggers)
-                // We check if it's in schedule to avoid animating totally bogus IDs, 
-                // though sortedTableColumns comes from the schedule anyway.
-                handleColumnAnimation(colId, "add");
-            });
+            // Only animate width if we already had columns (i.e. not initial load)
+            // AND only if exactly one column is added (prevent bulk load animation)
+            if (prevCols.length > 0 && newCols.length === 1) {
+                newCols.forEach(colId => {
+                    handleColumnAnimation(colId, "add");
+                });
+            }
         }
 
         // Update ref
         prevColumnsRef.current = sortedTableColumns;
-    }, [sortedTableColumns]);
+    }, [sortedTableColumns, selectedDate]);
 
 
     // Calculate column types once
@@ -145,7 +156,7 @@ const DailyTable: React.FC<DailyTableProps> = ({
                             <div className={`${styles.headerInner} ${styles.headerGray}`}></div>
                         </th>
 
-                        {sortedTableColumns.map((colId) => {
+                        {sortedTableColumns.map((colId, colIndex) => {
                             const type = columnTypes[colId] || "event";
                             const headerColorClass = getColorClass(type);
                             const width = animatingWidths[colId];
@@ -165,7 +176,13 @@ const DailyTable: React.FC<DailyTableProps> = ({
                                     className={`${styles.headerCell} ${styles.regularHeaderCell}`}
                                     style={style}
                                 >
-                                    <div className={`${styles.headerInner} ${headerColorClass}`} style={isAnimating ? { width: `${width}px` } : undefined}>
+                                    <motion.div
+                                        className={`${styles.headerInner} ${headerColorClass}`}
+                                        style={isAnimating ? { width: `${width}px` } : undefined}
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ duration: 0.3, delay: colIndex * 0.02 }}
+                                    >
                                         {type === "event" ? (
                                             <DailyEventHeader columnId={colId} type={type} onDelete={isAnimating ? undefined : (id) => handleColumnAnimation(id, "remove")} />
                                         ) : (
@@ -176,7 +193,7 @@ const DailyTable: React.FC<DailyTableProps> = ({
                                                 onDelete={isAnimating ? undefined : (id) => handleColumnAnimation(id, "remove")}
                                             />
                                         )}
-                                    </div>
+                                    </motion.div>
                                 </th>
                             );
                         })}
@@ -193,7 +210,7 @@ const DailyTable: React.FC<DailyTableProps> = ({
                                 </div>
                             </td>
 
-                            {sortedTableColumns.map((colId) => {
+                            {sortedTableColumns.map((colId, colIndex) => {
                                 const type = columnTypes[colId] || "event";
                                 const columnData = schedule[colId];
                                 if (!columnData) return null;
@@ -215,7 +232,12 @@ const DailyTable: React.FC<DailyTableProps> = ({
                                         className={`${styles.dataCell} ${styles.regularDataCell}`}
                                         style={style}
                                     >
-                                        <div className={styles.cellContent}>
+                                        <motion.div
+                                            className={styles.cellContent}
+                                            initial={{ opacity: 0, x: -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ duration: 0.3, delay: colIndex * 0.02 }}
+                                        >
                                             {type === "event" ? (
                                                 <DailyEventCell cell={cellData} columnId={colId} />
                                             ) : (
@@ -226,7 +248,7 @@ const DailyTable: React.FC<DailyTableProps> = ({
                                                     type={type}
                                                 />
                                             )}
-                                        </div>
+                                        </motion.div>
                                     </td>
                                 );
                             })}
