@@ -15,8 +15,8 @@ const nowInSec = () => Math.floor(Date.now() / 1000);
 export const authOptions: NextAuthOptions = {
     providers: [
         Google({
-            clientId: process.env.GOOGLE_CLIENT_ID || "",
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+            clientId: process.env.GOOGLE_CLIENT_ID || "shibutzplus@gmail.com",
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET || "123456",
         }),
         CredentialsProvider({
             name: "Admin Login",
