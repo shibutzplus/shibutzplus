@@ -33,6 +33,11 @@
 
 .eyeIcon {
     font-size: 16px;
+    transition: opacity 0.2s ease;
+}
+
+.eyeIcon:hover {
+    color: var(--bright-text-color-hover);
 }
 
 .clickable {

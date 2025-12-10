@@ -30,7 +30,7 @@ export default function AnnualTeacherPageLayout({ children }: AnnualTeacherPageL
                             onChange={handleTeacherChange}
                             isSearchable={true}
                             isDisabled={isSaving || isLoading}
-                            placeholder="בחרו מורה..."
+                            placeholder="מורה..."
                             hasBorder
                         />
                     </div>

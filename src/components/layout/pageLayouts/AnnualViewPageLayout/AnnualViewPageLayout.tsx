@@ -35,7 +35,7 @@ export default function AnnualViewPageLayout({ children }: AnnualViewPageLayoutP
                             onChange={handleClassChange}
                             isSearchable={true}
                             isDisabled={isLoading}
-                            placeholder="בחרו כיתה/קבוצה..."
+                            placeholder="כיתה/קבוצה..."
                             hasBorder
                             isClearable
                         />
@@ -47,7 +47,7 @@ export default function AnnualViewPageLayout({ children }: AnnualViewPageLayoutP
                             onChange={handleTeacherChange}
                             isSearchable={true}
                             isDisabled={isLoading}
-                            placeholder="בחרו מורה..."
+                            placeholder="מורה..."
                             hasBorder
                             isClearable
                         />
@@ -63,7 +63,7 @@ export default function AnnualViewPageLayout({ children }: AnnualViewPageLayoutP
                             onChange={handleClassChange}
                             isSearchable={false}
                             isDisabled={isLoading}
-                            placeholder="בחרו כיתה/קבוצה..."
+                            placeholder="כיתה/קבוצה..."
                             hasBorder
                             isClearable
                         />
@@ -75,7 +75,7 @@ export default function AnnualViewPageLayout({ children }: AnnualViewPageLayoutP
                             onChange={handleTeacherChange}
                             isSearchable={true}
                             isDisabled={isLoading}
-                            placeholder="בחרו מורה..."
+                            placeholder="מורה..."
                             hasBorder
                             isClearable
                         />

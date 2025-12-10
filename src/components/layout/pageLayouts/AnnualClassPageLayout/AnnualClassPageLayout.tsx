@@ -30,7 +30,7 @@ export default function AnnualClassPageLayout({ children }: AnnualClassPageLayou
                             onChange={handleClassChange}
                             isSearchable={true}
                             isDisabled={isSaving || isLoading}
-                            placeholder="בחרו כיתה/קבוצה..."
+                            placeholder="כיתה/קבוצה..."
                             hasBorder
                         />
                     </div>
