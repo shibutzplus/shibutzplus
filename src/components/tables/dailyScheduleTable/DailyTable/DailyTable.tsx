@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useRef, useLayoutEffect } from "react";
+import React, { useMemo } from "react";
 import { motion } from "motion/react";
 import styles from "./DailyTable.module.css";
 import { TableRows } from "@/models/constant/table";
@@ -11,7 +11,76 @@ import DailyTeacherHeader from "../DailyTeacherHeader/DailyTeacherHeader";
 import DailyEventHeader from "../DailyEventHeader/DailyEventHeader";
 import DailyTeacherCell from "../DailyTeacherCell/DailyTeacherCell";
 import DailyEventCell from "../DailyEventCell/DailyEventCell";
+import { useColumnAnimation } from "./useColumnAnimation";
 
+// --- Wrapper Components ---
+
+type AnimatedHeaderWrapperProps = {
+    colIndex: number;
+    width: number | undefined;
+    headerColorClass: string;
+    children: React.ReactNode;
+};
+
+const AnimatedHeaderWrapper: React.FC<AnimatedHeaderWrapperProps> = ({ colIndex, width, headerColorClass, children }) => {
+    const isAnimating = width !== undefined;
+    return (
+        <th
+            className={`${styles.headerCell} ${styles.regularHeaderCell}`}
+            style={isAnimating ? {
+                width: `${width}px`,
+                minWidth: `${width}px`,
+                maxWidth: `${width}px`,
+                overflow: "hidden",
+                padding: 0
+            } : undefined}
+        >
+            <motion.div
+                className={`${styles.headerInner} ${headerColorClass}`}
+                style={isAnimating ? { width: `${width}px` } : undefined}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, delay: colIndex * 0.02 }}
+            >
+                {children}
+            </motion.div>
+        </th>
+    );
+};
+
+type AnimatedCellWrapperProps = {
+    colIndex: number;
+    width: number | undefined;
+    children: React.ReactNode;
+};
+
+const AnimatedCellWrapper: React.FC<AnimatedCellWrapperProps> = ({ colIndex, width, children }) => {
+    const isAnimating = width !== undefined;
+    return (
+        <td
+            className={`${styles.dataCell} ${styles.regularDataCell}`}
+            style={isAnimating ? {
+                width: `${width}px`,
+                minWidth: `${width}px`,
+                maxWidth: `${width}px`,
+                overflow: "hidden",
+                padding: 0
+            } : undefined}
+        >
+            <motion.div
+                className={styles.cellContent}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, delay: colIndex * 0.02 }}
+            >
+                {children}
+            </motion.div>
+        </td>
+    );
+};
+
+
+// --- Main Properties ---
 
 type DailyTableProps = {
     mainDailyTable: DailySchedule;
@@ -24,89 +93,14 @@ const DailyTable: React.FC<DailyTableProps> = ({
     selectedDate,
     onTeacherClick,
 }) => {
-    const { deleteColumn } = useDailyTableContext();
     const schedule = mainDailyTable[selectedDate];
     const tableColumns = schedule ? Object.keys(schedule) : [];
     const sortedTableColumns = useSortColumns(schedule, mainDailyTable, selectedDate, tableColumns);
 
     const rows = Array.from({ length: TableRows }, (_, i) => i + 1);
 
-    // Manual animation state: map of colId -> current width (px)
-    const [animatingWidths, setAnimatingWidths] = useState<Record<string, number>>({});
-    // Initialize ref with initial columns to prevent animation on mount
-    const prevColumnsRef = useRef<string[]>(sortedTableColumns);
-    const prevDateRef = useRef<string>(selectedDate);
-
-    const handleColumnAnimation = (colId: string, direction: "add" | "remove") => {
-        // Get duration from CSS variable or default to 300ms
-        const cssDuration = typeof window !== 'undefined' ? getComputedStyle(document.documentElement).getPropertyValue('--daily-delete-duration-ms') : "300";
-        const duration = parseInt(cssDuration) || 300;
-        const targetWidth = 250;
-        const step = targetWidth / (duration / 16.66);
-
-        // Initial setup
-        let currentWidth = direction === "add" ? 0 : targetWidth;
-        setAnimatingWidths((prev) => ({ ...prev, [colId]: currentWidth }));
-
-        const animate = () => {
-            if (direction === "add") {
-                currentWidth += step;
-                if (currentWidth >= targetWidth) {
-                    // Animation complete (Add)
-                    setAnimatingWidths((prev) => {
-                        const { [colId]: _, ...rest } = prev;
-                        return rest;
-                    });
-                    return;
-                }
-            } else {
-                currentWidth -= step;
-                if (currentWidth <= 0) {
-                    // Animation complete (Remove)
-                    setAnimatingWidths((prev) => {
-                        const { [colId]: _, ...rest } = prev;
-                        return rest;
-                    });
-                    // Trigger deletion only after animation finishes
-                    deleteColumn(colId);
-                    return;
-                }
-            }
-
-            // Update state for render
-            setAnimatingWidths((prev) => ({ ...prev, [colId]: Math.max(0, Math.min(targetWidth, currentWidth)) }));
-            requestAnimationFrame(animate);
-        };
-
-        requestAnimationFrame(animate);
-    };
-
-    // Detect added columns
-    useLayoutEffect(() => {
-        // If date changed, reset state without animating
-        if (prevDateRef.current !== selectedDate) {
-            prevDateRef.current = selectedDate;
-            prevColumnsRef.current = sortedTableColumns;
-            return;
-        }
-
-        const prevCols = prevColumnsRef.current;
-        const newCols = sortedTableColumns.filter(id => !prevCols.includes(id));
-
-        if (newCols.length > 0) {
-            // Only animate width if we already had columns (i.e. not initial load)
-            // AND only if exactly one column is added (prevent bulk load animation)
-            if (prevCols.length > 0 && newCols.length === 1) {
-                newCols.forEach(colId => {
-                    handleColumnAnimation(colId, "add");
-                });
-            }
-        }
-
-        // Update ref
-        prevColumnsRef.current = sortedTableColumns;
-    }, [sortedTableColumns, selectedDate]);
-
+    // Use Custom Hook for Animation
+    const { animatingWidths, handleColumnAnimation } = useColumnAnimation(sortedTableColumns, selectedDate);
 
     // Calculate column types once
     const columnTypes = useMemo(() => {
@@ -162,39 +156,24 @@ const DailyTable: React.FC<DailyTableProps> = ({
                             const width = animatingWidths[colId];
                             const isAnimating = width !== undefined;
 
-                            const style = isAnimating ? {
-                                width: `${width}px`,
-                                minWidth: `${width}px`,
-                                maxWidth: `${width}px`,
-                                overflow: "hidden",
-                                padding: 0
-                            } : undefined;
-
                             return (
-                                <th
+                                <AnimatedHeaderWrapper
                                     key={colId}
-                                    className={`${styles.headerCell} ${styles.regularHeaderCell}`}
-                                    style={style}
+                                    colIndex={colIndex}
+                                    width={width}
+                                    headerColorClass={headerColorClass}
                                 >
-                                    <motion.div
-                                        className={`${styles.headerInner} ${headerColorClass}`}
-                                        style={isAnimating ? { width: `${width}px` } : undefined}
-                                        initial={{ opacity: 0, x: -20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ duration: 0.3, delay: colIndex * 0.02 }}
-                                    >
-                                        {type === "event" ? (
-                                            <DailyEventHeader columnId={colId} type={type} onDelete={isAnimating ? undefined : (id) => handleColumnAnimation(id, "remove")} />
-                                        ) : (
-                                            <DailyTeacherHeader
-                                                columnId={colId}
-                                                type={type}
-                                                onTeacherClick={onTeacherClick}
-                                                onDelete={isAnimating ? undefined : (id) => handleColumnAnimation(id, "remove")}
-                                            />
-                                        )}
-                                    </motion.div>
-                                </th>
+                                    {type === "event" ? (
+                                        <DailyEventHeader columnId={colId} type={type} onDelete={isAnimating ? undefined : (id) => handleColumnAnimation(id, "remove")} />
+                                    ) : (
+                                        <DailyTeacherHeader
+                                            columnId={colId}
+                                            type={type}
+                                            onTeacherClick={onTeacherClick}
+                                            onDelete={isAnimating ? undefined : (id) => handleColumnAnimation(id, "remove")}
+                                        />
+                                    )}
+                                </AnimatedHeaderWrapper>
                             );
                         })}
                     </tr>
@@ -215,41 +194,25 @@ const DailyTable: React.FC<DailyTableProps> = ({
                                 const columnData = schedule[colId];
                                 if (!columnData) return null;
                                 const cellData = columnData[row]; // row is the hour index
-
                                 const width = animatingWidths[colId];
-                                const isAnimating = width !== undefined;
-                                const style = isAnimating ? {
-                                    width: `${width}px`,
-                                    minWidth: `${width}px`,
-                                    maxWidth: `${width}px`,
-                                    overflow: "hidden",
-                                    padding: 0
-                                } : undefined;
 
                                 return (
-                                    <td
+                                    <AnimatedCellWrapper
                                         key={`${colId}-${row}`}
-                                        className={`${styles.dataCell} ${styles.regularDataCell}`}
-                                        style={style}
+                                        colIndex={colIndex}
+                                        width={width}
                                     >
-                                        <motion.div
-                                            className={styles.cellContent}
-                                            initial={{ opacity: 0, x: -20 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            transition={{ duration: 0.3, delay: colIndex * 0.02 }}
-                                        >
-                                            {type === "event" ? (
-                                                <DailyEventCell cell={cellData} columnId={colId} />
-                                            ) : (
-                                                <DailyTeacherCell
-                                                    key={`${colId}-${row}-${cellData?.subTeacher?.id || cellData?.class?.id || 'empty'}`}
-                                                    cell={cellData}
-                                                    columnId={colId}
-                                                    type={type}
-                                                />
-                                            )}
-                                        </motion.div>
-                                    </td>
+                                        {type === "event" ? (
+                                            <DailyEventCell cell={cellData} columnId={colId} />
+                                        ) : (
+                                            <DailyTeacherCell
+                                                key={`${colId}-${row}-${cellData?.subTeacher?.id || cellData?.class?.id || 'empty'}`}
+                                                cell={cellData}
+                                                columnId={colId}
+                                                type={type}
+                                            />
+                                        )}
+                                    </AnimatedCellWrapper>
                                 );
                             })}
                         </tr>
