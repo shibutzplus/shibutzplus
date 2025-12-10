@@ -5,6 +5,20 @@
     overscroll-behavior: none;
 }
 
+@media (max-width: 500px) {
+    .tableContainer {
+        scrollbar-width: none;
+        /* Firefox */
+        -ms-overflow-style: none;
+        /* IE/Edge */
+    }
+
+    .tableContainer::-webkit-scrollbar {
+        display: none;
+        /* Chrome/Safari */
+    }
+}
+
 .scheduleTable {
     width: 100%;
     background-color: var(--inner-background-color);
