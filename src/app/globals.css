@@ -1,4 +1,5 @@
 :root {
+
     --background-color: #FCFDFF;
     --inner-background-color: #E1E1EA;
     --inner-background-color-bright: #F3F3F7;
@@ -29,19 +30,13 @@
     --dark-border-color: #CECECE;
 
     --preloader-color: #9D8CDB;
+    --error-color: #e53935;
+    --shadow-background: #00000080;
+    --loading-color: #575757;
+
     --existing-teacher-color: #80B0FF;
     --missing-teacher-color: #ED7A7A;
     --event-color: #6EBE6A;
-
-    --error-color: #e53935;
-
-    --shadow-background: #00000080;
-
-    --skeleton-header-color: #e0e0e0;
-    --skeleton-input-color: #ececec;
-    --skeleton-input-color-bright: #f2f0f0;
-
-    --loading-color: #575757;
 
     /* Button colors */
     --button-color: #FFFFFF;
@@ -73,21 +68,20 @@
     --padding-width: 10px;
     --padding-width-mobile: 5px;
 
-    --table-daily-col-width: 250px;
-    --table-daily-col-inner-width: calc(var(--table-daily-col-width) - 40px);
-    --table-daily-header-height: 45px;
-    --table-daily-cell-height: 110px;
-    --table-daily-full-height: calc(var(--table-daily-header-height) + var(--table-daily-cell-height) * var(--hours-in-day) + (5px * 11));
-    --table-daily-btn-width: 60px;
+    --table-gray-color: #E1E1EC;
+
+    --table-daily-col-width: 240px;
+    --table-daily-header-height: 50px;
+    --table-daily-cell-height: 93px;
+
+    --daily-btn-width: 60px;
 
     --table-annual-col-width: 200px;
     --table-annual-col-width-mobile: 230px;
     --table-annual-header-height: 40px;
     --table-annual-cell-height: 96px;
-    --table-annual-full-height: calc(var(--table-daily-header-height) + var(--table-daily-cell-height) * var(--hours-in-day) + (5px * 10));
 
     --list-details-header-height: 50px;
-    --list-details-full-height: calc(100vh - var(--header-height) - 1rem);
     --list-details-padding: 1rem;
     --list-details-row-padding: 7px 1rem;
     --list-details-row-padding-mobile: 5px 0.5rem;
@@ -98,6 +92,9 @@
     --table-teacher-cell-height: 120px;
 
     --table-cols-gap: 3px;
+
+    /* Animation settings */
+    --daily-delete-duration-ms: 300;
 }
 
 html,

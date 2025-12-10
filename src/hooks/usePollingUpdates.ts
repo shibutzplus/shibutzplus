@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { successToast, errorToast } from "@/lib/toast";
+import { successToast } from "@/lib/toast";
 import router from "@/routes";
 import { checkForUpdates, getChannelsForPath } from "@/services/syncService";
 
@@ -17,7 +17,9 @@ type UsePollingUpdatesReturn = {
  * Custom hook for polling server updates and managing update notifications
  * @returns Object containing hasUpdate state and resetUpdate function
  */
-export const usePollingUpdates = (): UsePollingUpdatesReturn => {
+export const usePollingUpdates = (
+    onRefreshRef?: { current: (() => Promise<void> | void) | null }
+): UsePollingUpdatesReturn => {
     const pathname = usePathname();
 
     // Alert state for incoming updates
@@ -43,9 +45,14 @@ export const usePollingUpdates = (): UsePollingUpdatesReturn => {
             const { hasUpdates, latestTs } = await checkForUpdates({ since, channels });
 
             if (mounted && hasUpdates) {
-                errorToast("נמצאו עדכונים חדשים, יש ללחוץ על רענון כדי לראותם", Infinity);
+                //successToast("המערכת היומית עודכנה...", 3000);
                 setHasUpdate(true);
                 setLastTs(latestTs);
+
+                // Trigger auto-refresh if callback provided
+                if (onRefreshRef?.current) {
+                    onRefreshRef.current();
+                }
             }
         };
 
@@ -67,7 +74,7 @@ export const usePollingUpdates = (): UsePollingUpdatesReturn => {
             if (id) clearInterval(id);
             document.removeEventListener("visibilitychange", handleVisibility);
         };
-    }, [pathname]);
+    }, [pathname, onRefreshRef]);
 
     // Reset polling state on path change as we already get new data from DB
     useEffect(() => {

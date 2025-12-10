@@ -7,6 +7,8 @@ import type { UserRole, UserGender } from "@/models/types/auth";
 import { registerNewGoogleUserAction } from "@/app/actions/POST/registerNewGoogleUserAction";
 import { getUserByEmailAction } from "@/app/actions/GET/getUserByEmailAction";
 
+import CredentialsProvider from "next-auth/providers/credentials";
+
 // Always take the current time, so each login gets a fresh session timer.
 const nowInSec = () => Math.floor(Date.now() / 1000);
 
@@ -16,6 +18,30 @@ export const authOptions: NextAuthOptions = {
             clientId: process.env.GOOGLE_CLIENT_ID || "",
             clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
         }),
+        CredentialsProvider({
+            name: "Admin Login",
+            credentials: {
+                email: { label: "Email", type: "email" },
+                password: { label: "Password", type: "password" },
+            },
+            async authorize(credentials) {
+                const adminEmail = process.env.NEXT_PUBLIC_POWER_USER_EMAIL || "";
+                const adminPassword = process.env.SYSTEM_PASSWORD || "";
+
+                if (credentials?.email === adminEmail && credentials?.password === adminPassword) {
+                    const response = await getUserByEmailAction(adminEmail);
+                    if (response.success && response.data) {
+                        return {
+                            id: response.data.id,
+                            email: response.data.email,
+                            name: response.data.name,
+                            image: "",
+                        };
+                    }
+                }
+                return null;
+            },
+        }),
     ],
     session: {
         strategy: "jwt",
@@ -23,6 +49,8 @@ export const authOptions: NextAuthOptions = {
     },
     callbacks: {
         async signIn({ user, account, profile }) {
+            if (account?.provider === "credentials") return true;
+
             if (account?.provider === "google") {
                 const email = typeof profile?.email === "string" ? profile.email : undefined;
                 const name = typeof profile?.name === "string" ? profile.name : undefined;

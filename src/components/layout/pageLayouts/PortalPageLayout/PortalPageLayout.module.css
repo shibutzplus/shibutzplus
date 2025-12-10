@@ -23,33 +23,6 @@
     text-overflow: ellipsis;
 }
 
-.refreshContainer {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #555;
-}
-
-.refreshAlert {
-    color: rgba(255, 0, 0, 0.566);
-    animation: blink 1.5s infinite;
-}
-
-@keyframes blink {
-    0% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.5;
-    }
-
-    100% {
-        opacity: 1;
-    }
-}
-
 /* <= 470px */
 @media (max-width: 470px) {
 
@@ -58,5 +31,12 @@
         width: fit-content;
         min-width: 0;
         text-overflow: unset;
+    }
+}
+
+/* <= 360px */
+@media (max-width: 360px) {
+    .navContainer {
+        display: none;
     }
 }

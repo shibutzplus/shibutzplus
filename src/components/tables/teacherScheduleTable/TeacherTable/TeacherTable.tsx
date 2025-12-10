@@ -22,7 +22,7 @@ const TeacherTable: React.FC<TeacherTableProps> = ({ teacher, selectedDate, only
     const { mainPortalTable, isPortalLoading, hasFetched } = useTeacherTableContext();
     const dayTable = selectedDate ? mainPortalTable[selectedDate] : undefined;
 
-    if (!hasFetched || isPortalLoading)
+    if (!hasFetched)
         return (
             <div className={styles.loaderContainer}>
                 <Preloader />

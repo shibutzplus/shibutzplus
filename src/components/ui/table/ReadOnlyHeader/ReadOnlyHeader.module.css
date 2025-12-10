@@ -30,13 +30,13 @@
     color: var(--dark-text-color);
     font-weight: 600;
     font-size: 18px;
-    background-color: #E1E1EA;
+    background-color: var(--table-gray-color);
 }
 
 .hourCol {
     border-top-right-radius: 40px;
     border-top-left-radius: 40px;
-    background-color: var(--inner-background-color);
+    background-color: var(--table-gray-color);
     width: 30px;
     min-width: 30px;
     max-width: 30px;

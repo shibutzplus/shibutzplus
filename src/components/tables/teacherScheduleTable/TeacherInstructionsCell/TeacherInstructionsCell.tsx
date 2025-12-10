@@ -28,7 +28,7 @@ const TeacherInstructionsCell: React.FC<TeacherInstructionsCellProps> = ({
     useEffect(() => {
         if (!row) return;
         setInstructions(row.instructions || "");
-    }, [row]);
+    }, [row?.DBid, row?.instructions]);
 
     const handleChange = async (html: string) => {
         if (!row || !selectedDate) return;

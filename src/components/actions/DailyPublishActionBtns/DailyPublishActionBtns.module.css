@@ -2,11 +2,11 @@
     display: flex;
     align-items: center;
     gap: 15px;
-    --table-daily-btn-width: 60px;
+    --daily-btn-width: 60px;
 }
 
 .topNavBtnContainer button {
-    width: var(--table-daily-btn-width) !important;
+    width: var(--daily-btn-width) !important;
 }
 
 /* override generic button rule */
@@ -47,7 +47,7 @@
 
 @media (max-width: 505px) {
     .topNavBtnContainer .publishBtn {
-        width: var(--table-daily-btn-width) !important;
+        width: var(--daily-btn-width) !important;
         padding: 0;
         margin-left: 0;
     }

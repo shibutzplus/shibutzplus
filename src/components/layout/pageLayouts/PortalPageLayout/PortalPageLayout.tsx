@@ -6,9 +6,6 @@ import { usePortalContext } from "@/context/PortalContext";
 import PortalNav from "@/components/navigation/PortalNav/PortalNav";
 import { greetingTeacher } from "@/utils";
 import { AUTO_SWITCH_TIME, getTodayDateString, getTomorrowDateString } from "@/utils/time";
-import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
-
-import Icons from "@/style/icons";
 import { usePollingUpdates } from "@/hooks/usePollingUpdates";
 import { usePathname } from "next/navigation";
 import router from "@/routes";
@@ -25,20 +22,13 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
     const {
         teacher,
         selectedDate,
-        isDatesLoading,
         handleRefreshDates,
         handlePublishedRefresh,
-        isPublishLoading,
-        datesOptions,
     } = usePortalContext();
-    const { isPortalLoading, handlePortalRefresh } = useTeacherTableContext();
-    const { hasUpdate, resetUpdate } = usePollingUpdates();
+    const { handlePortalRefresh } = useTeacherTableContext();
+    const refreshRef = React.useRef<(() => Promise<void>) | null>(null);
+    const { resetUpdate } = usePollingUpdates(refreshRef);
     const isRegularTeacher = teacher?.role === TeacherRoleValues.REGULAR;
-
-    // Check if we switch "Tomorrow"
-    const isLoading = pathname.includes(router.teacherPortal.p)
-        ? isPortalLoading || isDatesLoading
-        : isPublishLoading || isDatesLoading;
 
     const handleRefresh = async () => {
         const res = await handleRefreshDates();
@@ -50,14 +40,15 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
 
         if (pathname.includes(router.teacherPortal.p)) {
             if (isValidDate) await handlePortalRefresh(teacher, effectiveDate);
+        } else if (pathname.includes(router.publishedPortal.p)) {
+            if (isValidDate) await handlePublishedRefresh(undefined, effectiveDate, undefined);
         }
-        // For School Portal (publish-portal), the change in selectedDate (via context)
-        // will trigger the useEffect there to refetch. Accessing handlePublishedRefresh here
-        // would use stale "dateToFetch" from closure since confirm hasn't re-rendered yet.
-
         // reset update badge after successful refresh
         resetUpdate();
     };
+
+    // Keep the ref updated with the latest handleRefresh
+    refreshRef.current = handleRefresh;
 
     // -- Auto Refresh at 16:00 -- //
     React.useEffect(() => {
@@ -109,7 +100,7 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
         }
 
         const isTeacherPortal = pathname.includes(router.teacherPortal.p);
-        const baseTitle = isTeacherPortal ? "המערכת שלך" : "המערכת";
+        const baseTitle = isTeacherPortal ? "המערכת שלך" : "מערכת בית הספר";
 
         return (
             <div className={styles.titleContainer}>
@@ -126,22 +117,14 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
             HeaderRightActions={
                 <>
                     <h3 className={styles.greetingAndName}>{getTitle()}</h3>
-
-                    <div
-                        className={`${styles.refreshContainer} ${hasUpdate ? styles.refreshAlert : ""}`}
-                    >
-                        <IconBtn
-                            Icon={<Icons.refresh size={26} />}
-                            onClick={handleRefresh}
-                            disabled={isLoading}
-                            isLoading={isLoading}
-                            title="בדקו אם יש עדכונים במערכת השעות"
-                        />
-                    </div>
                 </>
             }
             HeaderLeftActions={
-                !teacher || isRegularTeacher ? <PortalNav /> : null
+                !teacher || isRegularTeacher ? (
+                    <div className={styles.navContainer}>
+                        <PortalNav />
+                    </div>
+                ) : null
             }
             contentClassName=""
         >

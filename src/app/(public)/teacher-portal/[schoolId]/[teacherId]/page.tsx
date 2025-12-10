@@ -8,7 +8,7 @@ import { useParams, useRouter } from "next/navigation";
 import router from "@/routes";
 import TeacherTable from "@/components/tables/teacherScheduleTable/TeacherTable/TeacherTable";
 import { useTeacherTableContext } from "@/context/TeacherTableContext";
-import TeacherPortalSkeleton from "@/components/loading/skeleton/TeacherPortalSkeleton/TeacherPortalSkeleton";
+import Preloader from "@/components/ui/Preloader/Preloader";
 
 import NotPublished from "@/components/empty/NotPublished/NotPublished";
 
@@ -40,7 +40,19 @@ const TeacherPortalPage: NextPage = () => {
         }
     }, [selectedDate, teacher?.id, schoolId, datesOptions]);
 
-    if (!teacher || isDatesLoading) return <TeacherPortalSkeleton />;
+    if (!teacher)
+        return (
+            <div
+                style={{
+                    position: "absolute",
+                    top: "40%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                }}
+            >
+                <Preloader />
+            </div>
+        );
 
     if (!isValidDate) {
         return (

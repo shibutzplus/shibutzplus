@@ -50,7 +50,10 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
         teacher?: TeacherType,
         selectedDate?: string,
     ) => {
-        if (!teacher || !selectedDate) return false;
+        if (!teacher || !selectedDate) {
+            setHasFetched(true);
+            return false;
+        }
         try {
             setIsPortalLoading(true);
             const response = await getTeacherFullScheduleAction(teacher.id, selectedDate);

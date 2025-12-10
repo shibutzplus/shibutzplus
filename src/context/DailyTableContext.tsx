@@ -218,8 +218,21 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         const prevSchedule = { ...mainDailyTable };
 
         const updatedSchedule = { ...mainDailyTable };
+        const columnToDelete = updatedSchedule[selectedDate]?.[columnId];
+
+        // Check if there is a header event or teacher. If so, we assume the column exists in DB.
+        // We check the first row ("1") for header info as it's the standard location for headerCol in this implementation.
+        const headerCol = columnToDelete?.["1"]?.headerCol;
+        const hasSavedData =
+            !!headerCol?.headerEvent || !!headerCol?.headerTeacher;
+
         delete updatedSchedule[selectedDate]?.[columnId];
         setMainAndStorageTable(updatedSchedule);
+
+        // If no data was saved to DB, we don't need to call the API
+        if (!hasSavedData) {
+            return true;
+        }
 
         try {
             const response = await deleteDailyColumnAction(school.id, columnId, selectedDate);
