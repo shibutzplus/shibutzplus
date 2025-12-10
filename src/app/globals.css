@@ -1,9 +1,5 @@
 :root {
 
-    /* ToRemove */
-    --table-daily-full-height: calc(var(--table-daily-header-height) + var(--table-daily-cell-height) * var(--hours-in-day) + (5px * 11));
-    /* ToRemove */
-
     --background-color: #FCFDFF;
     --inner-background-color: #E1E1EA;
     --inner-background-color-bright: #F3F3F7;
@@ -96,7 +92,7 @@
     --table-cols-gap: 3px;
 
     /* Animation settings */
-    --daily-delete-duration-ms: 200;
+    --daily-delete-duration-ms: 300;
 }
 
 html,

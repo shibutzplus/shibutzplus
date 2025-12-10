@@ -43,11 +43,6 @@ export const useColumnAnimation = (sortedTableColumns: string[], selectedDate: s
                         return rest;
                     });
                 } else {
-                    setAnimatingWidths((prev) => {
-                        const { [colId]: _, ...rest } = prev;
-                        return rest;
-                    });
-                    // Trigger deletion only after animation finishes
                     deleteColumn(colId);
                 }
                 return;
