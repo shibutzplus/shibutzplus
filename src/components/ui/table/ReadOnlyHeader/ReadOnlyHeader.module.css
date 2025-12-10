@@ -19,7 +19,7 @@
     top: calc(var(--padding-top-desktop) * -1);
     left: 0;
     width: 100%;
-    height: calc(var(--padding-top-desktop) * 2);
+    height: var(--padding-top-desktop);
     background-color: var(--background-color);
     z-index: -1;
 }
@@ -33,7 +33,7 @@
     background-color: var(--table-gray-color);
 }
 
-.hourCol {
+.topHourCellCol {
     border-top-right-radius: 40px;
     border-top-left-radius: 40px;
     background-color: var(--table-gray-color);
@@ -51,8 +51,52 @@
 
 .trHeader:nth-child(3) {
     border-top-right-radius: var(--border-radius-table);
+    background-color: transparent !important;
+    position: relative;
+}
+
+.trHeader:nth-child(3)::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 30px;
+    height: 30px;
+    background-color: var(--background-color);
+    z-index: -2;
+}
+
+.trHeader:nth-child(3)::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: var(--table-gray-color);
+    border-top-right-radius: var(--border-radius-table);
+    z-index: -1;
 }
 
 .trHeader:last-child {
     border-top-left-radius: var(--border-radius-table);
+    background-color: transparent !important;
+    position: relative;
+}
+
+.trHeader:last-child::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 30px;
+    height: 30px;
+    background-color: var(--background-color);
+    z-index: -2;
+}
+
+.trHeader:last-child::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: var(--table-gray-color);
+    border-top-left-radius: var(--border-radius-table);
+    z-index: -1;
 }

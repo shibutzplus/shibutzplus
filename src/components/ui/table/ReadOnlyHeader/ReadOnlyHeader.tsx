@@ -29,7 +29,7 @@ const ReadOnlyHeader: React.FC<ReadOnlyHeaderProps> = ({
     return (
         <thead className={`${hasHeader ? styles.theadWithHeader : styles.theadWithoutHeader} ${isInsidePanel ? styles.theadInsidePanel : ""}`}>
             <tr>
-                {hasHour ? <th className={styles.hourCol}>{/* "Hour" column */}</th> : null}
+                {hasHour ? <th className={styles.topHourCellCol}>{/* "Hour" column */}</th> : null}
                 {Array.from({ length: emptyTrs }, (_, i) => i).map((i) => (
                     <th key={i} className={styles.emptyTrHeader}></th>
                 ))}
