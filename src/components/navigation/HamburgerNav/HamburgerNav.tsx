@@ -199,7 +199,12 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
         onClose();
     };
 
-    const teacher = getStorageTeacher();
+    const [teacher, setTeacher] = React.useState<any>(null);
+
+    useEffect(() => {
+        setTeacher(getStorageTeacher());
+    }, []);
+
     const isSubstituteTeacher = teacher?.role === TeacherRoleValues.SUBSTITUTE;
 
     const displayedGroups = linkGroups

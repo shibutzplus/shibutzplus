@@ -56,7 +56,7 @@
 }
 
 .headerGray {
-    background-color: var(--inner-background-color);
+    background-color: var(--table-gray-color);
 }
 
 /* Row Number Column (Sticky Right) */
@@ -64,7 +64,7 @@
     position: sticky;
     right: 0;
     z-index: 20;
-    background-color: var(--inner-background-color);
+    background-color: var(--table-gray-color);
     vertical-align: middle;
     height: var(--table-daily-cell-height);
     box-sizing: border-box;

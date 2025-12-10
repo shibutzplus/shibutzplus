@@ -1,10 +1,11 @@
-/* < 600px */
+/* > 600px */
 .hoursColumn {
     width: 30px;
     min-width: 30px;
     max-width: 30px;
     padding: 0;
     margin: 0;
+    background-color: var(--table-gray-color);
 }
 
 .emptyCell {
@@ -25,29 +26,27 @@
     font-size: 14px;
     font-weight: 600;
     color: var(--dark-text-color);
-    background-color: var(--top-color);
+    background-color: white;
     border-radius: 50%;
     margin: auto;
 }
 
 .scheduleDetailsCell {
     position: relative;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
+    padding-right: 4px;
+    padding-bottom: 5px;
+    box-sizing: border-box;
+    width: var(--table-teacher-details-col-width);
+    display: table-cell;
 }
 
-/* Mobile First: Default width is 100% and has padding-bottom */
 .scheduleInstructionsCell {
     position: relative;
     padding-left: 4px;
     padding-right: 4px;
-    padding-bottom: 20px;
     box-sizing: border-box;
-    width: 100%;
+    width: 85%;
+    padding-bottom: 5px;
 }
 
 .scheduleCell {
@@ -67,35 +66,38 @@
 }
 
 .mobileDetails {
-    display: block;
-    width: 100%;
-    margin-bottom: 5px;
+    display: none;
 }
 
 .desktopOnly {
-    display: none !important;
+    display: table-cell !important;
 }
 
-/* > 600px */
-@media (min-width: 601px) {
-    .desktopOnly {
-        display: table-cell !important;
-    }
+/* < 600px */
+@media (max-width: 600px) {
 
-    .mobileDetails {
-        display: none;
+    .scheduleDetailsCell {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        padding: 0;
     }
 
     .scheduleInstructionsCell {
-        width: 85%;
-        padding-bottom: 5px;
+        width: auto;
+        padding-bottom: 20px;
     }
 
-    .scheduleDetailsCell {
-        display: table-cell;
-        padding-right: 4px;
-        padding-bottom: 5px;
-        box-sizing: border-box;
-        width: var(--table-teacher-details-col-width);
+    .mobileDetails {
+        display: block;
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+    .desktopOnly {
+        display: none !important;
     }
 }

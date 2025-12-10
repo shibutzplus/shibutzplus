@@ -17,13 +17,14 @@ const PublishedPortalPage: NextPage = () => {
         isPublishLoading,
         fetchPublishScheduleData,
         isDatesLoading,
+        hasFetched,
     } = usePortalContext();
 
     useEffect(() => {
         fetchPublishScheduleData();
     }, [selectedDate, teacher?.id, schoolId]);
 
-    if (isDatesLoading || isPublishLoading) {
+    if (!hasFetched) {
         return (
             <div style={{ position: "relative", width: "100%", height: "100%" }}>
                 <Preloader
