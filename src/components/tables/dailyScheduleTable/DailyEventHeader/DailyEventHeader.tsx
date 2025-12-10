@@ -11,9 +11,10 @@ import styles from "../DailyTable/DailyTable.module.css";
 type DailyEventHeaderProps = {
     columnId: string;
     type: ColumnType;
+    onDelete?: (colId: string) => void;
 };
 
-const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, type }) => {
+const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, type, onDelete }) => {
     const { populateEventColumn, deleteColumn, mainDailyTable, selectedDate } =
         useDailyTableContext();
 
@@ -50,7 +51,12 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, type }) =
     const handleDeleteClick = () => {
         const deleteLabel = selectedEventData || "האירוע";
         const msg = `האם למחוק את ${deleteLabel}?`;
-        handleOpenPopup("deleteDailyCol", msg, deleteCol);
+
+        if (onDelete) {
+            handleOpenPopup("deleteDailyCol", msg, async () => onDelete(columnId));
+        } else {
+            handleOpenPopup("deleteDailyCol", msg, deleteCol);
+        }
     };
 
     return (

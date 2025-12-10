@@ -18,12 +18,14 @@ type DailyTeacherHeaderProps = {
     columnId: string;
     type: ColumnType;
     onTeacherClick?: (teacher: TeacherType) => void;
+    onDelete?: (colId: string) => void;
 };
 
 const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
     columnId,
     type,
     onTeacherClick,
+    onDelete,
 }) => {
     const { teachers } = useMainContext();
     const {
@@ -98,7 +100,12 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
         e.stopPropagation();
         const label = selectedTeacherData?.name || "המורה";
         const msg = `האם למחוק את ${label}?`;
-        handleOpenPopup("deleteDailyCol", msg, handleDeleteColumn);
+
+        if (onDelete) {
+            handleOpenPopup("deleteDailyCol", msg, async () => onDelete(columnId));
+        } else {
+            handleOpenPopup("deleteDailyCol", msg, handleDeleteColumn);
+        }
     };
 
     const handleTeacherClick = async () => {

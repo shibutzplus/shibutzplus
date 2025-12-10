@@ -94,6 +94,9 @@
     --table-teacher-cell-height: 120px;
 
     --table-cols-gap: 3px;
+
+    /* Animation settings */
+    --daily-delete-duration-ms: 200;
 }
 
 html,
