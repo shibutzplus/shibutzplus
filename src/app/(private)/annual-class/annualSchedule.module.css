@@ -5,6 +5,8 @@
     box-sizing: border-box;
     padding-top: var(--padding-top-desktop);
     padding-bottom: var(--padding-top-desktop);
+    display: flex;
+    flex-direction: column;
 }
 
 .placeholder {

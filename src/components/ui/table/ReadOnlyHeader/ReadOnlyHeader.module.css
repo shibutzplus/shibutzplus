@@ -34,12 +34,13 @@
 }
 
 .topHourCellCol {
-    position: relative;
+    position: sticky;
+    right: 0;
     width: 30px;
     min-width: 30px;
     max-width: 30px;
     background-color: transparent !important;
-    z-index: 1;
+    z-index: 101;
 }
 
 .topHourCellCol::before {

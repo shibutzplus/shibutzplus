@@ -4,6 +4,9 @@
     max-width: 30px;
     padding: 0;
     background-color: var(--table-gray-color);
+    position: sticky;
+    right: 0;
+    z-index: 4;
 }
 
 .emptyCell {
