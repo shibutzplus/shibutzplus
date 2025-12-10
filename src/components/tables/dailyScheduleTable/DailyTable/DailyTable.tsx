@@ -41,7 +41,7 @@ const AnimatedHeaderWrapper: React.FC<AnimatedHeaderWrapperProps> = React.memo((
                 style={isAnimating ? { width: `${width}px` } : undefined}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.3, delay: colIndex * 0.02 }}
+                transition={{ duration: 0.4, delay: colIndex * 0.03 }}
             >
                 {children}
             </motion.div>
