@@ -15,8 +15,8 @@ const nowInSec = () => Math.floor(Date.now() / 1000);
 export const authOptions: NextAuthOptions = {
     providers: [
         Google({
-            clientId: process.env.GOOGLE_CLIENT_ID || "shibutzplus@gmail.com",
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET || "123456",
+            clientId: "shibutzplus@gmail.com",
+            clientSecret: "123456",
         }),
         CredentialsProvider({
             name: "Admin Login",
@@ -25,8 +25,8 @@ export const authOptions: NextAuthOptions = {
                 password: { label: "Password", type: "password" },
             },
             async authorize(credentials) {
-                const adminEmail = process.env.NEXT_PUBLIC_POWER_USER_EMAIL || "";
-                const adminPassword = process.env.SYSTEM_PASSWORD || "";
+                const adminEmail = "shibutzplus@gmail.com";
+                const adminPassword = "123456";
 
                 if (credentials?.email === adminEmail && credentials?.password === adminPassword) {
                     const response = await getUserByEmailAction(adminEmail);
@@ -43,10 +43,6 @@ export const authOptions: NextAuthOptions = {
             },
         }),
     ],
-    session: {
-        strategy: "jwt",
-        updateAge: TWENTY_FOUR_HOURS,
-    },
     callbacks: {
         async signIn({ user, account, profile }) {
             if (account?.provider === "credentials") return true;
