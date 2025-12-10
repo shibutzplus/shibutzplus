@@ -85,8 +85,8 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
                                 >
                                     <motion.div
                                         style={{ width: "100%", height: "100%" }}
-                                        initial={{ opacity: 0, x: -20 }}
-                                        animate={{ opacity: 1, x: 0 }}
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
                                         transition={{ duration: 0.3, delay: index * 0.02 }}
                                     >
                                         {type === "event" ? (
@@ -125,8 +125,8 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
                                     >
                                         <motion.div
                                             style={{ width: "100%", height: "100%" }}
-                                            initial={{ opacity: 0, x: -20 }}
-                                            animate={{ opacity: 1, x: 0 }}
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
                                             transition={{ duration: 0.3, delay: index * 0.02 }}
                                         >
                                             {type === "event" ? (
