@@ -36,24 +36,26 @@ const AnnualViewTable: React.FC<AnnualViewTableProps> = ({
     }, [!!schedule, !!subjects, !!classes]);
 
     return (
-        <table className={styles.scheduleTable}>
-            <AnnualHeader />
-            <tbody className={styles.scheduleTableBody}>
-                {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => (
-                    <AnnualViewRow
-                        key={hour}
-                        hour={hour}
-                        isDisabled={isDisabled}
-                        schedule={schedule}
-                        selectedClassId={selectedClassId}
-                        selectedTeacherId={selectedTeacherId}
-                        subjects={subjects || []}
-                        teachers={teachers || []}
-                        classes={classes || []}
-                    />
-                ))}
-            </tbody>
-        </table>
+        <div className={styles.tableContainer}>
+            <table className={styles.scheduleTable}>
+                <AnnualHeader />
+                <tbody className={styles.scheduleTableBody}>
+                    {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => (
+                        <AnnualViewRow
+                            key={hour}
+                            hour={hour}
+                            isDisabled={isDisabled}
+                            schedule={schedule}
+                            selectedClassId={selectedClassId}
+                            selectedTeacherId={selectedTeacherId}
+                            subjects={subjects || []}
+                            teachers={teachers || []}
+                            classes={classes || []}
+                        />
+                    ))}
+                </tbody>
+            </table>
+        </div>
     );
 };
 

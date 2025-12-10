@@ -1,5 +1,6 @@
 .container {
     width: calc(100% - (var(--padding-width) * 2));
+    height: 100%;
     margin: 0 auto;
     box-sizing: border-box;
     padding-top: var(--padding-top-desktop);

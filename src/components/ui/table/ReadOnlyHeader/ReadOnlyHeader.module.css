@@ -34,12 +34,30 @@
 }
 
 .topHourCellCol {
-    border-top-right-radius: 40px;
-    border-top-left-radius: 40px;
-    background-color: var(--table-gray-color);
+    position: relative;
     width: 30px;
     min-width: 30px;
     max-width: 30px;
+    background-color: transparent !important;
+    z-index: 1;
+}
+
+.topHourCellCol::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: var(--background-color);
+    z-index: -2;
+}
+
+.topHourCellCol::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: var(--table-gray-color);
+    border-top-right-radius: 40px;
+    border-top-left-radius: 40px;
+    z-index: -1;
 }
 
 .emptyTrHeader {

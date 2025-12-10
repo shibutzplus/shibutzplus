@@ -99,26 +99,28 @@ const AnnualClassTable: React.FC<AnnualClassTableProps> = ({
     };
 
     return (
-        <table className={styles.scheduleTable}>
-            <AnnualHeader />
-            <tbody className={styles.scheduleTableBody}>
-                {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => (
-                    <AnnualRow
-                        key={hour}
-                        hour={hour}
-                        isDisabled={isDisabled}
-                        schedule={schedule}
-                        selectedClassId={selectedClassId}
-                        subjects={subjects || []}
-                        teachers={teachers || []}
-                        classes={classes || []}
-                        onCreateSubject={handleCreateSubject}
-                        onCreateTeacher={handleCreateTeacher}
-                        handleAddNewRow={handleAddNewRow}
-                    />
-                ))}
-            </tbody>
-        </table>
+        <div className={styles.tableContainer}>
+            <table className={styles.scheduleTable}>
+                <AnnualHeader />
+                <tbody className={styles.scheduleTableBody}>
+                    {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => (
+                        <AnnualRow
+                            key={hour}
+                            hour={hour}
+                            isDisabled={isDisabled}
+                            schedule={schedule}
+                            selectedClassId={selectedClassId}
+                            subjects={subjects || []}
+                            teachers={teachers || []}
+                            classes={classes || []}
+                            onCreateSubject={handleCreateSubject}
+                            onCreateTeacher={handleCreateTeacher}
+                            handleAddNewRow={handleAddNewRow}
+                        />
+                    ))}
+                </tbody>
+            </table>
+        </div>
     );
 };
 
