@@ -12,6 +12,7 @@
     min-height: 0;
     overflow: auto;
     width: 100%;
+    overscroll-behavior: none;
 }
 
 .topBarLayout {
