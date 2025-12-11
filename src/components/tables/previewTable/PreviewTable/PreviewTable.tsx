@@ -1,0 +1,154 @@
+"use client";
+
+import React from "react";
+import { motion } from "motion/react";
+import styles from "./PreviewTable.module.css";
+import { TableRows } from "@/models/constant/table";
+import { sortDailyColumnIdsByType } from "@/utils/sort";
+import { DailySchedule, ColumnType } from "@/models/types/dailySchedule";
+import { AppType } from "@/models/types";
+import { TeacherType } from "@/models/types/teachers";
+import PreviewTeacherHeader from "../PreviewTeacherHeader/PreviewTeacherHeader";
+import PreviewEventHeader from "../PreviewEventHeader/PreviewEventHeader";
+import PreviewTeacherCell from "../PreviewTeacherCell/PreviewTeacherCell";
+import PreviewEventCell from "../PreviewEventCell/PreviewEventCell";
+
+type PreviewTableProps = {
+    mainDailyTable: DailySchedule;
+    selectedDate: string;
+    onTeacherClick?: (teacher: TeacherType) => Promise<void>;
+    appType?: AppType;
+    EmptyTable?: React.FC<{ date?: string }>;
+};
+
+const PreviewTable: React.FC<PreviewTableProps> = ({
+    mainDailyTable,
+    selectedDate,
+    onTeacherClick,
+    EmptyTable,
+    appType = "private",
+}) => {
+    const schedule = mainDailyTable[selectedDate];
+    const tableColumns = schedule ? Object.keys(schedule) : [];
+    const sortedTableColumns = schedule
+        ? sortDailyColumnIdsByType(tableColumns, mainDailyTable, selectedDate)
+        : [];
+
+    const columnTypes = React.useMemo(() => {
+        const types: Record<string, ColumnType> = {};
+        if (!schedule) return types;
+
+        sortedTableColumns.forEach((colId) => {
+            const columnData = schedule[colId];
+            if (!columnData) return;
+
+            const colFirstObj =
+                columnData["1"] ||
+                Object.values(columnData).find((cell) => cell?.headerCol?.type);
+
+            types[colId] = colFirstObj?.headerCol?.type || "event";
+        });
+        return types;
+    }, [schedule, sortedTableColumns]);
+
+    // Rows 1 to 8
+    const rows = Array.from({ length: TableRows }, (_, i) => i + 1);
+
+    const isEmpty = !schedule || Object.keys(schedule).length === 0;
+
+    if (isEmpty && EmptyTable) {
+        return <EmptyTable date={selectedDate} />;
+    }
+
+    if (isEmpty) {
+        return null; // Or some default empty state
+    }
+
+    return (
+        <div className={styles.tableContainer}>
+            <table className={styles.table}>
+                <thead>
+                    <tr>
+                        {/* Corner Cell */}
+                        <th className={`${styles.headerCell} ${styles.cornerCell}`}>
+                            <div className={`${styles.headerInner} ${styles.headerGray}`}></div>
+                        </th>
+
+                        {sortedTableColumns.map((colId, index) => {
+                            const type = columnTypes[colId] || "event";
+                            const column = schedule[colId];
+
+                            return (
+                                <th
+                                    key={colId}
+                                    className={`${styles.headerCell} ${styles.regularHeaderCell}`}
+                                >
+                                    <motion.div
+                                        style={{ width: "100%", height: "100%" }}
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ duration: 0.3, delay: index * 0.02 }}
+                                    >
+                                        {type === "event" ? (
+                                            <PreviewEventHeader type={type} column={column} />
+                                        ) : (
+                                            <PreviewTeacherHeader
+                                                column={column}
+                                                appType={appType}
+                                                type={type}
+                                                selectedDate={selectedDate}
+                                                onTeacherClick={onTeacherClick}
+                                            />
+                                        )}
+                                    </motion.div>
+                                </th>
+                            );
+                        })}
+                    </tr>
+                </thead>
+                <tbody>
+                    {rows.map((row) => (
+                        <tr key={row}>
+                            <td className={styles.rowNumberCell}>
+                                <div className={styles.rowNumberBadge}>{row}</div>
+                            </td>
+
+                            {sortedTableColumns.map((colId, index) => {
+                                const type = columnTypes[colId] || "event";
+                                const columnData = schedule[colId];
+                                const cellData = columnData?.[row];
+
+                                return (
+                                    <td
+                                        key={`${colId}-${row}`}
+                                        className={`${styles.dataCell} ${styles.regularDataCell}`}
+                                    >
+                                        <motion.div
+                                            style={{ width: "100%", height: "100%" }}
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            transition={{ duration: 0.3, delay: index * 0.02 }}
+                                        >
+                                            {type === "event" ? (
+                                                <PreviewEventCell cell={cellData} columnId={colId} />
+                                            ) : (
+                                                <PreviewTeacherCell
+                                                    cell={cellData}
+                                                    columnId={colId}
+                                                    type={type}
+                                                    appType={appType}
+                                                />
+                                            )}
+                                        </motion.div>
+                                    </td>
+                                );
+                            })}
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    );
+};
+
+export default PreviewTable;

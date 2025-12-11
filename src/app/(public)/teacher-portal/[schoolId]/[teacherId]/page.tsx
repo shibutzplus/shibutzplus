@@ -1,22 +1,25 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import { NextPage } from "next";
-import { useParams, useRouter } from "next/navigation";
-import PortalTable from "@/components/tables/teacherPortalTable/PortalTable/PortalTable";
-import TeacherPortalSkeleton from "@/components/layout/skeleton/TeacherPortalSkeleton/TeacherPortalSkeleton";
-import { usePortal } from "@/context/PortalContext";
 import styles from "./teacherPortal.module.css";
+import { usePortalContext } from "@/context/PortalContext";
+import { useParams, useRouter } from "next/navigation";
 import router from "@/routes";
-import { errorToast } from "@/lib/toast";
+import TeacherTable from "@/components/tables/teacherScheduleTable/TeacherTable/TeacherTable";
+import { useTeacherTableContext } from "@/context/TeacherTableContext";
+import Preloader from "@/components/ui/Preloader/Preloader";
+
+import NotPublished from "@/components/empty/NotPublished/NotPublished";
 
 const TeacherPortalPage: NextPage = () => {
+    const { selectedDate, teacher, setTeacherAndSchool, datesOptions, isDatesLoading } = usePortalContext();
+    const { fetchTeacherScheduleDate } = useTeacherTableContext();
+
     const params = useParams();
     const route = useRouter();
     const schoolId = params.schoolId as string | undefined;
     const teacherId = params.teacherId as string | undefined;
-    const { teacher, setTeacherAndSchool, fetchPortalScheduleDate, isPortalLoading, selectedDate } =
-        usePortal();
 
     if (!schoolId) route.push(`${router.teacherSignIn.p}`);
     if (!teacherId) route.push(`${router.teacherSignIn.p}/${schoolId}`);
@@ -29,28 +32,40 @@ const TeacherPortalPage: NextPage = () => {
         if (!teacher) setTeacher();
     }, [teacherId, schoolId]);
 
-    const blockRef = useRef<boolean>(true);
-    useEffect(() => {
-        const fetchData = async () => {
-            if (blockRef.current) {
-                const response = await fetchPortalScheduleDate();
-                if (response.success) blockRef.current = false;
-                else if (response.error !== "") {
-                    errorToast(response.error);
-                }
-            }
-        };
-        fetchData();
-    }, [selectedDate, teacher]);
+    const isValidDate = datesOptions.some((d) => d.value === selectedDate);
 
-    if (isPortalLoading) return <TeacherPortalSkeleton />;
+    useEffect(() => {
+        if (isValidDate) {
+            fetchTeacherScheduleDate(teacher, selectedDate);
+        }
+    }, [selectedDate, teacher?.id, schoolId, datesOptions]);
+
+    if (!teacher)
+        return (
+            <div
+                style={{
+                    position: "absolute",
+                    top: "40%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                }}
+            >
+                <Preloader />
+            </div>
+        );
+
+    if (!isValidDate) {
+        return (
+            <div className={styles.container}>
+                <NotPublished date={selectedDate} text="אין שינויים במערכת האישית" />
+            </div>
+        );
+    }
 
     return (
-        <section className={styles.content}>
-            <div className={styles.whiteBox}>
-                <PortalTable />
-            </div>
-        </section>
+        <div className={styles.container}>
+            <TeacherTable teacher={teacher} selectedDate={selectedDate} />
+        </div>
     );
 };
 

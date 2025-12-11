@@ -1,9 +1,22 @@
 "use client";
 import React from "react";
-import TeacherPortalSkeleton from "@/components/layout/skeleton/TeacherPortalSkeleton/TeacherPortalSkeleton";
+
+
+import Preloader from "@/components/ui/Preloader/Preloader";
 
 const SkeletonPortalSchedule: React.FC = () => {
-    return <TeacherPortalSkeleton />;
+    return (
+        <div
+            style={{
+                position: "absolute",
+                top: "40%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+            }}
+        >
+            <Preloader />
+        </div>
+    );
 };
 
 export default SkeletonPortalSchedule;

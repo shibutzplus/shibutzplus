@@ -1,0 +1,148 @@
+.tableContainer {
+    flex: 1;
+    overflow: auto;
+    max-width: 100%;
+    overscroll-behavior: none;
+    height: 100%;
+}
+
+.scheduleTable {
+    width: 100%;
+    background-color: var(--table-gray-color);
+    border-radius: var(--border-radius-table);
+    border-collapse: separate;
+    border-spacing: 0;
+    border: none;
+    margin-bottom: 0;
+    table-layout: fixed;
+}
+
+.scheduleTable thead,
+.scheduleTable tr {
+    border: none !important;
+}
+
+.scheduleTable thead {
+    position: sticky;
+    top: 0;
+    z-index: 21;
+    background-color: transparent;
+}
+
+.scheduleTableBody {
+    width: 100%;
+}
+
+.headerCell {
+    position: sticky;
+    top: 0px;
+    z-index: 50;
+    text-align: center;
+    height: var(--table-annual-header-height);
+    vertical-align: middle;
+    background-color: var(--background-color);
+    border-radius: 0;
+}
+
+.headerInner {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--table-gray-color);
+}
+
+.scheduleTable thead th:nth-child(2) .headerInner {
+    border-top-right-radius: var(--border-radius-table);
+    border-top-left-radius: var(--border-radius-table);
+}
+
+.scheduleTable thead th:nth-child(4) .headerInner {
+    border-top-right-radius: var(--border-radius-table);
+}
+
+.scheduleTable thead th:last-child .headerInner {
+    border-top-left-radius: var(--border-radius-table);
+}
+
+.hoursHeader {
+    width: var(--table-hours-col-width);
+    min-width: var(--table-hours-col-width);
+    max-width: var(--table-hours-col-width);
+    background-color: var(--table-gray-color);
+    box-shadow: 0 4px 0 var(--table-gray-color), 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.hoursColumn {
+    z-index: 60;
+    background-color: var(--background-color) !important;
+    width: var(--table-hours-col-width);
+    min-width: var(--table-hours-col-width);
+    max-width: var(--table-hours-col-width);
+    right: 0;
+    padding: 0;
+}
+
+.emptyColSeparator {
+    background-color: var(--background-color) !important;
+    width: 5px !important;
+    min-width: 5px !important;
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border: none !important;
+    outline: none !important;
+}
+
+/* Specific Columns */
+.detailsColumn {
+    width: var(--table-teacher-details-col-width);
+    min-width: var(--table-teacher-details-col-width);
+}
+
+.instructionsColumn {
+    width: auto;
+}
+
+.loaderContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+    width: 100%;
+}
+
+/* < 600px */
+@media (max-width: 600px) {
+    .scheduleTable {
+        border-radius: 0;
+    }
+
+    .detailsColumn {
+        display: none;
+    }
+
+    .scheduleTable thead th:last-child .headerInner {
+        border-top-right-radius: var(--border-radius-table);
+    }
+
+}
+
+/* < 450px */
+@media (max-width: 450px) {
+
+    .tableContainer::-webkit-scrollbar {
+        width: 3px;
+    }
+
+    .tableContainer::-webkit-scrollbar-thumb {
+        background: transparent;
+    }
+
+    .tableContainer::-webkit-scrollbar-track {
+        background: transparent;
+    }
+}

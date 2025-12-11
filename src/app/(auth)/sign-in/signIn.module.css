@@ -1,4 +1,4 @@
-/* Mobile */
+/* > 1024px */
 .container {
     position: fixed;
     top: 0;
@@ -16,9 +16,15 @@
 .mainSection {
     display: flex;
     flex-direction: column;
-    gap: 2em;
+    gap: 3em;
     width: 90%;
-    margin-bottom: 10vh;
+    margin: 0 auto 20vh auto;
+}
+
+.formContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
 }
 
 .googleButton {
@@ -28,26 +34,24 @@
     justify-content: center;
     gap: 0.75rem;
     padding: 1rem 1.5rem;
-    border: var(--border-heavy-primary);
+    border: var(--border-primary);
     border-radius: 8px;
-    background-color: var(--background);
-    color: #3c4043;
+    background-color: var(--top_color);
+    color: var(--dark-text-color);
     font-size: 18px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
-    margin-bottom: 1rem;
-    margin: 0 auto 1rem auto;
+    margin: 0 auto;
 }
 
 .googleButton:hover {
-    background-color: var(--background);
-    border-color: #c8c9ca;
-    box-shadow: var(--header-box-shadow);
+    background-color: var(--top-color-hover);
+    box-shadow: var(--box-shadow-btn);
 }
 
 .googleButton:active {
-    background-color: var(--background);
+    background-color: var(--top-color);
 }
 
 .error {
@@ -57,58 +61,36 @@
     text-align: center;
 }
 
-.registerLink {
-    margin-top: 2rem;
-    text-align: center;
-}
-
 .problemLink {
-    color: var(--input-color);
-    text-decoration: none;
-    font-weight: 500;
-    text-decoration: underline !important;
-}
-
-.problemLink:hover {
-    color: var(--input-hover-color) !important;
-}
-
-.illustrationContainer {
-    display: block;
-    position: absolute;
-    bottom: 1%;
-    left: 32%;
-    z-index: 0;
-    opacity: 0.9;
-}
-
-.illustration {
-    width: 55vw;
-    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .emailLine {
     display: block;
     margin-top: 0.75rem;
+    text-decoration: underline;
+    color: #007bff;
 }
 
-/* Desktop */
-@media (min-width: 768px) {
+.problemLink:hover .emailLine {
+    color: #3399ff;
+}
+
+/* < 1024px */
+@media (max-width: 1024px) {
     .mainSection {
-        gap: 3em;
-        margin: 0 auto 20vh auto;
-    }
-    .googleButton {
-        width: 320px;
-        margin: 0 auto;
-    }
-    .illustrationContainer {
-        bottom: 1%;
-        left: 2%;
+        gap: 2em;
+        margin: 0 auto 10vh auto;
     }
 
-    .illustration {
-        width: 35vw;
+    .formContainer {
+        gap: 1.5rem;
+    }
+
+    .googleButton {
+        margin: 0 auto 1rem auto;
     }
 }
 

@@ -1,0 +1,29 @@
+/* > 720px */
+.container {
+    width: calc(100% - (var(--padding-width) * 2));
+    margin: 0 auto;
+    box-sizing: border-box;
+    padding-bottom: var(--padding-top-desktop);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    height: 100%;
+}
+
+.placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60vh;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* < 720px */
+@media (max-width: 720px) {
+    .container {
+        padding-top: var(--padding-top-mobile);
+        padding-bottom: var(--padding-top-mobile);
+    }
+}

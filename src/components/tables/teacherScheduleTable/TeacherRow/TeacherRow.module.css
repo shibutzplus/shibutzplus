@@ -1,0 +1,104 @@
+.hoursColumn {
+    width: var(--table-hours-col-width);
+    min-width: var(--table-hours-col-width);
+    max-width: var(--table-hours-col-width);
+    padding: 0;
+    background-color: var(--table-gray-color);
+    position: sticky;
+    right: 0;
+    z-index: 4;
+}
+
+.emptyCell {
+    background-color: var(--background-color) !important;
+    width: 5px !important;
+    min-width: 5px !important;
+}
+
+.hourCell {
+    text-align: center;
+    vertical-align: middle;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--dark-text-color);
+    background-color: white;
+    border-radius: 50%;
+    margin: auto;
+}
+
+.scheduleDetailsCell {
+    position: relative;
+    padding-right: 4px;
+    padding-bottom: 5px;
+    box-sizing: border-box;
+    width: var(--table-teacher-details-col-width);
+    display: table-cell;
+}
+
+.scheduleInstructionsCell {
+    position: relative;
+    padding-left: 4px;
+    padding-right: 4px;
+    box-sizing: border-box;
+    width: auto;
+    padding-bottom: 5px;
+}
+
+.scheduleCell {
+    position: relative;
+    padding: 4px;
+    box-sizing: border-box;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.teacherRow {
+    height: var(--table-teacher-cell-height);
+}
+
+.mobileDetails {
+    display: none;
+}
+
+.desktopOnly {
+    display: table-cell !important;
+}
+
+/* < 600px */
+@media (max-width: 600px) {
+
+    .scheduleDetailsCell {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        padding: 0;
+    }
+
+    .scheduleInstructionsCell {
+        width: auto;
+        padding-bottom: 20px;
+    }
+
+    .mobileDetails {
+        display: block;
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+    .desktopOnly {
+        display: none !important;
+    }
+}

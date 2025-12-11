@@ -16,6 +16,7 @@
 .input {
   width: 100%;
   padding: 10px 16px;
+  height: var(--input-height);
   border: 1px solid var(--input-border);
   border-radius: 4px;
   font-size: 16px;
@@ -68,9 +69,8 @@
   margin-bottom: 0;
   text-align: right;
   position: absolute;
-  bottom: -5px;
-  right: 10px;
-  background-color: var( --background);
+  bottom: -22px;
+  background-color: var(--background);
   z-index: 2;
   padding: 0 7px;
   box-sizing: border-box;

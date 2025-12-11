@@ -1,8 +1,19 @@
 import React from "react";
-import PublishedSkeleton from "@/components/layout/skeleton/PublishedSkeleton/PublishedSkeleton";
+import Preloader from "@/components/ui/Preloader/Preloader";
 
 const SkeletonPublishedPortal: React.FC = () => {
-    return <PublishedSkeleton />;
+    return (
+        <div
+            style={{
+                position: "absolute",
+                top: "40%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+            }}
+        >
+            <Preloader />
+        </div>
+    );
 };
 
 export default SkeletonPublishedPortal;

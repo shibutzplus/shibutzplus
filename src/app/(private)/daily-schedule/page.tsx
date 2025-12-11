@@ -1,119 +1,85 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import { NextPage } from "next";
-import DailyTable from "@/components/tables/dailyScheduleTable/DailyTable/DailyTable";
-import DailySkeleton from "@/components/layout/skeleton/DailySkeleton/DailySkeleton";
+import Preloader from "@/components/ui/Preloader/Preloader";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import styles from "./DailySchedule.module.css";
-import { AnnualTableProvider } from "@/context/AnnualTableContext"; // Added: provider for annual table
+import DailyTable from "@/components/tables/dailyScheduleTable/DailyTable/DailyTable";
+import PreviewTable from "@/components/tables/previewTable/PreviewTable/PreviewTable";
+import EmptyTable from "@/components/empty/EmptyTable/EmptyTable";
+import LoadingPage from "@/components/loading/LoadingPage/LoadingPage";
+import { TeacherTableProvider } from "@/context/TeacherTableContext";
+import SlidingPanel from "@/components/ui/SlidingPanel/SlidingPanel";
+import TeacherTable from "@/components/tables/teacherScheduleTable/TeacherTable/TeacherTable";
+import { TeacherType } from "@/models/types/teachers";
 
 const DailySchedulePage: NextPage = () => {
-  const { isLoading } = useDailyTableContext();
+    const { isLoading, isEditMode, selectedDate, mainDailyTable, isLoadingEditPage } =
+        useDailyTableContext();
 
-  // Run scroll sync only after data is loaded and DOM is rendered
-  useEffect(() => {
-    if (isLoading) return;
+    const [isPanelOpen, setIsPanelOpen] = useState<boolean>(false);
+    const [teacher, setTeacher] = useState<TeacherType>();
 
-    const inner = document.querySelector<HTMLElement>('[class*="scrollableContent"]');
-    const bar = document.getElementById("bottomScroller") as HTMLElement | null;
-    if (!inner || !bar) return;
-
-    const barInner = bar.firstElementChild as HTMLElement;
-    const measured = (inner.querySelector("table") as HTMLElement) || inner;
-
-    const max = (el: HTMLElement) => Math.max(0, el.scrollWidth - el.clientWidth);
-    const clamp = (v: number, lo: number, hi: number) => Math.min(Math.max(v, lo), hi);
-
-    let ratio = 1;
-    let lock = false;
-    let rafId: number | null = null;
-
-    const recalc = () => {
-      if (rafId) cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(() => {
-        lock = true;
-
-        const mInnerBefore = max(inner) || 1;
-        const relInner = inner.scrollLeft / mInnerBefore;
-
-        const needWidth = measured.scrollWidth;
-        if (barInner.style.width !== needWidth + "px") {
-          barInner.style.width = needWidth + "px";
-        }
-
-        const mBar = max(bar);
-        const mInner = max(inner);
-        ratio = mInner ? mBar / mInner : 1;
-
-        const innerX = clamp(Math.round(relInner * (mInner || 0)), 0, mInner);
-        const barX = clamp(Math.round(innerX * ratio), 0, mBar);
-
-        if (inner.scrollLeft !== innerX) inner.scrollLeft = innerX;
-        if (bar.scrollLeft !== barX) bar.scrollLeft = barX;
-
-        lock = false;
-      });
+    const handleTeacherClick = async (teacher: TeacherType) => {
+        setTeacher(teacher);
+        setIsPanelOpen(true);
     };
 
-    const onBar = () => {
-      if (lock) return;
-      lock = true;
-      inner.scrollLeft = bar.scrollLeft / (ratio || 1);
-      lock = false;
+    const handleClosePanel = () => {
+        setIsPanelOpen(false);
     };
 
-    const onInner = () => {
-      if (lock) return;
-      lock = true;
-      bar.scrollLeft = inner.scrollLeft * (ratio || 1);
-      lock = false;
-    };
+    if (isLoading)
+        return (
+            <div
+                style={{
+                    position: "absolute",
+                    top: "40%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                }}
+            >
+                <Preloader />
+            </div>
+        );
+    if (isLoadingEditPage) return <LoadingPage />;
 
-    const ro1 = new ResizeObserver(() => recalc());
-    const ro2 = new ResizeObserver(() => recalc());
-    ro1.observe(measured);
-    ro2.observe(inner);
-
-    window.addEventListener("resize", recalc, { passive: true });
-    bar.addEventListener("scroll", onBar, { passive: true });
-    inner.addEventListener("scroll", onInner, { passive: true });
-
-    recalc();
-
-    return () => {
-      if (rafId) cancelAnimationFrame(rafId);
-      ro1.disconnect();
-      ro2.disconnect();
-      window.removeEventListener("resize", recalc);
-      bar.removeEventListener("scroll", onBar);
-      inner.removeEventListener("scroll", onInner);
-    };
-  }, [isLoading]);
-
-  if (isLoading) {
     return (
-      <div className={styles.loadingWrapper}>
-        <DailySkeleton />
-        <div className={styles.loader}></div>
-      </div>
-    )
-  }
+        <TeacherTableProvider>
+            <section className={styles.container}>
+                {isEditMode ? (
+                    <DailyTable
+                        mainDailyTable={mainDailyTable}
+                        selectedDate={selectedDate}
+                        onTeacherClick={handleTeacherClick}
+                    />
+                ) : (
+                    <PreviewTable
+                        mainDailyTable={mainDailyTable}
+                        selectedDate={selectedDate}
+                        EmptyTable={() => (
+                            <EmptyTable
+                                message="מערכת השעות להיום טרם הוזנה"
+                                showIcons={false}
+                            />
+                        )}
+                        onTeacherClick={handleTeacherClick}
+                    />
+                )}
 
-  return (
-    <AnnualTableProvider>
-      <section className={styles.container}>
-        <DailyTable />
-        <div
-          id="bottomScroller"
-          className={styles.bottomScroller}
-          aria-label="horizontal scroller"
-        >
-          <div className={styles.bottomInner} />
-        </div>
-      </section>
-    </AnnualTableProvider>
-  );
+                <SlidingPanel
+                    isOpen={isPanelOpen}
+                    onClose={handleClosePanel}
+                    title={teacher?.name || ""}
+                >
+                    {teacher ? (
+                        <TeacherTable teacher={teacher} selectedDate={selectedDate} isInsidePanel />
+                    ) : null}
+                </SlidingPanel>
+            </section>
+        </TeacherTableProvider>
+    );
 };
 
 export default DailySchedulePage;

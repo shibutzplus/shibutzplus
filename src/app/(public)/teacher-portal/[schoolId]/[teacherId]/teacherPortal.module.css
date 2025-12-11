@@ -1,15 +1,7 @@
-.content {
-  flex: 1 1 auto;
-  min-height: 0;
-  display: flex;
-  justify-content: center;
-}
-
-.whiteBox {
+.container {
   width: 100%;
-  border-radius: 0;
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 auto;
-  min-height: 0;
+  height: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding-top: var(--padding-top-desktop);
 }

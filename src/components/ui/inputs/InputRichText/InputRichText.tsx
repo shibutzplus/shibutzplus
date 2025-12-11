@@ -15,6 +15,7 @@ type InputRichTextProps = {
     onBlurHTML?: (html: string) => void;
     minHeight?: number;
     importantPlaceholder?: boolean;
+    maxLines?: number;
 };
 
 const normalize = (html: string) => {
@@ -30,31 +31,48 @@ const InputRichText: React.FC<InputRichTextProps> = ({
     onBlurHTML,
     minHeight = 40,
     importantPlaceholder = false,
+    maxLines,
 }) => {
+    const extensions = React.useMemo(() => [
+        StarterKit.configure({
+            blockquote: false,
+            bulletList: false,
+            orderedList: false,
+            code: false,
+            codeBlock: false,
+            italic: false,
+            strike: false,
+            heading: false,
+            horizontalRule: false,
+        }),
+        Link.configure({
+            openOnClick: true,
+            autolink: true,
+            HTMLAttributes: { rel: "noopener noreferrer", target: "_blank" },
+            validate: (href) => /^(https?:\/\/|mailto:|tel:)/i.test(href || ""),
+        }),
+        Placeholder.configure({ placeholder: placeholder || "" }),
+    ], [placeholder]);
+
+    const countLines = (html: string): number => {
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = html;
+        const paragraphs = tempDiv.querySelectorAll("p");
+        return paragraphs.length || 1;
+    };
     const editor = useEditor({
         immediatelyRender: false,
-        extensions: [
-            StarterKit.configure({
-                blockquote: false,
-                bulletList: false,
-                orderedList: false,
-                code: false,
-                codeBlock: false,
-                italic: false,
-                strike: false,
-                heading: false,
-                horizontalRule: false,
-            }),
-            Link.configure({
-                openOnClick: true,
-                autolink: true,
-                HTMLAttributes: { rel: "noopener noreferrer", target: "_blank" },
-                validate: (href) => /^(https?:\/\/|mailto:|tel:)/i.test(href || ""),
-            }),
-            Placeholder.configure({ placeholder: placeholder || "" }),
-        ],
+        extensions,
         content: value || "",
-        onUpdate: ({ editor }) => onChangeHTML(normalize(editor.getHTML())),
+        onUpdate: ({ editor }) => {
+            const html = editor.getHTML();
+            if (maxLines && countLines(html) > maxLines) {
+                // Revert to previous content if line limit exceeded
+                editor.commands.setContent(value || "", { emitUpdate: false });
+                return;
+            }
+            onChangeHTML(normalize(html));
+        },
         editorProps: {
             attributes: {
                 class: styles.editor,

@@ -12,6 +12,7 @@ export const STORAGE_KEYS = {
 };
 
 export const getStorage = <T>(key: string) => {
+    if (typeof window === "undefined") return null;
     const storage: string | null = localStorage.getItem(key);
     if (!storage) return null;
     try {
@@ -22,6 +23,7 @@ export const getStorage = <T>(key: string) => {
 };
 
 export const setStorage = <T>(key: string, value: T) => {
+    if (typeof window === "undefined") return false;
     if (!value) return false;
     try {
         localStorage.setItem(key, JSON.stringify(value));
@@ -32,8 +34,11 @@ export const setStorage = <T>(key: string, value: T) => {
 };
 
 export const clearStorage = () => {
+    if (typeof window === "undefined") return;
     localStorage.clear();
 };
+
+
 
 //
 // CacheTimestamp
@@ -91,5 +96,6 @@ export const setStorageTeacher = (teacher: TeacherType) => {
 };
 
 export const removeStorageTeacher = () => {
+    if (typeof window === "undefined") return;
     localStorage.removeItem(STORAGE_KEYS.TEACHER_DATA);
 };

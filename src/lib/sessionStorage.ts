@@ -5,6 +5,7 @@ import { DailySchedule } from "@/models/types/dailySchedule";
 export const SESSION_KEYS = {
     DAILY_TABLE_DATA: "daily_schedule_data",    // Manager Portal
     PUBLISH_DATES: "publish_dates",             // Manager Portal
+    HAMBURGER_EXPANDED_GROUPS: "menu_expanded", // Hamburger Menu
 };
 
 export const getSessionStorage = <T>(key: string) => {

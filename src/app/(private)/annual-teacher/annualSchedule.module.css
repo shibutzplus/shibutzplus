@@ -1,0 +1,19 @@
+.container {
+    width: calc(100% - (var(--padding-width) * 2));
+    height: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+    padding-bottom: var(--padding-top-desktop);
+    display: flex;
+    flex-direction: column;
+}
+
+.placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60vh;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+}

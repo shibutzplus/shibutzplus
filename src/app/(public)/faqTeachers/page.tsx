@@ -5,6 +5,7 @@ import emailjs from "emailjs-com";
 import { useEffect, useState } from "react";
 import { getStorageTeacher } from "@/lib/localStorage";
 import { errorToast, successToast } from "@/lib/toast";
+import { motion } from "motion/react";
 
 export default function FAQPage() {
     const [teacherLink, setTeacherLink] = useState<string>("");
@@ -56,8 +57,7 @@ export default function FAQPage() {
             const raw = error?.text || error?.message || error?.toString() || "";
             const shortError = raw.split(".")[0] + ".";
             errorToast(
-                `אירעה שגיאה בשליחת ההודעה. יש להעביר את פרטי השגיאה למנהל בבית הספר כדי שיוכל לדווח למפתחי שיבוץ פלוס.\n\n${
-                    shortError || "לא זמינים"
+                `אירעה שגיאה בשליחת ההודעה. יש להעביר את פרטי השגיאה למנהל בבית הספר כדי שיוכל לדווח למפתחי שיבוץ פלוס.\n\n${shortError || "לא זמינים"
                 }`,
                 Infinity
             );
@@ -66,30 +66,21 @@ export default function FAQPage() {
         }
     };
 
-    return (
-        <div className="faq-container">
-            <h1>שאלות נפוצות</h1>
-            <p className="subtitle">ריכזנו עבורכם את התשובות לכל השאלות החשובות</p>
-
-            <details>
-                <summary>האם ניתן להוסיף קישור חיצוני בשדה חומר הלימוד?</summary>
-                <div className="answer">
+    const faqItems = [
+        {
+            question: "האם ניתן להוסיף קישור חיצוני בשדה חומר הלימוד?",
+            answer: (
+                <>
                     כן!<br />
                     יש להדביק את הכתובת וללחוץ Enter בסיום כדי שהוא יזוהה.<br />
                     כאשר הקישור מזוהה, הוא יופיע בצבע כחול.
-                </div>
-            </details>
-
-            <details>
-                <summary>מדוע מתקבלת לפעמים הודעה שעלי ללחוץ על כפתור הריענון?</summary>
-                <div className="answer">
-                    כאשר בוצעו עדכונים במערכת השעות לאחר פרסומה, תופיע הודעה לרענן את הדף כדי להציג את השינויים.
-                </div>
-            </details>
-
-            <details>
-                <summary>האם אפשר לקבל קישור ישיר למשתמש שלי בלי שאצטרך להזדהות כל פעם מחדש?</summary>
-                <div className="answer">
+                </>
+            )
+        },
+        {
+            question: "האם אפשר לקבל קישור ישיר למשתמש שלי בלי שאצטרך להזדהות כל פעם מחדש?",
+            answer: (
+                <>
                     כן!<br />
                     אפשר להשתמש בקישור האישי המצורף, והוא ייפתח ישירות ללא צורך במסך ההזדהות. הקישור מיועד לשימוש שלך בלבד ואין להעבירו לאחרים.
                     {teacherLink ? (
@@ -101,19 +92,21 @@ export default function FAQPage() {
                     ) : (
                         <p>כדי לראות את הקישור הייחודי שלך, יש להתחבר קודם למערכת</p>
                     )}
-                </div>
-            </details>
-
-            <details>
-                <summary>האם צריך להתנתק בסיום השימוש?</summary>
-                <div className="answer">
+                </>
+            )
+        },
+        {
+            question: "האם צריך להתנתק בסיום השימוש?",
+            answer: (
+                <>
                     לא
-                </div>
-            </details>
-
-            <details>
-                <summary>האם אפשר להתקין את האתר כאפליקציה בטלפון כדי שתהיה לי גישה מהירה?</summary>
-                <div className="answer">
+                </>
+            )
+        },
+        {
+            question: "האם אפשר להתקין את האתר כאפליקציה בטלפון כדי שתהיה לי גישה מהירה?",
+            answer: (
+                <>
                     כן,<br />
                     עבור משתמשי אנדרואיד ניתן להיעזר בסרטון הבא:<br />
                     <a href="https://www.youtube.com/shorts/1TkmsiS1ELg" target="_blank" rel="noopener noreferrer">
@@ -137,19 +130,33 @@ export default function FAQPage() {
                     4. אשרו את ההוספה – האייקון יופיע במסך האפליקציות<br />
                     <br />
                     מומלץ להתחבר עם הקישור האישי שלכם.
-                </div>
+                </>
+            )
+        }
+    ];
 
-            </details>
+    return (
+        <div className="faq-container">
+            <h1>שאלות נפוצות</h1>
+            <p className="subtitle">ריכזנו עבורכם את התשובות לכל השאלות החשובות</p>
 
-            <details>
-                <summary>טיפים נוספים?</summary>
-                <div className="answer">
-                    מדי פעם נעדכן כאן שאלות נפוצות ונוסיף סרטונים חדשים.<br /><br />
-                    <a href="https://www.youtube.com/shorts/S2_Ym1RtFjk" target="_blank" rel="noopener noreferrer">
-                        סרטון הדרכה קצר
-                    </a>
-                </div>
-            </details>
+            {faqItems.map((item, index) => (
+                <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                        duration: 0.5,
+                        delay: index * 0.1,
+                        ease: "easeOut"
+                    }}
+                >
+                    <details>
+                        <summary>{item.question}</summary>
+                        <div className="answer">{item.answer}</div>
+                    </details>
+                </motion.div>
+            ))}
 
             <br />
             <div className="contact-section">
