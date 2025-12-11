@@ -15,38 +15,16 @@ const nowInSec = () => Math.floor(Date.now() / 1000);
 export const authOptions: NextAuthOptions = {
     providers: [
         Google({
-            clientId: "shibutzplus@gmail.com",
-            clientSecret: "123456",
-        }),
-        CredentialsProvider({
-            name: "Admin Login",
-            credentials: {
-                email: { label: "Email", type: "email" },
-                password: { label: "Password", type: "password" },
-            },
-            async authorize(credentials) {
-                const adminEmail = "shibutzplus@gmail.com";
-                const adminPassword = "123456";
-
-                if (credentials?.email === adminEmail && credentials?.password === adminPassword) {
-                    const response = await getUserByEmailAction(adminEmail);
-                    if (response.success && response.data) {
-                        return {
-                            id: response.data.id,
-                            email: response.data.email,
-                            name: response.data.name,
-                            image: "",
-                        };
-                    }
-                }
-                return null;
-            },
+            clientId: process.env.GOOGLE_CLIENT_ID || "",
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
         }),
     ],
+    session: {
+        strategy: "jwt",
+        updateAge: TWENTY_FOUR_HOURS,
+    },
     callbacks: {
         async signIn({ user, account, profile }) {
-            if (account?.provider === "credentials") return true;
-
             if (account?.provider === "google") {
                 const email = typeof profile?.email === "string" ? profile.email : undefined;
                 const name = typeof profile?.name === "string" ? profile.name : undefined;
