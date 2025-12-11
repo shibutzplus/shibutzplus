@@ -13,10 +13,12 @@ import { TeacherTableProvider } from "@/context/TeacherTableContext";
 import SlidingPanel from "@/components/ui/SlidingPanel/SlidingPanel";
 import TeacherTable from "@/components/tables/teacherScheduleTable/TeacherTable/TeacherTable";
 import { TeacherType } from "@/models/types/teachers";
+import { useMainContext } from "@/context/MainContext";
 
 const DailySchedulePage: NextPage = () => {
     const { isLoading, isEditMode, selectedDate, mainDailyTable, isLoadingEditPage } =
         useDailyTableContext();
+    const { settings } = useMainContext();
 
     const [isPanelOpen, setIsPanelOpen] = useState<boolean>(false);
     const [teacher, setTeacher] = useState<TeacherType>();
@@ -74,7 +76,13 @@ const DailySchedulePage: NextPage = () => {
                     title={teacher?.name || ""}
                 >
                     {teacher ? (
-                        <TeacherTable teacher={teacher} selectedDate={selectedDate} isInsidePanel />
+                        <TeacherTable
+                            teacher={teacher}
+                            selectedDate={selectedDate}
+                            isInsidePanel
+                            hoursNum={settings?.hoursNum}
+                            fitToSchedule
+                        />
                     ) : null}
                 </SlidingPanel>
             </section>

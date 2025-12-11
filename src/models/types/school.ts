@@ -1,4 +1,5 @@
 import { ActionResponse } from "./actions";
+import { SchoolSettingsType } from "./settings";
 
 export type SchoolStatus =
     | "onboarding"
@@ -17,6 +18,7 @@ export type SchoolType = {
     publishDates: string[];
     createdAt: Date;
     updatedAt: Date;
+    settings?: SchoolSettingsType;
 };
 
 export type GetSchoolResponse = ActionResponse & {

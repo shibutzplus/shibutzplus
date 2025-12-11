@@ -24,6 +24,7 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
         selectedDate,
         handleRefreshDates,
         handlePublishedRefresh,
+        settings,
     } = usePortalContext();
     const { handlePortalRefresh } = useTeacherTableContext();
     const refreshRef = React.useRef<(() => Promise<void>) | null>(null);
@@ -114,13 +115,16 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
         <PageLayout
             appType="public"
             hideLogo
+            schoolSettings={settings}
             HeaderRightActions={
                 <>
                     <h3 className={styles.greetingAndName}>{getTitle()}</h3>
                 </>
             }
             HeaderLeftActions={
-                !teacher || isRegularTeacher ? (
+                !teacher ||
+                    isRegularTeacher ||
+                    (teacher?.role === TeacherRoleValues.SUBSTITUTE && settings?.displaySchedule2Susb) ? (
                     <div className={styles.navContainer}>
                         <PortalNav />
                     </div>

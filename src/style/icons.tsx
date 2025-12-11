@@ -1,34 +1,18 @@
 import {
-    IoHomeOutline,
-    IoCalendarOutline,
-    IoCalendarSharp,
-    IoPersonCircleOutline,
-    IoLogOutOutline,
-    IoSchoolOutline,
-    IoPeopleOutline,
-    IoMenuOutline,
-    IoCloseOutline,
-    IoBookOutline,
-    IoBook,
-    IoChevronDown,
+    IoCalendarOutline, IoCalendarSharp,
+    IoLogOutOutline, IoPeopleOutline, IoMenuOutline,
+    IoCloseOutline, IoBookOutline, IoChevronDown,
+    IoSettingsOutline, IoPersonOutline, IoPeopleSharp
 } from "react-icons/io5";
 import { IoMdRefresh } from "react-icons/io";
-import { RiEdit2Fill, RiDeleteBin6Line, RiPassValidLine } from "react-icons/ri";
+import { RiEdit2Fill, RiDeleteBin6Line } from "react-icons/ri";
 import { BsMegaphoneFill, BsCalendar4Event } from "react-icons/bs";
-import {
-    MdOutlineImageNotSupported,
-    MdOutlineContentCopy,
-    MdPersonAdd,
-    MdPerson,
-    MdSwapHoriz,
-    MdOpenInNew,
-} from "react-icons/md";
-import { FaPlus, FaList } from "react-icons/fa6";
-import { FaSave, FaLink, FaShareAlt, FaQuestion } from "react-icons/fa";
+import { MdPersonAdd, MdPerson, MdSwapHoriz, MdOpenInNew } from "react-icons/md";
+import { FaPlus } from "react-icons/fa6";
+import { FaSave, FaShareAlt, FaQuestion } from "react-icons/fa";
 import { PiChairLight } from "react-icons/pi";
 import { GoHistory } from "react-icons/go";
-import { IoPersonOutline, IoCheckmarkCircle } from "react-icons/io5";
-import { LuEye, LuEyeOff } from "react-icons/lu";
+import { LuEye } from "react-icons/lu";
 import { FiCheckCircle } from "react-icons/fi";
 import { GrSchedule } from "react-icons/gr";
 
@@ -45,7 +29,6 @@ const Icons = {
     edit: RiEdit2Fill,
     event: BsCalendar4Event,
     eye: LuEye,
-    eyeOff: LuEyeOff,
     faq: FaQuestion,
     history: GoHistory,
     logOut: IoLogOutOutline,
@@ -61,6 +44,9 @@ const Icons = {
     refresh: IoMdRefresh,
     success2: FiCheckCircle,
     users: IoPeopleOutline,
+    settings: IoSettingsOutline,
+    groupSolid: IoPeopleSharp,
+    group: IoPeopleOutline,
 };
 
 export default Icons;

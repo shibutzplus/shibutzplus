@@ -6,6 +6,7 @@ import { ClassRequest, ClassType } from "@/models/types/classes";
 import { SchoolType } from "@/models/types/school";
 import { SubjectRequest, SubjectType } from "@/models/types/subjects";
 import { TeacherRequest, TeacherType } from "@/models/types/teachers";
+import { SchoolSettingsType } from "@/models/types/settings";
 import { addClassAction } from "@/app/actions/POST/addClassAction";
 import { addSubjectAction } from "@/app/actions/POST/addSubjectAction";
 import { addTeacherAction } from "@/app/actions/POST/addTeacherAction";
@@ -23,6 +24,7 @@ import { UPDATE_DETAIL } from "@/models/constant/sync";
 
 interface MainContextType {
     school: SchoolType | undefined;
+    settings: SchoolSettingsType | undefined;
     teachers: TeacherType[] | undefined;
     subjects: SubjectType[] | undefined;
     classes: ClassType[] | undefined;
@@ -43,6 +45,7 @@ interface MainContextType {
     ) => Promise<SubjectType[] | undefined>;
     deleteSubject: (schoolId: string, subjectId: string) => Promise<boolean>;
     setSchool: React.Dispatch<React.SetStateAction<SchoolType | undefined>>;
+    setSettings: React.Dispatch<React.SetStateAction<SchoolSettingsType | undefined>>;
 }
 
 const MainContext = createContext<MainContextType | undefined>(undefined);
@@ -55,12 +58,17 @@ export const useMainContext = () => {
     return context;
 };
 
+export const useOptionalMainContext = () => {
+    return useContext(MainContext);
+};
+
 interface MainContextProviderProps {
     children: ReactNode;
 }
 
 export const MainContextProvider: React.FC<MainContextProviderProps> = ({ children }) => {
     const [school, setSchool] = useState<SchoolType | undefined>(undefined);
+    const [settings, setSettings] = useState<SchoolSettingsType | undefined>(undefined);
     const [teachers, setTeachers] = useState<TeacherType[] | undefined>(undefined);
     const [subjects, setSubjects] = useState<SubjectType[] | undefined>(undefined);
     const [classes, setClasses] = useState<ClassType[] | undefined>(undefined);
@@ -71,6 +79,8 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
     useInitData({
         school,
         setSchool,
+        settings,
+        setSettings,
         teachers,
         setTeachers,
         subjects,
@@ -258,6 +268,8 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         updateSubject,
         deleteSubject,
         setSchool,
+        settings,
+        setSettings,
     };
 
     return <MainContext.Provider value={value}>{children}</MainContext.Provider>;

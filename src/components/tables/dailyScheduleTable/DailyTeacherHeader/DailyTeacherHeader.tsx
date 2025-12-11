@@ -136,6 +136,7 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
                     colorHover={BrightTextColorHover}
                     placeholderColor={BrightTextColor}
                     fontSize="18px"
+                    caretColor="#cccccc"
                 />
             </div>
         </div>

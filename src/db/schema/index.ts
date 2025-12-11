@@ -11,6 +11,7 @@ import { classes, type ClassSchema, type NewClassSchema } from './classes';
 import { subjects, type SubjectSchema, type NewSubjectSchema } from './subjects';
 import { annualSchedule, type AnnualScheduleSchema, type NewAnnualScheduleSchema } from './annual-schedule';
 import { dailySchedule, type DailyScheduleSchema, type NewDailyScheduleSchema } from './daily-schedule';
+import { schoolSettings, type SchoolSettingsSchema, type NewSchoolSettingsSchema } from './settings';
 
 // ===== Define Relations =====
 
@@ -23,13 +24,22 @@ export const usersRelations = relations(users, ({ one }) => ({
 }));
 
 // School relations
-export const schoolsRelations = relations(schools, ({ many }) => ({
+export const schoolsRelations = relations(schools, ({ many, one }) => ({
   users: many(users),
   teachers: many(teachers),
   classes: many(classes),
   subjects: many(subjects),
   annualSchedules: many(annualSchedule),
   dailySchedules: many(dailySchedule),
+  settings: one(schoolSettings),
+}));
+
+// School Settings relations
+export const schoolSettingsRelations = relations(schoolSettings, ({ one }) => ({
+  school: one(schools, {
+    fields: [schoolSettings.schoolId],
+    references: [schools.id],
+  }),
 }));
 
 // Teacher relations
@@ -123,6 +133,7 @@ export {
   subjects, type SubjectSchema, type NewSubjectSchema,
   annualSchedule, type AnnualScheduleSchema, type NewAnnualScheduleSchema,
   dailySchedule, type DailyScheduleSchema, type NewDailyScheduleSchema,
+  schoolSettings, type SchoolSettingsSchema, type NewSchoolSettingsSchema,
 };
 
 // Export all tables for Drizzle ORM
@@ -134,4 +145,5 @@ export const tables = {
   subjects,
   annualSchedule,
   dailySchedule,
+  schoolSettings,
 };

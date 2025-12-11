@@ -82,8 +82,9 @@ export const fillLeftRowsWithEmptyCells = (
     selectedDate: string,
     columnId: string,
     headerCol?: HeaderCol | undefined,
+    hoursNum: number = HOURS_IN_DAY,
 ) => {
-    for (let hour = 1; hour <= HOURS_IN_DAY; hour++) {
+    for (let hour = 1; hour <= hoursNum; hour++) {
         if (!updatedSchedule[selectedDate][columnId][`${hour}`]) {
             updatedSchedule[selectedDate][columnId][`${hour}`] = { headerCol, hour };
         }
@@ -168,6 +169,7 @@ export const populateDailyScheduleTable = async (
     mainDailyTable: DailySchedule,
     selectedDate: string,
     dataColumns: DailyScheduleType[],
+    hoursNum: number = HOURS_IN_DAY,
 ) => {
     try {
         if (!dataColumns) return;
@@ -181,7 +183,7 @@ export const populateDailyScheduleTable = async (
         const newSchedule: DailySchedule = {};
         Object.entries(entriesByDayAndHeader).forEach(([date, headerEntries]) => {
             Object.entries(headerEntries).forEach(([columnId, cells]) => {
-                setColumn(cells, newSchedule, columnId, date);
+                setColumn(cells, newSchedule, columnId, date, hoursNum);
             });
         });
 

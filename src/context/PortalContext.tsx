@@ -6,6 +6,7 @@ import { getTeacherByIdAction } from "@/app/actions/GET/getTeacherByIdAction";
 import { SelectOption } from "@/models/types";
 import { TeacherType } from "@/models/types/teachers";
 import { getPublishedDatesOptions as getPublishedDatesOptions } from "@/resources/dayOptions";
+import { SchoolSettingsType } from "@/models/types/settings";
 import { chooseDefaultDate } from "@/utils/time";
 import { selectSelectedDate } from "@/services/portalTeacherService";
 import { getStorageTeacher } from "@/lib/localStorage";
@@ -15,6 +16,7 @@ import { usePublished } from "@/hooks/portal/usePublished";
 interface PortalContextType {
     teacher: TeacherType | undefined;
     schoolId: string | undefined;
+    settings: SchoolSettingsType | undefined;
     selectedDate: string;
     isDatesLoading: boolean;
     handleDayChange: (value: string) => void;
@@ -54,6 +56,7 @@ type PortalProviderProps = {
 export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
     const [teacher, setTeacher] = useState<TeacherType | undefined>();
     const [schoolId, setSchoolId] = useState<string | undefined>();
+    const [settings, setSettings] = useState<SchoolSettingsType | undefined>();
 
     const [selectedDate, setSelectedDate] = useState<string>("");
 
@@ -103,6 +106,7 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
                 try {
                     const response = await getSchoolAction(teacher.schoolId);
                     if (response.success && response.data) {
+                        setSettings(response.data.settings);
                         const res = getPublishedDatesOptions(response.data.publishDates);
                         if (res.length === 0) {
                             setDatesOptions([]);
@@ -159,6 +163,7 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
         try {
             const response = await getSchoolAction(teacher.schoolId);
             if (response.success && response.data) {
+                setSettings(response.data.settings);
                 const options = getPublishedDatesOptions(response.data.publishDates);
                 setDatesOptions(options);
 
@@ -204,6 +209,7 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
     const value: PortalContextType = {
         teacher,
         schoolId,
+        settings,
         selectedDate,
         isDatesLoading,
         handleDayChange,

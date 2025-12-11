@@ -16,15 +16,16 @@ export const setColumn = (
     newSchedule: DailySchedule,
     columnId: string,
     date: string,
+    hoursNum: number = HOURS_IN_DAY,
 ) => {
     // Check if this is an teacher column by looking at the first cell
     const isTeacherColumn = cells.length > 0 && cells[0].headerCol?.headerTeacher !== undefined;
     // (cells[0].subTeacher !== undefined || cells[0].event !== undefined);
 
     if (isTeacherColumn) {
-        setTeacherColumn(newSchedule, date, cells, columnId);
+        setTeacherColumn(newSchedule, date, cells, columnId, hoursNum);
     } else {
-        setEventColumn(newSchedule, date, cells, columnId);
+        setEventColumn(newSchedule, date, cells, columnId, hoursNum);
     }
     return newSchedule;
 };
@@ -34,6 +35,7 @@ export const setTeacherColumn = (
     selectedDate: string,
     columnData: DailyScheduleCell[],
     columnId: string,
+    hoursNum: number = HOURS_IN_DAY,
 ) => {
     dailySchedule = initDailySchedule(dailySchedule, selectedDate, columnId);
 
@@ -43,7 +45,7 @@ export const setTeacherColumn = (
         hourDataMap.set(row.hour, row);
     });
 
-    for (let hour = 1; hour <= HOURS_IN_DAY; hour++) {
+    for (let hour = 1; hour <= hoursNum; hour++) {
         const existingData = hourDataMap.get(hour);
 
         if (existingData) {
@@ -73,6 +75,7 @@ export const setEventColumn = (
     selectedDate: string,
     columnData: DailyScheduleCell[],
     columnId: string,
+    hoursNum: number = HOURS_IN_DAY,
 ): DailySchedule => {
     dailySchedule = initDailySchedule(dailySchedule, selectedDate, columnId);
 
@@ -82,7 +85,7 @@ export const setEventColumn = (
         hourDataMap.set(row.hour, row);
     });
 
-    for (let hour = 1; hour <= HOURS_IN_DAY; hour++) {
+    for (let hour = 1; hour <= hoursNum; hour++) {
         const existingData = hourDataMap.get(hour);
         if (existingData) {
             dailySchedule[selectedDate][columnId][`${hour}`] = {

@@ -19,6 +19,7 @@ type PreviewTableProps = {
     onTeacherClick?: (teacher: TeacherType) => Promise<void>;
     appType?: AppType;
     EmptyTable?: React.FC<{ date?: string }>;
+    hoursNum?: number;
 };
 
 const PreviewTable: React.FC<PreviewTableProps> = ({
@@ -27,6 +28,7 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
     onTeacherClick,
     EmptyTable,
     appType = "private",
+    hoursNum,
 }) => {
     const schedule = mainDailyTable[selectedDate];
     const tableColumns = schedule ? Object.keys(schedule) : [];
@@ -51,8 +53,8 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
         return types;
     }, [schedule, sortedTableColumns]);
 
-    // Rows 1 to 8
-    const rows = Array.from({ length: TableRows }, (_, i) => i + 1);
+    // Rows 1 to 8 (or dynamic)
+    const rows = Array.from({ length: hoursNum || TableRows }, (_, i) => i + 1);
 
     const isEmpty = !schedule || Object.keys(schedule).length === 0;
 

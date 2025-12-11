@@ -13,7 +13,7 @@ import Preloader from "@/components/ui/Preloader/Preloader";
 import NotPublished from "@/components/empty/NotPublished/NotPublished";
 
 const TeacherPortalPage: NextPage = () => {
-    const { selectedDate, teacher, setTeacherAndSchool, datesOptions, isDatesLoading } = usePortalContext();
+    const { selectedDate, teacher, setTeacherAndSchool, datesOptions, isDatesLoading, settings } = usePortalContext();
     const { fetchTeacherScheduleDate } = useTeacherTableContext();
 
     const params = useParams();
@@ -64,7 +64,12 @@ const TeacherPortalPage: NextPage = () => {
 
     return (
         <div className={styles.container}>
-            <TeacherTable teacher={teacher} selectedDate={selectedDate} />
+            <TeacherTable
+                teacher={teacher}
+                selectedDate={selectedDate}
+                hoursNum={settings?.hoursNum}
+                fitToSchedule
+            />
         </div>
     );
 };

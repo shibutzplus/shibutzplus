@@ -74,3 +74,17 @@
         display: none;
     }
 }
+
+/* <= 350px */
+@media (max-width: 350px) {
+    .topNavRight {
+        width: auto;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .topNavLeft {
+        flex-shrink: 0;
+        width: auto !important;
+    }
+}

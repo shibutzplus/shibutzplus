@@ -16,10 +16,11 @@ export const createNewEmptyColumn = (
     selectedDate: string,
     columnId: string,
     type: ColumnType,
+    hoursNum: number = HOURS_IN_DAY,
 ) => {
     dailySchedule = initDailySchedule(dailySchedule, selectedDate, columnId);
 
-    for (let hour = 1; hour <= HOURS_IN_DAY; hour++) {
+    for (let hour = 1; hour <= hoursNum; hour++) {
         dailySchedule[selectedDate][columnId][`${hour}`] = {
             headerCol: { type },
             hour: hour,
@@ -42,11 +43,12 @@ export const setEmptyTeacherColumn = (
     selectedDate: string,
     columnId: string,
     type: ColumnType,
+    hoursNum: number = HOURS_IN_DAY,
     headerTeacher?: TeacherType,
 ) => {
     dailySchedule = initDailySchedule(dailySchedule, selectedDate, columnId);
 
-    for (let hour = 1; hour <= HOURS_IN_DAY; hour++) {
+    for (let hour = 1; hour <= hoursNum; hour++) {
         dailySchedule[selectedDate][columnId][`${hour}`] = {
             headerCol: { headerTeacher, type },
             hour: hour,

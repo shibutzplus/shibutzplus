@@ -33,10 +33,3 @@
         text-overflow: unset;
     }
 }
-
-/* <= 360px */
-@media (max-width: 360px) {
-    .navContainer {
-        display: none;
-    }
-}

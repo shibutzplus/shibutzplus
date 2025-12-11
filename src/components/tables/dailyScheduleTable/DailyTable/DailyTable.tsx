@@ -11,6 +11,8 @@ import DailyEventHeader from "../DailyEventHeader/DailyEventHeader";
 import DailyTeacherCell from "../DailyTeacherCell/DailyTeacherCell";
 import DailyEventCell from "../DailyEventCell/DailyEventCell";
 import { useColumnAnimation } from "./useColumnAnimation";
+import { useMainContext } from "@/context/MainContext";
+import { HOURS_IN_DAY } from "@/utils/time";
 
 // --- Wrapper Components ---
 
@@ -94,6 +96,9 @@ const DailyTable: React.FC<DailyTableProps> = ({
     selectedDate,
     onTeacherClick,
 }) => {
+    const { settings } = useMainContext();
+    const hoursNum = settings?.hoursNum || HOURS_IN_DAY;
+
     const schedule = mainDailyTable[selectedDate];
     const tableColumns = schedule ? Object.keys(schedule) : [];
     const sortedTableColumns = useSortColumns(schedule, mainDailyTable, selectedDate, tableColumns);
@@ -123,7 +128,7 @@ const DailyTable: React.FC<DailyTableProps> = ({
         prevSortedColumnsRef.current = sortedTableColumns;
     }, [sortedTableColumns]);
 
-    const rows = Array.from({ length: TableRows }, (_, i) => i + 1);
+    const rows = Array.from({ length: hoursNum }, (_, i) => i + 1);
 
     // Use Custom Hook for Animation
     const { animatingWidths, handleColumnAnimation } = useColumnAnimation(sortedTableColumns, selectedDate);

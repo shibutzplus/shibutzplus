@@ -11,6 +11,8 @@ import { getSchoolAction as getSchoolFromDB } from "@/app/actions/GET/getSchoolA
 import { getTeachersAction as getTeachersFromDB } from "@/app/actions/GET/getTeachersAction";
 import { getSubjectsAction as getSubjectsFromDB } from "@/app/actions/GET/getSubjectsAction";
 import { getClassesAction as getClassesFromDB } from "@/app/actions/GET/getClassesAction";
+import { getSchoolSettingsAction } from "@/app/actions/GET/getSchoolSettingsAction";
+import { GetSchoolSettingsResponse, SchoolSettingsType } from "@/models/types/settings";
 import {
     getCacheTimestamp, getStorageClasses, getStorageSubjects, getStorageTeachers,
     setCacheTimestamp, setStorageClasses, setStorageSubjects, setStorageTeachers,
@@ -22,6 +24,8 @@ import { sortByHebrewName } from "@/utils/sort";
 interface useInitDataProps {
     school: SchoolType | undefined;
     setSchool: (school: SchoolType | undefined) => void;
+    settings: SchoolSettingsType | undefined;
+    setSettings: (settings: SchoolSettingsType | undefined) => void;
     teachers: TeacherType[] | undefined;
     setTeachers: (teachers: TeacherType[] | undefined) => void;
     subjects: SubjectType[] | undefined;
@@ -40,6 +44,8 @@ const SYNC_TS_KEY = "sync_ts_detailsUpdate";
 const useInitData = ({
     school,
     setSchool,
+    settings,
+    setSettings,
     teachers,
     setTeachers,
     subjects,
@@ -63,11 +69,15 @@ const useInitData = ({
     useEffect(() => {
         const fetchData = async (schoolId: string) => {
             try {
-                let schoolPromise, classesPromise, teachersPromise, subjectsPromise;
+                let schoolPromise, classesPromise, teachersPromise, subjectsPromise, settingsPromise;
 
                 if (!school) {
                     // fetch school from DB
                     schoolPromise = getSchoolFromDB(schoolId);
+                }
+
+                if (!settings) {
+                    settingsPromise = getSchoolSettingsAction(schoolId);
                 }
 
                 // single poll for any data change across entities
@@ -113,16 +123,24 @@ const useInitData = ({
                         );
                 }
 
-                const [schoolRes, classesRes, teachersRes, subjectsRes] = await Promise.all([
+                const [schoolRes, classesRes, teachersRes, subjectsRes, settingsRes] = await Promise.all([
                     schoolPromise || Promise.resolve(null),
                     classesPromise || Promise.resolve(null),
                     teachersPromise || Promise.resolve(null),
                     subjectsPromise || Promise.resolve(null),
+                    settingsPromise || Promise.resolve(null),
                 ]);
 
                 if (schoolRes && schoolRes.success && schoolRes.data) {
                     setSchool(schoolRes.data);
                 }
+
+                const resolvedSettingsRes = settingsRes as unknown as GetSchoolSettingsResponse | null;
+
+                if (resolvedSettingsRes && resolvedSettingsRes.success && resolvedSettingsRes.data) {
+                    setSettings(resolvedSettingsRes.data);
+                }
+
                 if (teachersRes && teachersRes.success && teachersRes.data) {
                     const sortedTeachers = sortByHebrewName(teachersRes.data);
                     setTeachers(sortedTeachers);
@@ -161,7 +179,7 @@ const useInitData = ({
 
             fetchData(effectiveSchoolId);
         }
-    }, [session, status, school, teachers, subjects, classes]);
+    }, [session, status, school, settings, teachers, subjects, classes]);
 };
 
 export default useInitData;

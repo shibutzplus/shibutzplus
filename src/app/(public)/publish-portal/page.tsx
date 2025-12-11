@@ -18,6 +18,7 @@ const PublishedPortalPage: NextPage = () => {
         fetchPublishScheduleData,
         isDatesLoading,
         hasFetched,
+        settings,
     } = usePortalContext();
 
     useEffect(() => {
@@ -47,6 +48,7 @@ const PublishedPortalPage: NextPage = () => {
                 selectedDate={selectedDate}
                 appType="public"
                 EmptyTable={(props) => <NotPublished {...props} text="המערכת לא פורסמה" />}
+                hoursNum={settings?.hoursNum}
             />
         </section>
     );

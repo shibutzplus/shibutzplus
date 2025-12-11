@@ -14,11 +14,28 @@ type TeacherTableProps = {
     teacher?: TeacherType;
     selectedDate: string;
     isInsidePanel?: boolean;
+    hoursNum?: number;
+    fitToSchedule?: boolean;
 };
 
-const TeacherTable: React.FC<TeacherTableProps> = ({ teacher, selectedDate, isInsidePanel }) => {
+const TeacherTable: React.FC<TeacherTableProps> = ({
+    teacher,
+    selectedDate,
+    isInsidePanel,
+    hoursNum,
+    fitToSchedule,
+}) => {
     const { mainPortalTable, hasFetched } = useTeacherTableContext();
     const dayTable = selectedDate ? mainPortalTable[selectedDate] : undefined;
+
+    let rowsCount = hoursNum || TableRows;
+    if (fitToSchedule && dayTable) {
+        const hours = Object.keys(dayTable).map(Number);
+        if (hours.length > 0) {
+            const maxHour = Math.max(...hours);
+            rowsCount = maxHour;
+        }
+    }
 
     if (!hasFetched)
         return (
@@ -48,7 +65,7 @@ const TeacherTable: React.FC<TeacherTableProps> = ({ teacher, selectedDate, isIn
                     </tr>
                 </thead>
                 <tbody className={styles.scheduleTableBody}>
-                    {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => {
+                    {Array.from({ length: rowsCount }, (_, i) => i + 1).map((hour) => {
                         const row = dayTable?.[String(hour)];
                         return (
                             <TeacherRow

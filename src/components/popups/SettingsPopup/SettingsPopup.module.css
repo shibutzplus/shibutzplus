@@ -1,0 +1,73 @@
+.popupContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--dark-text-color);
+    margin-bottom: 0.5rem;
+}
+
+.inputsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 250px;
+}
+
+.buttonContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 1rem;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.saveButton {
+    background-color: var(--button-background-color);
+    color: var(--button-color);
+    border: none;
+    border-radius: var(--border-radius-input);
+    padding: 0.5rem 2rem;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    min-width: 100px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.saveButton:hover {
+    background-color: var(--button-hover-background-color);
+}
+
+.cancelButton {
+    background-color: transparent;
+    color: var(--dark-text-color);
+    border: 1px solid var(--dark-border-color);
+    border-radius: var(--border-radius-input);
+    padding: 0.5rem 2rem;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    min-width: 100px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cancelButton:hover {
+    background-color: var(--button-disabled-background-color);
+    color: white;
+}

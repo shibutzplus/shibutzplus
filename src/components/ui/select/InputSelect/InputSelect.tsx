@@ -34,6 +34,7 @@ type InputSelectProps = {
     onBeforeRemove?: (removedLabel: string | null, proceed: () => void) => void;
     isCentered?: boolean;
     fontSize?: string;
+    caretColor?: string;
 };
 
 const InputSelect: React.FC<InputSelectProps> = ({
@@ -56,6 +57,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
     onBeforeRemove,
     isCentered = false,
     fontSize,
+    caretColor,
 }) => {
     const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
     const [isMounted, setIsMounted] = useState(false);
@@ -171,6 +173,8 @@ const InputSelect: React.FC<InputSelectProps> = ({
             gridArea: "1/1/2/3",
             visibility: "visible",
             minWidth: 0,
+            caretColor: caretColor || color,
+            color: color,
         }),
         placeholder: (provided: any) => {
             const base =

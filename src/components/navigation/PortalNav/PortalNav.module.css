@@ -26,12 +26,13 @@
 }
 
 .topBtn:hover {
-    background-color: var(--inner-background-color);
+    background-color: var(--inner-background-color-bright);
     font-weight: 600;
+    transform: translateY(-1px);
 }
 
 .topBtn.active {
-    background-color: var(--skeleton-input-color);
+    background-color: var(--inner-background-color-bright);
     font-weight: 600;
 }
 
@@ -44,5 +45,16 @@
 
     .btnText {
         display: none;
+    }
+}
+
+/* <= 350px */
+@media (max-width: 350px) {
+    .topButtonsContainer {
+        gap: 5px;
+    }
+
+    .topBtn {
+        width: 40px;
     }
 }
