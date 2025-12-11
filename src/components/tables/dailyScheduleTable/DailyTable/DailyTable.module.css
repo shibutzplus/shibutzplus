@@ -109,7 +109,7 @@
 .dataCell {
     background-color: var(--inner-background-color);
     border-radius: 0;
-    padding: 5px;
+    padding: 2px 4px;
     vertical-align: top;
     border: none;
     height: var(--table-daily-cell-height);
