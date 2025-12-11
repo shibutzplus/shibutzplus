@@ -2,7 +2,6 @@
 
 import React from "react";
 import { TableRows } from "@/models/constant/table";
-import TeacherHeader from "../TeacherHeader/TeacherHeader";
 import TeacherRow from "../TeacherRow/TeacherRow";
 import styles from "./TeacherTable.module.css";
 import { useTeacherTableContext } from "@/context/TeacherTableContext";
@@ -14,12 +13,11 @@ import Preloader from "@/components/ui/Preloader/Preloader";
 type TeacherTableProps = {
     teacher?: TeacherType;
     selectedDate: string;
-    onlyMobile?: boolean;
     isInsidePanel?: boolean;
 };
 
-const TeacherTable: React.FC<TeacherTableProps> = ({ teacher, selectedDate, onlyMobile, isInsidePanel }) => {
-    const { mainPortalTable, isPortalLoading, hasFetched } = useTeacherTableContext();
+const TeacherTable: React.FC<TeacherTableProps> = ({ teacher, selectedDate, isInsidePanel }) => {
+    const { mainPortalTable, hasFetched } = useTeacherTableContext();
     const dayTable = selectedDate ? mainPortalTable[selectedDate] : undefined;
 
     if (!hasFetched)
@@ -32,24 +30,39 @@ const TeacherTable: React.FC<TeacherTableProps> = ({ teacher, selectedDate, only
     if (!dayTable || Object.keys(dayTable).length === 0) return <NotPublished date={selectedDate} />;
 
     return (
-        <table className={styles.scheduleTable}>
-            <TeacherHeader onlyMobile={onlyMobile} isInsidePanel={isInsidePanel} />
-            <tbody className={styles.scheduleTableBody}>
-                {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => {
-                    const row = dayTable?.[String(hour)];
-                    return (
-                        <TeacherRow
-                            key={hour}
-                            hour={hour}
-                            row={row}
-                            teacher={teacher}
-                            selectedDate={selectedDate}
-                            onlyMobile={onlyMobile}
-                        />
-                    );
-                })}
-            </tbody>
-        </table>
+        <div className={styles.tableContainer}>
+            <table className={styles.scheduleTable}>
+                <thead className={isInsidePanel ? styles.theadInsidePanel : ""}>
+                    <tr>
+                        <th className={styles.emptyColSeparator}></th>
+                        <th className={`${styles.headerCell} ${styles.hoursColumn}`}>
+                            <div className={`${styles.headerInner} ${styles.hoursHeader}`}></div>
+                        </th>
+                        <th className={styles.emptyColSeparator}></th>
+                        <th className={`${styles.headerCell} ${styles.detailsColumn}`}>
+                            <div className={styles.headerInner}>ממלא מקום</div>
+                        </th>
+                        <th className={`${styles.headerCell} ${styles.instructionsColumn}`}>
+                            <div className={styles.headerInner}>חומר לימוד</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody className={styles.scheduleTableBody}>
+                    {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => {
+                        const row = dayTable?.[String(hour)];
+                        return (
+                            <TeacherRow
+                                key={hour}
+                                hour={hour}
+                                row={row}
+                                teacher={teacher}
+                                selectedDate={selectedDate}
+                            />
+                        );
+                    })}
+                </tbody>
+            </table>
+        </div>
     );
 };
 

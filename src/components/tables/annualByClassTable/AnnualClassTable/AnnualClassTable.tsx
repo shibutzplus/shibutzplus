@@ -9,7 +9,7 @@ import { TableRows } from "@/models/constant/table";
 import { useMainContext } from "@/context/MainContext";
 import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
-import AnnualHeader from "../AnnualHeader/AnnualHeader";
+import { DAYS_OF_WORK_WEEK } from "@/utils/time";
 import AnnualRow from "../AnnualRow/AnnualRow";
 import styles from "./AnnualClassTable.module.css";
 import { AnnualInputCellType } from "@/models/types/annualSchedule";
@@ -99,26 +99,42 @@ const AnnualClassTable: React.FC<AnnualClassTableProps> = ({
     };
 
     return (
-        <table className={styles.scheduleTable}>
-            <AnnualHeader />
-            <tbody className={styles.scheduleTableBody}>
-                {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => (
-                    <AnnualRow
-                        key={hour}
-                        hour={hour}
-                        isDisabled={isDisabled}
-                        schedule={schedule}
-                        selectedClassId={selectedClassId}
-                        subjects={subjects || []}
-                        teachers={teachers || []}
-                        classes={classes || []}
-                        onCreateSubject={handleCreateSubject}
-                        onCreateTeacher={handleCreateTeacher}
-                        handleAddNewRow={handleAddNewRow}
-                    />
-                ))}
-            </tbody>
-        </table>
+        <div className={styles.tableContainer}>
+            <table className={styles.scheduleTable}>
+                <thead>
+                    <tr>
+                        <th className={`${styles.headerCell} ${styles.hoursColumn}`}>
+                            <div className={`${styles.headerInner} ${styles.hoursHeader}`}></div>
+                        </th>
+                        <th className={styles.emptyColSeparator}></th>
+                        {DAYS_OF_WORK_WEEK.map((day) => (
+                            <th key={day} className={styles.headerCell}>
+                                <div className={styles.headerInner}>
+                                    {`יום ${day}'`}
+                                </div>
+                            </th>
+                        ))}
+                    </tr>
+                </thead>
+                <tbody className={styles.scheduleTableBody}>
+                    {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => (
+                        <AnnualRow
+                            key={hour}
+                            hour={hour}
+                            isDisabled={isDisabled}
+                            schedule={schedule}
+                            selectedClassId={selectedClassId}
+                            subjects={subjects || []}
+                            teachers={teachers || []}
+                            classes={classes || []}
+                            onCreateSubject={handleCreateSubject}
+                            onCreateTeacher={handleCreateTeacher}
+                            handleAddNewRow={handleAddNewRow}
+                        />
+                    ))}
+                </tbody>
+            </table>
+        </div>
     );
 };
 

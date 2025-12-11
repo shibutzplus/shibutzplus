@@ -1,5 +1,7 @@
 :root {
 
+    --hours-in-day: 10;
+
     --background-color: #FCFDFF;
     --inner-background-color: #E1E1EA;
     --inner-background-color-bright: #F3F3F7;
@@ -34,26 +36,20 @@
     --shadow-background: #00000080;
     --loading-color: #575757;
 
-    --existing-teacher-color: #80B0FF;
-    --missing-teacher-color: #ED7A7A;
-    --event-color: #6EBE6A;
+    --missing-teacher-text-color: #ED7A7A;
 
-    /* Button colors */
     --button-color: #FFFFFF;
     --button-background-color: #000;
     --button-hover-background-color: #333;
     --button-disabled-color: #b9b9b9;
     --button-disabled-background-color: #919191;
 
-    --hours-in-day: 10;
+    --box-shadow-primary: 0px 4px 4px #00000010;
+    --box-shadow-btn: 0px 4px 4px #00000005;
 
     --input-height: 40px;
 
     --border-primary: 1px solid var(--dark-border-color);
-    --border-secondary: 1px solid var(--bright-border-color);
-
-    --box-shadow-primary: 0px 4px 4px #00000010;
-    --box-shadow-btn: 0px 4px 4px #00000005;
 
     --border-radius-input: 4px;
     --border-radius-table: 20px;
@@ -66,9 +62,9 @@
     --padding-top-mobile: 0.2rem;
 
     --padding-width: 10px;
-    --padding-width-mobile: 5px;
 
     --table-gray-color: #E1E1EC;
+    --table-hours-col-width: 35px;
 
     --table-daily-col-width: 240px;
     --table-daily-header-height: 50px;
@@ -82,7 +78,6 @@
     --table-annual-cell-height: 96px;
 
     --list-details-header-height: 50px;
-    --list-details-padding: 1rem;
     --list-details-row-padding: 7px 1rem;
     --list-details-row-padding-mobile: 5px 0.5rem;
     --list-details-actions-width: 160px;
@@ -90,8 +85,6 @@
 
     --table-teacher-details-col-width: 200px;
     --table-teacher-cell-height: 120px;
-
-    --table-cols-gap: 3px;
 
     /* Animation settings */
     --daily-delete-duration-ms: 300;

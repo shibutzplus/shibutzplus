@@ -101,11 +101,16 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
 
     const isActivity = classes.find((c) => c.id === selectedClassId)?.activity;
 
+    const subjectOptions = useMemo(
+        () => createSelectOptions<SubjectType>(filteredSubjects),
+        [filteredSubjects],
+    );
+
     return (
         <td className={styles.scheduleCell}>
             <div className={styles.cellContent}>
                 <DynamicInputMultiSelect
-                    options={createSelectOptions<SubjectType>(filteredSubjects)}
+                    options={subjectOptions}
                     value={schedule[selectedClassId]?.[day]?.[hour]?.subjects ?? []}
                     onChange={handleSubjectChange}
                     placeholder="מקצוע"

@@ -1,9 +1,12 @@
 .hoursColumn {
-    width: 30px;
-    min-width: 30px;
-    max-width: 30px;
+    width: var(--table-hours-col-width);
+    min-width: var(--table-hours-col-width);
+    max-width: var(--table-hours-col-width);
     padding: 0;
     background-color: var(--table-gray-color);
+    position: sticky;
+    right: 0;
+    z-index: 4;
 }
 
 .emptyCell {
@@ -15,8 +18,8 @@
 .hourCell {
     text-align: center;
     vertical-align: middle;
-    width: 75%;
-    aspect-ratio: 1;
+    width: 24px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
