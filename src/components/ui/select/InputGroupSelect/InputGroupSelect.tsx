@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import Select, { StylesConfig, components } from "react-select";
 import { GroupOption, SelectOption } from "@/models/types";
 import { customStyles } from "@/style/selectStyle";
@@ -51,29 +51,35 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     menuWidth,
     color,
 }) => {
-    const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
-    const [inputValue, setInputValue] = useState("");
-
-    useEffect(() => {
+    // Derived state instead of useState
+    const selectedOption = useMemo(() => {
         if (value) {
             const allOptions = options.flatMap((group) => group.options);
             const found = allOptions.find((opt) => opt.value === value);
-            setSelectedOption(found || { value, label: value });
-        } else {
-            setSelectedOption(null);
+            return found || { value, label: value };
         }
+        return null;
     }, [value, options]);
+
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
+    const [inputValue, setInputValue] = useState("");
 
     // Initialize collapsed state per group based on GroupOption.collapsed
     useEffect(() => {
         setCollapsedGroups((prev) => {
             const next: Record<string, boolean> = {};
+            let hasChanged = false;
             options.forEach((g) => {
-                next[g.label] =
-                    prev[g.label] !== undefined ? prev[g.label] : ((g as any).collapsed ?? false);
+                const newVal = prev[g.label] !== undefined ? prev[g.label] : ((g as any).collapsed ?? false);
+                next[g.label] = newVal;
+                if (prev[g.label] !== newVal) hasChanged = true;
             });
+            // Simple optimization to avoid update if keys/values are identical
+            // This is a naive check; if keys count differs, we should update.
+            const prevKeys = Object.keys(prev);
+            const nextKeys = Object.keys(next);
+            if (!hasChanged && prevKeys.length === nextKeys.length) return prev;
             return next;
         });
     }, [options]);
@@ -85,14 +91,12 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
         );
         if (!existsExact && isAllowAddNew && onCreate) {
             await onCreate(inputValue);
-            const newOption: SelectOption = { value: inputValue, label: inputValue };
-            setSelectedOption(newOption);
+            // Parent handles update via props, no local set needed
             onChange(inputValue);
         }
     };
 
     const handleChange = (option: SelectOption | null) => {
-        setSelectedOption(option);
         onChange(option ? option.value : "");
     };
 
@@ -191,7 +195,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
                 isDisabled={isDisabled}
                 placeholder={placeholder}
                 menuPlacement="auto"
-                menuPortalTarget={typeof document !== "undefined" ? document.body : null}
+                // menuPortalTarget={typeof document !== "undefined" ? document.body : null}
                 onMenuOpen={() => {
                     handleMenuOpen();
                     setIsMenuOpen(true);
@@ -244,4 +248,4 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     );
 };
 
-export default InputGroupSelect;
+export default React.memo(InputGroupSelect);
