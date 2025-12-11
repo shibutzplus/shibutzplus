@@ -1,11 +1,12 @@
-/* > 600px */
 .hoursColumn {
-    width: 30px;
-    min-width: 30px;
-    max-width: 30px;
+    width: var(--table-hours-col-width);
+    min-width: var(--table-hours-col-width);
+    max-width: var(--table-hours-col-width);
     padding: 0;
-    margin: 0;
     background-color: var(--table-gray-color);
+    position: sticky;
+    right: 0;
+    z-index: 4;
 }
 
 .emptyCell {
@@ -45,7 +46,7 @@
     padding-left: 4px;
     padding-right: 4px;
     box-sizing: border-box;
-    width: 85%;
+    width: auto;
     padding-bottom: 5px;
 }
 
