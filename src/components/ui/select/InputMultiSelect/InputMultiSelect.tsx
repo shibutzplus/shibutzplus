@@ -1,4 +1,4 @@
-import React, { useEffect, useId, useState } from "react";
+import React, { useEffect, useId, useState, useMemo } from "react";
 import Select from "react-select";
 import { GroupOption, SelectOption } from "@/models/types";
 import AddToSelectBtn from "../../buttons/AddToSelectBtn/AddToSelectBtn";
@@ -46,26 +46,23 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
     onCreate,
     onBeforeRemove,
 }) => {
-    const [options, setOptions] = useState<SelectOption[]>(initialOptions);
-    const [selectedOptions, setSelectedOptions] = useState<SelectOption[]>([]);
+    const [createdOptions, setCreatedOptions] = useState<SelectOption[]>([]);
     const [isMounted, setIsMounted] = useState(false);
     const selectInstanceId = useId(); // for SSR consistency
 
-    // Sync options list when parent updates
-    useEffect(() => {
-        setOptions(initialOptions);
-    }, [initialOptions]);
+    // Merge passed options with locally created ones
+    const options = useMemo(() => {
+        return [...initialOptions, ...createdOptions];
+    }, [initialOptions, createdOptions]);
 
-    // Sync selected options from incoming values
-    useEffect(() => {
-        if (!value || value.length === 0) {
-            setSelectedOptions([]);
-            return;
-        }
-        const selected = value
+    // Derive selected options directly from props
+    // We memoize this to prevent react-select from seeing a new object every time if nothing changed,
+    // although react-select handles that well usually.
+    const selectedOptions = useMemo(() => {
+        if (!value || value.length === 0) return [];
+        return value
             .map((v) => options.find((opt) => opt.value === v))
             .filter((x): x is SelectOption => Boolean(x));
-        setSelectedOptions(selected);
     }, [value, options]);
 
     // Client-only portal target for menus to avoid SSR warning
@@ -81,10 +78,10 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
 
         // Intercept remove actions to allow confirmation
         if (onBeforeRemove && meta.action === "remove-value") {
-            const removedLabel = ((meta as any).removedValue?.label as string | undefined) ?? null;
+            const removedLabel =
+                ((meta as any).removedValue?.label as string | undefined) ?? null;
 
             return onBeforeRemove(removedLabel, () => {
-                setSelectedOptions(next);
                 onChange(
                     next.map((o) => o.value),
                     meta.action as SelectMethod,
@@ -92,7 +89,6 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
             });
         }
 
-        setSelectedOptions(next);
         onChange(
             next.map((o) => o.value),
             meta.action as SelectMethod,
@@ -112,10 +108,11 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
             const valueId = await onCreate(labelTrimmed);
             if (valueId) {
                 const newOption: SelectOption = { value: valueId, label: labelTrimmed };
-                const updatedOptions = [...options, newOption];
-                setOptions(updatedOptions);
+                // Keep track of created options locally so they don't disappear
+                // until the parent passes them back in 'initialOptions' (if ever)
+                setCreatedOptions((prev) => [...prev, newOption]);
+
                 const nextSelected = [...selectedOptions, newOption];
-                setSelectedOptions(nextSelected);
                 onChange(
                     nextSelected.map((o) => o.value),
                     "create-option",
@@ -193,8 +190,6 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
                 closeMenuOnSelect={true}
                 hideSelectedOptions={false}
                 backspaceRemovesValue
-                menuPortalTarget={isMounted ? document.body : null}
-                menuPlacement="auto"
                 noOptionsMessage={({ inputValue }) =>
                     isAllowAddNew ? (
                         <AddToSelectBtn
@@ -239,4 +234,4 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({
     );
 };
 
-export default InputMultiSelect;
+export default React.memo(InputMultiSelect);

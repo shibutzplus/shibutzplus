@@ -10,25 +10,23 @@ type TeacherRowProps = {
     row?: TeacherScheduleType;
     teacher?: TeacherType;
     selectedDate: string;
-    onlyMobile?: boolean;
 };
 
-const TeacherRow: React.FC<TeacherRowProps> = ({ hour, row, teacher, selectedDate, onlyMobile }) => {
+const TeacherRow: React.FC<TeacherRowProps> = ({ hour, row, teacher, selectedDate }) => {
     return (
         <tr className={styles.teacherRow}>
+            <td className={styles.emptyCell}></td>
             <td className={styles.hoursColumn}>
                 <div className={styles.hourCell}>{hour}</div>
             </td>
             <td className={styles.emptyCell}></td>
 
-            {!onlyMobile && (
-                <td className={`${styles.scheduleDetailsCell} ${styles.desktopOnly}`}>
-                    <TeacherDetailsCell row={row} teacher={teacher} />
-                </td>
-            )}
+            <td className={`${styles.scheduleDetailsCell} ${styles.desktopOnly}`}>
+                <TeacherDetailsCell row={row} teacher={teacher} />
+            </td>
 
             <td className={styles.scheduleInstructionsCell}>
-                <div className={styles.mobileDetails} style={onlyMobile ? { display: "block" } : undefined}>
+                <div className={styles.mobileDetails}>
                     <TeacherDetailsCell row={row} teacher={teacher} />
                 </div>
                 <TeacherInstructionsCell row={row} teacher={teacher} selectedDate={selectedDate} />
