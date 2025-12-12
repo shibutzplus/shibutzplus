@@ -9,8 +9,8 @@ import { updateSettingsAction } from "@/app/actions/PUT/updateSettingsAction";
 import { errorToast, successToast } from "@/lib/toast";
 import { SchoolSettingsType } from "@/models/types/settings";
 
-const hoursOptions: SelectOption[] = Array.from({ length: 5 }, (_, i) => {
-    const val = (i + 7).toString();
+const hoursOptions: SelectOption[] = Array.from({ length: 7 }, (_, i) => {
+    const val = (i + 6).toString();
     return { value: val, label: val };
 });
 
@@ -70,7 +70,7 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({
 
             <div className={styles.inputsContainer}>
                 <InputSelect
-                    label="מקסימום מספר השעות ביום לימודים"
+                    label="שעות לימוד מקסימליות ביום:"
                     options={hoursOptions}
                     value={hours}
                     onChange={(val) => setHours(val)}
@@ -80,7 +80,7 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({
                 />
 
                 <InputSelect
-                    label="הצגת השינויים במערכת היומית של בית הספר גם למורים החיצוניים"
+                    label="הצגת השינויים במערכת בית הספר גם למורים שאינם בצוות הקבוע:"
                     options={externalTeacherOptions}
                     value={showExternal}
                     onChange={(val) => setShowExternal(val)}
