@@ -98,127 +98,141 @@ const InputSelect: React.FC<InputSelectProps> = ({
         onChange(next, meta.action as SelectMethod);
     };
 
-    const baseStyles = customStyles(
-        error || "",
+    const stylesOverride: StylesConfig<SelectOption, false> = React.useMemo(() => {
+        const baseStyles = customStyles(
+            error || "",
+            hasBorder,
+            isDisabled ? false : true,
+            backgroundColor,
+            color,
+            placeholderColor,
+            colorHover,
+        );
+
+        return {
+            ...(baseStyles as StylesConfig<SelectOption, false>),
+            control: (provided: any) => {
+                const base =
+                    typeof baseStyles.control === "function"
+                        ? baseStyles.control(provided)
+                        : provided;
+                return {
+                    ...base,
+                    fontSize: fontSize || base.fontSize,
+                    flexWrap: "nowrap", // Prevent wrapping of indicators
+                };
+            },
+            valueContainer: (provided: any) => {
+                const base =
+                    typeof baseStyles.valueContainer === "function"
+                        ? baseStyles.valueContainer(provided)
+                        : provided;
+                return {
+                    ...base,
+                    overflow: "hidden",
+                    justifyContent: isCentered ? "center" : "flex-start",
+                    flex: "1 1 auto",
+                    flexWrap: "nowrap",
+                    display: "grid",
+                    gridTemplateColumns: "1fr auto",
+                    minWidth: 0, // Allow shrinking below content size
+                };
+            },
+            indicatorsContainer: (provided: any) => ({
+                ...provided,
+                flexShrink: 0,
+                display: "flex",
+                justifyContent: "flex-start",
+            }),
+            dropdownIndicator: (provided: any) => ({
+                ...provided,
+                marginRight: "auto",
+                padding: 10,
+                color: color,
+            }),
+            singleValue: (provided: any) => {
+                const base =
+                    typeof baseStyles.singleValue === "function"
+                        ? baseStyles.singleValue(provided)
+                        : provided;
+                return {
+                    ...base,
+                    fontSize: fontSize || base.fontSize,
+                    maxWidth: "100%",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    fontWeight: isBold ? 600 : 400,
+                    textAlign: isCentered ? "center" : "right",
+                    width: isCentered ? "100%" : "auto",
+                    gridArea: "1/1/2/3",
+                    minWidth: 0, // Allow truncation in grid
+                };
+            },
+            input: (provided: any) => ({
+                ...provided,
+                fontSize: fontSize || provided.fontSize,
+                gridArea: "1/1/2/3",
+                visibility: "visible",
+                minWidth: 0,
+                caretColor: caretColor || color,
+                color: color,
+            }),
+            placeholder: (provided: any) => {
+                const base =
+                    typeof baseStyles.placeholder === "function"
+                        ? baseStyles.placeholder(provided)
+                        : provided;
+                return {
+                    ...base,
+                    fontSize: fontSize || base.fontSize,
+                };
+            },
+            option: (provided: any, state: any) => {
+                const base =
+                    typeof baseStyles.option === "function"
+                        ? baseStyles.option(provided, state)
+                        : provided;
+                return {
+                    ...base,
+                    fontSize: fontSize || base.fontSize,
+                };
+            },
+            clearIndicator: (provided: any) => {
+                const base =
+                    typeof baseStyles.clearIndicator === "function"
+                        ? baseStyles.clearIndicator(provided)
+                        : provided;
+                return {
+                    ...base,
+                    color: InputColor,
+                    cursor: "pointer",
+                    borderRadius: "50%",
+                    width: 30,
+                    height: 30,
+                    marginLeft: -5,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    "&:hover": {
+                        color: "red",
+                    },
+                };
+            },
+        };
+    }, [
+        error,
         hasBorder,
-        isDisabled ? false : true,
+        isDisabled,
         backgroundColor,
         color,
         placeholderColor,
         colorHover,
-    );
-    const stylesOverride: StylesConfig<SelectOption, false> = {
-        ...(baseStyles as StylesConfig<SelectOption, false>),
-        control: (provided: any) => {
-            const base =
-                typeof baseStyles.control === "function"
-                    ? baseStyles.control(provided)
-                    : provided;
-            return {
-                ...base,
-                fontSize: fontSize || base.fontSize,
-                flexWrap: "nowrap", // Prevent wrapping of indicators
-            };
-        },
-        valueContainer: (provided: any) => {
-            const base =
-                typeof baseStyles.valueContainer === "function"
-                    ? baseStyles.valueContainer(provided)
-                    : provided;
-            return {
-                ...base,
-                overflow: "hidden",
-                justifyContent: isCentered ? "center" : "flex-start",
-                flex: "1 1 auto",
-                flexWrap: "nowrap",
-                display: "grid",
-                gridTemplateColumns: "1fr auto",
-                minWidth: 0, // Allow shrinking below content size
-            };
-        },
-        indicatorsContainer: (provided: any) => ({
-            ...provided,
-            flexShrink: 0,
-            display: "flex",
-            justifyContent: "flex-start",
-        }),
-        dropdownIndicator: (provided: any) => ({
-            ...provided,
-            marginRight: "auto",
-            padding: 10,
-            color: color,
-        }),
-        singleValue: (provided: any) => {
-            const base =
-                typeof baseStyles.singleValue === "function"
-                    ? baseStyles.singleValue(provided)
-                    : provided;
-            return {
-                ...base,
-                fontSize: fontSize || base.fontSize,
-                maxWidth: "100%",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                fontWeight: isBold ? 600 : 400,
-                textAlign: isCentered ? "center" : "right",
-                width: isCentered ? "100%" : "auto",
-                gridArea: "1/1/2/3",
-                minWidth: 0, // Allow truncation in grid
-            };
-        },
-        input: (provided: any) => ({
-            ...provided,
-            fontSize: fontSize || provided.fontSize,
-            gridArea: "1/1/2/3",
-            visibility: "visible",
-            minWidth: 0,
-            caretColor: caretColor || color,
-            color: color,
-        }),
-        placeholder: (provided: any) => {
-            const base =
-                typeof baseStyles.placeholder === "function"
-                    ? baseStyles.placeholder(provided)
-                    : provided;
-            return {
-                ...base,
-                fontSize: fontSize || base.fontSize,
-            };
-        },
-        option: (provided: any, state: any) => {
-            const base =
-                typeof baseStyles.option === "function"
-                    ? baseStyles.option(provided, state)
-                    : provided;
-            return {
-                ...base,
-                fontSize: fontSize || base.fontSize,
-            };
-        },
-        clearIndicator: (provided: any) => {
-            const base =
-                typeof baseStyles.clearIndicator === "function"
-                    ? baseStyles.clearIndicator(provided)
-                    : provided;
-            return {
-                ...base,
-                color: InputColor,
-                cursor: "pointer",
-                borderRadius: "50%",
-                width: 30,
-                height: 30,
-                marginLeft: -5,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                "&:hover": {
-                    color: "red",
-                },
-            };
-        },
-
-    };
+        fontSize,
+        isBold,
+        isCentered,
+        caretColor,
+    ]);
 
     return (
         <SelectLayout resolvedId={id || ""} error={error} label={label}>
@@ -236,6 +250,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
                 backspaceRemovesValue
                 menuPortalTarget={isMounted ? document.body : null}
                 menuPlacement="auto"
+                menuPosition="fixed"
                 noOptionsMessage={() => <div>לא נמצאו אפשרויות</div>}
                 styles={stylesOverride}
                 classNamePrefix="react-select"
