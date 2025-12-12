@@ -4,7 +4,6 @@ import { RegisterRequest, RegisterResponse } from "@/models/types/auth";
 import { db, schema, executeQuery } from "@/db";
 import { eq } from "drizzle-orm";
 import msg from "@/resources/messages";
-import { initClasses, initSubjects } from "@/resources/levelsOptions";
 import { SchoolLevel } from "@/db/schema";
 import bcrypt from "bcryptjs";
 
@@ -66,21 +65,6 @@ const signUp = async (params: RegisterRequest): Promise<RegisterResponse> => {
                     .returning({ id: schema.schools.id });
 
                 const newSchoolId = newSchool.id;
-
-                // Create classes and subjects
-                const classes = initClasses(level as SchoolLevel);
-                const subjects = initSubjects(level as SchoolLevel);
-
-                for (const className of classes) {
-                    await db.insert(schema.classes).values({ name: className, schoolId: newSchoolId }).returning();
-                }
-
-                for (const subject of subjects) {
-                    await db.insert(schema.subjects).values({
-                        name: subject,
-                        schoolId: newSchoolId,
-                    });
-                }
 
                 return newSchoolId;
             });

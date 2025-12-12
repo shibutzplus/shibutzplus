@@ -3,9 +3,10 @@
 import React, { useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import styles from "./HamburgerNav.module.css";
 import Icons from "@/style/icons";
+import { OurEmail } from "@/models/constant";
 import { motion, AnimatePresence } from "motion/react";
 import { useAccessibility } from "../../../hooks/browser/useAccessibility";
 import routePath from "../../../routes";
@@ -185,6 +186,8 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
     const { openPopup } = usePopup();
     const context = useOptionalMainContext();
     const school = context?.school;
+    const { data: session } = useSession();
+    const userEmail = session?.user?.email;
 
     useAccessibility({ isOpen, navRef, onClose });
 
@@ -229,6 +232,20 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
         })
         .map((group) => {
             let links = group.links;
+
+            if (group.title === "בניית מערכת שנתית" && userEmail === OurEmail) {
+                const hasLink = links.some((l) => l.p === "/annual-import");
+                if (!hasLink) {
+                    links = [
+                        ...links,
+                        {
+                            name: "ייבוא מערכת",
+                            p: "/annual-import",
+                            Icon: <Icons.upload size={24} />,
+                        },
+                    ];
+                }
+            }
 
             // Inject "School Schedule" for substitute teachers if setting enabled
             if (
