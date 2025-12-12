@@ -25,7 +25,7 @@ const TeacherTable: React.FC<TeacherTableProps> = ({
     hoursNum,
     fitToSchedule,
 }) => {
-    const { mainPortalTable, hasFetched } = useTeacherTableContext();
+    const { mainPortalTable, hasFetched, isPortalLoading } = useTeacherTableContext();
     const dayTable = selectedDate ? mainPortalTable[selectedDate] : undefined;
 
     let rowsCount = hoursNum || TableRows;
@@ -37,14 +37,14 @@ const TeacherTable: React.FC<TeacherTableProps> = ({
         }
     }
 
-    if (!hasFetched)
+    if (!hasFetched || isPortalLoading || !dayTable)
         return (
             <div className={styles.loaderContainer}>
                 <Preloader />
             </div>
         );
 
-    if (!dayTable || Object.keys(dayTable).length === 0) return <NotPublished date={selectedDate} />;
+    if (Object.keys(dayTable).length === 0) return <NotPublished date={selectedDate} />;
 
     return (
         <div className={styles.tableContainer}>

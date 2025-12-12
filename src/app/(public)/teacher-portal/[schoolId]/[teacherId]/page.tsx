@@ -32,12 +32,8 @@ const TeacherPortalPage: NextPage = () => {
         if (!teacher) setTeacher();
     }, [teacherId, schoolId]);
 
-    const isValidDate = datesOptions.some((d) => d.value === selectedDate);
-
     useEffect(() => {
-        if (isValidDate) {
-            fetchTeacherScheduleDate(teacher, selectedDate);
-        }
+        fetchTeacherScheduleDate(teacher, selectedDate);
     }, [selectedDate, teacher?.id, schoolId, datesOptions]);
 
     if (!teacher)
@@ -53,14 +49,6 @@ const TeacherPortalPage: NextPage = () => {
                 <Preloader />
             </div>
         );
-
-    if (!isValidDate) {
-        return (
-            <div className={styles.container}>
-                <NotPublished date={selectedDate} text="אין שינויים במערכת האישית" />
-            </div>
-        );
-    }
 
     return (
         <div className={styles.container}>

@@ -70,7 +70,7 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({
 
             <div className={styles.inputsContainer}>
                 <InputSelect
-                    label="מספר השעות ביום"
+                    label="מקסימום מספר השעות ביום לימודים"
                     options={hoursOptions}
                     value={hours}
                     onChange={(val) => setHours(val)}
