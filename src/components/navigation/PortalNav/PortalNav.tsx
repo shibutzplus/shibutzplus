@@ -43,9 +43,9 @@ const PortalNav: React.FC = () => {
                 className={`${styles.topBtn} ${pathname.includes(router.publishedPortal.p) ? styles.active : ""}`}
             >
                 {pathname.includes(router.publishedPortal.p) ? (
-                    <Icons.calendarFill size={18} style={{ marginInlineEnd: "4px" }} />
+                    <Icons.groupSolid size={22} style={{ marginInlineEnd: "4px" }} />
                 ) : (
-                    <Icons.calendar size={18} style={{ marginInlineEnd: "4px" }} />
+                    <Icons.group size={22} style={{ marginInlineEnd: "4px" }} />
                 )}
                 <span className={styles.btnText}>מערכת בית ספרית</span>
             </button>

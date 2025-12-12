@@ -100,7 +100,7 @@ interface DailyTableProviderProps {
 }
 
 export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children }) => {
-    const { school, teachers } = useMainContext();
+    const { school, teachers, settings } = useMainContext();
 
     // Main state for table object storage
     const [mainDailyTable, setMainDailyTable] = useState<DailySchedule>({});
@@ -175,6 +175,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                         mainDailyTable,
                         selectedDate,
                         response.data,
+                        settings?.hoursNum
                     );
                     if (newSchedule) setMainAndStorageTable(newSchedule);
                 } else {
@@ -209,6 +210,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
             selectedDate,
             newColumnId,
             type,
+            settings?.hoursNum
         );
         setMainAndStorageTable(updatedSchedule);
     };

@@ -5,6 +5,7 @@ import styles from "./PageLayout.module.css";
 import Logo from "@/components/ui/Logo/Logo";
 import HamburgerNav, { HamburgerButton } from "@/components/navigation/HamburgerNav/HamburgerNav";
 import { AppType } from "@/models/types";
+import { SchoolSettingsType } from "@/models/types/settings";
 
 type PageLayoutProps = {
     children: React.ReactNode;
@@ -16,6 +17,7 @@ type PageLayoutProps = {
     leftSideWidth?: number;
     hideLogo?: boolean;
     contentClassName?: string;
+    schoolSettings?: SchoolSettingsType;
 };
 
 export default function PageLayout({
@@ -28,6 +30,7 @@ export default function PageLayout({
     leftSideWidth = 230,
     hideLogo = false,
     contentClassName = "",
+    schoolSettings,
 }: PageLayoutProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -65,6 +68,7 @@ export default function PageLayout({
                 hamburgerType={appType}
                 isOpen={isMenuOpen}
                 onClose={() => setIsMenuOpen(false)}
+                schoolSettings={schoolSettings}
             />
         </>
     );

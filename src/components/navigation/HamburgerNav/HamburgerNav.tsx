@@ -10,6 +10,10 @@ import { motion, AnimatePresence } from "motion/react";
 import { useAccessibility } from "../../../hooks/browser/useAccessibility";
 import routePath from "../../../routes";
 import { clearStorage, getStorageTeacher } from "@/lib/localStorage";
+import { usePopup } from "@/context/PopupContext";
+import SettingsPopup from "@/components/popups/SettingsPopup/SettingsPopup";
+import { useOptionalMainContext } from "@/context/MainContext";
+
 import {
     clearSessionStorage,
     getSessionStorage,
@@ -19,6 +23,8 @@ import {
 import { AppType } from "@/models/types";
 import Logo from "../../ui/Logo/Logo";
 import { TeacherRoleValues } from "@/models/types/teachers";
+import { HOURS_IN_DAY } from "@/utils/time";
+import { SchoolSettingsType } from "@/models/types/settings";
 
 export interface ILink {
     name: string;
@@ -114,12 +120,12 @@ const linkGroups: ILinkGroup[] = [
             {
                 name: "המערכת שלי",
                 p: routePath.teacherPortal.p,
-                Icon: <Icons.teacher size={24} />,
+                Icon: <Icons.teacher size={22} />,
             },
             {
                 name: "מערכת בית ספרית",
                 p: routePath.publishedPortal.p,
-                Icon: <Icons.calendar size={24} />,
+                Icon: <Icons.group size={24} />,
             },
         ],
     },
@@ -163,17 +169,22 @@ type HamburgerNavProps = {
     isOpen: boolean;
     onClose: () => void;
     hamburgerType: AppType;
+    schoolSettings?: SchoolSettingsType;
 };
 
 const HamburgerNav: React.FC<HamburgerNavProps> = ({
     isOpen,
     onClose,
     hamburgerType = "private",
+    schoolSettings,
 }) => {
     const pathname = usePathname();
     const navRef = useRef<HTMLDivElement>(null);
     const overlayRef = useRef<HTMLDivElement>(null);
     const route = useRouter();
+    const { openPopup } = usePopup();
+    const context = useOptionalMainContext();
+    const school = context?.school;
 
     useAccessibility({ isOpen, navRef, onClose });
 
@@ -216,18 +227,41 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
             }
             return false;
         })
-        .map((group) => ({
-            ...group,
-            links: group.links.map((link) => {
-                if (link.p === routePath.teacherPortal.p && teacher) {
-                    return {
-                        ...link,
-                        p: `${routePath.teacherPortal.p}/${teacher.schoolId}/${teacher.id}`,
-                    };
+        .map((group) => {
+            let links = group.links;
+
+            // Inject "School Schedule" for substitute teachers if setting enabled
+            if (
+                group.type === "substitute" &&
+                (schoolSettings?.displaySchedule2Susb || context?.settings?.displaySchedule2Susb)
+            ) {
+                // Avoid duplicates if logic runs multiple times or if link already exists (though constant it shouldn't)
+                const hasLink = links.some((l) => l.p === routePath.publishedPortal.p);
+                if (!hasLink) {
+                    links = [
+                        ...links,
+                        {
+                            name: "מערכת בית ספרית",
+                            p: routePath.publishedPortal.p,
+                            Icon: <Icons.group size={24} />,
+                        },
+                    ];
                 }
-                return link;
-            }),
-        }));
+            }
+
+            return {
+                ...group,
+                links: links.map((link) => {
+                    if (link.p === routePath.teacherPortal.p && teacher) {
+                        return {
+                            ...link,
+                            p: `${routePath.teacherPortal.p}/${teacher.schoolId}/${teacher.id}`,
+                        };
+                    }
+                    return link;
+                }),
+            };
+        });
 
     const [expandedGroups, setExpandedGroups] = React.useState<string[]>([]);
 
@@ -348,6 +382,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
 
                     <div className={styles.bottomSection}>
                         <section className={styles.menuSection}>
+                            <div className={styles.groupDivider} />
                             <Link
                                 href={isPrivate ? "/faqManager" : "/faqTeachers"}
                                 className={styles.navLink}
@@ -357,6 +392,34 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                                 <Icons.faq size={24} />
                                 <span>שאלות נפוצות</span>
                             </Link>
+                            {isPrivate && (
+                                <div
+                                    className={styles.navLink}
+                                    onClick={() => {
+                                        if (school?.id) {
+                                            onClose();
+                                            openPopup(
+                                                "settings",
+                                                "S",
+                                                <SettingsPopup
+                                                    schoolId={school.id}
+                                                    initialHours={context?.settings?.hoursNum || HOURS_IN_DAY}
+                                                    initialShowExternal={
+                                                        context?.settings?.displaySchedule2Susb || false
+                                                    }
+                                                    onSave={(newSettings) => {
+                                                        context?.setSettings(newSettings);
+                                                    }}
+                                                />,
+                                            );
+                                        }
+                                    }}
+                                    aria-label="הגדרות מערכת"
+                                >
+                                    <Icons.settings size={24} />
+                                    <span>הגדרות מערכת</span>
+                                </div>
+                            )}
                         </section>
                         <section className={styles.logoutSection}>
                             <div

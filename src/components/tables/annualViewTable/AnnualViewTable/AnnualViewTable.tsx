@@ -6,9 +6,10 @@ import { SubjectType } from "@/models/types/subjects";
 import { TeacherType } from "@/models/types/teachers";
 import { ClassType } from "@/models/types/classes";
 import { TableRows } from "@/models/constant/table";
-import { DAYS_OF_WORK_WEEK } from "@/utils/time"; // Added import
+import { DAYS_OF_WORK_WEEK, HOURS_IN_DAY } from "@/utils/time"; // Added import
 import AnnualViewRow from "@/components/tables/annualViewTable/AnnualViewRow/AnnualViewRow";
 import styles from "./AnnualViewTable.module.css";
+import { useMainContext } from "@/context/MainContext";
 
 type AnnualViewTableProps = {
     schedule: WeeklySchedule;
@@ -29,6 +30,9 @@ const AnnualViewTable: React.FC<AnnualViewTableProps> = ({
     classes,
     setIsLoading,
 }) => {
+    const { settings } = useMainContext();
+    const hoursNum = settings?.hoursNum || HOURS_IN_DAY;
+
     const isDisabled = !schedule || !subjects || !classes;
 
     useEffect(() => {
@@ -54,7 +58,7 @@ const AnnualViewTable: React.FC<AnnualViewTableProps> = ({
                     </tr>
                 </thead>
                 <tbody className={styles.scheduleTableBody}>
-                    {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => (
+                    {Array.from({ length: hoursNum }, (_, i) => i + 1).map((hour) => (
                         <AnnualViewRow
                             key={hour}
                             hour={hour}

@@ -13,7 +13,7 @@ import Preloader from "@/components/ui/Preloader/Preloader";
 import NotPublished from "@/components/empty/NotPublished/NotPublished";
 
 const TeacherPortalPage: NextPage = () => {
-    const { selectedDate, teacher, setTeacherAndSchool, datesOptions, isDatesLoading } = usePortalContext();
+    const { selectedDate, teacher, setTeacherAndSchool, datesOptions, isDatesLoading, settings } = usePortalContext();
     const { fetchTeacherScheduleDate } = useTeacherTableContext();
 
     const params = useParams();
@@ -32,12 +32,8 @@ const TeacherPortalPage: NextPage = () => {
         if (!teacher) setTeacher();
     }, [teacherId, schoolId]);
 
-    const isValidDate = datesOptions.some((d) => d.value === selectedDate);
-
     useEffect(() => {
-        if (isValidDate) {
-            fetchTeacherScheduleDate(teacher, selectedDate);
-        }
+        fetchTeacherScheduleDate(teacher, selectedDate);
     }, [selectedDate, teacher?.id, schoolId, datesOptions]);
 
     if (!teacher)
@@ -54,17 +50,14 @@ const TeacherPortalPage: NextPage = () => {
             </div>
         );
 
-    if (!isValidDate) {
-        return (
-            <div className={styles.container}>
-                <NotPublished date={selectedDate} text="אין שינויים במערכת האישית" />
-            </div>
-        );
-    }
-
     return (
         <div className={styles.container}>
-            <TeacherTable teacher={teacher} selectedDate={selectedDate} />
+            <TeacherTable
+                teacher={teacher}
+                selectedDate={selectedDate}
+                hoursNum={settings?.hoursNum}
+                fitToSchedule
+            />
         </div>
     );
 };
