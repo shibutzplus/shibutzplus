@@ -101,7 +101,7 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
         }
 
         const isTeacherPortal = pathname.includes(router.teacherPortal.p);
-        const baseTitle = isTeacherPortal ? "המערכת שלך" : "מערכת בית הספר";
+        const baseTitle = isTeacherPortal ? "המערכת שלך" : "שינויים";
 
         return (
             <div className={styles.titleContainer}>
