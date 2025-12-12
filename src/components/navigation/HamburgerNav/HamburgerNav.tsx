@@ -382,6 +382,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
 
                     <div className={styles.bottomSection}>
                         <section className={styles.menuSection}>
+                            <div className={styles.groupDivider} />
                             <Link
                                 href={isPrivate ? "/faqManager" : "/faqTeachers"}
                                 className={styles.navLink}
