@@ -100,7 +100,12 @@ export const filterDailyHeaderTeachers = (
 ) => {
     const flatTeachersSet = new Set<string>();
 
-    if (!teachers) return [];
+    if (!teachers || teachers.length === 0) {
+        if (selectedTeacher) {
+            return createSelectOptions([selectedTeacher]);
+        }
+        return [];
+    }
 
     // Collect all teachers already selected as header in any daily column for the CURRENT DATE
     if (selectedDate && alreadySelectedTeachers[selectedDate]) {
@@ -131,8 +136,11 @@ export const filterDailyHeaderTeachers = (
         const isCurrentOrNotUsed =
             teacher.id === selectedTeacher?.id || !flatTeachersSet.has(teacher.id);
 
-        // If teachersTeachingTodayIds is provided, keep only teachers that teach today
-        const teachesToday = !teachersTeachingTodayIds || teachersTeachingTodayIds.has(teacher.id);
+        // If teachersTeachingTodayIds is provided, keep only teachers that teach today, but ALWAYS keep the currently selected teacher
+        const teachesToday =
+            !teachersTeachingTodayIds ||
+            teachersTeachingTodayIds.has(teacher.id) ||
+            teacher.id === selectedTeacher?.id;
 
         return isRegular && isCurrentOrNotUsed && teachesToday;
     });
