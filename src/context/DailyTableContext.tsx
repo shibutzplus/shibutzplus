@@ -18,7 +18,7 @@ import { getAnnualScheduleAction } from "@/app/actions/GET/getAnnualScheduleActi
 import { AvailableTeachers, TeacherClassMap } from "@/models/types/annualSchedule";
 import { getTomorrowOption } from "@/resources/dayOptions";
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
-import { successToast } from "@/lib/toast";
+import { errorToast } from "@/lib/toast";
 import { generateId } from "@/utils";
 import { deleteDailyColumnAction } from "@/app/actions/DELETE/deleteDailyColumnAction";
 import useDailyEventActions from "@/hooks/daily/useDailyEventActions";
@@ -170,7 +170,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 if (populateFromStorage) return;
                 const targetDate = selectedDate || getTomorrowOption();
                 const response = await getDailyScheduleAction(school.id, targetDate);
-                if (response.success && response.data && teachers) {
+                if (response.success && response.data) {
                     const newSchedule = await populateDailyScheduleTable(
                         mainDailyTable,
                         selectedDate,
@@ -179,7 +179,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                     );
                     if (newSchedule) setMainAndStorageTable(newSchedule);
                 } else {
-                    successToast("החיבור למשתמש נותק, יש להיכנס מחדש למערכת.");
+                    errorToast("החיבור למשתמש נכשל. התנתקו ונסו שוב.");
                 }
             } catch (error) {
                 console.error("Error fetching daily schedule data:", error);
@@ -189,7 +189,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         };
 
         fetchDataForDate();
-    }, [school?.id, selectedDate]);
+    }, [school?.id, selectedDate, teachers]);
 
     const populateTableFromStorage = () => {
         const tableStorage = getSessionDailyTable();

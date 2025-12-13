@@ -22,8 +22,9 @@ export async function getSubjectsAction(schoolId: string): Promise<GetSubjectsRe
 
         if (!subjects || subjects.length === 0) {
             return {
-                success: false,
-                message: messages.subjects.error,
+                success: true,
+                message: messages.subjects.success,
+                data: [],
             };
         }
 

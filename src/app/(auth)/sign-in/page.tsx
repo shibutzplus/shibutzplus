@@ -18,6 +18,7 @@ import { STATUS_AUTH, STATUS_LOADING, STATUS_UNAUTH } from "@/models/constant/se
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { getSchoolsMinAction } from "@/app/actions/GET/getSchoolsMinAction";
+import { sortByHebrewName } from "@/utils/sort";
 
 const POWER_USER_EMAIL = process.env.NEXT_PUBLIC_POWER_USER_EMAIL;
 
@@ -64,7 +65,9 @@ const SignInContent: React.FC = () => {
                     (async () => {
                         try {
                             const list = await getSchoolsMinAction();
-                            setSchools(Array.isArray(list) ? list : []);
+                            const schoolsList = Array.isArray(list) ? list : [];
+                            const sorted = sortByHebrewName(schoolsList);
+                            setSchools(sorted);
                         } finally {
                             setIsLoadingSchools(false);
                         }

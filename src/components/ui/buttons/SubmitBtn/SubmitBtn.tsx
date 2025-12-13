@@ -9,6 +9,7 @@ interface SubmitBtnProps {
     buttonText: string;
     error?: string;
     disabled?: boolean;
+    className?: string; // Optional className override
 }
 
 const SubmitBtn: React.FC<SubmitBtnProps> = ({
@@ -18,12 +19,13 @@ const SubmitBtn: React.FC<SubmitBtnProps> = ({
     buttonText,
     error,
     disabled = false,
+    className = "",
 }) => {
     return (
         <div className={styles.buttonContainer}>
             <button
                 type={type}
-                className={styles.button}
+                className={`${styles.button} ${className}`}
                 onClick={onClick}
                 disabled={isLoading || disabled}
             >

@@ -7,7 +7,7 @@ import {
 import { IoMdRefresh } from "react-icons/io";
 import { RiEdit2Fill, RiDeleteBin6Line } from "react-icons/ri";
 import { BsMegaphoneFill, BsCalendar4Event } from "react-icons/bs";
-import { MdPersonAdd, MdPerson, MdSwapHoriz, MdOpenInNew } from "react-icons/md";
+import { MdPersonAdd, MdPerson, MdSwapHoriz, MdOpenInNew, MdFileUpload } from "react-icons/md";
 import { FaPlus } from "react-icons/fa6";
 import { FaSave, FaShareAlt, FaQuestion } from "react-icons/fa";
 import { PiChairLight } from "react-icons/pi";
@@ -45,6 +45,7 @@ const Icons = {
     success2: FiCheckCircle,
     users: IoPeopleOutline,
     settings: IoSettingsOutline,
+    upload: MdFileUpload,
     groupSolid: IoPeopleSharp,
     group: IoPeopleOutline,
 };

@@ -23,8 +23,9 @@ export async function getClassesAction(schoolId: string): Promise<GetClassesResp
 
         if (!classes || classes.length === 0) {
             return {
-                success: false,
-                message: messages.classes.error,
+                success: true,
+                message: messages.classes.success,
+                data: [],
             };
         }
 
