@@ -5,7 +5,6 @@ import {
     getDayNumberByDate,
     getTodayDateString,
     getTomorrowDateString,
-    ONE_WEEK,
     SATURDAY_NUMBER,
     ONE_DAY,
     israelTimezoneDate,

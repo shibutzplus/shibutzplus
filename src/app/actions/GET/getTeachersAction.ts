@@ -41,7 +41,7 @@ export async function getTeachersAction(
         });
 
         if (!teachers || teachers.length === 0) {
-            return { success: false, message: messages.teachers.error };
+            return { success: true, message: messages.teachers.success, data: [] };
         }
 
         return { success: true, message: messages.teachers.success, data: teachers };

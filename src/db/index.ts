@@ -16,7 +16,7 @@ export const db: DB =
     client: sql,
     schema,
     // *** debug ***
-    //logger: process.env.NODE_ENV === "development"
+    logger: process.env.NODE_ENV === "development"
     // *** debug ***
   });
 
