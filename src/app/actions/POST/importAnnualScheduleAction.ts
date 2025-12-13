@@ -16,7 +16,7 @@ export async function importAnnualScheduleAction(
     schoolId: string,
     csvData: string[][],
     config: CsvAnalysisConfig,
-    entityType: "teachers" | "classes" | "subjects" = "teachers",
+    entityType: "teachers" | "classes" | "subjects" | "workGroups" = "teachers",
     manualEntityList?: string[]
 ): Promise<ImportResponse> {
     try {
@@ -50,7 +50,7 @@ export async function importAnnualScheduleAction(
             return newTeacher;
         };
 
-        const getOrCreateClass = async (name: string) => {
+        const getOrCreateClass = async (name: string, isActivity: boolean = false) => {
             // Find existing
             const existing = await db.select().from(schema.classes).where(
                 and(
@@ -65,11 +65,12 @@ export async function importAnnualScheduleAction(
             const [newClass] = await db.insert(schema.classes).values({
                 schoolId,
                 name,
+                activity: isActivity,
             }).returning();
             return newClass;
         };
 
-        const getOrCreateSubject = async (name: string) => {
+        const getOrCreateSubject = async (name: string, isActivity: boolean = false) => {
             // Find existing
             const existing = await db.select().from(schema.subjects).where(
                 and(
@@ -84,6 +85,7 @@ export async function importAnnualScheduleAction(
             const [newSubject] = await db.insert(schema.subjects).values({
                 schoolId,
                 name,
+                activity: isActivity,
             }).returning();
             return newSubject;
         };
@@ -101,6 +103,10 @@ export async function importAnnualScheduleAction(
                         await getOrCreateClass(name);
                     } else if (entityType === "subjects") {
                         await getOrCreateSubject(name);
+                    } else if (entityType === "workGroups") {
+                        // Work Groups are saved as BOTH Class and Subject with activity=true
+                        await getOrCreateClass(name, true);
+                        await getOrCreateSubject(name, true);
                     }
                 }
                 return; // SKIP CSV PARSING
@@ -138,6 +144,7 @@ export async function importAnnualScheduleAction(
         if (entityType === "teachers") successMessage = "ייבוא מורים בוצע בהצלחה";
         else if (entityType === "classes") successMessage = "ייבוא כיתות בוצע בהצלחה";
         else if (entityType === "subjects") successMessage = "ייבוא מקצועות בוצע בהצלחה";
+        else if (entityType === "workGroups") successMessage = "קבוצות עבודה נשמרו בהצלחה";
 
         return { success: true, message: successMessage };
 

@@ -56,12 +56,7 @@
     color: #b91c1c;
 }
 
-.gridContainer {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    grid-template-columns: 1fr 1fr;
-}
+
 
 .formCard {
     width: 300px;
@@ -82,114 +77,22 @@
     margin-bottom: 0.5rem;
 }
 
-.previewContainer {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.tableWrapper {
-    background-color: #0f172a;
-    color: #f1f5f9;
-    padding: 1rem;
-    border-radius: 0.75rem;
-    overflow: auto;
-    font-size: 0.75rem;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    height: 500px;
-    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
-    direction: ltr;
-}
-
-.table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.row {
-    transition: background-color 0.1s;
-}
-
-.row:hover {
-    background-color: #1e293b;
-}
-
-.cellIndex {
-    padding: 0.25rem;
-    border-right: 1px solid #334155;
-    width: 2rem;
-    color: #64748b;
-    user-select: none;
-    text-align: right;
-    padding-right: 0.5rem;
-}
-
-.cellContent {
-    padding: 0.25rem 0.5rem;
-    white-space: nowrap;
-}
-
-/* Highlight Classes */
-.rowTeacher {
-    background-color: rgba(30, 58, 138, 0.5);
-    color: #bfdbfe;
-}
-
-.rowHeader {
-    background-color: rgba(20, 83, 45, 0.5);
-    color: #bbf7d0;
-}
-
-.rowSeparator {
-    background-color: rgba(127, 29, 29, 0.3);
-}
-
-.legend {
-    display: flex;
-    gap: 1rem;
-    font-size: 0.75rem;
-    color: #6b7280;
-    padding: 0 0.5rem;
-}
-
-.legendItem {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-}
-
-.legendBox {
-    width: 0.75rem;
-    height: 0.75rem;
-    border-radius: 0.125rem;
-    display: block;
-}
-
-.legendBoxTeacher {
-    background-color: rgba(30, 58, 138, 0.5);
-    border: 1px solid #3b82f6;
-}
-
-.legendBoxHeader {
-    background-color: rgba(20, 83, 45, 0.5);
-    border: 1px solid #22c55e;
-}
-
-.legendBoxSeparator {
-    background-color: rgba(127, 29, 29, 0.3);
-    border: 1px solid #ef4444;
-}
-
 /* Actions Bar (Navigation) */
 .actions {
-    width: 20%;
+    width: 80%;
     display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    padding-top: 0.5rem;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 1rem;
     border-top: 1px solid #e5e7eb;
-    margin-top: 0.5rem;
-    gap: 30px;
+    gap: 1rem;
+}
+
+.buttonsRow {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    width: 100%;
 }
 
 .actions button {
@@ -265,4 +168,313 @@
 .btnUpdate:disabled {
     opacity: 0.7;
     cursor: not-allowed;
+}
+
+/* Table Layout for Step 2 */
+.stepTable {
+    width: 80%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.cellConfig {
+    vertical-align: top;
+    width: 33.333%;
+    min-width: 300px;
+    padding-left: 1rem;
+}
+
+.cellList {
+    vertical-align: top;
+    width: 66.666%;
+}
+
+.listHeight {
+    height: 600px;
+}
+
+.formCardWidth {
+    width: 100%;
+}
+
+.stepLabel {
+    width: 100%;
+    text-align: right;
+    color: #6b7280;
+    /* text-gray-500 */
+}
+
+/* Flex utilities replacement */
+.flexGap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.mt2 {
+    margin-top: 0.5rem;
+}
+
+.mt4 {
+    margin-top: 1rem;
+}
+
+.flexEnd {
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Typography Helpers */
+.stepTitle {
+    margin-bottom: 0.1rem;
+}
+
+.subTitle {
+    font-size: 1.25rem;
+    /* text-xl */
+    font-weight: 700;
+    /* font-bold */
+    margin-bottom: 0.5rem;
+    /* mb-2 */
+}
+
+.descriptionText {
+    color: #6b7280;
+    /* text-gray-500 */
+}
+
+.textCenter {
+    text-align: center;
+}
+
+/* Upload Step (Step 1) */
+.uploadContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.fileSuccess {
+    font-size: 0.875rem;
+    color: #16a34a;
+    margin-top: 0.5rem;
+    display: block;
+}
+
+/* Editable List Component Styles */
+.editableListContainer {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: white;
+    border-radius: 0.5rem;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    margin-bottom: 1rem;
+}
+
+.editableListHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background-color: #f9fafb;
+    /* bg-gray-50 */
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.editableListTitle {
+    font-weight: 700;
+    color: #374151;
+    /* text-gray-700 */
+}
+
+.editableAddButton {
+    color: #2563eb;
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0.25rem 0.5rem;
+    background-color: #eff6ff;
+    border-radius: 0.25rem;
+    transition: color 0.2s, background-color 0.2s;
+    border: none;
+    cursor: pointer;
+}
+
+.editableAddButton:hover {
+    color: #1e40af;
+    /* text-blue-800 */
+}
+
+.editableContent {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    overflow-y: auto;
+    padding: 0.5rem;
+    flex: 1;
+    height: auto;
+}
+
+.editableItem {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.editableIndex {
+    color: #9ca3af;
+    /* text-gray-400 */
+    font-size: 0.75rem;
+    /* text-xs */
+    width: 1rem;
+}
+
+.editableInput {
+    border: 1px solid #e5e7eb;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    width: 100%;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.editableInput:focus {
+    border-color: #3b82f6;
+    /* border-blue-500 */
+    box-shadow: 0 0 0 1px #3b82f6;
+}
+
+.editableDeleteButton {
+    color: #9ca3af;
+    /* text-gray-400 */
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    transition: all 0.2s;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.editableDeleteButton:hover {
+    color: #ef4444;
+    /* text-red-500 */
+    background-color: #fef2f2;
+    /* bg-red-50 */
+}
+
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #9ca3af;
+    gap: 0.5rem;
+    margin-top: 2.5rem;
+}
+
+.emptyAddButton {
+    color: #3b82f6;
+    font-size: 0.875rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.emptyAddButton:hover {
+    text-decoration: underline;
+}
+
+/* Verify Helpers */
+.verifyContainer {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 1rem;
+}
+
+.verifyListWrapper {
+    width: 100%;
+    height: 500px;
+}
+
+@media (min-width: 768px) {
+    .verifyListWrapper {
+        width: 50%;
+    }
+}
+
+
+/* File Input Styles */
+.fileInput {
+    display: block;
+    width: 100%;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.fileInput::file-selector-button {
+    margin-right: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    border: 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    background-color: #eff6ff;
+    color: #1d4ed8;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+
+/* Confirmation Modal Styles */
+.modalActions {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.modalBtnYes {
+    background-color: #2563eb;
+    color: white;
+    padding: 0.5rem 2rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.modalBtnYes:hover {
+    background-color: #1d4ed8;
+}
+
+.modalBtnNo {
+    background-color: #f3f4f6;
+    color: #374151;
+    padding: 0.5rem 2rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+    border: 1px solid #d1d5db;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.modalBtnNo:hover {
+    background-color: #e5e7eb;
+    border-color: #9ca3af;
+}
+
+.modalText {
+    font-size: 1.25rem;
+    font-weight: 600;
+    text-align: center;
+    color: #1f2937;
+    margin-bottom: 1rem;
 }

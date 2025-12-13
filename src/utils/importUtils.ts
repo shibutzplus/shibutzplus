@@ -5,6 +5,9 @@ export type CsvAnalysisConfig = {
     separator: "empty_line" | string;
     ignoreText?: string;
     hourColumn?: number; // 1-based
+    // New Subject Extraction Params
+    subjectLine?: "first" | "last" | "all";
+    subjectSeparator?: string;
 };
 
 /**
@@ -62,7 +65,10 @@ export function extractNameFromBlock(block: string[][], config: CsvAnalysisConfi
 
 /**
  * Extracts potential subjects from the data grid area of all blocks.
- * Logic: Iterate all cells in data area. Split by newline. Take the last non-empty line.
+ * Logic: Iterate all cells in data area.
+ *  - Split cell into lines.
+ *  - Use config.subjectLine to pick lines ("first" (default), "last", "all").
+ *  - Split chosen lines by config.subjectSeparator (default ",").
  */
 export function extractSubjectsFromGrid(blocks: string[][][], config: CsvAnalysisConfig): { subjects: Set<string>, workGroups: Set<string> } {
     const subjects = new Set<string>();
@@ -72,6 +78,9 @@ export function extractSubjectsFromGrid(blocks: string[][][], config: CsvAnalysi
         "פרטני", "מליאה", "שהייה", "תפקיד", "ייעוץ",
         "ניהול", "שילוב", "תגבור", "צוות"
     ]);
+
+    const lineMode = config.subjectLine || "first";
+    const separator = config.subjectSeparator || ",";
 
     for (const block of blocks) {
         if (block.length < config.dataStartRow) continue;
@@ -87,12 +96,22 @@ export function extractSubjectsFromGrid(blocks: string[][][], config: CsvAnalysi
                 const cell = row[c];
                 if (!cell || !cell.trim()) continue;
 
-                // Split by newline and take first line
+                // Split by newline
                 const lines = cell.split("\n").map(l => l.trim()).filter(l => l.length > 0);
-                if (lines.length > 0) {
-                    const firstLine = lines[0];
-                    // Split by comma
-                    const lineParts = firstLine.split(",").map(p => p.trim());
+                if (lines.length === 0) continue;
+
+                let linesToProcess: string[] = [];
+                if (lineMode === "first") {
+                    linesToProcess = [lines[0]];
+                } else if (lineMode === "last") {
+                    linesToProcess = [lines[lines.length - 1]];
+                } else { // "all"
+                    linesToProcess = lines;
+                }
+
+                for (const line of linesToProcess) {
+                    // Split by separator
+                    const lineParts = line.split(separator).map(p => p.trim());
 
                     for (const candidate of lineParts) {
                         if (candidate.length <= 1) continue;
