@@ -41,9 +41,6 @@ const AnimatedHeaderWrapper: React.FC<AnimatedHeaderWrapperProps> = React.memo((
             <motion.div
                 className={`${styles.headerInner} ${headerColorClass}`}
                 style={isAnimating ? { width: `${width}px` } : undefined}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.4, delay: colIndex * 0.03 }}
             >
                 {children}
             </motion.div>
@@ -72,7 +69,7 @@ const AnimatedCellWrapper: React.FC<AnimatedCellWrapperProps> = React.memo(({ co
         >
             <motion.div
                 className={styles.cellContent}
-                initial={{ opacity: 0 }}
+                initial={{ opacity: 0.4 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3, delay: colIndex * 0.02 }}
             >
