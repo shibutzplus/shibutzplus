@@ -1,6 +1,6 @@
 import { deleteDailyColumnAction } from "@/app/actions/DELETE/deleteDailyColumnAction";
 import { getTeacherScheduleByDayAction } from "@/app/actions/GET/getTeacherScheduleByDayAction";
-import { addDailyTeacherCellAction } from "@/app/actions/POST/addDailyTeacherCellAction";
+import { addDailyTeacherCellsAction } from "@/app/actions/POST/addDailyTeacherCellsAction";
 import { updateDailyTeacherCellAction } from "@/app/actions/PUT/updateDailyTeacherCellAction";
 import { useMainContext } from "@/context/MainContext";
 import { UPDATE_TEACHER } from "@/models/constant/sync";
@@ -17,7 +17,7 @@ const useDailyTeacherActions = (
     setMainAndStorageTable: (newSchedule: DailySchedule) => void,
     clearColumn: (day: string, columnId: string) => void,
 ) => {
-    const { school, teachers } = useMainContext();
+    const { school, teachers, settings } = useMainContext();
 
     const pushIfPublished = (selectedDate: string) => {
         if (!!school?.publishDates?.includes(selectedDate)) pushSyncUpdate(UPDATE_TEACHER);
@@ -33,7 +33,36 @@ const useDailyTeacherActions = (
         const schoolId = school?.id;
         if (!schoolId) return;
         try {
-            // Delete the old column record if need to update
+            // Optimistic update: Show new teacher name immediately
+            if (teachers && teachers.length > 0) {
+                const optimisticTeacher = teachers.find((t) => t.id === teacherId);
+                if (optimisticTeacher) {
+                    // Create a deep copy of the schedule for the specific date/column to avoid mutation issues
+                    const optimisticSchedule = { ...mainDailyTable };
+                    if (optimisticSchedule[selectedDate]) {
+                        optimisticSchedule[selectedDate] = { ...optimisticSchedule[selectedDate] };
+                        optimisticSchedule[selectedDate][columnId] = {}; // Clear existing column data first
+                    }
+
+                    const finalOptimisticSchedule = setEmptyTeacherColumn(
+                        optimisticSchedule,
+                        selectedDate,
+                        columnId,
+                        type,
+                        settings?.hoursNum,
+                        optimisticTeacher,
+                    );
+                    setMainAndStorageTable(finalOptimisticSchedule);
+                } else {
+                    clearColumn(selectedDate, columnId);
+                }
+            } else {
+                // Fallback if teachers not loaded (unlikely)
+                clearColumn(selectedDate, columnId);
+            }
+
+            // Capture the state needed for deletion BEFORE async operations 
+            // (though in this function scope, mainDailyTable is stale closure which is actually what we want for 'alreadyExists' check)
             const alreadyExists = mainDailyTable[selectedDate]?.[columnId];
             if (alreadyExists) {
                 const response = await deleteDailyColumnAction(school.id, columnId, selectedDate);
@@ -42,11 +71,22 @@ const useDailyTeacherActions = (
                 }
             }
 
-            clearColumn(selectedDate, columnId);
+            // NOTE: We do NOT call clearColumn again here to avoid flicker. 
+            // The DB is cleared (if delete succeeded), and the UI shows the optimistic teacher.
+
             const response = await getTeacherScheduleByDayAction(schoolId, dayNumber, teacherId);
             if (response.success && response.data) {
                 if (response.data.length > 0) {
+                    const pendingInserts: { request: ReturnType<typeof addNewTeacherValueCell>, dailyCell: DailyScheduleCell }[] = [];
+
+                    // We need to work on a fresh copy that doesn't have the "optimistic" empty cells 
+                    // (or previous data) so updateAddCell will use the new cellData (with class/subject)
                     let updatedSchedule: DailySchedule = { ...mainDailyTable };
+                    if (updatedSchedule[selectedDate]) {
+                        updatedSchedule[selectedDate] = { ...updatedSchedule[selectedDate] };
+                        updatedSchedule[selectedDate][columnId] = {};
+                    }
+
                     for (const row of response.data) {
                         const dailyCell = {
                             hour: row.hour,
@@ -63,18 +103,28 @@ const useDailyTeacherActions = (
                             type,
                         );
                         if (newDailyRow) {
-                            const response = await addDailyTeacherCellAction(newDailyRow);
-                            if (response.success && response.data) {
-                                dailyCell.DBid = response.data.id;
-                                updatedSchedule = updateAddCell(
-                                    response.data.id,
-                                    updatedSchedule,
-                                    selectedDate,
-                                    dailyCell,
-                                    columnId,
-                                    {},
-                                );
-                            }
+                            pendingInserts.push({ request: newDailyRow, dailyCell });
+                        }
+                    }
+
+                    if (pendingInserts.length > 0) {
+                        const batchResponse = await addDailyTeacherCellsAction(pendingInserts.map(p => p.request!));
+
+                        if (batchResponse.success && batchResponse.data) {
+                            batchResponse.data.forEach((savedCell, idx) => {
+                                const item = pendingInserts[idx];
+                                if (item) {
+                                    item.dailyCell.DBid = savedCell.id;
+                                    updatedSchedule = updateAddCell(
+                                        savedCell.id,
+                                        updatedSchedule,
+                                        selectedDate,
+                                        item.dailyCell,
+                                        columnId,
+                                        {},
+                                    );
+                                }
+                            });
                         }
                     }
 
@@ -84,10 +134,12 @@ const useDailyTeacherActions = (
                         selectedDate,
                         columnId,
                         { headerTeacher, type },
+                        settings?.hoursNum,
                     );
                     setMainAndStorageTable(updatedSchedule);
                 } else {
                     // If the teacher does not teach on this day, create an empty column
+                    // We re-affirm the empty column with the teacher header
                     const headerTeacher = teachers?.find((t) => t.id === teacherId);
                     if (!headerTeacher) return;
                     const updatedSchedule = setEmptyTeacherColumn(
@@ -95,6 +147,7 @@ const useDailyTeacherActions = (
                         selectedDate,
                         columnId,
                         type,
+                        settings?.hoursNum,
                         headerTeacher,
                     );
                     setMainAndStorageTable(updatedSchedule);
@@ -104,6 +157,7 @@ const useDailyTeacherActions = (
             return undefined;
         } catch (error) {
             console.error("Error fetching teacher schedule:", error);
+            // On error we might want to reset? For now, leave it.
             return undefined;
         }
     };
