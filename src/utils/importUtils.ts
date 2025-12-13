@@ -132,3 +132,80 @@ export function extractSubjectsFromGrid(blocks: string[][][], config: CsvAnalysi
     }
     return { subjects, workGroups };
 }
+
+/**
+ * Calculates the similarity percentage between two strings.
+ * Uses Levenshtein distance.
+ * Returns a number between 0 and 100.
+ */
+export function calculateSimilarity(s1: string, s2: string): number {
+    const longer = s1.length > s2.length ? s1 : s2;
+    const shorter = s1.length > s2.length ? s2 : s1;
+
+    if (longer.length === 0) {
+        return 1.0;
+    }
+
+    const editDistance = levenshtein(longer, shorter);
+    return (longer.length - editDistance) / longer.length * 100;
+}
+
+function levenshtein(s1: string, s2: string): number {
+    const costs: number[] = new Array();
+    for (let i = 0; i <= s1.length; i++) {
+        let lastValue = i;
+        for (let j = 0; j <= s2.length; j++) {
+            if (i == 0)
+                costs[j] = j;
+            else {
+                if (j > 0) {
+                    let newValue = costs[j - 1];
+                    if (s1.charAt(i - 1) != s2.charAt(j - 1))
+                        newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+                    costs[j - 1] = lastValue;
+                    lastValue = newValue;
+                }
+            }
+        }
+        if (i > 0)
+            costs[s2.length] = lastValue;
+    }
+    return costs[s2.length];
+}
+
+/**
+ * Finds the best match for a query string from a list of candidates.
+ * Returns the candidate and the score if above threshold.
+ */
+export function findBestMatch(query: string, candidates: string[], threshold: number = 90): { bestMatch: string | null, score: number } {
+    let bestMatch: string | null = null;
+    let bestScore = 0;
+
+    const normalizedQuery = query.trim();
+
+    for (const candidate of candidates) {
+        // Direct inclusion check (bonus)
+        // If DB name is subset of CSV name or vice versa, give high score?
+        // Requirement says: "DB name can be subset of CSV name".
+        // e.g. CSV: "John Doe Master" -> DB: "John Doe"
+        if (normalizedQuery.includes(candidate) || candidate.includes(normalizedQuery)) {
+            // Check length ratio to avoid "Dan" matching "Daniela" too easily if we only rely on includes
+            // But usually this is a strong signal. Let's calculate similarity anyway to be safe, 
+            // OR give it a boost.
+            // Let's rely on similarity but maybe use a lower threshold if it's a substring match?
+            // Actually, for "starts with" or "contains", we might want to return immediately if exact match.
+        }
+
+        const score = calculateSimilarity(normalizedQuery, candidate);
+        if (score > bestScore) {
+            bestScore = score;
+            bestMatch = candidate;
+        }
+    }
+
+    if (bestScore >= threshold) {
+        return { bestMatch, score: bestScore };
+    }
+
+    return { bestMatch: null, score: bestScore };
+}

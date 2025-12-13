@@ -11,23 +11,9 @@ import { useOptionalMainContext } from "@/context/MainContext";
 import { errorToast, successToast } from "@/lib/toast";
 import { parseCsvToBlocks, extractSubjectsFromGrid } from "@/utils/importUtils";
 import PopupModal from "@/components/popups/PopupModal/PopupModal";
-
-type CsvAnalysisConfig = {
-    teacherNameRow: number;
-    headerRow: number;
-    dataStartRow: number;
-    separator: "empty_line" | string;
-    ignoreText: string;
-    hourColumn?: number;
-    subjectLine?: "first" | "last" | "all";
-    subjectSeparator?: string;
-};
-
-// Default separator options
-const separatorOptions = [
-    { value: "empty_line", label: "שורה ריקה" },
-    { value: "custom", label: "תו מותאם אישית" },
-];
+import EditableList from "./components/EditableList";
+import ImportConfigStep, { CsvAnalysisConfig } from "./components/ImportConfigStep";
+import StepNavigation from "./components/StepNavigation";
 
 const AnnualImportPage = () => {
     // 1-3: Teachers, 4-6: Classes
@@ -61,9 +47,14 @@ const AnnualImportPage = () => {
     });
     const [previewClasses, setPreviewClasses] = useState<string[]>([]);
 
-    // --- Subjects State (Step 7) ---
     const [previewSubjects, setPreviewSubjects] = useState<string[]>([]);
     const [previewWorkGroups, setPreviewWorkGroups] = useState<string[]>([]);
+
+    // --- Final Step 6 State ---
+    const [dbTeachers, setDbTeachers] = useState<{ id: string, name: string }[]>([]);
+    const [selectedTeacherId, setSelectedTeacherId] = useState<string>("");
+    const [previewSchedule, setPreviewSchedule] = useState<any[]>([]);
+    const [classLineInCell, setClassLineInCell] = useState<string>("2");
 
     const [customSeparator, setCustomSeparator] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -291,43 +282,30 @@ const AnnualImportPage = () => {
         setIsConfirmOpen(false);
     };
 
-    const saveTeachersToDb = async () => {
+    const saveToDb = async (
+        type: "teachers" | "classes" | "subjects" | "workGroups",
+        csvData: string[][],
+        config: CsvAnalysisConfig,
+        manualList?: string[]
+    ) => {
         if (!schoolId) return;
         setIsLoading(true);
         try {
             const { importAnnualScheduleAction } = await import("@/app/actions/POST/importAnnualScheduleAction");
-            const res = await importAnnualScheduleAction(schoolId, teacherCsvData, configTeacher, "teachers");
+
+            // If manualList is provided, pass it (for subjects/workGroups). 
+            // Otherwise it's undefined (for teachers/classes).
+            const res = await importAnnualScheduleAction(schoolId, csvData, config, type, manualList);
 
             if (res.success) {
                 successToast(res.message);
-                // Stay on step, let "Next" handle nav
             } else {
                 errorToast(res.message);
             }
+
         } catch (err) {
             console.error(err);
-            errorToast("Error saving teachers");
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const saveClassesToDb = async () => {
-        if (!schoolId) return;
-        setIsLoading(true);
-        try {
-            const { importAnnualScheduleAction } = await import("@/app/actions/POST/importAnnualScheduleAction");
-            const res = await importAnnualScheduleAction(schoolId, classCsvData, configClass, "classes");
-
-            if (res.success) {
-                alert(res.message);
-                // Stay on step
-            } else {
-                alert(`Error: ${res.message}`);
-            }
-        } catch (err) {
-            console.error(err);
-            alert("Error saving classes");
+            errorToast(`Error saving ${type}`);
         } finally {
             setIsLoading(false);
         }
@@ -366,53 +344,134 @@ const AnnualImportPage = () => {
         }
     };
 
-    const saveSubjectsToDb = async () => {
-        if (!schoolId) return;
+    // --- Step 6 Logic ---
+    const handleSingleTeacherUpdate = async () => {
+        if (!schoolId || !selectedTeacherId) return;
         setIsLoading(true);
         try {
-            const { importAnnualScheduleAction } = await import("@/app/actions/POST/importAnnualScheduleAction");
+            const { generateAnnualScheduleAction } = await import("@/app/actions/POST/generateAnnualScheduleAction");
+            const fullConfig = { ...configTeacher, classLine: classLineInCell };
 
-            // We now pass the EDITED list of subjects (previewSubjects) directly to the server action
-            // This ensures deletions/adjustments made in the UI are respected.
-            // We pass empty CSV data as we are using the manual override.
-
-            const res = await importAnnualScheduleAction(schoolId, [], configTeacher, "subjects", previewSubjects);
+            // Update ONLY the selected teacher
+            const res = await generateAnnualScheduleAction(process.env.NEXT_PUBLIC_SCHOOL_ID || schoolId, teacherCsvData, fullConfig, selectedTeacherId, true);
 
             if (res.success) {
-                successToast(res.message);
-            } else {
-                errorToast(res.message);
-            }
+                successToast(res.message || "המערכת למורה עודכנה בהצלחה");
 
+                if (res.data && res.data.errors && res.data.errors.length > 0) {
+                    downloadErrorsCsv(res.data.errors);
+                    successToast(`נמצאו ${res.data.errors.length} שגיאות. קובץ עם השגיאות מוכן להורדה.`);
+                }
+            } else {
+                errorToast(res.message || "שגיאה בעדכון המערכת");
+            }
         } catch (err) {
             console.error(err);
-            errorToast("שגיאה בשמירת מקצועות");
+            errorToast("Error updating teacher schedule");
         } finally {
             setIsLoading(false);
         }
     };
 
-    const saveWorkGroupsToDb = async () => {
+    const fetchDbTeachers = async () => {
         if (!schoolId) return;
+        try {
+            const { getTeachersAction } = await import("@/app/actions/GET/getTeachersAction");
+            const res = await getTeachersAction(schoolId);
+            if (res.success && res.data) {
+                setDbTeachers(res.data);
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    useEffect(() => {
+        if (step === 6) {
+            fetchDbTeachers();
+        }
+    }, [step]);
+
+    const handlePreviewTeacherSchedule = async (teacherId: string) => {
+        if (!schoolId || !teacherId) return;
         setIsLoading(true);
         try {
-            const { importAnnualScheduleAction } = await import("@/app/actions/POST/importAnnualScheduleAction");
+            const { generateAnnualScheduleAction } = await import("@/app/actions/POST/generateAnnualScheduleAction");
+            // Pass `classLine` in extra config
+            const fullConfig = { ...configTeacher, classLine: classLineInCell };
 
-            // Save work groups as BOTH classes and subjects with activity=true
-            const res = await importAnnualScheduleAction(schoolId, [], configTeacher, "workGroups", previewWorkGroups);
+            const res = await generateAnnualScheduleAction(process.env.NEXT_PUBLIC_SCHOOL_ID || schoolId, teacherCsvData, fullConfig, teacherId, false);
 
-            if (res.success) {
-                successToast(res.message);
+            if (res.success && res.data) {
+                setPreviewSchedule(res.data.schedule || []);
+                // If checking specific teacher, maybe set matched teacher name?
             } else {
-                errorToast(res.message);
+                setPreviewSchedule([]);
             }
-
         } catch (err) {
             console.error(err);
-            errorToast("שגיאה בשמירת קבוצות עבודה");
+            setPreviewSchedule([]);
         } finally {
             setIsLoading(false);
         }
+    };
+
+    // Auto-refresh preview if config changes
+    useEffect(() => {
+        if (step === 6 && selectedTeacherId) {
+            const timer = setTimeout(() => {
+                handlePreviewTeacherSchedule(selectedTeacherId);
+            }, 500);
+            return () => clearTimeout(timer);
+        }
+    }, [classLineInCell, selectedTeacherId]);
+
+    const handleFinalUpdate = async () => {
+        if (!schoolId) return;
+        setIsLoading(true);
+        try {
+            const { generateAnnualScheduleAction } = await import("@/app/actions/POST/generateAnnualScheduleAction");
+            const fullConfig = { ...configTeacher, classLine: classLineInCell };
+
+            // This updates ALL teachers matched in the CSV
+            const res = await generateAnnualScheduleAction(schoolId, teacherCsvData, fullConfig, undefined, true);
+
+            if (res.success) {
+                successToast(res.message || "הנתונים נשמרו בהצלחה");
+
+                if (res.data && res.data.errors && res.data.errors.length > 0) {
+                    downloadErrorsCsv(res.data.errors);
+                    successToast(`נמצאו ${res.data.errors.length} שגיאות. קובץ עם השגיאות מוכן להורדה.`);
+                }
+            } else {
+                errorToast(res.message || "שגיאה בשמירת הנתונים");
+            }
+        } catch (err) {
+            console.error(err);
+            errorToast("Error updating systems");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const downloadErrorsCsv = (errors: any[]) => {
+        const header = "Teacher Name,Day,Hour,Cell Content,Error Reason\n";
+        const rows = errors.map(e => {
+            // Escape csv fields if needed
+            const cleanCell = e.cellContent.replace(/"/g, '""');
+            return `"${e.teacherName}",${e.day},${e.hour},"${cleanCell}","${e.reason}"`;
+        }).join("\n");
+
+        const csvContent = "\uFEFF" + header + rows; // Add BOM
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", "import_errors.csv");
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     };
 
     const handleNext = () => {
@@ -425,19 +484,14 @@ const AnnualImportPage = () => {
             setStep(3);
         } else if (step === 3) {
             if (previewClasses.length === 0) {
-                handleAnalyze(3, true); // Analyze "Classes" (ID 3 internally for now, or keep 5 if logic requires)
-                // NOTE: Logic currently uses 2 or 5. Let's stick to 5 for "Classes" in backend logic if that's what it expects?
-                // But wait, handleAnalyze takes "2 | 5". Let's update handleAnalyze signature cleanly if needed.
-                // Actually, let's keep it '5' in the call if the backend expects it, but pass '3' if we refactor.
-                // Let's look at handleAnalyze: "analyzeStep: 2 | 5". 
-                // So we should call handleAnalyze(5, true) here.
+                handleAnalyze(3, true);
             }
             handleAnalyzeSubjects();
-            // handleAnalyzeSubjects sets step to 5 originally. We want it to go to 4 (Subjects).
-            // We need to update handleAnalyzeSubjects to setStep(4).
         } else if (step === 4) {
             setStep(5);
         } else if (step === 5) {
+            setStep(6);
+        } else if (step === 6) {
             reset();
             successToast("תהליך הייבוא הושלם בהצלחה!", Infinity);
         }
@@ -447,62 +501,12 @@ const AnnualImportPage = () => {
         if (step === 2) setStep(1);
         if (step === 3) setStep(2);
         if (step === 4) setStep(3);
+        if (step === 4) setStep(3);
         if (step === 5) setStep(4);
+        if (step === 6) setStep(5);
     };
 
-    // Editable List Component
-    const EditableList = ({ title, items, onChange }: { title: string, items: string[], onChange: (items: string[]) => void }) => {
-        const handleDelete = (index: number) => {
-            const newItems = items.filter((_, i) => i !== index);
-            onChange(newItems);
-        };
 
-        const handleAdd = () => {
-            onChange([...items, ""]);
-        };
-
-        return (
-            <div className={`${styles.editableListContainer} ${styles.listColumn || ''}`}>
-                <div className={styles.editableListHeader}>
-                    <h4 className={styles.editableListTitle}>{title} ({items.length})</h4>
-                    <button onClick={handleAdd} className={styles.editableAddButton}>+ הוסף</button>
-                </div>
-
-                <div className={styles.editableContent}>
-                    {items.map((item, idx) => (
-                        <div key={idx} className={styles.editableItem}>
-                            <span className={styles.editableIndex}>{idx + 1}.</span>
-                            <input
-                                value={item}
-                                className={styles.editableInput}
-                                onChange={(e) => {
-                                    const newItems = [...items];
-                                    newItems[idx] = e.target.value;
-                                    onChange(newItems);
-                                }}
-                                placeholder="הזן ערך..."
-                            />
-                            <button
-                                onClick={() => handleDelete(idx)}
-                                className={styles.editableDeleteButton}
-                                title="מחק שורה"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M18 6 6 18" /><path d="m6 6 12 12" />
-                                </svg>
-                            </button>
-                        </div>
-                    ))}
-                    {items.length === 0 && (
-                        <div className={styles.emptyState}>
-                            <span>אין נתונים</span>
-                            <button onClick={handleAdd} className={styles.emptyAddButton}>הוסף פריט ראשון</button>
-                        </div>
-                    )}
-                </div>
-            </div>
-        );
-    };
 
     return (
         <AnnualImportPageLayout>
@@ -513,6 +517,8 @@ const AnnualImportPage = () => {
                 {/* Step 1: Upload (Teacher & Class) */}
                 {step === 1 && (
                     <div className={styles.stepContainer}>
+                        <h2 className={`${styles.title} ${styles.stepTitle}`}>העלאת קבצים (שלב 1 מתוך 6)</h2>
+                        <br /><br />
                         <div className={styles.uploadContainer}>
                             <div>
                                 {/* Teacher Upload */}
@@ -543,254 +549,60 @@ const AnnualImportPage = () => {
                         </div>
                         <br /><br />
 
-                        <div className={styles.actions}>
-                            <div className={styles.stepLabel}>שלב {step} מתוך 5</div>
-                            <div className={styles.buttonsRow}>
-                                <SubmitBtn
-                                    onClick={handleNext}
-                                    buttonText="שלב הבא"
-                                    isLoading={false}
-                                    type="button"
-                                    disabled={!teacherFile && !classFile}
-                                />
-                            </div>
-                        </div>
+                        <StepNavigation
+                            onNext={handleNext}
+                            isNextDisabled={!teacherFile && !classFile}
+                            showPrev={false}
+                        />
                     </div>
                 )}
 
                 {/* Step 2: Configuration & Verify (Teacher) Combined */}
                 {step === 2 && (
-                    <div className={styles.configSection}>
-                        <h2 className={`${styles.title} ${styles.stepTitle}`}>רשימת המורים</h2>
-
-                        <table className={styles.stepTable}>
-                            <tbody>
-                                <tr>
-                                    {/* CONFIGURATION (First column = Right in RTL) */}
-                                    <td className={styles.cellConfig}>
-                                        <div className={styles.formCard} style={{ width: '100%' }}>
-                                            <h3 className={styles.sectionTitle}>הגדרות זיהוי</h3>
-
-                                            <InputText
-                                                label="מספר השורה הראשונה בה מופיע שם המורה"
-                                                type="number"
-                                                value={configTeacher.teacherNameRow}
-                                                onChange={(e) => handleConfigTeacherChange("teacherNameRow", parseInt(e.target.value))}
-                                                min={1}
-                                            />
-                                            <InputText
-                                                label="מספר השורה הראשונה בה מתחילה הכותרת (ימים/שעות)"
-                                                type="number"
-                                                value={configTeacher.headerRow}
-                                                onChange={(e) => handleConfigTeacherChange("headerRow", parseInt(e.target.value))}
-                                                min={1}
-                                            />
-                                            <InputText
-                                                label="מספר השורה הראשונה בה מתחילים הנתונים"
-                                                type="number"
-                                                value={configTeacher.dataStartRow}
-                                                onChange={(e) => handleConfigTeacherChange("dataStartRow", parseInt(e.target.value))}
-                                                min={1}
-                                            />
-                                            <InputText
-                                                label="מספר עמודת השעות (אם מופיעה)"
-                                                type="number"
-                                                value={configTeacher.hourColumn || ""}
-                                                onChange={(e) => handleConfigTeacherChange("hourColumn", e.target.value ? parseInt(e.target.value) : undefined)}
-                                                min={1}
-                                                placeholder="למשל: 1"
-                                            />
-
-                                            <div className={styles.flexGap}>
-                                                <label className="text-sm font-medium text-gray-700">סימון רווח בין מערכות</label>
-                                                <DynamicInputSelect
-                                                    options={separatorOptions}
-                                                    value={configTeacher.separator}
-                                                    onChange={(val) => handleConfigTeacherChange("separator", val)}
-                                                    placeholder="בחר סוג הפרדה"
-                                                />
-                                                {configTeacher.separator === "custom" && (
-                                                    <div className={styles.mt2}>
-                                                        <InputText
-                                                            label="הזן תו מפריד"
-                                                            value={customSeparator}
-                                                            onChange={(e) => setCustomSeparator(e.target.value)}
-                                                        />
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <InputText
-                                                label="טקסט להסרה משם המורה (אופציונלי)"
-                                                type="text"
-                                                value={configTeacher.ignoreText}
-                                                onChange={(e) => handleConfigTeacherChange("ignoreText", e.target.value)}
-                                                placeholder="לדוגמה: מערכת שעות"
-                                            />
-                                        </div>
-                                    </td>
-
-                                    {/* LIST (Second column = Left in RTL) */}
-                                    <td className={styles.cellList}>
-                                        <div className={styles.listHeight}>
-                                            <EditableList title="מורים שזוהו" items={previewTeachers} onChange={(items) => setPreviewTeachers(items)} />
-                                        </div>
-                                        <div className={`${styles.mt4} ${styles.flexEnd}`}>
-                                            <SubmitBtn
-                                                onClick={() => handleRequestSave(saveTeachersToDb)}
-                                                buttonText="עדכון טבלת המורים"
-                                                className={styles.btnUpdate}
-                                                isLoading={isLoading}
-                                                type="button"
-                                            />
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        <div className={styles.actions}>
-                            <div className="w-full text-right text-gray-500">שלב {step} מתוך 6</div>
-                            <div className={styles.buttonsRow}>
-                                <SubmitBtn
-                                    onClick={handlePrev}
-                                    buttonText="שלב קודם"
-                                    className={styles.btnSecondary}
-                                    isLoading={false}
-                                    type="button"
-                                />
-                                <SubmitBtn
-                                    onClick={handleNext}
-                                    buttonText="שלב הבא"
-                                    className={styles.btnPrimary}
-                                    isLoading={isLoading}
-                                    type="button"
-                                />
-                            </div>
-                        </div>
-                    </div>
+                    <ImportConfigStep
+                        title="רשימת המורים (שלב 2 מתוך 6)"
+                        step={2}
+                        config={configTeacher}
+                        onConfigChange={handleConfigTeacherChange}
+                        customSeparator={customSeparator}
+                        setCustomSeparator={setCustomSeparator}
+                        previewItems={previewTeachers}
+                        onPreviewItemsChange={setPreviewTeachers}
+                        listTitle="מורים שזוהו"
+                        onSave={() => handleRequestSave(() => saveToDb("teachers", teacherCsvData, configTeacher))}
+                        saveButtonText="עדכון טבלת המורים"
+                        onNext={handleNext}
+                        onPrev={handlePrev}
+                        isLoading={isLoading}
+                    />
                 )}
-
 
                 {/* --- CLASSES PHASE --- */}
 
-
-
                 {/* Step 3: Class Configuration & Verify (Combined) */}
                 {step === 3 && (
-                    <div className={styles.configSection}>
-                        <h2 className={`${styles.title} ${styles.stepTitle}`}>רשימת הכיתות</h2>
-
-                        <table className={styles.stepTable}>
-                            <tbody>
-                                <tr>
-                                    {/* CONFIGURATION (First column = Right in RTL) */}
-                                    <td className={styles.cellConfig}>
-                                        <div className={styles.formCard} style={{ width: '100%' }}>
-                                            <h3 className={styles.sectionTitle}>הגדרות זיהוי</h3>
-
-                                            <InputText
-                                                label="מספר השורה הראשונה בה מופיע שם הכיתה"
-                                                type="number"
-                                                value={configClass.teacherNameRow}
-                                                onChange={(e) => handleConfigClassChange("teacherNameRow", parseInt(e.target.value))}
-                                                min={1}
-                                            />
-                                            <InputText
-                                                label="מספר השורה הראשונה בה מתחילה הכותרת (ימים/שעות)"
-                                                type="number"
-                                                value={configClass.headerRow}
-                                                onChange={(e) => handleConfigClassChange("headerRow", parseInt(e.target.value))}
-                                                min={1}
-                                            />
-                                            <InputText
-                                                label="מספר השורה הראשונה בה מתחילים הנתונים"
-                                                type="number"
-                                                value={configClass.dataStartRow}
-                                                onChange={(e) => handleConfigClassChange("dataStartRow", parseInt(e.target.value))}
-                                                min={1}
-                                            />
-                                            <InputText
-                                                label="מספר עמודת השעות (אם מופיעה)"
-                                                type="number"
-                                                value={configClass.hourColumn || ""}
-                                                onChange={(e) => handleConfigClassChange("hourColumn", e.target.value ? parseInt(e.target.value) : undefined)}
-                                                min={1}
-                                                placeholder="למשל: 1"
-                                            />
-
-                                            <div className={styles.flexGap}>
-                                                <label className="text-sm font-medium text-gray-700">סימון רווח בין מערכות</label>
-                                                <DynamicInputSelect
-                                                    options={separatorOptions}
-                                                    value={configClass.separator}
-                                                    onChange={(val) => handleConfigClassChange("separator", val)}
-                                                    placeholder="בחר סוג הפרדה"
-                                                />
-                                                {configClass.separator === "custom" && (
-                                                    <div className={styles.mt2}>
-                                                        <InputText
-                                                            label="הזן תו מפריד"
-                                                            value={customSeparator}
-                                                            onChange={(e) => setCustomSeparator(e.target.value)}
-                                                        />
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <InputText
-                                                label="טקסט להסרה משם הכיתה (אופציונלי)"
-                                                type="text"
-                                                value={configClass.ignoreText}
-                                                onChange={(e) => handleConfigClassChange("ignoreText", e.target.value)}
-                                                placeholder="לדוגמה: מערכת שעות"
-                                            />
-                                        </div>
-                                    </td>
-
-                                    {/* LIST (Second column = Left in RTL) */}
-                                    <td className={styles.cellList}>
-                                        <div className={styles.listHeight}>
-                                            <EditableList title="כיתות שזוהו" items={previewClasses} onChange={(items) => setPreviewClasses(items)} />
-                                        </div>
-                                        <div className={`${styles.mt4} ${styles.flexEnd}`}>
-                                            <SubmitBtn
-                                                onClick={() => handleRequestSave(saveClassesToDb)}
-                                                buttonText="עדכון טבלת הכיתות"
-                                                className={styles.btnUpdate}
-                                                isLoading={isLoading}
-                                                type="button"
-                                            />
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        <div className={styles.actions}>
-                            <div className="w-full text-right text-gray-500">שלב {step} מתוך 5</div>
-                            <div className={styles.buttonsRow}>
-                                <SubmitBtn
-                                    onClick={handlePrev}
-                                    buttonText="שלב קודם"
-                                    className={styles.btnSecondary}
-                                    isLoading={false}
-                                    type="button"
-                                />
-                                <SubmitBtn
-                                    onClick={handleNext}
-                                    buttonText="שלב הבא"
-                                    className={styles.btnPrimary}
-                                    isLoading={isLoading}
-                                    type="button"
-                                />
-                            </div>
-                        </div>
-                    </div>
+                    <ImportConfigStep
+                        title="רשימת הכיתות (שלב 3 מתוך 6)"
+                        step={3}
+                        config={configClass}
+                        onConfigChange={handleConfigClassChange}
+                        customSeparator={customSeparator}
+                        setCustomSeparator={setCustomSeparator}
+                        previewItems={previewClasses}
+                        onPreviewItemsChange={setPreviewClasses}
+                        listTitle="כיתות שזוהו"
+                        onSave={() => handleRequestSave(() => saveToDb("classes", classCsvData, configClass))}
+                        saveButtonText="עדכון טבלת הכיתות"
+                        onNext={handleNext}
+                        onPrev={handlePrev}
+                        isLoading={isLoading}
+                    />
                 )}
 
-                {/* Step 4: Subjects - Was 5 */}
+                {/* Step 4: Subjects */}
                 {step === 4 && (
                     <div className={styles.configSection}>
-                        <h2 className={`${styles.title} ${styles.stepTitle}`}>רשימת מקצועות</h2>
+                        <h2 className={`${styles.title} ${styles.stepTitle}`}>רשימת מקצועות (שלב 4 מתוך 6)</h2>
 
                         <table className={styles.stepTable}>
                             <tbody>
@@ -798,8 +610,7 @@ const AnnualImportPage = () => {
                                     {/* CONFIG (First column = Right in RTL) */}
                                     <td className={styles.cellConfig}>
                                         <div className={`${styles.formCard} ${styles.formCardWidth}`}>
-                                            <h3 className={styles.sectionTitle}>הגדרות זיהוי מקצועות</h3>
-
+                                            <h3 className={styles.sectionTitle}> הגדרות זיהוי לפי 2 הקבצים</h3>
                                             <DynamicInputSelect
                                                 label="שורה בתא (עבור מקצוע)"
                                                 value={configTeacher.subjectLine || "first"}
@@ -840,7 +651,7 @@ const AnnualImportPage = () => {
                                         </div>
                                         <div className={`${styles.mt4} ${styles.flexEnd}`}>
                                             <SubmitBtn
-                                                onClick={() => handleRequestSave(saveSubjectsToDb)}
+                                                onClick={() => handleRequestSave(() => saveToDb("subjects", [], configTeacher, previewSubjects))}
                                                 buttonText="עדכון טבלת מקצועות"
                                                 className={styles.btnUpdate}
                                                 isLoading={isLoading}
@@ -852,32 +663,17 @@ const AnnualImportPage = () => {
                             </tbody>
                         </table>
 
-                        <div className={styles.actions}>
-                            <div className={styles.stepLabel}>שלב {step} מתוך 5</div>
-                            <div className={styles.buttonsRow}>
-                                <SubmitBtn
-                                    onClick={handlePrev}
-                                    buttonText="שלב קודם"
-                                    className={styles.btnSecondary}
-                                    isLoading={false}
-                                    type="button"
-                                />
-                                <SubmitBtn
-                                    onClick={handleNext}
-                                    buttonText="שלב הבא"
-                                    className={styles.btnPrimary}
-                                    isLoading={false}
-                                    type="button"
-                                />
-                            </div>
-                        </div>
+                        <StepNavigation
+                            onNext={handleNext}
+                            onPrev={handlePrev}
+                        />
                     </div>
                 )}
 
-                {/* Step 5: Verify (Work Groups) - Was 6 */}
+                {/* Step 5: Verify (Work Groups) */}
                 {step === 5 && (
                     <div className={styles.configSection}>
-                        <h2 className={`${styles.title} ${styles.stepTitle}`}>קבוצות עבודה</h2>
+                        <h2 className={`${styles.title} ${styles.stepTitle}`}>קבוצות עבודה (שלב 5 מתוך 6)</h2>
 
                         <div className={styles.verifyContainer}>
                             <div className={styles.verifyListWrapper}>
@@ -886,7 +682,7 @@ const AnnualImportPage = () => {
                             <div className={styles.updateButtonContainer}>
                                 {/* Future: Save Work Groups */}
                                 <SubmitBtn
-                                    onClick={() => handleRequestSave(saveWorkGroupsToDb)}
+                                    onClick={() => handleRequestSave(() => saveToDb("workGroups", [], configTeacher, previewWorkGroups))}
                                     buttonText="שמור קבוצות עבודה"
                                     className={styles.btnUpdate}
                                     isLoading={isLoading}
@@ -894,25 +690,129 @@ const AnnualImportPage = () => {
                                 />
                             </div>
                         </div>
-                        <div className={styles.actions}>
-                            <div className={styles.stepLabel}>שלב {step} מתוך 5</div>
-                            <div className={styles.buttonsRow}>
-                                <SubmitBtn
-                                    onClick={handlePrev}
-                                    buttonText="שלב קודם"
-                                    className={styles.btnSecondary}
-                                    isLoading={false}
-                                    type="button"
-                                />
-                                <SubmitBtn
-                                    onClick={handleNext}
-                                    buttonText="סיום"
-                                    className={styles.btnSuccess}
-                                    isLoading={false}
-                                    type="button"
-                                />
-                            </div>
-                        </div>
+                        <StepNavigation
+                            onNext={handleNext}
+                            onPrev={handlePrev}
+                        />
+                    </div>
+                )}
+                {/* Step 6: Final Processing */}
+                {step === 6 && (
+                    <div className={styles.configSection}>
+                        <h2 className={`${styles.title} ${styles.stepTitle}`}>בניית המערכת (שלב מסכם) (שלב 6 מתוך 6)</h2>
+
+                        <table className={styles.stepTable}>
+                            <tbody>
+                                <tr>
+                                    {/* CONFIG (Right) */}
+                                    <td className={styles.cellConfig}>
+                                        <div className={`${styles.formCard} ${styles.formCardWidth}`}>
+                                            <h3 className={styles.sectionTitle}> הגדרות זיהוי בקובץ מערכת לפי מורים</h3>
+
+                                            <DynamicInputSelect
+                                                label="שורה בתא עבור כיתה"
+                                                value={classLineInCell}
+                                                onChange={(val) => setClassLineInCell(val)}
+                                                options={[
+                                                    { value: "first", label: "שורה ראשונה" },
+                                                    { value: "2", label: "שורה שניה" },
+                                                    { value: "last", label: "שורה אחרונה" }
+                                                ]}
+                                                placeholder="בחר שורה..."
+                                            />
+                                        </div>
+                                    </td>
+
+                                    {/* PREVIEW (Left) */}
+                                    <td className={styles.cellList}>
+                                        <div className={styles.previewColumn}>
+                                            {/* Teacher Select */}
+                                            <div className={styles.teacherSelectWrapper}>
+                                                <DynamicInputSelect
+                                                    placeholder="בחר מורה לתצוגה מקדימה"
+                                                    options={dbTeachers.map(t => ({ value: t.id, label: t.name }))}
+                                                    value={selectedTeacherId}
+                                                    isBold={true}
+                                                    onChange={(val) => setSelectedTeacherId(val)}
+                                                />
+                                            </div>
+
+                                            {/* Grid Preview */}
+                                            <div className={styles.previewContainer}>
+                                                {selectedTeacherId && previewSchedule.length > 0 ? (
+                                                    <table className={styles.previewTable}>
+                                                        <thead>
+                                                            <tr>
+                                                                <th className={styles.tableHeader}>שעה / יום</th>
+                                                                {["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי"].map(d => (
+                                                                    <th key={d} className={styles.tableHeader}>{d}</th>
+                                                                ))}
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {Array.from({ length: Math.max(...previewSchedule.map(s => s.hour), 8) }).map((_, hourIdx) => {
+                                                                const hour = hourIdx + 1;
+                                                                return (
+                                                                    <tr key={hour}>
+                                                                        <td className={styles.hourCell}>{hour}</td>
+                                                                        {[1, 2, 3, 4, 5, 6].map(day => {
+                                                                            const cell = previewSchedule.find(s => s.day === day && s.hour === hour);
+                                                                            const isValid = cell && cell.subjectId && cell.classId;
+                                                                            const bgClass = cell ? (isValid ? styles.validCell : styles.invalidCell) : '';
+
+                                                                            return (
+                                                                                <td key={day} className={`${styles.dataCell} ${bgClass}`}>
+                                                                                    {cell ? (
+                                                                                        <div className={styles.cellContent}>
+                                                                                            <span className={`${styles.subjectText} ${!isValid ? styles.textRed : ''}`}>{cell.subjectName || "?"}</span>
+                                                                                            <span className={styles.classText}>{cell.className || "?"}</span>
+                                                                                            {!isValid && <span className={styles.errorText}>לא זוהה</span>}
+                                                                                        </div>
+                                                                                    ) : null}
+                                                                                </td>
+                                                                            );
+                                                                        })}
+                                                                    </tr>
+                                                                );
+                                                            })}
+                                                        </tbody>
+                                                    </table>
+                                                ) : (
+                                                    <div className={styles.emptyStatePreview}>
+                                                        {selectedTeacherId ? "אין נתונים להצגה (או לא זוהו)" : "בחר מורה לצפייה במערכת"}
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <div className={styles.previewActions}>
+                                                {selectedTeacherId && (
+                                                    <SubmitBtn
+                                                        onClick={() => handleRequestSave(handleSingleTeacherUpdate)}
+                                                        buttonText={`עדכון מערכת למורה ${dbTeachers.find(t => t.id === selectedTeacherId)?.name || ""}`}
+                                                        className={styles.btnSingleUpdate}
+                                                        isLoading={isLoading}
+                                                        type="button"
+                                                    />
+                                                )}
+                                                <SubmitBtn
+                                                    onClick={() => handleRequestSave(handleFinalUpdate)}
+                                                    buttonText="עדכון כל המערכות"
+                                                    className={styles.btnUpdate}
+                                                    isLoading={isLoading}
+                                                    type="button"
+                                                />
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <StepNavigation
+                            onNext={handleNext}
+                            onPrev={handlePrev}
+                            nextLabel="סיום"
+                        />
                     </div>
                 )}
                 {/* Confirmation Popup */}
@@ -922,25 +822,29 @@ const AnnualImportPage = () => {
                     size="S"
                 >
                     <div className={styles.modalContentWrapper}>
-                        <h3 className={styles.modalText}>האם להמשיך?</h3>
+                        <h3 className={styles.modalText}>אישור עדכון</h3>
+                        <p className={styles.modalMessage}>האם אתה בטוח שברצונך לעדכן את המערכת? פעולה זו תדרוס נתונים קיימים.</p>
                         <div className={styles.modalActions}>
                             <button
                                 className={styles.modalBtnYes}
-                                onClick={handleConfirmSave}
+                                onClick={async () => {
+                                    setIsConfirmOpen(false);
+                                    if (confirmAction) await confirmAction();
+                                }}
                             >
-                                כן
+                                כן, עדכן
                             </button>
                             <button
                                 className={styles.modalBtnNo}
                                 onClick={() => setIsConfirmOpen(false)}
                             >
-                                לא
+                                ביטול
                             </button>
                         </div>
                     </div>
                 </PopupModal>
             </div>
-        </AnnualImportPageLayout >
+        </AnnualImportPageLayout>
     );
 };
 

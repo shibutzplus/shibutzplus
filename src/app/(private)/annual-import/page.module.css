@@ -478,3 +478,131 @@
     color: #1f2937;
     margin-bottom: 1rem;
 }
+
+/* Step 6 Preview */
+.previewContainer {
+    flex: 1;
+    border: 1px solid #e5e7eb;
+    overflow: auto;
+    background-color: white;
+    min-height: 300px;
+    max-height: 500px;
+}
+
+.previewTable {
+    width: 100%;
+    text-align: center;
+    font-size: 0.75rem;
+    border-collapse: separate;
+}
+
+.tableHeader {
+    padding: 0.5rem;
+    border: 1px solid #e5e7eb;
+    background-color: #f3f4f6;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    font-weight: 700;
+}
+
+.hourCell {
+    border: 1px solid #e5e7eb;
+    background-color: #f9fafb;
+    font-weight: 700;
+}
+
+.dataCell {
+    border: 1px solid #e5e7eb;
+    height: 3rem;
+    vertical-align: middle;
+}
+
+.dataCellActive {
+    background-color: #eff6ff;
+}
+
+.cellContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.subjectText {
+    font-weight: 700;
+    color: #1d4ed8;
+    display: block;
+}
+
+.previewColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    height: 100%;
+}
+
+.teacherSelectWrapper {
+    width: 16rem;
+}
+
+.previewActions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+
+.btnSingleUpdate {
+    color: white;
+    font-weight: 700;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s;
+    border-radius: 0.5rem;
+    height: 40px;
+    width: auto;
+    padding: 0 1.5rem;
+}
+
+.btnSingleUpdate:hover {
+    background-color: #374151;
+}
+
+.validCell {
+    background-color: #dcfce7;
+    /* green-100 */
+}
+
+.invalidCell {
+    background-color: #fee2e2;
+    /* red-100 */
+}
+
+.errorText {
+    color: #ef4444;
+    /* red-500 */
+    font-size: 0.625rem;
+    font-weight: 700;
+    display: block;
+}
+
+.inputLabel {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    /* text-gray-700 */
+}
+
+.emptyStatePreview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #9ca3af;
+    /* text-gray-400 */
+}
+
+.textRed {
+    color: #b91c1c;
+    /* text-red-700 */
+}
