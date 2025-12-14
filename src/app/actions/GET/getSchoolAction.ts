@@ -14,20 +14,12 @@ export async function getSchoolAction(schoolId: string): Promise<GetSchoolRespon
             return authError as GetSchoolResponse;
         }
 
-        const [school, settings] = await executeQuery(async () => {
-            const schoolPromise = db
+        const school = await executeQuery(async () => {
+            return db
                 .select()
                 .from(schema.schools)
                 .where(eq(schema.schools.id, schoolId))
                 .then((res) => res[0]);
-
-            const settingsPromise = db
-                .select()
-                .from(schema.schoolSettings)
-                .where(eq(schema.schoolSettings.schoolId, schoolId))
-                .then((res) => res[0]);
-
-            return Promise.all([schoolPromise, settingsPromise]);
         });
 
         if (!school) {
@@ -40,10 +32,7 @@ export async function getSchoolAction(schoolId: string): Promise<GetSchoolRespon
         return {
             success: true,
             message: messages.school.success,
-            data: {
-                ...school,
-                settings,
-            },
+            data: school,
         };
     } catch (error) {
         console.error("Error fetching school:", error);

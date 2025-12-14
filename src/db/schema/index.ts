@@ -31,7 +31,7 @@ export const schoolsRelations = relations(schools, ({ many, one }) => ({
   subjects: many(subjects),
   annualSchedules: many(annualSchedule),
   dailySchedules: many(dailySchedule),
-  settings: one(schoolSettings),
+
 }));
 
 // School Settings relations

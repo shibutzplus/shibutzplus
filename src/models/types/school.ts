@@ -18,6 +18,8 @@ export type SchoolType = {
     publishDates: string[];
     createdAt: Date;
     updatedAt: Date;
+    hoursNum: number;
+    displaySchedule2Susb: boolean;
     settings?: SchoolSettingsType;
 };
 

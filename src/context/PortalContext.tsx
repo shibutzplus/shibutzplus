@@ -106,7 +106,13 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
                 try {
                     const response = await getSchoolAction(teacher.schoolId);
                     if (response.success && response.data) {
-                        setSettings(response.data.settings);
+                        const { hoursNum, displaySchedule2Susb } = response.data;
+                        setSettings({
+                            id: 0,
+                            schoolId: response.data.id,
+                            hoursNum,
+                            displaySchedule2Susb,
+                        });
                         const res = getPublishedDatesOptions(response.data.publishDates);
                         if (res.length === 0) {
                             setDatesOptions([]);
@@ -163,7 +169,13 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
         try {
             const response = await getSchoolAction(teacher.schoolId);
             if (response.success && response.data) {
-                setSettings(response.data.settings);
+                const { hoursNum, displaySchedule2Susb } = response.data;
+                setSettings({
+                    id: 0,
+                    schoolId: response.data.id,
+                    hoursNum,
+                    displaySchedule2Susb,
+                });
                 const options = getPublishedDatesOptions(response.data.publishDates);
                 setDatesOptions(options);
 
