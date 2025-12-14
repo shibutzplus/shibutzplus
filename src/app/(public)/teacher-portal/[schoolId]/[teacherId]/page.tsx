@@ -36,7 +36,7 @@ const TeacherPortalPage: NextPage = () => {
         fetchTeacherScheduleDate(teacher, selectedDate);
     }, [selectedDate, teacher?.id, schoolId, datesOptions]);
 
-    if (!teacher)
+    if (!teacher || !settings)
         return (
             <div
                 style={{
@@ -49,6 +49,11 @@ const TeacherPortalPage: NextPage = () => {
                 <Preloader />
             </div>
         );
+
+    const isPublished = datesOptions.some((d) => d.value === selectedDate);
+    if (!isPublished) {
+        return <NotPublished date={selectedDate} text="המערכת טרם פורסמה" />;
+    }
 
     return (
         <div className={styles.container}>

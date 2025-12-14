@@ -47,7 +47,7 @@ const PublishedPortalPage: NextPage = () => {
                 mainDailyTable={mainPublishTable}
                 selectedDate={selectedDate}
                 appType="public"
-                EmptyTable={(props) => <NotPublished {...props} text="המערכת לא פורסמה" />}
+                EmptyTable={(props) => <NotPublished {...props} text="המערכת הבית ספרית טרם פורסמה" />}
                 hoursNum={settings?.hoursNum}
             />
         </section>
