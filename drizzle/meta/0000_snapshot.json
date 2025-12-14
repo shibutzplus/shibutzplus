@@ -1,5 +1,5 @@
 {
-  "id": "85a9fb80-0f01-4eaa-ac7c-552b3630fc0a",
+  "id": "e7d4f5f8-a93a-4380-9707-94fb1f9cddea",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -66,17 +66,47 @@
         }
       },
       "indexes": {
-        "annual_position_idx": {
-          "name": "annual_position_idx",
+        "idx_annual_teacher_id": {
+          "name": "idx_annual_teacher_id",
           "columns": [
             {
-              "expression": "school_id",
+              "expression": "teacher_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
             }
           ],
-          "isUnique": true,
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_annual_class_id": {
+          "name": "idx_annual_class_id",
+          "columns": [
+            {
+              "expression": "class_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_annual_subject_id": {
+          "name": "idx_annual_subject_id",
+          "columns": [
+            {
+              "expression": "subject_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
           "concurrently": false,
           "method": "btree",
           "with": {}
@@ -124,6 +154,13 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
+        },
+        "activity": {
+          "name": "activity",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
         }
       },
       "indexes": {},
@@ -146,7 +183,13 @@
         },
         "date": {
           "name": "date",
-          "type": "text",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "day": {
+          "name": "day",
+          "type": "varchar(10)",
           "primaryKey": false,
           "notNull": true
         },
@@ -168,6 +211,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "column_id": {
+          "name": "column_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "school_id": {
           "name": "school_id",
           "type": "text",
@@ -178,22 +227,10 @@
           "name": "class_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "subject_id": {
           "name": "subject_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "absent_teacher_id": {
-          "name": "absent_teacher_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "present_teacher_id": {
-          "name": "present_teacher_id",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -203,6 +240,31 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false
+        },
+        "issue_teacher_id": {
+          "name": "issue_teacher_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "issue_teacher_type": {
+          "name": "issue_teacher_type",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'missingTeacher'"
+        },
+        "instructions": {
+          "name": "instructions",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
         },
         "created_at": {
           "name": "created_at",
@@ -220,22 +282,126 @@
         }
       },
       "indexes": {
-        "daily_position_idx": {
-          "name": "daily_position_idx",
+        "idx_daily_school_date": {
+          "name": "idx_daily_school_date",
           "columns": [
             {
               "expression": "school_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
+            },
+            {
+              "expression": "date",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
             }
           ],
-          "isUnique": true,
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_daily_issue_teacher_id": {
+          "name": "idx_daily_issue_teacher_id",
+          "columns": [
+            {
+              "expression": "issue_teacher_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_daily_sub_teacher_id": {
+          "name": "idx_daily_sub_teacher_id",
+          "columns": [
+            {
+              "expression": "sub_teacher_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_daily_class_id": {
+          "name": "idx_daily_class_id",
+          "columns": [
+            {
+              "expression": "class_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_daily_column_id": {
+          "name": "idx_daily_column_id",
+          "columns": [
+            {
+              "expression": "column_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
           "concurrently": false,
           "method": "btree",
           "with": {}
         }
       },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.settings": {
+      "name": "settings",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "hours_num": {
+          "name": "hours_num",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "display_schedule2susb": {
+          "name": "display_schedule2susb",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "school_id": {
+          "name": "school_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
@@ -272,6 +438,13 @@
           "primaryKey": false,
           "notNull": true,
           "default": "'onboarding'"
+        },
+        "publish_dates": {
+          "name": "publish_dates",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'"
         },
         "created_at": {
           "name": "created_at",
@@ -339,6 +512,13 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
+        },
+        "activity": {
+          "name": "activity",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
         }
       },
       "indexes": {},
@@ -398,7 +578,29 @@
           "default": "now()"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "idx_teachers_school_id_name": {
+          "name": "idx_teachers_school_id_name",
+          "columns": [
+            {
+              "expression": "school_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
@@ -448,11 +650,18 @@
           "notNull": true,
           "default": "'female'"
         },
+        "auth_type": {
+          "name": "auth_type",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'google'"
+        },
         "school_id": {
           "name": "school_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",

@@ -8,7 +8,7 @@ dotenv.config({ path: '.env.local' });
 const connectionString = process.env.DATABASE_URL || 'postgresql://user:password@localhost:5432/shibutzplus';
 
 export default {
-  schema: './src/db/schema/*',
+  schema: './src/db/schema/index.ts',
   out: './drizzle',
   dialect: 'postgresql',
   dbCredentials: {

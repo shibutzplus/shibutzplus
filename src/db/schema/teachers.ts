@@ -1,4 +1,4 @@
-import { pgTable, text, varchar, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, text, varchar, timestamp, index } from 'drizzle-orm/pg-core';
 import { createId } from '@paralleldrive/cuid2';
 import { TeacherRole } from '@/models/types/teachers';
 
@@ -10,6 +10,10 @@ export const teachers = pgTable('teachers', {
   userId: text('user_id'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
+}, (table) => {
+  return {
+    schoolIdNameIdx: index('idx_teachers_school_id_name').on(table.schoolId, table.name),
+  };
 });
 
 export type TeacherSchema = typeof teachers.$inferSelect;
