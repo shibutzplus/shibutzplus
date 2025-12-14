@@ -130,9 +130,9 @@ export const israelToday = new Date(
 // -- Cache -- //
 
 // Cache expiration time (1 hour in milliseconds)
-export const CACHE_EXPIRATION = 60 * 60 * 1000;
+export const CACHE_EXPIRATION = 24 * 60 * 60 * 1000;
 
-// Check if cache is fresh (less than 1 hour old)
+// Check if cache is fresh (less than 24 hours old)
 export const isCacheFresh = (cacheTimestamp: string | null) =>
     cacheTimestamp && Date.now() - parseInt(cacheTimestamp) < CACHE_EXPIRATION;
 

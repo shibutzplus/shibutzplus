@@ -21,6 +21,7 @@ import { setStorageClasses, setStorageSubjects, setStorageTeachers } from "@/lib
 import { errorToast } from "@/lib/toast";
 import { pushSyncUpdate } from "@/services/syncService";
 import { UPDATE_DETAIL } from "@/models/constant/sync";
+import { removeSessionStorage, SESSION_KEYS } from "@/lib/sessionStorage";
 
 interface MainContextType {
     school: SchoolType | undefined;
@@ -101,6 +102,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
                 setStorageSubjects(updatedSubjects);
                 return updatedSubjects;
             });
+            removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
             void pushSyncUpdate(UPDATE_DETAIL);
             return response.data;
         }
@@ -116,6 +118,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         if (response.success && response.data) {
             setSubjects(response.data as SubjectType[]);
             setStorageSubjects(response.data as SubjectType[]);
+            removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
             void pushSyncUpdate(UPDATE_DETAIL);
             return response.data;
         }
@@ -128,6 +131,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
             setSubjects(response.subjects);
             setStorageSubjects(response.subjects);
             setAnnualAfterDelete(response.annualSchedules);
+            removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
             void pushSyncUpdate(UPDATE_DETAIL);
             return true;
         }
@@ -152,6 +156,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
                 });
             }
 
+            removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
             void pushSyncUpdate(UPDATE_DETAIL);
             return response.data;
         }
@@ -183,6 +188,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
                 }
             }
 
+            removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
             void pushSyncUpdate(UPDATE_DETAIL);
             return response.data;
         }
@@ -208,6 +214,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
                 }
             }
 
+            removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
             void pushSyncUpdate(UPDATE_DETAIL);
             return true;
         }
@@ -223,6 +230,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
                 setStorageTeachers(updatedTeachers);
                 return updatedTeachers;
             });
+            removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
             void pushSyncUpdate(UPDATE_DETAIL);
             return response.data;
         }
@@ -237,6 +245,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         if (response.success && response.data) {
             setTeachers(response.data as TeacherType[]);
             setStorageTeachers(response.data as TeacherType[]);
+            removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
             void pushSyncUpdate(UPDATE_DETAIL);
             return response.data;
         }
@@ -249,6 +258,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
             setTeachers(response.teachers);
             setStorageTeachers(response.teachers);
             setAnnualAfterDelete(response.annualSchedules);
+            removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
             void pushSyncUpdate(UPDATE_DETAIL);
             return true;
         }
