@@ -15,7 +15,7 @@ type TeacherTableProps = {
     selectedDate: string;
     isInsidePanel?: boolean;
     hoursNum?: number;
-    fitToSchedule?: boolean;
+    fitToSchedule?: boolean;    // FFU
 };
 
 const TeacherTable: React.FC<TeacherTableProps> = ({

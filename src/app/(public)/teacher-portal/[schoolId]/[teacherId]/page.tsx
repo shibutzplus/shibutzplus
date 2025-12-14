@@ -61,7 +61,6 @@ const TeacherPortalPage: NextPage = () => {
                 teacher={teacher}
                 selectedDate={selectedDate}
                 hoursNum={settings?.hoursNum}
-                fitToSchedule
             />
         </div>
     );

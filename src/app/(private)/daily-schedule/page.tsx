@@ -81,7 +81,6 @@ const DailySchedulePage: NextPage = () => {
                             selectedDate={selectedDate}
                             isInsidePanel
                             hoursNum={settings?.hoursNum}
-                            fitToSchedule
                         />
                     ) : null}
                 </SlidingPanel>
