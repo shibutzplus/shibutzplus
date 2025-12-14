@@ -65,7 +65,6 @@ const HistorySchedulePage: NextPage = () => {
                         selectedDate={selectedYearDate}
                         isInsidePanel
                         hoursNum={settings?.hoursNum}
-                        fitToSchedule
                     />
                 ) : null}
             </SlidingPanel>
