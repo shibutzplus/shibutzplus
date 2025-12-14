@@ -61,6 +61,8 @@ const signUp = async (params: RegisterRequest): Promise<RegisterResponse> => {
                         type: level,
                         status: "annual",
                         publishDates: [],
+                        hoursNum: 10,
+                        displaySchedule2Susb: false,
                     })
                     .returning({ id: schema.schools.id });
 

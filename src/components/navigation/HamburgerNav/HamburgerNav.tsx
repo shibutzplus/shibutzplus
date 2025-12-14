@@ -252,7 +252,6 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                 group.type === "substitute" &&
                 (schoolSettings?.displaySchedule2Susb || context?.settings?.displaySchedule2Susb)
             ) {
-                // Avoid duplicates if logic runs multiple times or if link already exists (though constant it shouldn't)
                 const hasLink = links.some((l) => l.p === routePath.publishedPortal.p);
                 if (!hasLink) {
                     links = [
@@ -297,6 +296,30 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
             setSessionStorage(SESSION_KEYS.HAMBURGER_EXPANDED_GROUPS, newState);
             return newState;
         });
+    };
+
+    const handleOpenSettings = () => {
+        if (!school?.id) return;
+
+        onClose();
+        openPopup(
+            "settings",
+            "S",
+            <SettingsPopup
+                schoolId={school.id}
+                initialHours={context?.settings?.hoursNum || HOURS_IN_DAY}
+                initialShowExternal={context?.settings?.displaySchedule2Susb || false}
+                onSave={(newSettings) => {
+                    context?.setSchool((prev) =>
+                        prev ? ({
+                            ...prev,
+                            hoursNum: newSettings.hoursNum,
+                            displaySchedule2Susb: newSettings.displaySchedule2Susb
+                        }) : prev
+                    );
+                }}
+            />,
+        );
     };
 
     return (
@@ -412,25 +435,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                             {isPrivate && (
                                 <div
                                     className={styles.navLink}
-                                    onClick={() => {
-                                        if (school?.id) {
-                                            onClose();
-                                            openPopup(
-                                                "settings",
-                                                "S",
-                                                <SettingsPopup
-                                                    schoolId={school.id}
-                                                    initialHours={context?.settings?.hoursNum || HOURS_IN_DAY}
-                                                    initialShowExternal={
-                                                        context?.settings?.displaySchedule2Susb || false
-                                                    }
-                                                    onSave={(newSettings) => {
-                                                        context?.setSettings(newSettings);
-                                                    }}
-                                                />,
-                                            );
-                                        }
-                                    }}
+                                    onClick={handleOpenSettings}
                                     aria-label="הגדרות מערכת"
                                 >
                                     <Icons.settings size={24} />

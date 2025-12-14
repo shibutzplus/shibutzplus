@@ -22,39 +22,24 @@ export async function updateSettingsAction(
     try {
         const { hoursNum, displaySchedule2Susb, schoolId } = params;
 
-        const existingSettings = await db
-            .select()
-            .from(schema.schoolSettings)
-            .where(eq(schema.schoolSettings.schoolId, schoolId))
-            .limit(1)
-            .then((res) => res[0]);
-
-        if (existingSettings) {
-            await db
-                .update(schema.schoolSettings)
-                .set({
-                    hoursNum,
-                    displaySchedule2Susb,
-                })
-                .where(eq(schema.schoolSettings.id, existingSettings.id));
-        } else {
-            await db.insert(schema.schoolSettings).values({
+        await db
+            .update(schema.schools)
+            .set({
                 hoursNum,
                 displaySchedule2Susb,
-                schoolId,
-            });
-        }
+            })
+            .where(eq(schema.schools.id, schoolId));
 
         revalidatePath("/");
 
-        revalidatePath("/");
+        // Since we are updating schools, we return the params as the updated state
+        const updatedSettings: SchoolSettingsType = {
+            id: 0, // Placeholder, not used practically in new flow
+            schoolId,
+            hoursNum,
+            displaySchedule2Susb
+        };
 
-        const updatedSettings: SchoolSettingsType = existingSettings
-            ? { ...existingSettings, hoursNum, displaySchedule2Susb }
-            : { id: 0, schoolId, hoursNum, displaySchedule2Susb }; // ID 0 is temp if inserted, but usually we'd fetch or use RETURNING
-
-        // Better to fetch fresh if we want ID, but for now just returning params is enough for optimstic/local update
-        // Or if we want perfect sync we can return what we wrote.
         return {
             success: true,
             message: "ההגדרות נשמרו בהצלחה",

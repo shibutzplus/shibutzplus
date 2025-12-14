@@ -45,7 +45,6 @@ interface MainContextType {
     ) => Promise<SubjectType[] | undefined>;
     deleteSubject: (schoolId: string, subjectId: string) => Promise<boolean>;
     setSchool: React.Dispatch<React.SetStateAction<SchoolType | undefined>>;
-    setSettings: React.Dispatch<React.SetStateAction<SchoolSettingsType | undefined>>;
 }
 
 const MainContext = createContext<MainContextType | undefined>(undefined);
@@ -68,7 +67,13 @@ interface MainContextProviderProps {
 
 export const MainContextProvider: React.FC<MainContextProviderProps> = ({ children }) => {
     const [school, setSchool] = useState<SchoolType | undefined>(undefined);
-    const [settings, setSettings] = useState<SchoolSettingsType | undefined>(undefined);
+    const settings: SchoolSettingsType | undefined = school ? {
+        id: 0,
+        schoolId: school.id,
+        hoursNum: school.hoursNum ?? 10,
+        displaySchedule2Susb: school.displaySchedule2Susb ?? false,
+    } : undefined;
+
     const [teachers, setTeachers] = useState<TeacherType[] | undefined>(undefined);
     const [subjects, setSubjects] = useState<SubjectType[] | undefined>(undefined);
     const [classes, setClasses] = useState<ClassType[] | undefined>(undefined);
@@ -79,8 +84,6 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
     useInitData({
         school,
         setSchool,
-        settings,
-        setSettings,
         teachers,
         setTeachers,
         subjects,
@@ -269,7 +272,6 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         deleteSubject,
         setSchool,
         settings,
-        setSettings,
     };
 
     return <MainContext.Provider value={value}>{children}</MainContext.Provider>;

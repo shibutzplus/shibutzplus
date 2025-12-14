@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { STATUS_AUTH } from "@/models/constant/session";
-import { SchoolType } from "@/models/types/school";
+import { SchoolType, GetSchoolResponse } from "@/models/types/school";
 import { GetSubjectsResponse, SubjectType } from "@/models/types/subjects";
 import { GetTeachersResponse, TeacherType } from "@/models/types/teachers";
 import { ClassType, GetClassesResponse } from "@/models/types/classes";
@@ -11,8 +11,7 @@ import { getSchoolAction as getSchoolFromDB } from "@/app/actions/GET/getSchoolA
 import { getTeachersAction as getTeachersFromDB } from "@/app/actions/GET/getTeachersAction";
 import { getSubjectsAction as getSubjectsFromDB } from "@/app/actions/GET/getSubjectsAction";
 import { getClassesAction as getClassesFromDB } from "@/app/actions/GET/getClassesAction";
-import { getSchoolSettingsAction } from "@/app/actions/GET/getSchoolSettingsAction";
-import { GetSchoolSettingsResponse, SchoolSettingsType } from "@/models/types/settings";
+
 import {
     getCacheTimestamp, getStorageClasses, getStorageSubjects, getStorageTeachers,
     setCacheTimestamp, setStorageClasses, setStorageSubjects, setStorageTeachers,
@@ -24,8 +23,7 @@ import { sortByHebrewName } from "@/utils/sort";
 interface useInitDataProps {
     school: SchoolType | undefined;
     setSchool: (school: SchoolType | undefined) => void;
-    settings: SchoolSettingsType | undefined;
-    setSettings: (settings: SchoolSettingsType | undefined) => void;
+
     teachers: TeacherType[] | undefined;
     setTeachers: (teachers: TeacherType[] | undefined) => void;
     subjects: SubjectType[] | undefined;
@@ -44,8 +42,6 @@ const SYNC_TS_KEY = "sync_ts_detailsUpdate";
 const useInitData = ({
     school,
     setSchool,
-    settings,
-    setSettings,
     teachers,
     setTeachers,
     subjects,
@@ -69,15 +65,14 @@ const useInitData = ({
     useEffect(() => {
         const fetchData = async (schoolId: string) => {
             try {
-                let schoolPromise, classesPromise, teachersPromise, subjectsPromise, settingsPromise;
+                let schoolPromise: Promise<GetSchoolResponse> | undefined;
+                let classesPromise: Promise<GetClassesResponse> | undefined;
+                let teachersPromise: Promise<GetTeachersResponse> | undefined;
+                let subjectsPromise: Promise<GetSubjectsResponse> | undefined;
 
                 if (!school) {
                     // fetch school from DB
                     schoolPromise = getSchoolFromDB(schoolId);
-                }
-
-                if (!settings) {
-                    settingsPromise = getSchoolSettingsAction(schoolId);
                 }
 
                 // single poll for any data change across entities
@@ -123,36 +118,29 @@ const useInitData = ({
                         );
                 }
 
-                const [schoolRes, classesRes, teachersRes, subjectsRes, settingsRes] = await Promise.all([
+                const [schoolRes, classesRes, teachersRes, subjectsRes] = await Promise.all([
                     schoolPromise || Promise.resolve(null),
                     classesPromise || Promise.resolve(null),
                     teachersPromise || Promise.resolve(null),
                     subjectsPromise || Promise.resolve(null),
-                    settingsPromise || Promise.resolve(null),
                 ]);
 
                 if (schoolRes && schoolRes.success && schoolRes.data) {
                     setSchool(schoolRes.data);
                 }
 
-                const resolvedSettingsRes = settingsRes as unknown as GetSchoolSettingsResponse | null;
-
-                if (resolvedSettingsRes && resolvedSettingsRes.success && resolvedSettingsRes.data) {
-                    setSettings(resolvedSettingsRes.data);
-                }
-
                 if (teachersRes && teachersRes.success && teachersRes.data) {
-                    const sortedTeachers = sortByHebrewName(teachersRes.data);
+                    const sortedTeachers = sortByHebrewName<any>(teachersRes.data);
                     setTeachers(sortedTeachers);
                     setStorageTeachers(sortedTeachers);
                 }
                 if (subjectsRes && subjectsRes.success && subjectsRes.data) {
-                    const sortedSubjects = sortByHebrewName(subjectsRes.data);
+                    const sortedSubjects = sortByHebrewName<any>(subjectsRes.data);
                     setSubjects(sortedSubjects);
                     setStorageSubjects(sortedSubjects);
                 }
                 if (classesRes && classesRes.success && classesRes.data) {
-                    const sortedClasses = sortByHebrewName(classesRes.data);
+                    const sortedClasses = sortByHebrewName<any>(classesRes.data);
                     setClasses(sortedClasses);
                     setStorageClasses(sortedClasses);
                 }
@@ -179,7 +167,7 @@ const useInitData = ({
 
             fetchData(effectiveSchoolId);
         }
-    }, [session, status, school, settings, teachers, subjects, classes]);
+    }, [session, status, school, teachers, subjects, classes]);
 };
 
 export default useInitData;
