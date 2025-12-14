@@ -1,12 +1,12 @@
-import { pgTable, text, varchar, timestamp, integer, uniqueIndex, date } from 'drizzle-orm/pg-core';
+import { pgTable, text, varchar, timestamp, integer, index, date } from 'drizzle-orm/pg-core';
 import { createId } from '@paralleldrive/cuid2';
 import { ColumnType } from '@/models/types/dailySchedule';
 
 export const dailySchedule = pgTable('daily_schedule', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
   date: date('date').notNull(),
-  day: varchar('day', { length: 20 }).notNull(), // day of week 1-7
-  hour: integer('hour').notNull(), // period number
+  day: varchar('day', { length: 10 }).notNull(), // day of week 1-7 (should have been integer)
+  hour: integer('hour').notNull(),
   eventTitle: varchar('event_title', { length: 255 }),
   event: text('event'),
   columnId: text('column_id'),
@@ -22,8 +22,11 @@ export const dailySchedule = pgTable('daily_schedule', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 }, (table) => {
   return {
-    dateHourIdx: uniqueIndex('daily_date_hour_idx').on(table.schoolId, table.date, table.hour, table.classId),
-    dayHourIdx: uniqueIndex('daily_day_hour_idx').on(table.schoolId, table.day, table.hour, table.classId),
+    schoolIdDateIdx: index('idx_daily_school_date').on(table.schoolId, table.date),
+    issueTeacherIdIdx: index('idx_daily_issue_teacher_id').on(table.issueTeacherId),
+    subTeacherIdIdx: index('idx_daily_sub_teacher_id').on(table.subTeacherId),
+    classIdIdx: index('idx_daily_class_id').on(table.classId),
+    columnIdIdx: index('idx_daily_column_id').on(table.columnId),
   };
 });
 
