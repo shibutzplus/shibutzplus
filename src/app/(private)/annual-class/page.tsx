@@ -10,7 +10,7 @@ import { populateAllClassesSchedule } from "@/services/annual/populate";
 import { initializeEmptyAnnualSchedule } from "@/services/annual/initialize";
 
 const AnnualSchedulePage: NextPage = () => {
-    const { classes, teachers, subjects } = useMainContext();
+    const { classes, teachers, subjects, school } = useMainContext();
     const { annualScheduleTable, selectedClassId, schedule, setSchedule, setIsLoading, setIsSaving, isSaving, handleAddNewRow, } = useAnnualByClass();
 
     // Initialize and populate schedule for all classes on first render
@@ -26,7 +26,11 @@ const AnnualSchedulePage: NextPage = () => {
             let newSchedule = {};
             // Initialize empty schedule for all classes
             classes.forEach((cls) => {
-                newSchedule = initializeEmptyAnnualSchedule(newSchedule, cls.id);
+                newSchedule = initializeEmptyAnnualSchedule(
+                    newSchedule,
+                    cls.id,
+                    school?.hoursNum || 10,
+                );
             });
             // Populate schedule for all classes in one pass
             newSchedule = populateAllClassesSchedule(annualScheduleTable, newSchedule);

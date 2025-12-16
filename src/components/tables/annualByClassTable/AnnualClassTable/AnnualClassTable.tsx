@@ -117,7 +117,7 @@ const AnnualClassTable: React.FC<AnnualClassTableProps> = ({
                     </tr>
                 </thead>
                 <tbody className={styles.scheduleTableBody}>
-                    {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => (
+                    {Array.from({ length: school?.hoursNum || TableRows }, (_, i) => i + 1).map((hour) => (
                         <AnnualRow
                             key={hour}
                             hour={hour}
