@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Btn from "@/components/ui/buttons/Btn/Btn";
+import AddToListBtn from "@/components/ui/buttons/AddToListBtn/AddToListBtn";
 import InputText from "@/components/ui/inputs/InputText/InputText";
 import Icons from "@/style/icons";
 import { errorToast } from "@/lib/toast";
@@ -113,7 +113,7 @@ function AddListRow<T extends Record<string, any>>({
                 />
             </div>
             <div className={styles.addListBtn}>
-                <Btn
+                <AddToListBtn
                     text={buttonLabel}
                     onClick={handleSubmitAdd}
                     isLoading={isLoading}

@@ -1,8 +1,8 @@
 import React from "react";
-import styles from "./Btn.module.css";
+import styles from "./AddToListBtn.module.css";
 import Loading from "@/components/loading/Loading/Loading";
 
-interface BtnProps {
+interface AddToListBtnProps {
     text: string;
     onClick?: (e: React.MouseEvent) => void;
     isLoading: boolean;
@@ -11,7 +11,14 @@ interface BtnProps {
     style?: React.CSSProperties;
 }
 
-const Btn: React.FC<BtnProps> = ({ text, onClick, isLoading, Icon, className, style }) => {
+const AddToListBtn: React.FC<AddToListBtnProps> = ({
+    text,
+    onClick,
+    isLoading,
+    Icon,
+    className,
+    style,
+}) => {
     return (
         <button
             onClick={onClick}
@@ -35,4 +42,4 @@ const Btn: React.FC<BtnProps> = ({ text, onClick, isLoading, Icon, className, st
     );
 };
 
-export default Btn;
+export default AddToListBtn;

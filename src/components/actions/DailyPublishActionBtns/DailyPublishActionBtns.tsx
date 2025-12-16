@@ -20,7 +20,7 @@ const DailyPublishActionBtns: React.FC = () => {
         <div className={styles.topNavBtnContainer}>
             {isDisabled ? (
                 <div className={styles.publishedStatus}>
-                    <Icons.success2 size={20} />
+                    <Icons.success size={20} />
                     <span>פורסם</span>
                 </div>
             ) : (

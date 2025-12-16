@@ -1,8 +1,15 @@
 import {
-    IoCalendarOutline, IoCalendarSharp,
-    IoLogOutOutline, IoPeopleOutline, IoMenuOutline,
-    IoCloseOutline, IoBookOutline, IoChevronDown,
-    IoSettingsOutline, IoPersonOutline, IoPeopleSharp
+    IoCalendarOutline,
+    IoCalendarSharp,
+    IoLogOutOutline,
+    IoPeopleOutline,
+    IoMenuOutline,
+    IoCloseOutline,
+    IoBookOutline,
+    IoChevronDown,
+    IoSettingsOutline,
+    IoPersonOutline,
+    IoPeopleSharp,
 } from "react-icons/io5";
 import { IoMdRefresh } from "react-icons/io";
 import { RiEdit2Fill, RiDeleteBin6Line } from "react-icons/ri";
@@ -42,7 +49,7 @@ const Icons = {
     teacher: IoPersonOutline,
     teacherSolid: MdPerson,
     refresh: IoMdRefresh,
-    success2: FiCheckCircle,
+    success: FiCheckCircle,
     users: IoPeopleOutline,
     settings: IoSettingsOutline,
     upload: MdFileUpload,

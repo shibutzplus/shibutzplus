@@ -1,4 +1,3 @@
-import { AnnualScheduleRequest } from "@/models/types/annualSchedule";
 import { ClassType } from "@/models/types/classes";
 
 export const getSelectedClass = (classes: ClassType[] | undefined, selectedClassId: string) => {
@@ -7,17 +6,4 @@ export const getSelectedClass = (classes: ClassType[] | undefined, selectedClass
 
 export const getSelectedTeacher = (teachers: any[] | undefined, selectedTeacherId: string) => {
     return teachers?.find((t) => t.id === selectedTeacherId);
-};
-
-// NOT IN USE
-export const getUniqueCellsFromQueue = (queueRows: AnnualScheduleRequest[]) => {
-    const cells = queueRows.map((row) => ({
-        day: row.day,
-        hour: row.hour,
-    }));
-    const uniqueCells = cells.filter(
-        (cell, index) =>
-            cells.findIndex((c) => c.day === cell.day && c.hour === cell.hour) === index,
-    );
-    return uniqueCells;
 };
