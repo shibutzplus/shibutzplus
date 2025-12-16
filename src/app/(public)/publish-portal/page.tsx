@@ -25,7 +25,7 @@ const PublishedPortalPage: NextPage = () => {
         fetchPublishScheduleData();
     }, [selectedDate, teacher?.id, schoolId]);
 
-    if (!hasFetched) {
+    if (!hasFetched || isDatesLoading) {
         return (
             <div style={{ position: "relative", width: "100%", height: "100%" }}>
                 <Preloader

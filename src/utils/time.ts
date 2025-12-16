@@ -18,8 +18,12 @@ export const HOURS_IN_DAY = 9;
 export const AUTO_SWITCH_TIME = "16:00";
 
 // YYYY-MM-DD format
+// YYYY-MM-DD format
 export const getDateReturnString = (date: Date) => {
-    return date.toISOString().split("T")[0];
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
 };
 
 // DD-MM-YYYY format
