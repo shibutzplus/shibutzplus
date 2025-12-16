@@ -68,7 +68,7 @@ export function getIsraeliDateOptions(): SelectOption[] {
 }
 
 export function getPublishedDatesOptions(dates: string[]): SelectOption[] {
-    const todayStr = new Date().toISOString().slice(0, 10);
+    const todayStr = getTodayDateString();
 
     return dates
         .filter(d => d >= todayStr)                 // keep today and future only
