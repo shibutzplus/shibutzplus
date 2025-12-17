@@ -7,6 +7,8 @@ import InputRichText from "@/components/ui/inputs/InputRichText/InputRichText";
 import { getInstructionPlaceholder } from "@/utils/portal";
 import { useTeacherTableContext } from "@/context/TeacherTableContext";
 import { TeacherType } from "@/models/types/teachers";
+import { dailyInstructionSchema } from "@/models/validation/daily";
+import { errorToast } from "@/lib/toast";
 
 type TeacherInstructionsCellProps = {
     row: TeacherScheduleType | undefined;
@@ -34,8 +36,26 @@ const TeacherInstructionsCell: React.FC<TeacherInstructionsCellProps> = ({
         if (!row || !selectedDate) return;
         const value = html.trim();
         if (value === prevInstructions) return;
-        setPrevInstructions(value);
-        saveInstractions(value, row, selectedDate);
+
+        const validation = dailyInstructionSchema.safeParse({ instructions: value });
+        if (!validation.success) {
+            errorToast(validation.error.issues[0]?.message || "תוכן ההנחיות לא תקין");
+            return;
+        }
+
+        const cleanInstructions = validation.data.instructions;
+
+        // If normalization changed content (e.g. sanitization), update state to match
+        if (
+            cleanInstructions !== value &&
+            cleanInstructions !== undefined &&
+            cleanInstructions !== null
+        ) {
+            setInstructions(cleanInstructions);
+        }
+
+        setPrevInstructions(cleanInstructions || "");
+        saveInstractions(cleanInstructions || "", row, selectedDate);
     };
 
     return (
