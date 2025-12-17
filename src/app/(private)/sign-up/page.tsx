@@ -58,7 +58,7 @@ const SignUpPage: NextPage = () => {
         const res = await signUp(formData);
 
         if (!res.success) {
-            setError(res.message);
+            setError(res.message || "");
             setIsLoading(false);
             return;
         }

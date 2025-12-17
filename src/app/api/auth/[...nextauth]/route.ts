@@ -7,8 +7,6 @@ import type { UserRole, UserGender } from "@/models/types/auth";
 import { registerNewGoogleUserAction } from "@/app/actions/POST/registerNewGoogleUserAction";
 import { getUserByEmailAction } from "@/app/actions/GET/getUserByEmailAction";
 
-import CredentialsProvider from "next-auth/providers/credentials";
-
 // Always take the current time, so each login gets a fresh session timer.
 const nowInSec = () => Math.floor(Date.now() / 1000);
 
