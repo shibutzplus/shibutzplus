@@ -1,4 +1,4 @@
-import { pgTable, text, varchar, timestamp, boolean, index } from 'drizzle-orm/pg-core';
+import { pgTable, text, varchar, timestamp, boolean, index, uniqueIndex } from 'drizzle-orm/pg-core';
 import { createId } from '@paralleldrive/cuid2';
 
 export const subjects = pgTable('subjects', {
@@ -10,7 +10,7 @@ export const subjects = pgTable('subjects', {
   activity: boolean('activity').default(false).notNull(),
 }, (table) => {
   return {
-    schoolIdNameIdx: index('idx_subjects_school_id_name').on(table.schoolId, table.name),
+    schoolIdNameIdx: uniqueIndex('idx_subjects_school_id_name').on(table.schoolId, table.name),
   };
 });
 

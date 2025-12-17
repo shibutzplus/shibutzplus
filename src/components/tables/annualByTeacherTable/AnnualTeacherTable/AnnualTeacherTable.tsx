@@ -11,6 +11,7 @@ import AnnualRow from "../AnnualRow/AnnualRow";
 import styles from "./AnnualTeacherTable.module.css";
 import { AnnualInputCellType } from "@/models/types/annualSchedule";
 import { SelectMethod } from "@/models/types/actions";
+import { useMainContext } from "@/context/MainContext";
 
 type AnnualTeacherTableProps = {
     schedule: WeeklySchedule;
@@ -40,6 +41,7 @@ const AnnualTeacherTable: React.FC<AnnualTeacherTableProps> = ({
     isSaving,
     handleAddNewRow,
 }) => {
+    const { school } = useMainContext();
     const isDisabled = isSaving || !schedule || !subjects || !classes;
 
     useEffect(() => {
@@ -65,7 +67,7 @@ const AnnualTeacherTable: React.FC<AnnualTeacherTableProps> = ({
                     </tr>
                 </thead>
                 <tbody className={styles.scheduleTableBody}>
-                    {Array.from({ length: TableRows }, (_, i) => i + 1).map((hour) => (
+                    {Array.from({ length: school?.hoursNum || TableRows }, (_, i) => i + 1).map((hour) => (
                         <AnnualRow
                             key={hour}
                             hour={hour}

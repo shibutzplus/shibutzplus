@@ -10,7 +10,7 @@ import { populateAllTeachersSchedule } from "@/services/annual/populate";
 import { initializeEmptyAnnualSchedule } from "@/services/annual/initialize";
 
 const AnnualSchedulePage: NextPage = () => {
-    const { classes, teachers, subjects } = useMainContext();
+    const { classes, teachers, subjects, school } = useMainContext();
     const {
         selectedTeacherId,
         schedule,
@@ -34,7 +34,11 @@ const AnnualSchedulePage: NextPage = () => {
             let newSchedule = {};
             // Initialize empty schedule for all teachers
             teachers.forEach((teacher) => {
-                newSchedule = initializeEmptyAnnualSchedule(newSchedule, teacher.id);
+                newSchedule = initializeEmptyAnnualSchedule(
+                    newSchedule,
+                    teacher.id,
+                    school?.hoursNum || 10,
+                );
             });
             // Populate schedule for all teachers in one pass
             newSchedule = populateAllTeachersSchedule(annualScheduleTable, newSchedule);
