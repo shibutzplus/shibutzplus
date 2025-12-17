@@ -1,28 +1,26 @@
 "use client";
 
-import "@/components/faq/faq.css"
-import emailjs from "emailjs-com";
+import "@/components/faq/faq.css";
 import { useEffect, useState } from "react";
 import { getStorageTeacher } from "@/lib/localStorage";
 import { errorToast, successToast } from "@/lib/toast";
 import { motion } from "motion/react";
+import { sendTeacherContactEmail } from "@/app/actions/POST/sendEmailAction";
+import router from "@/routes";
 
 export default function FAQPage() {
     const [teacherLink, setTeacherLink] = useState<string>("");
     const [contactMessage, setContactMessage] = useState<string>("");
-    const [isSending, setIsSending] = useState<boolean>(false); // loading state
+    const [isSending, setIsSending] = useState<boolean>(false);
 
     useEffect(() => {
         // Get teacher info from localStorage
         const teacher = getStorageTeacher();
         if (teacher?.id && teacher?.schoolId) {
-            setTeacherLink(`https://shibutzplus.com/teacher-portal/${teacher.schoolId}/${teacher.id}`);
+            setTeacherLink(
+                `${process.env.WEBSITE_URL}${router.teacherPortal.p}/${teacher.schoolId}/${teacher.id}`,
+            );
         }
-    }, []);
-
-    useEffect(() => {
-        // Init EmailJS public key
-        emailjs.init("54PCur6UIAdgGLnux");
     }, []);
 
     const handleSendContactEmail = async () => {
@@ -39,17 +37,12 @@ export default function FAQPage() {
         try {
             setIsSending(true);
 
-            await emailjs.send(
-                "service_m62x2wg",
-                "template_e926ovf",
-                {
-                    schoolCode,
-                    teacherCode,
-                    teacherName,
-                    message: contactMessage.trim(),
-                },
-                "54PCur6UIAdgGLnux"      // Public Key
-            );
+            await sendTeacherContactEmail({
+                schoolCode,
+                teacherCode,
+                teacherName,
+                message: contactMessage.trim(),
+            });
 
             successToast("ההודעה נשלחה בהצלחה. ניצור איתכם קשר בהקדם ✨", Infinity);
             setContactMessage(""); // clear input after send
@@ -57,9 +50,10 @@ export default function FAQPage() {
             const raw = error?.text || error?.message || error?.toString() || "";
             const shortError = raw.split(".")[0] + ".";
             errorToast(
-                `אירעה שגיאה בשליחת ההודעה. יש להעביר את פרטי השגיאה למנהל בבית הספר כדי שיוכל לדווח למפתחי שיבוץ פלוס.\n\n${shortError || "לא זמינים"
+                `אירעה שגיאה בשליחת ההודעה. יש להעביר את פרטי השגיאה למנהל בבית הספר כדי שיוכל לדווח למפתחי שיבוץ פלוס.\n\n${
+                    shortError || "לא זמינים"
                 }`,
-                Infinity
+                Infinity,
             );
         } finally {
             setIsSending(false);
@@ -71,18 +65,22 @@ export default function FAQPage() {
             question: "האם ניתן להוסיף קישור חיצוני בשדה חומר הלימוד?",
             answer: (
                 <>
-                    כן!<br />
-                    יש להדביק את הכתובת וללחוץ Enter בסיום כדי שהוא יזוהה.<br />
+                    כן!
+                    <br />
+                    יש להדביק את הכתובת וללחוץ Enter בסיום כדי שהוא יזוהה.
+                    <br />
                     כאשר הקישור מזוהה, הוא יופיע בצבע כחול.
                 </>
-            )
+            ),
         },
         {
             question: "האם אפשר לקבל קישור ישיר למשתמש שלי בלי שאצטרך להזדהות כל פעם מחדש?",
             answer: (
                 <>
-                    כן!<br />
-                    אפשר להשתמש בקישור האישי המצורף, והוא ייפתח ישירות ללא צורך במסך ההזדהות. הקישור מיועד לשימוש שלך בלבד ואין להעבירו לאחרים.
+                    כן!
+                    <br />
+                    אפשר להשתמש בקישור האישי המצורף, והוא ייפתח ישירות ללא צורך במסך ההזדהות. הקישור
+                    מיועד לשימוש שלך בלבד ואין להעבירו לאחרים.
                     {teacherLink ? (
                         <div className="teacher-link">
                             <a href={teacherLink} target="_blank" rel="noopener noreferrer">
@@ -93,46 +91,62 @@ export default function FAQPage() {
                         <p>כדי לראות את הקישור הייחודי שלך, יש להתחבר קודם למערכת</p>
                     )}
                 </>
-            )
+            ),
         },
         {
             question: "האם צריך להתנתק בסיום השימוש?",
-            answer: (
-                <>
-                    לא
-                </>
-            )
+            answer: <>לא</>,
         },
         {
             question: "האם אפשר להתקין את האתר כאפליקציה בטלפון כדי שתהיה לי גישה מהירה?",
             answer: (
                 <>
-                    כן,<br />
-                    עבור משתמשי אנדרואיד ניתן להיעזר בסרטון הבא:<br />
-                    <a href="https://www.youtube.com/shorts/1TkmsiS1ELg" target="_blank" rel="noopener noreferrer">
+                    כן,
+                    <br />
+                    עבור משתמשי אנדרואיד ניתן להיעזר בסרטון הבא:
+                    <br />
+                    <a
+                        href="https://www.youtube.com/shorts/1TkmsiS1ELg"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
                         https://www.youtube.com/shorts/1TkmsiS1ELg
                     </a>
                     <br />
-                    1. פתחו את האתר בדפדפן כרום בטלפון<br />
-                    2. לחצו על שלוש הנקודות למעלה בצד ימין<br />
-                    3. בחרו באפשרות הוסף למסך הבית<br />
-                    4. אשרו את ההוספה – האייקון יופיע במסך האפליקציות<br />
+                    1. פתחו את האתר בדפדפן כרום בטלפון
                     <br />
-                    עבור משתמשי אייפון ניתן להיעזר בסרטון הבא:<br />
-                    <a href="https://www.youtube.com/shorts/oWHuZoN571Y" target="_blank" rel="noopener noreferrer">
+                    2. לחצו על שלוש הנקודות למעלה בצד ימין
+                    <br />
+                    3. בחרו באפשרות הוסף למסך הבית
+                    <br />
+                    4. אשרו את ההוספה – האייקון יופיע במסך האפליקציות
+                    <br />
+                    <br />
+                    עבור משתמשי אייפון ניתן להיעזר בסרטון הבא:
+                    <br />
+                    <a
+                        href="https://www.youtube.com/shorts/oWHuZoN571Y"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
                         https://www.youtube.com/shorts/oWHuZoN571Y
                     </a>
                     <br />
-                    1. פתחו את האתר בדפדפן מסוג ספארי (באייפון התקנה עובדת רק מתוך ספארי)<br />
-                    2. לחצו על כפתור **שיתוף** (הריבוע עם החץ למעלה)<br />
-                    3. לחצו על כפתור **עוד**<br />
-                    3. גללו למטה ובחרו **הוסף למסך הבית**<br />
-                    4. אשרו את ההוספה – האייקון יופיע במסך האפליקציות<br />
+                    1. פתחו את האתר בדפדפן מסוג ספארי (באייפון התקנה עובדת רק מתוך ספארי)
+                    <br />
+                    2. לחצו על כפתור **שיתוף** (הריבוע עם החץ למעלה)
+                    <br />
+                    3. לחצו על כפתור **עוד**
+                    <br />
+                    3. גללו למטה ובחרו **הוסף למסך הבית**
+                    <br />
+                    4. אשרו את ההוספה – האייקון יופיע במסך האפליקציות
+                    <br />
                     <br />
                     מומלץ להתחבר עם הקישור האישי שלכם.
                 </>
-            )
-        }
+            ),
+        },
     ];
 
     return (
@@ -148,7 +162,7 @@ export default function FAQPage() {
                     transition={{
                         duration: 0.5,
                         delay: index * 0.1,
-                        ease: "easeOut"
+                        ease: "easeOut",
                     }}
                 >
                     <details>
@@ -160,8 +174,8 @@ export default function FAQPage() {
 
             <br />
             <div className="contact-section">
-                שאלות? הצעות? צרו איתנו קשר<br />
-
+                שאלות? הצעות? צרו איתנו קשר
+                <br />
                 <div className="contact-inline-form">
                     <textarea
                         placeholder={`כתבו כאן את ההודעה שלכם
@@ -180,7 +194,6 @@ export default function FAQPage() {
                     </button>
                 </div>
             </div>
-
         </div>
     );
 }
