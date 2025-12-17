@@ -99,7 +99,9 @@ export const filterDailyHeaderTeachers = (
         return isRegular && isCurrentOrNotUsed && teachesToday;
     });
 
-    return createSelectOptions(filteredTeachers);
+    const sortedTeachers = sortByHebrewName(filteredTeachers);
+
+    return createSelectOptions(sortedTeachers);
 };
 
 // DailySchedule Dropdown: Build grouped teacher options (substitutes, available, unavailable) for a specific day/hour
