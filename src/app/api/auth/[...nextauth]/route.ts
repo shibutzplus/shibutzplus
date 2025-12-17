@@ -18,6 +18,27 @@ export const authOptions: NextAuthOptions = {
             clientId: process.env.GOOGLE_CLIENT_ID || "",
             clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
         }),
+        CredentialsProvider({
+            name: "Credentials",
+            credentials: {
+                email: { label: "Email", type: "text" },
+                password: { label: "Password", type: "password" },
+            },
+            async authorize(credentials) {
+                if (
+                    credentials?.email === process.env.NEXT_PUBLIC_POWER_USER_EMAIL &&
+                    credentials?.password === process.env.SYSTEM_PASSWORD
+                ) {
+                    return {
+                        id: "admin-user",
+                        name: "Admin User",
+                        email: process.env.NEXT_PUBLIC_POWER_USER_EMAIL,
+                        role: "admin",
+                    };
+                }
+                return null;
+            },
+        }),
     ],
     session: {
         strategy: "jwt",
@@ -25,6 +46,8 @@ export const authOptions: NextAuthOptions = {
     },
     callbacks: {
         async signIn({ user, account, profile }) {
+            if (account?.provider === "credentials") return true;
+
             if (account?.provider === "google") {
                 const email = typeof profile?.email === "string" ? profile.email : undefined;
                 const name = typeof profile?.name === "string" ? profile.name : undefined;
