@@ -187,7 +187,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
                             hasBorder
                             backgroundColor="transparent"
                             onCreate={(value: string) => handleTeacherChange("create", value)}
-                            menuWidth="210px"
+                            menuWidth="220px"
                             color={
                                 classData?.activity ? "var(--disabled-text-color)" : undefined
                             }
