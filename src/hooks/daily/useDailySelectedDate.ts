@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { getIsraeliDateOptions, getTomorrowOption } from "@/resources/dayOptions";
+import { AUTO_SWITCH_TIME } from "@/utils/time";
 
 const useDailySelectedDate = () => {
     const daysSelectOptions = () => getIsraeliDateOptions();
 
-    // Pick today if before 16:00, otherwise tomorrow; skip to tomorrow if today not in options (weekend/holiday)
+    // Pick today if before AUTO_SWITCH_TIME, otherwise tomorrow; skip to tomorrow if today not in options (weekend/holiday)
     const [selectedDate, setSelectedDayId] = useState<string>(() => {
         const now = new Date();
         const hour = now.getHours();
@@ -15,7 +16,9 @@ const useDailySelectedDate = () => {
         const todayInOpts = opts.find((o) => o.value === todayStr)?.value;
         const tomorrow = getTomorrowOption();
 
-        if (hour < 16) {
+        const [switchHour] = AUTO_SWITCH_TIME.split(":").map(Number);
+
+        if (hour < switchHour) {
             return todayInOpts || tomorrow || opts[0]?.value || todayStr;
         }
         return tomorrow || todayInOpts || opts[0]?.value || todayStr;

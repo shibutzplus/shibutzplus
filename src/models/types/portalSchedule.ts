@@ -15,6 +15,11 @@ export type TeacherScheduleType = {
     subTeacher?: TeacherType;
     event?: string;
     instructions?: string;
+    scheduleItems?: {
+        class: ClassType;
+        subject: SubjectType;
+        DBid?: string;
+    }[];
 };
 
 export type PortalSchedule = {

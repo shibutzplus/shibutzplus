@@ -51,7 +51,7 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
     // Keep the ref updated with the latest handleRefresh
     refreshRef.current = handleRefresh;
 
-    // -- Auto Refresh at 16:00 -- //
+    // -- Auto Refresh at AUTO_SWITCH_TIME (16:00) -- //
     React.useEffect(() => {
         if (!teacher) return;
 
@@ -65,7 +65,7 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
 
             if (delay < 0) {
                 // The requirement: "When we enter the system a refresh timeout is set for next 4 PM (today or tomorrow)"
-                // If it's already past 16:00, schedule for tomorrow 16:00
+                // If it's already past AUTO_SWITCH_TIME, schedule for tomorrow AUTO_SWITCH_TIME
                 target.setDate(target.getDate() + 1);
                 delay = target.getTime() - now.getTime();
             }

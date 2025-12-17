@@ -4,7 +4,12 @@ import { addDailyTeacherCellsAction } from "@/app/actions/POST/addDailyTeacherCe
 import { updateDailyTeacherCellAction } from "@/app/actions/PUT/updateDailyTeacherCellAction";
 import { useMainContext } from "@/context/MainContext";
 import { UPDATE_TEACHER } from "@/models/constant/sync";
-import { ColumnType, DailySchedule, DailyScheduleCell } from "@/models/types/dailySchedule";
+import {
+    ColumnType,
+    DailySchedule,
+    DailyScheduleCell,
+    DailyScheduleType,
+} from "@/models/types/dailySchedule";
 import { TeacherType } from "@/models/types/teachers";
 import { addNewTeacherValueCell } from "@/services/daily/add";
 import { fillLeftRowsWithEmptyCells } from "@/services/daily/populate";
@@ -111,7 +116,7 @@ const useDailyTeacherActions = (
                         const batchResponse = await addDailyTeacherCellsAction(pendingInserts.map(p => p.request!));
 
                         if (batchResponse.success && batchResponse.data) {
-                            batchResponse.data.forEach((savedCell, idx) => {
+                            batchResponse.data.forEach((savedCell: DailyScheduleType, idx: number) => {
                                 const item = pendingInserts[idx];
                                 if (item) {
                                     item.dailyCell.DBid = savedCell.id;
