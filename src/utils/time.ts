@@ -12,7 +12,7 @@ export const ONE_WEEK = 7;
 export const ONE_DAY = 1;
 
 // Number of hours in a day
-export const HOURS_IN_DAY = 9;
+export const HOURS_IN_DAY = 10;
 
 // Global auto-switch time configuration (HH:MM)
 export const AUTO_SWITCH_TIME = "16:00";
