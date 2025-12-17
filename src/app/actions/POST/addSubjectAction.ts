@@ -6,11 +6,20 @@ import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { NewSubjectSchema } from "@/db/schema";
+import { subjectSchema } from "@/models/validation/subject";
 
 export async function addSubjectAction(
     subjectData: SubjectRequest,
 ): Promise<ActionResponse & { data?: SubjectType; errorCode?: string }> {
     try {
+        const validation = subjectSchema.safeParse(subjectData);
+        if (!validation.success) {
+            return {
+                success: false,
+                message: validation.error.issues[0]?.message || "נתונים לא תקינים",
+            };
+        }
+
         const authError = await checkAuthAndParams({
             name: subjectData.name,
             schoolId: subjectData.schoolId,

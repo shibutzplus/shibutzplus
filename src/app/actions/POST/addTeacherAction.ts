@@ -6,11 +6,20 @@ import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { NewTeacherSchema } from "@/db/schema";
+import { teacherSchema } from "@/models/validation/teacher";
 
 export async function addTeacherAction(
     teacherData: TeacherRequest,
 ): Promise<ActionResponse & { data?: TeacherType; errorCode?: string }> {
     try {
+        const validation = teacherSchema.safeParse(teacherData);
+        if (!validation.success) {
+            return {
+                success: false,
+                message: validation.error.issues[0]?.message || "נתונים לא תקינים",
+            };
+        }
+
         const authError = await checkAuthAndParams({
             name: teacherData.name,
             role: teacherData.role,
@@ -54,4 +63,3 @@ export async function addTeacherAction(
         return { success: false, message: messages.common.serverError };
     }
 }
-

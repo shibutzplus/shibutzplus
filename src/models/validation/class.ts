@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { allowedRe, noControlRe } from ".";
+import { noControlRe } from ".";
 
 export const classSchema = z.object({
     name: z
@@ -11,8 +11,13 @@ export const classSchema = z.object({
         .refine((s) => s.length === 0 || !noControlRe.test(s), {
             message: "תווים לא חוקיים",
         })
-        .refine((s) => s.length === 0 || allowedRe.test(s), {
-            message: "תווים לא חוקיים",
-        }),
+        .refine(
+            (s) => {
+                const strictClassRe = /^[\p{L}\p{N} _().\u05F3\u05F4-]+$/u;
+                return s.length === 0 || strictClassRe.test(s);
+            },
+            {
+                message: "תווים לא חוקיים (אסור להשתמש בגרשיים או תווים מיוחדים)",
+            },
+        ),
 });
-

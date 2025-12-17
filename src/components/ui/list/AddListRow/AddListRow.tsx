@@ -53,7 +53,6 @@ function AddListRow<T extends Record<string, any>>({
         e.stopPropagation();
         setIsLoading(true);
         setValidationErrors({});
-        console.log("AddListRow: suppressErrorToast =", suppressErrorToast);
 
         try {
             const validationResult = schema.safeParse(values);

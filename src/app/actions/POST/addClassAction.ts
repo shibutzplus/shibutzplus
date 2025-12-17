@@ -5,11 +5,20 @@ import { ClassType, ClassRequest } from "@/models/types/classes";
 import { ActionResponse } from "@/models/types/actions";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
+import { classSchema } from "@/models/validation/class";
 
 export async function addClassAction(
     classData: ClassRequest,
 ): Promise<ActionResponse & { data?: ClassType; errorCode?: string }> {
     try {
+        const validation = classSchema.safeParse(classData);
+        if (!validation.success) {
+            return {
+                success: false,
+                message: validation.error.issues[0]?.message || "נתונים לא תקינים",
+            };
+        }
+
         const authError = await checkAuthAndParams({
             name: classData.name,
             schoolId: classData.schoolId,
