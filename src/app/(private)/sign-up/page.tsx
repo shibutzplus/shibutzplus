@@ -18,7 +18,6 @@ import signUp from "@/app/actions/POST/signUpAction";
 const SignUpPage: NextPage = () => {
     const router = useRouter();
     const [formData, setFormData] = useState<RegisterRequest>({
-        systemPassword: "",
         name: "",
         email: "",
         password: "",
@@ -152,18 +151,6 @@ const SignUpPage: NextPage = () => {
                     }
                     placeholder="בחר את סוג בית הספר..."
                     hasBorder
-                />
-
-                <br />
-
-                <InputPassword
-                    label="סיסמת מערכת"
-                    id="systemPassword"
-                    name="systemPassword"
-                    value={formData.systemPassword}
-                    onChange={handleChange}
-                    required
-                    error={validationErrors.systemPassword}
                 />
 
                 <SubmitBtn type="submit" isLoading={isLoading} buttonText="הרשמה" error={error} />

@@ -20,7 +20,6 @@ export type UserType = {
 };
 
 export type RegisterRequest = {
-    systemPassword: string;
     name: string;
     email: string;
     password: string;
