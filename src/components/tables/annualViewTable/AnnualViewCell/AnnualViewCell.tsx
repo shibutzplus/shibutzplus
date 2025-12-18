@@ -40,7 +40,7 @@ const AnnualViewCell: React.FC<AnnualViewCellProps> = ({
     }
 
     const cellData = schedule[lookupId][day][hour];
-    const { teachers: teacherIds, subjects: subjectIds, classId } = cellData;
+    const { teachers: teacherIds, subjects: subjectIds, classId, classes: cellClassIds } = cellData;
 
     // Helper to get names
     const getSubjectName = (id: string) => subjects.find((s) => s.id === id)?.name || "";
@@ -75,9 +75,11 @@ const AnnualViewCell: React.FC<AnnualViewCellProps> = ({
         // Scenario 2: Only Teacher Selected -> Class + Subject
         content = (
             <>
-                {classId && (
+                {((cellClassIds && cellClassIds.length > 0) || classId) && (
                     <div className={styles.class}>
-                        {getClassName(classId)}
+                        {(cellClassIds && cellClassIds.length > 0 ? cellClassIds : [classId!])
+                            .map((id) => getClassName(id))
+                            .join(", ")}
                     </div>
                 )}
                 {!isActivityClass(classId || "") && subjectIds.map((sid, idx) => (
