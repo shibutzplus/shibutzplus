@@ -14,6 +14,7 @@ export type DailyScheduleType = {
     event?: string;
     school: SchoolType;
     class?: ClassType;
+    classes?: ClassType[];
     subject?: SubjectType;
     issueTeacher?: TeacherType;
     issueTeacherType: ColumnType;
@@ -33,6 +34,7 @@ export type DailyScheduleRequest = {
     event?: string;
     school: SchoolType;
     class?: ClassType;
+    classes?: ClassType[];
     subject?: SubjectType;
     issueTeacher?: TeacherType;
     issueTeacherType: ColumnType;

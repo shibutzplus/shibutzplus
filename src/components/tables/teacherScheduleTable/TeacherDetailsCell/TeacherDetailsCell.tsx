@@ -28,8 +28,9 @@ const TeacherDetailsCell: React.FC<TeacherDetailsCellProps> = ({ row, teacher })
         <div className={`${row ? styles.cellContent : styles.emptyCell}`}>
             <div className={styles.classAndSubject}>
                 {row?.classes?.map((c) => c.name).join(", ")}
-                {/* TODO:  "&& !row?.class?.activity"  */}
-                {row?.subject?.name && !row?.classes?.[0]?.activity && ` | ${row.subject.name}`}
+                {row?.subject?.name &&
+                    !row?.classes?.some((c) => c.activity) &&
+                    ` | ${row.subject.name}`}
             </div>
             <div className={styles.subTeacher}>{displayReplaceTeacher()}</div>
         </div>

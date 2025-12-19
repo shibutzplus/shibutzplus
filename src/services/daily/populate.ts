@@ -62,22 +62,7 @@ export const populateTable = (dataColumns: DailyScheduleType[], selectedDate: st
             entriesByDayAndHeader[selectedDate][columnId] = [];
         }
 
-        const existingCellIndex = entriesByDayAndHeader[selectedDate][columnId].findIndex(
-            (cell) => cell.hour === cellData.hour,
-        );
-
-        if (existingCellIndex !== -1) {
-            // Cell exists, merge classes if applicable
-            const existingCell = entriesByDayAndHeader[selectedDate][columnId][existingCellIndex];
-
-            if (existingCell.classes && cellData.classes) {
-                // Merge classes
-                existingCell.classes.push(...cellData.classes);
-            }
-        } else {
-            // New cell, add it
-            entriesByDayAndHeader[selectedDate][columnId].push(cellData);
-        }
+        entriesByDayAndHeader[selectedDate][columnId].push(cellData);
     }
 
     return entriesByDayAndHeader;

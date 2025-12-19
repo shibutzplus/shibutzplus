@@ -8,7 +8,6 @@ import {
     ColumnType,
     DailySchedule,
     DailyScheduleCell,
-    DailyScheduleRequest,
     DailyScheduleType,
     TeacherHourlyScheduleItem,
 } from "@/models/types/dailySchedule";
@@ -85,7 +84,7 @@ const useDailyTeacherActions = (
             if (response.success && response.data) {
                 if (response.data.length > 0) {
                     const pendingInserts: {
-                        request: DailyScheduleRequest;
+                        request: ReturnType<typeof addNewTeacherValueCell>;
                         dailyCell: DailyScheduleCell;
                     }[] = [];
 
@@ -105,29 +104,24 @@ const useDailyTeacherActions = (
                             headerCol: { headerTeacher: row.headerCol.headerTeacher, type },
                         } as DailyScheduleCell;
 
-                        const newDailyRowRequests = addNewTeacherValueCell(
+                        const newDailyRow = addNewTeacherValueCell(
                             school,
                             dailyCell,
                             columnId,
                             selectedDate,
                             type,
                         );
-                        if (newDailyRowRequests) {
-                            newDailyRowRequests.forEach((request) => {
-                                pendingInserts.push({ request, dailyCell });
-                            });
-                        }
+                        if (newDailyRow) pendingInserts.push({ request: newDailyRow, dailyCell });
                     }
 
                     if (pendingInserts.length > 0) {
                         const batchResponse = await addDailyTeacherCellsAction(
-                            pendingInserts.map((p) => p.request),
+                            pendingInserts.map((p) => p.request!),
                         );
-
                         if (batchResponse.success && batchResponse.data) {
                             batchResponse.data.forEach(
-                                (savedCell: DailyScheduleType, i: number) => {
-                                    const item = pendingInserts[i];
+                                (savedCell: DailyScheduleType, index: number) => {
+                                    const item = pendingInserts[index];
                                     if (item) {
                                         item.dailyCell.DBid = savedCell.id;
                                         updatedSchedule = updateAddCell(
@@ -198,21 +192,19 @@ const useDailyTeacherActions = (
             data.event,
         );
         if (dailyCellData) {
-            for (const dailyCell of dailyCellData) {
-                const response = await updateDailyTeacherCellAction(dailyScheduleId, dailyCell);
-                if (response?.success && response.data) {
-                    const updatedSchedule: DailySchedule = updateAddCell(
-                        response.data.id,
-                        mainDailyTable,
-                        selectedDate,
-                        cellData,
-                        columnId,
-                        data,
-                    );
-                    setMainAndStorageTable(updatedSchedule);
-                    pushIfPublished(selectedDate);
-                    return response.data;
-                }
+            const response = await updateDailyTeacherCellAction(dailyScheduleId, dailyCellData);
+            if (response?.success && response.data) {
+                const updatedSchedule = updateAddCell(
+                    response.data.id,
+                    mainDailyTable,
+                    selectedDate,
+                    cellData,
+                    columnId,
+                    data,
+                );
+                setMainAndStorageTable(updatedSchedule);
+                pushIfPublished(selectedDate);
+                return response.data;
             }
         }
         return undefined;
@@ -237,21 +229,19 @@ const useDailyTeacherActions = (
         );
 
         if (dailyCellData) {
-            for (const dailyCell of dailyCellData) {
-                const response = await updateDailyTeacherCellAction(dailyScheduleId, dailyCell);
-                if (response?.success && response.data) {
-                    const updatedSchedule: DailySchedule = updateAddCell(
-                        response.data.id,
-                        mainDailyTable,
-                        selectedDate,
-                        cellData,
-                        columnId,
-                        { subTeacher: undefined, event: undefined },
-                    );
-                    setMainAndStorageTable(updatedSchedule);
-                    pushIfPublished(selectedDate);
-                    return response.data;
-                }
+            const response = await updateDailyTeacherCellAction(dailyScheduleId, dailyCellData);
+            if (response?.success && response.data) {
+                const updatedSchedule = updateAddCell(
+                    response.data.id,
+                    mainDailyTable,
+                    selectedDate,
+                    cellData,
+                    columnId,
+                    { subTeacher: undefined, event: undefined },
+                );
+                setMainAndStorageTable(updatedSchedule);
+                pushIfPublished(selectedDate);
+                return response.data;
             }
         }
         return undefined;

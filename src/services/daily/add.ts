@@ -55,9 +55,9 @@ export const addNewTeacherValueCell = (
     text?: string,
 ) => {
     const { hour, classes, subject, headerCol } = cellData;
-    if (!school || !classes || classes.length === 0 || !subject || !headerCol?.headerTeacher) return;
+    if (!school || !classes || !subject || !headerCol?.headerTeacher) return;
 
-    const dailyCellDataRequests: DailyScheduleRequest[] = classes.map((classData) => ({
+    const dailyCellDataRequests: DailyScheduleRequest = {
         date: getStringReturnDate(selectedDate),
         day: getDayNumberByDateString(selectedDate).toString(),
         issueTeacher: headerCol.headerTeacher,
@@ -68,10 +68,11 @@ export const addNewTeacherValueCell = (
         columnId,
         hour,
         school,
-        class: classData,
         subject,
+        class: classes[0],
+        classes,
         position: 0,
-    }));
+    };
 
     return dailyCellDataRequests;
 };

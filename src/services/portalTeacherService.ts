@@ -62,7 +62,7 @@ export const populatePortalTable = (
                 hour: entry.hour,
                 schoolId: entry.school?.id,
                 school: entry.school,
-                class: entry.class,
+                classes: entry.classes,
                 subject: entry.subject,
                 subTeacher: entry.subTeacher,
                 issueTeacher: entry.issueTeacher,

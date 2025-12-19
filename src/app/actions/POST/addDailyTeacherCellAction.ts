@@ -7,7 +7,7 @@ import { db, schema, executeQuery } from "../../../db";
 import { ActionResponse } from "@/models/types/actions";
 import { NewDailyScheduleSchema } from "@/db/schema";
 import { getDateReturnString } from "@/utils/time";
-
+// NOT IN USE
 export async function addDailyTeacherCellAction(
     scheduleCellData: DailyScheduleRequest,
 ): Promise<ActionResponse & { data?: DailyScheduleType }> {
@@ -19,6 +19,7 @@ export async function addDailyTeacherCellAction(
             columnId,
             school,
             class: classData,
+            classes,
             subject,
             issueTeacher,
             issueTeacherType,
@@ -34,6 +35,7 @@ export async function addDailyTeacherCellAction(
             columnId: columnId,
             schoolId: school.id,
             classId: classData?.id,
+            classesId: classes?.map((c) => c.id),
             subjectId: subject?.id,
         });
         if (authError || !classData || !subject) {
@@ -47,6 +49,7 @@ export async function addDailyTeacherCellAction(
             columnId: columnId,
             schoolId: school.id,
             classId: classData.id,
+            classIds: classes?.map((c) => c.id),
             subjectId: subject.id,
             issueTeacherId: issueTeacher?.id,
             issueTeacherType: issueTeacherType,
@@ -79,6 +82,7 @@ export async function addDailyTeacherCellAction(
                 createdAt: newDailySchedule.createdAt,
                 updatedAt: newDailySchedule.updatedAt,
                 class: classData,
+                classes,
                 school,
                 issueTeacher,
                 issueTeacherType,
