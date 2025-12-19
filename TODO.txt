@@ -1,7 +1,4 @@
 
-- update daily cell
-- delete daily cell
-
 
 TODO
 - portal - leave empty hours that has no information (gray + small height)
