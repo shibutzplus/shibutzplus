@@ -5,7 +5,7 @@ import { publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { and, eq } from "drizzle-orm";
 import { db, schema, executeQuery } from "../../../db";
-
+// NOT IN USE
 export async function getDailyByTeacherAction(
     teacherId: string,
     date: string,

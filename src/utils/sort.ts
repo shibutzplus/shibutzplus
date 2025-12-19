@@ -30,6 +30,15 @@ export const sortByHebrewName = <T extends Record<string, any>>(
     });
 };
 
+export const sortClassesByName = (classes: ClassType[]) => {
+    return [...(classes || [])].sort((a, b) => {
+        if (a.activity !== b.activity) {
+            return a.activity ? 1 : -1;
+        }
+        return a.name.localeCompare(b.name, "he", { numeric: true });
+    });
+};
+
 // Annual Schedule: Build grouped teacher options (available vs unavailable) for a class at a specific day/hour in the annual schedule
 export const sortAnnualTeachers = (
     allTeachers: TeacherType[],
@@ -354,12 +363,12 @@ export const sortDailyTeachers = (
     const groups: GroupOption[] = [
         ...(currentValue
             ? [
-                {
-                    label: "מחיקת השיבוץ",
-                    options: [{ value: EmptyValue, label: "🗑️" }],
-                    hideCount: true,
-                },
-            ]
+                  {
+                      label: "מחיקת השיבוץ",
+                      options: [{ value: EmptyValue, label: "🗑️" }],
+                      hideCount: true,
+                  },
+              ]
             : []),
         {
             label: "מורה נוסף בשיעור",

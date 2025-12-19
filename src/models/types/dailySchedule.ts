@@ -56,7 +56,7 @@ export type DailyScheduleCell = {
     headerCol?: HeaderCol;
     subTeacher?: TeacherType;
     subject?: SubjectType;
-    class?: ClassType;
+    classes?: ClassType[];
     event?: string;
     hour: number;
 };
@@ -71,7 +71,7 @@ export type DailySchedule = {
 
 export type TeacherHourlyScheduleItem = {
     hour: number;
-    class: ClassType;
+    classes: ClassType[];
     subject: SubjectType;
     headerCol: HeaderCol;
 };

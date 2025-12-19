@@ -34,18 +34,32 @@ export async function getTeacherScheduleByDayAction(
                 return [];
             }
 
-            return schedules.map(
-                (schedule) =>
-                    ({
-                        hour: schedule.hour,
-                        class: schedule.class,
-                        subject: schedule.subject,
-                        headerCol: {
-                            headerTeacher: schedule.teacher,
-                            type: ColumnTypeValues.existingTeacher,
-                        },
-                    }) as TeacherHourlyScheduleItem,
-            );
+            // Group by hour
+            const schedulesByHour: Record<number, any[]> = {};
+            schedules.forEach(schedule => {
+                const hour = schedule.hour;
+                if (!schedulesByHour[hour]) {
+                    schedulesByHour[hour] = [];
+                }
+                schedulesByHour[hour].push(schedule);
+            });
+
+            return Object.entries(schedulesByHour).map(([hourStr, hourSchedules]) => {
+                const hour = parseInt(hourStr);
+                const first = hourSchedules[0];
+                const classes = hourSchedules.map(s => s.class).filter(Boolean);
+                
+                return {
+                    hour: hour,
+                    classes: classes,
+                    subject: first.subject,
+                    // TODO: is it good? need to check
+                    headerCol: {
+                        headerTeacher: first.teacher,
+                        type: ColumnTypeValues.existingTeacher,
+                    },
+                } as TeacherHourlyScheduleItem;
+            });
         });
 
         if (!teacherSchedule || teacherSchedule.length === 0) {

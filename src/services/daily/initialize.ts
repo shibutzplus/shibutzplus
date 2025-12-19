@@ -8,7 +8,7 @@ export const initDailyTeacherCellData = (entry: DailyScheduleType) => {
     const cellData: DailyScheduleCell = {
         DBid: entry.id,
         hour: entry.hour,
-        class: entry.class,
+        classes: entry.class ? [entry.class] : [],
         subject: entry.subject,
         headerCol: { headerTeacher: entry.issueTeacher, type: entry.issueTeacherType },
     };

@@ -9,7 +9,7 @@ export type TeacherScheduleType = {
     hour: number; // 1-7
     schoolId?: string;
     school?: SchoolType;
-    class?: ClassType;
+    classes?: ClassType[];
     subject?: SubjectType;
     issueTeacher?: TeacherType;
     subTeacher?: TeacherType;

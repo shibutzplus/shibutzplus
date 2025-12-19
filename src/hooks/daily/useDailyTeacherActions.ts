@@ -4,7 +4,14 @@ import { addDailyTeacherCellsAction } from "@/app/actions/POST/addDailyTeacherCe
 import { updateDailyTeacherCellAction } from "@/app/actions/PUT/updateDailyTeacherCellAction";
 import { useMainContext } from "@/context/MainContext";
 import { UPDATE_TEACHER } from "@/models/constant/sync";
-import { ColumnType, DailySchedule, DailyScheduleCell } from "@/models/types/dailySchedule";
+import {
+    ColumnType,
+    DailySchedule,
+    DailyScheduleCell,
+    DailyScheduleRequest,
+    DailyScheduleType,
+    TeacherHourlyScheduleItem,
+} from "@/models/types/dailySchedule";
 import { TeacherType } from "@/models/types/teachers";
 import { addNewTeacherValueCell } from "@/services/daily/add";
 import { fillLeftRowsWithEmptyCells } from "@/services/daily/populate";
@@ -61,7 +68,7 @@ const useDailyTeacherActions = (
                 clearColumn(selectedDate, columnId);
             }
 
-            // Capture the state needed for deletion BEFORE async operations 
+            // Capture the state needed for deletion BEFORE async operations
             // (though in this function scope, mainDailyTable is stale closure which is actually what we want for 'alreadyExists' check)
             const alreadyExists = mainDailyTable[selectedDate]?.[columnId];
             if (alreadyExists) {
@@ -71,15 +78,18 @@ const useDailyTeacherActions = (
                 }
             }
 
-            // NOTE: We do NOT call clearColumn again here to avoid flicker. 
+            // NOTE: We do NOT call clearColumn again here to avoid flicker.
             // The DB is cleared (if delete succeeded), and the UI shows the optimistic teacher.
 
             const response = await getTeacherScheduleByDayAction(schoolId, dayNumber, teacherId);
             if (response.success && response.data) {
                 if (response.data.length > 0) {
-                    const pendingInserts: { request: ReturnType<typeof addNewTeacherValueCell>, dailyCell: DailyScheduleCell }[] = [];
+                    const pendingInserts: {
+                        request: DailyScheduleRequest;
+                        dailyCell: DailyScheduleCell;
+                    }[] = [];
 
-                    // We need to work on a fresh copy that doesn't have the "optimistic" empty cells 
+                    // We need to work on a fresh copy that doesn't have the "optimistic" empty cells
                     // (or previous data) so updateAddCell will use the new cellData (with class/subject)
                     let updatedSchedule: DailySchedule = { ...mainDailyTable };
                     if (updatedSchedule[selectedDate]) {
@@ -87,44 +97,50 @@ const useDailyTeacherActions = (
                         updatedSchedule[selectedDate][columnId] = {};
                     }
 
-                    for (const row of response.data) {
+                    for (const row of response.data as TeacherHourlyScheduleItem[]) {
                         const dailyCell = {
                             hour: row.hour,
-                            class: row.class,
+                            classes: row.classes,
                             subject: row.subject,
                             headerCol: { headerTeacher: row.headerCol.headerTeacher, type },
                         } as DailyScheduleCell;
 
-                        const newDailyRow = addNewTeacherValueCell(
+                        const newDailyRowRequests = addNewTeacherValueCell(
                             school,
                             dailyCell,
                             columnId,
                             selectedDate,
                             type,
                         );
-                        if (newDailyRow) {
-                            pendingInserts.push({ request: newDailyRow, dailyCell });
+                        if (newDailyRowRequests) {
+                            newDailyRowRequests.forEach((request) => {
+                                pendingInserts.push({ request, dailyCell });
+                            });
                         }
                     }
 
                     if (pendingInserts.length > 0) {
-                        const batchResponse = await addDailyTeacherCellsAction(pendingInserts.map(p => p.request!));
+                        const batchResponse = await addDailyTeacherCellsAction(
+                            pendingInserts.map((p) => p.request),
+                        );
 
                         if (batchResponse.success && batchResponse.data) {
-                            batchResponse.data.forEach((savedCell, idx) => {
-                                const item = pendingInserts[idx];
-                                if (item) {
-                                    item.dailyCell.DBid = savedCell.id;
-                                    updatedSchedule = updateAddCell(
-                                        savedCell.id,
-                                        updatedSchedule,
-                                        selectedDate,
-                                        item.dailyCell,
-                                        columnId,
-                                        {},
-                                    );
-                                }
-                            });
+                            batchResponse.data.forEach(
+                                (savedCell: DailyScheduleType, i: number) => {
+                                    const item = pendingInserts[i];
+                                    if (item) {
+                                        item.dailyCell.DBid = savedCell.id;
+                                        updatedSchedule = updateAddCell(
+                                            savedCell.id,
+                                            updatedSchedule,
+                                            selectedDate,
+                                            item.dailyCell,
+                                            columnId,
+                                            {},
+                                        );
+                                    }
+                                },
+                            );
                         }
                     }
 
@@ -182,19 +198,21 @@ const useDailyTeacherActions = (
             data.event,
         );
         if (dailyCellData) {
-            const response = await updateDailyTeacherCellAction(dailyScheduleId, dailyCellData);
-            if (response?.success && response.data) {
-                const updatedSchedule = updateAddCell(
-                    response.data.id,
-                    mainDailyTable,
-                    selectedDate,
-                    cellData,
-                    columnId,
-                    data,
-                );
-                setMainAndStorageTable(updatedSchedule);
-                pushIfPublished(selectedDate);
-                return response.data;
+            for (const dailyCell of dailyCellData) {
+                const response = await updateDailyTeacherCellAction(dailyScheduleId, dailyCell);
+                if (response?.success && response.data) {
+                    const updatedSchedule: DailySchedule = updateAddCell(
+                        response.data.id,
+                        mainDailyTable,
+                        selectedDate,
+                        cellData,
+                        columnId,
+                        data,
+                    );
+                    setMainAndStorageTable(updatedSchedule);
+                    pushIfPublished(selectedDate);
+                    return response.data;
+                }
             }
         }
         return undefined;
@@ -219,19 +237,21 @@ const useDailyTeacherActions = (
         );
 
         if (dailyCellData) {
-            const response = await updateDailyTeacherCellAction(dailyScheduleId, dailyCellData);
-            if (response?.success && response.data) {
-                const updatedSchedule = updateAddCell(
-                    response.data.id,
-                    mainDailyTable,
-                    selectedDate,
-                    cellData,
-                    columnId,
-                    { subTeacher: undefined, event: undefined },
-                );
-                setMainAndStorageTable(updatedSchedule);
-                pushIfPublished(selectedDate);
-                return response.data;
+            for (const dailyCell of dailyCellData) {
+                const response = await updateDailyTeacherCellAction(dailyScheduleId, dailyCell);
+                if (response?.success && response.data) {
+                    const updatedSchedule: DailySchedule = updateAddCell(
+                        response.data.id,
+                        mainDailyTable,
+                        selectedDate,
+                        cellData,
+                        columnId,
+                        { subTeacher: undefined, event: undefined },
+                    );
+                    setMainAndStorageTable(updatedSchedule);
+                    pushIfPublished(selectedDate);
+                    return response.data;
+                }
             }
         }
         return undefined;
