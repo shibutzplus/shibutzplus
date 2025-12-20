@@ -32,6 +32,8 @@ export const setNewScheduleTemplate = (
     selectedId: string,
     day: string,
     hour: number,
+    defaultTeacher?: string,
+    defaultClass?: string,
 ) => {
     // If there is no cell, create template one
     if (!newSchedule[selectedId]) {
@@ -42,9 +44,9 @@ export const setNewScheduleTemplate = (
     }
     if (!newSchedule[selectedId][day][hour]) {
         newSchedule[selectedId][day][hour] = {
-            teachers: [],
+            teachers: defaultTeacher ? [defaultTeacher] : [],
+            classes: defaultClass ? [defaultClass] : [],
             subjects: [],
-            classes: [],
         };
     }
     return newSchedule;

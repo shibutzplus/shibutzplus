@@ -4,7 +4,11 @@ import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { and, asc, eq } from "drizzle-orm";
-import { ColumnTypeValues, GetTeacherScheduleResponse, TeacherHourlyScheduleItem, } from "@/models/types/dailySchedule";
+import {
+    ColumnTypeValues,
+    GetTeacherScheduleResponse,
+    TeacherHourlyScheduleItem,
+} from "@/models/types/dailySchedule";
 
 export async function getTeacherScheduleByDayAction(
     schoolId: string,
@@ -34,32 +38,33 @@ export async function getTeacherScheduleByDayAction(
                 return [];
             }
 
-            // Group by hour
-            const schedulesByHour: Record<number, any[]> = {};
-            schedules.forEach(schedule => {
+            const groupedSchedules = schedules.reduce<
+                Record<number, TeacherHourlyScheduleItem>
+            >((acc, schedule) => {
                 const hour = schedule.hour;
-                if (!schedulesByHour[hour]) {
-                    schedulesByHour[hour] = [];
+                if (!acc[hour]) {
+                    acc[hour] = {
+                        hour: schedule.hour,
+                        classes: [],
+                        subject: schedule.subject,
+                        headerCol: {
+                            headerTeacher: schedule.teacher,
+                            type: ColumnTypeValues.existingTeacher,
+                        },
+                    };
                 }
-                schedulesByHour[hour].push(schedule);
-            });
 
-            return Object.entries(schedulesByHour).map(([hourStr, hourSchedules]) => {
-                const hour = parseInt(hourStr);
-                const first = hourSchedules[0];
-                const classes = hourSchedules.map(s => s.class).filter(Boolean);
-                
-                return {
-                    hour: hour,
-                    classes: classes,
-                    subject: first.subject,
-                    // TODO: is it good? need to check
-                    headerCol: {
-                        headerTeacher: first.teacher,
-                        type: ColumnTypeValues.existingTeacher,
-                    },
-                } as TeacherHourlyScheduleItem;
-            });
+                if (schedule.class) {
+                     const classExists = acc[hour].classes.some(c => c.id === schedule.class.id);
+                     if (!classExists) {
+                         acc[hour].classes.push(schedule.class);
+                     }
+                }
+
+                return acc;
+            }, {});
+
+            return Object.values(groupedSchedules).sort((a, b) => a.hour - b.hour);
         });
 
         if (!teacherSchedule || teacherSchedule.length === 0) {

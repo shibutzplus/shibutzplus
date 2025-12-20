@@ -194,8 +194,7 @@ export const AnnualByTeacherProvider: React.FC<{ children: React.ReactNode }> = 
         if (!school?.id || !selectedTeacherId) return;
         let newSchedule = { ...schedule };
 
-        // TODO: teachers: [selectedTeacherId], // The teacher is fixed in this view
-        setNewScheduleTemplate(newSchedule, selectedTeacherId, day, hour);
+        setNewScheduleTemplate(newSchedule, selectedTeacherId, day, hour, selectedTeacherId);
 
         newSchedule[selectedTeacherId][day][hour][type] = elementIds;
 
