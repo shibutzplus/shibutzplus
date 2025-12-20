@@ -27,7 +27,6 @@ export const dailySchedule = pgTable('daily_schedule', {
     issueTeacherIdIdx: index('idx_daily_issue_teacher_id').on(table.issueTeacherId),
     subTeacherIdIdx: index('idx_daily_sub_teacher_id').on(table.subTeacherId),
     classIdIdx: index('idx_daily_class_id').on(table.classId),
-    classIdsIdx: index('idx_daily_class_ids').using('gin', table.classIds),
     columnIdIdx: index('idx_daily_column_id').on(table.columnId),
   };
 });

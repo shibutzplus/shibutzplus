@@ -1,4 +1,5 @@
-
+- annual view 
+- teacher view (panel)
 
 TODO
 - portal - leave empty hours that has no information (gray + small height)
