@@ -12,6 +12,7 @@ export const dailySchedule = pgTable('daily_schedule', {
   columnId: text('column_id'),
   schoolId: text('school_id').notNull(),
   classId: text('class_id'),
+  classIds: text('class_ids').array(),
   subjectId: text('subject_id'),
   subTeacherId: text('sub_teacher_id'),
   issueTeacherId: text('issue_teacher_id'),
@@ -23,8 +24,8 @@ export const dailySchedule = pgTable('daily_schedule', {
 }, (table) => {
   return {
     schoolIdDateIdx: index('idx_daily_school_date').on(table.schoolId, table.date),
-    issueTeacherIdIdx: index('idx_daily_issue_teacher_id').on(table.issueTeacherId),
-    subTeacherIdIdx: index('idx_daily_sub_teacher_id').on(table.subTeacherId),
+    issueTeacherIdIdx: index('idx_daily_issue_teacher_date_hour').on(table.issueTeacherId, table.date, table.hour),
+    subTeacherIdIdx: index('idx_daily_sub_teacher_date_hour').on(table.subTeacherId, table.date, table.hour),
     classIdIdx: index('idx_daily_class_id').on(table.classId),
     columnIdIdx: index('idx_daily_column_id').on(table.columnId),
   };

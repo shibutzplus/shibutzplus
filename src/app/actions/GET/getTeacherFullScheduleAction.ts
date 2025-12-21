@@ -3,7 +3,7 @@
 import { DailyScheduleType, GetDailyScheduleResponse } from "@/models/types/dailySchedule";
 import { publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
-import { and, eq, or } from "drizzle-orm";
+import { and, eq, or, inArray } from "drizzle-orm";
 import { db, schema, executeQuery } from "../../../db";
 
 const getTeacherFullScheduleAction = async (
@@ -35,6 +35,36 @@ const getTeacherFullScheduleAction = async (
                 },
                 orderBy: schema.dailySchedule.hour,
             });
+
+            // Handle classes array manually since it's an array of IDs
+            const allClassIds = new Set<string>();
+            dailySchedules.forEach((schedule: any) => {
+                if (schedule.classIds && Array.isArray(schedule.classIds)) {
+                    schedule.classIds.forEach((id: string) => allClassIds.add(id));
+                }
+            });
+
+            const classesData =
+                allClassIds.size > 0
+                    ? await db.query.classes.findMany({
+                          where: inArray(schema.classes.id, Array.from(allClassIds)),
+                      })
+                    : [];
+
+            const classesMap = new Map(classesData.map((c: any) => [c.id, c]));
+
+            const getClasses = (schedule: any) => {
+                if (
+                    schedule.classIds &&
+                    Array.isArray(schedule.classIds) &&
+                    schedule.classIds.length > 0
+                ) {
+                    return schedule.classIds
+                        .map((id: string) => classesMap.get(id))
+                        .filter(Boolean);
+                }
+                return schedule.class ? [schedule.class] : [];
+            };
 
             // Group by hour to handle conflicts
             const schedulesByHour = new Map<number, any>();
@@ -68,6 +98,7 @@ const getTeacherFullScheduleAction = async (
                     event: schedule.event || undefined,
                     school: schedule.school,
                     class: schedule.class || undefined,
+                    classes: getClasses(schedule),
                     subject: schedule.subject || undefined,
                     issueTeacher: schedule.issueTeacher || undefined,
                     issueTeacherType: schedule.issueTeacherType || undefined,

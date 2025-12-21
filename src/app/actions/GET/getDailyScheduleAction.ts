@@ -3,7 +3,7 @@
 import { DailyScheduleType, GetDailyScheduleResponse } from "@/models/types/dailySchedule";
 import { checkAuthAndParams, publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { db, schema, executeQuery } from "../../../db";
 
 export async function getDailyScheduleAction(
@@ -35,6 +35,37 @@ export async function getDailyScheduleAction(
                 },
             });
 
+            // TODO: ugly
+            // Handle classes array manually since it's an array of IDs
+            const allClassIds = new Set<string>();
+            schedules.forEach((schedule: any) => {
+                if (schedule.classIds && Array.isArray(schedule.classIds)) {
+                    schedule.classIds.forEach((id: string) => allClassIds.add(id));
+                }
+            });
+
+            const classesData =
+                allClassIds.size > 0
+                    ? await db.query.classes.findMany({
+                          where: inArray(schema.classes.id, Array.from(allClassIds)),
+                      })
+                    : [];
+
+            const classesMap = new Map(classesData.map((c: any) => [c.id, c]));
+
+            const getClasses = (schedule: any) => {
+                if (
+                    schedule.classIds &&
+                    Array.isArray(schedule.classIds) &&
+                    schedule.classIds.length > 0
+                ) {
+                    return schedule.classIds
+                        .map((id: string) => classesMap.get(id))
+                        .filter(Boolean);
+                }
+                return schedule.class ? [schedule.class] : [];
+            };
+
             return schedules.map(
                 (schedule: any) =>
                     ({
@@ -47,6 +78,7 @@ export async function getDailyScheduleAction(
                         event: schedule.event,
                         school: schedule.school,
                         class: schedule.class,
+                        classes: getClasses(schedule),
                         subject: schedule.subject,
                         issueTeacher: schedule.issueTeacher,
                         issueTeacherType: schedule.issueTeacherType,

@@ -1,7 +1,6 @@
 import { AnnualScheduleType, WeeklySchedule } from "@/models/types/annualSchedule";
 import { DAYS_OF_WEEK } from "@/utils/time";
 
-
 /**
  * Iterates through the table once and populates the relevant class schedules. O(N)
  */
@@ -23,10 +22,8 @@ export const populateAllClassesSchedule = (
             newSchedule[classId][dayName][entry.hour] = {
                 teachers: [],
                 subjects: [],
-                classId: classId,
+                classes: [],
             };
-        } else if (!newSchedule[classId][dayName][entry.hour].classId) {
-            newSchedule[classId][dayName][entry.hour].classId = classId;
         }
 
         const cell = newSchedule[classId][dayName][entry.hour];
@@ -36,6 +33,9 @@ export const populateAllClassesSchedule = (
         }
         if (entry.subject?.id && !cell.subjects.includes(entry.subject.id)) {
             cell.subjects.push(entry.subject.id);
+        }
+        if (entry.class?.id && !cell.classes.includes(entry.class.id)) {
+            cell.classes.push(entry.class.id);
         }
     });
 
@@ -63,10 +63,8 @@ export const populateAllTeachersSchedule = (
             newSchedule[teacherId][dayName][entry.hour] = {
                 teachers: [],
                 subjects: [],
-                classId: entry.class?.id,
+                classes: [],
             };
-        } else if (!newSchedule[teacherId][dayName][entry.hour].classId) {
-            newSchedule[teacherId][dayName][entry.hour].classId = entry.class?.id;
         }
 
         const cell = newSchedule[teacherId][dayName][entry.hour];
@@ -76,6 +74,9 @@ export const populateAllTeachersSchedule = (
         }
         if (entry.subject?.id && !cell.subjects.includes(entry.subject.id)) {
             cell.subjects.push(entry.subject.id);
+        }
+        if (entry.class?.id && !cell.classes.includes(entry.class.id)) {
+            cell.classes.push(entry.class.id);
         }
     });
 

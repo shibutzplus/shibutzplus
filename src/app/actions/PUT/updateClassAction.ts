@@ -47,7 +47,7 @@ export async function updateClassAction(
         const allClassesResp = await getClassesAction(classData.schoolId);
         return {
             success: true,
-            message: messages.classes.updateSuccess,
+            message: messages.classes.updateClassSuccess,
             data: allClassesResp.data || [],
         };
     } catch (error) {

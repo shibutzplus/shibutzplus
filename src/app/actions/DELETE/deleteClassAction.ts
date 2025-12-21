@@ -80,7 +80,7 @@ export async function deleteClassAction(
 
         return {
             success: true,
-            message: messages.classes.deleteSuccess,
+            message: messages.classes.deleteClassSuccess,
             annualSchedules: annualSchedule,
             classes: remainingClasses,
         };

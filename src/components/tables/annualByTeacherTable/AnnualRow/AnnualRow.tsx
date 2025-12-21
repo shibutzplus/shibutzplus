@@ -11,7 +11,7 @@ import { SelectMethod } from "@/models/types/actions";
 type AnnualRowProps = {
     hour: number;
     schedule: WeeklySchedule;
-    selectedClassId: string;
+    selectedTeacherId: string;
     subjects: SubjectType[];
     teachers: TeacherType[];
     classes: ClassType[];
@@ -37,11 +37,7 @@ const AnnualRow: React.FC<AnnualRowProps> = (props) => {
             </td>
             <td className={styles.emptyCell}></td>
             {DAYS_OF_WORK_WEEK.map((day) => (
-                <AnnualCell
-                    key={`${day}-${hour}`}
-                    day={day}
-                    {...props}
-                />
+                <AnnualCell key={`${day}-${hour}`} day={day} {...props} />
             ))}
         </tr>
     );

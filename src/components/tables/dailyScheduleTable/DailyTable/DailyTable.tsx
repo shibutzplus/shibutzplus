@@ -1,7 +1,6 @@
 import React, { useMemo } from "react";
 import { motion } from "motion/react";
 import styles from "./DailyTable.module.css";
-import { TableRows } from "@/models/constant/table";
 import EmptyTable from "@/components/empty/EmptyTable/EmptyTable";
 import { DailySchedule, ColumnType } from "@/models/types/dailySchedule";
 import { useSortColumns } from "./useSortColumns";
@@ -13,8 +12,6 @@ import DailyEventCell from "../DailyEventCell/DailyEventCell";
 import { useColumnAnimation } from "./useColumnAnimation";
 import { useMainContext } from "@/context/MainContext";
 import { HOURS_IN_DAY } from "@/utils/time";
-
-// --- Wrapper Components ---
 
 type AnimatedHeaderWrapperProps = {
     colIndex: number;
@@ -235,7 +232,7 @@ const DailyTable: React.FC<DailyTableProps> = ({
                                             <DailyEventCell cell={cellData} columnId={colId} />
                                         ) : (
                                             <DailyTeacherCell
-                                                key={`${colId}-${row}-${cellData?.subTeacher?.id || cellData?.class?.id || 'empty'}`}
+                                                key={`${colId}-${row}-${cellData?.subTeacher?.id || cellData?.classes?.[0]?.id || 'empty'}`}
                                                 cell={cellData}
                                                 columnId={colId}
                                                 type={type}

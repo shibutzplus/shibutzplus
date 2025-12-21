@@ -1,5 +1,4 @@
 
-
 TODO
 - portal - leave empty hours that has no information (gray + small height)
 - text for 'create new teacher' in the select
