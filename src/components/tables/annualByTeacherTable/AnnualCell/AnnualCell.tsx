@@ -68,9 +68,11 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
         handleAddNewRow("classes", values, day, hour, method);
 
         if (values.length > 0) {
-            const selectedClassObj = classes.find((c) => c.id === selectedTeacherId);
-            if (selectedClassObj?.activity) {
-                const matchingSubject = subjects.find((s) => s.name === selectedClassObj.name);
+            const activityClass = classes.find((c) => values.includes(c.id) && c.activity);
+            if (activityClass) {
+                const matchingSubject = subjects.find(
+                    (s) => s.name === activityClass.name && s.activity
+                );
                 if (matchingSubject) {
                     handleAddNewRow(
                         "subjects",
@@ -115,7 +117,6 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
                     isSearchable
                     isDisabled={isDisabled}
                     onBeforeRemove={confirmRemove}
-                    isClearable
                     isBold
                 />
             </div>

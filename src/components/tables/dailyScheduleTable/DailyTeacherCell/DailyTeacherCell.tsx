@@ -169,9 +169,8 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
                 <div className={styles.innerCellContent}>
                     <Tooltip content={getTooltipText()} on={["click", "scroll"]}>
                         <div
-                            className={`${styles.classAndSubject} ${
-                                isActivity ? styles.activityText : ""
-                            }`}
+                            className={`${styles.classAndSubject} ${isActivity ? styles.activityText : ""
+                                }`}
                         >
                             {getTooltipText()}
                         </div>
@@ -188,7 +187,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
                             hasBorder
                             backgroundColor="transparent"
                             onCreate={(value: string) => handleTeacherChange("create", value)}
-                            menuWidth="210px"
+                            menuWidth="220px"
                             color={isActivity ? "var(--disabled-text-color)" : undefined}
                         />
                     </div>

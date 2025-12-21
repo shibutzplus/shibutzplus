@@ -1,11 +1,6 @@
 import { GroupOption } from "@/models/types";
 import { AvailableTeachers, WeeklySchedule } from "@/models/types/annualSchedule";
-import {
-    ColumnTypeValues,
-    ColumnType,
-    DailySchedule,
-    DailyScheduleCell,
-} from "@/models/types/dailySchedule";
+import { ColumnTypeValues, ColumnType, DailySchedule, DailyScheduleCell, } from "@/models/types/dailySchedule";
 import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import { dayToNumber } from "./time";
 import { ClassType } from "@/models/types/classes";
@@ -48,48 +43,19 @@ export const sortAnnualTeachers = (
     day: string,
     hour: number,
 ): GroupOption[] => {
-    // Calculate available teachers for this specific day and hour
-    const busyTeacherIds = new Set<string>();
-
-    // Check all classes except the currently selected one
-    classes.forEach((cls) => {
-        if (cls.id != selectedClassId) {
-            const teacherIds = schedule[cls.id]?.[day]?.[hour]?.teachers;
-            if (teacherIds) {
-                teacherIds.forEach((id) => {
-                    busyTeacherIds.add(id);
-                });
-            }
-        }
-    });
-
-    // Filter available teachers (not busy at this time)
-    const availableTeachers = allTeachers.filter((teacher) => !busyTeacherIds.has(teacher.id));
-    const availableTeacherIds = new Set(availableTeachers.map((t) => t.id));
-
-    const availableRegular = allTeachers.filter(
-        (teacher) =>
-            teacher.role === TeacherRoleValues.REGULAR && availableTeacherIds.has(teacher.id),
+    // Filter only regular teachers
+    const regularTeachers = allTeachers.filter(
+        (teacher) => teacher.role === TeacherRoleValues.REGULAR,
     );
 
-    const unavailableTeachers = allTeachers.filter((teacher) => busyTeacherIds.has(teacher.id));
+    // Sort alphabetically
+    const sortedTeachers = sortByHebrewName(regularTeachers);
 
-    // Sort each group alphabetically in Hebrew
-    const sortedAvailableRegular = sortByHebrewName(availableRegular);
-    const sortedUnavailableTeachers = sortByHebrewName(unavailableTeachers);
-
-    // Build grouped options (always three groups, even if empty)
+    // Build single group
     const groups: GroupOption[] = [
         {
-            label: "מורים פנויים", // Available
-            options: sortedAvailableRegular.map((teacher) => ({
-                value: teacher.id,
-                label: teacher.name,
-            })),
-        },
-        {
-            label: "מורים לא פנויים", // Unavailable
-            options: sortedUnavailableTeachers.map((teacher) => ({
+            label: "מורים",
+            options: sortedTeachers.map((teacher) => ({
                 value: teacher.id,
                 label: teacher.name,
             })),
@@ -363,12 +329,12 @@ export const sortDailyTeachers = (
     const groups: GroupOption[] = [
         ...(currentValue
             ? [
-                  {
-                      label: "מחיקת השיבוץ",
-                      options: [{ value: EmptyValue, label: "🗑️" }],
-                      hideCount: true,
-                  },
-              ]
+                {
+                    label: "מחיקת השיבוץ",
+                    options: [{ value: EmptyValue, label: "🗑️" }],
+                    hideCount: true,
+                },
+            ]
             : []),
         {
             label: "מורה נוסף בשיעור",
