@@ -18,7 +18,7 @@ export async function getClassesAction(schoolId: string): Promise<GetClassesResp
                 .select()
                 .from(schema.classes)
                 .where(eq(schema.classes.schoolId, schoolId))
-                .orderBy(asc(schema.classes.name));
+                .orderBy(asc(schema.classes.activity), asc(schema.classes.name));
         });
 
         if (!classes || classes.length === 0) {

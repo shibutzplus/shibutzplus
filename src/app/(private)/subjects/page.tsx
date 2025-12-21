@@ -7,7 +7,6 @@ import AddSubjectRow from "@/components/details/subjectDetails/AddSubjectRow/Add
 import SubjectRow from "@/components/details/subjectDetails/SubjectRow/SubjectRow";
 import { SubjectType } from "@/models/types/subjects";
 import { useMainContext } from "@/context/MainContext";
-import { sortByHebrewName } from "@/utils/sort";
 
 const SubjectsPage: NextPage = () => {
     const { subjects } = useMainContext();
@@ -16,8 +15,7 @@ const SubjectsPage: NextPage = () => {
     const sortedSubjects = React.useMemo(
         () => {
             if (!subjects) return undefined;
-            const filtered = subjects.filter(s => !s.activity && s.name.includes(searchTerm));
-            return sortByHebrewName(filtered);
+            return subjects.filter(s => !s.activity && s.name.includes(searchTerm));
         },
         [subjects, searchTerm],
     );

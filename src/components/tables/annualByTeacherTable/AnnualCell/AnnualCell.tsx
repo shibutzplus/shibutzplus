@@ -6,7 +6,7 @@ import { TeacherType } from "@/models/types/teachers";
 import { WeeklySchedule, AnnualInputCellType } from "@/models/types/annualSchedule";
 import { ClassType } from "@/models/types/classes";
 import { SelectMethod } from "@/models/types/actions";
-import { sortByHebrewName, sortClassesByName } from "@/utils/sort";
+
 import useDeletePopup from "@/hooks/useDeletePopup";
 import { PopupAction } from "@/context/PopupContext";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
@@ -100,7 +100,7 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
         <td className={styles.scheduleCell}>
             <div className={styles.cellContent}>
                 <DynamicInputSelect
-                    options={createSelectOptions<SubjectType>(sortByHebrewName(subjects || []))}
+                    options={createSelectOptions<SubjectType>(subjects || [])}
                     value={schedule[selectedTeacherId]?.[day]?.[hour]?.subjects[0] ?? ""}
                     onChange={handleSubjectChange}
                     placeholder="מקצוע"
@@ -110,7 +110,7 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
                     isClearable
                 />
                 <DynamicInputMultiSelect
-                    options={createSelectOptions<ClassType>(sortClassesByName(classes))}
+                    options={createSelectOptions<ClassType>(classes)}
                     value={schedule[selectedTeacherId]?.[day]?.[hour]?.classes ?? []}
                     onChange={handleClassChange}
                     placeholder="כיתה"

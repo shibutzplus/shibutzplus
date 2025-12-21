@@ -6,7 +6,6 @@ import DetailsListLayout from "@/components/layout/DetailsListLayout/DetailsList
 import { useMainContext } from "@/context/MainContext";
 import AddClassRow from "@/components/details/classDetails/AddClassRow/AddClassRow";
 import ClassRow from "@/components/details/classDetails/ClassRow/ClassRow";
-import { sortByHebrewName } from "@/utils/sort";
 import { ClassType } from "@/models/types/classes";
 
 const GroupsPage: NextPage = () => {
@@ -17,8 +16,7 @@ const GroupsPage: NextPage = () => {
         () => {
             if (!classes) return undefined;
             // Filter for activity=true (groups)
-            const filtered = classes.filter(c => c.activity && c.name.includes(searchTerm));
-            return sortByHebrewName(filtered);
+            return classes.filter(c => c.activity && c.name.includes(searchTerm));
         },
         [classes, searchTerm],
     );

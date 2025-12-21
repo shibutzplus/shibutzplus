@@ -95,13 +95,7 @@ export const AnnualByClassProvider: React.FC<{ children: ReactNode }> = ({ child
     }, [queueRows]);
 
     const classesSelectOptions = () => {
-        const sortedClasses = [...(classes || [])].sort((a, b) => {
-            if (a.activity !== b.activity) {
-                return a.activity ? 1 : -1;
-            }
-            return a.name.localeCompare(b.name, "he", { numeric: true });
-        });
-        return createSelectOptions<ClassType>(sortedClasses);
+        return createSelectOptions<ClassType>(classes || []);
     };
 
     const addNewAnnualScheduleItem = async (newScheduleItem: AnnualScheduleRequest) => {

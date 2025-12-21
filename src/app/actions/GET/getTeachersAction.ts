@@ -4,7 +4,7 @@ import { GetTeachersResponse, TeacherRoleValues } from "@/models/types/teachers"
 import { checkAuthAndParams, publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
-import { eq, ne, and } from "drizzle-orm";
+import { eq, ne, and, asc } from "drizzle-orm";
 
 export async function getTeachersAction(
     schoolId: string,
@@ -25,7 +25,7 @@ export async function getTeachersAction(
                     .select()
                     .from(schema.teachers)
                     .where(eq(schema.teachers.schoolId, schoolId))
-                    .orderBy(schema.teachers.name);
+                    .orderBy(asc(schema.teachers.name));
             } else {
                 return await db
                     .select()
@@ -36,7 +36,7 @@ export async function getTeachersAction(
                             ne(schema.teachers.role, TeacherRoleValues.SUBSTITUTE),
                         ),
                     )
-                    .orderBy(schema.teachers.name);
+                    .orderBy(asc(schema.teachers.name));
             }
         });
 
