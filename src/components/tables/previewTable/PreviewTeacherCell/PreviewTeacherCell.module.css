@@ -15,6 +15,10 @@
     align-items: flex-start;
 }
 
+.textContent {
+    line-height: 1.3;
+}
+
 .subTeacherName {
     font-weight: 600;
 }
