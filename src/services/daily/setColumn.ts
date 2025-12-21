@@ -1,15 +1,11 @@
 import { DailySchedule, DailyScheduleCell } from "@/models/types/dailySchedule";
+import { ClassType } from "@/models/types/classes";
+import { SubjectType } from "@/models/types/subjects";
 import { initDailySchedule } from "./populate";
 import { HOURS_IN_DAY } from "@/utils/time";
 
 /**
  * Updates a specific column in the daily schedule with new cell data.
- *
- * This function determines whether the provided `cells` belong to a teacher column or an event column
- * based on the presence of `headerTeacher` in the first cell's header data. It then delegates
- * the update process to either `setTeacherColumn` or `setEventColumn` accordingly.
- *
- * @returns The updated `DailySchedule` object with the modified column.
  */
 export const setColumn = (
     cells: DailyScheduleCell[],
@@ -20,14 +16,12 @@ export const setColumn = (
 ) => {
     // Check if this is an teacher column by looking at the first cell
     const isTeacherColumn = cells.length > 0 && cells[0].headerCol?.headerTeacher !== undefined;
-    // (cells[0].subTeacher !== undefined || cells[0].event !== undefined);
 
     if (isTeacherColumn) {
-        setTeacherColumn(newSchedule, date, cells, columnId, hoursNum);
+        return setTeacherColumn(newSchedule, date, cells, columnId, hoursNum);
     } else {
-        setEventColumn(newSchedule, date, cells, columnId, hoursNum);
+        return setEventColumn(newSchedule, date, cells, columnId, hoursNum);
     }
-    return newSchedule;
 };
 
 export const setTeacherColumn = (
@@ -37,37 +31,71 @@ export const setTeacherColumn = (
     columnId: string,
     hoursNum: number = HOURS_IN_DAY,
 ) => {
-    dailySchedule = initDailySchedule(dailySchedule, selectedDate, columnId);
+    // 1. Initialize structure immutably
+    const initializedSchedule = initDailySchedule(dailySchedule, selectedDate, columnId);
+
+    // We'll build the new column object
+    const existingDate = initializedSchedule[selectedDate];
+    const existingColumn = existingDate[columnId] || {};
+    const newColumn = { ...existingColumn };
 
     // Create a map of existing data for quick lookup
-    const hourDataMap = new Map<number, DailyScheduleCell>();
+    const hourDataMap = new Map<number, DailyScheduleCell[]>();
     columnData.forEach((row) => {
-        hourDataMap.set(row.hour, row);
+        const existingInfo = hourDataMap.get(row.hour) || [];
+        existingInfo.push(row);
+        hourDataMap.set(row.hour, existingInfo);
     });
 
     for (let hour = 1; hour <= hoursNum; hour++) {
-        const existingData = hourDataMap.get(hour);
+        const existingDataList = hourDataMap.get(hour);
 
-        if (existingData) {
-            dailySchedule[selectedDate][columnId][`${hour}`] = {
-                class: existingData.class,
-                subject: existingData.subject,
-                hour: existingData.hour,
-                subTeacher: existingData.subTeacher,
-                event: existingData.event,
-                headerCol: existingData.headerCol,
-                DBid: existingData.DBid,
+        if (existingDataList && existingDataList.length > 0) {
+            const firstItem = existingDataList[0];
+
+            // Map all items to scheduleItems
+            const uniqueClasses = new Set();
+            const scheduleItems: { class: ClassType; subject: SubjectType; DBid?: string | undefined; }[] = [];
+
+            existingDataList.forEach((item) => {
+                if (item.class && item.subject) {
+                    if (!uniqueClasses.has(item.class.id)) {
+                        uniqueClasses.add(item.class.id);
+                        scheduleItems.push({
+                            class: item.class,
+                            subject: item.subject,
+                            DBid: item.DBid,
+                        });
+                    }
+                }
+            });
+
+            newColumn[`${hour}`] = {
+                class: firstItem.class,
+                subject: firstItem.subject,
+                hour: firstItem.hour,
+                subTeacher: firstItem.subTeacher, // Assuming subTeacher is consistent or we take the first one
+                event: firstItem.event,
+                headerCol: firstItem.headerCol,
+                DBid: firstItem.DBid,
+                scheduleItems: scheduleItems.length > 0 ? scheduleItems : undefined,
             };
         } else {
             // Empty cell
-            dailySchedule[selectedDate][columnId][`${hour}`] = {
+            newColumn[`${hour}`] = {
                 headerCol: columnData[0].headerCol,
                 hour: hour,
             };
         }
     }
 
-    return dailySchedule;
+    return {
+        ...initializedSchedule,
+        [selectedDate]: {
+            ...existingDate,
+            [columnId]: newColumn
+        }
+    };
 };
 
 export const setEventColumn = (
@@ -77,7 +105,13 @@ export const setEventColumn = (
     columnId: string,
     hoursNum: number = HOURS_IN_DAY,
 ): DailySchedule => {
-    dailySchedule = initDailySchedule(dailySchedule, selectedDate, columnId);
+    // 1. Initialize structure immutably
+    const initializedSchedule = initDailySchedule(dailySchedule, selectedDate, columnId);
+
+    // We'll build the new column object
+    const existingDate = initializedSchedule[selectedDate];
+    const existingColumn = existingDate[columnId] || {};
+    const newColumn = { ...existingColumn };
 
     // Create a map of existing data for quick lookup
     const hourDataMap = new Map<number, DailyScheduleCell>();
@@ -88,7 +122,7 @@ export const setEventColumn = (
     for (let hour = 1; hour <= hoursNum; hour++) {
         const existingData = hourDataMap.get(hour);
         if (existingData) {
-            dailySchedule[selectedDate][columnId][`${hour}`] = {
+            newColumn[`${hour}`] = {
                 event: existingData.event,
                 hour: existingData.hour,
                 headerCol: existingData.headerCol,
@@ -96,12 +130,18 @@ export const setEventColumn = (
             };
         } else {
             // Empty cell with header info only
-            dailySchedule[selectedDate][columnId][`${hour}`] = {
+            newColumn[`${hour}`] = {
                 headerCol: columnData[0].headerCol,
                 hour: hour,
             };
         }
     }
 
-    return dailySchedule;
+    return {
+        ...initializedSchedule,
+        [selectedDate]: {
+            ...existingDate,
+            [columnId]: newColumn
+        }
+    };
 };

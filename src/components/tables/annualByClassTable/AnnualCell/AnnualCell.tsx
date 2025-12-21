@@ -49,17 +49,10 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
     const { handleOpenPopup } = useDeletePopup();
 
     const sortedTeacherOptions = useMemo(() => {
-        const groups = sortAnnualTeachers(
-            teachers || [],
-            classes || [],
-            schedule,
-            selectedClassId,
-            day,
-            hour,
-        );
+        const groups = sortAnnualTeachers(teachers || []);
         // Flatten groups to simple options list
         return groups.flatMap((g) => g.options);
-    }, [teachers, classes, schedule, selectedClassId, day, hour]);
+    }, [teachers]);
 
     const handleSubjectChange = (values: string[], method: SelectMethod) => {
         handleAddNewRow("subjects", values, day, hour, method);

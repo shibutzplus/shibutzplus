@@ -20,6 +20,7 @@ export const initializeEmptyAnnualSchedule = (
             newSchedule[selectedClassId][day][hour] = {
                 teachers: [],
                 subjects: [],
+                classes: [],
             };
         }
     });
@@ -44,6 +45,7 @@ export const setNewScheduleTemplate = (
             teachers: [],
             subjects: [],
             classId: selectedClassId,
+            classes: [selectedClassId],
         };
     }
     return newSchedule;

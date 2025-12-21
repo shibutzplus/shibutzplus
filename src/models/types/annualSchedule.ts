@@ -33,6 +33,7 @@ export type AnnualScheduleCell = {
     teachers: string[];
     subjects: string[];
     classId?: string;
+    classes: string[];
 };
 
 export type WeeklySchedule = {

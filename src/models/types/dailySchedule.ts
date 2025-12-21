@@ -59,6 +59,11 @@ export type DailyScheduleCell = {
     class?: ClassType;
     event?: string;
     hour: number;
+    scheduleItems?: {
+        class: ClassType;
+        subject: SubjectType;
+        DBid?: string;
+    }[];
 };
 
 export type DailySchedule = {
