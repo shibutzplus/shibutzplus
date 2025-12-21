@@ -14,6 +14,7 @@ export const annualSchedule = pgTable('annual_schedule', {
 }, (table) => {
   return {
     teacherIdIdx: index('idx_annual_teacher_id').on(table.teacherId),
+    schoolIdIdx: index('idx_annual_school_id').on(table.schoolId),
     classIdIdx: index('idx_annual_class_id').on(table.classId),
     subjectIdIdx: index('idx_annual_subject_id').on(table.subjectId),
   };

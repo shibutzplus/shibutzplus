@@ -50,7 +50,10 @@ const PreviewTeacherCell: React.FC<PreviewTeacherCellProps> = ({ cell, appType }
     return (
         <div className={styles.cellContent}>
             <div className={styles.innerCellContent}>
-                <span className={isActivity ? styles.activityText : ""}>
+                <span
+                    className={`${styles.textContent} ${isActivity ? styles.activityText : ""
+                        }`}
+                >
                     {getTextContent()}
                 </span>
                 {subTeacherData ? (
