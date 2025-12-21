@@ -2,6 +2,7 @@
 
 const EMAILJS_SERVICE_ID = process.env.EMAILJS_SERVICE_ID || "";
 const EMAILJS_PUBLIC_KEY = process.env.EMAILJS_PUBLIC_KEY || "";
+const EMAILJS_PRIVATE_KEY = process.env.EMAILJS_PRIVATE_KEY || "";
 const EMAILJS_TEACHER_TEMPLATE_ID = process.env.EMAILJS_TEACHER_TEMPLATE_ID || "";
 const EMAILJS_ADMIN_TEMPLATE_ID = process.env.EMAILJS_ADMIN_TEMPLATE_ID || "";
 
@@ -18,6 +19,7 @@ async function sendEmailAction(
         service_id: EMAILJS_SERVICE_ID,
         template_id: templateId,
         user_id: EMAILJS_PUBLIC_KEY,
+        accessToken: EMAILJS_PRIVATE_KEY,
         template_params: params,
     };
 
@@ -56,10 +58,13 @@ export interface AdminEmailParams {
 }
 
 export async function sendTeacherContactEmail(params: TeacherEmailParams) {
+    console.log("ROY sendTeacherContactEmail", params);
+    console.log("ROY EMAILJS_TEACHER_TEMPLATE_ID", EMAILJS_TEACHER_TEMPLATE_ID);
     const response = await sendEmailAction(
         EMAILJS_TEACHER_TEMPLATE_ID,
         params as unknown as Record<string, unknown>,
     );
+    console.log("ROY response", response);
     if (response.status !== 200) {
         throw new Error(response.text);
     }
