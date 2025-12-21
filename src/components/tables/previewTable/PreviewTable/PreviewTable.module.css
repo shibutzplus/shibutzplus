@@ -115,3 +115,11 @@
     min-width: var(--table-daily-col-width);
     max-width: var(--table-daily-col-width);
 }
+
+.cellContent {
+    background-color: white;
+    border-radius: var(--border-radius-cell);
+    height: 100%;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
