@@ -67,6 +67,8 @@
     overflow-y: auto;
     width: 100%;
     overscroll-behavior: none;
+    list-style: none;
+    padding: 0;
 }
 
 /* <= 800 */
