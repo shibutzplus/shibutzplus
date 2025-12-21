@@ -1,5 +1,5 @@
 import { GroupOption } from "@/models/types";
-import { AvailableTeachers, WeeklySchedule } from "@/models/types/annualSchedule";
+import { AvailableTeachers } from "@/models/types/annualSchedule";
 import { ColumnTypeValues, ColumnType, DailySchedule, DailyScheduleCell, } from "@/models/types/dailySchedule";
 import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import { dayToNumber } from "./time";
@@ -8,62 +8,7 @@ import { createSelectOptions } from "./format";
 import { dailySelectActivity } from "@/resources/dailySelectActivities";
 import { EmptyValue } from "@/models/constant/daily";
 
-/**
- * Sorts an array of objects by their Hebrew name property in alphabetical order (א-ב-ג...)
- * @param items - Array of objects with a name property containing Hebrew text
- * @param nameKey - The key of the property to sort by (defaults to 'name')
- * @returns A new sorted array
- */
-export const sortByHebrewName = <T extends Record<string, any>>(
-    items: T[],
-    nameKey: keyof T = "name" as keyof T,
-): T[] => {
-    return [...items].sort((a, b) => {
-        const nameA = String(a[nameKey]);
-        const nameB = String(b[nameKey]);
-        return nameA.localeCompare(nameB, "he", { numeric: true });
-    });
-};
 
-export const sortClassesByName = (classes: ClassType[]) => {
-    return [...(classes || [])].sort((a, b) => {
-        if (a.activity !== b.activity) {
-            return a.activity ? 1 : -1;
-        }
-        return a.name.localeCompare(b.name, "he", { numeric: true });
-    });
-};
-
-// Annual Schedule: Build grouped teacher options (available vs unavailable) for a class at a specific day/hour in the annual schedule
-export const sortAnnualTeachers = (
-    allTeachers: TeacherType[],
-    classes: ClassType[],
-    schedule: WeeklySchedule,
-    selectedClassId: string,
-    day: string,
-    hour: number,
-): GroupOption[] => {
-    // Filter only regular teachers
-    const regularTeachers = allTeachers.filter(
-        (teacher) => teacher.role === TeacherRoleValues.REGULAR,
-    );
-
-    // Sort alphabetically
-    const sortedTeachers = sortByHebrewName(regularTeachers);
-
-    // Build single group
-    const groups: GroupOption[] = [
-        {
-            label: "מורים",
-            options: sortedTeachers.map((teacher) => ({
-                value: teacher.id,
-                label: teacher.name,
-            })),
-        },
-    ];
-
-    return groups;
-};
 
 // DailySchedule Header Dropdown: Filter header teacher options: only regular teachers, avoid duplicates
 export const filterDailyHeaderTeachers = (

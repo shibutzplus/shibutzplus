@@ -8,7 +8,6 @@ import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import AddSubstituteRow from "@/components/details/substituteDetails/AddSubstituteRow/AddSubstituteRow";
 import SubstituteRow from "@/components/details/substituteDetails/SubstituteRow/SubstituteRow";
 import { filterTeachersByRole } from "@/utils/format";
-import { sortByHebrewName } from "@/utils/sort";
 
 const SubstitutePage: NextPage = () => {
     const { teachers } = useMainContext();
@@ -18,7 +17,7 @@ const SubstitutePage: NextPage = () => {
         () => {
             if (!teachers) return undefined;
             const filtered = teachers.filter(t => t.name.includes(searchTerm));
-            return filterTeachersByRole(sortByHebrewName(filtered), TeacherRoleValues.SUBSTITUTE);
+            return filterTeachersByRole(filtered, TeacherRoleValues.SUBSTITUTE);
         },
         [teachers, searchTerm],
     );

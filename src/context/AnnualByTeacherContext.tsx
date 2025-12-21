@@ -1,17 +1,11 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import {
-    WeeklySchedule,
-    AnnualScheduleType,
-    AnnualInputCellType,
-    AnnualScheduleRequest,
-} from "@/models/types/annualSchedule";
+import { WeeklySchedule, AnnualScheduleType, AnnualInputCellType, AnnualScheduleRequest, } from "@/models/types/annualSchedule";
 import { useMainContext } from "./MainContext";
 import { createSelectOptions } from "@/utils/format";
 import { TeacherType } from "@/models/types/teachers";
 import { Pair, SelectOption } from "@/models/types";
-import { sortByHebrewName } from "@/utils/sort";
 import useInitAnnualData from "@/hooks/useInitAnnualData";
 import { SelectMethod } from "@/models/types/actions";
 import { SubjectType } from "@/models/types/subjects";
@@ -20,11 +14,7 @@ import { deleteAnnualByTeacherAction } from "@/app/actions/DELETE/deleteAnnualBy
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { dayToNumber } from "@/utils/time";
-import {
-    createAnnualByTeacherRequests,
-    createClassSubjectPairs,
-    setNewScheduleTemplate,
-} from "@/services/annual/initialize";
+import { createAnnualByTeacherRequests, createClassSubjectPairs, setNewScheduleTemplate, } from "@/services/annual/initialize";
 import { getSelectedTeacher } from "@/services/annual/get";
 
 interface AnnualByTeacherContextType {
@@ -92,7 +82,7 @@ export const AnnualByTeacherProvider: React.FC<{ children: React.ReactNode }> = 
 
     const teachersSelectOptions = (): SelectOption[] => {
         const regularTeachers = teachers?.filter((t) => t.role === "regular") || [];
-        return createSelectOptions<TeacherType>(sortByHebrewName(regularTeachers));
+        return createSelectOptions<TeacherType>(regularTeachers);
     };
 
     useEffect(() => {

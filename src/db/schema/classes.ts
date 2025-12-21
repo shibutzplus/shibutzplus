@@ -11,6 +11,7 @@ export const classes = pgTable('classes', {
 }, (table) => {
   return {
     schoolIdNameIdx: uniqueIndex('idx_classes_school_id_name').on(table.schoolId, table.name),
+    schoolIdActivityNameIdx: index('idx_classes_school_id_activity_name').on(table.schoolId, table.activity, table.name),
   };
 });
 
