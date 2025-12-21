@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { motion } from "motion/react";
 import styles from "./PreviewTable.module.css";
 import { TableRows } from "@/models/constant/table";
 import { sortDailyColumnIdsByType } from "@/utils/sort";
@@ -45,7 +45,8 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
             if (!columnData) return;
 
             const colFirstObj =
-                columnData["1"] || Object.values(columnData).find((cell) => cell?.headerCol?.type);
+                columnData["1"] ||
+                Object.values(columnData).find((cell) => cell?.headerCol?.type);
 
             types[colId] = colFirstObj?.headerCol?.type || "event";
         });
@@ -75,56 +76,36 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
                             <div className={`${styles.headerInner} ${styles.headerGray}`}></div>
                         </th>
 
-                        <AnimatePresence>
-                            {sortedTableColumns.map((colId) => {
-                                const type = columnTypes[colId] || "event";
-                                const column = schedule[colId];
+                        {sortedTableColumns.map((colId, index) => {
+                            const type = columnTypes[colId] || "event";
+                            const column = schedule[colId];
 
-                                return (
-                                    <motion.th
-                                        key={colId}
-                                        id={`col-${colId}`}
-                                        className={`${styles.headerCell} ${styles.regularHeaderCell}`}
-                                        initial={{ opacity: 0, width: 0, minWidth: 0, maxWidth: 0 }}
-                                        animate={{
-                                            opacity: 1,
-                                            width: "var(--table-daily-col-width)",
-                                            minWidth: "var(--table-daily-col-width)",
-                                            maxWidth: "var(--table-daily-col-width)",
-                                            transition: { duration: 0.2 },
-                                        }}
-                                        exit={{
-                                            opacity: 0,
-                                            width: 0,
-                                            minWidth: 0,
-                                            maxWidth: 0,
-                                            transition: {
-                                                opacity: { duration: 0.1 },
-                                                default: { duration: 0.2 },
-                                            },
-                                        }}
-                                        style={{ overflow: "hidden", whiteSpace: "nowrap" }}
+                            return (
+                                <th
+                                    key={colId}
+                                    className={`${styles.headerCell} ${styles.regularHeaderCell}`}
+                                >
+                                    <motion.div
+                                        style={{ width: "100%", height: "100%" }}
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ duration: 0.3, delay: index * 0.02 }}
                                     >
-                                        <div
-                                            className={`${styles.headerInner}`}
-                                            style={{ width: "100%" }}
-                                        >
-                                            {type === "event" ? (
-                                                <PreviewEventHeader type={type} column={column} />
-                                            ) : (
-                                                <PreviewTeacherHeader
-                                                    column={column}
-                                                    appType={appType}
-                                                    type={type}
-                                                    selectedDate={selectedDate}
-                                                    onTeacherClick={onTeacherClick}
-                                                />
-                                            )}
-                                        </div>
-                                    </motion.th>
-                                );
-                            })}
-                        </AnimatePresence>
+                                        {type === "event" ? (
+                                            <PreviewEventHeader type={type} column={column} />
+                                        ) : (
+                                            <PreviewTeacherHeader
+                                                column={column}
+                                                appType={appType}
+                                                type={type}
+                                                selectedDate={selectedDate}
+                                                onTeacherClick={onTeacherClick}
+                                            />
+                                        )}
+                                    </motion.div>
+                                </th>
+                            );
+                        })}
                     </tr>
                 </thead>
                 <tbody>
@@ -133,60 +114,37 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
                             <td className={styles.rowNumberCell}>
                                 <div className={styles.rowNumberBadge}>{row}</div>
                             </td>
-                            <AnimatePresence>
-                                {sortedTableColumns.map((colId) => {
-                                    const type = columnTypes[colId] || "event";
-                                    const columnData = schedule[colId];
-                                    const cellData = columnData?.[row];
 
-                                    return (
-                                        <motion.td
-                                            key={`${colId}-${row}`}
-                                            className={`${styles.dataCell} ${styles.regularDataCell}`}
-                                            initial={{
-                                                opacity: 0,
-                                                width: 0,
-                                                minWidth: 0,
-                                                maxWidth: 0,
-                                            }}
-                                            animate={{
-                                                opacity: 1,
-                                                width: "var(--table-daily-col-width)",
-                                                minWidth: "var(--table-daily-col-width)",
-                                                maxWidth: "var(--table-daily-col-width)",
-                                                transition: { duration: 0.2 },
-                                            }}
-                                            exit={{
-                                                opacity: 0,
-                                                width: 0,
-                                                minWidth: 0,
-                                                maxWidth: 0,
-                                                transition: {
-                                                    opacity: { duration: 0.1 },
-                                                    default: { duration: 0.2 },
-                                                },
-                                            }}
-                                            style={{ overflow: "hidden", whiteSpace: "nowrap" }}
+                            {sortedTableColumns.map((colId, index) => {
+                                const type = columnTypes[colId] || "event";
+                                const columnData = schedule[colId];
+                                const cellData = columnData?.[row];
+
+                                return (
+                                    <td
+                                        key={`${colId}-${row}`}
+                                        className={`${styles.dataCell} ${styles.regularDataCell}`}
+                                    >
+                                        <motion.div
+                                            style={{ width: "100%", height: "100%" }}
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            transition={{ duration: 0.3, delay: index * 0.02 }}
                                         >
-                                            <div className={styles.cellContent}>
-                                                {type === "event" ? (
-                                                    <PreviewEventCell
-                                                        cell={cellData}
-                                                        columnId={colId}
-                                                    />
-                                                ) : (
-                                                    <PreviewTeacherCell
-                                                        cell={cellData}
-                                                        columnId={colId}
-                                                        type={type}
-                                                        appType={appType}
-                                                    />
-                                                )}
-                                            </div>
-                                        </motion.td>
-                                    );
-                                })}
-                            </AnimatePresence>
+                                            {type === "event" ? (
+                                                <PreviewEventCell cell={cellData} columnId={colId} />
+                                            ) : (
+                                                <PreviewTeacherCell
+                                                    cell={cellData}
+                                                    columnId={colId}
+                                                    type={type}
+                                                    appType={appType}
+                                                />
+                                            )}
+                                        </motion.div>
+                                    </td>
+                                );
+                            })}
                         </tr>
                     ))}
                 </tbody>

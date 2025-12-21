@@ -1,5 +1,7 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useMemo } from "react";
+import { motion } from "motion/react";
 import styles from "./DailyTable.module.css";
+import { TableRows } from "@/models/constant/table";
 import EmptyTable from "@/components/empty/EmptyTable/EmptyTable";
 import { DailySchedule, ColumnType } from "@/models/types/dailySchedule";
 import { useSortColumns } from "./useSortColumns";
@@ -8,10 +10,77 @@ import DailyTeacherHeader from "../DailyTeacherHeader/DailyTeacherHeader";
 import DailyEventHeader from "../DailyEventHeader/DailyEventHeader";
 import DailyTeacherCell from "../DailyTeacherCell/DailyTeacherCell";
 import DailyEventCell from "../DailyEventCell/DailyEventCell";
+import { useColumnAnimation } from "./useColumnAnimation";
 import { useMainContext } from "@/context/MainContext";
 import { HOURS_IN_DAY } from "@/utils/time";
-import { useDailyTableContext } from "@/context/DailyTableContext";
-import { AnimatePresence, motion } from "motion/react";
+
+// --- Wrapper Components ---
+
+type AnimatedHeaderWrapperProps = {
+    colIndex: number;
+    width: number | undefined;
+    headerColorClass: string;
+    children: React.ReactNode;
+    id?: string;
+};
+
+const AnimatedHeaderWrapper: React.FC<AnimatedHeaderWrapperProps> = React.memo(({ colIndex, width, headerColorClass, children, id }) => {
+    const isAnimating = width !== undefined;
+    return (
+        <th
+            id={id}
+            className={`${styles.headerCell} ${styles.regularHeaderCell}`}
+            style={isAnimating ? {
+                width: `${width}px`,
+                minWidth: `${width}px`,
+                maxWidth: `${width}px`,
+                overflow: "hidden",
+                padding: 0
+            } : undefined}
+        >
+            <motion.div
+                className={`${styles.headerInner} ${headerColorClass}`}
+                style={isAnimating ? { width: `${width}px` } : undefined}
+            >
+                {children}
+            </motion.div>
+        </th>
+    );
+});
+
+type AnimatedCellWrapperProps = {
+    colIndex: number;
+    width: number | undefined;
+    children: React.ReactNode;
+};
+
+const AnimatedCellWrapper: React.FC<AnimatedCellWrapperProps> = React.memo(({ colIndex, width, children }) => {
+    const isAnimating = width !== undefined;
+    return (
+        <td
+            className={`${styles.dataCell} ${styles.regularDataCell}`}
+            style={isAnimating ? {
+                width: `${width}px`,
+                minWidth: `${width}px`,
+                maxWidth: `${width}px`,
+                overflow: "hidden",
+                padding: 0
+            } : undefined}
+        >
+            <motion.div
+                className={styles.cellContent}
+                initial={{ opacity: 0.4 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3, delay: colIndex * 0.02 }}
+            >
+                {children}
+            </motion.div>
+        </td>
+    );
+});
+
+
+// --- Main Properties ---
 
 type DailyTableProps = {
     mainDailyTable: DailySchedule;
@@ -25,16 +94,15 @@ const DailyTable: React.FC<DailyTableProps> = ({
     onTeacherClick,
 }) => {
     const { settings } = useMainContext();
-    const { deleteColumn } = useDailyTableContext();
     const hoursNum = settings?.hoursNum || HOURS_IN_DAY;
 
     const schedule = mainDailyTable[selectedDate];
     const tableColumns = schedule ? Object.keys(schedule) : [];
     const sortedTableColumns = useSortColumns(schedule, mainDailyTable, selectedDate, tableColumns);
 
-    const prevSortedColumnsRef = useRef<string[]>([]);
+    const prevSortedColumnsRef = React.useRef<string[]>([]);
 
-    useEffect(() => {
+    React.useEffect(() => {
         // Compare current columns with previous to find the new one
         if (prevSortedColumnsRef.current.length < sortedTableColumns.length) {
             const newColumns = sortedTableColumns.filter(colId => !prevSortedColumnsRef.current.includes(colId));
@@ -58,6 +126,9 @@ const DailyTable: React.FC<DailyTableProps> = ({
     }, [sortedTableColumns]);
 
     const rows = Array.from({ length: hoursNum }, (_, i) => i + 1);
+
+    // Use Custom Hook for Animation
+    const { animatingWidths, handleColumnAnimation } = useColumnAnimation(sortedTableColumns, selectedDate);
 
     // Calculate column types once
     const columnTypes = useMemo(() => {
@@ -107,37 +178,33 @@ const DailyTable: React.FC<DailyTableProps> = ({
                             <div className={`${styles.headerInner} ${styles.headerGray}`}></div>
                         </th>
 
-                        <AnimatePresence>
-                            {sortedTableColumns.map((colId) => {
-                                const type = columnTypes[colId] || "event";
-                                const headerColorClass = getColorClass(type);
+                        {sortedTableColumns.map((colId, colIndex) => {
+                            const type = columnTypes[colId] || "event";
+                            const headerColorClass = getColorClass(type);
+                            const width = animatingWidths[colId];
+                            const isAnimating = width !== undefined;
 
-                                return (
-                                    <motion.th
-                                        key={colId}
-                                        id={`col-${colId}`}
-                                        className={`${styles.headerCell} ${styles.regularHeaderCell}`}
-                                        initial={{ opacity: 0, width: 0, minWidth: 0, maxWidth: 0 }}
-                                        animate={{ opacity: 1, width: "var(--table-daily-col-width)", minWidth: "var(--table-daily-col-width)", maxWidth: "var(--table-daily-col-width)", transition: { duration: 0.2 } }}
-                                        exit={{ opacity: 0, width: 0, minWidth: 0, maxWidth: 0, transition: { opacity: { duration: 0.1 }, default: { duration: 0.2 } } }}
-                                        style={{ overflow: "hidden", whiteSpace: "nowrap" }}
-                                    >
-                                        <div className={`${styles.headerInner} ${headerColorClass}`} style={{ width: "100%" }}>
-                                            {type === "event" ? (
-                                                <DailyEventHeader columnId={colId} type={type} onDelete={(id) => deleteColumn(id)} />
-                                            ) : (
-                                                <DailyTeacherHeader
-                                                    columnId={colId}
-                                                    type={type}
-                                                    onTeacherClick={onTeacherClick}
-                                                    onDelete={(id) => deleteColumn(id)}
-                                                />
-                                            )}
-                                        </div>
-                                    </motion.th>
-                                );
-                            })}
-                        </AnimatePresence>
+                            return (
+                                <AnimatedHeaderWrapper
+                                    key={colId}
+                                    id={`col-${colId}`}
+                                    colIndex={colIndex}
+                                    width={width}
+                                    headerColorClass={headerColorClass}
+                                >
+                                    {type === "event" ? (
+                                        <DailyEventHeader columnId={colId} type={type} onDelete={isAnimating ? undefined : (id) => handleColumnAnimation(id, "remove")} />
+                                    ) : (
+                                        <DailyTeacherHeader
+                                            columnId={colId}
+                                            type={type}
+                                            onTeacherClick={onTeacherClick}
+                                            onDelete={isAnimating ? undefined : (id) => handleColumnAnimation(id, "remove")}
+                                        />
+                                    )}
+                                </AnimatedHeaderWrapper>
+                            );
+                        })}
                     </tr>
                 </thead>
                 <tbody>
@@ -151,38 +218,32 @@ const DailyTable: React.FC<DailyTableProps> = ({
                                 </div>
                             </td>
 
-                            <AnimatePresence>
-                                {sortedTableColumns.map((colId) => {
-                                    const type = columnTypes[colId] || "event";
-                                    const columnData = schedule[colId];
-                                    if (!columnData) return null;
-                                    const cellData = columnData[row];
+                            {sortedTableColumns.map((colId, colIndex) => {
+                                const type = columnTypes[colId] || "event";
+                                const columnData = schedule[colId];
+                                if (!columnData) return null;
+                                const cellData = columnData[row]; // row is the hour index
+                                const width = animatingWidths[colId];
 
-                                    return (
-                                        <motion.td
-                                            key={`${colId}-${row}`}
-                                            className={`${styles.dataCell} ${styles.regularDataCell}`}
-                                            initial={{ opacity: 0, width: 0, minWidth: 0, maxWidth: 0 }}
-                                            animate={{ opacity: 1, width: "var(--table-daily-col-width)", minWidth: "var(--table-daily-col-width)", maxWidth: "var(--table-daily-col-width)", transition: { duration: 0.2 } }}
-                                            exit={{ opacity: 0, width: 0, minWidth: 0, maxWidth: 0, transition: { opacity: { duration: 0.1 }, default: { duration: 0.2 } } }}
-                                            style={{ overflow: "hidden", whiteSpace: "nowrap" }}
-                                        >
-                                            <div className={styles.cellContent}>
-                                                {type === "event" ? (
-                                                    <DailyEventCell cell={cellData} columnId={colId} />
-                                                ) : (
-                                                    <DailyTeacherCell
-                                                        key={`${colId}-${row}-${cellData?.subTeacher?.id || cellData?.class?.id || 'empty'}`}
-                                                        cell={cellData}
-                                                        columnId={colId}
-                                                        type={type}
-                                                    />
-                                                )}
-                                            </div>
-                                        </motion.td>
-                                    );
-                                })}
-                            </AnimatePresence>
+                                return (
+                                    <AnimatedCellWrapper
+                                        key={`${colId}-${row}`}
+                                        colIndex={colIndex}
+                                        width={width}
+                                    >
+                                        {type === "event" ? (
+                                            <DailyEventCell cell={cellData} columnId={colId} />
+                                        ) : (
+                                            <DailyTeacherCell
+                                                key={`${colId}-${row}-${cellData?.subTeacher?.id || cellData?.class?.id || 'empty'}`}
+                                                cell={cellData}
+                                                columnId={colId}
+                                                type={type}
+                                            />
+                                        )}
+                                    </AnimatedCellWrapper>
+                                );
+                            })}
                         </tr>
                     ))}
                 </tbody>

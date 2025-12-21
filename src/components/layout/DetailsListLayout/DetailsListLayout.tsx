@@ -18,7 +18,7 @@ const DetailsListLayout = <T,>({
     headerAction,
     children,
 }: DetailsListLayoutProps<T>) => {
-    const listRef = useRef<HTMLUListElement>(null);
+    const listRef = useRef<HTMLElement>(null);
     const [scrollbarWidth, setScrollbarWidth] = useState(0);
 
     useEffect(() => {
@@ -57,7 +57,7 @@ const DetailsListLayout = <T,>({
             <div className={styles.addRowWrapper}>
                 {headerAction}
             </div>
-            <ul className={styles.list} ref={listRef}>
+            <section className={styles.list} ref={listRef}>
                 {details === undefined ? (
                     <ListRowLoading />
                 ) : details?.length === 0 ? (
@@ -65,7 +65,7 @@ const DetailsListLayout = <T,>({
                 ) : (
                     children
                 )}
-            </ul>
+            </section>
         </main>
     );
 };

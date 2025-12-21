@@ -8,7 +8,6 @@
     padding: var(--list-details-row-padding);
     box-sizing: border-box;
     border-radius: var(--border-radius-cell);
-    list-style: none;
 }
 
 .nameCell {
