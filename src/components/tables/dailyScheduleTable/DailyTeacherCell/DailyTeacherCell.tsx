@@ -162,32 +162,18 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
                 <div className={styles.innerCellContent}>
                     <Tooltip
                         content={
-                            cell?.scheduleItems && cell.scheduleItems.length > 1
-                                ? cell.scheduleItems.map((item) => item.class.name).join(", ") +
-                                " | " +
-                                cell.scheduleItems[0].subject.name
-                                : classData.name +
-                                (!classData?.activity ? " | " + subjectData.name : "")
+                            classData.name +
+                            (!classData?.activity ? " | " + subjectData.name : "")
                         }
                         on={["click", "scroll"]}
                     >
-                        {cell?.scheduleItems && cell.scheduleItems.length > 1 ? (
-                            <div
-                                className={`${styles.classAndSubject} ${cell.scheduleItems[0].class.activity ? styles.activityText : ""
-                                    }`}
-                            >
-                                {cell.scheduleItems.map((item) => item.class.name).join(", ")}
-                                {" | " + cell.scheduleItems[0].subject.name}
-                            </div>
-                        ) : (
-                            <div
-                                className={`${styles.classAndSubject} ${classData.activity ? styles.activityText : ""
-                                    }`}
-                            >
-                                {classData.name}
-                                {!classData?.activity && " | " + subjectData.name}
-                            </div>
-                        )}
+                        <div
+                            className={`${styles.classAndSubject} ${classData.activity ? styles.activityText : ""
+                                }`}
+                        >
+                            {classData.name}
+                            {!classData?.activity && " | " + subjectData.name}
+                        </div>
                     </Tooltip>
                     <div className={styles.teacherSelect}>
                         <DynamicInputGroupSelect
@@ -201,7 +187,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
                             hasBorder
                             backgroundColor="transparent"
                             onCreate={(value: string) => handleTeacherChange("create", value)}
-                            menuWidth="220px"
+                            menuWidth="210px"
                             color={
                                 classData?.activity ? "var(--disabled-text-color)" : undefined
                             }

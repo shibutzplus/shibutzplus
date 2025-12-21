@@ -22,7 +22,6 @@ import { errorToast } from "@/lib/toast";
 import { pushSyncUpdate } from "@/services/syncService";
 import { UPDATE_DETAIL } from "@/models/constant/sync";
 import { removeSessionStorage, SESSION_KEYS } from "@/lib/sessionStorage";
-import { sortByHebrewName } from "@/utils/sort";
 
 interface MainContextType {
     school: SchoolType | undefined;
@@ -228,9 +227,8 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
             setTeachers((prev) => {
                 if (!response.data) return prev;
                 const updatedTeachers = prev ? [...prev, response.data] : [response.data];
-                const sortedTeachers = sortByHebrewName(updatedTeachers);
-                setStorageTeachers(sortedTeachers);
-                return sortedTeachers;
+                setStorageTeachers(updatedTeachers);
+                return updatedTeachers;
             });
             removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
             void pushSyncUpdate(UPDATE_DETAIL);
