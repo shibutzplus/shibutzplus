@@ -45,15 +45,8 @@ const PreviewTeacherCell: React.FC<PreviewTeacherCellProps> = ({ cell, appType }
         <div className={styles.cellContent}>
             <div className={styles.innerCellContent}>
                 <span className={classData?.activity ? styles.activityText : ""}>
-                    {cell?.scheduleItems && cell.scheduleItems.length > 1
-                        ? cell.scheduleItems.map((item) => item.class.name).join(", ")
-                        : classData && classData.name}
-                    {subjectData &&
-                        !classData?.activity &&
-                        " | " +
-                        (cell?.scheduleItems && cell.scheduleItems.length > 1
-                            ? cell.scheduleItems[0].subject.name
-                            : subjectData.name)}
+                    {classData && classData.name}
+                    {subjectData && !classData?.activity && " | " + subjectData.name}
                 </span>
                 {subTeacherData ? (
                     <div className={styles.subTeacherName}>{subTeacherData.name}</div>

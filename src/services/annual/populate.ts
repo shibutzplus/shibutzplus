@@ -24,15 +24,9 @@ export const populateAllClassesSchedule = (
                 teachers: [],
                 subjects: [],
                 classId: classId,
-                classes: [classId],
             };
         } else if (!newSchedule[classId][dayName][entry.hour].classId) {
             newSchedule[classId][dayName][entry.hour].classId = classId;
-            if (!newSchedule[classId][dayName][entry.hour].classes) {
-                newSchedule[classId][dayName][entry.hour].classes = [classId];
-            } else if (!newSchedule[classId][dayName][entry.hour].classes.includes(classId)) {
-                newSchedule[classId][dayName][entry.hour].classes.push(classId);
-            }
         }
 
         const cell = newSchedule[classId][dayName][entry.hour];
@@ -70,7 +64,6 @@ export const populateAllTeachersSchedule = (
                 teachers: [],
                 subjects: [],
                 classId: entry.class?.id,
-                classes: entry.class?.id ? [entry.class.id] : [],
             };
         } else if (!newSchedule[teacherId][dayName][entry.hour].classId) {
             newSchedule[teacherId][dayName][entry.hour].classId = entry.class?.id;
@@ -83,12 +76,6 @@ export const populateAllTeachersSchedule = (
         }
         if (entry.subject?.id && !cell.subjects.includes(entry.subject.id)) {
             cell.subjects.push(entry.subject.id);
-        }
-        if (entry.class?.id) {
-            if (!cell.classes) cell.classes = [];
-            if (!cell.classes.includes(entry.class.id)) {
-                cell.classes.push(entry.class.id);
-            }
         }
     });
 

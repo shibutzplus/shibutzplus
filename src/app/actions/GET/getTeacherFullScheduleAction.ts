@@ -36,7 +36,28 @@ const getTeacherFullScheduleAction = async (
                 orderBy: schema.dailySchedule.hour,
             });
 
-            const results: DailyScheduleType[] = dailySchedules
+            // Group by hour to handle conflicts
+            const schedulesByHour = new Map<number, any>();
+
+            dailySchedules.forEach((schedule) => {
+                const hour = schedule.hour;
+                const existing = schedulesByHour.get(hour);
+
+                if (!existing) {
+                    // No existing schedule for this hour, add it
+                    schedulesByHour.set(hour, schedule);
+                } else {
+                    // There's a conflict - prioritize subTeacher over issueTeacher
+                    if (schedule.subTeacherId === teacherId) {
+                        // Current schedule has teacher as subTeacher, use it
+                        schedulesByHour.set(hour, schedule);
+                    }
+                    // If current schedule only has teacher as issueTeacher and existing already exists,
+                    // keep the existing one (which could be subTeacher or was added first)
+                }
+            });
+
+            const results: DailyScheduleType[] = Array.from(schedulesByHour.values())
                 .map((schedule) => ({
                     id: schedule.id,
                     date: new Date(schedule.date),
