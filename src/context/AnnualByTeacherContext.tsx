@@ -182,7 +182,7 @@ export const AnnualByTeacherProvider: React.FC<{ children: React.ReactNode }> = 
         newElementObj?: any,
     ) => {
         if (!school?.id || !selectedTeacherId) return;
-        let newSchedule = { ...schedule };
+        const newSchedule = { ...schedule };
 
         setNewScheduleTemplate(newSchedule, selectedTeacherId, day, hour, selectedTeacherId);
 

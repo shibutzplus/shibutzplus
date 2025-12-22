@@ -17,7 +17,7 @@ export const getStorage = <T>(key: string) => {
     if (!storage) return null;
     try {
         return JSON.parse(storage) as T;
-    } catch (e) {
+    } catch {
         return null;
     }
 };
@@ -28,7 +28,7 @@ export const setStorage = <T>(key: string, value: T) => {
     try {
         localStorage.setItem(key, JSON.stringify(value));
         return true;
-    } catch (error) {
+    } catch {
         return false;
     }
 };

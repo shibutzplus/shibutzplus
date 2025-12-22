@@ -13,7 +13,7 @@ import Preloader from "@/components/ui/Preloader/Preloader";
 import NotPublished from "@/components/empty/NotPublished/NotPublished";
 
 const TeacherPortalPage: NextPage = () => {
-    const { selectedDate, teacher, setTeacherAndSchool, datesOptions, isDatesLoading, settings } = usePortalContext();
+    const { selectedDate, teacher, setTeacherAndSchool, datesOptions, settings } = usePortalContext();
     const { fetchTeacherScheduleDate } = useTeacherTableContext();
 
     const params = useParams();
@@ -52,7 +52,7 @@ const TeacherPortalPage: NextPage = () => {
 
     const isPublished = datesOptions.some((d) => d.value === selectedDate);
     if (!isPublished) {
-        return <NotPublished date={selectedDate} text="המערכת טרם פורסמה" />;
+        return <NotPublished date={selectedDate} text="המערכת לא פורסמה" />;
     }
 
     return (

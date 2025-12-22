@@ -1,4 +1,4 @@
-import { db, schema } from './index';
+import { schema } from './index';
 import { loadEnv } from './load-env';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
@@ -13,15 +13,15 @@ import { TeacherRole } from '@/models/types/teachers';
 async function seed() {
   // Load environment variables
   loadEnv();
-  
+
   console.log('Seeding database...');
-  
+
   // Create a fresh database connection
   const DATABASE_URL = process.env.DATABASE_URL;
   if (!DATABASE_URL) {
     throw new Error('DATABASE_URL environment variable is not set');
   }
-  
+
   // Create a Neon connection
   const sql = neon(DATABASE_URL);
   const db = drizzle(sql, { schema });
@@ -32,22 +32,22 @@ async function seed() {
 
     // Insert schools
     const schoolIds = await seedSchools(db);
-    
+
     // Insert users
     const userIds = await seedUsers(db, schoolIds);
-    
+
     // Insert teachers
     const teacherIds = await seedTeachers(db, userIds, schoolIds);
-    
+
     // Insert classes
     const classIds = await seedClasses(db, schoolIds);
-    
+
     // Insert subjects
     const subjectIds = await seedSubjects(db, schoolIds);
-    
+
     // Insert annual schedule
     await seedAnnualSchedule(db, schoolIds, classIds, teacherIds, subjectIds);
-    
+
     console.log('Database seeded successfully!');
   } catch (error) {
     console.error('Seeding failed:', error);
@@ -60,7 +60,7 @@ async function seed() {
  */
 async function clearExistingData(db: any) {
   console.log('Clearing existing data...');
-  
+
   try {
     // Check if tables exist before deleting
     const tableExists = async (tableName: string) => {
@@ -77,7 +77,7 @@ async function clearExistingData(db: any) {
         return false;
       }
     };
-    
+
     // Delete in reverse order of dependencies
     if (await tableExists('daily_schedule')) await db.delete(schema.dailySchedule);
     if (await tableExists('annual_schedule')) await db.delete(schema.annualSchedule);
@@ -86,7 +86,7 @@ async function clearExistingData(db: any) {
     if (await tableExists('teachers')) await db.delete(schema.teachers);
     if (await tableExists('users')) await db.delete(schema.users);
     if (await tableExists('schools')) await db.delete(schema.schools);
-    
+
     console.log('Existing data cleared successfully');
   } catch (error) {
     console.warn('Error while clearing data:', error);
@@ -99,7 +99,7 @@ async function clearExistingData(db: any) {
  */
 async function seedSchools(db: any) {
   console.log('Seeding schools...');
-  
+
   const schools = [
     {
       name: 'Elementary School 1',
@@ -122,10 +122,10 @@ async function seedSchools(db: any) {
       status: 'onboarding' as SchoolStatus,
     },
   ];
-  
+
   const result = await db.insert(schema.schools).values(schools).returning({ id: schema.schools.id });
   console.log(`${result.length} schools inserted`);
-  
+
   return result.map((school: { id: string }) => school.id);
 }
 
@@ -134,7 +134,7 @@ async function seedSchools(db: any) {
  */
 async function seedUsers(db: any, schoolIds: string[]) {
   console.log('Seeding users...');
-  
+
   const users = [
     {
       name: 'Admin User',
@@ -169,10 +169,10 @@ async function seedUsers(db: any, schoolIds: string[]) {
       schoolId: schoolIds[2],
     },
   ];
-  
+
   const result = await db.insert(schema.users).values(users).returning({ id: schema.users.id });
   console.log(`${result.length} users inserted`);
-  
+
   return result.map((user: { id: string }) => user.id);
 }
 
@@ -181,17 +181,17 @@ async function seedUsers(db: any, schoolIds: string[]) {
  */
 async function seedTeachers(db: any, userIds: string[], schoolIds: string[]) {
   console.log('Seeding teachers...');
-  
+
   // Get user information to use for teacher names
   const users = await db.select().from(schema.users).where(
     sql`id IN (${sql.join(userIds, sql`, `)})`
   );
-  
+
   const userMap = users.reduce((map: any, user: any) => {
     map[user.id] = user;
     return map;
   }, {});
-  
+
   const teachers = [
     {
       role: 'regular' as TeacherRole,
@@ -212,10 +212,10 @@ async function seedTeachers(db: any, userIds: string[], schoolIds: string[]) {
       name: userMap[userIds[3]]?.name || 'Michael Brown',
     },
   ];
-  
+
   const result = await db.insert(schema.teachers).values(teachers).returning({ id: schema.teachers.id });
   console.log(`${result.length} teachers inserted`);
-  
+
   return result.map((teacher: { id: string }) => teacher.id);
 }
 
@@ -224,7 +224,7 @@ async function seedTeachers(db: any, userIds: string[], schoolIds: string[]) {
  */
 async function seedClasses(db: any, schoolIds: string[]) {
   console.log('Seeding classes...');
-  
+
   const classes = [
     {
       name: '1A',
@@ -247,10 +247,10 @@ async function seedClasses(db: any, schoolIds: string[]) {
       schoolId: schoolIds[0],
     },
   ];
-  
+
   const result = await db.insert(schema.classes).values(classes).returning({ id: schema.classes.id });
   console.log(`${result.length} classes inserted`);
-  
+
   return result.map((cls: { id: string }) => cls.id);
 }
 
@@ -259,7 +259,7 @@ async function seedClasses(db: any, schoolIds: string[]) {
  */
 async function seedSubjects(db: any, schoolIds: string[]) {
   console.log('Seeding subjects...');
-  
+
   const subjects = [
     { name: 'Mathematics', schoolId: schoolIds[0] },
     { name: 'Science', schoolId: schoolIds[0] },
@@ -270,10 +270,10 @@ async function seedSubjects(db: any, schoolIds: string[]) {
     { name: 'Music', schoolId: schoolIds[2] },
     { name: 'Computer Science', schoolId: schoolIds[2] },
   ];
-  
+
   const result = await db.insert(schema.subjects).values(subjects).returning({ id: schema.subjects.id });
   console.log(`${result.length} subjects inserted`);
-  
+
   return result.map((subject: { id: string }) => subject.id);
 }
 
@@ -284,7 +284,7 @@ async function seedSubjects(db: any, schoolIds: string[]) {
  */
 async function seedAnnualSchedule(db: any, schoolIds: string[], classIds: string[], teacherIds: string[], subjectIds: string[]) {
   console.log('Seeding annual schedule...');
-  
+
   // Create schedules with proper day values (1-7 for days of week) and position field
   const schedules = [
     {
@@ -312,10 +312,10 @@ async function seedAnnualSchedule(db: any, schoolIds: string[], classIds: string
       hour: 3,
     },
   ];
-  
+
   const result = await db.insert(schema.annualSchedule).values(schedules).returning({ id: schema.annualSchedule.id });
   console.log(`${result.length} annual schedule entries inserted`);
-  
+
   return result.map((schedule: { id: string }) => schedule.id);
 }
 

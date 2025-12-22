@@ -14,7 +14,7 @@ export const signInWithGoogle = async () => {
         } else {
             return { success: true, message: msg.auth.login.success };
         }
-    } catch (error) {
+    } catch {
         return { success: false, message: msg.common.serverError };
     }
 };

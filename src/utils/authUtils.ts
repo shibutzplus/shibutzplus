@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import { ActionResponse } from "@/models/types/actions";
 import messages from "@/resources/messages";
 import { getExpireTime } from "./time";

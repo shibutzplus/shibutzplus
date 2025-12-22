@@ -13,11 +13,11 @@ type SubjectRowProps = {
 };
 
 const SubjectRow: React.FC<SubjectRowProps> = ({ subject }) => {
-    const { subjects, deleteSubject, school, updateSubject } = useMainContext();
+    const { deleteSubject, school, updateSubject } = useMainContext();
     const { handleOpenPopup } = useDeletePopup();
 
     const { handleSubmitDelete } = useSubmit(
-        () => {},
+        () => { },
         messages.subjects.deleteSuccess,
         messages.subjects.deleteError,
         messages.subjects.invalid,

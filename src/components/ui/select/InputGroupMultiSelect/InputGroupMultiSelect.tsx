@@ -64,13 +64,10 @@ const InputGroupMultiSelect: React.FC<InputGroupMultiSelectProps> = ({
     const [isMounted, setIsMounted] = useState(false);
     const selectInstanceId = useId(); // for SSR consistency
 
-    // Keep local grouped options in sync with incoming prop, and update selectedOptions only if value or groupedOptions actually changed
     useEffect(() => {
-        let changed = false;
         // Only update groupedOptions if different
         setGroupedOptions((prev) => {
             if (prev !== groupedInitial) {
-                changed = true;
                 return groupedInitial;
             }
             return prev;

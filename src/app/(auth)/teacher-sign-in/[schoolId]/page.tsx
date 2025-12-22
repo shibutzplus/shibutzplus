@@ -69,7 +69,7 @@ export default function TeacherSignInPage() {
             if (resp.success && resp.data) {
                 setSchoolName(resp.data.name);
             }
-        } catch (error) {
+        } catch {
             //console.error("Error fetching school:", error);
         }
     };

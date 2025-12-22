@@ -10,11 +10,10 @@ import styles from "../DailyTable/DailyTable.module.css";
 
 type DailyEventHeaderProps = {
     columnId: string;
-    type: ColumnType;
     onDelete?: (colId: string) => void;
 };
 
-const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, type, onDelete }) => {
+const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete }) => {
     const { populateEventColumn, deleteColumn, mainDailyTable, selectedDate } =
         useDailyTableContext();
 

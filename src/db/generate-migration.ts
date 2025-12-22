@@ -4,13 +4,14 @@ import { loadEnv } from './load-env';
 export async function generateMigration() {
   // Load environment variables from .env.local
   loadEnv();
-  
+
   console.log('Generating migration for schema changes...');
-  
+
   try {
     // Use the drizzle-kit CLI directly
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { exec } = require('child_process');
-    
+
     exec('npx drizzle-kit generate:pg --schema=./src/db/schema/index.ts --out=./drizzle', (error: Error | null, stdout: string, stderr: string) => {
       if (error) {
         console.error(`Error: ${error.message}`);

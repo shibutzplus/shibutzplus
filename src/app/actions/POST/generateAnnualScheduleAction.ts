@@ -173,7 +173,7 @@ export async function generateAnnualScheduleAction(
                         }
 
                         if ((!matchedSubjectId || !matchedClassId) && saveToDb) {
-                            let reason = [];
+                            const reason = [];
                             if (!matchedSubjectId) reason.push(`Subject '${subjectPart}' not found`);
                             if (!matchedClassId) reason.push(`Class '${classPart}' not found`);
 

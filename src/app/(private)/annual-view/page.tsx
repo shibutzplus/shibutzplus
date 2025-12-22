@@ -13,8 +13,7 @@ const AnnualViewPage: NextPage = () => {
         schedule,
         selectedClassId,
         selectedTeacherId,
-        setIsLoading,
-        isLoading
+        setIsLoading
     } = useAnnualView();
 
     const hasSelection = selectedClassId || selectedTeacherId;

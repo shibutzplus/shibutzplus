@@ -9,7 +9,7 @@ import { useMobileSelectScroll } from "@/hooks/scroll/useMobileSelectScroll";
 import AddToSelectBtn from "../../buttons/AddToSelectBtn/AddToSelectBtn";
 import styles from "./InputGroupSelect.module.css";
 import SelectLayout from "../SelectLayout/SelectLayout";
-import { InputBackgroundColor, TabColor } from "@/style/root";
+import { InputBackgroundColor, TabColor, InputColor } from "@/style/root";
 
 /**
  * DailyTeacherCell - Sub Teacher
@@ -51,19 +51,20 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     menuWidth,
     color,
 }) => {
+    const [inputValue, setInputValue] = useState("");
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
+
+    const allOptions = useMemo(() => options.flatMap((group) => group.options), [options]);
+
     // Derived state instead of useState
     const selectedOption = useMemo(() => {
         if (value) {
-            const allOptions = options.flatMap((group) => group.options);
             const found = allOptions.find((opt) => opt.value === value);
             return found || { value, label: value };
         }
         return null;
-    }, [value, options]);
-
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
-    const [inputValue, setInputValue] = useState("");
+    }, [value, allOptions]);
 
     // Initialize collapsed state per group based on GroupOption.collapsed
     useEffect(() => {
@@ -76,7 +77,6 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
                 if (prev[g.label] !== newVal) hasChanged = true;
             });
             // Simple optimization to avoid update if keys/values are identical
-            // This is a naive check; if keys count differs, we should update.
             const prevKeys = Object.keys(prev);
             const nextKeys = Object.keys(next);
             if (!hasChanged && prevKeys.length === nextKeys.length) return prev;
@@ -85,7 +85,6 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     }, [options]);
 
     const handleOnCreate = async (inputValue: string) => {
-        const allOptions = options.flatMap((group) => group.options);
         const existsExact = allOptions.some(
             (opt) => opt.label.trim().toLowerCase() === inputValue.trim().toLowerCase(),
         );
@@ -100,8 +99,8 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
         onChange(option ? option.value : "");
     };
 
-    const selectRef = useRef<any>(null);
-    const { selectRef: mobileScrollRef, containerRef, handleMenuOpen } = useMobileSelectScroll();
+    // removed unused selectRef
+    const { selectRef: mobileScrollRef, handleMenuOpen } = useMobileSelectScroll();
 
     const baseStyles = customStyles(error || "", hasBorder, true, backgroundColor, color);
     const stylesOverride: StylesConfig<SelectOption, false, GroupOption> = {
@@ -143,6 +142,9 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
         singleValue: (prov: any) => ({
             ...prov,
             fontWeight: "bold",
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
         }),
     };
 
@@ -179,11 +181,57 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
         );
     };
 
+    const CustomSingleValue = (props: any) => {
+        const [isHovered, setIsHovered] = useState(false);
+        return (
+            <components.SingleValue {...props}>
+                {props.children}
+                {isClearable && selectedOption && (
+                    <div
+                        onMouseDown={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            handleChange(null);
+                        }}
+                        onTouchEnd={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            handleChange(null);
+                        }}
+                        onMouseEnter={() => setIsHovered(true)}
+                        onMouseLeave={() => setIsHovered(false)}
+                        style={{
+                            marginRight: "9px",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            color: isHovered ? "red" : InputColor,
+                            padding: "0 6px",
+                            zIndex: 5,
+                            position: "relative",
+                            pointerEvents: "auto",
+                        }}
+                    >
+                        <svg
+                            height="14"
+                            width="14"
+                            viewBox="0 0 20 20"
+                            aria-hidden="true"
+                            focusable="false"
+                            style={{ fill: "currentColor" }}
+                        >
+                            <path d="M14.348 14.849c-0.469 0.469-1.229 0.469-1.697 0l-2.651-3.030-2.651 3.029c-0.469 0.469-1.229 0.469-1.697 0-0.469-0.469-0.469-1.229 0-1.697l2.758-3.15-2.759-3.152c-0.469-0.469-0.469-1.228 0-1.697s1.228-0.469 1.697 0l2.652 3.031 2.651-3.031c0.469-0.469 1.228-0.469 1.697 0s0.469 1.229 0 1.697l-2.758 3.152 2.758 3.15c0.469 0.469 0.469 1.229 0 1.698z"></path>
+                        </svg>
+                    </div>
+                )}
+            </components.SingleValue>
+        );
+    };
+
     return (
         <SelectLayout resolvedId={id || ""} error={error} label={label}>
             <Select<SelectOption, false, GroupOption>
                 ref={(ref) => {
-                    selectRef.current = ref;
                     mobileScrollRef.current = ref;
                 }}
                 inputId={id}
@@ -202,7 +250,11 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
                 }}
                 onMenuClose={() => setIsMenuOpen(false)}
                 onInputChange={(val) => setInputValue(val)}
-                components={{ Group }}
+                components={{
+                    Group,
+                    SingleValue: CustomSingleValue,
+                    ClearIndicator: () => null,
+                }}
                 noOptionsMessage={({ inputValue }) =>
                     isAllowAddNew && inputValue.trim() !== "" ? (
                         <AddToSelectBtn
@@ -220,7 +272,6 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
                     const inputValue = (e.target as HTMLInputElement).value.trim();
                     if (!inputValue) return;
 
-                    const allOptions = options.flatMap((group) => group.options);
                     const hasExact = allOptions.some(
                         (opt) => opt.label.trim().toLowerCase() === inputValue.toLowerCase(),
                     );

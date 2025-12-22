@@ -34,7 +34,7 @@ const DailyCol: React.FC<DailyColProps> = ({ columnId, column, onTeacherClick })
 
     return columnType === "event" ? (
         <div className={styles.dailyColumn} data-column-id={columnId}>
-            <DailyEventHeader columnId={columnId} type={columnType} />
+            <DailyEventHeader columnId={columnId} />
             <div className={`${styles.rows} ${animClass}`}>
                 {colFirstObj
                     ? Object.entries(displayColumn).map(([hour, cell]) => (
@@ -48,7 +48,6 @@ const DailyCol: React.FC<DailyColProps> = ({ columnId, column, onTeacherClick })
             <DailyTeacherHeader
                 columnId={columnId}
                 type={columnType}
-                onTeacherClick={onTeacherClick}
             />
             <div className={`${styles.rows} ${animClass}`}>
                 {colFirstObj

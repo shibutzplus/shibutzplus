@@ -42,7 +42,7 @@ export const createNewSelectOption_btnText = (inputValue: string, template?: str
 // NOT IN USE
 export const convertContentToHTML = (text: string) => {
     const lines = text.split("\n");
-    let html: string[] = [];
+    const html: string[] = [];
     let currentList: string[] = [];
     let isInList = false;
 

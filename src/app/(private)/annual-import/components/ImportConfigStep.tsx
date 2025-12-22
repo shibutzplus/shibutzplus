@@ -26,7 +26,6 @@ const separatorOptions = [
 interface ImportConfigStepProps {
     title: string;
     // Step configuration
-    step: number;
     config: CsvAnalysisConfig;
     onConfigChange: (key: keyof CsvAnalysisConfig, value: any) => void;
 
@@ -52,7 +51,6 @@ interface ImportConfigStepProps {
 
 const ImportConfigStep: React.FC<ImportConfigStepProps> = ({
     title,
-    step,
     config,
     onConfigChange,
     customSeparator,

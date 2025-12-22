@@ -16,7 +16,7 @@ const ClassRow: React.FC<ClassRowProps> = ({ classItem }) => {
     const { updateClass, school, deleteClass } = useMainContext();
     const { handleOpenPopup } = useDeletePopup();
 
-    const { handleSubmitDelete, isLoading } = useSubmit(
+    const { handleSubmitDelete } = useSubmit(
         () => { },
         classItem.activity
             ? messages.classes.deleteGroupSuccess

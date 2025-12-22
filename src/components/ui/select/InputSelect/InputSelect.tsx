@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Select, { ActionMeta, OnChangeValue, StylesConfig } from "react-select";
+import Select, { ActionMeta, OnChangeValue, StylesConfig, components, SingleValueProps } from "react-select";
 import { SelectOption } from "@/models/types";
 import { customStyles } from "@/style/selectStyle";
 import SelectLayout from "../SelectLayout/SelectLayout";
@@ -138,18 +138,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
                     minWidth: 0, // Allow shrinking below content size
                 };
             },
-            indicatorsContainer: (provided: any) => ({
-                ...provided,
-                flexShrink: 0,
-                display: "flex",
-                justifyContent: "flex-start",
-            }),
-            dropdownIndicator: (provided: any) => ({
-                ...provided,
-                marginRight: "auto",
-                padding: 10,
-                color: color,
-            }),
+
             singleValue: (provided: any) => {
                 const base =
                     typeof baseStyles.singleValue === "function"
@@ -167,6 +156,11 @@ const InputSelect: React.FC<InputSelectProps> = ({
                     width: isCentered ? "100%" : "auto",
                     gridArea: "1/1/2/3",
                     minWidth: 0, // Allow truncation in grid
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: isCentered ? "center" : "flex-start",
+                    padding: "0 5px",
                 };
             },
             input: (provided: any) => ({
@@ -234,6 +228,53 @@ const InputSelect: React.FC<InputSelectProps> = ({
         caretColor,
     ]);
 
+    const CustomSingleValue = (props: SingleValueProps<SelectOption>) => {
+        const [isHovered, setIsHovered] = useState(false);
+        return (
+            <components.SingleValue {...props}>
+                {props.children}
+                {isClearable && selectedOption && (
+                    <div
+                        onMouseDown={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            handleChange(null, { action: "clear" } as any);
+                        }}
+                        onTouchEnd={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            handleChange(null, { action: "clear" } as any);
+                        }}
+                        onMouseEnter={() => setIsHovered(true)}
+                        onMouseLeave={() => setIsHovered(false)}
+                        style={{
+                            marginRight: "9px",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            color: isHovered ? "red" : InputColor,
+                            padding: "0 6px",
+                            zIndex: 5,
+                            position: "relative",
+                            pointerEvents: "auto",
+                        }}
+                    >
+                        <svg
+                            height="14"
+                            width="14"
+                            viewBox="0 0 20 20"
+                            aria-hidden="true"
+                            focusable="false"
+                            style={{ fill: "currentColor" }}
+                        >
+                            <path d="M14.348 14.849c-0.469 0.469-1.229 0.469-1.697 0l-2.651-3.030-2.651 3.029c-0.469 0.469-1.229 0.469-1.697 0-0.469-0.469-0.469-1.229 0-1.697l2.758-3.15-2.759-3.152c-0.469-0.469-0.469-1.228 0-1.697s1.228-0.469 1.697 0l2.652 3.031 2.651-3.031c0.469-0.469 1.228-0.469 1.697 0s0.469 1.229 0 1.697l-2.758 3.152 2.758 3.15c0.469 0.469 0.469 1.229 0 1.698z"></path>
+                        </svg>
+                    </div>
+                )}
+            </components.SingleValue>
+        );
+    };
+
     return (
         <SelectLayout resolvedId={id || ""} error={error} label={label}>
             <Select
@@ -254,6 +295,10 @@ const InputSelect: React.FC<InputSelectProps> = ({
                 noOptionsMessage={() => <div>לא נמצאו אפשרויות</div>}
                 styles={stylesOverride}
                 classNamePrefix="react-select"
+                components={{
+                    SingleValue: CustomSingleValue,
+                    ClearIndicator: () => null,
+                }}
             />
         </SelectLayout>
     );
