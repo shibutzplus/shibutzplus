@@ -5,7 +5,6 @@ import messages from "@/resources/messages";
 import { eq, and } from "drizzle-orm";
 import { db, schema, executeQuery } from "../../../db";
 import { ActionResponse } from "@/models/types/actions";
-import { ColumnTypeValues } from "@/models/types/dailySchedule";
 import { NewDailyScheduleSchema } from "@/db/schema";
 
 export async function updateDailyEventHeaderAction(

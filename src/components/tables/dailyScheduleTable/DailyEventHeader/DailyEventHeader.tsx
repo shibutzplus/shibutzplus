@@ -14,7 +14,7 @@ type DailyEventHeaderProps = {
     onDelete?: (colId: string) => void;
 };
 
-const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, type, onDelete }) => {
+const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete }) => {
     const { populateEventColumn, deleteColumn, mainDailyTable, selectedDate } =
         useDailyTableContext();
 

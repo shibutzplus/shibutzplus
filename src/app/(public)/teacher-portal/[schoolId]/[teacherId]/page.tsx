@@ -13,7 +13,7 @@ import Preloader from "@/components/ui/Preloader/Preloader";
 import NotPublished from "@/components/empty/NotPublished/NotPublished";
 
 const TeacherPortalPage: NextPage = () => {
-    const { selectedDate, teacher, setTeacherAndSchool, datesOptions, isDatesLoading, settings } = usePortalContext();
+    const { selectedDate, teacher, setTeacherAndSchool, datesOptions, settings } = usePortalContext();
     const { fetchTeacherScheduleDate } = useTeacherTableContext();
 
     const params = useParams();

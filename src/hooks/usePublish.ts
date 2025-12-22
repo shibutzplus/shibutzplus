@@ -48,7 +48,7 @@ const usePublish = () => {
             } else {
                 errorToast(messages.publish.error, Infinity);
             }
-        } catch (error) {
+        } catch {
             errorToast(messages.publish.error, Infinity);
         } finally {
             setIsLoading(false);

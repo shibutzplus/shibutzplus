@@ -101,7 +101,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     };
 
     const selectRef = useRef<any>(null);
-    const { selectRef: mobileScrollRef, containerRef, handleMenuOpen } = useMobileSelectScroll();
+    const { selectRef: mobileScrollRef, handleMenuOpen } = useMobileSelectScroll();
 
     const baseStyles = customStyles(error || "", hasBorder, true, backgroundColor, color);
     const stylesOverride: StylesConfig<SelectOption, false, GroupOption> = {
@@ -160,7 +160,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
         };
 
         // remove props that leak to DOM via GroupHeading
-        const { Heading, headingProps, ...safeHeadingProps } = props as any;
+        const { ...safeHeadingProps } = props as any;
 
         const optionsChildren = props.children;
 

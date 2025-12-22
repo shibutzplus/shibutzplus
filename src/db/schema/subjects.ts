@@ -1,4 +1,4 @@
-import { pgTable, text, varchar, timestamp, boolean, index, uniqueIndex } from 'drizzle-orm/pg-core';
+import { pgTable, text, varchar, timestamp, boolean, uniqueIndex } from 'drizzle-orm/pg-core';
 import { createId } from '@paralleldrive/cuid2';
 
 export const subjects = pgTable('subjects', {

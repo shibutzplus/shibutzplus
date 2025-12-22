@@ -151,7 +151,7 @@ export function calculateSimilarity(s1: string, s2: string): number {
 }
 
 function levenshtein(s1: string, s2: string): number {
-    const costs: number[] = new Array();
+    const costs: number[] = [];
     for (let i = 0; i <= s1.length; i++) {
         let lastValue = i;
         for (let j = 0; j <= s2.length; j++) {

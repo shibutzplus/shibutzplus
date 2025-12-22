@@ -218,7 +218,7 @@ const AnnualImportPage = () => {
         if (!schoolId) return;
         setIsLoading(true);
 
-        let fileToParse = analyzeStep === 2 ? teacherFile : classFile;
+        const fileToParse = analyzeStep === 2 ? teacherFile : classFile;
 
         if (fileToParse) {
             Papa.parse(fileToParse, {
@@ -275,12 +275,7 @@ const AnnualImportPage = () => {
         setIsConfirmOpen(true);
     };
 
-    const handleConfirmSave = () => {
-        if (confirmAction) {
-            confirmAction();
-        }
-        setIsConfirmOpen(false);
-    };
+
 
     const saveToDb = async (
         type: "teachers" | "classes" | "subjects" | "workGroups",
@@ -561,7 +556,6 @@ const AnnualImportPage = () => {
                 {step === 2 && (
                     <ImportConfigStep
                         title="רשימת המורים (שלב 2 מתוך 6)"
-                        step={2}
                         config={configTeacher}
                         onConfigChange={handleConfigTeacherChange}
                         customSeparator={customSeparator}
@@ -583,7 +577,6 @@ const AnnualImportPage = () => {
                 {step === 3 && (
                     <ImportConfigStep
                         title="רשימת הכיתות (שלב 3 מתוך 6)"
-                        step={3}
                         config={configClass}
                         onConfigChange={handleConfigClassChange}
                         customSeparator={customSeparator}

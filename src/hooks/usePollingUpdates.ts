@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { successToast } from "@/lib/toast";
 import router from "@/routes";
 import { checkForUpdates, getChannelsForPath } from "@/services/syncService";
 

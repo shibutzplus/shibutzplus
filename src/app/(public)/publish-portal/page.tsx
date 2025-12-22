@@ -14,7 +14,6 @@ const PublishedPortalPage: NextPage = () => {
         teacher,
         schoolId,
         mainPublishTable,
-        isPublishLoading,
         fetchPublishScheduleData,
         isDatesLoading,
         hasFetched,

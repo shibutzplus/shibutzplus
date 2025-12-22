@@ -139,7 +139,7 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
                 setDatesOptions([]);
             }
         };
-        blockRef.current && fetchPublishedDates();
+        if (blockRef.current) fetchPublishedDates();
     }, [teacher]);
 
     // Initialize selectedDate when datesOptions becomes available
@@ -228,7 +228,6 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
         setTeacherAndSchool,
         datesOptions,
         handleRefreshDates,
-
         isPublishLoading,
         hasFetched,
         mainPublishTable,

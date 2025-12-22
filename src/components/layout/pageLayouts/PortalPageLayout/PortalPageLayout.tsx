@@ -95,7 +95,7 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
         else if (isTomorrow) suffix = "מחר";
         else {
             // Fallback: DD/MM
-            const [y, m, d] = selectedDate.split("-");
+            const [, m, d] = selectedDate.split("-");
             // selectedDate is YYYY-MM-DD
             if (d && m) suffix = `${d}/${m}`;
         }

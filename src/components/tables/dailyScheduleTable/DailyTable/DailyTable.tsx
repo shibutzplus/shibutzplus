@@ -4,7 +4,6 @@ import styles from "./DailyTable.module.css";
 import EmptyTable from "@/components/empty/EmptyTable/EmptyTable";
 import { DailySchedule, ColumnType } from "@/models/types/dailySchedule";
 import { useSortColumns } from "./useSortColumns";
-import { TeacherType } from "@/models/types/teachers";
 import DailyTeacherHeader from "../DailyTeacherHeader/DailyTeacherHeader";
 import DailyEventHeader from "../DailyEventHeader/DailyEventHeader";
 import DailyTeacherCell from "../DailyTeacherCell/DailyTeacherCell";
@@ -21,7 +20,7 @@ type AnimatedHeaderWrapperProps = {
     id?: string;
 };
 
-const AnimatedHeaderWrapper: React.FC<AnimatedHeaderWrapperProps> = React.memo(({ colIndex, width, headerColorClass, children, id }) => {
+const AnimatedHeaderWrapper: React.FC<AnimatedHeaderWrapperProps> = React.memo(({ width, headerColorClass, children, id }) => {
     const isAnimating = width !== undefined;
     return (
         <th
@@ -44,6 +43,7 @@ const AnimatedHeaderWrapper: React.FC<AnimatedHeaderWrapperProps> = React.memo((
         </th>
     );
 });
+AnimatedHeaderWrapper.displayName = "AnimatedHeaderWrapper";
 
 type AnimatedCellWrapperProps = {
     colIndex: number;
@@ -75,6 +75,7 @@ const AnimatedCellWrapper: React.FC<AnimatedCellWrapperProps> = React.memo(({ co
         </td>
     );
 });
+AnimatedCellWrapper.displayName = "AnimatedCellWrapper";
 
 
 // --- Main Properties ---
@@ -82,13 +83,11 @@ const AnimatedCellWrapper: React.FC<AnimatedCellWrapperProps> = React.memo(({ co
 type DailyTableProps = {
     mainDailyTable: DailySchedule;
     selectedDate: string;
-    onTeacherClick: (teacher: TeacherType) => Promise<void>;
 };
 
 const DailyTable: React.FC<DailyTableProps> = ({
     mainDailyTable,
     selectedDate,
-    onTeacherClick,
 }) => {
     const { settings } = useMainContext();
     const hoursNum = settings?.hoursNum || HOURS_IN_DAY;
@@ -195,7 +194,6 @@ const DailyTable: React.FC<DailyTableProps> = ({
                                         <DailyTeacherHeader
                                             columnId={colId}
                                             type={type}
-                                            onTeacherClick={onTeacherClick}
                                             onDelete={isAnimating ? undefined : (id) => handleColumnAnimation(id, "remove")}
                                         />
                                     )}

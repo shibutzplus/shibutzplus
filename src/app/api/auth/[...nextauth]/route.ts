@@ -7,7 +7,7 @@ import type { UserRole, UserGender } from "@/models/types/auth";
 import { registerNewGoogleUserAction } from "@/app/actions/POST/registerNewGoogleUserAction";
 import { getUserByEmailAction } from "@/app/actions/GET/getUserByEmailAction";
 
-import CredentialsProvider from "next-auth/providers/credentials";
+// import CredentialsProvider from "next-auth/providers/credentials";
 
 // Always take the current time, so each login gets a fresh session timer.
 const nowInSec = () => Math.floor(Date.now() / 1000);
@@ -24,7 +24,7 @@ export const authOptions: NextAuthOptions = {
         updateAge: TWENTY_FOUR_HOURS,
     },
     callbacks: {
-        async signIn({ user, account, profile }) {
+        async signIn({ account, profile }) {
             if (account?.provider === "google") {
                 const email = typeof profile?.email === "string" ? profile.email : undefined;
                 const name = typeof profile?.name === "string" ? profile.name : undefined;
@@ -32,7 +32,7 @@ export const authOptions: NextAuthOptions = {
                 try {
                     const response = await registerNewGoogleUserAction({ email });
                     if (!response.success) return false;
-                } catch (err) {
+                } catch {
                     return false;
                 }
                 return true;

@@ -155,7 +155,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
                 );
                 if (!response) throw new Error();
             }
-        } catch (error) {
+        } catch {
             errorToast(messages.dailySchedule.createError);
             setSelectedSubTeacher("");
         } finally {

@@ -3,7 +3,6 @@ import { AvailableTeachers } from "@/models/types/annualSchedule";
 import { ColumnTypeValues, ColumnType, DailySchedule, DailyScheduleCell, } from "@/models/types/dailySchedule";
 import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import { dayToNumber } from "./time";
-import { ClassType } from "@/models/types/classes";
 import { createSelectOptions } from "./format";
 import { dailySelectActivity } from "@/resources/dailySelectActivities";
 import { EmptyValue } from "@/models/constant/daily";

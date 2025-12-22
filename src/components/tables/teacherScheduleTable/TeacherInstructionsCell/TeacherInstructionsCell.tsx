@@ -19,7 +19,7 @@ const TeacherInstructionsCell: React.FC<TeacherInstructionsCellProps> = ({
     teacher,
     selectedDate,
 }) => {
-    const { saveInstractions, isSavingLoading } = useTeacherTableContext();
+    const { saveInstractions } = useTeacherTableContext();
     const [instructions, setInstructions] = useState<string>(row?.instructions || "");
     const [prevInstructions, setPrevInstructions] = useState<string>(row?.instructions || "");
 
