@@ -52,7 +52,7 @@ const TeacherPortalPage: NextPage = () => {
 
     const isPublished = datesOptions.some((d) => d.value === selectedDate);
     if (!isPublished) {
-        return <NotPublished date={selectedDate} text="המערכת טרם פורסמה" />;
+        return <NotPublished date={selectedDate} text="המערכת לא פורסמה" />;
     }
 
     return (
