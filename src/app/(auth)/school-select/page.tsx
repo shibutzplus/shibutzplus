@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "./schoolSelect.module.css";
 import { getSchoolsMinAction } from "@/app/actions/GET/getSchoolsMinAction";
-import { sortByHebrewName } from "@/utils/sort";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import routes from "@/routes";
@@ -21,8 +20,7 @@ const SchoolSelectPage = () => {
             try {
                 const list = await getSchoolsMinAction();
                 const schoolsList = Array.isArray(list) ? list : [];
-                const sorted = sortByHebrewName(schoolsList);
-                setSchools(sorted);
+                setSchools(schoolsList);
             } catch (error) {
                 console.error("Failed to load schools", error);
             } finally {
