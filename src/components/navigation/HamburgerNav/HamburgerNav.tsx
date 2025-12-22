@@ -6,7 +6,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import styles from "./HamburgerNav.module.css";
 import Icons from "@/style/icons";
-import { OurEmail } from "@/models/constant";
 import { motion, AnimatePresence } from "motion/react";
 import { useAccessibility } from "../../../hooks/browser/useAccessibility";
 import routePath from "../../../routes";
@@ -14,7 +13,6 @@ import { clearStorage, getStorageTeacher } from "@/lib/localStorage";
 import { usePopup } from "@/context/PopupContext";
 import SettingsPopup from "@/components/popups/SettingsPopup/SettingsPopup";
 import { useOptionalMainContext } from "@/context/MainContext";
-
 import {
     clearSessionStorage,
     getSessionStorage,
@@ -34,6 +32,7 @@ export interface ILink {
 }
 
 interface ILinkGroup {
+    id: string;
     title: string;
     links: ILink[];
     type: "private" | "public" | "substitute";
@@ -42,6 +41,7 @@ interface ILinkGroup {
 
 const linkGroups: ILinkGroup[] = [
     {
+        id: "schedule",
         title: "מערכת שעות",
         type: "private",
         isCollapse: false,
@@ -65,6 +65,7 @@ const linkGroups: ILinkGroup[] = [
     },
 
     {
+        id: "school_settings",
         title: "הגדרות בית הספר",
         type: "private",
         isCollapse: true,
@@ -97,6 +98,7 @@ const linkGroups: ILinkGroup[] = [
         ],
     },
     {
+        id: "built_schedule",
         title: "בניית מערכת שנתית",
         type: "private",
         isCollapse: true,
@@ -114,6 +116,25 @@ const linkGroups: ILinkGroup[] = [
         ],
     },
     {
+        id: "admin",
+        title: "מסכי מנהל",
+        type: "private",
+        isCollapse: true,
+        links: [
+            {
+                name: "משתמש חדש",
+                p: routePath.signUp.p,
+                Icon: <Icons.users size={24} />,
+            },
+            {
+                name: "ייבוא מערכת",
+                p: "/annual-import",
+                Icon: <Icons.upload size={24} />,
+            },
+        ],
+    },
+    {
+        id: "teachers",
         title: "מסכים למורים",
         type: "public",
         isCollapse: false,
@@ -131,6 +152,7 @@ const linkGroups: ILinkGroup[] = [
         ],
     },
     {
+        id: "substitute",
         title: "מסכים למורי ממלאי מקום",
         type: "substitute",
         isCollapse: false,
@@ -187,7 +209,8 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
     const context = useOptionalMainContext();
     const school = context?.school;
     const { data: session } = useSession();
-    const userEmail = session?.user?.email;
+    const userRole = (session?.user as any)?.role;
+    const [teacher, setTeacher] = React.useState<any>(null);
 
     useAccessibility({ isOpen, navRef, onClose });
 
@@ -213,8 +236,6 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
         onClose();
     };
 
-    const [teacher, setTeacher] = React.useState<any>(null);
-
     useEffect(() => {
         setTeacher(getStorageTeacher());
     }, []);
@@ -223,6 +244,8 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
 
     const displayedGroups = linkGroups
         .filter((group) => {
+            if (group.title === "admin" && userRole !== "admin") return false;
+
             if (hamburgerType === "private") return group.type === "private";
             if (hamburgerType === "public") {
                 if (isSubstituteTeacher) return group.type === "substitute";
@@ -232,21 +255,6 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
         })
         .map((group) => {
             let links = group.links;
-
-            if (group.title === "בניית מערכת שנתית" && userEmail === OurEmail) {
-                const hasLink = links.some((l) => l.p === "/annual-import");
-                if (!hasLink) {
-                    links = [
-                        ...links,
-                        {
-                            name: "ייבוא מערכת",
-                            p: "/annual-import",
-                            Icon: <Icons.upload size={24} />,
-                        },
-                    ];
-                }
-            }
-
             // Inject "School Schedule" for substitute teachers if setting enabled
             if (
                 group.type === "substitute" &&
@@ -311,11 +319,13 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                 initialShowExternal={context?.settings?.displaySchedule2Susb || false}
                 onSave={(newSettings) => {
                     context?.setSchool((prev) =>
-                        prev ? ({
-                            ...prev,
-                            hoursNum: newSettings.hoursNum,
-                            displaySchedule2Susb: newSettings.displaySchedule2Susb
-                        }) : prev
+                        prev
+                            ? {
+                                  ...prev,
+                                  hoursNum: newSettings.hoursNum,
+                                  displaySchedule2Susb: newSettings.displaySchedule2Susb,
+                              }
+                            : prev,
                     );
                 }}
             />,

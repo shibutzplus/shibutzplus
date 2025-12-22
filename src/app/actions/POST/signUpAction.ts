@@ -8,21 +8,9 @@ import bcrypt from "bcryptjs";
 
 const signUp = async (params: RegisterRequest): Promise<RegisterResponse> => {
     try {
-        const { name, email, password, systemPassword, role, gender, schoolName, level } = params;
+        const { name, email, password, role, gender, schoolName, level } = params;
 
-        if (
-            !name ||
-            !email ||
-            !password ||
-            !systemPassword ||
-            !role ||
-            !gender ||
-            !schoolName ||
-            !level
-        ) {
-            return { success: false, message: msg.auth.register.invalid };
-        }
-        if (systemPassword !== process.env.SYSTEM_PASSWORD) {
+        if (!name || !email || !password || !role || !gender || !schoolName || !level) {
             return { success: false, message: msg.auth.register.invalid };
         }
 

@@ -12,8 +12,14 @@ import { getTeachersAction as getTeachersFromDB } from "@/app/actions/GET/getTea
 import { getSubjectsAction as getSubjectsFromDB } from "@/app/actions/GET/getSubjectsAction";
 import { getClassesAction as getClassesFromDB } from "@/app/actions/GET/getClassesAction";
 import {
-    getCacheTimestamp, getStorageClasses, getStorageSubjects, getStorageTeachers,
-    setCacheTimestamp, setStorageClasses, setStorageSubjects, setStorageTeachers,
+    getCacheTimestamp,
+    getStorageClasses,
+    getStorageSubjects,
+    getStorageTeachers,
+    setCacheTimestamp,
+    setStorageClasses,
+    setStorageSubjects,
+    setStorageTeachers,
 } from "@/lib/localStorage";
 import { isCacheFresh } from "@/utils/time";
 import { checkForUpdates } from "@/services/syncService";
@@ -30,7 +36,6 @@ interface useInitDataProps {
     setClasses: (classes: ClassType[] | undefined) => void;
 }
 
-const POWER_USER_EMAIL = process.env.NEXT_PUBLIC_POWER_USER_EMAIL;
 const SYNC_TS_KEY = "sync_ts_detailsUpdate";
 
 /**
@@ -74,10 +79,15 @@ const useInitData = ({
                 }
 
                 // single poll for any data change across entities
-                const lastSeen = Number((typeof window !== "undefined" && localStorage.getItem(SYNC_TS_KEY)) || 0);
+                const lastSeen = Number(
+                    (typeof window !== "undefined" && localStorage.getItem(SYNC_TS_KEY)) || 0,
+                );
                 let changed = false;
 
-                const { hasUpdates, latestTs } = await checkForUpdates({ since: lastSeen, channels: ["detailsUpdate"] });
+                const { hasUpdates, latestTs } = await checkForUpdates({
+                    since: lastSeen,
+                    channels: ["detailsUpdate"],
+                });
 
                 if (hasUpdates) {
                     changed = true;
@@ -90,30 +100,30 @@ const useInitData = ({
                     classesPromise = changed
                         ? getClassesFromDB(schoolId)
                         : promiseFromCacheOrDB<ClassType[], GetClassesResponse>(
-                            schoolId,
-                            getStorageClasses(),
-                            getClassesFromDB,
-                        );
+                              schoolId,
+                              getStorageClasses(),
+                              getClassesFromDB,
+                          );
                 }
 
                 if (!teachers) {
                     teachersPromise = changed
                         ? getTeachersFromDB(schoolId)
                         : promiseFromCacheOrDB<TeacherType[], GetTeachersResponse>(
-                            schoolId,
-                            getStorageTeachers(),
-                            getTeachersFromDB,
-                        );
+                              schoolId,
+                              getStorageTeachers(),
+                              getTeachersFromDB,
+                          );
                 }
 
                 if (!subjects) {
                     subjectsPromise = changed
                         ? getSubjectsFromDB(schoolId)
                         : promiseFromCacheOrDB<SubjectType[], GetSubjectsResponse>(
-                            schoolId,
-                            getStorageSubjects(),
-                            getSubjectsFromDB,
-                        );
+                              schoolId,
+                              getStorageSubjects(),
+                              getSubjectsFromDB,
+                          );
                 }
 
                 const [schoolRes, classesRes, teachersRes, subjectsRes] = await Promise.all([
@@ -156,15 +166,16 @@ const useInitData = ({
         };
 
         if (status === STATUS_AUTH && typeof window !== "undefined" && session?.user?.schoolId) {
-            // prefer ?schoolId for Power User
-            const email = (session.user as any)?.email as string | undefined;
+            // prefer ?schoolId for Admin User
+            const userRole = (session.user as any)?.role;
             let picked: string | null = null;
             try {
                 picked = new URLSearchParams(window.location.search).get("schoolId");
             } catch {
                 picked = null;
             }
-            const effectiveSchoolId = email === POWER_USER_EMAIL && picked?.trim() ? picked.trim() : session.user.schoolId;
+            const effectiveSchoolId =
+                userRole === "admin" && picked?.trim() ? picked.trim() : session.user.schoolId;
 
             fetchData(effectiveSchoolId);
         }

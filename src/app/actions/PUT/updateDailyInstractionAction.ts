@@ -6,6 +6,7 @@ import { eq, and, or } from "drizzle-orm";
 import { db, schema, executeQuery } from "../../../db";
 import { ActionResponse } from "@/models/types/actions";
 import { NewDailyScheduleSchema } from "@/db/schema";
+import { dailyInstructionSchema } from "@/models/validation/daily";
 
 export async function updateDailyInstructionAction(
     date: string,
@@ -17,13 +18,25 @@ export async function updateDailyInstructionAction(
     subTeacherId?: string,
 ): Promise<ActionResponse> {
     try {
+        const validation = dailyInstructionSchema.safeParse({ instructions });
+        if (!validation.success) {
+            return {
+                success: false,
+                message: validation.error.issues[0]?.message || "תוכן ההנחיות לא תקין",
+            };
+        }
+        // Use the transformed (sanitized) value
+        const cleanInstructions = validation.data.instructions;
+
         const authError = await publicAuthAndParams({ date, rowId });
         if (authError) {
             return authError as ActionResponse;
         }
 
         const updatedEntries = await executeQuery(async () => {
-            const payload = { instructions: instructions || null } as Partial<NewDailyScheduleSchema>;
+            const payload = {
+                instructions: cleanInstructions || null,
+            } as Partial<NewDailyScheduleSchema>;
 
             // Update one DB row normally, or 2 rows if it's a cross-reference swap
             // 2 rows usecase: 2 teachers in the same day and hour replaced each other (cross-reference case)
@@ -54,12 +67,7 @@ export async function updateDailyInstructionAction(
             return await db
                 .update(schema.dailySchedule)
                 .set(payload)
-                .where(
-                    and(
-                        eq(schema.dailySchedule.date, date),
-                        eq(schema.dailySchedule.id, rowId),
-                    ),
-                )
+                .where(and(eq(schema.dailySchedule.date, date), eq(schema.dailySchedule.id, rowId)))
                 .returning();
         });
 
