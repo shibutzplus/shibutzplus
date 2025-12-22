@@ -12,10 +12,13 @@ import styles from "../DailyTable/DailyTable.module.css";
 import useDeletePopup from "@/hooks/useDeletePopup";
 import Icons from "@/style/icons";
 
+import { TeacherType } from "@/models/types/teachers";
+
 type DailyTeacherHeaderProps = {
     columnId: string;
     type: ColumnType;
     onDelete?: (colId: string) => void;
+    onTeacherClick?: (teacher: TeacherType) => void;
 };
 
 const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
