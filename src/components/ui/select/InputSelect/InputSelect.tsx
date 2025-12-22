@@ -240,6 +240,11 @@ const InputSelect: React.FC<InputSelectProps> = ({
                             e.preventDefault();
                             handleChange(null, { action: "clear" } as any);
                         }}
+                        onTouchEnd={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            handleChange(null, { action: "clear" } as any);
+                        }}
                         onMouseEnter={() => setIsHovered(true)}
                         onMouseLeave={() => setIsHovered(false)}
                         style={{

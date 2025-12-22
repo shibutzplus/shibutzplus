@@ -271,15 +271,7 @@ export const sortDailyTeachers = (
 
     // Groups
     const groups: GroupOption[] = [
-        ...(currentValue
-            ? [
-                {
-                    label: "מחיקת השיבוץ",
-                    options: [{ value: EmptyValue, label: "🗑️" }],
-                    hideCount: true,
-                },
-            ]
-            : []),
+
         {
             label: "מורה נוסף בשיעור",
             collapsed: true,

@@ -107,7 +107,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
             if (!cellData) return;
 
             // Handle empty value - clear the selection
-            if (value === EmptyValue) {
+            if (value === EmptyValue || value === "") {
                 setSelectedSubTeacher("");
                 const existingDailyId = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.DBid;
                 if (existingDailyId) {
@@ -183,6 +183,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
                             placeholder="ממלא מקום"
                             isSearchable
                             isAllowAddNew
+                            isClearable
                             isDisabled={isLoading}
                             hasBorder
                             backgroundColor="transparent"
