@@ -160,7 +160,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
         };
 
         // remove props that leak to DOM via GroupHeading
-        const { Heading, ...safeHeadingProps } = props as any;
+        const { Heading, headingProps, ...safeHeadingProps } = props as any;
 
         const optionsChildren = props.children;
 
