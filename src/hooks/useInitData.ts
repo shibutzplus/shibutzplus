@@ -11,7 +11,6 @@ import { getSchoolAction as getSchoolFromDB } from "@/app/actions/GET/getSchoolA
 import { getTeachersAction as getTeachersFromDB } from "@/app/actions/GET/getTeachersAction";
 import { getSubjectsAction as getSubjectsFromDB } from "@/app/actions/GET/getSubjectsAction";
 import { getClassesAction as getClassesFromDB } from "@/app/actions/GET/getClassesAction";
-
 import {
     getCacheTimestamp,
     getStorageClasses,
@@ -24,7 +23,6 @@ import {
 } from "@/lib/localStorage";
 import { isCacheFresh } from "@/utils/time";
 import { checkForUpdates } from "@/services/syncService";
-import { sortByHebrewName } from "@/utils/sort";
 
 interface useInitDataProps {
     school: SchoolType | undefined;
@@ -140,17 +138,20 @@ const useInitData = ({
                 }
 
                 if (teachersRes && teachersRes.success && teachersRes.data) {
-                    const sortedTeachers = sortByHebrewName<any>(teachersRes.data);
+                    const sortedTeachers = [...teachersRes.data].sort((a, b) => a.name.localeCompare(b.name, "he", { numeric: true }));
                     setTeachers(sortedTeachers);
                     setStorageTeachers(sortedTeachers);
                 }
                 if (subjectsRes && subjectsRes.success && subjectsRes.data) {
-                    const sortedSubjects = sortByHebrewName<any>(subjectsRes.data);
+                    const sortedSubjects = [...subjectsRes.data].sort((a, b) => a.name.localeCompare(b.name, "he", { numeric: true }));
                     setSubjects(sortedSubjects);
                     setStorageSubjects(sortedSubjects);
                 }
                 if (classesRes && classesRes.success && classesRes.data) {
-                    const sortedClasses = sortByHebrewName<any>(classesRes.data);
+                    const sortedClasses = [...classesRes.data].sort((a, b) => {
+                        if (a.activity !== b.activity) return a.activity ? 1 : -1;
+                        return a.name.localeCompare(b.name, "he", { numeric: true });
+                    });
                     setClasses(sortedClasses);
                     setStorageClasses(sortedClasses);
                 }

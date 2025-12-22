@@ -4,7 +4,6 @@ import { RegisterRequest, RegisterResponse } from "@/models/types/auth";
 import { db, schema, executeQuery } from "@/db";
 import { eq } from "drizzle-orm";
 import msg from "@/resources/messages";
-import { SchoolLevel } from "@/db/schema";
 import bcrypt from "bcryptjs";
 
 const signUp = async (params: RegisterRequest): Promise<RegisterResponse> => {

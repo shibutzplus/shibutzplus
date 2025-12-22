@@ -3,7 +3,7 @@ import React from "react"
 import { SessionProvider } from "next-auth/react"
 import { Toaster } from "react-hot-toast"
 import { PopupProvider } from "@/context/PopupContext"
-import { BorderRadiusCell, BoxShadowPrimary, DarkTextColor, FontSize, TabColor } from "@/style/root"
+import { BorderRadiusCell, DarkTextColor, FontSize, TabColor } from "@/style/root"
 
 export default function Providers({ children }: { children: React.ReactNode }) {
     return (

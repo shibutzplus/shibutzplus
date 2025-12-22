@@ -6,7 +6,6 @@ import DetailsListLayout from "@/components/layout/DetailsListLayout/DetailsList
 import { useMainContext } from "@/context/MainContext";
 import AddClassRow from "@/components/details/classDetails/AddClassRow/AddClassRow";
 import ClassRow from "@/components/details/classDetails/ClassRow/ClassRow";
-import { sortByHebrewName } from "@/utils/sort";
 import { ClassType } from "@/models/types/classes";
 
 const ClassesPage: NextPage = () => {
@@ -16,8 +15,7 @@ const ClassesPage: NextPage = () => {
     const sortedClasses = React.useMemo(
         () => {
             if (!classes) return undefined;
-            const filtered = classes.filter(c => !c.activity && c.name.includes(searchTerm));
-            return sortByHebrewName(filtered);
+            return classes.filter(c => !c.activity && c.name.includes(searchTerm));
         },
         [classes, searchTerm],
     );

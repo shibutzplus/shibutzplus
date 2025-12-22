@@ -13,7 +13,8 @@ export const annualSchedule = pgTable('annual_schedule', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 }, (table) => {
   return {
-    teacherIdIdx: index('idx_annual_teacher_id').on(table.teacherId),
+    teacherIdIdx: index('idx_annual_teacher_id_day').on(table.teacherId, table.day),
+    schoolIdIdx: index('idx_annual_school_id').on(table.schoolId),
     classIdIdx: index('idx_annual_class_id').on(table.classId),
     subjectIdIdx: index('idx_annual_subject_id').on(table.subjectId),
   };

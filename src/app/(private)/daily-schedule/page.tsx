@@ -54,7 +54,6 @@ const DailySchedulePage: NextPage = () => {
                     <DailyTable
                         mainDailyTable={mainDailyTable}
                         selectedDate={selectedDate}
-                        onTeacherClick={handleTeacherClick}
                     />
                 ) : (
                     <PreviewTable

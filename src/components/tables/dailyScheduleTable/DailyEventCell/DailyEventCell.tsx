@@ -9,7 +9,7 @@ import { DailyScheduleCell } from "@/models/types/dailySchedule";
 type DailyEventCellProps = { columnId: string; cell: DailyScheduleCell };
 
 const DailyEventCell: React.FC<DailyEventCellProps> = ({ columnId, cell }) => {
-    const { mainDailyTable, addEventCell, updateEventCell, deleteEventCell, selectedDate } =
+    const { mainDailyTable, addEventCell, updateEventCell, deleteEventCell, selectedDate, populateEventColumn } =
         useDailyTableContext();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -26,11 +26,14 @@ const DailyEventCell: React.FC<DailyEventCellProps> = ({ columnId, cell }) => {
         const event = value.trim();
         if (event === prevInfo) return;
 
-        if (!headerData?.headerEvent) {
-            errorToast("יש להזין כותרת לפני הוספת אירועים", Infinity);
-            setInfo("");
-            setPrevInfo("");
-            return;
+        let currentHeaderTitle = headerData?.headerEvent;
+
+        if (!currentHeaderTitle && event) {
+            const firstLine = event.split('\n')[0];
+            if (firstLine) {
+                await populateEventColumn(columnId, firstLine);
+                currentHeaderTitle = firstLine;
+            }
         }
 
         setInfo(event);
@@ -38,8 +41,20 @@ const DailyEventCell: React.FC<DailyEventCellProps> = ({ columnId, cell }) => {
 
         try {
             setIsLoading(true);
-            const cellData = mainDailyTable[selectedDate]?.[columnId]?.[hour];
+            let cellData = mainDailyTable[selectedDate]?.[columnId]?.[hour];
             if (!cellData) return;
+
+            // Patch cellData if we just auto-filled the header title locally
+            if (!cellData.headerCol?.headerEvent && currentHeaderTitle) {
+                cellData = {
+                    ...cellData,
+                    headerCol: {
+                        ...(cellData.headerCol || { type: "event" }),
+                        headerEvent: currentHeaderTitle,
+                        type: cellData.headerCol?.type || "event",
+                    },
+                };
+            }
 
             let response;
             if (event === "") {

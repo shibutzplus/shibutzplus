@@ -1,4 +1,4 @@
-import { neon, neonConfig } from "@neondatabase/serverless";
+import { neon } from "@neondatabase/serverless";
 
 // Create a single neon client with proper configuration
 export const sql = neon(process.env.DATABASE_URL!, {

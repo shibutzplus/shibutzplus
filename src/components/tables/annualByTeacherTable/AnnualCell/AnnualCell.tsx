@@ -6,16 +6,17 @@ import { TeacherType } from "@/models/types/teachers";
 import { WeeklySchedule, AnnualInputCellType } from "@/models/types/annualSchedule";
 import { ClassType } from "@/models/types/classes";
 import { SelectMethod } from "@/models/types/actions";
-import { sortByHebrewName } from "@/utils/sort";
+
 import useDeletePopup from "@/hooks/useDeletePopup";
 import { PopupAction } from "@/context/PopupContext";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
+import DynamicInputMultiSelect from "@/components/ui/select/InputMultiSelect/DynamicInputSelect";
 
 type AnnualCellProps = {
     day: string;
     hour: number;
     schedule: WeeklySchedule;
-    selectedClassId: string;
+    selectedTeacherId: string;
     subjects: SubjectType[];
     classes: ClassType[];
     isDisabled: boolean;
@@ -33,7 +34,7 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
     day,
     hour,
     schedule,
-    selectedClassId,
+    selectedTeacherId,
     subjects,
     classes,
     isDisabled,
@@ -63,14 +64,14 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
         }
     };
 
-    const handleClassChange = (value: string, method?: SelectMethod) => {
-        handleAddNewRow("classes", value ? [value] : [], day, hour, method || "select-option");
+    const handleClassChange = (values: string[], method: SelectMethod) => {
+        handleAddNewRow("classes", values, day, hour, method);
 
-        if (value) {
-            const selectedClassObj = classes.find((c) => c.id === value);
-            if (selectedClassObj?.activity) {
+        if (values.length > 0) {
+            const activityClass = classes.find((c) => values.includes(c.id) && c.activity);
+            if (activityClass) {
                 const matchingSubject = subjects.find(
-                    (s) => s.name === selectedClassObj.name && s.activity
+                    (s) => s.name === activityClass.name && s.activity
                 );
                 if (matchingSubject) {
                     handleAddNewRow(
@@ -99,8 +100,8 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
         <td className={styles.scheduleCell}>
             <div className={styles.cellContent}>
                 <DynamicInputSelect
-                    options={createSelectOptions<SubjectType>(sortByHebrewName(subjects || []))}
-                    value={schedule[selectedClassId]?.[day]?.[hour]?.subjects[0] ?? ""}
+                    options={createSelectOptions<SubjectType>(subjects || [])}
+                    value={schedule[selectedTeacherId]?.[day]?.[hour]?.subjects[0] ?? ""}
                     onChange={handleSubjectChange}
                     placeholder="מקצוע"
                     isSearchable
@@ -108,22 +109,14 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
                     onBeforeRemove={confirmRemove}
                     isClearable
                 />
-                <DynamicInputSelect
-                    options={createSelectOptions<ClassType>(
-                        [...(classes || [])].sort((a, b) => {
-                            if (a.activity !== b.activity) {
-                                return a.activity ? 1 : -1;
-                            }
-                            return a.name.localeCompare(b.name, "he", { numeric: true });
-                        }),
-                    )}
-                    value={schedule[selectedClassId]?.[day]?.[hour]?.classId ?? ""}
+                <DynamicInputMultiSelect
+                    options={createSelectOptions<ClassType>(classes)}
+                    value={schedule[selectedTeacherId]?.[day]?.[hour]?.classes ?? []}
                     onChange={handleClassChange}
                     placeholder="כיתה"
                     isSearchable
                     isDisabled={isDisabled}
                     onBeforeRemove={confirmRemove}
-                    isClearable
                     isBold
                 />
             </div>

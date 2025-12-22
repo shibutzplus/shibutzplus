@@ -8,7 +8,7 @@ import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import AddTeacherRow from "@/components/details/teacherDetails/AddTeacherRow/AddTeacherRow";
 import TeacherRow from "@/components/details/teacherDetails/TeacherRow/TeacherRow";
 import { filterTeachersByRole } from "@/utils/format";
-import { sortByHebrewName } from "@/utils/sort";
+
 
 const TeachersPage: NextPage = () => {
     const { teachers } = useMainContext();
@@ -18,7 +18,7 @@ const TeachersPage: NextPage = () => {
         () => {
             if (!teachers) return undefined;
             const filtered = teachers.filter(t => t.name.includes(searchTerm));
-            return filterTeachersByRole(sortByHebrewName(filtered), TeacherRoleValues.REGULAR);
+            return filterTeachersByRole(filtered, TeacherRoleValues.REGULAR);
         },
         [teachers, searchTerm],
     );

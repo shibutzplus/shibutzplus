@@ -1,94 +1,13 @@
 import { GroupOption } from "@/models/types";
-import { AvailableTeachers, WeeklySchedule } from "@/models/types/annualSchedule";
-import {
-    ColumnTypeValues,
-    ColumnType,
-    DailySchedule,
-    DailyScheduleCell,
-} from "@/models/types/dailySchedule";
+import { AvailableTeachers } from "@/models/types/annualSchedule";
+import { ColumnTypeValues, ColumnType, DailySchedule, DailyScheduleCell, } from "@/models/types/dailySchedule";
 import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import { dayToNumber } from "./time";
-import { ClassType } from "@/models/types/classes";
 import { createSelectOptions } from "./format";
 import { dailySelectActivity } from "@/resources/dailySelectActivities";
 import { EmptyValue } from "@/models/constant/daily";
 
-/**
- * Sorts an array of objects by their Hebrew name property in alphabetical order (א-ב-ג...)
- * @param items - Array of objects with a name property containing Hebrew text
- * @param nameKey - The key of the property to sort by (defaults to 'name')
- * @returns A new sorted array
- */
-export const sortByHebrewName = <T extends Record<string, any>>(
-    items: T[],
-    nameKey: keyof T = "name" as keyof T,
-): T[] => {
-    return [...items].sort((a, b) => {
-        const nameA = String(a[nameKey]);
-        const nameB = String(b[nameKey]);
-        return nameA.localeCompare(nameB, "he", { numeric: true });
-    });
-};
 
-// Annual Schedule: Build grouped teacher options (available vs unavailable) for a class at a specific day/hour in the annual schedule
-export const sortAnnualTeachers = (
-    allTeachers: TeacherType[],
-    classes: ClassType[],
-    schedule: WeeklySchedule,
-    selectedClassId: string,
-    day: string,
-    hour: number,
-): GroupOption[] => {
-    // Calculate available teachers for this specific day and hour
-    const busyTeacherIds = new Set<string>();
-
-    // Check all classes except the currently selected one
-    classes.forEach((cls) => {
-        if (cls.id != selectedClassId) {
-            const teacherIds = schedule[cls.id]?.[day]?.[hour]?.teachers;
-            if (teacherIds) {
-                teacherIds.forEach((id) => {
-                    busyTeacherIds.add(id);
-                });
-            }
-        }
-    });
-
-    // Filter available teachers (not busy at this time)
-    const availableTeachers = allTeachers.filter((teacher) => !busyTeacherIds.has(teacher.id));
-    const availableTeacherIds = new Set(availableTeachers.map((t) => t.id));
-
-    const availableRegular = allTeachers.filter(
-        (teacher) =>
-            teacher.role === TeacherRoleValues.REGULAR && availableTeacherIds.has(teacher.id),
-    );
-
-    const unavailableTeachers = allTeachers.filter((teacher) => busyTeacherIds.has(teacher.id));
-
-    // Sort each group alphabetically in Hebrew
-    const sortedAvailableRegular = sortByHebrewName(availableRegular);
-    const sortedUnavailableTeachers = sortByHebrewName(unavailableTeachers);
-
-    // Build grouped options (always three groups, even if empty)
-    const groups: GroupOption[] = [
-        {
-            label: "מורים פנויים", // Available
-            options: sortedAvailableRegular.map((teacher) => ({
-                value: teacher.id,
-                label: teacher.name,
-            })),
-        },
-        {
-            label: "מורים לא פנויים", // Unavailable
-            options: sortedUnavailableTeachers.map((teacher) => ({
-                value: teacher.id,
-                label: teacher.name,
-            })),
-        },
-    ];
-
-    return groups;
-};
 
 // DailySchedule Header Dropdown: Filter header teacher options: only regular teachers, avoid duplicates
 export const filterDailyHeaderTeachers = (
@@ -352,15 +271,7 @@ export const sortDailyTeachers = (
 
     // Groups
     const groups: GroupOption[] = [
-        ...(currentValue
-            ? [
-                {
-                    label: "מחיקת השיבוץ",
-                    options: [{ value: EmptyValue, label: "🗑️" }],
-                    hideCount: true,
-                },
-            ]
-            : []),
+
         {
             label: "מורה נוסף בשיעור",
             collapsed: true,

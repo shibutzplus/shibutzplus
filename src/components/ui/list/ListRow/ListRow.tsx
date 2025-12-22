@@ -3,7 +3,6 @@ import InputText from "@/components/ui/inputs/InputText/InputText";
 import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
 import Icons from "@/style/icons";
 import styles from "./ListRow.module.css";
-import { useShareTextOrLink } from "@/hooks/useShareTextOrLink";
 import { successToast, errorToast } from "@/lib/toast";
 
 export type ListRowProps<T> = {
@@ -37,7 +36,6 @@ function ListRow<T extends Record<string, any>>({
     const [isEditLoading, setIsEditLoading] = useState(false);
     const [value, setValue] = useState<string>(getInitialValue(item));
     const [validationErrors, setValidationErrors] = useState<{ [K in keyof T]?: string }>({});
-    const share = useShareTextOrLink();
 
     useEffect(() => {
         setValue(getInitialValue(item));
@@ -68,7 +66,7 @@ function ListRow<T extends Record<string, any>>({
                 ...(updateExtraFields ? updateExtraFields(item) : {}),
             } as Partial<T>;
             await onUpdate(getId(item), updateData);
-        } catch (error) {
+        } catch {
             // Optionally handle error toast here
         } finally {
             setIsEditLoading(false);

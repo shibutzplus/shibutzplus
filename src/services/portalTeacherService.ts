@@ -1,12 +1,7 @@
 import { SelectOption } from "@/models/types";
 import { DailyScheduleType } from "@/models/types/dailySchedule";
 import { PortalSchedule } from "@/models/types/portalSchedule";
-import {
-    getDateReturnString,
-    getTodayDateString,
-    getTomorrowDateString,
-    israelTimezoneDate,
-} from "@/utils/time";
+import { AUTO_SWITCH_TIME, getDateReturnString, getTodayDateString, getTomorrowDateString, israelTimezoneDate, } from "@/utils/time";
 
 export const selectSelectedDate = (dates: SelectOption[]) => {
     const israelTime = israelTimezoneDate();
@@ -15,8 +10,10 @@ export const selectSelectedDate = (dates: SelectOption[]) => {
     const todayDate = getTodayDateString();
     const tomorrowDate = getTomorrowDateString();
 
-    // If current time is before 16:00, try to find today first
-    if (currentHour < 16) {
+    const switchHour = parseInt(AUTO_SWITCH_TIME.split(":")[0]);
+
+    // If current time is before switch time, try to find today first
+    if (currentHour < switchHour) {
         const todayOption = dates.find((date) => date.value === todayDate);
         if (todayOption) {
             return todayOption;
@@ -62,7 +59,7 @@ export const populatePortalTable = (
                 hour: entry.hour,
                 schoolId: entry.school?.id,
                 school: entry.school,
-                class: entry.class,
+                classes: entry.classes,
                 subject: entry.subject,
                 subTeacher: entry.subTeacher,
                 issueTeacher: entry.issueTeacher,

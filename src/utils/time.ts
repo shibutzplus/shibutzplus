@@ -12,7 +12,7 @@ export const ONE_WEEK = 7;
 export const ONE_DAY = 1;
 
 // Number of hours in a day
-export const HOURS_IN_DAY = 9;
+export const HOURS_IN_DAY = 10;
 
 // Global auto-switch time configuration (HH:MM)
 export const AUTO_SWITCH_TIME = "16:00";
@@ -262,7 +262,7 @@ export const clampDayToMonth = (day: string, year: string, month: string) => {
 // - Before switch time: prefer today if exists.
 // - After switch time: prefer tomorrow if exists, else today.
 // - If options empty/undefined: return today/tomorrow based on time.
-export const chooseDefaultDate = (options?: SelectOption[]): string => {
+export const chooseDefaultDate = (_options?: SelectOption[]): string => {
     const now = new Date();
     const today = getTodayDateString();
     const tomorrow = getTomorrowDateString();

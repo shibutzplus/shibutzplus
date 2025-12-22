@@ -38,7 +38,7 @@ const InputDate: React.FC = () => {
             onClick={(e) => {
                 try {
                     e.currentTarget.showPicker();
-                } catch (error) {
+                } catch {
                     // Fallback or ignore if not supported
                 }
             }}

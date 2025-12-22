@@ -50,7 +50,7 @@ export const setTeacherColumn = (
 
         if (existingData) {
             dailySchedule[selectedDate][columnId][`${hour}`] = {
-                class: existingData.class,
+                classes: existingData.classes,
                 subject: existingData.subject,
                 hour: existingData.hour,
                 subTeacher: existingData.subTeacher,

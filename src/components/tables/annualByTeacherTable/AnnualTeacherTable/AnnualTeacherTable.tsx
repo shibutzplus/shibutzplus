@@ -15,7 +15,7 @@ import { useMainContext } from "@/context/MainContext";
 
 type AnnualTeacherTableProps = {
     schedule: WeeklySchedule;
-    selectedClassId: string;
+    selectedTeacherId: string;
     subjects: SubjectType[] | undefined;
     teachers: TeacherType[] | undefined;
     classes: ClassType[] | undefined;
@@ -33,7 +33,7 @@ type AnnualTeacherTableProps = {
 
 const AnnualTeacherTable: React.FC<AnnualTeacherTableProps> = ({
     schedule,
-    selectedClassId,
+    selectedTeacherId,
     subjects,
     teachers,
     classes,
@@ -59,27 +59,27 @@ const AnnualTeacherTable: React.FC<AnnualTeacherTableProps> = ({
                         <th className={styles.emptyColSeparator}></th>
                         {DAYS_OF_WORK_WEEK.map((day) => (
                             <th key={day} className={styles.headerCell}>
-                                <div className={styles.headerInner}>
-                                    {`יום ${day}'`}
-                                </div>
+                                <div className={styles.headerInner}>{`יום ${day}'`}</div>
                             </th>
                         ))}
                     </tr>
                 </thead>
                 <tbody className={styles.scheduleTableBody}>
-                    {Array.from({ length: school?.hoursNum || TableRows }, (_, i) => i + 1).map((hour) => (
-                        <AnnualRow
-                            key={hour}
-                            hour={hour}
-                            isDisabled={isDisabled}
-                            schedule={schedule}
-                            selectedClassId={selectedClassId}
-                            subjects={subjects || []}
-                            teachers={teachers || []}
-                            classes={classes || []}
-                            handleAddNewRow={handleAddNewRow}
-                        />
-                    ))}
+                    {Array.from({ length: school?.hoursNum || TableRows }, (_, i) => i + 1).map(
+                        (hour) => (
+                            <AnnualRow
+                                key={hour}
+                                hour={hour}
+                                isDisabled={isDisabled}
+                                schedule={schedule}
+                                selectedTeacherId={selectedTeacherId}
+                                subjects={subjects || []}
+                                teachers={teachers || []}
+                                classes={classes || []}
+                                handleAddNewRow={handleAddNewRow}
+                            />
+                        ),
+                    )}
                 </tbody>
             </table>
         </div>

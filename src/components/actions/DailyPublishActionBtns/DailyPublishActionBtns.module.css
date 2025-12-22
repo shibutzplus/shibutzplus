@@ -45,6 +45,18 @@
     margin-left: 25px;
 }
 
+
+.clickableStatus {
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.clickableStatus:hover {
+    opacity: 0.7;
+}
+
+
+
 @media (max-width: 505px) {
     .topNavBtnContainer .publishBtn {
         width: var(--daily-btn-width) !important;
@@ -59,4 +71,5 @@
     .publishedStatus {
         display: none;
     }
+
 }

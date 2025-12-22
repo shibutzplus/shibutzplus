@@ -10,9 +10,21 @@ interface DeletePopupProps {
     text: string;
     onDelete: () => Promise<void>;
     onCancel: () => void;
+    confirmText?: string;
+    cancelText?: string;
+    Icon?: React.ElementType | React.ReactNode;
+    isDefaultCancel?: boolean;
 }
 
-const DeletePopup: React.FC<DeletePopupProps> = ({ text, onDelete, onCancel }) => {
+const DeletePopup: React.FC<DeletePopupProps> = ({
+    text,
+    onDelete,
+    onCancel,
+    confirmText = "מחיקה",
+    cancelText = "ביטול",
+    Icon,
+    isDefaultCancel = false
+}) => {
     const { closePopup } = usePopup();
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -32,18 +44,32 @@ const DeletePopup: React.FC<DeletePopupProps> = ({ text, onDelete, onCancel }) =
         <div className={styles.popupContent}>
             <div className={styles.iconContainer}>
                 <div className={styles.iconBackground}>
-                    <DeleteSvg />
+                    {Icon ? (
+                        /* Check if Icon is a function component (React.ElementType) or a node */
+                        typeof Icon === 'function' ? <Icon size={40} /> : Icon
+                    ) : (
+                        <DeleteSvg />
+                    )}
                 </div>
             </div>
 
             <h2 className={styles.title}>{text}</h2>
 
             <div className={styles.buttonContainer}>
-                <button className={styles.deleteButton} onClick={handleDelete} disabled={isLoading}>
-                    {isLoading ? <Loading size="S" /> : "מחיקה"}
+                <button
+                    className={isDefaultCancel ? styles.cancelButton : styles.deleteButton}
+                    onClick={handleDelete}
+                    disabled={isLoading}
+                    autoFocus={!isDefaultCancel}
+                >
+                    {isLoading ? <Loading size="S" /> : confirmText}
                 </button>
-                <button className={styles.cancelButton} onClick={handleCancel}>
-                    ביטול
+                <button
+                    className={isDefaultCancel ? styles.deleteButton : styles.cancelButton}
+                    onClick={handleCancel}
+                    autoFocus={isDefaultCancel}
+                >
+                    {cancelText}
                 </button>
             </div>
         </div>

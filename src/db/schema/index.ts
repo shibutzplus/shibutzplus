@@ -24,7 +24,7 @@ export const usersRelations = relations(users, ({ one }) => ({
 }));
 
 // School relations
-export const schoolsRelations = relations(schools, ({ many, one }) => ({
+export const schoolsRelations = relations(schools, ({ many }) => ({
   users: many(users),
   teachers: many(teachers),
   classes: many(classes),

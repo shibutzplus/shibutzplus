@@ -53,7 +53,7 @@ const AnnualSchedulePage: NextPage = () => {
             {selectedTeacherId ? (
                 <AnnualTeacherTable
                     schedule={schedule}
-                    selectedClassId={selectedTeacherId}
+                    selectedTeacherId={selectedTeacherId}
                     subjects={subjects}
                     teachers={teachers}
                     classes={classes}

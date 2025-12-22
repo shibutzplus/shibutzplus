@@ -40,7 +40,7 @@ const AnnualViewCell: React.FC<AnnualViewCellProps> = ({
     }
 
     const cellData = schedule[lookupId][day][hour];
-    const { teachers: teacherIds, subjects: subjectIds, classId } = cellData;
+    const { teachers: teacherIds, subjects: subjectIds, classes: classesIds } = cellData;
 
     // Helper to get names
     const getSubjectName = (id: string) => subjects.find((s) => s.id === id)?.name || "";
@@ -59,12 +59,12 @@ const AnnualViewCell: React.FC<AnnualViewCellProps> = ({
         // Scenario 1: Only Class Selected -> Subject + Teacher
         content = (
             <>
-                {!isActivityClass(selectedClassId) && subjectIds.map((sid, idx) => (
+                {!isActivityClass(selectedClassId) && subjectIds.map((sid) => (
                     <div key={sid} className={styles.subject}>
                         {getSubjectName(sid)}
                     </div>
                 ))}
-                {teacherIds.map((tid, idx) => (
+                {teacherIds.map((tid) => (
                     <div key={tid} className={styles.teacher}>
                         {getTeacherName(tid)}
                     </div>
@@ -75,12 +75,12 @@ const AnnualViewCell: React.FC<AnnualViewCellProps> = ({
         // Scenario 2: Only Teacher Selected -> Class + Subject
         content = (
             <>
-                {classId && (
+                {classesIds && classesIds.length > 0 && (
                     <div className={styles.class}>
-                        {getClassName(classId)}
+                        {classesIds.map((id) => getClassName(id)).join(", ")}
                     </div>
                 )}
-                {!isActivityClass(classId || "") && subjectIds.map((sid, idx) => (
+                {!classesIds?.some((id) => isActivityClass(id)) && subjectIds.map((sid) => (
                     <div key={sid} className={styles.subject}>
                         {getSubjectName(sid)}
                     </div>
@@ -96,7 +96,7 @@ const AnnualViewCell: React.FC<AnnualViewCellProps> = ({
         if (isTeacherInCell) {
             content = (
                 <>
-                    {subjectIds.map((sid, idx) => (
+                    {subjectIds.map((sid) => (
                         <div key={sid} className={styles.subject} style={{ fontWeight: "normal" }}>
                             {getSubjectName(sid)}
                         </div>

@@ -1,7 +1,4 @@
-import { drizzle } from 'drizzle-orm/neon-http';
-import { neon } from '@neondatabase/serverless';
 import { migrate } from 'drizzle-orm/neon-http/migrator';
-import * as schema from './schema';
 import { loadEnv } from './load-env';
 import { db } from './index';
 
@@ -9,9 +6,9 @@ import { db } from './index';
 export async function runMigrations() {
   // Load environment variables from .env.local
   loadEnv();
-  
+
   console.log('Running migrations...');
-  
+
   try {
     await migrate(db, { migrationsFolder: './drizzle' });
     console.log('Migrations completed successfully');

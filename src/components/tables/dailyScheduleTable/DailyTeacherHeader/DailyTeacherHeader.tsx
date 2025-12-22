@@ -8,23 +8,21 @@ import { useMainContext } from "@/context/MainContext";
 import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { BrightTextColor, BrightTextColorHover } from "@/style/root";
-import { TeacherType } from "@/models/types/teachers";
-import { useTeacherTableContext } from "@/context/TeacherTableContext";
 import styles from "../DailyTable/DailyTable.module.css";
 import useDeletePopup from "@/hooks/useDeletePopup";
 import Icons from "@/style/icons";
 
+import { TeacherType } from "@/models/types/teachers";
+
 type DailyTeacherHeaderProps = {
     columnId: string;
     type: ColumnType;
-    onTeacherClick?: (teacher: TeacherType) => void;
     onDelete?: (colId: string) => void;
 };
 
 const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
     columnId,
     type,
-    onTeacherClick,
     onDelete,
 }) => {
     const { teachers } = useMainContext();
@@ -35,7 +33,6 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
         deleteColumn,
         mapAvailableTeachers,
     } = useDailyTableContext();
-    const { fetchTeacherScheduleDate } = useTeacherTableContext();
     const [isLoading, setIsLoading] = useState(false);
     const { handleOpenPopup } = useDeletePopup();
 
@@ -105,13 +102,6 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
             handleOpenPopup("deleteDailyCol", msg, async () => onDelete(columnId));
         } else {
             handleOpenPopup("deleteDailyCol", msg, handleDeleteColumn);
-        }
-    };
-
-    const handleTeacherClick = async () => {
-        if (selectedTeacherData?.name && onTeacherClick) {
-            onTeacherClick(selectedTeacherData);
-            await fetchTeacherScheduleDate(selectedTeacherData, selectedDate);
         }
     };
 

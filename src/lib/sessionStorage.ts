@@ -13,7 +13,7 @@ export const getSessionStorage = <T>(key: string) => {
     if (!storage) return null;
     try {
         return JSON.parse(storage) as T;
-    } catch (e) {
+    } catch {
         return null;
     }
 };
@@ -23,7 +23,7 @@ export const setSessionStorage = <T>(key: string, value: T) => {
     try {
         sessionStorage.setItem(key, JSON.stringify(value));
         return true;
-    } catch (error) {
+    } catch {
         return false;
     }
 };
@@ -32,7 +32,7 @@ export const removeSessionStorage = (key: string) => {
     try {
         sessionStorage.removeItem(key);
         return true;
-    } catch (error) {
+    } catch {
         return false;
     }
 };
@@ -41,7 +41,7 @@ export const clearSessionStorage = () => {
     try {
         sessionStorage.clear();
         return true;
-    } catch (error) {
+    } catch {
         return false;
     }
 };

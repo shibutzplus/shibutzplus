@@ -4,7 +4,7 @@ import { GetSubjectsResponse } from "@/models/types/subjects";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
-import { eq } from "drizzle-orm";
+import { eq, asc } from "drizzle-orm";
 
 export async function getSubjectsAction(schoolId: string): Promise<GetSubjectsResponse> {
     try {
@@ -17,7 +17,8 @@ export async function getSubjectsAction(schoolId: string): Promise<GetSubjectsRe
             return await db
                 .select()
                 .from(schema.subjects)
-                .where(eq(schema.subjects.schoolId, schoolId));
+                .where(eq(schema.subjects.schoolId, schoolId))
+                .orderBy(asc(schema.subjects.name));
         });
 
         if (!subjects || subjects.length === 0) {

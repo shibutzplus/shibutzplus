@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { PortalProvider } from "@/context/PortalContext";
-import PortalPageLayout from "@/components/layout/pageLayouts/PortalPageLayout/PortalPageLayout";
 import { TeacherTableProvider } from "@/context/TeacherTableContext";
 
 export const metadata: Metadata = {

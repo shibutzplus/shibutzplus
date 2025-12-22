@@ -1,8 +1,7 @@
-import React from "react";
+import React, { useMemo } from "react";
 import styles from "./PreviewTeacherCell.module.css";
 import { ColumnType, ColumnTypeValues, DailyScheduleCell } from "@/models/types/dailySchedule";
 import EmptyCell from "@/components/ui/table/EmptyCell/EmptyCell";
-
 import { AppType } from "@/models/types";
 
 type PreviewTeacherCellProps = {
@@ -13,13 +12,20 @@ type PreviewTeacherCellProps = {
 };
 
 const PreviewTeacherCell: React.FC<PreviewTeacherCellProps> = ({ cell, appType }) => {
-    const classData = cell?.class;
+    const classesData = cell?.classes;
     const subjectData = cell?.subject;
     const subTeacherData = cell?.subTeacher;
     const teacherText = cell?.event;
     const isMissingTeacher = cell?.headerCol?.type === ColumnTypeValues.missingTeacher;
+    const isActivity = useMemo(() => classesData?.some((cls) => cls.activity), [classesData]);
 
-    if (appType === "public" && classData?.activity) {
+    const getTextContent = () => {
+        if (!classesData?.length) return "";
+        const classNames = classesData.map((cls) => cls.name).join(", ");
+        return classNames + (!isActivity && subjectData ? " | " + subjectData.name : "");
+    };
+
+    if (appType === "public" && isActivity) {
         return (
             <div className={styles.cellContent}>
                 <EmptyCell />
@@ -32,7 +38,7 @@ const PreviewTeacherCell: React.FC<PreviewTeacherCellProps> = ({ cell, appType }
     if (
         !subTeacherData &&
         !teacherText &&
-        (!isMissingTeacher || (!classData && !subjectData))
+        (!isMissingTeacher || (!classesData?.length && !subjectData))
     ) {
         return (
             <div className={styles.cellContent}>
@@ -44,15 +50,17 @@ const PreviewTeacherCell: React.FC<PreviewTeacherCellProps> = ({ cell, appType }
     return (
         <div className={styles.cellContent}>
             <div className={styles.innerCellContent}>
-                <span className={classData?.activity ? styles.activityText : ""}>
-                    {classData && classData.name}
-                    {subjectData && !classData?.activity && " | " + subjectData.name}
+                <span
+                    className={`${styles.textContent} ${isActivity ? styles.activityText : ""
+                        }`}
+                >
+                    {getTextContent()}
                 </span>
                 {subTeacherData ? (
                     <div className={styles.subTeacherName}>{subTeacherData.name}</div>
                 ) : teacherText ? (
                     <div className={styles.subTeacherName}>{teacherText}</div>
-                ) : isMissingTeacher && !classData?.activity ? (
+                ) : isMissingTeacher && !isActivity ? (
                     <div className={styles.missingSubTeacherName}>אין מילוי מקום</div>
                 ) : null}
             </div>

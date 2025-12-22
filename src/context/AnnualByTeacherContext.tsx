@@ -1,17 +1,11 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import {
-    WeeklySchedule,
-    AnnualScheduleType,
-    AnnualInputCellType,
-    AnnualScheduleRequest,
-} from "@/models/types/annualSchedule";
+import { WeeklySchedule, AnnualScheduleType, AnnualInputCellType, AnnualScheduleRequest, } from "@/models/types/annualSchedule";
 import { useMainContext } from "./MainContext";
 import { createSelectOptions } from "@/utils/format";
 import { TeacherType } from "@/models/types/teachers";
 import { Pair, SelectOption } from "@/models/types";
-import { sortByHebrewName } from "@/utils/sort";
 import useInitAnnualData from "@/hooks/useInitAnnualData";
 import { SelectMethod } from "@/models/types/actions";
 import { SubjectType } from "@/models/types/subjects";
@@ -20,7 +14,8 @@ import { deleteAnnualByTeacherAction } from "@/app/actions/DELETE/deleteAnnualBy
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { dayToNumber } from "@/utils/time";
-import { createAnnualRequests, createPairs } from "@/services/annual/initialize";
+import { createAnnualByTeacherRequests, createClassSubjectPairs, setNewScheduleTemplate, } from "@/services/annual/initialize";
+import { getSelectedTeacher } from "@/services/annual/get";
 
 interface AnnualByTeacherContextType {
     selectedTeacherId?: string;
@@ -87,7 +82,7 @@ export const AnnualByTeacherProvider: React.FC<{ children: React.ReactNode }> = 
 
     const teachersSelectOptions = (): SelectOption[] => {
         const regularTeachers = teachers?.filter((t) => t.role === "regular") || [];
-        return createSelectOptions<TeacherType>(sortByHebrewName(regularTeachers));
+        return createSelectOptions<TeacherType>(regularTeachers);
     };
 
     useEffect(() => {
@@ -187,30 +182,13 @@ export const AnnualByTeacherProvider: React.FC<{ children: React.ReactNode }> = 
         newElementObj?: any,
     ) => {
         if (!school?.id || !selectedTeacherId) return;
-        let newSchedule = { ...schedule };
-        // Ensure structure exists
-        if (!newSchedule[selectedTeacherId]) newSchedule[selectedTeacherId] = {};
-        if (!newSchedule[selectedTeacherId][day]) newSchedule[selectedTeacherId][day] = {};
-        if (!newSchedule[selectedTeacherId][day][hour]) {
-            newSchedule[selectedTeacherId][day][hour] = {
-                teachers: [selectedTeacherId], // The teacher is fixed in this view
-                subjects: [],
-                classId: undefined,
-            };
-        }
+        const newSchedule = { ...schedule };
 
-        // Update local state
-        if (type === "classes") {
-            if (elementIds.length > 0) {
-                newSchedule[selectedTeacherId][day][hour].classId = elementIds[0];
-            } else {
-                newSchedule[selectedTeacherId][day][hour].classId = undefined;
-            }
-        } else if (type === "subjects") {
-            newSchedule[selectedTeacherId][day][hour].subjects = elementIds;
-        }
+        setNewScheduleTemplate(newSchedule, selectedTeacherId, day, hour, selectedTeacherId);
 
-        const classId = newSchedule[selectedTeacherId][day][hour].classId;
+        newSchedule[selectedTeacherId][day][hour][type] = elementIds;
+
+        const classIds = newSchedule[selectedTeacherId][day][hour].classes;
         const subjectIds = newSchedule[selectedTeacherId][day][hour].subjects;
         setSchedule(newSchedule);
 
@@ -218,37 +196,29 @@ export const AnnualByTeacherProvider: React.FC<{ children: React.ReactNode }> = 
         if (method === "remove-value" || method === "clear") {
             const dayNum = dayToNumber(day);
             // If class or subjects are removed, we clear the cell for this teacher
-            if (!classId || subjectIds.length === 0) {
+            if (classIds.length === 0 || subjectIds.length === 0) {
                 await deleteAnnualScheduleItem(dayNum, hour, selectedTeacherId, school.id);
                 return; // stop here
             }
         }
 
         // 2) Incomplete data → do nothing yet
-        if (!classId || subjectIds.length === 0) {
+        if (classIds.length === 0 || subjectIds.length === 0) {
             return;
         }
 
-        // Prepare requests
+        // Create
         let subjectsList = [...(subjects || [])];
         if (method === "create-option" && newElementObj && type === "subjects") {
             subjectsList = [newElementObj as SubjectType];
         }
 
-        // We need to find the Class object
-        const selectedClassObj = classes?.find((c) => c.id === classId);
-
-        // We need the Teacher object
-        const selectedTeacherObj = teachers?.find((t) => t.id === selectedTeacherId);
-
-        if (!selectedClassObj || !selectedTeacherObj) return;
-
-        const pairs: Pair[] = createPairs([selectedTeacherId], subjectIds);
-
-        const requests: AnnualScheduleRequest[] = createAnnualRequests(
-            selectedClassObj,
+        const pairs: Pair[] = createClassSubjectPairs(classIds, subjectIds);
+        const selectedTeacherObj = getSelectedTeacher(teachers, selectedTeacherId);
+        const requests: AnnualScheduleRequest[] = createAnnualByTeacherRequests(
+            selectedTeacherObj,
             school,
-            [selectedTeacherObj],
+            classes,
             subjectsList,
             pairs,
             day,

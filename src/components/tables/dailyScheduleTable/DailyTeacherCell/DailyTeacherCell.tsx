@@ -29,17 +29,15 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
         clearTeacherCell,
         teacherClassMap,
     } = useDailyTableContext();
-    //TODO
-    // const { teacherAtIndex, classNameById } = useAnnualTable();
-    const [isLoading, setIsLoading] = useState(false);
 
     const hour = cell?.hour;
-    const classData = cell?.class;
+    const classesData = cell?.classes;
     const subjectData = cell?.subject;
     const subTeacherData = cell?.subTeacher;
     const teacherText = cell?.event;
     const headerData = cell?.headerCol;
 
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [selectedSubTeacher, setSelectedSubTeacher] = useState<string>(
         subTeacherData?.name || teacherText || "",
     );
@@ -91,6 +89,15 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
     const checkIfActivity = (value: string) =>
         Object.values(ActivityValues).some((option) => option === value);
 
+    const isActivity = useMemo(() => classesData?.some((cls) => cls.activity), [classesData]);
+
+    // TODO: move to utils
+    const getTooltipText = () => {
+        if (!classesData?.length) return "";
+        const classNames = classesData.map((cls) => cls.name).join(", ");
+        return classNames + (!isActivity && subjectData ? " | " + subjectData.name : "");
+    };
+
     const handleTeacherChange = async (methodType: "update" | "create", value: string) => {
         if (!hour || !columnId || !selectedDate || !headerData) return;
 
@@ -100,7 +107,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
             if (!cellData) return;
 
             // Handle empty value - clear the selection
-            if (value === EmptyValue) {
+            if (value === EmptyValue || value === "") {
                 setSelectedSubTeacher("");
                 const existingDailyId = mainDailyTable[selectedDate]?.[columnId]?.[hour]?.DBid;
                 if (existingDailyId) {
@@ -148,7 +155,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
                 );
                 if (!response) throw new Error();
             }
-        } catch (error) {
+        } catch {
             errorToast(messages.dailySchedule.createError);
             setSelectedSubTeacher("");
         } finally {
@@ -158,21 +165,14 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
 
     return (
         <div className={styles.cellContent}>
-            {classData && subjectData ? (
+            {classesData && classesData.length > 0 && subjectData ? (
                 <div className={styles.innerCellContent}>
-                    <Tooltip
-                        content={
-                            classData.name +
-                            (!classData?.activity ? " | " + subjectData.name : "")
-                        }
-                        on={["click", "scroll"]}
-                    >
+                    <Tooltip content={getTooltipText()} on={["click", "scroll"]}>
                         <div
-                            className={`${styles.classAndSubject} ${classData.activity ? styles.activityText : ""
+                            className={`${styles.classAndSubject} ${isActivity ? styles.activityText : ""
                                 }`}
                         >
-                            {classData.name}
-                            {!classData?.activity && " | " + subjectData.name}
+                            {getTooltipText()}
                         </div>
                     </Tooltip>
                     <div className={styles.teacherSelect}>
@@ -183,14 +183,13 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
                             placeholder="ממלא מקום"
                             isSearchable
                             isAllowAddNew
+                            isClearable
                             isDisabled={isLoading}
                             hasBorder
                             backgroundColor="transparent"
                             onCreate={(value: string) => handleTeacherChange("create", value)}
-                            menuWidth="210px"
-                            color={
-                                classData?.activity ? "var(--disabled-text-color)" : undefined
-                            }
+                            menuWidth="220px"
+                            color={isActivity ? "var(--disabled-text-color)" : undefined}
                         />
                     </div>
                 </div>

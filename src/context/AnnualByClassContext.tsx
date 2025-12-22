@@ -15,7 +15,11 @@ import { SelectMethod } from "@/models/types/actions";
 import { dayToNumber } from "@/utils/time";
 import { TeacherType } from "@/models/types/teachers";
 import { SubjectType } from "@/models/types/subjects";
-import { createAnnualRequests, createPairs, setNewScheduleTemplate, } from "@/services/annual/initialize";
+import {
+    createAnnualByClassRequests,
+    createTeacherSubjectPairs,
+    setNewScheduleTemplate,
+} from "@/services/annual/initialize";
 import { getSelectedClass } from "@/services/annual/get";
 
 interface AnnualByClassContextType {
@@ -91,13 +95,7 @@ export const AnnualByClassProvider: React.FC<{ children: ReactNode }> = ({ child
     }, [queueRows]);
 
     const classesSelectOptions = () => {
-        const sortedClasses = [...(classes || [])].sort((a, b) => {
-            if (a.activity !== b.activity) {
-                return a.activity ? 1 : -1;
-            }
-            return a.name.localeCompare(b.name, "he", { numeric: true });
-        });
-        return createSelectOptions<ClassType>(sortedClasses);
+        return createSelectOptions<ClassType>(classes || []);
     };
 
     const addNewAnnualScheduleItem = async (newScheduleItem: AnnualScheduleRequest) => {
@@ -112,7 +110,6 @@ export const AnnualByClassProvider: React.FC<{ children: ReactNode }> = ({ child
         }
         return undefined;
     };
-
 
     const deleteAnnualScheduleItem = async (
         day: number,
@@ -195,23 +192,13 @@ export const AnnualByClassProvider: React.FC<{ children: ReactNode }> = ({ child
         let newSchedule = { ...schedule };
         newSchedule = setNewScheduleTemplate(newSchedule, selectedClassId, day, hour);
 
-        // If not already filled, fill it and get the IDs
-        if (type === "teachers" || type === "subjects") {
-            newSchedule[selectedClassId][day][hour][type] = elementIds;
-        } else if (type === "classes") {
-            // In Class Context, we usually don't set classId via this method, but if we did:
-            if (elementIds.length > 0) {
-                newSchedule[selectedClassId][day][hour].classId = elementIds[0];
-            } else {
-                newSchedule[selectedClassId][day][hour].classId = undefined;
-            }
-        }
+        newSchedule[selectedClassId][day][hour][type] = elementIds;
         const teacherIds = schedule[selectedClassId][day][hour].teachers;
         const subjectIds = schedule[selectedClassId][day][hour].subjects;
         setSchedule(newSchedule);
 
         // 1) Handle deletions first
-        if (method === "remove-value") {
+        if (method === "remove-value" || method === "clear") {
             const dayNum = dayToNumber(day);
             if (subjectIds.length === 0 || teacherIds.length === 0) {
                 await deleteAnnualScheduleItem(dayNum, hour, selectedClassId, school.id);
@@ -224,15 +211,16 @@ export const AnnualByClassProvider: React.FC<{ children: ReactNode }> = ({ child
             return;
         }
 
+        // Create
         let teachersList = [...(teachers || [])];
         let subjectsList = [...(subjects || [])];
         if (method === "create-option" && newElementObj) {
             teachersList = type === "teachers" ? [newElementObj as TeacherType] : teachers || [];
             subjectsList = type === "subjects" ? [newElementObj as SubjectType] : subjects || [];
         }
-        const pairs: Pair[] = createPairs(teacherIds, subjectIds);
+        const pairs: Pair[] = createTeacherSubjectPairs(teacherIds, subjectIds);
         const selectedClassObj = getSelectedClass(classes, selectedClassId);
-        const requests: AnnualScheduleRequest[] = createAnnualRequests(
+        const requests: AnnualScheduleRequest[] = createAnnualByClassRequests(
             selectedClassObj,
             school,
             teachersList,

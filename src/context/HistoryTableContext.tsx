@@ -5,7 +5,6 @@ import { SelectOption } from "@/models/types";
 import {
     getCurrentDateComponents,
     buildDateString,
-    getSchoolYearInitialMonth,
     generateDayOptions,
     clampDayToMonth,
 } from "@/utils/time";
@@ -42,9 +41,8 @@ interface HistoryTableProviderProps {
 }
 
 export const HistoryTableProvider: React.FC<HistoryTableProviderProps> = ({ children }) => {
-    const { school, teachers } = useMainContext();
+    const { school } = useMainContext();
     const { year: currentYear, month: currentMonth, day: currentDay } = getCurrentDateComponents();
-    const initialMonth = getSchoolYearInitialMonth();
 
     const [selectedYear, setSelectedYear] = useState<string>(currentYear);
     const [selectedMonth, setSelectedMonth] = useState<string>(currentMonth);
