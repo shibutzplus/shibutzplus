@@ -58,7 +58,7 @@ const SignUpPage: NextPage = () => {
         const res = await signUp(formData);
 
         if (!res.success) {
-            setError(res.message);
+            setError(res.message || "An unknown error occurred");
             setIsLoading(false);
             return;
         }
@@ -112,7 +112,7 @@ const SignUpPage: NextPage = () => {
                     }
                     placeholder="בחר מגדר"
                     isSearchable={false}
-                    hasBorder
+                    hasBorder={true}
                 />
 
                 <DynamicInputSelect
@@ -127,7 +127,7 @@ const SignUpPage: NextPage = () => {
                     }
                     placeholder="בחר תפקיד"
                     isSearchable={false}
-                    hasBorder
+                    hasBorder={true}
                 />
 
                 <InputText
@@ -151,7 +151,7 @@ const SignUpPage: NextPage = () => {
                         }))
                     }
                     placeholder="בחר את סוג בית הספר..."
-                    hasBorder
+                    hasBorder={true}
                 />
 
                 <br />
