@@ -5,21 +5,45 @@ import styles from "./DailyPublishActionBtns.module.css";
 import usePublish from "@/hooks/usePublish";
 import Loading from "@/components/loading/Loading/Loading";
 import { useDailyTableContext } from "@/context/DailyTableContext";
+import useDeletePopup from "@/hooks/useDeletePopup";
 
 const DailyPublishActionBtns: React.FC = () => {
     const { isEditMode, isLoadingEditPage, changeDailyMode } = useDailyTableContext();
 
     const {
         publishDailySchedule,
+        unpublishDailySchedule,
         isLoading: publishLoading,
         onShareLink,
         isDisabled,
     } = usePublish();
 
+    const { handleOpenPopup } = useDeletePopup();
+
+    const handleUnpublishClick = () => {
+        if (unpublishDailySchedule) {
+            handleOpenPopup(
+                "deleteDailyCol",
+                "האם לבטל את הפרסום?",
+                unpublishDailySchedule,
+                "כן",
+                "לא",
+                <Icons.faq size={40} />,
+                true // isDefaultCancel
+            );
+        }
+    };
+
     return (
         <div className={styles.topNavBtnContainer}>
             {isDisabled ? (
-                <div className={styles.publishedStatus}>
+                <div
+                    className={`${styles.publishedStatus} ${styles.clickableStatus}`}
+                    onClick={handleUnpublishClick}
+                    title="לחצו לביטול הפרסום"
+                    role="button"
+                    tabIndex={0}
+                >
                     <Icons.success size={20} />
                     <span>פורסם</span>
                 </div>
@@ -58,7 +82,10 @@ const DailyPublishActionBtns: React.FC = () => {
                     hasBorder
                 />
             </span>
-        </div>
+
+
+
+        </div >
     );
 };
 
