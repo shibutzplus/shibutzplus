@@ -189,7 +189,7 @@ const DailyTable: React.FC<DailyTableProps> = ({
                                     headerColorClass={headerColorClass}
                                 >
                                     {type === "event" ? (
-                                        <DailyEventHeader columnId={colId} type={type} onDelete={isAnimating ? undefined : (id) => handleColumnAnimation(id, "remove")} />
+                                        <DailyEventHeader columnId={colId} onDelete={isAnimating ? undefined : (id) => handleColumnAnimation(id, "remove")} />
                                     ) : (
                                         <DailyTeacherHeader
                                             columnId={colId}

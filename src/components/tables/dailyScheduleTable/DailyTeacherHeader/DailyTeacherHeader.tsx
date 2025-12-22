@@ -18,7 +18,6 @@ type DailyTeacherHeaderProps = {
     columnId: string;
     type: ColumnType;
     onDelete?: (colId: string) => void;
-    onTeacherClick?: (teacher: TeacherType) => void;
 };
 
 const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({

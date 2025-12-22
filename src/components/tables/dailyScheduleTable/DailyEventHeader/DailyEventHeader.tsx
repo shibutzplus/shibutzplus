@@ -10,7 +10,6 @@ import styles from "../DailyTable/DailyTable.module.css";
 
 type DailyEventHeaderProps = {
     columnId: string;
-    type: ColumnType;
     onDelete?: (colId: string) => void;
 };
 
