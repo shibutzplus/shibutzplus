@@ -13,7 +13,7 @@ interface DeletePopupProps {
     confirmText?: string;
     cancelText?: string;
     Icon?: React.ElementType | React.ReactNode;
-    isDefaultCancel?: boolean;
+    defaultAnswer?: "yes" | "no";
 }
 
 const DeletePopup: React.FC<DeletePopupProps> = ({
@@ -23,7 +23,7 @@ const DeletePopup: React.FC<DeletePopupProps> = ({
     confirmText = "מחיקה",
     cancelText = "ביטול",
     Icon,
-    isDefaultCancel = false
+    defaultAnswer = "yes"
 }) => {
     const { closePopup } = usePopup();
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -57,17 +57,17 @@ const DeletePopup: React.FC<DeletePopupProps> = ({
 
             <div className={styles.buttonContainer}>
                 <button
-                    className={isDefaultCancel ? styles.cancelButton : styles.deleteButton}
+                    className={defaultAnswer === "no" ? styles.cancelButton : styles.deleteButton}
                     onClick={handleDelete}
                     disabled={isLoading}
-                    autoFocus={!isDefaultCancel}
+                    autoFocus={defaultAnswer === "yes"}
                 >
                     {isLoading ? <Loading size="S" /> : confirmText}
                 </button>
                 <button
-                    className={isDefaultCancel ? styles.deleteButton : styles.cancelButton}
+                    className={defaultAnswer === "no" ? styles.deleteButton : styles.cancelButton}
                     onClick={handleCancel}
-                    autoFocus={isDefaultCancel}
+                    autoFocus={defaultAnswer === "no"}
                 >
                     {cancelText}
                 </button>

@@ -66,43 +66,16 @@ const usePublish = () => {
                 const storageDates = getSessionPublishDates();
                 if (storageDates) {
                     const newStorageDates = storageDates.filter(d => d !== selectedDate);
-                    // We need a way to set the whole array, but setSessionPublishDates currently only takes a single string (date) and *adds* it or sets it?
-                    // Let's verify setSessionPublishDates implementation.
-                    // Assuming setSessionPublishDates handles array or we need to implement a remove helper.
-                    // Checking imports, setSessionPublishDates is imported from "@/lib/sessionStorage". 
-                    // I'll check that file in a moment, but constructing the logic now.
-                    // IF setSessionPublishDates only adds, I might need to access sessionStorage directly or check if there is a 'remove' or 'setAll' function.
-                    // For now I will assume I need to handle this.
-
-                    // Actually, let's look at setSessionPublishDates implementation first in the next step to be sure, 
-                    // but for this replacement, I will assume standard logic or come back to it.
-                    // Wait, I should not assume. 
-
-                    // Let's proceed with adding the function but maybe comment out the session storage part until I verify? 
-                    // No, that's sloppy.
-
-                    // I will check the file in the next step and then apply the edit. 
-                    // BUT I am in the middle of a multi_replace.
-
-                    // I will assume I can update the context and then I will fix the session storage part if needed.
-                    // Update school context
-                    setSchool(prev => prev ? { ...prev, publishDates: (prev.publishDates || []).filter(d => d !== selectedDate) } : prev);
-
-                    void pushSyncUpdate(UPDATE_TEACHER);
-                    successToast("הפרסום בוטל בהצלחה", 3000); // "Publish cancelled successfully"
-                    setBtnTitle("פרסום המערכת");
-                    setIsDisabled(false);
-
-                    // Helper to update session storage manually if needed for now
-                    const currentSession = sessionStorage.getItem('publish_dates');
-                    if (currentSession) {
-                        const parsed = JSON.parse(currentSession);
-                        if (Array.isArray(parsed)) {
-                            const updated = parsed.filter((d: string) => d !== selectedDate);
-                            sessionStorage.setItem('publish_dates', JSON.stringify(updated));
-                        }
-                    }
+                    sessionStorage.setItem('publish_dates', JSON.stringify(newStorageDates));
                 }
+
+                // Update school context
+                setSchool(prev => prev ? { ...prev, publishDates: (prev.publishDates || []).filter(d => d !== selectedDate) } : prev);
+
+                void pushSyncUpdate(UPDATE_TEACHER);
+                successToast("הפרסום בוטל בהצלחה", 3000);
+                setBtnTitle("פרסום המערכת");
+                setIsDisabled(false);
             } else {
                 errorToast(messages.common.serverError, Infinity);
             }

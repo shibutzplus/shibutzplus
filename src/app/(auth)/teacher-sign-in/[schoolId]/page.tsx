@@ -1,6 +1,7 @@
 // **Teacher Sign-In Logic**
 //
-// URL without parameters             → Go to teacher login and show a wrong URL message.
+// URL without parameters             → Go to ContactAdminError and display a message.
+// URL with a wrong school parameter  → Go to ContactAdminError and display a message.
 // URL with `school_id` only          → Show regular teacher list for that school. (Clear only if substitute teacher in localStorage)
 // URL with `school_id` + `teacher_id`→ Auto-login to the teacher’s portal
 // URL with `auth=logout`             → Display Login but show teacher list only for regular teachers
@@ -22,6 +23,7 @@ import { TeacherType } from "@/models/types/teachers";
 import { setStorageTeacher, getStorageTeacher, removeStorageTeacher } from "@/lib/localStorage";
 import { getTeacherByIdAction } from "@/app/actions/GET/getTeacherByIdAction";
 import { getSchoolAction } from "@/app/actions/GET/getSchoolAction";
+import ContactAdminError from "@/components/auth/ContactAdminError/ContactAdminError";
 
 export default function TeacherSignInPage() {
     const params = useParams();
@@ -35,6 +37,7 @@ export default function TeacherSignInPage() {
     const [isLoadingTeachers, setIsLoadingTeachers] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
     const [schoolName, setSchoolName] = useState<string>("");
+    const [isError, setIsError] = useState(false);
 
     const fetchTeachers = async () => {
         if (!schoolId) return;
@@ -50,13 +53,11 @@ export default function TeacherSignInPage() {
                 setTeachers(teacherOptions);
                 setTeachersFull(response.data);
             } else {
-                // Back to login page on error
-                route.push(`${router.teacherSignIn.p}`);
+                setIsError(true);
             }
         } catch (error) {
             console.error("Error fetching teachers:", error);
-            errorToast(messages.auth.login.failed);
-            route.push(`${router.teacherSignIn.p}`);
+            setIsError(true);
         } finally {
             setIsLoadingTeachers(false);
         }
@@ -68,9 +69,11 @@ export default function TeacherSignInPage() {
             const resp = await getSchoolAction(schoolId);
             if (resp.success && resp.data) {
                 setSchoolName(resp.data.name);
+            } else {
+                setIsError(true);
             }
         } catch {
-            //console.error("Error fetching school:", error);
+            setIsError(true);
         }
     };
 
@@ -126,6 +129,10 @@ export default function TeacherSignInPage() {
             }
         })();
     }, [route, schoolId, teacherId, searchParams]);
+
+    if (isError) {
+        return <ContactAdminError />;
+    }
 
     if (isLoading) {
         return <SignInLoadingPage />;

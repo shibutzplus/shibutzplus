@@ -1,22 +1,23 @@
-import styles from "./teacherSignIn.module.css";
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { getStorageTeacher } from "@/lib/localStorage";
+import routePath from "@/routes";
+import ContactAdminError from "@/components/auth/ContactAdminError/ContactAdminError";
 
 export default function TeacherSignIn() {
-  return (
-    <main className={styles.container}>
-      <div className={styles.mainSection}>
-        <div
-          style={{
-            textAlign: "center",
-            fontWeight: "bold",
-            lineHeight: 1.5,
-            fontSize: "1.2rem",
-            margin: "2rem 0",
-          }}
-        >
-          אנא צרו קשר עם הנהלת בית הספר לקבלת קישור תקין
-        </div>
-        <footer className={styles.copyright}>&copy; שיבוץ+, כל הזכויות שמורות. 2025</footer>
-      </div>
-    </main>
-  );
+  const router = useRouter();
+
+  useEffect(() => {
+    // Check local storage for teacher data
+    const teacherData = getStorageTeacher();
+
+    if (teacherData && teacherData.schoolId && teacherData.id) {
+      // If data exists, redirect to the teacher portal
+      router.push(`${routePath.teacherPortal.p}/${teacherData.schoolId}/${teacherData.id}`);
+    }
+  }, [router]);
+
+  return <ContactAdminError />;
 }

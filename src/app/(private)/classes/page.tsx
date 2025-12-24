@@ -15,7 +15,9 @@ const ClassesPage: NextPage = () => {
     const sortedClasses = React.useMemo(
         () => {
             if (!classes) return undefined;
-            return classes.filter(c => !c.activity && c.name.includes(searchTerm));
+            return classes
+                .filter(c => !c.activity && c.name.includes(searchTerm))
+                .sort((a, b) => a.name.localeCompare(b.name, "he", { numeric: true }));
         },
         [classes, searchTerm],
     );

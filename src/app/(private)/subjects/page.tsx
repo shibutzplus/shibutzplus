@@ -15,7 +15,9 @@ const SubjectsPage: NextPage = () => {
     const sortedSubjects = React.useMemo(
         () => {
             if (!subjects) return undefined;
-            return subjects.filter(s => !s.activity && s.name.includes(searchTerm));
+            return subjects
+                .filter(s => !s.activity && s.name.includes(searchTerm))
+                .sort((a, b) => a.name.localeCompare(b.name, "he", { numeric: true }));
         },
         [subjects, searchTerm],
     );

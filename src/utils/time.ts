@@ -18,7 +18,6 @@ export const HOURS_IN_DAY = 10;
 export const AUTO_SWITCH_TIME = "16:00";
 
 // YYYY-MM-DD format
-// YYYY-MM-DD format
 export const getDateReturnString = (date: Date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -57,7 +56,6 @@ export const getTwoDaysFromNowDateString = () => {
 };
 
 // -- Day -- //
-
 export const getToday = () => {
     return getDateReturnString(new Date());
 };
@@ -94,17 +92,8 @@ export const getCurrentYear = (): number => {
 };
 
 // -- Date -- //
-
 export const getDateNumberByDate = (date: Date) => {
     return date.getDate();
-};
-
-export const getDateNumberByDateString = (date: string) => {
-    return new Date(date).getDate();
-};
-
-export const getTodayDateNumber = () => {
-    return getDateNumberByDate(new Date());
 };
 
 export const israelTimezoneDate = () => {
@@ -155,29 +144,6 @@ export const getSessionMaxAge = (remember: boolean) => (remember ? 30 * 24 * 60 
 
 export const COOKIES_EXPIRE_TIME = 365;
 
-//--
-
-export const getCurrentWeekEntries = (data?: DailyScheduleType[]) => {
-    // Filter entries to only include the current week
-    const today = new Date();
-    const currentDay = today.getDay(); // 0 = Sunday, 6 = Saturday
-
-    // Calculate the start and end of the current week (Sunday to Saturday)
-    const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - currentDay); // Go back to Sunday
-
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6); // Go forward to Saturday
-
-    // Filter entries to only include the current week
-    const currentWeekEntries = data?.filter((entry) => {
-        const entryDate = new Date(entry.date);
-        return entryDate >= startOfWeek && entryDate <= endOfWeek;
-    });
-
-    return currentWeekEntries;
-};
-
 // -- History -- //
 
 export const pad2 = (n: number) => {
@@ -199,38 +165,12 @@ export const getCurrentDateComponents = () => {
     return { year, month, day };
 };
 
-// Parse YYYY-MM-DD string into components
-export const parseDateString = (dateStr: string) => {
-    if (!isYYYYMMDD(dateStr)) return null;
-
-    const year = dateStr.slice(0, 4);
-    const month = String(parseInt(dateStr.slice(5, 7), 10)); // "1".."12"
-    const day = String(parseInt(dateStr.slice(8, 10), 10)); // "1".."31"
-
-    return { year, month, day };
-};
-
 // Build YYYY-MM-DD string from components
 export const buildDateString = (year: string, month: string, day: string) => {
     const yNum = parseInt(year, 10);
     const mNum = parseInt(month, 10);
     const dNum = parseInt(day, 10);
     return `${yNum}-${pad2(mNum)}-${pad2(dNum)}`;
-};
-
-// Get today's date as YYYY-MM-DD string
-export const getTodayString = () => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth() + 1;
-    const day = now.getDate();
-    return `${year}-${pad2(month)}-${pad2(day)}`;
-};
-
-// Get initial month for school year (fallback to September if July/August)
-export const getSchoolYearInitialMonth = () => {
-    const currentMonth = new Date().getMonth() + 1; // 1-12
-    return currentMonth === 7 || currentMonth === 8 ? "9" : `${currentMonth}`;
 };
 
 // Generate day options for select dropdown
