@@ -16,7 +16,9 @@ const GroupsPage: NextPage = () => {
         () => {
             if (!classes) return undefined;
             // Filter for activity=true (groups)
-            return classes.filter(c => c.activity && c.name.includes(searchTerm));
+            return classes
+                .filter(c => c.activity && c.name.includes(searchTerm))
+                .sort((a, b) => a.name.localeCompare(b.name, "he", { numeric: true }));
         },
         [classes, searchTerm],
     );

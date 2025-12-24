@@ -17,7 +17,8 @@ const SubstitutePage: NextPage = () => {
         () => {
             if (!teachers) return undefined;
             const filtered = teachers.filter(t => t.name.includes(searchTerm));
-            return filterTeachersByRole(filtered, TeacherRoleValues.SUBSTITUTE);
+            const hasRole = filterTeachersByRole(filtered, TeacherRoleValues.SUBSTITUTE);
+            return hasRole.sort((a, b) => a.name.localeCompare(b.name, "he", { numeric: true }));
         },
         [teachers, searchTerm],
     );

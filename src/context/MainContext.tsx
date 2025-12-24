@@ -99,6 +99,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
             setSubjects((prev) => {
                 if (!response.data) return prev;
                 const updatedSubjects = prev ? [...prev, response.data] : [response.data];
+                updatedSubjects.sort((a, b) => a.name.localeCompare(b.name, "he", { numeric: true }));
                 setStorageSubjects(updatedSubjects);
                 return updatedSubjects;
             });
@@ -144,6 +145,10 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
             setClasses((prev) => {
                 if (!response.data) return prev;
                 const updatedClasses = prev ? [...prev, response.data] : [response.data];
+                updatedClasses.sort((a, b) => {
+                    if (a.activity !== b.activity) return a.activity ? 1 : -1;
+                    return a.name.localeCompare(b.name, "he", { numeric: true });
+                });
                 setStorageClasses(updatedClasses);
                 return updatedClasses;
             });
@@ -227,6 +232,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
             setTeachers((prev) => {
                 if (!response.data) return prev;
                 const updatedTeachers = prev ? [...prev, response.data] : [response.data];
+                updatedTeachers.sort((a, b) => a.name.localeCompare(b.name, "he", { numeric: true }));
                 setStorageTeachers(updatedTeachers);
                 return updatedTeachers;
             });
