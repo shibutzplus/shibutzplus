@@ -14,16 +14,20 @@ import Icons from "@/style/icons";
 
 import { TeacherType } from "@/models/types/teachers";
 
+import { useTeacherTableContext } from "@/context/TeacherTableContext";
+
 type DailyTeacherHeaderProps = {
     columnId: string;
     type: ColumnType;
     onDelete?: (colId: string) => void;
+    onTeacherClick?: (teacher: TeacherType) => void;
 };
 
 const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
     columnId,
     type,
     onDelete,
+    onTeacherClick,
 }) => {
     const { teachers } = useMainContext();
     const {
@@ -33,11 +37,33 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
         deleteColumn,
         mapAvailableTeachers,
     } = useDailyTableContext();
+    const { fetchTeacherScheduleDate } = useTeacherTableContext(); // Added context
     const [isLoading, setIsLoading] = useState(false);
     const { handleOpenPopup } = useDeletePopup();
 
+    // Menu state
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const menuRef = React.useRef<HTMLDivElement>(null);
+
     const selectedTeacherData =
         mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.headerTeacher;
+
+    // Close menu when clicking outside
+    React.useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+                setIsMenuOpen(false);
+            }
+        };
+
+        if (isMenuOpen) {
+            document.addEventListener("mousedown", handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [isMenuOpen]);
 
     const handleTeacherChange = async (value: string) => {
         const teacherId = value;
@@ -93,8 +119,7 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
         }
     };
 
-    const handleDeleteClick = (e: React.MouseEvent) => {
-        e.stopPropagation();
+    const handleDeleteClick = () => {
         const label = selectedTeacherData?.name || "המורה";
         const msg = `האם למחוק את ${label}?`;
 
@@ -105,14 +130,58 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
         }
     };
 
+    const handlePreviewClick = async () => {
+        if (selectedTeacherData && onTeacherClick) {
+            await fetchTeacherScheduleDate(selectedTeacherData, selectedDate);
+            onTeacherClick(selectedTeacherData);
+        }
+        setIsMenuOpen(false);
+    };
+
+    const toggleMenu = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setIsMenuOpen((prev) => !prev);
+    };
+
     return (
         <div className={styles.headerContentWrapper}>
-            <Icons.delete
-                className={styles.trashIcon}
-                onClick={handleDeleteClick}
-                size={16}
-                title="מחיקת עמודה"
-            />
+            <div className={styles.menuWrapper} ref={menuRef}>
+                <Icons.menuVertical
+                    className={styles.trashIcon} // Keeping same class for positioning/style if appropriate, or use a new one
+                    onClick={toggleMenu}
+                    size={16}
+                    title="אפשרויות"
+                    style={{ cursor: "pointer" }}
+                />
+                {isMenuOpen && (
+                    <div className={styles.menuDropdown}>
+                        {/* Delete Option */}
+                        <div
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setIsMenuOpen(false);
+                                handleDeleteClick();
+                            }}
+                            className={`${styles.menuItem} ${styles.menuItemDelete}`}
+                        >
+                            <Icons.delete size={14} />
+                            <span>מחיקה</span>
+                        </div>
+
+                        {/* Preview Option - Only if onTeacherClick is provided and teacher is selected */}
+                        {onTeacherClick && selectedTeacherData && (
+                            <div
+                                onClick={handlePreviewClick}
+                                className={styles.menuItem}
+                            >
+                                <Icons.eye size={14} />
+                                <span>תצוגה מקדימה</span>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
+
             <div className={styles.inputSelectWrapper}>
                 <DynamicInputSelect
                     options={filteredTeacherOptions}

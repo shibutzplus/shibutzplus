@@ -22,6 +22,27 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete 
 
     const [prevValue, setPrevValue] = useState<string>(selectedEventData || "");
 
+    // Menu state
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const menuRef = React.useRef<HTMLDivElement>(null);
+
+    // Close menu when clicking outside
+    React.useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+                setIsMenuOpen(false);
+            }
+        };
+
+        if (isMenuOpen) {
+            document.addEventListener("mousedown", handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [isMenuOpen]);
+
     const handleChange = (e: React.FocusEvent<HTMLInputElement>) => {
         const newValue = e.target.value.trim();
 
@@ -58,14 +79,37 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete 
         }
     };
 
+    const toggleMenu = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setIsMenuOpen((prev) => !prev);
+    };
+
     return (
         <div className={styles.headerContentWrapper}>
-            <Icons.delete
-                className={styles.trashIcon}
-                onClick={handleDeleteClick}
-                size={16}
-                title="מחיקת עמודה"
-            />
+            <div className={styles.menuWrapper} ref={menuRef}>
+                <Icons.menuVertical
+                    className={styles.trashIcon}
+                    onClick={toggleMenu}
+                    size={16}
+                    title="אפשרויות"
+                />
+                {isMenuOpen && (
+                    <div className={styles.menuDropdown}>
+                        {/* Delete Option */}
+                        <div
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setIsMenuOpen(false);
+                                handleDeleteClick();
+                            }}
+                            className={`${styles.menuItem} ${styles.menuItemDelete}`}
+                        >
+                            <Icons.delete size={14} />
+                            <span>מחיקה</span>
+                        </div>
+                    </div>
+                )}
+            </div>
             <div className={styles.inputSelectWrapper}>
                 <InputText
                     placeholder="כותרת האירוע"

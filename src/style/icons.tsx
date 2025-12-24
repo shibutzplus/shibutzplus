@@ -13,7 +13,7 @@ import {
 } from "react-icons/io5";
 import { IoMdRefresh } from "react-icons/io";
 import { RiEdit2Fill, RiDeleteBin6Line } from "react-icons/ri";
-import { BsMegaphoneFill, BsCalendar4Event } from "react-icons/bs";
+import { BsMegaphoneFill, BsCalendar4Event, BsThreeDotsVertical } from "react-icons/bs";
 import { MdPersonAdd, MdPerson, MdSwapHoriz, MdOpenInNew, MdFileUpload } from "react-icons/md";
 import { FaPlus } from "react-icons/fa6";
 import { FaSave, FaShareAlt, FaQuestion } from "react-icons/fa";
@@ -55,6 +55,7 @@ const Icons = {
     upload: MdFileUpload,
     groupSolid: IoPeopleSharp,
     group: IoPeopleOutline,
+    menuVertical: BsThreeDotsVertical,
 };
 
 export default Icons;

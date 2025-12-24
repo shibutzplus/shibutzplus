@@ -11,6 +11,7 @@ import DailyEventCell from "../DailyEventCell/DailyEventCell";
 import { useColumnAnimation } from "./useColumnAnimation";
 import { useMainContext } from "@/context/MainContext";
 import { HOURS_IN_DAY } from "@/utils/time";
+import { TeacherType } from "@/models/types/teachers";
 
 type AnimatedHeaderWrapperProps = {
     colIndex: number;
@@ -83,11 +84,13 @@ AnimatedCellWrapper.displayName = "AnimatedCellWrapper";
 type DailyTableProps = {
     mainDailyTable: DailySchedule;
     selectedDate: string;
+    onTeacherClick?: (teacher: TeacherType) => void;
 };
 
 const DailyTable: React.FC<DailyTableProps> = ({
     mainDailyTable,
     selectedDate,
+    onTeacherClick,
 }) => {
     const { settings } = useMainContext();
     const hoursNum = settings?.hoursNum || HOURS_IN_DAY;
@@ -195,6 +198,7 @@ const DailyTable: React.FC<DailyTableProps> = ({
                                             columnId={colId}
                                             type={type}
                                             onDelete={isAnimating ? undefined : (id) => handleColumnAnimation(id, "remove")}
+                                            onTeacherClick={onTeacherClick}
                                         />
                                     )}
                                 </AnimatedHeaderWrapper>
