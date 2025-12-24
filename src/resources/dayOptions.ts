@@ -1,19 +1,8 @@
 import { SelectOption } from "@/models/types";
 import {
-    DAYS_OF_WEEK,
-    getDateReturnString,
-    getDayNumberByDate,
-    getTodayDateString,
-    getTomorrowDateString,
-    SATURDAY_NUMBER,
-    ONE_DAY,
-    israelTimezoneDate,
-    generateDateRange,
-    getCurrentMonth,
-    getCurrentYear,
-    israelToday,
-    DAYS_OF_WEEK_FORMAT,
-    formatTMDintoDMY,
+    DAYS_OF_WEEK, getDateReturnString, getDayNumberByDate, getTodayDateString,
+    getTomorrowDateString, SATURDAY_NUMBER, ONE_DAY, israelTimezoneDate, generateDateRange,
+    getCurrentMonth, getCurrentYear, israelToday, DAYS_OF_WEEK_FORMAT, formatTMDintoDMY,
 } from "@/utils/time";
 
 export function getIsraeliDateOptions(): SelectOption[] {

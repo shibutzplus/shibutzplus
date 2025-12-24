@@ -7,6 +7,7 @@ import PreviewTable from "@/components/tables/previewTable/PreviewTable/PreviewT
 import { usePortalContext } from "@/context/PortalContext";
 import Preloader from "@/components/ui/Preloader/Preloader";
 import NotPublished from "@/components/empty/NotPublished/NotPublished";
+import ContactAdminError from "@/components/auth/ContactAdminError/ContactAdminError";
 
 const PublishedPortalPage: NextPage = () => {
     const {
@@ -20,9 +21,26 @@ const PublishedPortalPage: NextPage = () => {
         settings,
     } = usePortalContext();
 
+    const [showError, setShowError] = React.useState(false);
+
+    useEffect(() => {
+        // If teacher is already loaded, we are good
+        if (teacher) return;
+
+        // Check local storage directly
+        const stored = localStorage.getItem("teacher_data"); // Helper function might be better but direct access is sync
+        if (!stored) {
+            setShowError(true);
+        }
+    }, [teacher]);
+
     useEffect(() => {
         fetchPublishScheduleData();
     }, [selectedDate, teacher?.id, schoolId]);
+
+    if (showError && !teacher) {
+        return <ContactAdminError />;
+    }
 
     if (!hasFetched || isDatesLoading) {
         return (
