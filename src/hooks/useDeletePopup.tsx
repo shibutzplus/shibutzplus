@@ -12,7 +12,7 @@ const useDeletePopup = () => {
         confirmBtnText?: string,
         cancelBtnText?: string,
         Icon?: React.ElementType | React.ReactNode,
-        isDefaultCancel?: boolean,
+        defaultAnswer?: "yes" | "no",
     ) => {
         openPopup(
             type,
@@ -24,7 +24,7 @@ const useDeletePopup = () => {
                 confirmText={confirmBtnText}
                 cancelText={cancelBtnText}
                 Icon={Icon}
-                isDefaultCancel={isDefaultCancel}
+                defaultAnswer={defaultAnswer}
             />,
         );
     };

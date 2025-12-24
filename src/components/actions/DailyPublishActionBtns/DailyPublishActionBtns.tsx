@@ -29,7 +29,7 @@ const DailyPublishActionBtns: React.FC = () => {
                 "כן",
                 "לא",
                 <Icons.faq size={40} />,
-                true // isDefaultCancel
+                "yes" // defaultAnswer
             );
         }
     };
