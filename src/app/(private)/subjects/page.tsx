@@ -7,6 +7,7 @@ import AddSubjectRow from "@/components/details/subjectDetails/AddSubjectRow/Add
 import SubjectRow from "@/components/details/subjectDetails/SubjectRow/SubjectRow";
 import { SubjectType } from "@/models/types/subjects";
 import { useMainContext } from "@/context/MainContext";
+import { sortByName } from "@/utils/sort";
 
 const SubjectsPage: NextPage = () => {
     const { subjects } = useMainContext();
@@ -17,7 +18,7 @@ const SubjectsPage: NextPage = () => {
             if (!subjects) return undefined;
             return subjects
                 .filter(s => !s.activity && s.name.includes(searchTerm))
-                .sort((a, b) => a.name.localeCompare(b.name, "he", { numeric: true }));
+                .sort(sortByName);
         },
         [subjects, searchTerm],
     );

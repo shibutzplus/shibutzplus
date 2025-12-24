@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { useMainContext } from "./MainContext";
 import { createSelectOptions } from "@/utils/format";
+import { compareHebrew, sortByName } from "@/utils/sort";
 import { ClassType } from "@/models/types/classes";
 import { TeacherType, TeacherRoleValues } from "@/models/types/teachers";
 import { AnnualScheduleType, WeeklySchedule } from "@/models/types/annualSchedule";
@@ -87,7 +88,7 @@ export const AnnualViewProvider: React.FC<{ children: ReactNode }> = ({ children
             if (a.activity !== b.activity) {
                 return a.activity ? 1 : -1;
             }
-            return a.name.localeCompare(b.name, "he", { numeric: true });
+            return compareHebrew(a.name, b.name);
         });
         return createSelectOptions<ClassType>(sortedClasses);
     };
@@ -95,7 +96,7 @@ export const AnnualViewProvider: React.FC<{ children: ReactNode }> = ({ children
     const teachersSelectOptions = () => {
         const sortedTeachers = [...(teachers || [])]
             .filter((t) => t.role === TeacherRoleValues.REGULAR)
-            .sort((a, b) => a.name.localeCompare(b.name, "he"));
+            .sort(sortByName);
         return createSelectOptions<TeacherType>(sortedTeachers);
     };
 

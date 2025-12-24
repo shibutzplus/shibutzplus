@@ -370,3 +370,13 @@ export const sortDailyColumnIdsByType = (
         return getTypeOrder(aType) - getTypeOrder(bType);
     });
 };
+
+// General Hebrew sort helper
+export const compareHebrew = (a: string, b: string) => {
+    return a.localeCompare(b, "he", { numeric: true });
+};
+
+// Sort objects by name property
+export const sortByName = <T extends { name: string }>(a: T, b: T) => {
+    return compareHebrew(a.name, b.name);
+};

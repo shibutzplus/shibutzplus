@@ -23,6 +23,7 @@ import {
 } from "@/lib/localStorage";
 import { isCacheFresh } from "@/utils/time";
 import { checkForUpdates } from "@/services/syncService";
+import { compareHebrew, sortByName } from "@/utils/sort";
 
 interface useInitDataProps {
     school: SchoolType | undefined;
@@ -100,30 +101,30 @@ const useInitData = ({
                     classesPromise = changed
                         ? getClassesFromDB(schoolId)
                         : promiseFromCacheOrDB<ClassType[], GetClassesResponse>(
-                              schoolId,
-                              getStorageClasses(),
-                              getClassesFromDB,
-                          );
+                            schoolId,
+                            getStorageClasses(),
+                            getClassesFromDB,
+                        );
                 }
 
                 if (!teachers) {
                     teachersPromise = changed
                         ? getTeachersFromDB(schoolId)
                         : promiseFromCacheOrDB<TeacherType[], GetTeachersResponse>(
-                              schoolId,
-                              getStorageTeachers(),
-                              getTeachersFromDB,
-                          );
+                            schoolId,
+                            getStorageTeachers(),
+                            getTeachersFromDB,
+                        );
                 }
 
                 if (!subjects) {
                     subjectsPromise = changed
                         ? getSubjectsFromDB(schoolId)
                         : promiseFromCacheOrDB<SubjectType[], GetSubjectsResponse>(
-                              schoolId,
-                              getStorageSubjects(),
-                              getSubjectsFromDB,
-                          );
+                            schoolId,
+                            getStorageSubjects(),
+                            getSubjectsFromDB,
+                        );
                 }
 
                 const [schoolRes, classesRes, teachersRes, subjectsRes] = await Promise.all([
@@ -138,19 +139,19 @@ const useInitData = ({
                 }
 
                 if (teachersRes && teachersRes.success && teachersRes.data) {
-                    const sortedTeachers = [...teachersRes.data].sort((a, b) => a.name.localeCompare(b.name, "he", { numeric: true }));
+                    const sortedTeachers = [...teachersRes.data].sort(sortByName);
                     setTeachers(sortedTeachers);
                     setStorageTeachers(sortedTeachers);
                 }
                 if (subjectsRes && subjectsRes.success && subjectsRes.data) {
-                    const sortedSubjects = [...subjectsRes.data].sort((a, b) => a.name.localeCompare(b.name, "he", { numeric: true }));
+                    const sortedSubjects = [...subjectsRes.data].sort(sortByName);
                     setSubjects(sortedSubjects);
                     setStorageSubjects(sortedSubjects);
                 }
                 if (classesRes && classesRes.success && classesRes.data) {
                     const sortedClasses = [...classesRes.data].sort((a, b) => {
                         if (a.activity !== b.activity) return a.activity ? 1 : -1;
-                        return a.name.localeCompare(b.name, "he", { numeric: true });
+                        return compareHebrew(a.name, b.name);
                     });
                     setClasses(sortedClasses);
                     setStorageClasses(sortedClasses);

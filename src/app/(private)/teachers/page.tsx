@@ -8,6 +8,7 @@ import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import AddTeacherRow from "@/components/details/teacherDetails/AddTeacherRow/AddTeacherRow";
 import TeacherRow from "@/components/details/teacherDetails/TeacherRow/TeacherRow";
 import { filterTeachersByRole } from "@/utils/format";
+import { sortByName } from "@/utils/sort";
 
 
 const TeachersPage: NextPage = () => {
@@ -19,7 +20,7 @@ const TeachersPage: NextPage = () => {
             if (!teachers) return undefined;
             const filtered = teachers.filter(t => t.name.includes(searchTerm));
             const hasRole = filterTeachersByRole(filtered, TeacherRoleValues.REGULAR);
-            return hasRole.sort((a, b) => a.name.localeCompare(b.name, "he", { numeric: true }));
+            return hasRole.sort(sortByName);
         },
         [teachers, searchTerm],
     );
