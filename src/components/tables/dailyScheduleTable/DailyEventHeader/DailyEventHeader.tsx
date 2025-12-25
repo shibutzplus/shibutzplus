@@ -11,10 +11,12 @@ import styles from "../DailyTable/DailyTable.module.css";
 type DailyEventHeaderProps = {
     columnId: string;
     onDelete?: (colId: string) => void;
+    isFirst?: boolean;
+    isLast?: boolean;
 };
 
-const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete }) => {
-    const { populateEventColumn, deleteColumn, mainDailyTable, selectedDate } =
+const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete, isFirst, isLast }) => {
+    const { populateEventColumn, deleteColumn, mainDailyTable, selectedDate, deleteEventCell, moveColumn } =
         useDailyTableContext();
 
     const selectedEventData =
@@ -88,7 +90,7 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete 
         <div className={styles.headerContentWrapper}>
             <div className={styles.menuWrapper} ref={menuRef}>
                 <Icons.menuVertical
-                    className={styles.trashIcon}
+                    className={styles.openMenu}
                     onClick={toggleMenu}
                     size={16}
                     title="אפשרויות"
@@ -106,6 +108,36 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete 
                         >
                             <Icons.delete size={14} />
                             <span>מחיקה</span>
+                        </div>
+
+                        <div className={styles.menuSeparator} />
+
+                        {/* Move Right Option */}
+                        <div
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                if (isFirst) return;
+                                setIsMenuOpen(false);
+                                moveColumn && moveColumn(columnId, "right");
+                            }}
+                            className={`${styles.menuItem} ${isFirst ? styles.menuItemDisabled : ""}`}
+                        >
+                            <Icons.arrowRight size={14} />
+                            <span>הזז ימינה</span>
+                        </div>
+
+                        {/* Move Left Option */}
+                        <div
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                if (isLast) return;
+                                setIsMenuOpen(false);
+                                moveColumn && moveColumn(columnId, "left");
+                            }}
+                            className={`${styles.menuItem} ${isLast ? styles.menuItemDisabled : ""}`}
+                        >
+                            <Icons.arrowLeft size={14} />
+                            <span>הזז שמאלה</span>
                         </div>
                     </div>
                 )}

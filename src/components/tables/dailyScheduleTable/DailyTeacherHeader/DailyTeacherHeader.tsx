@@ -21,6 +21,8 @@ type DailyTeacherHeaderProps = {
     type: ColumnType;
     onDelete?: (colId: string) => void;
     onTeacherClick?: (teacher: TeacherType) => void;
+    isFirst?: boolean;
+    isLast?: boolean;
 };
 
 const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
@@ -28,15 +30,12 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
     type,
     onDelete,
     onTeacherClick,
+    isFirst,
+    isLast,
 }) => {
     const { teachers } = useMainContext();
-    const {
-        mainDailyTable,
-        selectedDate,
-        populateTeacherColumn,
-        deleteColumn,
-        mapAvailableTeachers,
-    } = useDailyTableContext();
+    const { deleteColumn, mainDailyTable, selectedDate, moveColumn, populateTeacherColumn, mapAvailableTeachers } =
+        useDailyTableContext();
     const { fetchTeacherScheduleDate } = useTeacherTableContext(); // Added context
     const [isLoading, setIsLoading] = useState(false);
     const { handleOpenPopup } = useDeletePopup();
@@ -147,7 +146,7 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
         <div className={styles.headerContentWrapper}>
             <div className={styles.menuWrapper} ref={menuRef}>
                 <Icons.menuVertical
-                    className={styles.trashIcon} // Keeping same class for positioning/style if appropriate, or use a new one
+                    className={styles.openMenu}
                     onClick={toggleMenu}
                     size={16}
                     title="אפשרויות"
@@ -170,14 +169,47 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
 
                         {/* Preview Option - Only if onTeacherClick is provided and teacher is selected */}
                         {onTeacherClick && selectedTeacherData && (
-                            <div
-                                onClick={handlePreviewClick}
-                                className={styles.menuItem}
-                            >
-                                <Icons.eye size={14} />
-                                <span>תצוגה מקדימה</span>
-                            </div>
+                            <>
+                                <div className={styles.menuSeparator} />
+                                <div
+                                    onClick={handlePreviewClick}
+                                    className={styles.menuItem}
+                                >
+                                    <Icons.eye size={14} />
+                                    <span>חומר הלימוד</span>
+                                </div>
+                            </>
                         )}
+
+                        <div className={styles.menuSeparator} />
+
+                        {/* Move Right Option */}
+                        <div
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                if (isFirst) return;
+                                setIsMenuOpen(false);
+                                moveColumn && moveColumn(columnId, "right");
+                            }}
+                            className={`${styles.menuItem} ${isFirst ? styles.menuItemDisabled : ""}`}
+                        >
+                            <Icons.arrowRight size={14} />
+                            <span>הזז ימינה</span>
+                        </div>
+
+                        {/* Move Left Option */}
+                        <div
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                if (isLast) return;
+                                setIsMenuOpen(false);
+                                moveColumn && moveColumn(columnId, "left");
+                            }}
+                            className={`${styles.menuItem} ${isLast ? styles.menuItemDisabled : ""}`}
+                        >
+                            <Icons.arrowLeft size={14} />
+                            <span>הזז שמאלה</span>
+                        </div>
                     </div>
                 )}
             </div>

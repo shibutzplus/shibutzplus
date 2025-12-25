@@ -10,6 +10,8 @@ import {
     IoSettingsOutline,
     IoPersonOutline,
     IoPeopleSharp,
+    IoArrowBack,
+    IoArrowForward,
 } from "react-icons/io5";
 import { IoMdRefresh } from "react-icons/io";
 import { RiEdit2Fill, RiDeleteBin6Line } from "react-icons/ri";
@@ -26,6 +28,8 @@ import { GrSchedule } from "react-icons/gr";
 const Icons = {
     addTeacher: MdPersonAdd,
     arrowDown: IoChevronDown,
+    arrowRight: IoArrowForward,
+    arrowLeft: IoArrowBack,
     book: IoBookOutline,
     calendar: IoCalendarOutline,
     dailyCalendar: GrSchedule,

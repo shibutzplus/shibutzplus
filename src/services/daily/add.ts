@@ -18,6 +18,7 @@ export const addNewEventCell = (
     columnId: string,
     selectedDate: string,
     event: string,
+    position: number = 0,
 ) => {
     const { hour, headerCol } = cellData;
     if (!school || event === undefined || !headerCol?.headerEvent) {
@@ -32,7 +33,7 @@ export const addNewEventCell = (
         hour,
         school,
         event,
-        position: 0,
+        position,
     };
     return dailyCellData;
 };
@@ -53,6 +54,7 @@ export const addNewTeacherValueCell = (
     type: ColumnType,
     subTeacher?: TeacherType,
     text?: string,
+    position: number = 0,
 ) => {
     const { hour, classes, subject, headerCol } = cellData;
     if (!school || !classes || !subject || !headerCol?.headerTeacher) return;
@@ -71,7 +73,7 @@ export const addNewTeacherValueCell = (
         subject,
         class: classes[0],
         classes,
-        position: 0,
+        position,
     };
 
     return dailyCellDataRequests;

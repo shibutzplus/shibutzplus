@@ -19,6 +19,7 @@ export const updateAddCell = (
     cellData: DailyScheduleCell,
     columnId: string,
     data: { event?: string; subTeacher?: TeacherType },
+    headerEvent?: string,
 ) => {
     // Update mainDailyTable with the new cell data
     const updatedSchedule = { ...mainDailyTable };
@@ -46,6 +47,14 @@ export const updateAddCell = (
         existingCell.DBid = responseId;
         delete existingCell.subTeacher;
         delete existingCell.event;
+    }
+
+    if (headerEvent) {
+        existingCell.headerCol = {
+            ...existingCell.headerCol,
+            headerEvent: headerEvent,
+            type: ColumnTypeValues.event, // Ensure type is event
+        };
     }
 
     updatedSchedule[selectedDate][columnId][hourStr] = existingCell;
@@ -104,11 +113,14 @@ export const updateAllEventHeader = (
     eventTitle: string,
 ) => {
     for (let i = 1; i <= HOURS_IN_DAY; i++) {
-        updatedSchedule[selectedDate][columnId][`${i}`].headerCol = {
-            ...updatedSchedule[selectedDate][columnId][`${i}`].headerCol,
-            headerEvent: eventTitle,
-            type: ColumnTypeValues.event,
-        };
+        const cell = updatedSchedule[selectedDate][columnId][`${i}`];
+        if (cell) {
+            cell.headerCol = {
+                ...cell.headerCol,
+                headerEvent: eventTitle,
+                type: ColumnTypeValues.event,
+            };
+        }
     }
     return updatedSchedule;
 };

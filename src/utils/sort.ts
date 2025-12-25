@@ -5,9 +5,6 @@ import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import { dayToNumber } from "./time";
 import { createSelectOptions } from "./format";
 import { dailySelectActivity } from "@/resources/dailySelectActivities";
-import { EmptyValue } from "@/models/constant/daily";
-
-
 
 // DailySchedule Header Dropdown: Filter header teacher options: only regular teachers, avoid duplicates
 export const filterDailyHeaderTeachers = (
@@ -81,7 +78,6 @@ export const sortDailyTeachers = (
     teacherAtIndex: Record<string, Record<string, Record<string, string>>> = {},
     classNameById: Record<string, string> = {},
     currentHeaderTeacherId?: string,
-    currentValue?: string,
     classActivityById: Record<string, boolean> = {},
 ) => {
     const dayNum = dayToNumber(day);
@@ -340,34 +336,17 @@ export const sortDailyTeachers = (
     return groups;
 };
 
-// Sort columns by issueTeacherType in order: [existingTeacher], [missingTeacher], [event]
-export const sortDailyColumnIdsByType = (
+// Sort columns by position (field 'position' in headerCol)
+export const sortDailyColumnIdsByPosition = (
     columnIds: string[],
-    schedule: DailySchedule,
-    selectedDate: string,
+    daySchedule: Record<string, Record<string, DailyScheduleCell>> | undefined,
 ) => {
-    const getTypeOrder = (type: ColumnType) => {
-        switch (type) {
-            case ColumnTypeValues.missingTeacher:
-                return 1;
-            case ColumnTypeValues.existingTeacher:
-                return 2;
-            case ColumnTypeValues.event:
-                return 3;
-            default:
-                return 4;
-        }
-    };
+    if (!daySchedule) return columnIds;
 
-    const getColumnType = (columnId: string): ColumnType => {
-        const column = schedule[selectedDate]?.[columnId];
-        return column?.["1"]?.headerCol?.type || ColumnTypeValues.existingTeacher;
-    };
-
-    return columnIds.sort((a, b) => {
-        const aType = getColumnType(a);
-        const bType = getColumnType(b);
-        return getTypeOrder(aType) - getTypeOrder(bType);
+    return [...columnIds].sort((a, b) => {
+        const posA = Object.values(daySchedule[a] || {})[0]?.headerCol?.position ?? 0;
+        const posB = Object.values(daySchedule[b] || {})[0]?.headerCol?.position ?? 0;
+        return posA - posB;
     });
 };
 

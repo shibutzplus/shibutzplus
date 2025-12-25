@@ -128,13 +128,15 @@
     min-width: 0;
 }
 
-.trashIcon {
+.openMenu {
     cursor: pointer;
     flex-shrink: 0;
     transition: all 0.2s ease;
+    padding-left: 5px;
+    box-sizing: content-box;
 }
 
-.trashIcon:hover {
+.openMenu:hover {
     color: var(--bright-text-color-hover);
 }
 
@@ -198,4 +200,17 @@
 
 .menuItemDelete {
     color: #d32f2f;
+}
+
+.menuSeparator {
+    height: 1px;
+    background-color: #eee;
+    margin: 4px 0;
+}
+
+.menuItemDisabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: transparent !important;
+    color: #999;
 }

@@ -5,7 +5,7 @@ import { DailyScheduleType } from "@/models/types/dailySchedule";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 
 export async function deleteDailyColumnAction(
     schoolId: string,
@@ -19,12 +19,18 @@ export async function deleteDailyColumnAction(
         }
 
         const schedules = await executeQuery(async () => {
+            // Handle legacy data where columnId might be NULL (mapped to "undefined" string in state)
+            const columnCondition = (columnId === "undefined" || columnId === "null")
+                ? isNull(schema.dailySchedule.columnId)
+                : eq(schema.dailySchedule.columnId, columnId);
+
             await db
                 .delete(schema.dailySchedule)
                 .where(
                     and(
                         eq(schema.dailySchedule.schoolId, schoolId),
-                        eq(schema.dailySchedule.columnId, columnId),
+                        eq(schema.dailySchedule.date, date),
+                        columnCondition,
                     ),
                 );
 
@@ -69,7 +75,7 @@ export async function deleteDailyColumnAction(
             dailySchedules,
         };
     } catch (error) {
-        console.error("Error deleting daily schedule column:", error);
+        console.error("Error deleting daily schedule column:", error, { schoolId, columnId, date });
         return {
             success: false,
             message: messages.dailySchedule.deleteError,

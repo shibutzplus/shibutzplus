@@ -29,6 +29,15 @@ import {
 } from "@/services/daily/populate";
 import { createNewEmptyColumn } from "@/services/daily/setEmpty";
 import { useDailyEditMode } from "@/hooks/daily/useDailyEditMode";
+import { sortDailyColumnIdsByPosition } from "@/utils/sort";
+import { ColumnTypeValues } from "@/models/types/dailySchedule";
+
+const COLUMN_PRIORITY: Record<ColumnType, number> = {
+    [ColumnTypeValues.missingTeacher]: 0,
+    [ColumnTypeValues.existingTeacher]: 1,
+    [ColumnTypeValues.event]: 2,
+    [ColumnTypeValues.empty]: 1,
+};
 
 interface DailyTableContextType {
     mainDailyTable: DailySchedule;
@@ -85,6 +94,7 @@ interface DailyTableContextType {
     daysSelectOptions: () => SelectOption[];
     handleDayChange: (value: string) => void;
     changeDailyMode: () => void;
+    moveColumn: (columnId: string, direction: "left" | "right") => Promise<void>;
 }
 
 const DailyTableContext = createContext<DailyTableContextType | undefined>(undefined);
@@ -121,8 +131,11 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     const clearColumn = (day: string, columnId: string) => {
         const updatedSchedule = { ...mainDailyTable };
 
-        if (updatedSchedule[day] && updatedSchedule[day][columnId]) {
-            updatedSchedule[day][columnId] = {};
+        if (updatedSchedule[day]) {
+            updatedSchedule[day] = { ...updatedSchedule[day] };
+            if (updatedSchedule[day][columnId]) {
+                updatedSchedule[day][columnId] = {};
+            }
         }
 
         setMainAndStorageTable(updatedSchedule);
@@ -203,17 +216,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         return false;
     };
 
-    const addNewEmptyColumn = (type: ColumnType) => {
-        const newColumnId = `${type}-${generateId()}`;
-        const updatedSchedule = createNewEmptyColumn(
-            mainDailyTable,
-            selectedDate,
-            newColumnId,
-            type,
-            settings?.hoursNum
-        );
-        setMainAndStorageTable(updatedSchedule);
-    };
+
 
     const deleteColumn = async (columnId: string) => {
         if (!school?.id) return false;
@@ -222,11 +225,9 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         const updatedSchedule = { ...mainDailyTable };
         const columnToDelete = updatedSchedule[selectedDate]?.[columnId];
 
-        // Check if there is a header event or teacher. If so, we assume the column exists in DB.
-        // We check the first row ("1") for header info as it's the standard location for headerCol in this implementation.
-        const headerCol = columnToDelete?.["1"]?.headerCol;
-        const hasSavedData =
-            !!headerCol?.headerEvent || !!headerCol?.headerTeacher;
+        // Check if any cell in this column has a DBid. 
+        // If so, it means there are records in the database that need to be deleted.
+        const hasSavedData = columnToDelete ? Object.values(columnToDelete).some(cell => !!cell.DBid) : false;
 
         delete updatedSchedule[selectedDate]?.[columnId];
         setMainAndStorageTable(updatedSchedule);
@@ -248,6 +249,161 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
             console.error("Error deleting daily column:", error);
             return false;
         }
+    };
+
+    const POSITION_GAP = 1000;
+    const REBALANCE_THRESHOLD = 10; // If gap is smaller than this, rebalance
+
+    const rebalanceColumns = async (sortedColumnIds: string[], schedule: DailySchedule) => {
+        if (!school?.id) return;
+
+        const updates: { columnId: string; position: number }[] = [];
+        const newSchedule = { ...schedule };
+        // Create a shallow copy of the day's schedule to avoid mutating the original
+        if (newSchedule[selectedDate]) {
+            newSchedule[selectedDate] = { ...newSchedule[selectedDate] };
+        } else {
+            newSchedule[selectedDate] = {};
+        }
+
+        sortedColumnIds.forEach((colId, index) => {
+            const newPos = (index + 1) * POSITION_GAP;
+
+            // Optimization: Only send update to DB if position actually changes
+            // We check hour "0" (metadata) or hour "1" (visual) for the current position
+            const currentColumn = schedule[selectedDate]?.[colId];
+            const currentPos = currentColumn?.["0"]?.DBid
+                ? (currentColumn["0"].headerCol?.position || 0)
+                : (currentColumn?.["1"]?.headerCol?.position || 0);
+
+            if (currentPos !== newPos) {
+                updates.push({ columnId: colId, position: newPos });
+            }
+
+            // Update local state immediately
+            // Ensure we copy the column and iterate all cells to update position
+            if (newSchedule[selectedDate][colId]) {
+                newSchedule[selectedDate][colId] = { ...newSchedule[selectedDate][colId] };
+                Object.keys(newSchedule[selectedDate][colId]).forEach((key) => {
+                    const cell = newSchedule[selectedDate][colId][key];
+                    if (cell && cell.headerCol) {
+                        newSchedule[selectedDate][colId][key] = {
+                            ...cell,
+                            headerCol: {
+                                ...cell.headerCol,
+                                position: newPos,
+                            },
+                        };
+                    }
+                });
+            }
+        });
+
+        setMainAndStorageTable(newSchedule);
+
+        try {
+            const { updateDailyColumnPositionsAction } = await import("@/app/actions/PUT/updateDailyColumnPositionsAction");
+            await updateDailyColumnPositionsAction(school.id, selectedDate, updates);
+        } catch (error) {
+            console.error("Error rebalancing columns:", error);
+        }
+    };
+
+    const addNewEmptyColumn = (type: ColumnType) => {
+        const newColumnId = `${type}-${generateId()}`;
+
+        const schedule = mainDailyTable[selectedDate] || {};
+        const existingColumns = Object.keys(schedule);
+        const sortedColumns = sortDailyColumnIdsByPosition(existingColumns, schedule);
+
+        const newPriority = COLUMN_PRIORITY[type];
+
+        // Find insertion index: after all columns with <= priority, before any with > priority
+        // Since the array is sorted by position, we just need to find the first column
+        // that has a strictly HIGHER priority (should come after our new column).
+        // Our new column goes before that one.
+        let insertIndex = sortedColumns.findIndex((colId) => {
+            const colType = schedule[colId]?.["1"]?.headerCol?.type || ColumnTypeValues.existingTeacher;
+            const colPriority = COLUMN_PRIORITY[colType] ?? 1;
+            return colPriority > newPriority;
+        });
+
+        // If not found, it means all existing columns have <= priority, so append to end
+        if (insertIndex === -1) {
+            insertIndex = sortedColumns.length;
+        }
+
+        // Calculate Position
+        const prevId = insertIndex > 0 ? sortedColumns[insertIndex - 1] : null;
+        const nextId = insertIndex < sortedColumns.length ? sortedColumns[insertIndex] : null;
+
+        const prevPos = prevId ? (schedule[prevId]?.["1"]?.headerCol?.position || 0) : 0;
+        // If nextId is null, it means we are inserting at the very end.
+        // In this case, nextPos should be prevPos + 2*POSITION_GAP to ensure a gap.
+        const nextPos = nextId ? (schedule[nextId]?.["1"]?.headerCol?.position || ((prevPos || 0) + POSITION_GAP * 2)) : ((prevPos || 0) + POSITION_GAP * 2);
+
+        let newPos = Math.floor((prevPos + nextPos) / 2);
+
+        // Check collision or creation of 0-gap
+        // If newPos is equal to prevPos or nextPos, or if inserting at the start and nextPos is too small (e.g., 0 or 1),
+        // it indicates a need for rebalancing.
+        if (newPos === prevPos || newPos === nextPos || (insertIndex === 0 && nextPos < REBALANCE_THRESHOLD)) {
+            // Rebalance everything including the new column
+            const newColsList = [...sortedColumns];
+            newColsList.splice(insertIndex, 0, newColumnId);
+
+            // Create empty column first with placeholder pos
+            const tempSchedule = createNewEmptyColumn(
+                mainDailyTable,
+                selectedDate,
+                newColumnId,
+                type,
+                0, // Placeholder position, will be updated by rebalance
+                settings?.hoursNum
+            );
+
+            // Pass this temp schedule to rebalance so it knows about the new column
+            rebalanceColumns(newColsList, tempSchedule);
+            return;
+        }
+
+        // Normal Insert
+        const finalSchedule = createNewEmptyColumn(
+            mainDailyTable,
+            selectedDate,
+            newColumnId,
+            type,
+            newPos,
+            settings?.hoursNum
+        );
+        setMainAndStorageTable(finalSchedule);
+    };
+
+    const moveColumn = async (columnId: string, direction: "left" | "right") => {
+        if (!school?.id) return;
+        const schedule = mainDailyTable[selectedDate] || {};
+        const columnIds = Object.keys(schedule);
+        const sortedCols = sortDailyColumnIdsByPosition(columnIds, schedule);
+
+        const currentIndex = sortedCols.indexOf(columnId);
+        if (currentIndex === -1) return;
+
+        // Determine the target index in the sorted array
+        // "Right" in visual RTL means moving towards the start of the array (lower index)
+        // "Left" in visual RTL means moving towards the end of the array (higher index)
+        const targetIndex = direction === "right" ? currentIndex - 1 : currentIndex + 1;
+
+        if (targetIndex < 0 || targetIndex >= sortedCols.length) return;
+
+        // Construct the DESIRED array order after the move
+        const newOrder = [...sortedCols];
+        const [movedItem] = newOrder.splice(currentIndex, 1);
+        newOrder.splice(targetIndex, 0, movedItem);
+
+        // Instead of calculating average positions (which fails with legacy 0 data),
+        // we forcefully rebalance the entire day's columns to guarantee the new order.
+        // This ensures positions are always clean (1000, 2000, 3000...)
+        rebalanceColumns(newOrder, mainDailyTable);
     };
 
     return (
@@ -272,6 +428,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 updateEventCell,
                 deleteEventCell,
                 changeDailyMode,
+                moveColumn,
             }}
         >
             {children}
