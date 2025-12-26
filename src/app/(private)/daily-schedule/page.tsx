@@ -50,25 +50,11 @@ const DailySchedulePage: NextPage = () => {
     return (
         <TeacherTableProvider>
             <section className={styles.container}>
-                {isEditMode ? (
-                    <DailyTable
-                        mainDailyTable={mainDailyTable}
-                        selectedDate={selectedDate}
-                        onTeacherClick={handleTeacherClick}
-                    />
-                ) : (
-                    <PreviewTable
-                        mainDailyTable={mainDailyTable}
-                        selectedDate={selectedDate}
-                        EmptyTable={() => (
-                            <EmptyTable
-                                message="מערכת השעות להיום טרם הוזנה"
-                                showIcons={false}
-                            />
-                        )}
-                        onTeacherClick={handleTeacherClick}
-                    />
-                )}
+                <DailyTable
+                    mainDailyTable={mainDailyTable}
+                    selectedDate={selectedDate}
+                    onTeacherClick={handleTeacherClick}
+                />
 
                 <SlidingPanel
                     isOpen={isPanelOpen}

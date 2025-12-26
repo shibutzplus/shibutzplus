@@ -33,7 +33,7 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
     isLast,
 }) => {
     const { teachers } = useMainContext();
-    const { deleteColumn, mainDailyTable, selectedDate, moveColumn, populateTeacherColumn, mapAvailableTeachers } =
+    const { deleteColumn, mainDailyTable, selectedDate, moveColumn, populateTeacherColumn, mapAvailableTeachers, isEditMode } =
         useDailyTableContext();
     const { fetchTeacherScheduleDate } = useTeacherTableContext(); // Added context
     const [isLoading, setIsLoading] = useState(false);
@@ -140,20 +140,33 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
             </DailyColumnMenu>
 
             <div className={styles.inputSelectWrapper}>
-                <DynamicInputSelect
-                    options={filteredTeacherOptions}
-                    value={selectedTeacherData?.id || ""}
-                    onChange={handleTeacherChange}
-                    placeholder="בחירת מורה"
-                    isSearchable
-                    isDisabled={isLoading}
-                    backgroundColor="transparent"
-                    color={BrightTextColor}
-                    colorHover={BrightTextColorHover}
-                    placeholderColor={BrightTextColor}
-                    fontSize="18px"
-                    caretColor="#cccccc"
-                />
+                <div style={{ display: isEditMode ? "block" : "none", width: "100%" }}>
+                    <DynamicInputSelect
+                        options={filteredTeacherOptions}
+                        value={selectedTeacherData?.id || ""}
+                        onChange={handleTeacherChange}
+                        placeholder="בחירת מורה"
+                        isSearchable
+                        isDisabled={isLoading}
+                        backgroundColor="transparent"
+                        color={BrightTextColor}
+                        colorHover={BrightTextColorHover}
+                        placeholderColor={BrightTextColor}
+                        fontSize="18px"
+                        caretColor="#cccccc"
+                    />
+                </div>
+                <div
+                    className={styles.staticHeaderText}
+                    title={selectedTeacherData?.name}
+                    style={{
+                        display: isEditMode ? "none" : "flex",
+                        cursor: selectedTeacherData ? "pointer" : "default"
+                    }}
+                    onClick={handlePreviewClick}
+                >
+                    {selectedTeacherData?.name || ""}
+                </div>
             </div>
         </div>
     );

@@ -28,6 +28,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
         updateTeacherCell,
         clearTeacherCell,
         teacherClassMap,
+        isEditMode,
     } = useDailyTableContext();
 
     const hour = cell?.hour;
@@ -162,9 +163,24 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
         }
     };
 
-    return (
-        <div className={styles.cellContent}>
-            {classesData && classesData.length > 0 && subjectData ? (
+    const isMissingTeacher = headerData?.type === "missingTeacher";
+
+    // Preview Content Logic
+    const renderPreviewContent = () => {
+        if (
+            !subTeacherData &&
+            !teacherText &&
+            (!isMissingTeacher || (!classesData?.length && !subjectData))
+        ) {
+            return (
+                <div className={styles.cellContent}>
+                    <EmptyCell />
+                </div>
+            );
+        }
+
+        return (
+            <div className={styles.cellContent}>
                 <div className={styles.innerCellContent}>
                     <Tooltip content={getTooltipText()} on={["click", "scroll"]}>
                         <div
@@ -175,27 +191,56 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
                         </div>
                     </Tooltip>
                     <div className={styles.teacherSelect}>
-                        <DynamicInputGroupSelect
-                            options={sortedTeacherOptions}
-                            value={selectedSubTeacher}
-                            onChange={(value: string) => handleTeacherChange("update", value)}
-                            placeholder="ממלא מקום"
-                            isSearchable
-                            isAllowAddNew
-                            isClearable
-                            isDisabled={isLoading}
-                            hasBorder
-                            backgroundColor="transparent"
-                            onCreate={(value: string) => handleTeacherChange("create", value)}
-                            menuWidth="220px"
-                            color={isActivity ? "var(--disabled-text-color)" : undefined}
-                        />
+                        {subTeacherData ? (
+                            <div className={styles.subTeacherName}>{subTeacherData.name}</div>
+                        ) : teacherText ? (
+                            <div className={styles.subTeacherName}>{teacherText}</div>
+                        ) : isMissingTeacher && !isActivity ? (
+                            <div className={styles.missingSubTeacherName}>אין ממלא מקום</div>
+                        ) : null}
                     </div>
                 </div>
-            ) : (
-                <EmptyCell />
-            )}
-        </div>
+            </div>
+        );
+    };
+
+    return (
+        <>
+            <div style={{ display: isEditMode ? "block" : "none", width: "100%", height: "100%" }}>
+                <div className={styles.cellContent}>
+                    <div className={styles.innerCellContent}>
+                        <Tooltip content={getTooltipText()} on={["click", "scroll"]}>
+                            <div
+                                className={`${styles.classAndSubject} ${isActivity ? styles.activityText : ""
+                                    }`}
+                            >
+                                {getTooltipText()}
+                            </div>
+                        </Tooltip>
+                        <div className={styles.teacherSelect}>
+                            <DynamicInputGroupSelect
+                                options={sortedTeacherOptions}
+                                value={selectedSubTeacher}
+                                onChange={(value: string) => handleTeacherChange("update", value)}
+                                placeholder="ממלא מקום"
+                                isSearchable
+                                isAllowAddNew
+                                isClearable
+                                isDisabled={isLoading}
+                                hasBorder
+                                backgroundColor="transparent"
+                                onCreate={(value: string) => handleTeacherChange("create", value)}
+                                menuWidth="220px"
+                                color={isActivity ? "var(--disabled-text-color)" : undefined}
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style={{ display: !isEditMode ? "block" : "none", width: "100%", height: "100%" }}>
+                {renderPreviewContent()}
+            </div>
+        </>
     );
 };
 

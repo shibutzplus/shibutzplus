@@ -7,12 +7,7 @@ export const useDailyEditMode = () => {
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const changeDailyMode = () => {
-        setIsLoadingEditPage(true);
         setIsEditMode((prev) => !prev);
-
-        timeoutRef.current = setTimeout(() => {
-            setIsLoadingEditPage(false);
-        }, 400);
     };
 
     useEffect(() => {

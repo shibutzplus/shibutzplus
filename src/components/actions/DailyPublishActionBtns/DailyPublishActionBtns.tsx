@@ -65,7 +65,7 @@ const DailyPublishActionBtns: React.FC = () => {
                 </button>
             )}
 
-            <span title={isEditMode ? "תצוגה מקדימה / בדיקה" : "חזרה לשיבוץ"}>
+            <span title={isEditMode ? "תצוגה מקדימה" : "חזרה לשיבוץ"}>
                 <IconBtn
                     Icon={isEditMode ? <Icons.eye size={24} /> : <Icons.edit size={20} />}
                     onClick={changeDailyMode}

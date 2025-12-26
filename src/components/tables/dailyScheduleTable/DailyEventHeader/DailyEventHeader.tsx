@@ -16,7 +16,7 @@ type DailyEventHeaderProps = {
 };
 
 const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete, isFirst, isLast }) => {
-    const { populateEventColumn, deleteColumn, mainDailyTable, selectedDate, moveColumn } =
+    const { populateEventColumn, deleteColumn, mainDailyTable, selectedDate, moveColumn, isEditMode } =
         useDailyTableContext();
 
     const selectedEventData =
@@ -81,15 +81,24 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete,
                 isLast={isLast}
             />
             <div className={styles.inputSelectWrapper}>
-                <InputText
-                    placeholder="כותרת האירוע"
-                    value={value}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    backgroundColor="transparent"
-                    hasBorder={false}
-                    fontSize="18px"
-                />
+                <div style={{ display: isEditMode ? "block" : "none", width: "100%" }}>
+                    <InputText
+                        placeholder="כותרת האירוע"
+                        value={value}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        backgroundColor="transparent"
+                        hasBorder={false}
+                        fontSize="18px"
+                    />
+                </div>
+                <div
+                    className={styles.staticHeaderText}
+                    title={value || selectedEventData || ""}
+                    style={{ display: isEditMode ? "none" : "flex" }}
+                >
+                    {value || selectedEventData || ""}
+                </div>
             </div>
         </div>
     );
