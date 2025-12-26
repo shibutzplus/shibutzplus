@@ -12,6 +12,8 @@ import Preloader from "@/components/ui/Preloader/Preloader";
 
 import NotPublished from "@/components/empty/NotPublished/NotPublished";
 
+import { getDayNumberByDateString } from "@/utils/time";
+
 const TeacherPortalPage: NextPage = () => {
     const { selectedDate, teacher, setTeacherAndSchool, datesOptions, settings } = usePortalContext();
     const { fetchTeacherScheduleDate } = useTeacherTableContext();
@@ -51,8 +53,10 @@ const TeacherPortalPage: NextPage = () => {
         );
 
     const isPublished = datesOptions.some((d) => d.value === selectedDate);
+    const isShabbat = selectedDate ? getDayNumberByDateString(selectedDate) === 7 : false;
+
     if (!isPublished) {
-        return <NotPublished date={selectedDate} text="המערכת לא פורסמה" />;
+        return <NotPublished date={selectedDate} text={isShabbat ? "סוף שבוע נעים" : "המערכת לא פורסמה"} />;
     }
 
     return (
