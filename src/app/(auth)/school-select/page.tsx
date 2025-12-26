@@ -31,13 +31,14 @@ const SchoolSelectPage = () => {
 
     const handleSelect = (schoolId: string) => {
         try {
-            if (session?.user && (session.user as any).role === "admin") {
+            const user = session?.user as { role: string; status: string } | undefined;
+            if (user && user.role === "admin") {
                 setIsLoading(true);
-                const userStatus = (session.user as any).status;
+                const userStatus = user.status;
                 const target = userStatus === "annual" ? DEFAULT_REDIRECT : routes.dailySchedule.p;
                 router.push(`${target}?schoolId=${encodeURIComponent(schoolId)}`);
             }
-        } catch (error) {
+        } catch {
             setIsLoading(false);
         }
     };

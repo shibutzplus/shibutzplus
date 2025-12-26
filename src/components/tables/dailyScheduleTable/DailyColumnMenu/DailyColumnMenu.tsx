@@ -78,7 +78,7 @@ const DailyColumnMenu: React.FC<DailyColumnMenuProps> = ({
                             e.stopPropagation();
                             if (isFirst) return;
                             setIsMenuOpen(false);
-                            onMoveRight && onMoveRight();
+                            onMoveRight?.();
                         }}
                         className={`${styles.menuItem} ${isFirst ? styles.menuItemDisabled : ""}`}
                     >
@@ -92,7 +92,7 @@ const DailyColumnMenu: React.FC<DailyColumnMenuProps> = ({
                             e.stopPropagation();
                             if (isLast) return;
                             setIsMenuOpen(false);
-                            onMoveLeft && onMoveLeft();
+                            onMoveLeft?.();
                         }}
                         className={`${styles.menuItem} ${isLast ? styles.menuItemDisabled : ""}`}
                     >

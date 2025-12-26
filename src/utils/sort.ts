@@ -1,6 +1,6 @@
 import { GroupOption } from "@/models/types";
 import { AvailableTeachers } from "@/models/types/annualSchedule";
-import { ColumnTypeValues, ColumnType, DailySchedule, DailyScheduleCell, } from "@/models/types/dailySchedule";
+import { ColumnTypeValues, DailySchedule, DailyScheduleCell, } from "@/models/types/dailySchedule";
 import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import { dayToNumber } from "./time";
 import { createSelectOptions } from "./format";

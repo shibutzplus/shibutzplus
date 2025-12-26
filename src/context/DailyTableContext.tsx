@@ -342,12 +342,12 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         // In this case, nextPos should be prevPos + 2*POSITION_GAP to ensure a gap.
         const nextPos = nextId ? (schedule[nextId]?.["1"]?.headerCol?.position || ((prevPos || 0) + POSITION_GAP * 2)) : ((prevPos || 0) + POSITION_GAP * 2);
 
-        let newPos = Math.floor((prevPos + nextPos) / 2);
+        const calculatedNewPos = Math.floor((prevPos + nextPos) / 2);
 
         // Check collision or creation of 0-gap
         // If newPos is equal to prevPos or nextPos, or if inserting at the start and nextPos is too small (e.g., 0 or 1),
         // it indicates a need for rebalancing.
-        if (newPos === prevPos || newPos === nextPos || (insertAfterIndex === -1 && nextPos < REBALANCE_THRESHOLD)) {
+        if (calculatedNewPos === prevPos || calculatedNewPos === nextPos || (insertAfterIndex === -1 && calculatedNewPos < REBALANCE_THRESHOLD)) {
             // Rebalance everything including the new column
             const newColsList = [...sortedColumns];
             // insertAfterIndex is where we insert AFTER. So we insert AT insertAfterIndex + 1.
@@ -375,7 +375,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
             selectedDate,
             newColumnId,
             type,
-            newPos,
+            calculatedNewPos,
             settings?.hoursNum
         );
         setMainAndStorageTable(finalSchedule);

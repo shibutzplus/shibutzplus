@@ -1,5 +1,4 @@
 import { SelectOption } from "@/models/types";
-import { DailyScheduleType } from "@/models/types/dailySchedule";
 
 export const DAYS_OF_WEEK = ["א", "ב", "ג", "ד", "ה", "ו", "ש"];
 export const DAYS_OF_WORK_WEEK = ["א", "ב", "ג", "ד", "ה", "ו"];
@@ -134,7 +133,7 @@ export const mathFloorNow = Math.floor(Date.now() / 1000);
 
 export const TWENTY_FOUR_HOURS = 24 * 60 * 60;
 
-export const getExpireTime = (remember: any) => {
+export const getExpireTime = (remember: boolean) => {
     const maxAge = remember ? 30 * 24 * 60 * 60 : 60 * 60; // 30d vs 1h
     return mathFloorNow + maxAge;
 };

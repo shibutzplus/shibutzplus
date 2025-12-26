@@ -16,7 +16,7 @@ type DailyColProps = {
     onTeacherClick?: (teacher: TeacherType) => void;
 };
 
-const DailyCol: React.FC<DailyColProps> = ({ columnId, column, onTeacherClick }) => {
+const DailyCol: React.FC<DailyColProps> = ({ columnId, column }) => {
     const { displayColumn, isFadingOut } = useColumnAnimation(column);
     const colFirstObj =
         displayColumn["1"] ||

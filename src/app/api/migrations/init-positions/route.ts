@@ -33,7 +33,7 @@ export async function POST(req: Request) {
 
         allRecords.forEach((record) => {
             // Ensure date is a string key
-            const dateKey = typeof record.date === 'string' ? record.date : (record.date as any).toISOString().split('T')[0];
+            const dateKey = typeof record.date === 'string' ? record.date : (record.date as unknown as Date).toISOString().split('T')[0];
             if (!recordsByDate[dateKey]) {
                 recordsByDate[dateKey] = [];
             }
@@ -48,7 +48,7 @@ export async function POST(req: Request) {
         // 3. Process each date
         const updates: Promise<any>[] = [];
 
-        for (const [date, records] of Object.entries(recordsByDate)) {
+        for (const records of Object.values(recordsByDate)) {
             const daySchedule: Record<string, Record<string, DailyScheduleCell>> = {};
             const columnIds = new Set<string>();
 

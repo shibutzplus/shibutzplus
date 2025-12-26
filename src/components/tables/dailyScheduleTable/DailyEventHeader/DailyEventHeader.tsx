@@ -16,7 +16,7 @@ type DailyEventHeaderProps = {
 };
 
 const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete, isFirst, isLast }) => {
-    const { populateEventColumn, deleteColumn, mainDailyTable, selectedDate, deleteEventCell, moveColumn } =
+    const { populateEventColumn, deleteColumn, mainDailyTable, selectedDate, moveColumn } =
         useDailyTableContext();
 
     const selectedEventData =
