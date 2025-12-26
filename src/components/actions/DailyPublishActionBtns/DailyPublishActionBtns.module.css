@@ -58,6 +58,10 @@
 
 
 @media (max-width: 505px) {
+    .topNavBtnContainer {
+        gap: 0px;
+    }
+
     .topNavBtnContainer .publishBtn {
         width: var(--daily-btn-width) !important;
         padding: 0;
@@ -69,7 +73,14 @@
     }
 
     .publishedStatus {
+        margin-left: 0;
+    }
+
+    .publishedStatus span {
         display: none;
     }
 
+    .topNavBtnContainer button {
+        border: none !important;
+    }
 }
