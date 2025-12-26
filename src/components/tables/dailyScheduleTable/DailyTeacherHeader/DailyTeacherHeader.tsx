@@ -10,6 +10,7 @@ import messages from "@/resources/messages";
 import { BrightTextColor, BrightTextColorHover } from "@/style/root";
 import styles from "../DailyTable/DailyTable.module.css";
 import useDeletePopup from "@/hooks/useDeletePopup";
+import { useClickOutside } from "@/hooks/useClickOutside";
 import Icons from "@/style/icons";
 
 import { TeacherType } from "@/models/types/teachers";
@@ -48,21 +49,13 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
         mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.headerTeacher;
 
     // Close menu when clicking outside
-    React.useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-                setIsMenuOpen(false);
-            }
-        };
-
-        if (isMenuOpen) {
-            document.addEventListener("mousedown", handleClickOutside);
-        }
-
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, [isMenuOpen]);
+    useClickOutside(
+        menuRef,
+        () => {
+            if (isMenuOpen) setIsMenuOpen(false);
+        },
+        isMenuOpen,
+    );
 
     const handleTeacherChange = async (value: string) => {
         const teacherId = value;

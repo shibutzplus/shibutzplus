@@ -1,4 +1,5 @@
 import { useEffect, RefObject } from 'react';
+import { useClickOutside } from '../useClickOutside';
 
 interface UseAccessibilityProps {
   isOpen: boolean;
@@ -15,21 +16,7 @@ interface UseAccessibilityProps {
  */
 export const useAccessibility = ({ isOpen, navRef, onClose }: UseAccessibilityProps) => {
   // Handle click outside to close
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (navRef.current && !navRef.current.contains(event.target as Node)) {
-        onClose();
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isOpen, onClose, navRef]);
+  useClickOutside(navRef, onClose, isOpen);
 
   // Handle Escape key to close
   useEffect(() => {
@@ -55,7 +42,7 @@ export const useAccessibility = ({ isOpen, navRef, onClose }: UseAccessibilityPr
     } else {
       document.body.style.overflow = "auto";
     }
-    
+
     return () => {
       document.body.style.overflow = "auto";
     };
@@ -64,7 +51,7 @@ export const useAccessibility = ({ isOpen, navRef, onClose }: UseAccessibilityPr
   // Focus trap
   useEffect(() => {
     if (!isOpen) return;
-    
+
     const navElement = navRef.current;
     if (!navElement) return;
 
@@ -73,23 +60,23 @@ export const useAccessibility = ({ isOpen, navRef, onClose }: UseAccessibilityPr
     );
 
     if (focusableElements.length === 0) return;
-    
+
     const firstElement = focusableElements[0] as HTMLElement;
     const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
-    
+
     // Focus the first element when opened
     firstElement.focus();
-    
+
     const handleTabKey = (e: KeyboardEvent) => {
       if (e.key !== 'Tab') return;
-      
+
       // Shift + Tab
       if (e.shiftKey) {
         if (document.activeElement === firstElement) {
           e.preventDefault();
           lastElement.focus();
         }
-      } 
+      }
       // Tab
       else {
         if (document.activeElement === lastElement) {
@@ -98,9 +85,9 @@ export const useAccessibility = ({ isOpen, navRef, onClose }: UseAccessibilityPr
         }
       }
     };
-    
+
     document.addEventListener('keydown', handleTabKey);
-    
+
     return () => {
       document.removeEventListener('keydown', handleTabKey);
     };

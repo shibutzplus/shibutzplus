@@ -3,10 +3,11 @@ import InputText from "../../../ui/inputs/InputText/InputText";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
-import { ColumnType } from "@/models/types/dailySchedule";
 import useDeletePopup from "@/hooks/useDeletePopup";
 import Icons from "@/style/icons";
 import styles from "../DailyTable/DailyTable.module.css";
+import { formatTMDintoDMY } from "@/utils/time";
+import { useClickOutside } from "@/hooks/useClickOutside";
 
 type DailyEventHeaderProps = {
     columnId: string;
@@ -22,42 +23,43 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete,
     const selectedEventData =
         mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.headerEvent;
 
-    const [prevValue, setPrevValue] = useState<string>(selectedEventData || "");
-
     // Menu state
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuRef = React.useRef<HTMLDivElement>(null);
 
-    // Close menu when clicking outside
+    useClickOutside(
+        menuRef,
+        () => {
+            if (isMenuOpen) setIsMenuOpen(false);
+        },
+        isMenuOpen,
+    );
+
+    const [value, setValue] = useState(selectedEventData || "");
+    const prevValueRef = React.useRef(selectedEventData || "");
+
+    // Update local state when value from server changes (and we are not editing)
     React.useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-                setIsMenuOpen(false);
-            }
-        };
+        setValue(selectedEventData || "");
+        prevValueRef.current = selectedEventData || "";
+    }, [selectedEventData]);
 
-        if (isMenuOpen) {
-            document.addEventListener("mousedown", handleClickOutside);
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setValue(e.target.value);
+    };
+
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+        let newValue = e.target.value.trim();
+
+        // If empty, set default to current date
+        if (newValue === "") {
+            newValue = formatTMDintoDMY(selectedDate);
+            setValue(newValue);
         }
 
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, [isMenuOpen]);
-
-    const handleChange = (e: React.FocusEvent<HTMLInputElement>) => {
-        const newValue = e.target.value.trim();
-
-        // Prevent empty header if there was a previous saved value
-        if (prevValue && newValue === "") {
-            errorToast("כותרת העמודה אינה יכולה להיות ריקה", Infinity);
-            e.target.value = prevValue; // revert to previous value
-            return;
-        }
-
-        if (prevValue !== newValue) {
+        if (prevValueRef.current !== newValue) {
             populateEventColumn(columnId, newValue);
-            setPrevValue(newValue);
+            prevValueRef.current = newValue;
         }
     };
 
@@ -145,8 +147,9 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete,
             <div className={styles.inputSelectWrapper}>
                 <InputText
                     placeholder="כותרת האירוע"
-                    onBlur={handleChange}
-                    defaultValue={selectedEventData || ""}
+                    value={value}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
                     backgroundColor="transparent"
                     hasBorder={false}
                     fontSize="18px"

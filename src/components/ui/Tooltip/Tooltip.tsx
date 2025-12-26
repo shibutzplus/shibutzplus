@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useClickOutside } from "@/hooks/useClickOutside";
 import styles from "./Tooltip.module.css";
 
 type TooltipTrigger = "hover" | "click" | "scroll";
@@ -38,28 +39,24 @@ const Tooltip: React.FC<TooltipProps> = ({ content, children, on = ["click", "sc
         }
     };
 
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-                setIsVisible(false);
-            }
-        };
+    useClickOutside(
+        containerRef,
+        () => setIsVisible(false),
+        isVisible && hasTrigger("click")
+    );
 
+    useEffect(() => {
         const handleScroll = () => {
             setIsVisible(false);
         };
 
         if (isVisible) {
-            if (hasTrigger("click")) {
-                document.addEventListener("mousedown", handleClickOutside);
-            }
             if (hasTrigger("scroll")) {
                 window.addEventListener("scroll", handleScroll, { capture: true });
             }
         }
 
         return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
             window.removeEventListener("scroll", handleScroll, { capture: true });
         };
     }, [isVisible, on]);
