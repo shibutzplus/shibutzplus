@@ -10,11 +10,9 @@ import messages from "@/resources/messages";
 import { BrightTextColor, BrightTextColorHover } from "@/style/root";
 import styles from "../DailyTable/DailyTable.module.css";
 import useDeletePopup from "@/hooks/useDeletePopup";
-import { useClickOutside } from "@/hooks/useClickOutside";
+import DailyColumnMenu from "../DailyColumnMenu/DailyColumnMenu";
 import Icons from "@/style/icons";
-
 import { TeacherType } from "@/models/types/teachers";
-
 import { useTeacherTableContext } from "@/context/TeacherTableContext";
 
 type DailyTeacherHeaderProps = {
@@ -41,21 +39,8 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
     const [isLoading, setIsLoading] = useState(false);
     const { handleOpenPopup } = useDeletePopup();
 
-    // Menu state
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const menuRef = React.useRef<HTMLDivElement>(null);
-
     const selectedTeacherData =
         mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.headerTeacher;
-
-    // Close menu when clicking outside
-    useClickOutside(
-        menuRef,
-        () => {
-            if (isMenuOpen) setIsMenuOpen(false);
-        },
-        isMenuOpen,
-    );
 
     const handleTeacherChange = async (value: string) => {
         const teacherId = value;
@@ -127,85 +112,33 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
             await fetchTeacherScheduleDate(selectedTeacherData, selectedDate);
             onTeacherClick(selectedTeacherData);
         }
-        setIsMenuOpen(false);
-    };
-
-    const toggleMenu = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        setIsMenuOpen((prev) => !prev);
     };
 
     return (
         <div className={styles.headerContentWrapper}>
-            <div className={styles.menuWrapper} ref={menuRef}>
-                <Icons.menuVertical
-                    className={styles.openMenu}
-                    onClick={toggleMenu}
-                    size={16}
-                    title="אפשרויות"
-                    style={{ cursor: "pointer" }}
-                />
-                {isMenuOpen && (
-                    <div className={styles.menuDropdown}>
-                        {/* Delete Option */}
+            <DailyColumnMenu
+                onDelete={handleDeleteClick}
+                onMoveRight={() => moveColumn && moveColumn(columnId, "right")}
+                onMoveLeft={() => moveColumn && moveColumn(columnId, "left")}
+                isFirst={isFirst}
+                isLast={isLast}
+            >
+                {({ closeMenu }) =>
+                    onTeacherClick &&
+                    selectedTeacherData && (
                         <div
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setIsMenuOpen(false);
-                                handleDeleteClick();
+                            onClick={() => {
+                                handlePreviewClick();
+                                closeMenu();
                             }}
-                            className={`${styles.menuItem} ${styles.menuItemDelete}`}
+                            className={styles.menuItem}
                         >
-                            <Icons.delete size={14} />
-                            <span>מחיקה</span>
+                            <Icons.eye size={14} />
+                            <span>חומר הלימוד</span>
                         </div>
-
-                        {/* Preview Option - Only if onTeacherClick is provided and teacher is selected */}
-                        {onTeacherClick && selectedTeacherData && (
-                            <>
-                                <div className={styles.menuSeparator} />
-                                <div
-                                    onClick={handlePreviewClick}
-                                    className={styles.menuItem}
-                                >
-                                    <Icons.eye size={14} />
-                                    <span>חומר הלימוד</span>
-                                </div>
-                            </>
-                        )}
-
-                        <div className={styles.menuSeparator} />
-
-                        {/* Move Right Option */}
-                        <div
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                if (isFirst) return;
-                                setIsMenuOpen(false);
-                                moveColumn && moveColumn(columnId, "right");
-                            }}
-                            className={`${styles.menuItem} ${isFirst ? styles.menuItemDisabled : ""}`}
-                        >
-                            <Icons.arrowRight size={14} />
-                            <span>הזז ימינה</span>
-                        </div>
-
-                        {/* Move Left Option */}
-                        <div
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                if (isLast) return;
-                                setIsMenuOpen(false);
-                                moveColumn && moveColumn(columnId, "left");
-                            }}
-                            className={`${styles.menuItem} ${isLast ? styles.menuItemDisabled : ""}`}
-                        >
-                            <Icons.arrowLeft size={14} />
-                            <span>הזז שמאלה</span>
-                        </div>
-                    </div>
-                )}
-            </div>
+                    )
+                }
+            </DailyColumnMenu>
 
             <div className={styles.inputSelectWrapper}>
                 <DynamicInputSelect

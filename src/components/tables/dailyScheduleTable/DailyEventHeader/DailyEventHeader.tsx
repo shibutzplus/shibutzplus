@@ -4,10 +4,9 @@ import { useDailyTableContext } from "@/context/DailyTableContext";
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import useDeletePopup from "@/hooks/useDeletePopup";
-import Icons from "@/style/icons";
 import styles from "../DailyTable/DailyTable.module.css";
 import { formatTMDintoDMY } from "@/utils/time";
-import { useClickOutside } from "@/hooks/useClickOutside";
+import DailyColumnMenu from "../DailyColumnMenu/DailyColumnMenu";
 
 type DailyEventHeaderProps = {
     columnId: string;
@@ -22,18 +21,6 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete,
 
     const selectedEventData =
         mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.headerEvent;
-
-    // Menu state
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const menuRef = React.useRef<HTMLDivElement>(null);
-
-    useClickOutside(
-        menuRef,
-        () => {
-            if (isMenuOpen) setIsMenuOpen(false);
-        },
-        isMenuOpen,
-    );
 
     const [value, setValue] = useState(selectedEventData || "");
     const prevValueRef = React.useRef(selectedEventData || "");
@@ -83,67 +70,16 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete,
         }
     };
 
-    const toggleMenu = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        setIsMenuOpen((prev) => !prev);
-    };
 
     return (
         <div className={styles.headerContentWrapper}>
-            <div className={styles.menuWrapper} ref={menuRef}>
-                <Icons.menuVertical
-                    className={styles.openMenu}
-                    onClick={toggleMenu}
-                    size={16}
-                    title="אפשרויות"
-                />
-                {isMenuOpen && (
-                    <div className={styles.menuDropdown}>
-                        {/* Delete Option */}
-                        <div
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setIsMenuOpen(false);
-                                handleDeleteClick();
-                            }}
-                            className={`${styles.menuItem} ${styles.menuItemDelete}`}
-                        >
-                            <Icons.delete size={14} />
-                            <span>מחיקה</span>
-                        </div>
-
-                        <div className={styles.menuSeparator} />
-
-                        {/* Move Right Option */}
-                        <div
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                if (isFirst) return;
-                                setIsMenuOpen(false);
-                                moveColumn && moveColumn(columnId, "right");
-                            }}
-                            className={`${styles.menuItem} ${isFirst ? styles.menuItemDisabled : ""}`}
-                        >
-                            <Icons.arrowRight size={14} />
-                            <span>הזז ימינה</span>
-                        </div>
-
-                        {/* Move Left Option */}
-                        <div
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                if (isLast) return;
-                                setIsMenuOpen(false);
-                                moveColumn && moveColumn(columnId, "left");
-                            }}
-                            className={`${styles.menuItem} ${isLast ? styles.menuItemDisabled : ""}`}
-                        >
-                            <Icons.arrowLeft size={14} />
-                            <span>הזז שמאלה</span>
-                        </div>
-                    </div>
-                )}
-            </div>
+            <DailyColumnMenu
+                onDelete={handleDeleteClick}
+                onMoveRight={() => moveColumn && moveColumn(columnId, "right")}
+                onMoveLeft={() => moveColumn && moveColumn(columnId, "left")}
+                isFirst={isFirst}
+                isLast={isLast}
+            />
             <div className={styles.inputSelectWrapper}>
                 <InputText
                     placeholder="כותרת האירוע"
