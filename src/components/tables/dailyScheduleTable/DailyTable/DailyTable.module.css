@@ -202,6 +202,14 @@
     color: #d32f2f;
 }
 
+.menuItemDisabled {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: default;
+    background-color: transparent !important;
+    color: #aaa;
+}
+
 .menuSeparator {
     height: 1px;
     background-color: #eee;
