@@ -61,7 +61,7 @@ const PreviewTeacherCell: React.FC<PreviewTeacherCellProps> = ({ cell, appType }
                 ) : teacherText ? (
                     <div className={styles.subTeacherName}>{teacherText}</div>
                 ) : isMissingTeacher && !isActivity ? (
-                    <div className={styles.missingSubTeacherName}>אין מילוי מקום</div>
+                    <div className={styles.missingSubTeacherName}>אין ממלא מקום</div>
                 ) : null}
             </div>
         </div>
