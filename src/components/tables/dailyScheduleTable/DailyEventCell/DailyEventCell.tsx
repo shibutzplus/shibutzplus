@@ -91,8 +91,25 @@ const DailyEventCell: React.FC<DailyEventCellProps> = ({ columnId, cell }) => {
         }
     };
 
+    const cellRef = React.useRef<HTMLDivElement>(null);
+    const [hasScroll, setHasScroll] = useState(false);
+
+    React.useEffect(() => {
+        const textarea = cellRef.current?.querySelector("textarea");
+        if (textarea) {
+            // Check if height exceeds ~3.5 lines (approx 80px)
+            // 3 lines ~ 72px, 4 lines ~ 96px
+            setHasScroll(textarea.scrollHeight > 80);
+        } else if (cellRef.current) {
+            setHasScroll(cellRef.current.scrollHeight > cellRef.current.clientHeight);
+        }
+    }, [info]);
+
     return (
-        <div className={styles.cellContent}>
+        <div
+            className={`${styles.cellContent} ${hasScroll ? styles.hasScroll : ""}`}
+            ref={cellRef}
+        >
             <InputTextArea
                 value={info}
                 onChange={(e) => setInfo(e.target.value)}
