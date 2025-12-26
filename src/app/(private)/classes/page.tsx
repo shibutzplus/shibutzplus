@@ -7,6 +7,7 @@ import { useMainContext } from "@/context/MainContext";
 import AddClassRow from "@/components/details/classDetails/AddClassRow/AddClassRow";
 import ClassRow from "@/components/details/classDetails/ClassRow/ClassRow";
 import { ClassType } from "@/models/types/classes";
+import { sortByName } from "@/utils/sort";
 
 const ClassesPage: NextPage = () => {
     const { classes } = useMainContext();
@@ -17,7 +18,7 @@ const ClassesPage: NextPage = () => {
             if (!classes) return undefined;
             return classes
                 .filter(c => !c.activity && c.name.includes(searchTerm))
-                .sort((a, b) => a.name.localeCompare(b.name, "he", { numeric: true }));
+                .sort(sortByName);
         },
         [classes, searchTerm],
     );

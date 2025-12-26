@@ -38,6 +38,9 @@ const useDailyTeacherActions = (
     ) => {
         const schoolId = school?.id;
         if (!schoolId) return;
+
+        const currentPosition = mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.position || 0;
+
         try {
             // Optimistic update: Show new teacher name immediately
             if (teachers && teachers.length > 0) {
@@ -55,6 +58,7 @@ const useDailyTeacherActions = (
                         selectedDate,
                         columnId,
                         type,
+                        currentPosition,
                         settings?.hoursNum,
                         optimisticTeacher,
                     );
@@ -68,7 +72,6 @@ const useDailyTeacherActions = (
             }
 
             // Capture the state needed for deletion BEFORE async operations
-            // (though in this function scope, mainDailyTable is stale closure which is actually what we want for 'alreadyExists' check)
             const alreadyExists = mainDailyTable[selectedDate]?.[columnId];
             if (alreadyExists) {
                 const response = await deleteDailyColumnAction(school.id, columnId, selectedDate);
@@ -101,7 +104,7 @@ const useDailyTeacherActions = (
                             hour: row.hour,
                             classes: row.classes,
                             subject: row.subject,
-                            headerCol: { headerTeacher: row.headerCol.headerTeacher, type },
+                            headerCol: { headerTeacher: row.headerCol.headerTeacher, type, position: currentPosition },
                         } as DailyScheduleCell;
 
                         const newDailyRow = addNewTeacherValueCell(
@@ -110,6 +113,9 @@ const useDailyTeacherActions = (
                             columnId,
                             selectedDate,
                             type,
+                            undefined,
+                            undefined,
+                            currentPosition
                         );
                         if (newDailyRow) pendingInserts.push({ request: newDailyRow, dailyCell });
                     }
@@ -143,7 +149,7 @@ const useDailyTeacherActions = (
                         updatedSchedule,
                         selectedDate,
                         columnId,
-                        { headerTeacher, type },
+                        { headerTeacher, type, position: currentPosition },
                         settings?.hoursNum,
                     );
                     setMainAndStorageTable(updatedSchedule);
@@ -157,6 +163,7 @@ const useDailyTeacherActions = (
                         selectedDate,
                         columnId,
                         type,
+                        currentPosition,
                         settings?.hoursNum,
                         headerTeacher,
                     );
@@ -181,6 +188,7 @@ const useDailyTeacherActions = (
         data: { event?: string; subTeacher?: TeacherType },
     ) => {
         if (!school) return;
+        const currentPosition = mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.position || 0;
 
         const dailyCellData = addNewTeacherValueCell(
             school,
@@ -190,6 +198,7 @@ const useDailyTeacherActions = (
             type,
             data.subTeacher,
             data.event,
+            currentPosition,
         );
         if (dailyCellData) {
             const response = await updateDailyTeacherCellAction(dailyScheduleId, dailyCellData);
@@ -218,6 +227,7 @@ const useDailyTeacherActions = (
         dailyScheduleId: string,
     ) => {
         if (!school) return;
+        const currentPosition = mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.position || 0;
         const dailyCellData = addNewTeacherValueCell(
             school,
             cellData,
@@ -226,6 +236,7 @@ const useDailyTeacherActions = (
             type,
             undefined,
             undefined,
+            currentPosition,
         );
 
         if (dailyCellData) {

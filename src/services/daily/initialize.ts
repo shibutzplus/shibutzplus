@@ -10,7 +10,7 @@ export const initDailyTeacherCellData = (entry: DailyScheduleType) => {
         hour: entry.hour,
         classes: entry.classes,
         subject: entry.subject,
-        headerCol: { headerTeacher: entry.issueTeacher, type: entry.issueTeacherType },
+        headerCol: { headerTeacher: entry.issueTeacher, type: entry.issueTeacherType, position: entry.position },
     };
 
     if (entry.subTeacher) {
@@ -28,7 +28,7 @@ export const initDailyEventCellData = (entry: DailyScheduleType) => {
         DBid: entry.id,
         hour: entry.hour,
         event: entry.event,
-        headerCol: { headerEvent: entry.eventTitle, type: ColumnTypeValues.event },
+        headerCol: { headerEvent: entry.eventTitle, type: ColumnTypeValues.event, position: entry.position },
     };
 
     return cellData;

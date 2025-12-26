@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { noControlRe } from ".";
+
 
 export const teacherSchema = z.object({
     name: z

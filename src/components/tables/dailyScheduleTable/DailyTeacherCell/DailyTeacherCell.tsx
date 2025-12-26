@@ -66,7 +66,6 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
                 teacherClassMap,
                 classNameById,
                 headerData?.headerTeacher?.id,
-                subTeacherData?.id || teacherText,
                 classActivityById,
             ),
         [

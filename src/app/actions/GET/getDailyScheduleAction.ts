@@ -47,8 +47,8 @@ export async function getDailyScheduleAction(
             const classesData =
                 allClassIds.size > 0
                     ? await db.query.classes.findMany({
-                          where: inArray(schema.classes.id, Array.from(allClassIds)),
-                      })
+                        where: inArray(schema.classes.id, Array.from(allClassIds)),
+                    })
                     : [];
 
             const classesMap = new Map(classesData.map((c: any) => [c.id, c]));
@@ -83,6 +83,7 @@ export async function getDailyScheduleAction(
                         issueTeacher: schedule.issueTeacher,
                         issueTeacherType: schedule.issueTeacherType,
                         subTeacher: schedule.subTeacher,
+                        position: schedule.position,
                         createdAt: schedule.createdAt,
                         updatedAt: schedule.updatedAt,
                     }) as DailyScheduleType,

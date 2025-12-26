@@ -4,7 +4,7 @@ import React from "react";
 import { motion } from "motion/react";
 import styles from "./PreviewTable.module.css";
 import { TableRows } from "@/models/constant/table";
-import { sortDailyColumnIdsByType } from "@/utils/sort";
+import { sortDailyColumnIdsByPosition } from "@/utils/sort";
 import { DailySchedule, ColumnType } from "@/models/types/dailySchedule";
 import { AppType } from "@/models/types";
 import { TeacherType } from "@/models/types/teachers";
@@ -33,7 +33,7 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
     const schedule = mainDailyTable[selectedDate];
     const tableColumns = schedule ? Object.keys(schedule) : [];
     const sortedTableColumns = schedule
-        ? sortDailyColumnIdsByType(tableColumns, mainDailyTable, selectedDate)
+        ? sortDailyColumnIdsByPosition(tableColumns, schedule)
         : [];
 
     const columnTypes = React.useMemo(() => {

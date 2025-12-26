@@ -2,7 +2,7 @@
 
 import "@/components/faq/faq.css";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { errorToast, successToast } from "@/lib/toast";
 import Icons from "@/style/icons";
 import { motion } from "motion/react";
@@ -32,8 +32,9 @@ export default function FAQPage() {
 
             successToast("ההודעה נשלחה בהצלחה. ניצור איתכם קשר בהקדם ✨", Infinity);
             setContactMessage(""); // clear input after send
-        } catch (error: any) {
-            const raw = error?.text || error?.message || error?.toString() || "";
+        } catch (error: unknown) {
+            const err = error as any;
+            const raw = err?.text || err?.message || err?.toString() || "";
             const shortError = raw.split(".")[0] + ".";
             errorToast(
                 `אירעה שגיאה בשליחת ההודעה. יש להעביר את פרטי השגיאה למנהל בבית הספר כדי שיוכל לדווח למפתחי שיבוץ פלוס.\n\n${shortError || "לא זמינים"}`,

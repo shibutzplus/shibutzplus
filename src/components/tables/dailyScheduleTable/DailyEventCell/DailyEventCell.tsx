@@ -5,6 +5,7 @@ import messages from "@/resources/messages";
 import { errorToast } from "@/lib/toast";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import { DailyScheduleCell } from "@/models/types/dailySchedule";
+import { formatTMDintoDMY } from "@/utils/time";
 
 type DailyEventCellProps = { columnId: string; cell: DailyScheduleCell };
 
@@ -29,10 +30,11 @@ const DailyEventCell: React.FC<DailyEventCellProps> = ({ columnId, cell }) => {
         let currentHeaderTitle = headerData?.headerEvent;
 
         if (!currentHeaderTitle && event) {
-            const firstLine = event.split('\n')[0];
-            if (firstLine) {
-                await populateEventColumn(columnId, firstLine);
-                currentHeaderTitle = firstLine;
+            // Auto-fill header with date if empty
+            if (selectedDate) {
+                const defaultDateTitle = formatTMDintoDMY(selectedDate);
+                await populateEventColumn(columnId, defaultDateTitle);
+                currentHeaderTitle = defaultDateTitle;
             }
         }
 

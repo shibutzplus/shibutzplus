@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 import styles from "./DailyTable.module.css";
 import EmptyTable from "@/components/empty/EmptyTable/EmptyTable";
 import { DailySchedule, ColumnType } from "@/models/types/dailySchedule";
-import { useSortColumns } from "./useSortColumns";
+import { sortDailyColumnIdsByPosition } from "@/utils/sort";
 import DailyTeacherHeader from "../DailyTeacherHeader/DailyTeacherHeader";
 import DailyEventHeader from "../DailyEventHeader/DailyEventHeader";
 import DailyTeacherCell from "../DailyTeacherCell/DailyTeacherCell";
@@ -11,6 +11,7 @@ import DailyEventCell from "../DailyEventCell/DailyEventCell";
 import { useColumnAnimation } from "./useColumnAnimation";
 import { useMainContext } from "@/context/MainContext";
 import { HOURS_IN_DAY } from "@/utils/time";
+import { TeacherType } from "@/models/types/teachers";
 
 type AnimatedHeaderWrapperProps = {
     colIndex: number;
@@ -83,25 +84,30 @@ AnimatedCellWrapper.displayName = "AnimatedCellWrapper";
 type DailyTableProps = {
     mainDailyTable: DailySchedule;
     selectedDate: string;
+    onTeacherClick?: (teacher: TeacherType) => void;
 };
 
 const DailyTable: React.FC<DailyTableProps> = ({
     mainDailyTable,
     selectedDate,
+    onTeacherClick,
 }) => {
     const { settings } = useMainContext();
     const hoursNum = settings?.hoursNum || HOURS_IN_DAY;
 
     const schedule = mainDailyTable[selectedDate];
-    const tableColumns = schedule ? Object.keys(schedule) : [];
-    const sortedTableColumns = useSortColumns(schedule, mainDailyTable, selectedDate, tableColumns);
+    const sortedTableColumns = useMemo(() => {
+        if (!schedule) return [];
+        const tableColumns = Object.keys(schedule);
+        return sortDailyColumnIdsByPosition(tableColumns, schedule);
+    }, [schedule, mainDailyTable, selectedDate]);
 
     const prevSortedColumnsRef = React.useRef<string[]>([]);
 
     React.useEffect(() => {
         // Compare current columns with previous to find the new one
         if (prevSortedColumnsRef.current.length < sortedTableColumns.length) {
-            const newColumns = sortedTableColumns.filter(colId => !prevSortedColumnsRef.current.includes(colId));
+            const newColumns = sortedTableColumns.filter((colId: string) => !prevSortedColumnsRef.current.includes(colId));
 
             // Only scroll if exactly one new column is added (avoids scrolling on initial load or bulk updates)
             if (newColumns.length === 1) {
@@ -131,15 +137,23 @@ const DailyTable: React.FC<DailyTableProps> = ({
         const types: Record<string, ColumnType> = {};
         if (!schedule) return types;
 
-        sortedTableColumns.forEach(colId => {
+        sortedTableColumns.forEach((colId: string) => {
             const columnData = schedule[colId];
-            if (!columnData) return;
 
-            const colFirstObj =
-                columnData["1"] ||
-                Object.values(columnData).find((cell) => cell?.headerCol?.type);
+            // Fallback to type from ID prefix for old data stability
+            let inferredType: ColumnType = "existingTeacher";
+            if (colId.startsWith("missingTeacher-")) inferredType = "missingTeacher";
+            else if (colId.startsWith("event-")) inferredType = "event";
 
-            types[colId] = colFirstObj?.headerCol?.type || "event";
+            if (!columnData) {
+                types[colId] = inferredType;
+                return;
+            }
+
+            const headerCol = columnData["1"]?.headerCol ||
+                Object.values(columnData).find(cell => cell.headerCol)?.headerCol;
+
+            types[colId] = headerCol?.type || inferredType;
         });
         return types;
     }, [schedule, sortedTableColumns]);
@@ -174,11 +188,14 @@ const DailyTable: React.FC<DailyTableProps> = ({
                             <div className={`${styles.headerInner} ${styles.headerGray}`}></div>
                         </th>
 
-                        {sortedTableColumns.map((colId, colIndex) => {
+                        {sortedTableColumns.map((colId: string, colIndex: number) => {
                             const type = columnTypes[colId] || "event";
                             const headerColorClass = getColorClass(type);
                             const width = animatingWidths[colId];
                             const isAnimating = width !== undefined;
+
+                            const isFirst = colIndex === 0;
+                            const isLast = colIndex === sortedTableColumns.length - 1;
 
                             return (
                                 <AnimatedHeaderWrapper
@@ -189,12 +206,20 @@ const DailyTable: React.FC<DailyTableProps> = ({
                                     headerColorClass={headerColorClass}
                                 >
                                     {type === "event" ? (
-                                        <DailyEventHeader columnId={colId} onDelete={isAnimating ? undefined : (id) => handleColumnAnimation(id, "remove")} />
+                                        <DailyEventHeader
+                                            columnId={colId}
+                                            onDelete={isAnimating ? undefined : (id) => handleColumnAnimation(id, "remove")}
+                                            isFirst={isFirst}
+                                            isLast={isLast}
+                                        />
                                     ) : (
                                         <DailyTeacherHeader
                                             columnId={colId}
                                             type={type}
                                             onDelete={isAnimating ? undefined : (id) => handleColumnAnimation(id, "remove")}
+                                            onTeacherClick={onTeacherClick}
+                                            isFirst={isFirst}
+                                            isLast={isLast}
                                         />
                                     )}
                                 </AnimatedHeaderWrapper>
@@ -213,7 +238,7 @@ const DailyTable: React.FC<DailyTableProps> = ({
                                 </div>
                             </td>
 
-                            {sortedTableColumns.map((colId, colIndex) => {
+                            {sortedTableColumns.map((colId: string, colIndex: number) => {
                                 const type = columnTypes[colId] || "event";
                                 const columnData = schedule[colId];
                                 if (!columnData) return null;

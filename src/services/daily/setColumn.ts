@@ -67,6 +67,20 @@ export const setTeacherColumn = (
         }
     }
 
+    // Include the 0-th hour cell if it exists (contains the column DBid)
+    const zeroCell = hourDataMap.get(0);
+    if (zeroCell) {
+        dailySchedule[selectedDate][columnId]["0"] = {
+            classes: zeroCell.classes,
+            subject: zeroCell.subject,
+            hour: 0,
+            subTeacher: zeroCell.subTeacher,
+            event: zeroCell.event,
+            headerCol: zeroCell.headerCol,
+            DBid: zeroCell.DBid,
+        };
+    }
+
     return dailySchedule;
 };
 
@@ -101,6 +115,17 @@ export const setEventColumn = (
                 hour: hour,
             };
         }
+    }
+
+    // Include the 0-th hour cell if it exists (contains the column DBid)
+    const zeroCell = hourDataMap.get(0);
+    if (zeroCell) {
+        dailySchedule[selectedDate][columnId]["0"] = {
+            event: zeroCell.event,
+            hour: 0,
+            headerCol: zeroCell.headerCol,
+            DBid: zeroCell.DBid,
+        };
     }
 
     return dailySchedule;

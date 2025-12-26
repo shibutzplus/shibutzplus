@@ -51,6 +51,7 @@ export type HeaderCol = {
     headerTeacher?: TeacherType;
     headerEvent?: string;
     type: ColumnType;
+    position?: number;
 };
 
 export type DailyScheduleCell = {

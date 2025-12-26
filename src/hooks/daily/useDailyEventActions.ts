@@ -27,11 +27,16 @@ const useDailyEventActions = (
 
     const populateEventColumn = async (columnId: string, eventTitle: string) => {
         const alreadyExists = mainDailyTable[selectedDate]?.[columnId];
+        const currentPosition = alreadyExists?.["1"]?.headerCol?.position || 0;
+
         let updatedSchedule: DailySchedule = { ...mainDailyTable };
         let isUpdateSuccess = false;
 
-        // Try to update existing column first
-        if (alreadyExists && alreadyExists["1"]?.headerCol?.type === ColumnTypeValues.event) {
+        // Check if DB records exist for this column
+        const hasSavedData = alreadyExists ? Object.values(alreadyExists).some(cell => !!cell.DBid) : false;
+
+        // Try to update existing column first ONLY if we know it exists in DB
+        if (hasSavedData && alreadyExists && alreadyExists["1"]?.headerCol?.type === ColumnTypeValues.event) {
             const response = await updateDailyEventHeaderAction(selectedDate, columnId, eventTitle);
             if (response.success) {
                 updatedSchedule = updateAllEventHeader(
@@ -49,12 +54,18 @@ const useDailyEventActions = (
 
         // If update was skipped or failed, treat as new column creation
         if (!isUpdateSuccess) {
-            clearColumn(selectedDate, columnId);
+            // Explicitly clear local copy so fillLeftRowsWithEmptyCells regenerates the cells with new header
+            if (updatedSchedule[selectedDate]) {
+                updatedSchedule[selectedDate] = { ...updatedSchedule[selectedDate] };
+                updatedSchedule[selectedDate][columnId] = {};
+            }
+
             updatedSchedule = initDailySchedule(updatedSchedule, selectedDate, columnId);
             // Create a new entry in DB
             if (school?.id) {
                 const dayNum = getDayNumberByDateString(selectedDate).toString();
-                await addDailyEventCellAction({
+
+                const response = await addDailyEventCellAction({
                     date: new Date(selectedDate),
                     day: dayNum,
                     hour: 0,
@@ -63,14 +74,27 @@ const useDailyEventActions = (
                     issueTeacherType: ColumnTypeValues.event,
                     eventTitle,
                     event: eventPlaceholder,
-                    position: 0,
+                    position: currentPosition,
                 });
+
+                if (response.success && response.data?.id) {
+                    updatedSchedule[selectedDate][columnId]["0"] = {
+                        hour: 0,
+                        DBid: response.data.id,
+                        headerCol: {
+                            headerEvent: eventTitle,
+                            type: ColumnTypeValues.event,
+                            position: currentPosition,
+                        },
+                    };
+                }
             }
         }
 
         updatedSchedule = fillLeftRowsWithEmptyCells(updatedSchedule, selectedDate, columnId, {
             headerEvent: eventTitle,
             type: ColumnTypeValues.event,
+            position: currentPosition,
         });
         setMainAndStorageTable(updatedSchedule);
     };
@@ -81,8 +105,9 @@ const useDailyEventActions = (
         data: { event?: string; subTeacher?: TeacherType },
     ) => {
         if (!school) return;
+        const currentPosition = mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.position || 0;
         const eventTitle = data.event || eventPlaceholder;
-        const dailyCellData = addNewEventCell(school, cellData, columnId, selectedDate, eventTitle);
+        const dailyCellData = addNewEventCell(school, cellData, columnId, selectedDate, eventTitle, currentPosition);
         if (dailyCellData) {
             const response = await addDailyEventCellAction(dailyCellData);
             if (response?.success && response.data) {
@@ -93,6 +118,7 @@ const useDailyEventActions = (
                     cellData,
                     columnId,
                     data,
+                    cellData.headerCol?.headerEvent, // Pass the header event from the (potentially patched) cellData
                 );
                 setMainAndStorageTable(updatedSchedule);
                 pushIfPublished();
@@ -108,7 +134,8 @@ const useDailyEventActions = (
         event?: string,
     ) => {
         if (!school || event === undefined) return;
-        const dailyCellData = addNewEventCell(school, cellData, columnId, selectedDate, event);
+        const currentPosition = mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.position || 0;
+        const dailyCellData = addNewEventCell(school, cellData, columnId, selectedDate, event, currentPosition);
         if (dailyCellData) {
             const response = await updateDailyEventCellAction(dailyScheduleId, dailyCellData);
             if (response?.success && response.data) {

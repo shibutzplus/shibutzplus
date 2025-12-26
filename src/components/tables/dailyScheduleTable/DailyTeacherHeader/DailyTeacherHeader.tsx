@@ -10,29 +10,32 @@ import messages from "@/resources/messages";
 import { BrightTextColor, BrightTextColorHover } from "@/style/root";
 import styles from "../DailyTable/DailyTable.module.css";
 import useDeletePopup from "@/hooks/useDeletePopup";
+import DailyColumnMenu from "../DailyColumnMenu/DailyColumnMenu";
 import Icons from "@/style/icons";
-
 import { TeacherType } from "@/models/types/teachers";
+import { useTeacherTableContext } from "@/context/TeacherTableContext";
 
 type DailyTeacherHeaderProps = {
     columnId: string;
     type: ColumnType;
     onDelete?: (colId: string) => void;
+    onTeacherClick?: (teacher: TeacherType) => void;
+    isFirst?: boolean;
+    isLast?: boolean;
 };
 
 const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
     columnId,
     type,
     onDelete,
+    onTeacherClick,
+    isFirst,
+    isLast,
 }) => {
     const { teachers } = useMainContext();
-    const {
-        mainDailyTable,
-        selectedDate,
-        populateTeacherColumn,
-        deleteColumn,
-        mapAvailableTeachers,
-    } = useDailyTableContext();
+    const { deleteColumn, mainDailyTable, selectedDate, moveColumn, populateTeacherColumn, mapAvailableTeachers } =
+        useDailyTableContext();
+    const { fetchTeacherScheduleDate } = useTeacherTableContext(); // Added context
     const [isLoading, setIsLoading] = useState(false);
     const { handleOpenPopup } = useDeletePopup();
 
@@ -93,8 +96,7 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
         }
     };
 
-    const handleDeleteClick = (e: React.MouseEvent) => {
-        e.stopPropagation();
+    const handleDeleteClick = () => {
         const label = selectedTeacherData?.name || "המורה";
         const msg = `האם למחוק את ${label}?`;
 
@@ -105,14 +107,38 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
         }
     };
 
+    const handlePreviewClick = async () => {
+        if (selectedTeacherData && onTeacherClick) {
+            await fetchTeacherScheduleDate(selectedTeacherData, selectedDate);
+            onTeacherClick(selectedTeacherData);
+        }
+    };
+
     return (
         <div className={styles.headerContentWrapper}>
-            <Icons.delete
-                className={styles.trashIcon}
-                onClick={handleDeleteClick}
-                size={16}
-                title="מחיקת עמודה"
-            />
+            <DailyColumnMenu
+                onDelete={handleDeleteClick}
+                onMoveRight={() => moveColumn && moveColumn(columnId, "right")}
+                onMoveLeft={() => moveColumn && moveColumn(columnId, "left")}
+                isFirst={isFirst}
+                isLast={isLast}
+            >
+                {onTeacherClick && selectedTeacherData
+                    ? ({ closeMenu }) => (
+                        <div
+                            onClick={() => {
+                                handlePreviewClick();
+                                closeMenu();
+                            }}
+                            className={styles.menuItem}
+                        >
+                            <Icons.eye size={14} />
+                            <span>חומר הלימוד</span>
+                        </div>
+                    )
+                    : null}
+            </DailyColumnMenu>
+
             <div className={styles.inputSelectWrapper}>
                 <DynamicInputSelect
                     options={filteredTeacherOptions}

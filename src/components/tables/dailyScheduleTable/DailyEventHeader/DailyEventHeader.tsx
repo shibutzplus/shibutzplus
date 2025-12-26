@@ -3,38 +3,50 @@ import InputText from "../../../ui/inputs/InputText/InputText";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
-import { ColumnType } from "@/models/types/dailySchedule";
 import useDeletePopup from "@/hooks/useDeletePopup";
-import Icons from "@/style/icons";
 import styles from "../DailyTable/DailyTable.module.css";
+import { formatTMDintoDMY } from "@/utils/time";
+import DailyColumnMenu from "../DailyColumnMenu/DailyColumnMenu";
 
 type DailyEventHeaderProps = {
     columnId: string;
     onDelete?: (colId: string) => void;
+    isFirst?: boolean;
+    isLast?: boolean;
 };
 
-const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete }) => {
-    const { populateEventColumn, deleteColumn, mainDailyTable, selectedDate } =
+const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete, isFirst, isLast }) => {
+    const { populateEventColumn, deleteColumn, mainDailyTable, selectedDate, moveColumn } =
         useDailyTableContext();
 
     const selectedEventData =
         mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.headerEvent;
 
-    const [prevValue, setPrevValue] = useState<string>(selectedEventData || "");
+    const [value, setValue] = useState(selectedEventData || "");
+    const prevValueRef = React.useRef(selectedEventData || "");
 
-    const handleChange = (e: React.FocusEvent<HTMLInputElement>) => {
-        const newValue = e.target.value.trim();
+    // Update local state when value from server changes (and we are not editing)
+    React.useEffect(() => {
+        setValue(selectedEventData || "");
+        prevValueRef.current = selectedEventData || "";
+    }, [selectedEventData]);
 
-        // Prevent empty header if there was a previous saved value
-        if (prevValue && newValue === "") {
-            errorToast("כותרת העמודה אינה יכולה להיות ריקה", Infinity);
-            e.target.value = prevValue; // revert to previous value
-            return;
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setValue(e.target.value);
+    };
+
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+        let newValue = e.target.value.trim();
+
+        // If empty, set default to current date
+        if (newValue === "") {
+            newValue = formatTMDintoDMY(selectedDate);
+            setValue(newValue);
         }
 
-        if (prevValue !== newValue) {
+        if (prevValueRef.current !== newValue) {
             populateEventColumn(columnId, newValue);
-            setPrevValue(newValue);
+            prevValueRef.current = newValue;
         }
     };
 
@@ -58,19 +70,22 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete 
         }
     };
 
+
     return (
         <div className={styles.headerContentWrapper}>
-            <Icons.delete
-                className={styles.trashIcon}
-                onClick={handleDeleteClick}
-                size={16}
-                title="מחיקת עמודה"
+            <DailyColumnMenu
+                onDelete={handleDeleteClick}
+                onMoveRight={() => moveColumn && moveColumn(columnId, "right")}
+                onMoveLeft={() => moveColumn && moveColumn(columnId, "left")}
+                isFirst={isFirst}
+                isLast={isLast}
             />
             <div className={styles.inputSelectWrapper}>
                 <InputText
                     placeholder="כותרת האירוע"
-                    onBlur={handleChange}
-                    defaultValue={selectedEventData || ""}
+                    value={value}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
                     backgroundColor="transparent"
                     hasBorder={false}
                     fontSize="18px"

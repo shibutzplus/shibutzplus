@@ -121,7 +121,6 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    overflow: hidden;
 }
 
 .inputSelectWrapper {
@@ -129,13 +128,15 @@
     min-width: 0;
 }
 
-.trashIcon {
+.openMenu {
     cursor: pointer;
     flex-shrink: 0;
     transition: all 0.2s ease;
+    padding-left: 5px;
+    box-sizing: content-box;
 }
 
-.trashIcon:hover {
+.openMenu:hover {
     color: var(--bright-text-color-hover);
 }
 
@@ -158,4 +159,58 @@
     height: 100%;
     padding-top: 6px;
     padding-bottom: 6px;
+}
+
+/* Menu Dropdown Styles */
+.menuWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.menuDropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    min-width: 160px;
+    display: flex;
+    flex-direction: column;
+    padding: 4px 0;
+}
+
+.menuItem {
+    padding: 10px 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    color: #333;
+    transition: background-color 0.2s;
+}
+
+.menuItem:hover {
+    background-color: #f0f0f0;
+}
+
+.menuItemDelete {
+    color: #d32f2f;
+}
+
+.menuSeparator {
+    height: 1px;
+    background-color: #eee;
+    margin: 4px 0;
+}
+
+.menuItemDisabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: transparent !important;
+    color: #999;
 }

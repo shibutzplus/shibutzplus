@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Select, { StylesConfig, components } from "react-select";
 import { GroupOption, SelectOption } from "@/models/types";
 import { customStyles } from "@/style/selectStyle";
@@ -162,7 +162,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
         };
 
         // remove props that leak to DOM via GroupHeading
-        const { Heading, headingProps, ...safeHeadingProps } = props as any;
+        const { Heading: _Heading, headingProps: _HeadingProps, ...safeHeadingProps } = props as any;
 
         const optionsChildren = props.children;
 
