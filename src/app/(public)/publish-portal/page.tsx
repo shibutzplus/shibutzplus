@@ -9,6 +9,8 @@ import Preloader from "@/components/ui/Preloader/Preloader";
 import NotPublished from "@/components/empty/NotPublished/NotPublished";
 import ContactAdminError from "@/components/auth/ContactAdminError/ContactAdminError";
 
+import { getDayNumberByDateString } from "@/utils/time";
+
 const PublishedPortalPage: NextPage = () => {
     const {
         selectedDate,
@@ -58,13 +60,20 @@ const PublishedPortalPage: NextPage = () => {
         );
     }
 
+    const isShabbat = selectedDate ? getDayNumberByDateString(selectedDate) === 7 : false;
+
     return (
         <section className={styles.container}>
             <PreviewTable
                 mainDailyTable={mainPublishTable}
                 selectedDate={selectedDate}
                 appType="public"
-                EmptyTable={(props) => <NotPublished {...props} text="המערכת הבית ספרית לא פורסמה" />}
+                EmptyTable={(props) => (
+                    <NotPublished
+                        {...props}
+                        text={isShabbat ? "סוף שבוע נעים" : "המערכת הבית ספרית לא פורסמה"}
+                    />
+                )}
                 hoursNum={settings?.hoursNum}
             />
         </section>
