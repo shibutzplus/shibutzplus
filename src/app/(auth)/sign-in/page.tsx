@@ -92,7 +92,7 @@ const SignInContent: React.FC = () => {
                         disabled={isLoading}
                     >
                         {isLoading ? <Loading /> : null}
-                        <GoogleIcon /> משתמש רשום - התחברות
+                        <GoogleIcon /> התחברות
                     </button>
                     {error && <p className={styles.error}>{error}</p>}
                     <footer className={styles.registerLink}>

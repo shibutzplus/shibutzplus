@@ -12,3 +12,7 @@
     max-height: var(--table-daily-cell-height);
     overflow-y: auto;
 }
+
+.hasScroll {
+    padding: 0px 15px 0 15px;
+}

@@ -208,9 +208,14 @@
     margin: 4px 0;
 }
 
-.menuItemDisabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    background-color: transparent !important;
-    color: #999;
+
+.staticHeaderText {
+    font-size: 18px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 600;
+    padding: 0 15px 0 5px;
+    color: white;
+    text-align: right;
 }
