@@ -97,6 +97,25 @@ interface DailyTableContextType {
     moveColumn: (columnId: string, direction: "left" | "right") => Promise<void>;
 }
 
+const updateColumnPositionInSchedule = (
+    daySchedule: { [columnId: string]: { [hour: string]: DailyScheduleCell } },
+    columnId: string,
+    newPosition: number
+) => {
+    if (!daySchedule[columnId]) return;
+
+    daySchedule[columnId] = { ...daySchedule[columnId] }; // Shallow copy column
+    Object.keys(daySchedule[columnId]).forEach((key) => {
+        const cell = daySchedule[columnId][key];
+        if (cell && cell.headerCol) {
+            daySchedule[columnId][key] = {
+                ...cell,
+                headerCol: { ...cell.headerCol, position: newPosition },
+            };
+        }
+    });
+};
+
 const DailyTableContext = createContext<DailyTableContextType | undefined>(undefined);
 
 export const useDailyTableContext = () => {
@@ -270,33 +289,15 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
             const newPos = (index + 1) * POSITION_GAP;
 
             // Optimization: Only send update to DB if position actually changes
-            // We check hour "0" (metadata) or hour "1" (visual) for the current position
             const currentColumn = schedule[selectedDate]?.[colId];
-            const currentPos = currentColumn?.["0"]?.DBid
-                ? (currentColumn["0"].headerCol?.position || 0)
-                : (currentColumn?.["1"]?.headerCol?.position || 0);
+            const currentPos = currentColumn?.["1"]?.headerCol?.position || 0;
 
             if (currentPos !== newPos) {
                 updates.push({ columnId: colId, position: newPos });
             }
 
             // Update local state immediately
-            // Ensure we copy the column and iterate all cells to update position
-            if (newSchedule[selectedDate][colId]) {
-                newSchedule[selectedDate][colId] = { ...newSchedule[selectedDate][colId] };
-                Object.keys(newSchedule[selectedDate][colId]).forEach((key) => {
-                    const cell = newSchedule[selectedDate][colId][key];
-                    if (cell && cell.headerCol) {
-                        newSchedule[selectedDate][colId][key] = {
-                            ...cell,
-                            headerCol: {
-                                ...cell.headerCol,
-                                position: newPos,
-                            },
-                        };
-                    }
-                });
-            }
+            updateColumnPositionInSchedule(newSchedule[selectedDate], colId, newPos);
         });
 
         setMainAndStorageTable(newSchedule);
@@ -318,24 +319,23 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
 
         const newPriority = COLUMN_PRIORITY[type];
 
-        // Find insertion index: after all columns with <= priority, before any with > priority
-        // Since the array is sorted by position, we just need to find the first column
-        // that has a strictly HIGHER priority (should come after our new column).
-        // Our new column goes before that one.
-        let insertIndex = sortedColumns.findIndex((colId) => {
+        // Logic: Insert AFTER the last column that has equal or higher priority (lower priority value).
+        // Priority: Red(0) < Green(1) < Blue(2)
+        let insertAfterIndex = -1;
+
+        for (let i = 0; i < sortedColumns.length; i++) {
+            const colId = sortedColumns[i];
             const colType = schedule[colId]?.["1"]?.headerCol?.type || ColumnTypeValues.existingTeacher;
             const colPriority = COLUMN_PRIORITY[colType] ?? 1;
-            return colPriority > newPriority;
-        });
 
-        // If not found, it means all existing columns have <= priority, so append to end
-        if (insertIndex === -1) {
-            insertIndex = sortedColumns.length;
+            if (colPriority <= newPriority) {
+                insertAfterIndex = i;
+            }
         }
 
         // Calculate Position
-        const prevId = insertIndex > 0 ? sortedColumns[insertIndex - 1] : null;
-        const nextId = insertIndex < sortedColumns.length ? sortedColumns[insertIndex] : null;
+        const prevId = insertAfterIndex >= 0 ? sortedColumns[insertAfterIndex] : null;
+        const nextId = insertAfterIndex + 1 < sortedColumns.length ? sortedColumns[insertAfterIndex + 1] : null;
 
         const prevPos = prevId ? (schedule[prevId]?.["1"]?.headerCol?.position || 0) : 0;
         // If nextId is null, it means we are inserting at the very end.
@@ -347,10 +347,12 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         // Check collision or creation of 0-gap
         // If newPos is equal to prevPos or nextPos, or if inserting at the start and nextPos is too small (e.g., 0 or 1),
         // it indicates a need for rebalancing.
-        if (newPos === prevPos || newPos === nextPos || (insertIndex === 0 && nextPos < REBALANCE_THRESHOLD)) {
+        if (newPos === prevPos || newPos === nextPos || (insertAfterIndex === -1 && nextPos < REBALANCE_THRESHOLD)) {
             // Rebalance everything including the new column
             const newColsList = [...sortedColumns];
-            newColsList.splice(insertIndex, 0, newColumnId);
+            // insertAfterIndex is where we insert AFTER. So we insert AT insertAfterIndex + 1.
+            const spliceIndex = insertAfterIndex + 1;
+            newColsList.splice(spliceIndex, 0, newColumnId);
 
             // Create empty column first with placeholder pos
             const tempSchedule = createNewEmptyColumn(
@@ -388,22 +390,47 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         const currentIndex = sortedCols.indexOf(columnId);
         if (currentIndex === -1) return;
 
-        // Determine the target index in the sorted array
-        // "Right" in visual RTL means moving towards the start of the array (lower index)
-        // "Left" in visual RTL means moving towards the end of the array (higher index)
         const targetIndex = direction === "right" ? currentIndex - 1 : currentIndex + 1;
 
         if (targetIndex < 0 || targetIndex >= sortedCols.length) return;
 
-        // Construct the DESIRED array order after the move
-        const newOrder = [...sortedCols];
-        const [movedItem] = newOrder.splice(currentIndex, 1);
-        newOrder.splice(targetIndex, 0, movedItem);
+        const targetColumnId = sortedCols[targetIndex];
+        const currentColumn = schedule[columnId];
+        const targetColumn = schedule[targetColumnId];
 
-        // Instead of calculating average positions (which fails with legacy 0 data),
-        // we forcefully rebalance the entire day's columns to guarantee the new order.
-        // This ensures positions are always clean (1000, 2000, 3000...)
-        rebalanceColumns(newOrder, mainDailyTable);
+        // Get current positions
+        const currentPos = currentColumn?.["1"]?.headerCol?.position || 0;
+        const targetPos = targetColumn?.["1"]?.headerCol?.position || 0;
+
+        // Perform swap
+        const updates = [
+            { columnId: columnId, position: targetPos },
+            { columnId: targetColumnId, position: currentPos },
+        ];
+
+        // Optimistic update
+        const newSchedule = { ...mainDailyTable };
+        if (newSchedule[selectedDate]) {
+            newSchedule[selectedDate] = { ...newSchedule[selectedDate] };
+
+            // Update current column
+            updateColumnPositionInSchedule(newSchedule[selectedDate], columnId, targetPos);
+
+            // Update target column
+            updateColumnPositionInSchedule(newSchedule[selectedDate], targetColumnId, currentPos);
+        }
+
+        setMainAndStorageTable(newSchedule);
+
+        try {
+            const { updateDailyColumnPositionsAction } = await import(
+                "@/app/actions/PUT/updateDailyColumnPositionsAction"
+            );
+            await updateDailyColumnPositionsAction(school.id, selectedDate, updates);
+        } catch (error) {
+            console.error("Error moving column:", error);
+            // Revert state on error if needed or refetch
+        }
     };
 
     return (

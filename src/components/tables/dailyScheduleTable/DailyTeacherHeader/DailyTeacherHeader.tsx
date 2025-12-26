@@ -123,9 +123,8 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
                 isFirst={isFirst}
                 isLast={isLast}
             >
-                {({ closeMenu }) =>
-                    onTeacherClick &&
-                    selectedTeacherData && (
+                {onTeacherClick && selectedTeacherData
+                    ? ({ closeMenu }) => (
                         <div
                             onClick={() => {
                                 handlePreviewClick();
@@ -137,7 +136,7 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
                             <span>חומר הלימוד</span>
                         </div>
                     )
-                }
+                    : null}
             </DailyColumnMenu>
 
             <div className={styles.inputSelectWrapper}>
