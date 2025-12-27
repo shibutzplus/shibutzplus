@@ -9,7 +9,7 @@ import DailyTable from "@/components/tables/dailyScheduleTable/DailyTable/DailyT
 import LoadingPage from "@/components/loading/LoadingPage/LoadingPage";
 import { TeacherTableProvider } from "@/context/TeacherTableContext";
 import SlidingPanel from "@/components/ui/SlidingPanel/SlidingPanel";
-import TeacherTable from "@/components/tables/teacherScheduleTable/TeacherTable/TeacherTable";
+import TeacherTable from "@/components/tables/teacherMaterialTable/TeacherTable/TeacherTable";
 import { TeacherType } from "@/models/types/teachers";
 import { useMainContext } from "@/context/MainContext";
 

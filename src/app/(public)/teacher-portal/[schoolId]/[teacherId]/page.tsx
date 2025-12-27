@@ -6,7 +6,7 @@ import styles from "./teacherPortal.module.css";
 import { usePortalContext } from "@/context/PortalContext";
 import { useParams, useRouter } from "next/navigation";
 import router from "@/routes";
-import TeacherTable from "@/components/tables/teacherScheduleTable/TeacherTable/TeacherTable";
+import TeacherTable from "@/components/tables/teacherMaterialTable/TeacherTable/TeacherTable";
 import { useTeacherTableContext } from "@/context/TeacherTableContext";
 import Preloader from "@/components/ui/Preloader/Preloader";
 

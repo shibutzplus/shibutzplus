@@ -3,13 +3,13 @@
 import React, { useState } from "react";
 import type { NextPage } from "next";
 import styles from "./history.module.css";
-import PreviewTable from "@/components/tables/previewTable/PreviewTable/PreviewTable";
+import PreviewTable from "@/components/tables/dailyViewTable/PreviewTable/PreviewTable";
 import { useHistoryTable } from "@/context/HistoryTableContext";
 import NotPublished from "@/components/empty/NotPublished/NotPublished";
 import Preloader from "@/components/ui/Preloader/Preloader";
 import { TeacherTableProvider } from "@/context/TeacherTableContext";
 import SlidingPanel from "@/components/ui/SlidingPanel/SlidingPanel";
-import TeacherTable from "@/components/tables/teacherScheduleTable/TeacherTable/TeacherTable";
+import TeacherTable from "@/components/tables/teacherMaterialTable/TeacherTable/TeacherTable";
 import { TeacherType } from "@/models/types/teachers";
 import { useMainContext } from "@/context/MainContext";
 
