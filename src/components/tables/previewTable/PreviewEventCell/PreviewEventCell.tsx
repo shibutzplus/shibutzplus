@@ -11,10 +11,21 @@ type PreviewEventCellProps = {
 const PreviewEventCell: React.FC<PreviewEventCellProps> = ({ cell }) => {
     const eventData = cell?.event;
 
+    const [hasScroll, setHasScroll] = React.useState(false);
+
+    const cellRef = React.useCallback((node: HTMLDivElement | null) => {
+        if (node) {
+            setHasScroll(node.scrollHeight > node.clientHeight);
+        }
+    }, []);
+
     return (
         <div className={styles.cellContent}>
             {eventData ? (
-                <div className={styles.innerCellContent}>
+                <div
+                    className={`${styles.innerCellContent} ${hasScroll ? styles.hasScroll : ""}`}
+                    ref={cellRef}
+                >
                     <div className={styles.eventText}>{eventData}</div>
                 </div>
             ) : (
