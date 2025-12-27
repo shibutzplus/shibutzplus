@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import { NextPage } from "next";
 import styles from "./PublishedPortal.module.css";
-import PreviewTable from "@/components/tables/previewTable/PreviewTable/PreviewTable";
+import PreviewTable from "@/components/tables/dailyViewTable/PreviewTable/PreviewTable";
 import { usePortalContext } from "@/context/PortalContext";
 import Preloader from "@/components/ui/Preloader/Preloader";
 import NotPublished from "@/components/empty/NotPublished/NotPublished";
