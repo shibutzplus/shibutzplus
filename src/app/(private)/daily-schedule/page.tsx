@@ -5,7 +5,7 @@ import { NextPage } from "next";
 import Preloader from "@/components/ui/Preloader/Preloader";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import styles from "./DailySchedule.module.css";
-import DailyTable from "@/components/tables/dailyScheduleTable/DailyTable/DailyTable";
+import DailyTable from "@/components/tables/dailyEditTable/DailyTable/DailyTable";
 import LoadingPage from "@/components/loading/LoadingPage/LoadingPage";
 import { TeacherTableProvider } from "@/context/TeacherTableContext";
 import SlidingPanel from "@/components/ui/SlidingPanel/SlidingPanel";
