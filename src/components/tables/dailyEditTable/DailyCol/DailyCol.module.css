@@ -1,8 +1,8 @@
 .dailyColumn {
     background-color: var(--inner-background-color);
-    width: var(--table-daily-col-width);
-    min-width: var(--table-daily-col-width);
-    max-width: var(--table-daily-col-width);
+    width: var(--table-daily-col-width-edit);
+    min-width: var(--table-daily-col-width-edit);
+    max-width: var(--table-daily-col-width-edit);
     display: flex;
     flex-direction: column;
     padding: 0;

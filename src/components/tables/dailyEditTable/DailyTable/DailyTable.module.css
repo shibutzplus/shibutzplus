@@ -141,16 +141,16 @@
 }
 
 .regularHeaderCell {
-    width: var(--table-daily-col-width);
-    min-width: var(--table-daily-col-width);
-    max-width: var(--table-daily-col-width);
+    width: var(--table-daily-col-width-edit);
+    min-width: var(--table-daily-col-width-edit);
+    max-width: var(--table-daily-col-width-edit);
     overflow: visible;
 }
 
 .regularDataCell {
-    width: var(--table-daily-col-width);
-    min-width: var(--table-daily-col-width);
-    max-width: var(--table-daily-col-width);
+    width: var(--table-daily-col-width-edit);
+    min-width: var(--table-daily-col-width-edit);
+    max-width: var(--table-daily-col-width-edit);
 }
 
 .cellContent {
@@ -226,4 +226,8 @@
     padding: 0 15px 0 5px;
     color: white;
     text-align: right;
+}
+
+.previewMode {
+    --table-daily-col-width-edit: var(--table-daily-col-width-preview);
 }

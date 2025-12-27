@@ -10,6 +10,7 @@ import DailyTeacherCell from "../DailyTeacherCell/DailyTeacherCell";
 import DailyEventCell from "../DailyEventCell/DailyEventCell";
 import { useColumnAnimation } from "./useColumnAnimation";
 import { useMainContext } from "@/context/MainContext";
+import { useDailyTableContext } from "@/context/DailyTableContext";
 import { HOURS_IN_DAY } from "@/utils/time";
 import { TeacherType } from "@/models/types/teachers";
 
@@ -93,6 +94,7 @@ const DailyTable: React.FC<DailyTableProps> = ({
     onTeacherClick,
 }) => {
     const { settings } = useMainContext();
+    const { isEditMode } = useDailyTableContext(); // Get isEditMode
     const hoursNum = settings?.hoursNum || HOURS_IN_DAY;
 
     const schedule = mainDailyTable[selectedDate];
@@ -177,7 +179,7 @@ const DailyTable: React.FC<DailyTableProps> = ({
     }
 
     return (
-        <div className={styles.tableContainer}>
+        <div className={`${styles.tableContainer} ${!isEditMode ? styles.previewMode : ''}`}>
             <table className={styles.table}>
                 <thead>
                     <tr>

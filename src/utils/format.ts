@@ -1,6 +1,6 @@
 import { SelectOption } from "@/models/types";
 import { TeacherRole, TeacherType } from "@/models/types/teachers";
-import routePath from "@/routes";
+
 
 export const createSelectOptions = <T extends { id: string; name: string }>(
     data: T[] | undefined,
@@ -17,18 +17,6 @@ export const filterTeachersByRole = (teachers: TeacherType[], role: TeacherRole)
     return teachers.filter((teacher) => teacher.role === role);
 };
 
-// TODO: in use?
-export const getPageTitleFromUrl = (pathname: string) => {
-    const currentPath = pathname.split("/").filter(Boolean)[0] || "";
-    const routeKey = Object.keys(routePath).find(
-        (key) =>
-            routePath[key].p === `/${currentPath}` ||
-            (currentPath === "" && routePath[key].p === "/"),
-    );
-    if (routeKey) return routePath[routeKey].title;
-    return;
-};
-
 /**
  * Creates a button text for a new select option
  * @param template - string with placeholder {0} for the input value
@@ -39,46 +27,6 @@ export const createNewSelectOption_btnText = (inputValue: string, template?: str
     return template?.replace("{0}", inputValue) || inputValue;
 };
 
-// NOT IN USE
-export const convertContentToHTML = (text: string) => {
-    const lines = text.split("\n");
-    const html: string[] = [];
-    let currentList: string[] = [];
-    let isInList = false;
-
-    lines.forEach((line) => {
-        line = line.trim();
-
-        if (!line) {
-            if (isInList) {
-                html.push("<ul>\n" + currentList.join("\n") + "\n</ul>");
-                currentList = [];
-                isInList = false;
-            }
-            return;
-        }
-
-        line = line.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-
-        if (line.startsWith("*")) {
-            isInList = true;
-            currentList.push(`    <li>${line.substring(1).trim()}</li>`);
-        } else {
-            if (isInList) {
-                html.push("<ul>\n" + currentList.join("\n") + "\n</ul>");
-                currentList = [];
-                isInList = false;
-            }
-            html.push(`<p>${line}</p>`);
-        }
-    });
-
-    if (currentList.length > 0) {
-        html.push("<ul>\n" + currentList.join("\n") + "\n</ul>");
-    }
-
-    return `<div dir="rtl">\n${html.join("\n")}\n</div>`;
-};
 
 export const convertHTMLToContent = (html: string) => {
     // Handle anchor tags - convert to markdown format

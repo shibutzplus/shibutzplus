@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { WeeklySchedule } from "@/models/types/annualSchedule";
 import { SubjectType } from "@/models/types/subjects";
 import { TeacherType } from "@/models/types/teachers";
@@ -17,7 +17,6 @@ type AnnualViewTableProps = {
     subjects: SubjectType[] | undefined;
     teachers: TeacherType[] | undefined;
     classes: ClassType[] | undefined;
-    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const AnnualViewTable: React.FC<AnnualViewTableProps> = ({
@@ -27,16 +26,11 @@ const AnnualViewTable: React.FC<AnnualViewTableProps> = ({
     subjects,
     teachers,
     classes,
-    setIsLoading,
 }) => {
     const { settings } = useMainContext();
     const hoursNum = settings?.hoursNum || HOURS_IN_DAY;
 
     const isDisabled = !schedule || !subjects || !classes;
-
-    useEffect(() => {
-        setIsLoading(!schedule || !subjects || !classes);
-    }, [!!schedule, !!subjects, !!classes]);
 
     return (
         <div className={styles.tableContainer}>
