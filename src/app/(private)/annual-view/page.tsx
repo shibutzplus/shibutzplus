@@ -12,8 +12,7 @@ const AnnualViewPage: NextPage = () => {
     const {
         schedule,
         selectedClassId,
-        selectedTeacherId,
-        setIsLoading
+        selectedTeacherId
     } = useAnnualView();
 
     const hasSelection = selectedClassId || selectedTeacherId;
@@ -28,7 +27,6 @@ const AnnualViewPage: NextPage = () => {
                     subjects={subjects}
                     teachers={teachers}
                     classes={classes}
-                    setIsLoading={setIsLoading as React.Dispatch<React.SetStateAction<boolean>>}
                 />
             ) : (
                 <div className={styles.placeholder}>בחרו כיתה ו/או מורה כדי להציג את המערכת</div>
