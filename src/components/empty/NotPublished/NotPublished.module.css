@@ -9,7 +9,7 @@
     align-items: center;
     gap: 20px;
     max-height: calc(100vh - var(--header-height));
-    width: 50vw;
+    width: 90vw;
     text-align: center;
 }
 
@@ -17,6 +17,8 @@
     font-size: 18px;
     font-weight: 600;
     color: #666;
+    direction: rtl;
+    white-space: nowrap;
 }
 
 .text {
@@ -28,6 +30,6 @@
 /* > 1024px */
 @media (min-width: 1024px) {
     .emptyTable {
-        width: none;
+        width: auto;
     }
 }
