@@ -73,13 +73,15 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete,
 
     return (
         <div className={styles.headerContentWrapper}>
-            <DailyColumnMenu
-                onDelete={handleDeleteClick}
-                onMoveRight={() => moveColumn && moveColumn(columnId, "right")}
-                onMoveLeft={() => moveColumn && moveColumn(columnId, "left")}
-                isFirst={isFirst}
-                isLast={isLast}
-            />
+            {isEditMode && (
+                <DailyColumnMenu
+                    onDelete={handleDeleteClick}
+                    onMoveRight={() => moveColumn && moveColumn(columnId, "right")}
+                    onMoveLeft={() => moveColumn && moveColumn(columnId, "left")}
+                    isFirst={isFirst}
+                    isLast={isLast}
+                />
+            )}
             <div className={styles.inputSelectWrapper}>
                 <div style={{ display: isEditMode ? "block" : "none", width: "100%" }}>
                     <InputText

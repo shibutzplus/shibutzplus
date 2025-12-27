@@ -1,7 +1,7 @@
 .topNavBtnContainer {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 25px;
     --daily-btn-width: 60px;
 }
 
@@ -26,7 +26,6 @@
     cursor: pointer;
     width: auto !important;
     transition: all 0.2s;
-    margin-left: 25px;
 }
 
 .topNavBtnContainer .publishBtn:hover {
@@ -42,7 +41,6 @@
     font-weight: 700;
     font-size: 15px;
     padding: 0 10px;
-    margin-left: 25px;
 }
 
 

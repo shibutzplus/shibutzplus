@@ -104,14 +104,14 @@
 }
 
 .regularHeaderCell {
-    width: var(--table-daily-col-width);
-    min-width: var(--table-daily-col-width);
-    max-width: var(--table-daily-col-width);
+    width: var(--table-daily-col-width-preview);
+    min-width: var(--table-daily-col-width-preview);
+    max-width: var(--table-daily-col-width-preview);
     overflow: visible;
 }
 
 .regularDataCell {
-    width: var(--table-daily-col-width);
-    min-width: var(--table-daily-col-width);
-    max-width: var(--table-daily-col-width);
+    width: var(--table-daily-col-width-preview);
+    min-width: var(--table-daily-col-width-preview);
+    max-width: var(--table-daily-col-width-preview);
 }

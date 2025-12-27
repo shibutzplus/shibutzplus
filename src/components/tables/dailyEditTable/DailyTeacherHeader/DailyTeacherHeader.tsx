@@ -116,28 +116,30 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
 
     return (
         <div className={styles.headerContentWrapper}>
-            <DailyColumnMenu
-                onDelete={handleDeleteClick}
-                onMoveRight={() => moveColumn && moveColumn(columnId, "right")}
-                onMoveLeft={() => moveColumn && moveColumn(columnId, "left")}
-                isFirst={isFirst}
-                isLast={isLast}
-            >
-                {onTeacherClick && selectedTeacherData
-                    ? ({ closeMenu }) => (
-                        <div
-                            onClick={() => {
-                                handlePreviewClick();
-                                closeMenu();
-                            }}
-                            className={styles.menuItem}
-                        >
-                            <Icons.eye size={14} />
-                            <span>חומר הלימוד</span>
-                        </div>
-                    )
-                    : null}
-            </DailyColumnMenu>
+            {isEditMode && (
+                <DailyColumnMenu
+                    onDelete={handleDeleteClick}
+                    onMoveRight={() => moveColumn && moveColumn(columnId, "right")}
+                    onMoveLeft={() => moveColumn && moveColumn(columnId, "left")}
+                    isFirst={isFirst}
+                    isLast={isLast}
+                >
+                    {onTeacherClick && selectedTeacherData
+                        ? ({ closeMenu }) => (
+                            <div
+                                onClick={() => {
+                                    handlePreviewClick();
+                                    closeMenu();
+                                }}
+                                className={styles.menuItem}
+                            >
+                                <Icons.eye size={14} />
+                                <span>חומר הלימוד</span>
+                            </div>
+                        )
+                        : null}
+                </DailyColumnMenu>
+            )}
 
             <div className={styles.inputSelectWrapper}>
                 <div style={{ display: isEditMode ? "block" : "none", width: "100%" }}>

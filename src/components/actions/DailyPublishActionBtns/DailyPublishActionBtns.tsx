@@ -36,6 +36,15 @@ const DailyPublishActionBtns: React.FC = () => {
 
     return (
         <div className={styles.topNavBtnContainer}>
+            <span title={isEditMode ? "תצוגה מקדימה" : "חזרה לשיבוץ"}>
+                <IconBtn
+                    Icon={isEditMode ? <Icons.eye size={24} /> : <Icons.edit size={20} />}
+                    onClick={changeDailyMode}
+                    disabled={isLoadingEditPage}
+                    hasBorder
+                />
+            </span>
+
             {isDisabled ? (
                 <div
                     className={`${styles.publishedStatus} ${styles.clickableStatus}`}
@@ -64,15 +73,6 @@ const DailyPublishActionBtns: React.FC = () => {
                     )}
                 </button>
             )}
-
-            <span title={isEditMode ? "תצוגה מקדימה" : "חזרה לשיבוץ"}>
-                <IconBtn
-                    Icon={isEditMode ? <Icons.eye size={24} /> : <Icons.edit size={20} />}
-                    onClick={changeDailyMode}
-                    disabled={isLoadingEditPage}
-                    hasBorder
-                />
-            </span>
 
             <span title="שיתוף קישור למורים מן המניין">
                 <IconBtn

@@ -1,6 +1,6 @@
 .columnHeaderWrapper {
     width: 100%;
-    max-width: var(--table-daily-col-width);
+    max-width: var(--table-daily-col-width-preview);
     height: var(--table-daily-header-height);
     background-color: var(--background-color);
     position: absolute;
