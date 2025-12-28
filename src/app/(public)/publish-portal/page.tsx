@@ -66,7 +66,7 @@ const PublishedPortalPage: NextPage = () => {
     const isPublished = datesOptions.some((d) => d.value === selectedDate);
     const getEmptyText = () => {
         if (isShabbat) return "סוף שבוע נעים";
-        if (isPublished) return "אין עדכונים במערכת החדשה שפורסמה";
+        if (isPublished) return "אין עדכונים במערכת שפורסמה";
         return "המערכת הבית ספרית לא פורסמה";
     };
 
