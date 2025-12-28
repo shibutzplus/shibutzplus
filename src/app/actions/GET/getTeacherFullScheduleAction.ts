@@ -47,8 +47,8 @@ const getTeacherFullScheduleAction = async (
             const classesData =
                 allClassIds.size > 0
                     ? await db.query.classes.findMany({
-                          where: inArray(schema.classes.id, Array.from(allClassIds)),
-                      })
+                        where: inArray(schema.classes.id, Array.from(allClassIds)),
+                    })
                     : [];
 
             const classesMap = new Map(classesData.map((c: any) => [c.id, c]));
@@ -66,29 +66,8 @@ const getTeacherFullScheduleAction = async (
                 return schedule.class ? [schedule.class] : [];
             };
 
-            // Group by hour to handle conflicts
-            const schedulesByHour = new Map<number, any>();
-
-            dailySchedules.forEach((schedule) => {
-                const hour = schedule.hour;
-                const existing = schedulesByHour.get(hour);
-
-                if (!existing) {
-                    // No existing schedule for this hour, add it
-                    schedulesByHour.set(hour, schedule);
-                } else {
-                    // There's a conflict - prioritize subTeacher over issueTeacher
-                    if (schedule.subTeacherId === teacherId) {
-                        // Current schedule has teacher as subTeacher, use it
-                        schedulesByHour.set(hour, schedule);
-                    }
-                    // If current schedule only has teacher as issueTeacher and existing already exists,
-                    // keep the existing one (which could be subTeacher or was added first)
-                }
-            });
-
-            const results: DailyScheduleType[] = Array.from(schedulesByHour.values())
-                .map((schedule) => ({
+            const results: DailyScheduleType[] = dailySchedules
+                .map((schedule: any) => ({
                     id: schedule.id,
                     date: new Date(schedule.date),
                     day: schedule.day,
@@ -108,7 +87,7 @@ const getTeacherFullScheduleAction = async (
                     createdAt: schedule.createdAt,
                     updatedAt: schedule.updatedAt,
                 }))
-                .sort((a, b) => a.hour - b.hour);
+                .sort((a: any, b: any) => a.hour - b.hour);
 
             return results;
         });

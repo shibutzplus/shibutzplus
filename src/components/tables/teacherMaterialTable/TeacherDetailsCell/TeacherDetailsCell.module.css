@@ -29,6 +29,14 @@
 
 .subTeacher {
   font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.doubleRow {
+  font-weight: normal;
+  white-space: nowrap;
 }
 
 /* > 600 */
@@ -43,5 +51,10 @@
 
   .emptyCell {
     height: var(--table-teacher-cell-height);
+  }
+
+  .doubleRow {
+    font-weight: 600;
+    white-space: normal;
   }
 }

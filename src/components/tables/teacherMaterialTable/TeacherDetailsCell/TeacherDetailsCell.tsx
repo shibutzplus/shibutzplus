@@ -11,17 +11,40 @@ type TeacherDetailsCellProps = {
 };
 
 const TeacherDetailsCell: React.FC<TeacherDetailsCellProps> = ({ row, teacher }) => {
-    const displayReplaceTeacher = () => {
-        if (row?.issueTeacher) {
-            if (teacher?.id === row?.issueTeacher?.id) {
-                if (row?.subTeacher) return `${row?.subTeacher?.name}`;
-                if (row?.event) return row?.event;
-                return "";
-            } else {
-                return `במקום ${row?.issueTeacher?.name}`;
-            }
+    const getReplaceText = (r?: TeacherScheduleType) => {
+        if (!r?.issueTeacher) return "";
+        if (teacher?.id === r.issueTeacher?.id) {
+            if (r.subTeacher) return `מוחלף ע"י ${r.subTeacher.name}`;
+            if (r.event) return r.event;
+            return "";
+        } else {
+            return `מחליף את ${r.issueTeacher.name}`;
         }
-        return "";
+    };
+
+    const primaryText = getReplaceText(row);
+    const secondaryText = getReplaceText(row?.secondary);
+    const isDouble = !!(primaryText && secondaryText);
+
+    const displayReplaceTeacher = () => {
+        if (isDouble) {
+            const texts = [primaryText, secondaryText].sort((a, b) => {
+                if (a.startsWith("מחליף את")) return -1;
+                return 1;
+            });
+
+            return (
+                <>
+                    <div>{texts[0]}</div>
+                    <div>{texts[1]}</div>
+                </>
+            );
+        }
+        const text = primaryText || secondaryText;
+        if (text?.startsWith("מוחלף ע\"י ")) {
+            return text.replace("מוחלף ע\"י ", "");
+        }
+        return text;
     };
 
     return (
@@ -32,7 +55,9 @@ const TeacherDetailsCell: React.FC<TeacherDetailsCellProps> = ({ row, teacher })
                     !row?.classes?.some((c) => c.activity) &&
                     ` | ${row.subject.name}`}
             </div>
-            <div className={styles.subTeacher}>{displayReplaceTeacher()}</div>
+            <div className={`${styles.subTeacher} ${isDouble ? styles.doubleRow : ""}`}>
+                {displayReplaceTeacher()}
+            </div>
         </div>
     );
 };

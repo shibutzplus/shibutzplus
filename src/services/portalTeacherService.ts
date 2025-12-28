@@ -1,6 +1,6 @@
 import { SelectOption } from "@/models/types";
 import { DailyScheduleType } from "@/models/types/dailySchedule";
-import { PortalSchedule } from "@/models/types/portalSchedule";
+import { PortalSchedule, TeacherScheduleType } from "@/models/types/portalSchedule";
 import { AUTO_SWITCH_TIME, getDateReturnString, getTodayDateString, getTomorrowDateString, israelTimezoneDate, } from "@/utils/time";
 
 export const selectSelectedDate = (dates: SelectOption[]) => {
@@ -53,7 +53,7 @@ export const populatePortalTable = (
             if (date !== selectedDate) continue;
 
             const hour = String(entry.hour);
-            next[selectedDate]![hour] = {
+            const newEntry: TeacherScheduleType = {
                 DBid: entry.id,
                 columnId: entry.columnId,
                 hour: entry.hour,
@@ -66,6 +66,12 @@ export const populatePortalTable = (
                 event: entry.event,
                 instructions: entry.instructions,
             };
+
+            if (next[selectedDate]![hour]) {
+                next[selectedDate]![hour].secondary = newEntry;
+            } else {
+                next[selectedDate]![hour] = newEntry;
+            }
         }
     }
 
