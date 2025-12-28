@@ -153,6 +153,7 @@ const useDailyTeacherActions = (
                         settings?.hoursNum,
                     );
                     setMainAndStorageTable(updatedSchedule);
+                    pushIfPublished(selectedDate);
                 } else {
                     // If the teacher does not teach on this day, create an empty column
                     // We re-affirm the empty column with the teacher header

@@ -2,7 +2,7 @@
  * Sync Service
  * Handles push/poll for updates from the sync API
  */
-import { DAILY_TEACHER_COL_DATA_CHANGED, DAILY_EVENT_COL_DATA_CHANGED, LISTS_DATA_CHANGED, PUBLISH_DATA_CHANGED } from "@/models/constant/sync";
+import { DAILY_TEACHER_COL_DATA_CHANGED, DAILY_SCHOOL_DATA_CHANGED, LISTS_DATA_CHANGED, PUBLISH_DATA_CHANGED, MATERIAL_CHANGED } from "@/models/constant/sync";
 import { SyncChannel } from "@/models/types/sync";
 
 export type { SyncChannel };
@@ -28,7 +28,7 @@ export interface PollUpdatesParams {
  */
 const pollUpdates = async (params: PollUpdatesParams): Promise<SyncPollResponse | null> => {
   try {
-    // Skip polling when running in development (dont forget to do it also for push updates)
+    // Skip polling when running in development
     //if (process.env.NODE_ENV === "development") {
     //  return null; // For debug comment out this block  
     //}
@@ -87,9 +87,9 @@ export const getChannelsForPath = (
   // On teacher screen, listen to teacher columns events only
   // On schedule screen, listen to both teacher and events columns changes
   if (pathname.includes(teacherPortalPath)) {
-    return [DAILY_TEACHER_COL_DATA_CHANGED, PUBLISH_DATA_CHANGED];
+    return [DAILY_TEACHER_COL_DATA_CHANGED, PUBLISH_DATA_CHANGED, MATERIAL_CHANGED];
   }
-  return [DAILY_TEACHER_COL_DATA_CHANGED, DAILY_EVENT_COL_DATA_CHANGED, PUBLISH_DATA_CHANGED];
+  return [DAILY_TEACHER_COL_DATA_CHANGED, DAILY_SCHOOL_DATA_CHANGED, PUBLISH_DATA_CHANGED];
 };
 
 /**
@@ -99,11 +99,20 @@ export const getChannelsForPath = (
  */
 export const pushSyncUpdate = async (type: SyncChannel): Promise<void> => {
   try {
-    // Skip push when running in development (dont forget to do it also for polling updates)
+    // Skip push when running in development
     //if (process.env.NODE_ENV === "development") {
     //  return; // For debug comment out this block
     //}
-    void fetch(`/api/sync/push?type=${type}`, { method: "POST", keepalive: true });
+
+    let url = `/api/sync/push?type=${type}`;
+
+    // If running on dev server, prepend base URL
+    if (typeof window === "undefined") {
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+      url = `${baseUrl}${url}`;
+    }
+
+    void fetch(url, { method: "POST", keepalive: true });
   } catch (error) {
     console.error("Error pushing sync update:", error);
   }

@@ -35,14 +35,18 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
         const res = await handleRefreshDates();
 
         // Use the FRESH options returned by handleRefreshDates
-        const effectiveDate = res.selected || selectedDate;
+        // If res.selected is "", it means no date is selected/available (e.g. unpublish), so we should use "" to clear the view.
+        const effectiveDate = res.selected;
         const freshOptions = res.options || [];
         const isValidDate = freshOptions.some(d => d.value === effectiveDate);
 
         if (pathname.includes(router.teacherPortal.p)) {
+            // For teacher portal, we always want to refresh if we have a valid date
+            // If the date became invalid, handleRefreshDates should have given us a new valid one (effectiveDate)
             if (isValidDate) await handlePortalRefresh(teacher, effectiveDate);
         } else if (pathname.includes(router.publishedPortal.p)) {
-            if (isValidDate) await handlePublishedRefresh(undefined, effectiveDate, undefined);
+            // For published portal, always refresh with the effective date (which might be the new default or empty)
+            await handlePublishedRefresh(undefined, effectiveDate, undefined);
         }
         // reset update badge after successful refresh
         resetUpdate();

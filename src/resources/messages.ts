@@ -81,6 +81,7 @@ const messages = {
         deleteSuccess: "העמודה נמחקה",
         deleteError: "בעיה במחיקת עמודה במערכת היומית אנא נסו שוב",
         noScheduleFound: "לא נמצאו שעות לימוד למורה ביום זה",
+        notPublished: "המערכת היומית לא פורסמה",
     },
     publish: {
         success: "המערכת היומית פורסמה וזמינה למורים",

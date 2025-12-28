@@ -23,7 +23,7 @@ import { generateId } from "@/utils";
 import { deleteDailyColumnAction } from "@/app/actions/DELETE/deleteDailyColumnAction";
 import useDailyEventActions from "@/hooks/daily/useDailyEventActions";
 import { pushSyncUpdate } from "@/services/syncService";
-import { DAILY_TEACHER_COL_DATA_CHANGED } from "@/models/constant/sync";
+import { DAILY_TEACHER_COL_DATA_CHANGED, DAILY_SCHOOL_DATA_CHANGED } from "@/models/constant/sync";
 import {
     mapAnnualTeachers,
     populateDailyScheduleTable,
@@ -313,6 +313,10 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         } catch (error) {
             console.error("Error rebalancing columns:", error);
         }
+
+        if (school?.publishDates?.includes(selectedDate)) {
+            pushSyncUpdate(DAILY_SCHOOL_DATA_CHANGED);
+        }
     };
 
     const addNewEmptyColumn = (type: ColumnType) => {
@@ -435,6 +439,10 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         } catch (error) {
             console.error("Error moving column:", error);
             // Revert state on error if needed or refetch
+        }
+
+        if (school?.publishDates?.includes(selectedDate)) {
+            pushSyncUpdate(DAILY_SCHOOL_DATA_CHANGED);
         }
     };
 
