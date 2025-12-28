@@ -1,4 +1,5 @@
 import { redis } from "@/lib/redis"
+import { DAILY_TEACHER_COL_DATA_CHANGED, DAILY_EVENT_COL_DATA_CHANGED, LISTS_DATA_CHANGED, PUBLISH_DATA_CHANGED } from "@/models/constant/sync";
 
 export async function POST(req: Request) {
   try {
@@ -7,10 +8,10 @@ export async function POST(req: Request) {
     const type = url.searchParams.get("type")
 
     let channel: string
-    if (type === "teacher") channel = "teacher"                         // for dailySchedule teachers columns updates  
-    else if (type === "event") channel = "event"                        // for dailySchedule events column updates
-    else if (type === "material") channel = "material"                  // When materials data updates (not used currently)
-    else if (type === "detailsUpdate") channel = "detailsUpdate"        // for all details screen data updates
+    if (type === DAILY_TEACHER_COL_DATA_CHANGED) channel = DAILY_TEACHER_COL_DATA_CHANGED                         // for dailySchedule teachers columns updates  
+    else if (type === DAILY_EVENT_COL_DATA_CHANGED) channel = DAILY_EVENT_COL_DATA_CHANGED                        // for dailySchedule events column updates
+    else if (type === LISTS_DATA_CHANGED) channel = LISTS_DATA_CHANGED        // for all details screen data updates
+    else if (type === PUBLISH_DATA_CHANGED) channel = PUBLISH_DATA_CHANGED    // for publish status updates
     else return new Response("invalid type", { status: 400 })
 
     const item = {

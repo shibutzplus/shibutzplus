@@ -3,7 +3,7 @@ import { getTeacherScheduleByDayAction } from "@/app/actions/GET/getTeacherSched
 import { addDailyTeacherCellsAction } from "@/app/actions/POST/addDailyTeacherCellsAction";
 import { updateDailyTeacherCellAction } from "@/app/actions/PUT/updateDailyTeacherCellAction";
 import { useMainContext } from "@/context/MainContext";
-import { UPDATE_TEACHER } from "@/models/constant/sync";
+import { DAILY_TEACHER_COL_DATA_CHANGED } from "@/models/constant/sync";
 import {
     ColumnType,
     DailySchedule,
@@ -26,7 +26,7 @@ const useDailyTeacherActions = (
     const { school, teachers, settings } = useMainContext();
 
     const pushIfPublished = (selectedDate: string) => {
-        if (!!school?.publishDates?.includes(selectedDate)) pushSyncUpdate(UPDATE_TEACHER);
+        if (!!school?.publishDates?.includes(selectedDate)) pushSyncUpdate(DAILY_TEACHER_COL_DATA_CHANGED);
     };
 
     const populateTeacherColumn = async (

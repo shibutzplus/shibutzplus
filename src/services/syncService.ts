@@ -2,14 +2,16 @@
  * Sync Service
  * Handles push/poll for updates from the sync API
  */
+import { DAILY_TEACHER_COL_DATA_CHANGED, DAILY_EVENT_COL_DATA_CHANGED, LISTS_DATA_CHANGED, PUBLISH_DATA_CHANGED } from "@/models/constant/sync";
+import { SyncChannel } from "@/models/types/sync";
 
-export type SyncChannel = "teacher" | "event" | "material" | "detailsUpdate";
+export type { SyncChannel };
 
 export interface SyncPollResponse {
   latestTs: number;
   count: number;
   items: Array<{
-    channel: string;
+    channel: SyncChannel;
     ts: number;
   }>;
 }
@@ -27,9 +29,9 @@ export interface PollUpdatesParams {
 const pollUpdates = async (params: PollUpdatesParams): Promise<SyncPollResponse | null> => {
   try {
     // Skip polling when running in development (dont forget to do it also for push updates)
-    if (process.env.NODE_ENV === "development") {
-      return null; // For debug comment out this block  
-    }
+    //if (process.env.NODE_ENV === "development") {
+    //  return null; // For debug comment out this block  
+    //}
 
     const { since, channels } = params;
     const channelsParam = channels.join(",");
@@ -85,9 +87,9 @@ export const getChannelsForPath = (
   // On teacher screen, listen to teacher columns events only
   // On schedule screen, listen to both teacher and events columns changes
   if (pathname.includes(teacherPortalPath)) {
-    return ["teacher"];
+    return [DAILY_TEACHER_COL_DATA_CHANGED, PUBLISH_DATA_CHANGED];
   }
-  return ["teacher", "event"];
+  return [DAILY_TEACHER_COL_DATA_CHANGED, DAILY_EVENT_COL_DATA_CHANGED, PUBLISH_DATA_CHANGED];
 };
 
 /**
@@ -98,9 +100,9 @@ export const getChannelsForPath = (
 export const pushSyncUpdate = async (type: SyncChannel): Promise<void> => {
   try {
     // Skip push when running in development (dont forget to do it also for polling updates)
-    if (process.env.NODE_ENV === "development") {
-      return; // For debug comment out this block
-    }
+    //if (process.env.NODE_ENV === "development") {
+    //  return; // For debug comment out this block
+    //}
     void fetch(`/api/sync/push?type=${type}`, { method: "POST", keepalive: true });
   } catch (error) {
     console.error("Error pushing sync update:", error);

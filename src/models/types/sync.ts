@@ -1,0 +1,12 @@
+import {
+    LISTS_DATA_CHANGED,
+    DAILY_TEACHER_COL_DATA_CHANGED,
+    DAILY_EVENT_COL_DATA_CHANGED,
+    PUBLISH_DATA_CHANGED
+} from "../constant/sync";
+
+export type SyncChannel =
+    | typeof DAILY_TEACHER_COL_DATA_CHANGED
+    | typeof DAILY_EVENT_COL_DATA_CHANGED
+    | typeof LISTS_DATA_CHANGED
+    | typeof PUBLISH_DATA_CHANGED;
