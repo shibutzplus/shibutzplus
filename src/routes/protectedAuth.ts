@@ -47,7 +47,7 @@ export const getConfigMatcher = (): string[] => {
     const protectedPathsWithWildcard = getProtectedPaths();
 
     // Get login and register paths (typically need exact matches)
-    const authPaths = [router.signIn.p, router.signUp.p];
+    const authPaths = [router.signIn.p];
 
     // Add root path to the matcher
     const rootPath = router.home.p;
@@ -59,7 +59,17 @@ export const getConfigMatcher = (): string[] => {
 export const protectedPaths = getProtectedPaths();
 export const publicPaths = getPublicPaths();
 export const configMatcher = getConfigMatcher();
-export const authRoutes = [router.signIn.p, router.signUp.p];
+export const authRoutes = [router.signIn.p];
 export const apiAuthPrefix = "/api/auth";
 export const DEFAULT_REDIRECT = router.dailySchedule.p;
 export const DEFAULT_ERROR_REDIRECT = router.signIn.p;
+export const GUEST_REDIRECT = router.dailySchedule.p;
+export const GUEST_UNAUTHORIZED = [
+    router.subjects.p,
+    router.classes.p,
+    router.groups.p,
+    router.teachers.p,
+    router.teachers.p,
+    router.substitute.p,
+];
+export const ADMIN_ROUTES = [router.signUp.p, "/annual-import"];

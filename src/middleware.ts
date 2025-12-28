@@ -7,11 +7,15 @@ import {
     authRoutes,
     DEFAULT_ERROR_REDIRECT,
     DEFAULT_REDIRECT,
+    GUEST_REDIRECT,
+    GUEST_UNAUTHORIZED,
     publicPaths,
+    ADMIN_ROUTES,
 } from "@/routes/protectedAuth";
 
 export async function middleware(req: NextRequest) {
     const { nextUrl: url } = req;
+    console.log("Middleware starting for path:", url.pathname);
     const isLoggedIn = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
     const isApiAuthRoute = url.pathname.startsWith(apiAuthPrefix);
@@ -24,9 +28,30 @@ export async function middleware(req: NextRequest) {
 
     if (isLoggedIn) {
         if (isAuthRoute || url.pathname === router.home.p) {
+            if (isLoggedIn.role === "admin" || (isLoggedIn as any).user?.role === "admin") {
+                url.pathname = router.schoolSelect.p;
+            } else {
+                url.pathname = DEFAULT_REDIRECT;
+            }
+            return NextResponse.redirect(url);
+        }
+
+        if (
+            GUEST_UNAUTHORIZED.some((route) => url.pathname.startsWith(route)) &&
+            (isLoggedIn.role === "guest" || (isLoggedIn as any).user?.role === "guest")
+        ) {
+            url.pathname = GUEST_REDIRECT;
+            return NextResponse.redirect(url);
+        }
+
+        if (
+            ADMIN_ROUTES.some((route) => url.pathname.startsWith(route)) &&
+            (isLoggedIn.role !== "admin" && (isLoggedIn as any).user?.role !== "admin")
+        ) {
             url.pathname = DEFAULT_REDIRECT;
             return NextResponse.redirect(url);
         }
+
         return NextResponse.next();
     }
 
@@ -51,7 +76,6 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
 }
 
-// Next.js requires the matcher to be hardcoded here for static analysis
 export const config = {
     matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
 };

@@ -3,7 +3,7 @@
 import { db, schema, executeQuery } from "@/db";
 import { ClassType, ClassRequest } from "@/models/types/classes";
 import { ActionResponse } from "@/models/types/actions";
-import { checkAuthAndParams } from "@/utils/authUtils";
+import { checkAuthAndParams, checkIsNotGuest } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { classSchema } from "@/models/validation/class";
 
@@ -17,6 +17,11 @@ export async function addClassAction(
                 success: false,
                 message: validation.error.issues[0]?.message || "נתונים לא תקינים",
             };
+        }
+
+        const guestError = await checkIsNotGuest();
+        if (guestError) {
+            return guestError as ActionResponse;
         }
 
         const authError = await checkAuthAndParams({

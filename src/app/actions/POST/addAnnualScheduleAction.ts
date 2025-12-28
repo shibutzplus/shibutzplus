@@ -3,7 +3,7 @@
 import { db, schema, executeQuery } from "@/db";
 import { AnnualScheduleType, AnnualScheduleRequest } from "@/models/types/annualSchedule";
 import { ActionResponse } from "@/models/types/actions";
-import { checkAuthAndParams } from "@/utils/authUtils";
+import { checkAuthAndParams, checkIsNotGuest } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { NewAnnualScheduleSchema } from "@/db/schema";
 
@@ -23,6 +23,11 @@ export async function addAnnualScheduleAction(
 
         if (authError) {
             return authError as ActionResponse;
+        }
+
+        const guestError = await checkIsNotGuest();
+        if (guestError) {
+            return guestError as ActionResponse;
         }
 
         const newRow: NewAnnualScheduleSchema = {

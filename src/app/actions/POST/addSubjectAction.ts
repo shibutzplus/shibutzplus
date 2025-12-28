@@ -2,7 +2,7 @@
 
 import { SubjectType, SubjectRequest } from "@/models/types/subjects";
 import { ActionResponse } from "@/models/types/actions";
-import { checkAuthAndParams } from "@/utils/authUtils";
+import { checkAuthAndParams, checkIsNotGuest } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { NewSubjectSchema } from "@/db/schema";
@@ -18,6 +18,11 @@ export async function addSubjectAction(
                 success: false,
                 message: validation.error.issues[0]?.message || "נתונים לא תקינים",
             };
+        }
+
+        const guestError = await checkIsNotGuest();
+        if (guestError) {
+            return guestError as ActionResponse;
         }
 
         const authError = await checkAuthAndParams({

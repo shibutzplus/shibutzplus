@@ -3,16 +3,14 @@
 import styles from "./signIn.module.css";
 import { NextPage } from "next";
 import Link from "next/link";
-import { useEffect, useState, useRef, Suspense } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import GoogleIcon from "@/components/ui/assets/googleIcon";
 import Loading from "@/components/loading/Loading/Loading";
 import SignInLoadingPage from "@/components/loading/SignInLoadingPage/SignInLoadingPage";
 import { signInWithGoogle } from "@/app/actions/POST/signInAction";
-import { DEFAULT_REDIRECT } from "@/routes/protectedAuth";
-import routes from "@/routes";
-import { STATUS_AUTH, STATUS_LOADING, STATUS_UNAUTH } from "@/models/constant/session";
+import { STATUS_LOADING, STATUS_UNAUTH } from "@/models/constant/session";
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import HeroSection from "@/components/auth/HeroSection/HeroSection";
@@ -24,7 +22,6 @@ const SignInContent: React.FC = () => {
     const router = useRouter();
     const [error, setError] = useState<string>("");
     const [isLoading, setIsLoading] = useState(false);
-    const hasNavigatedRef = useRef(false);
 
     useEffect(() => {
         if (googleError === "AccessDenied") {
@@ -38,30 +35,10 @@ const SignInContent: React.FC = () => {
     }, [status]);
 
     useEffect(() => {
-        if (status === STATUS_UNAUTH && !hasNavigatedRef.current) {
+        if (status === STATUS_UNAUTH) {
             setIsLoading(false);
         }
     }, [status]);
-
-    // Navigate once authenticated; keep loader visible until push completes
-    useEffect(() => {
-        if (status === STATUS_AUTH && session?.user && !hasNavigatedRef.current) {
-            const userRole = (session.user as any).role;
-            const userStatus = (session.user as any).status;
-
-            // Admin: Redirect to School Select
-            if (userRole === "admin") {
-                hasNavigatedRef.current = true;
-                router.push(routes.schoolSelect.p);
-                return;
-            }
-
-            hasNavigatedRef.current = true;
-            setIsLoading(true);
-            const target = userStatus === "annual" ? DEFAULT_REDIRECT : routes.dailySchedule.p;
-            router.push(target);
-        }
-    }, [status, session, router]);
 
     const handleGoogleSignIn = async () => {
         setIsLoading(true);
@@ -72,11 +49,7 @@ const SignInContent: React.FC = () => {
         }
     };
 
-    if (
-        isLoading ||
-        status === STATUS_LOADING ||
-        (status === STATUS_AUTH && !hasNavigatedRef.current)
-    ) {
+    if (isLoading || status === STATUS_LOADING) {
         return <SignInLoadingPage />;
     }
 

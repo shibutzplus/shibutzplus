@@ -2,7 +2,7 @@
 
 import { ActionResponse } from "@/models/types/actions";
 import { AnnualScheduleType } from "@/models/types/annualSchedule";
-import { checkAuthAndParams } from "@/utils/authUtils";
+import { checkAuthAndParams, checkIsNotGuest } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { and, eq } from "drizzle-orm";
@@ -16,6 +16,11 @@ export async function deleteTeacherAction(
         const authError = await checkAuthAndParams({ schoolId, teacherId });
         if (authError) {
             return authError as ActionResponse;
+        }
+
+        const guestError = await checkIsNotGuest();
+        if (guestError) {
+            return guestError as ActionResponse;
         }
 
         const { annualSchedule, remainingTeachers } = await executeQuery(async () => {

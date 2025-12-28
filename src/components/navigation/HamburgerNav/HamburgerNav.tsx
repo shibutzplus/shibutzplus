@@ -9,6 +9,7 @@ import Icons from "@/style/icons";
 import { motion, AnimatePresence } from "motion/react";
 import { useAccessibility } from "../../../hooks/browser/useAccessibility";
 import routePath from "../../../routes";
+import { errorToast } from "@/lib/toast";
 import { clearStorage, getStorageTeacher } from "@/lib/localStorage";
 import { usePopup } from "@/context/PopupContext";
 import SettingsPopup from "@/components/popups/SettingsPopup/SettingsPopup";
@@ -29,6 +30,7 @@ export interface ILink {
     name: string;
     p: string;
     Icon: React.ReactNode;
+    isForGuest?: boolean;
 }
 
 interface ILinkGroup {
@@ -50,16 +52,19 @@ const linkGroups: ILinkGroup[] = [
                 name: routePath.dailySchedule.title,
                 p: routePath.dailySchedule.p,
                 Icon: <Icons.dailyCalendar size={24} />,
+                isForGuest: true,
             },
             {
                 name: routePath.annualView.title,
                 p: routePath.annualView.p,
                 Icon: <Icons.calendar size={24} />,
+                isForGuest: true,
             },
             {
                 name: routePath.history.title,
                 p: routePath.history.p,
                 Icon: <Icons.history size={24} />,
+                isForGuest: false,
             },
         ],
     },
@@ -74,26 +79,31 @@ const linkGroups: ILinkGroup[] = [
                 name: routePath.teachers.title,
                 p: routePath.teachers.p,
                 Icon: <Icons.teacher size={24} />,
+                isForGuest: false,
             },
             {
                 name: routePath.substitute.title,
                 p: routePath.substitute.p,
                 Icon: <Icons.substituteTeacher size={24} />,
+                isForGuest: false,
             },
             {
                 name: routePath.subjects.title,
                 p: routePath.subjects.p,
                 Icon: <Icons.book size={24} />,
+                isForGuest: false,
             },
             {
                 name: routePath.classes.title,
                 p: routePath.classes.p,
                 Icon: <Icons.chair size={24} />,
+                isForGuest: false,
             },
             {
                 name: routePath.groups.title,
                 p: routePath.groups.p,
                 Icon: <Icons.users size={24} />,
+                isForGuest: false,
             },
         ],
     },
@@ -107,11 +117,13 @@ const linkGroups: ILinkGroup[] = [
                 name: "לפי כיתה",
                 p: routePath.annualByClass.p,
                 Icon: <Icons.calendar size={24} />,
+                isForGuest: false,
             },
             {
                 name: "לפי מורה",
                 p: routePath.annualByTeacher.p,
                 Icon: <Icons.calendar size={24} />,
+                isForGuest: false,
             },
         ],
     },
@@ -125,11 +137,13 @@ const linkGroups: ILinkGroup[] = [
                 name: "משתמש חדש",
                 p: routePath.signUp.p,
                 Icon: <Icons.users size={24} />,
+                isForGuest: false,
             },
             {
                 name: "ייבוא מערכת",
                 p: "/annual-import",
                 Icon: <Icons.upload size={24} />,
+                isForGuest: false,
             },
         ],
     },
@@ -143,11 +157,13 @@ const linkGroups: ILinkGroup[] = [
                 name: "המערכת שלי",
                 p: routePath.teacherPortal.p,
                 Icon: <Icons.teacher size={22} />,
+                isForGuest: false,
             },
             {
                 name: "מערכת בית ספרית",
                 p: routePath.publishedPortal.p,
                 Icon: <Icons.group size={24} />,
+                isForGuest: false,
             },
         ],
     },
@@ -161,6 +177,7 @@ const linkGroups: ILinkGroup[] = [
                 name: "המערכת שלי",
                 p: routePath.teacherPortal.p,
                 Icon: <Icons.teacher size={24} />,
+                isForGuest: false,
             },
         ],
     },
@@ -174,13 +191,35 @@ type LinkComponentProps = {
 
 const LinkComponent: React.FC<LinkComponentProps> = ({ link, onClose, currentPath }) => {
     const isActive = currentPath.startsWith(link.p);
+    const { data: session } = useSession();
+    const userRole = (session?.user as any)?.role;
+    const isGuest = userRole === "guest";
+    const isDisabled = isGuest && !link.isForGuest;
 
     return (
         <div className={styles.linkWrapper}>
             <Link
-                href={link.p}
-                className={`${styles.navLink} ${isActive ? styles.active : ""}`}
-                onClick={onClose}
+                href={isDisabled ? "#" : link.p}
+                className={`${styles.navLink} ${isActive ? styles.active : ""} ${
+                    isDisabled ? styles.disabled : ""
+                }`}
+                onClick={(e) => {
+                    if (isDisabled) {
+                        e.preventDefault();
+                        errorToast(
+                            `המערכת פועלת כעת במצב אורח, ומאפשרת התרשמות כללית ממערכת שיבוץ+.
+
+כדי לעבוד באופן מלא – לנהל מערכת שעות יומית, לשבץ מורים ולשמור נתונים –
+נדרש רישום של בית הספר והפעלת חשבון מורשה.
+
+נשמח ללוות בתהליך קצר ופשוט.
+לחיצה על “יצירת קשר” תאפשר לנו לחזור בהקדם.`,
+                        );
+                        return;
+                    }
+                    onClose();
+                }}
+                aria-disabled={isDisabled}
             >
                 {link.Icon}
                 <span>{link.name}</span>
@@ -211,6 +250,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
     const { data: session } = useSession();
     const userRole = (session?.user as any)?.role;
     const [teacher, setTeacher] = React.useState<any>(null);
+    const isGuest = userRole === "guest";
 
     useAccessibility({ isOpen, navRef, onClose });
 
@@ -244,7 +284,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
 
     const displayedGroups = linkGroups
         .filter((group) => {
-            if (group.title === "admin" && userRole !== "admin") return false;
+            if (group.id === "admin" && userRole !== "admin") return false;
 
             if (hamburgerType === "private") return group.type === "private";
             if (hamburgerType === "public") {
@@ -444,9 +484,25 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                             </Link>
                             {isPrivate && (
                                 <div
-                                    className={styles.navLink}
-                                    onClick={handleOpenSettings}
+                                    className={`${styles.navLink} ${
+                                        isGuest ? styles.disabled : ""
+                                    }`}
+                                    onClick={
+                                        isGuest
+                                            ? () =>
+                                                  errorToast(
+                                                      `המערכת פועלת כעת במצב אורח, ומאפשרת התרשמות כללית ממערכת שיבוץ+.
+
+כדי לעבוד באופן מלא – לנהל מערכת שעות יומית, לשבץ מורים ולשמור נתונים –
+נדרש רישום של בית הספר והפעלת חשבון מורשה.
+
+נשמח ללוות בתהליך קצר ופשוט.
+לחיצה על “יצירת קשר” תאפשר לנו לחזור בהקדם.`,
+                                                  )
+                                            : handleOpenSettings
+                                    }
                                     aria-label="הגדרות מערכת"
+                                    aria-disabled={isGuest}
                                 >
                                     <Icons.settings size={24} />
                                     <span>הגדרות מערכת</span>

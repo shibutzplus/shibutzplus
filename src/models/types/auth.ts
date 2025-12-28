@@ -3,7 +3,7 @@ import "next-auth";
 import { ActionResponse } from "./actions";
 import { SchoolLevel } from "./school";
 
-export type UserRole = "admin" | "principal" | "deputy_principal" | "teacher";
+export type UserRole = "admin" | "principal" | "deputy_principal" | "teacher" | "guest";
 
 export type UserGender = "male" | "female";
 

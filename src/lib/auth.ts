@@ -26,7 +26,7 @@ export const authOptions: NextAuthOptions = {
                 const name = typeof profile?.name === "string" ? profile.name : undefined;
                 if (!email || !name) return false;
                 try {
-                    const response = await registerNewGoogleUserAction({ email });
+                    const response = await registerNewGoogleUserAction({ email, name });
                     if (!response.success) return false;
                 } catch {
                     return false;
