@@ -28,7 +28,7 @@ const PortalNav: React.FC = () => {
                 className={`${styles.topBtn} ${pathname.includes(router.teacherPortal.p) ? styles.active : ""}`}
             >
                 {pathname.includes(router.teacherPortal.p) ? (
-                    <Icons.teacherSolid size={18} style={{ marginInlineEnd: "4px" }} />
+                    <Icons.teacherSolid size={22} style={{ marginInlineEnd: "4px" }} />
                 ) : (
                     <Icons.teacher size={18} style={{ marginInlineEnd: "4px" }} />
                 )}

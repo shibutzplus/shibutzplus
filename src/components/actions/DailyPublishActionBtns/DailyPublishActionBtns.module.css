@@ -75,6 +75,7 @@
 
     .publishedStatus {
         margin-left: 0;
+        border: none;
     }
 
     .publishedStatus span {

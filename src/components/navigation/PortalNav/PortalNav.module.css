@@ -10,13 +10,13 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    width: 165px;
+    width: 170px;
     height: var(--input-height);
     font-size: 16px;
     background-color: transparent;
     color: var(--dark-text-color);
     border-radius: var(--border-radius-cell);
-    border: none;
+    border: 1px solid transparent;
     cursor: pointer;
     transition: all 0.1s ease-in-out;
 }
@@ -34,6 +34,7 @@
 .topBtn.active {
     background-color: var(--inner-background-color-bright);
     font-weight: 600;
+    border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 /* <= 660px */
