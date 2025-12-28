@@ -244,7 +244,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
 
     const displayedGroups = linkGroups
         .filter((group) => {
-            if (group.title === "admin" && userRole !== "admin") return false;
+            if (group.id === "admin" && userRole !== "admin") return false;
 
             if (hamburgerType === "private") return group.type === "private";
             if (hamburgerType === "public") {
