@@ -20,15 +20,19 @@ const COLUMN_PRIORITY = {
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { schoolId } = body;
+        const { schoolId, date } = body;
 
         if (!schoolId) {
             return NextResponse.json({ error: "schoolId is required" }, { status: 400 });
         }
 
-        // 1. Fetch all records for the school
+        // 1. Fetch records (all or specific date)
+        const whereClause = date
+            ? and(eq(dailySchedule.schoolId, schoolId), eq(dailySchedule.date, date))
+            : eq(dailySchedule.schoolId, schoolId);
+
         const allRecords = await db.query.dailySchedule.findMany({
-            where: eq(dailySchedule.schoolId, schoolId),
+            where: whereClause,
         });
 
         if (allRecords.length === 0) {
