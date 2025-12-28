@@ -7,6 +7,8 @@ import { db, schema, executeQuery } from "../../../db";
 import { ActionResponse } from "@/models/types/actions";
 import { NewDailyScheduleSchema } from "@/db/schema";
 import { dailyInstructionSchema } from "@/models/validation/daily";
+import { pushSyncUpdate } from "@/services/syncService";
+import { MATERIAL_CHANGED } from "@/models/constant/sync";
 
 export async function updateDailyInstructionAction(
     date: string,
@@ -77,6 +79,9 @@ export async function updateDailyInstructionAction(
                 message: messages.dailySchedule.updateError,
             };
         }
+
+        // Fire and forget sync update
+        void pushSyncUpdate(MATERIAL_CHANGED);
 
         return {
             success: true,

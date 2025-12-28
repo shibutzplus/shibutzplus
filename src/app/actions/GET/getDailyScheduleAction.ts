@@ -20,6 +20,25 @@ export async function getDailyScheduleAction(
         }
         if (authError) return authError as GetDailyScheduleResponse;
 
+        // For public access, verify the date is actually published!
+        if (!options.isPrivate) {
+            const school = await executeQuery(async () => {
+                return await db.query.schools.findFirst({
+                    where: eq(schema.schools.id, schoolId),
+                    columns: {
+                        publishDates: true,
+                    },
+                });
+            });
+
+            if (!school?.publishDates?.includes(date)) {
+                return {
+                    success: false,
+                    message: messages.dailySchedule.notPublished,
+                };
+            }
+        }
+
         const dailySchedule = await executeQuery(async () => {
             const schedules = await db.query.dailySchedule.findMany({
                 where: and(

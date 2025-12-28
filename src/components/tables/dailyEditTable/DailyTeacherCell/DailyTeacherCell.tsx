@@ -207,35 +207,41 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
     return (
         <>
             <div style={{ display: isEditMode ? "block" : "none", width: "100%", height: "100%" }}>
-                <div className={styles.cellContent}>
-                    <div className={styles.innerCellContent}>
-                        <Tooltip content={getTooltipText()} on={["click", "scroll"]}>
-                            <div
-                                className={`${styles.classAndSubject} ${isActivity ? styles.activityText : ""
-                                    }`}
-                            >
-                                {getTooltipText()}
+                {(!classesData?.length && !subjectData && !subTeacherData && !teacherText) ? (
+                    <div className={styles.cellContent}>
+                        <EmptyCell />
+                    </div>
+                ) : (
+                    <div className={styles.cellContent}>
+                        <div className={styles.innerCellContent}>
+                            <Tooltip content={getTooltipText()} on={["click", "scroll"]}>
+                                <div
+                                    className={`${styles.classAndSubject} ${isActivity ? styles.activityText : ""
+                                        }`}
+                                >
+                                    {getTooltipText()}
+                                </div>
+                            </Tooltip>
+                            <div className={styles.teacherSelect}>
+                                <DynamicInputGroupSelect
+                                    options={sortedTeacherOptions}
+                                    value={selectedSubTeacher}
+                                    onChange={(value: string) => handleTeacherChange("update", value)}
+                                    placeholder="ממלא מקום"
+                                    isSearchable
+                                    isAllowAddNew
+                                    isClearable
+                                    isDisabled={isLoading}
+                                    hasBorder
+                                    backgroundColor="transparent"
+                                    onCreate={(value: string) => handleTeacherChange("create", value)}
+                                    menuWidth="220px"
+                                    color={isActivity ? "var(--disabled-text-color)" : undefined}
+                                />
                             </div>
-                        </Tooltip>
-                        <div className={styles.teacherSelect}>
-                            <DynamicInputGroupSelect
-                                options={sortedTeacherOptions}
-                                value={selectedSubTeacher}
-                                onChange={(value: string) => handleTeacherChange("update", value)}
-                                placeholder="ממלא מקום"
-                                isSearchable
-                                isAllowAddNew
-                                isClearable
-                                isDisabled={isLoading}
-                                hasBorder
-                                backgroundColor="transparent"
-                                onCreate={(value: string) => handleTeacherChange("create", value)}
-                                menuWidth="220px"
-                                color={isActivity ? "var(--disabled-text-color)" : undefined}
-                            />
                         </div>
                     </div>
-                </div>
+                )}
             </div>
             <div style={{ display: !isEditMode ? "block" : "none", width: "100%", height: "100%" }}>
                 {renderPreviewContent()}

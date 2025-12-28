@@ -55,7 +55,11 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
             return false;
         }
         try {
-            setIsPortalLoading(true);
+            // Important: Do not show loader for background refresh, otherwise text which is typed write now will be lost)
+            // If mainPortalTable has data for this date, we are just refreshing values -> silent background update
+            if (!mainPortalTable[selectedDate]) {
+                setIsPortalLoading(true);
+            }
             const response = await getTeacherFullScheduleAction(teacher.id, selectedDate);
             if (response.success && response.data) {
                 const newSchedule = populatePortalTable(

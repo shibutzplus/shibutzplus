@@ -3,7 +3,7 @@ import { addDailyEventCellAction } from "@/app/actions/POST/addDailyEventCellAct
 import { updateDailyEventCellAction } from "@/app/actions/PUT/updateDailyEventCellAction";
 import { updateDailyEventHeaderAction } from "@/app/actions/PUT/updateDailyEventHeaderAction";
 import { useMainContext } from "@/context/MainContext";
-import { UPDATE_EVENT } from "@/models/constant/sync";
+import { DAILY_SCHOOL_DATA_CHANGED } from "@/models/constant/sync";
 import { eventPlaceholder } from "@/models/constant/table";
 import { ColumnTypeValues, DailySchedule, DailyScheduleCell } from "@/models/types/dailySchedule";
 import { TeacherType } from "@/models/types/teachers";
@@ -22,7 +22,7 @@ const useDailyEventActions = (
     const { school } = useMainContext();
 
     const pushIfPublished = () => {
-        if (!!school?.publishDates?.includes(selectedDate)) pushSyncUpdate(UPDATE_EVENT);
+        if (!!school?.publishDates?.includes(selectedDate)) pushSyncUpdate(DAILY_SCHOOL_DATA_CHANGED);
     };
 
     const populateEventColumn = async (columnId: string, eventTitle: string) => {
