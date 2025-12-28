@@ -41,6 +41,9 @@
     font-weight: 700;
     font-size: 15px;
     padding: 0 10px;
+    border: var(--border-primary);
+    border-radius: var(--border-radius-cell);
+    height: 40px;
 }
 
 
@@ -72,6 +75,7 @@
 
     .publishedStatus {
         margin-left: 0;
+        border: none;
     }
 
     .publishedStatus span {

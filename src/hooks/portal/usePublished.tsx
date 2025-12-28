@@ -1,7 +1,8 @@
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
 import { errorToast } from "@/lib/toast";
-import { DailySchedule } from "@/models/types/dailySchedule";
+import { DailySchedule, GetDailyScheduleResponse } from "@/models/types/dailySchedule";
 import { TeacherType } from "@/models/types/teachers";
+import messages from "@/resources/messages";
 import { populateDailyScheduleTable } from "@/services/daily/populate";
 import { useState } from "react";
 
@@ -14,14 +15,15 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
         overrideSchoolId?: string,
         overrideDate?: string,
         overrideTeacher?: TeacherType
-    ) => {
+    ): Promise<GetDailyScheduleResponse | null> => {
         const effectiveSchoolId = overrideSchoolId || schoolId;
         const effectiveTeacher = overrideTeacher || teacher;
         const effectiveDate = overrideDate || selectedDate;
 
         if (!effectiveSchoolId || !effectiveTeacher || !effectiveDate) {
+            setMainPublishTable({});
             setHasFetched(true);
-            return false;
+            return null;
         }
         try {
             setIsPublishLoading(true);
@@ -34,12 +36,13 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
                 );
                 if (newSchedule) setMainPublishTable(newSchedule);
             } else {
-                return false;
+                setMainPublishTable({});
+                return response;
             }
-            return true;
+            return response;
         } catch (error) {
             console.error("Error fetching daily schedule data:", error);
-            return false;
+            return null;
         } finally {
             setIsPublishLoading(false);
             setHasFetched(true);
@@ -51,17 +54,19 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
         overrideDate?: string,
         overrideTeacher?: TeacherType
     ) => {
-        const datesRes = await fetchPublishScheduleData(overrideSchoolId, overrideDate, overrideTeacher);
-        if (!datesRes) {
-            // If data is just missing (valid fetch, just no data), we shouldn't necessarily error.
-            // But if it returned false, it means something went wrong OR inputs were missing.
-            // For now, keeping the toast but the inputs check handles the "stuck" part.
-            // Wait, if early return (missing inputs) returns false, this toast will trigger.
-            // We should only toast if it was an ACTUAL error?
-            // "early return" returns false. So toast triggers.
-            // BUT, if we pass valid overrides, it won't early return.
+        const response = await fetchPublishScheduleData(overrideSchoolId, overrideDate, overrideTeacher);
+
+        // If response is null, it's a validation/exception error -> Toast
+        // If response exists but success is false, check if it's "Already published" (Wait no, "Not Published")
+        if (!response) {
             errorToast("בעיה בטעינת המידע, נסו שוב");
             return;
+        }
+
+        if (!response.success) {
+            if (response.message !== messages.dailySchedule.notPublished) {
+                errorToast(response.message || "בעיה בטעינת המידע, נסו שוב");
+            }
         }
     };
 

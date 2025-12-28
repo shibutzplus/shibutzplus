@@ -165,7 +165,10 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
             return { success: false, error: "", selected: "", options: [] };
         }
 
-        setIsDatesLoading(true);
+        // Only show loader if we don't have options yet (background refresh otherwise text which is typed write now will be lost)
+        if (datesOptions.length === 0) {
+            setIsDatesLoading(true);
+        }
         try {
             const response = await getSchoolAction(teacher.schoolId);
             if (response.success && response.data) {

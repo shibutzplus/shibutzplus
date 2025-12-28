@@ -22,6 +22,8 @@ import { errorToast } from "@/lib/toast";
 import { generateId } from "@/utils";
 import { deleteDailyColumnAction } from "@/app/actions/DELETE/deleteDailyColumnAction";
 import useDailyEventActions from "@/hooks/daily/useDailyEventActions";
+import { pushSyncUpdate } from "@/services/syncService";
+import { DAILY_TEACHER_COL_DATA_CHANGED, DAILY_SCHOOL_DATA_CHANGED } from "@/models/constant/sync";
 import {
     mapAnnualTeachers,
     populateDailyScheduleTable,
@@ -259,6 +261,9 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         try {
             const response = await deleteDailyColumnAction(school.id, columnId, selectedDate);
             if (response.success && response.dailySchedules) {
+                if (school && school.publishDates && school.publishDates.includes(selectedDate)) {
+                    pushSyncUpdate(DAILY_TEACHER_COL_DATA_CHANGED);
+                }
                 return true;
             }
             throw new Error(response.message || "delete failed");
@@ -307,6 +312,10 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
             await updateDailyColumnPositionsAction(school.id, selectedDate, updates);
         } catch (error) {
             console.error("Error rebalancing columns:", error);
+        }
+
+        if (school?.publishDates?.includes(selectedDate)) {
+            pushSyncUpdate(DAILY_SCHOOL_DATA_CHANGED);
         }
     };
 
@@ -430,6 +439,10 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         } catch (error) {
             console.error("Error moving column:", error);
             // Revert state on error if needed or refetch
+        }
+
+        if (school?.publishDates?.includes(selectedDate)) {
+            pushSyncUpdate(DAILY_SCHOOL_DATA_CHANGED);
         }
     };
 

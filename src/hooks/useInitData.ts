@@ -24,6 +24,7 @@ import {
 import { isCacheFresh } from "@/utils/time";
 import { checkForUpdates } from "@/services/syncService";
 import { compareHebrew, sortByName } from "@/utils/sort";
+import { LISTS_DATA_CHANGED } from "@/models/constant/sync";
 
 interface useInitDataProps {
     school: SchoolType | undefined;
@@ -37,7 +38,7 @@ interface useInitDataProps {
     setClasses: (classes: ClassType[] | undefined) => void;
 }
 
-const SYNC_TS_KEY = "sync_ts_detailsUpdate";
+const SYNC_TS_KEY = "sync_ts_lists";
 
 /**
  * Initialize data for the app
@@ -87,7 +88,7 @@ const useInitData = ({
 
                 const { hasUpdates, latestTs } = await checkForUpdates({
                     since: lastSeen,
-                    channels: ["detailsUpdate"],
+                    channels: [LISTS_DATA_CHANGED],
                 });
 
                 if (hasUpdates) {
@@ -180,7 +181,7 @@ const useInitData = ({
 
             fetchData(effectiveSchoolId);
         }
-    }, [session, status, school, teachers, subjects, classes]);
+    }, [session, status]);
 };
 
 export default useInitData;
