@@ -57,7 +57,7 @@ const TeacherTable: React.FC<TeacherTableProps> = ({
                         </th>
                         <th className={styles.emptyColSeparator}></th>
                         <th className={`${styles.headerCell} ${styles.detailsColumn}`}>
-                            <div className={styles.headerInner}>ממלא מקום</div>
+                            <div className={styles.headerInner}>שיעור</div>
                         </th>
                         <th className={`${styles.headerCell} ${styles.instructionsColumn}`}>
                             <div className={styles.headerInner}>חומר לימוד</div>

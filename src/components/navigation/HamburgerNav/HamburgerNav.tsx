@@ -321,10 +321,10 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                     context?.setSchool((prev) =>
                         prev
                             ? {
-                                  ...prev,
-                                  hoursNum: newSettings.hoursNum,
-                                  displaySchedule2Susb: newSettings.displaySchedule2Susb,
-                              }
+                                ...prev,
+                                hoursNum: newSettings.hoursNum,
+                                displaySchedule2Susb: newSettings.displaySchedule2Susb,
+                            }
                             : prev,
                     );
                 }}
@@ -344,7 +344,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
             >
                 <div className={styles.navHeader}>
                     <div onClick={onClose} className={styles.logoContainer}>
-                        <Logo size="XS" disableLink={true} />
+                        <Logo size="XS" />
                     </div>
                     <button
                         className={styles.closeButton}

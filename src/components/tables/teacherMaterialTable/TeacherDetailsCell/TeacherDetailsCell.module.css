@@ -29,6 +29,29 @@
 
 .subTeacher {
   font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.doubleRow {
+  white-space: nowrap;
+}
+
+.secondaryRow {
+  font-weight: normal;
+}
+
+.bold {
+  font-weight: 600;
+}
+
+.subName::before {
+  content: "(";
+}
+
+.subName::after {
+  content: ")";
 }
 
 /* > 600 */
@@ -43,5 +66,18 @@
 
   .emptyCell {
     height: var(--table-teacher-cell-height);
+  }
+
+  .doubleRow {
+    font-weight: 600;
+    white-space: normal;
+  }
+
+  .subName::before {
+    content: none;
+  }
+
+  .subName::after {
+    content: none;
   }
 }
