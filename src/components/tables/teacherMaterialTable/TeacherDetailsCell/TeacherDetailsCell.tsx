@@ -12,39 +12,40 @@ type TeacherDetailsCellProps = {
 
 const TeacherDetailsCell: React.FC<TeacherDetailsCellProps> = ({ row, teacher }) => {
     const getReplaceText = (r?: TeacherScheduleType) => {
-        if (!r?.issueTeacher) return "";
+        if (!r?.issueTeacher) return null;
         if (teacher?.id === r.issueTeacher?.id) {
-            if (r.subTeacher) return `מוחלף ע"י ${r.subTeacher.name}`;
-            if (r.event) return r.event;
-            return "";
+            if (r.subTeacher) return { text: r.subTeacher.name, type: "replaced" };
+            if (r.event) return { text: r.event, type: "replaced" };
+            return null;
         } else {
-            return `מחליף את ${r.issueTeacher.name}`;
+            const firstName = teacher?.name?.split(" ")[0] || "";
+            return {
+                text: `${firstName} במקום ${r.issueTeacher.name}`,
+                type: "replacing",
+            };
         }
     };
 
-    const primaryText = getReplaceText(row);
-    const secondaryText = getReplaceText(row?.secondary);
-    const isDouble = !!(primaryText && secondaryText);
+    const primary = getReplaceText(row);
+    const secondary = getReplaceText(row?.secondary);
+    const isDouble = !!(primary && secondary);
 
     const displayReplaceTeacher = () => {
-        if (isDouble) {
-            const texts = [primaryText, secondaryText].sort((a, b) => {
-                if (a.startsWith("מחליף את")) return -1;
-                return 1;
+        if (isDouble && primary && secondary) {
+            const texts = [primary, secondary].sort((a, b) => {
+                if (a.type === "replacing") return 1;
+                return -1;
             });
 
             return (
                 <>
-                    <div>{texts[0]}</div>
-                    <div>{texts[1]}</div>
+                    <div>{texts[0].text}</div>
+                    <div className={styles.secondaryRow}>({texts[1].text})</div>
                 </>
             );
         }
-        const text = primaryText || secondaryText;
-        if (text?.startsWith("מוחלף ע\"י ")) {
-            return text.replace("מוחלף ע\"י ", "");
-        }
-        return text;
+        const item = primary || secondary;
+        return item?.text;
     };
 
     return (

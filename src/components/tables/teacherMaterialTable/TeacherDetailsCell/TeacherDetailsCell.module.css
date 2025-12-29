@@ -35,8 +35,11 @@
 }
 
 .doubleRow {
-  font-weight: normal;
   white-space: nowrap;
+}
+
+.secondaryRow {
+  font-weight: normal;
 }
 
 /* > 600 */
