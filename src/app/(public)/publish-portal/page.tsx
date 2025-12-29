@@ -21,6 +21,7 @@ const PublishedPortalPage: NextPage = () => {
         isDatesLoading,
         hasFetched,
         settings,
+        datesOptions,
     } = usePortalContext();
 
     const [showError, setShowError] = React.useState(false);
@@ -62,6 +63,13 @@ const PublishedPortalPage: NextPage = () => {
 
     const isShabbat = selectedDate ? getDayNumberByDateString(selectedDate) === 7 : false;
 
+    const isPublished = datesOptions.some((d) => d.value === selectedDate);
+    const getEmptyText = () => {
+        if (isShabbat) return "סוף שבוע נעים";
+        if (isPublished) return "אין עדכונים במערכת שפורסמה";
+        return "המערכת הבית ספרית לא פורסמה";
+    };
+
     return (
         <section className={styles.container}>
             <PreviewTable
@@ -71,7 +79,7 @@ const PublishedPortalPage: NextPage = () => {
                 EmptyTable={(props) => (
                     <NotPublished
                         {...props}
-                        text={isShabbat ? "סוף שבוע נעים" : "המערכת הבית ספרית לא פורסמה"}
+                        text={getEmptyText()}
                     />
                 )}
                 hoursNum={settings?.hoursNum}

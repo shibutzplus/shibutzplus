@@ -15,6 +15,7 @@ export type TeacherScheduleType = {
     subTeacher?: TeacherType;
     event?: string;
     instructions?: string;
+    secondary?: TeacherScheduleType;
 };
 
 export type PortalSchedule = {

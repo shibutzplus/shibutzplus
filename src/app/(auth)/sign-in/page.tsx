@@ -10,10 +10,10 @@ import GoogleIcon from "@/components/ui/assets/googleIcon";
 import Loading from "@/components/loading/Loading/Loading";
 import SignInLoadingPage from "@/components/loading/SignInLoadingPage/SignInLoadingPage";
 import { signInWithGoogle } from "@/app/actions/POST/signInAction";
-import { STATUS_LOADING, STATUS_UNAUTH } from "@/models/constant/session";
-import { errorToast } from "@/lib/toast";
+import { successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import HeroSection from "@/components/auth/HeroSection/HeroSection";
+import { STATUS_LOADING, STATUS_UNAUTH } from "@/models/constant/session";
 
 const SignInContent: React.FC = () => {
     const { data: session, status } = useSession();
@@ -25,7 +25,7 @@ const SignInContent: React.FC = () => {
 
     useEffect(() => {
         if (googleError === "AccessDenied") {
-            errorToast(messages.auth.accessDenied);
+            successToast(messages.auth.accessDenied, Infinity);
             router.replace(window.location.pathname);
         }
     }, [googleError, router]);
