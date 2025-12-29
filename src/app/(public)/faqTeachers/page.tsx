@@ -18,7 +18,7 @@ export default function FAQPage() {
         const teacher = getStorageTeacher();
         if (teacher?.id && teacher?.schoolId) {
             setTeacherLink(
-                `${process.env.WEBSITE_URL}${router.teacherPortal.p}/${teacher.schoolId}/${teacher.id}`,
+                `${window.location.origin}${router.teacherPortal.p}/${teacher.schoolId}/${teacher.id}`,
             );
         }
     }, []);
@@ -50,8 +50,7 @@ export default function FAQPage() {
             const raw = error?.text || error?.message || error?.toString() || "";
             const shortError = raw.split(".")[0] + ".";
             errorToast(
-                `אירעה שגיאה בשליחת ההודעה. יש להעביר את פרטי השגיאה למנהל בבית הספר כדי שיוכל לדווח למפתחי שיבוץ פלוס.\n\n${
-                    shortError || "לא זמינים"
+                `אירעה שגיאה בשליחת ההודעה. יש להעביר את פרטי השגיאה למנהל בבית הספר כדי שיוכל לדווח למפתחי שיבוץ פלוס.\n\n${shortError || "לא זמינים"
                 }`,
                 Infinity,
             );
@@ -92,10 +91,6 @@ export default function FAQPage() {
                     )}
                 </>
             ),
-        },
-        {
-            question: "האם צריך להתנתק בסיום השימוש?",
-            answer: <>לא</>,
         },
         {
             question: "האם אפשר להתקין את האתר כאפליקציה בטלפון כדי שתהיה לי גישה מהירה?",
