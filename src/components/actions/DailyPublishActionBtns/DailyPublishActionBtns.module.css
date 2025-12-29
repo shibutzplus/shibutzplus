@@ -46,6 +46,10 @@
     height: 40px;
 }
 
+.publishedStatus svg {
+    color: #16a34a;
+}
+
 
 .clickableStatus {
     cursor: pointer;
