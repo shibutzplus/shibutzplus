@@ -46,6 +46,10 @@
   font-weight: 600;
 }
 
+.subName {
+  white-space: nowrap;
+}
+
 .subName::before {
   content: "(";
 }
