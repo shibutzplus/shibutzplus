@@ -68,17 +68,6 @@ const SignInContent: React.FC = () => {
                         <GoogleIcon /> התחברות
                     </button>
                     {error && <p className={styles.error}>{error}</p>}
-                    <footer className={styles.registerLink}>
-                        <Link
-                            href={`mailto:${process.env.NEXT_PUBLIC_POWER_USER_EMAIL || ""}`}
-                            className={styles.problemLink}
-                        >
-                            <span>צרו קשר</span>
-                            <span className={styles.emailLine}>
-                                {process.env.NEXT_PUBLIC_POWER_USER_EMAIL}
-                            </span>
-                        </Link>
-                    </footer>
                 </div>
             </section>
         </main>

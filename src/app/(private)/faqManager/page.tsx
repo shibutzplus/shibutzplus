@@ -2,48 +2,13 @@
 
 import "@/components/faq/faq.css";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
-import { errorToast, successToast } from "@/lib/toast";
 import Icons from "@/style/icons";
 import { motion } from "motion/react";
 import { sendAdminContactEmail } from "@/app/actions/POST/sendEmailAction";
+import ContactUsForm from "@/components/actions/ContactUsForm/ContactUsForm";
 
 export default function FAQPage() {
-    const [contactMessage, setContactMessage] = useState<string>("");
-    const [isSending, setIsSending] = useState<boolean>(false);
     const { data: session } = useSession();
-
-    const handleSendContactEmail = async () => {
-        if (!contactMessage.trim() || isSending) {
-            return;
-        }
-
-        const adminName = session?.user?.name || "לא מחובר";
-        const adminEmail = session?.user?.email || "לא מחובר";
-
-        try {
-            setIsSending(true);
-
-            await sendAdminContactEmail({
-                adminName,
-                adminEmail,
-                message: contactMessage.trim(),
-            });
-
-            successToast("ההודעה נשלחה בהצלחה. ניצור איתכם קשר בהקדם ✨", Infinity);
-            setContactMessage(""); // clear input after send
-        } catch (error: unknown) {
-            const err = error as any;
-            const raw = err?.text || err?.message || err?.toString() || "";
-            const shortError = raw.split(".")[0] + ".";
-            errorToast(
-                `אירעה שגיאה בשליחת ההודעה. יש להעביר את פרטי השגיאה למנהל בבית הספר כדי שיוכל לדווח למפתחי שיבוץ פלוס.\n\n${shortError || "לא זמינים"}`,
-                Infinity,
-            );
-        } finally {
-            setIsSending(false);
-        }
-    };
 
     const faqItems = [
         {
@@ -244,26 +209,21 @@ export default function FAQPage() {
             ))}
 
             <br />
+            <br />
             <div className="contact-section">
                 שאלות? הצעות? צרו איתנו קשר
                 <br />
-                <div className="contact-inline-form">
-                    <textarea
-                        placeholder={`כתבו כאן את ההודעה שלכם
-כולל מספר טלפון לקשר מהיר בווטסאפ או כתובת מייל`}
-                        value={contactMessage}
-                        onChange={(e) => setContactMessage(e.target.value)}
-                        className="contact-textarea"
-                    />
-
-                    <button
-                        type="button"
-                        onClick={handleSendContactEmail}
-                        disabled={!contactMessage.trim() || isSending}
-                    >
-                        {isSending ? <div className="loader"></div> : "שליחה"}
-                    </button>
-                </div>
+                <ContactUsForm
+                    onSend={async (message) => {
+                        const adminName = session?.user?.name || "לא מחובר";
+                        const adminEmail = session?.user?.email || "לא מחובר";
+                        await sendAdminContactEmail({
+                            adminName,
+                            adminEmail,
+                            message,
+                        });
+                    }}
+                />
             </div>
         </div>
     );

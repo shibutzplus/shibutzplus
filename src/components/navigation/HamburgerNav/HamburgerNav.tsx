@@ -25,6 +25,7 @@ import Logo from "../../ui/Logo/Logo";
 import { TeacherRoleValues } from "@/models/types/teachers";
 import { HOURS_IN_DAY } from "@/utils/time";
 import { SchoolSettingsType } from "@/models/types/settings";
+import useGuestModePopup from "@/hooks/useGuestModePopup";
 
 export interface ILink {
     name: string;
@@ -195,6 +196,7 @@ const LinkComponent: React.FC<LinkComponentProps> = ({ link, onClose, currentPat
     const userRole = (session?.user as any)?.role;
     const isGuest = userRole === "guest";
     const isDisabled = isGuest && !link.isForGuest;
+    const { handleOpenGuestPopup } = useGuestModePopup();
 
     return (
         <div className={styles.linkWrapper}>
@@ -206,15 +208,7 @@ const LinkComponent: React.FC<LinkComponentProps> = ({ link, onClose, currentPat
                 onClick={(e) => {
                     if (isDisabled) {
                         e.preventDefault();
-                        errorToast(
-                            `המערכת פועלת כעת במצב אורח, ומאפשרת התרשמות כללית ממערכת שיבוץ+.
-
-כדי לעבוד באופן מלא – לנהל מערכת שעות יומית, לשבץ מורים ולשמור נתונים –
-נדרש רישום של בית הספר והפעלת חשבון מורשה.
-
-נשמח ללוות בתהליך קצר ופשוט.
-לחיצה על “יצירת קשר” תאפשר לנו לחזור בהקדם.`,
-                        );
+                        handleOpenGuestPopup();
                         return;
                     }
                     onClose();
@@ -251,6 +245,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
     const userRole = (session?.user as any)?.role;
     const [teacher, setTeacher] = React.useState<any>(null);
     const isGuest = userRole === "guest";
+    const { handleOpenGuestPopup } = useGuestModePopup();
 
     useAccessibility({ isOpen, navRef, onClose });
 
@@ -489,16 +484,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                                     }`}
                                     onClick={
                                         isGuest
-                                            ? () =>
-                                                  errorToast(
-                                                      `המערכת פועלת כעת במצב אורח, ומאפשרת התרשמות כללית ממערכת שיבוץ+.
-
-כדי לעבוד באופן מלא – לנהל מערכת שעות יומית, לשבץ מורים ולשמור נתונים –
-נדרש רישום של בית הספר והפעלת חשבון מורשה.
-
-נשמח ללוות בתהליך קצר ופשוט.
-לחיצה על “יצירת קשר” תאפשר לנו לחזור בהקדם.`,
-                                                  )
+                                            ? handleOpenGuestPopup
                                             : handleOpenSettings
                                     }
                                     aria-label="הגדרות מערכת"

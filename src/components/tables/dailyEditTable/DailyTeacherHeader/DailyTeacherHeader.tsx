@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { useSession } from "next-auth/react";
 import { filterDailyHeaderTeachers } from "@/utils/sort";
 import DynamicInputSelect from "../../../ui/select/InputSelect/DynamicInputSelect";
 import { useDailyTableContext } from "@/context/DailyTableContext";
@@ -35,9 +36,11 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
     const { teachers } = useMainContext();
     const { deleteColumn, mainDailyTable, selectedDate, moveColumn, populateTeacherColumn, mapAvailableTeachers, isEditMode } =
         useDailyTableContext();
-    const { fetchTeacherScheduleDate } = useTeacherTableContext(); // Added context
+    const { fetchTeacherScheduleDate } = useTeacherTableContext();
     const [isLoading, setIsLoading] = useState(false);
     const { handleOpenPopup } = useDeletePopup();
+    const { data: session } = useSession();
+    const isGuest = (session?.user as any)?.role === "guest";
 
     const selectedTeacherData =
         mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.headerTeacher;
@@ -124,7 +127,7 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
                     isFirst={isFirst}
                     isLast={isLast}
                 >
-                    {onTeacherClick && selectedTeacherData
+                    {onTeacherClick && selectedTeacherData && !isGuest
                         ? ({ closeMenu }) => (
                             <div
                                 onClick={() => {

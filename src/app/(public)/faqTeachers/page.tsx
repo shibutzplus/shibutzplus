@@ -3,15 +3,13 @@
 import "@/components/faq/faq.css";
 import { useEffect, useState } from "react";
 import { getStorageTeacher } from "@/lib/localStorage";
-import { errorToast, successToast } from "@/lib/toast";
 import { motion } from "motion/react";
 import { sendTeacherContactEmail } from "@/app/actions/POST/sendEmailAction";
 import router from "@/routes";
+import ContactUsForm from "@/components/actions/ContactUsForm/ContactUsForm";
 
 export default function FAQPage() {
     const [teacherLink, setTeacherLink] = useState<string>("");
-    const [contactMessage, setContactMessage] = useState<string>("");
-    const [isSending, setIsSending] = useState<boolean>(false);
 
     useEffect(() => {
         // Get teacher info from localStorage
@@ -22,42 +20,6 @@ export default function FAQPage() {
             );
         }
     }, []);
-
-    const handleSendContactEmail = async () => {
-        if (!contactMessage.trim() || isSending) {
-            // Do nothing if message is empty or already sending
-            return;
-        }
-
-        const teacher = getStorageTeacher();
-        const schoolCode = teacher?.schoolId || "לא צוין";
-        const teacherCode = teacher?.id || "לא צוין";
-        const teacherName = teacher?.name || "לא צוין";
-
-        try {
-            setIsSending(true);
-
-            await sendTeacherContactEmail({
-                schoolCode,
-                teacherCode,
-                teacherName,
-                message: contactMessage.trim(),
-            });
-
-            successToast("ההודעה נשלחה בהצלחה. ניצור איתכם קשר בהקדם ✨", Infinity);
-            setContactMessage(""); // clear input after send
-        } catch (error: any) {
-            const raw = error?.text || error?.message || error?.toString() || "";
-            const shortError = raw.split(".")[0] + ".";
-            errorToast(
-                `אירעה שגיאה בשליחת ההודעה. יש להעביר את פרטי השגיאה למנהל בבית הספר כדי שיוכל לדווח למפתחי שיבוץ פלוס.\n\n${shortError || "לא זמינים"
-                }`,
-                Infinity,
-            );
-        } finally {
-            setIsSending(false);
-        }
-    };
 
     const faqItems = [
         {
@@ -168,26 +130,24 @@ export default function FAQPage() {
             ))}
 
             <br />
+            <br />
             <div className="contact-section">
                 שאלות? הצעות? צרו איתנו קשר
                 <br />
-                <div className="contact-inline-form">
-                    <textarea
-                        placeholder={`כתבו כאן את ההודעה שלכם
-כולל מספר טלפון לקשר מהיר בווטסאפ או כתובת מייל`}
-                        value={contactMessage}
-                        onChange={(e) => setContactMessage(e.target.value)}
-                        className="contact-textarea"
-                    />
-
-                    <button
-                        type="button"
-                        onClick={handleSendContactEmail}
-                        disabled={!contactMessage.trim() || isSending}
-                    >
-                        {isSending ? <div className="loader"></div> : "שליחה"}
-                    </button>
-                </div>
+                <ContactUsForm
+                    onSend={async (message) => {
+                        const teacher = getStorageTeacher();
+                        const schoolCode = teacher?.schoolId || "לא צוין";
+                        const teacherCode = teacher?.id || "לא צוין";
+                        const teacherName = teacher?.name || "לא צוין";
+                        await sendTeacherContactEmail({
+                            schoolCode,
+                            teacherCode,
+                            teacherName,
+                            message,
+                        });
+                    }}
+                />
             </div>
         </div>
     );

@@ -61,23 +61,6 @@
     text-align: center;
 }
 
-.problemLink {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.emailLine {
-    display: block;
-    margin-top: 0.75rem;
-    text-decoration: underline;
-    color: #007bff;
-}
-
-.problemLink:hover .emailLine {
-    color: #3399ff;
-}
-
 /* < 1024px */
 @media (max-width: 1024px) {
     .mainSection {
