@@ -38,21 +38,26 @@ const TeacherDetailsCell: React.FC<TeacherDetailsCellProps> = ({ row, teacher })
                 return -1;
             });
 
-            const firstLine = texts[0].text;
+            const firstLine = texts[0].type === "replaced"
+                ? <>{texts[0].text} <span className={styles.secondaryRow}>במקומי</span></>
+                : texts[0].text;
             const secondLine = texts[1].type === "replacing"
-                ? `אני במקום ${texts[1].text}`
+                ? <>אני במקום <span className={styles.bold}>{texts[1].text}</span></>
                 : texts[1].text;
 
             return (
                 <>
                     <div>{firstLine}</div>
-                    <div className={styles.secondaryRow}>({secondLine})</div>
+                    <div className={styles.secondaryRow}>{secondLine}</div>
                 </>
             );
         }
         const item = primary || secondary;
         if (item?.type === "replacing") {
             return `במקום ${item.text}`;
+        }
+        if (item?.type === "replaced") {
+            return <span className={styles.subName}>{item.text}</span>;
         }
         return item?.text;
     };
