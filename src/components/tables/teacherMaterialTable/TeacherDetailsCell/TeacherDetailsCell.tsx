@@ -18,9 +18,8 @@ const TeacherDetailsCell: React.FC<TeacherDetailsCellProps> = ({ row, teacher })
             if (r.event) return { text: r.event, type: "replaced" };
             return null;
         } else {
-            const firstName = teacher?.name?.split(" ")[0] || "";
             return {
-                text: `${firstName} במקום ${r.issueTeacher.name}`,
+                text: r.issueTeacher.name,
                 type: "replacing",
             };
         }
@@ -31,20 +30,30 @@ const TeacherDetailsCell: React.FC<TeacherDetailsCellProps> = ({ row, teacher })
     const isDouble = !!(primary && secondary);
 
     const displayReplaceTeacher = () => {
+        const firstName = teacher?.name?.split(" ")[0] || "";
+
         if (isDouble && primary && secondary) {
             const texts = [primary, secondary].sort((a, b) => {
                 if (a.type === "replacing") return 1;
                 return -1;
             });
 
+            const firstLine = texts[0].text;
+            const secondLine = texts[1].type === "replacing"
+                ? `אני במקום ${texts[1].text}`
+                : texts[1].text;
+
             return (
                 <>
-                    <div>{texts[0].text}</div>
-                    <div className={styles.secondaryRow}>({texts[1].text})</div>
+                    <div>{firstLine}</div>
+                    <div className={styles.secondaryRow}>({secondLine})</div>
                 </>
             );
         }
         const item = primary || secondary;
+        if (item?.type === "replacing") {
+            return `במקום ${item.text}`;
+        }
         return item?.text;
     };
 
