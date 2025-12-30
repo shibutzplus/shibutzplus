@@ -31,7 +31,7 @@ const TvScheduleTable: React.FC<TvScheduleTableProps> = ({
 
     React.useEffect(() => {
         if (window.innerWidth < 500 && colCount > 4 && !hasShownToast.current) {
-            successToast("לצפייה מיטבית, מומלץ לסובב את המכשיר לרוחב. ", 2500);
+            successToast("לצפייה מיטבית, מומלץ לסובב את המכשיר לרוחב. ", 3000);
             hasShownToast.current = true;
         }
     }, [colCount]);
@@ -79,18 +79,72 @@ const TvScheduleTable: React.FC<TvScheduleTableProps> = ({
         return <EmptyTable date={selectedDate} />;
     }
 
-    // Define grid columns style
+    // --- Font Size Configuration ---
+    const FONT_SIZE_CONFIG = {
+        screen_under_600px: {
+            maxWidth: 600,
+            fontSize: "2.8vw",
+            fewColumns: {
+                maxColumns: 4,
+                fontSize: "3.5vw"
+            }
+        },
+        screen_over_1000px: {
+            minWidth: 1000,
+            fontSize: "1.8vw"
+        },
+        screen_600_to_1000px_few_cols: {
+            maxColumns: 4,
+            fontSize: "1.8vw",
+        },
+        screen_600_to_1000px_many_cols: {
+            minColumns: 7, // more than 6
+            fontSize: "1.5vw",
+        },
+        screen_600_to_1000px_default: {
+            fontSize: "1.8vw",
+        },
+    };
+
+    // Track window width for config
+    const [windowWidth, setWindowWidth] = React.useState<number>(
+        typeof window !== "undefined" ? window.innerWidth : 1200
+    );
+
+    React.useEffect(() => {
+        const handleResize = () => setWindowWidth(window.innerWidth);
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    // Determine Layout Values
     let colWidth: string;
     let fontSize: string;
 
-    if (sortedTableColumns.length < 4) {
-        // If less than 3 columns, limit width to avoid super wide columns
-        // and increase font size for better readability
-        colWidth = "20vw";
-        fontSize = "1.8vw";
-    } else {
+    if (windowWidth <= FONT_SIZE_CONFIG.screen_under_600px.maxWidth) {
+        // Mobile (< 600px)
         colWidth = "1fr";
-        fontSize = "1.3vw";
+        if (sortedTableColumns.length < FONT_SIZE_CONFIG.screen_under_600px.fewColumns.maxColumns) {
+            fontSize = FONT_SIZE_CONFIG.screen_under_600px.fewColumns.fontSize;
+        } else {
+            fontSize = FONT_SIZE_CONFIG.screen_under_600px.fontSize;
+        }
+    } else if (windowWidth > FONT_SIZE_CONFIG.screen_over_1000px.minWidth) {
+        // Large Screen (> 1000px)
+        colWidth = "1fr";
+        fontSize = FONT_SIZE_CONFIG.screen_over_1000px.fontSize;
+    } else if (sortedTableColumns.length < FONT_SIZE_CONFIG.screen_600_to_1000px_few_cols.maxColumns) {
+        // Desktop (600px - 1000px) - Few Columns
+        colWidth = "20vw";
+        fontSize = FONT_SIZE_CONFIG.screen_600_to_1000px_few_cols.fontSize;
+    } else if (sortedTableColumns.length >= FONT_SIZE_CONFIG.screen_600_to_1000px_many_cols.minColumns) {
+        // Desktop (600px - 1000px) - Many Columns
+        colWidth = "1fr";
+        fontSize = FONT_SIZE_CONFIG.screen_600_to_1000px_many_cols.fontSize;
+    } else {
+        // Desktop (600px - 1000px) - Default
+        colWidth = "1fr";
+        fontSize = FONT_SIZE_CONFIG.screen_600_to_1000px_default.fontSize;
     }
 
     const gridStyle = {

@@ -23,11 +23,7 @@
     grid-template-columns: 3vw 2px repeat(var(--num-cols), var(--col-width));
 }
 
-@media (max-width: 600px) {
-    .headerRow {
-        grid-template-columns: 3vw 2px repeat(var(--num-cols), 1fr);
-    }
-}
+
 
 .headerCell {
     color: white;
@@ -72,11 +68,7 @@
     grid-template-columns: 3vw 2px repeat(var(--num-cols), var(--col-width));
 }
 
-@media (max-width: 600px) {
-    .row {
-        grid-template-columns: 3vw 2px repeat(var(--num-cols), 1fr);
-    }
-}
+
 
 .rowNumberCell {
     background-color: var(--table-gray-color);
@@ -150,4 +142,16 @@
     white-space: pre-wrap;
     word-break: break-word;
     overflow-wrap: break-word;
+}
+
+/* < 600px Portrait view */
+@media (max-width: 600px) {
+
+    .headerRow {
+        grid-template-columns: 3vw 2px repeat(var(--num-cols), 1fr);
+    }
+
+    .row {
+        grid-template-columns: 3vw 2px repeat(var(--num-cols), 1fr);
+    }
 }
