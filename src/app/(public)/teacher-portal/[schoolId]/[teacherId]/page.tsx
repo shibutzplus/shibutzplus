@@ -6,11 +6,13 @@ import styles from "./teacherPortal.module.css";
 import { usePortalContext } from "@/context/PortalContext";
 import { useParams, useRouter } from "next/navigation";
 import router from "@/routes";
-import TeacherTable from "@/components/tables/teacherScheduleTable/TeacherTable/TeacherTable";
+import TeacherTable from "@/components/tables/teacherMaterialTable/TeacherTable/TeacherTable";
 import { useTeacherTableContext } from "@/context/TeacherTableContext";
 import Preloader from "@/components/ui/Preloader/Preloader";
 
 import NotPublished from "@/components/empty/NotPublished/NotPublished";
+
+import { getDayNumberByDateString } from "@/utils/time";
 
 const TeacherPortalPage: NextPage = () => {
     const { selectedDate, teacher, setTeacherAndSchool, datesOptions, settings } = usePortalContext();
@@ -51,8 +53,10 @@ const TeacherPortalPage: NextPage = () => {
         );
 
     const isPublished = datesOptions.some((d) => d.value === selectedDate);
+    const isShabbat = selectedDate ? getDayNumberByDateString(selectedDate) === 7 : false;
+
     if (!isPublished) {
-        return <NotPublished date={selectedDate} text="המערכת לא פורסמה" />;
+        return <NotPublished date={selectedDate} text={isShabbat ? "סוף שבוע נעים" : "המערכת לא פורסמה"} />;
     }
 
     return (

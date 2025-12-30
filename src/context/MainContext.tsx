@@ -20,7 +20,7 @@ import useInitData from "@/hooks/useInitData";
 import { setStorageClasses, setStorageSubjects, setStorageTeachers } from "@/lib/localStorage";
 import { errorToast } from "@/lib/toast";
 import { pushSyncUpdate } from "@/services/syncService";
-import { UPDATE_DETAIL } from "@/models/constant/sync";
+import { LISTS_DATA_CHANGED } from "@/models/constant/sync";
 import { removeSessionStorage, SESSION_KEYS } from "@/lib/sessionStorage";
 import { compareHebrew, sortByName } from "@/utils/sort";
 
@@ -105,7 +105,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
                 return updatedSubjects;
             });
             removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
-            void pushSyncUpdate(UPDATE_DETAIL);
+            void pushSyncUpdate(LISTS_DATA_CHANGED);
             return response.data;
         }
         if (!response.success && (response as any).errorCode === "23505") {
@@ -121,7 +121,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
             setSubjects(response.data as SubjectType[]);
             setStorageSubjects(response.data as SubjectType[]);
             removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
-            void pushSyncUpdate(UPDATE_DETAIL);
+            void pushSyncUpdate(LISTS_DATA_CHANGED);
             return response.data;
         }
         return undefined;
@@ -134,7 +134,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
             setStorageSubjects(response.subjects);
             setAnnualAfterDelete(response.annualSchedules);
             removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
-            void pushSyncUpdate(UPDATE_DETAIL);
+            void pushSyncUpdate(LISTS_DATA_CHANGED);
             return true;
         }
         return false;
@@ -163,7 +163,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
             }
 
             removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
-            void pushSyncUpdate(UPDATE_DETAIL);
+            void pushSyncUpdate(LISTS_DATA_CHANGED);
             return response.data;
         }
         if (!response.success && (response as any).errorCode === "23505") {
@@ -195,7 +195,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
             }
 
             removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
-            void pushSyncUpdate(UPDATE_DETAIL);
+            void pushSyncUpdate(LISTS_DATA_CHANGED);
             return response.data;
         }
         return undefined;
@@ -221,7 +221,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
             }
 
             removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
-            void pushSyncUpdate(UPDATE_DETAIL);
+            void pushSyncUpdate(LISTS_DATA_CHANGED);
             return true;
         }
         return false;
@@ -238,7 +238,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
                 return updatedTeachers;
             });
             removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
-            void pushSyncUpdate(UPDATE_DETAIL);
+            void pushSyncUpdate(LISTS_DATA_CHANGED);
             return response.data;
         }
         if (!response.success && (response as any).errorCode === "23505") {
@@ -253,7 +253,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
             setTeachers(response.data as TeacherType[]);
             setStorageTeachers(response.data as TeacherType[]);
             removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
-            void pushSyncUpdate(UPDATE_DETAIL);
+            void pushSyncUpdate(LISTS_DATA_CHANGED);
             return response.data;
         }
         return undefined;
@@ -266,7 +266,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
             setStorageTeachers(response.teachers);
             setAnnualAfterDelete(response.annualSchedules);
             removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
-            void pushSyncUpdate(UPDATE_DETAIL);
+            void pushSyncUpdate(LISTS_DATA_CHANGED);
             return true;
         }
         return false;

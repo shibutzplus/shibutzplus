@@ -6,22 +6,33 @@ import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { dailySchedule } from "@/db/schema/daily-schedule";
 import { eq, and } from "drizzle-orm";
-import { sortDailyColumnIdsByPosition } from "@/utils/sort";
+
 import { initDailyEventCellData, initDailyTeacherCellData } from "@/services/daily/initialize";
 import { ColumnTypeValues, DailyScheduleCell, DailyScheduleType } from "@/models/types/dailySchedule";
+
+const COLUMN_PRIORITY = {
+    [ColumnTypeValues.missingTeacher]: 0,
+    [ColumnTypeValues.existingTeacher]: 1,
+    [ColumnTypeValues.event]: 2,
+    [ColumnTypeValues.empty]: 1,
+};
 
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { schoolId } = body;
+        const { schoolId, date } = body;
 
         if (!schoolId) {
             return NextResponse.json({ error: "schoolId is required" }, { status: 400 });
         }
 
-        // 1. Fetch all records for the school
+        // 1. Fetch records (all or specific date)
+        const whereClause = date
+            ? and(eq(dailySchedule.schoolId, schoolId), eq(dailySchedule.date, date))
+            : eq(dailySchedule.schoolId, schoolId);
+
         const allRecords = await db.query.dailySchedule.findMany({
-            where: eq(dailySchedule.schoolId, schoolId),
+            where: whereClause,
         });
 
         if (allRecords.length === 0) {
@@ -74,8 +85,30 @@ export async function POST(req: Request) {
 
             const uniqueColumnIds = Array.from(columnIds);
 
-            // Sort columns
-            const sortedColumnIds = sortDailyColumnIdsByPosition(uniqueColumnIds, daySchedule);
+            // Sort columns by Priority then Name
+            const sortedColumnIds = uniqueColumnIds.sort((a, b) => {
+                const cellsA = Object.values(daySchedule[a] || {});
+                const cellsB = Object.values(daySchedule[b] || {});
+
+                const colA = cellsA[0]?.headerCol;
+                const colB = cellsB[0]?.headerCol;
+
+                const typeA = colA?.type || ColumnTypeValues.existingTeacher;
+                const typeB = colB?.type || ColumnTypeValues.existingTeacher;
+
+                const priorityA = COLUMN_PRIORITY[typeA] ?? 1;
+                const priorityB = COLUMN_PRIORITY[typeB] ?? 1;
+
+                if (priorityA !== priorityB) {
+                    return priorityA - priorityB;
+                }
+
+                // Secondary sort by Name
+                const nameA = colA?.headerTeacher?.name || colA?.headerEvent || "";
+                const nameB = colB?.headerTeacher?.name || colB?.headerEvent || "";
+
+                return nameA.localeCompare(nameB, "he");
+            });
 
             // Assign positions and prepare updates
             sortedColumnIds.forEach((columnId, index) => {

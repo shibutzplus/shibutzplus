@@ -4,7 +4,7 @@ const messages = {
         serverError: "שגיאת מערכת פנימית. אנא נסו שוב"
     },
     auth: {
-        accessDenied: "כדי להתנסות במערכת עליכם להיות רשומים. לחצו על צרו קשר או כיתבו לנו למייל shibutzplus@gmail.com",
+        accessDenied: "נראה שהגעתם לאזור המיועד למנהלי המערכת. אם ברצונכם להצטרף או להתנסות בשיבוץ+, כיתבו לנו ל-shibutzplus@gmail.com",
         unauthorized: "אין הרשאה. יש להתחבר כדי לגשת למידע זה",
         paramRequired: "פרמטר נדרש",
         login: {
@@ -81,6 +81,7 @@ const messages = {
         deleteSuccess: "העמודה נמחקה",
         deleteError: "בעיה במחיקת עמודה במערכת היומית אנא נסו שוב",
         noScheduleFound: "לא נמצאו שעות לימוד למורה ביום זה",
+        notPublished: "המערכת היומית לא פורסמה",
     },
     publish: {
         success: "המערכת היומית פורסמה וזמינה למורים",

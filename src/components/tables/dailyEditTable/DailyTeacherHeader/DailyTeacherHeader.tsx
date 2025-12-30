@@ -1,0 +1,178 @@
+import React, { useState, useMemo } from "react";
+import { filterDailyHeaderTeachers } from "@/utils/sort";
+import DynamicInputSelect from "../../../ui/select/InputSelect/DynamicInputSelect";
+import { useDailyTableContext } from "@/context/DailyTableContext";
+import { ColumnType } from "@/models/types/dailySchedule";
+import { getDayNumberByDateString } from "@/utils/time";
+import { useMainContext } from "@/context/MainContext";
+import { errorToast, successToast } from "@/lib/toast";
+import messages from "@/resources/messages";
+import { BrightTextColor, BrightTextColorHover } from "@/style/root";
+import styles from "../DailyTable/DailyTable.module.css";
+import useDeletePopup from "@/hooks/useDeletePopup";
+import DailyColumnMenu from "../DailyColumnMenu/DailyColumnMenu";
+import Icons from "@/style/icons";
+import { TeacherType } from "@/models/types/teachers";
+import { useTeacherTableContext } from "@/context/TeacherTableContext";
+
+type DailyTeacherHeaderProps = {
+    columnId: string;
+    type: ColumnType;
+    onDelete?: (colId: string) => void;
+    onTeacherClick?: (teacher: TeacherType) => void;
+    isFirst?: boolean;
+    isLast?: boolean;
+};
+
+const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
+    columnId,
+    type,
+    onDelete,
+    onTeacherClick,
+    isFirst,
+    isLast,
+}) => {
+    const { teachers } = useMainContext();
+    const { deleteColumn, mainDailyTable, selectedDate, moveColumn, populateTeacherColumn, mapAvailableTeachers, isEditMode } =
+        useDailyTableContext();
+    const { fetchTeacherScheduleDate } = useTeacherTableContext(); // Added context
+    const [isLoading, setIsLoading] = useState(false);
+    const { handleOpenPopup } = useDeletePopup();
+
+    const selectedTeacherData =
+        mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.headerTeacher;
+
+    const handleTeacherChange = async (value: string) => {
+        const teacherId = value;
+        if (!teacherId) return;
+        setIsLoading(true);
+        const dayNumber = getDayNumberByDateString(selectedDate);
+        const response = await populateTeacherColumn(
+            selectedDate,
+            columnId,
+            dayNumber,
+            teacherId,
+            type,
+        );
+        if (response) {
+            if (response.length === 0) {
+                successToast(messages.dailySchedule.noScheduleFound);
+            }
+        } else {
+            errorToast(messages.dailySchedule.error);
+        }
+        setIsLoading(false);
+    };
+
+    // Build a set of teachers that actually teach today (in the annual schedule)
+    const teachersTeachingTodayIds = useMemo(() => {
+        const ids = new Set<string>();
+        const dayNumber = getDayNumberByDateString(selectedDate);
+        const dayMap = mapAvailableTeachers?.[dayNumber];
+        if (!dayMap) return ids;
+
+        Object.values(dayMap).forEach((hourTeachers) => {
+            hourTeachers.forEach((id) => ids.add(id));
+        });
+
+        return ids;
+    }, [mapAvailableTeachers, selectedDate]);
+
+    // Filtered teacher options: only regular teachers, no duplicates, and only those teaching today
+    const filteredTeacherOptions = useMemo(() => {
+        return filterDailyHeaderTeachers(
+            teachers,
+            mainDailyTable,
+            selectedTeacherData,
+            teachersTeachingTodayIds,
+            selectedDate,
+        );
+    }, [teachers, mainDailyTable, selectedTeacherData, teachersTeachingTodayIds, selectedDate]);
+
+    const handleDeleteColumn = async () => {
+        const response = await deleteColumn(columnId);
+        if (!response) {
+            errorToast(messages.dailySchedule.deleteError);
+        }
+    };
+
+    const handleDeleteClick = () => {
+        const label = selectedTeacherData?.name || "המורה";
+        const msg = `האם למחוק את ${label}?`;
+
+        if (onDelete) {
+            handleOpenPopup("deleteDailyCol", msg, async () => onDelete(columnId));
+        } else {
+            handleOpenPopup("deleteDailyCol", msg, handleDeleteColumn);
+        }
+    };
+
+    const handlePreviewClick = async () => {
+        if (selectedTeacherData && onTeacherClick) {
+            await fetchTeacherScheduleDate(selectedTeacherData, selectedDate);
+            onTeacherClick(selectedTeacherData);
+        }
+    };
+
+    return (
+        <div className={styles.headerContentWrapper}>
+            {isEditMode && (
+                <DailyColumnMenu
+                    onDelete={handleDeleteClick}
+                    onMoveRight={() => moveColumn && moveColumn(columnId, "right")}
+                    onMoveLeft={() => moveColumn && moveColumn(columnId, "left")}
+                    isFirst={isFirst}
+                    isLast={isLast}
+                >
+                    {onTeacherClick && selectedTeacherData
+                        ? ({ closeMenu }) => (
+                            <div
+                                onClick={() => {
+                                    handlePreviewClick();
+                                    closeMenu();
+                                }}
+                                className={styles.menuItem}
+                            >
+                                <Icons.eye size={14} />
+                                <span>חומר הלימוד</span>
+                            </div>
+                        )
+                        : null}
+                </DailyColumnMenu>
+            )}
+
+            <div className={styles.inputSelectWrapper}>
+                <div style={{ display: isEditMode ? "block" : "none", width: "100%" }}>
+                    <DynamicInputSelect
+                        options={filteredTeacherOptions}
+                        value={selectedTeacherData?.id || ""}
+                        onChange={handleTeacherChange}
+                        placeholder="בחירת מורה"
+                        isSearchable
+                        isDisabled={isLoading}
+                        backgroundColor="transparent"
+                        color={BrightTextColor}
+                        colorHover={BrightTextColorHover}
+                        placeholderColor={BrightTextColor}
+                        fontSize="18px"
+                        caretColor="#cccccc"
+                    />
+                </div>
+                <div
+                    className={styles.staticHeaderText}
+                    title={selectedTeacherData?.name}
+                    style={{
+                        display: isEditMode ? "none" : "flex",
+                        cursor: selectedTeacherData ? "pointer" : "default"
+                    }}
+                    onClick={handlePreviewClick}
+                >
+                    {selectedTeacherData?.name || ""}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default DailyTeacherHeader;
+

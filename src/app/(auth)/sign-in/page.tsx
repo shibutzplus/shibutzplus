@@ -13,7 +13,7 @@ import { signInWithGoogle } from "@/app/actions/POST/signInAction";
 import { DEFAULT_REDIRECT } from "@/routes/protectedAuth";
 import routes from "@/routes";
 import { STATUS_AUTH, STATUS_LOADING, STATUS_UNAUTH } from "@/models/constant/session";
-import { errorToast } from "@/lib/toast";
+import { successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import HeroSection from "@/components/auth/HeroSection/HeroSection";
 
@@ -28,7 +28,7 @@ const SignInContent: React.FC = () => {
 
     useEffect(() => {
         if (googleError === "AccessDenied") {
-            errorToast(messages.auth.accessDenied);
+            successToast(messages.auth.accessDenied, Infinity);
             router.replace(window.location.pathname);
         }
     }, [googleError, router]);
@@ -92,7 +92,7 @@ const SignInContent: React.FC = () => {
                         disabled={isLoading}
                     >
                         {isLoading ? <Loading /> : null}
-                        <GoogleIcon /> משתמש רשום - התחברות
+                        <GoogleIcon /> התחברות
                     </button>
                     {error && <p className={styles.error}>{error}</p>}
                     <footer className={styles.registerLink}>

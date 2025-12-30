@@ -1,0 +1,53 @@
+.dailyColumn {
+    background-color: var(--inner-background-color);
+    width: var(--table-daily-col-width-edit);
+    min-width: var(--table-daily-col-width-edit);
+    max-width: var(--table-daily-col-width-edit);
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
+    border-start-start-radius: var(--border-radius-table);
+    border-start-end-radius: var(--border-radius-table);
+    border-end-end-radius: var(--border-radius-cell);
+    border-end-start-radius: var(--border-radius-cell);
+    position: relative;
+}
+
+.rows {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    padding: 5px;
+    gap: 5px;
+    margin-top: var(--table-daily-header-height);
+    overflow: hidden;
+}
+
+.fadeIn {
+    animation: fadeIn 0.4s ease-in-out forwards;
+}
+
+.fadeOut {
+    animation: fadeOut 0.4s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}

@@ -1,7 +1,7 @@
 .topNavBtnContainer {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 25px;
     --daily-btn-width: 60px;
 }
 
@@ -26,7 +26,6 @@
     cursor: pointer;
     width: auto !important;
     transition: all 0.2s;
-    margin-left: 25px;
 }
 
 .topNavBtnContainer .publishBtn:hover {
@@ -42,7 +41,9 @@
     font-weight: 700;
     font-size: 15px;
     padding: 0 10px;
-    margin-left: 25px;
+    border: var(--border-primary);
+    border-radius: var(--border-radius-cell);
+    height: 40px;
 }
 
 
@@ -58,6 +59,10 @@
 
 
 @media (max-width: 505px) {
+    .topNavBtnContainer {
+        gap: 0px;
+    }
+
     .topNavBtnContainer .publishBtn {
         width: var(--daily-btn-width) !important;
         padding: 0;
@@ -69,7 +74,15 @@
     }
 
     .publishedStatus {
+        margin-left: 0;
+        border: none;
+    }
+
+    .publishedStatus span {
         display: none;
     }
 
+    .topNavBtnContainer button {
+        border: none !important;
+    }
 }

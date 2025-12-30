@@ -26,9 +26,6 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
                     <div className={styles.titleContainer}>
                         <h3>
                             {router.dailySchedule.title}
-                            {!isEditMode && (
-                                <span className={styles.previewModeLabel}>{" (תצוגת בדיקה)"}</span>
-                            )}
                         </h3>
                     </div>
                     <div className={styles.bar1DateContainer}>

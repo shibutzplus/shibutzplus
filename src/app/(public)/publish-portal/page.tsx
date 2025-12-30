@@ -3,11 +3,13 @@
 import React, { useEffect } from "react";
 import { NextPage } from "next";
 import styles from "./PublishedPortal.module.css";
-import PreviewTable from "@/components/tables/previewTable/PreviewTable/PreviewTable";
+import PreviewTable from "@/components/tables/dailyViewTable/PreviewTable/PreviewTable";
 import { usePortalContext } from "@/context/PortalContext";
 import Preloader from "@/components/ui/Preloader/Preloader";
 import NotPublished from "@/components/empty/NotPublished/NotPublished";
 import ContactAdminError from "@/components/auth/ContactAdminError/ContactAdminError";
+
+import { getDayNumberByDateString } from "@/utils/time";
 
 const PublishedPortalPage: NextPage = () => {
     const {
@@ -19,6 +21,7 @@ const PublishedPortalPage: NextPage = () => {
         isDatesLoading,
         hasFetched,
         settings,
+        datesOptions,
     } = usePortalContext();
 
     const [showError, setShowError] = React.useState(false);
@@ -58,13 +61,27 @@ const PublishedPortalPage: NextPage = () => {
         );
     }
 
+    const isShabbat = selectedDate ? getDayNumberByDateString(selectedDate) === 7 : false;
+
+    const isPublished = datesOptions.some((d) => d.value === selectedDate);
+    const getEmptyText = () => {
+        if (isShabbat) return "סוף שבוע נעים";
+        if (isPublished) return "אין עדכונים במערכת שפורסמה";
+        return "המערכת הבית ספרית לא פורסמה";
+    };
+
     return (
         <section className={styles.container}>
             <PreviewTable
                 mainDailyTable={mainPublishTable}
                 selectedDate={selectedDate}
                 appType="public"
-                EmptyTable={(props) => <NotPublished {...props} text="המערכת הבית ספרית לא פורסמה" />}
+                EmptyTable={(props) => (
+                    <NotPublished
+                        {...props}
+                        text={getEmptyText()}
+                    />
+                )}
                 hoursNum={settings?.hoursNum}
             />
         </section>

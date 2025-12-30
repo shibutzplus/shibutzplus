@@ -5,18 +5,16 @@ import { NextPage } from "next";
 import Preloader from "@/components/ui/Preloader/Preloader";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import styles from "./DailySchedule.module.css";
-import DailyTable from "@/components/tables/dailyScheduleTable/DailyTable/DailyTable";
-import PreviewTable from "@/components/tables/previewTable/PreviewTable/PreviewTable";
-import EmptyTable from "@/components/empty/EmptyTable/EmptyTable";
+import DailyTable from "@/components/tables/dailyEditTable/DailyTable/DailyTable";
 import LoadingPage from "@/components/loading/LoadingPage/LoadingPage";
 import { TeacherTableProvider } from "@/context/TeacherTableContext";
 import SlidingPanel from "@/components/ui/SlidingPanel/SlidingPanel";
-import TeacherTable from "@/components/tables/teacherScheduleTable/TeacherTable/TeacherTable";
+import TeacherTable from "@/components/tables/teacherMaterialTable/TeacherTable/TeacherTable";
 import { TeacherType } from "@/models/types/teachers";
 import { useMainContext } from "@/context/MainContext";
 
 const DailySchedulePage: NextPage = () => {
-    const { isLoading, isEditMode, selectedDate, mainDailyTable, isLoadingEditPage } =
+    const { isLoading, selectedDate, mainDailyTable, isLoadingEditPage } =
         useDailyTableContext();
     const { settings } = useMainContext();
 
@@ -50,25 +48,11 @@ const DailySchedulePage: NextPage = () => {
     return (
         <TeacherTableProvider>
             <section className={styles.container}>
-                {isEditMode ? (
-                    <DailyTable
-                        mainDailyTable={mainDailyTable}
-                        selectedDate={selectedDate}
-                        onTeacherClick={handleTeacherClick}
-                    />
-                ) : (
-                    <PreviewTable
-                        mainDailyTable={mainDailyTable}
-                        selectedDate={selectedDate}
-                        EmptyTable={() => (
-                            <EmptyTable
-                                message="מערכת השעות להיום טרם הוזנה"
-                                showIcons={false}
-                            />
-                        )}
-                        onTeacherClick={handleTeacherClick}
-                    />
-                )}
+                <DailyTable
+                    mainDailyTable={mainDailyTable}
+                    selectedDate={selectedDate}
+                    onTeacherClick={handleTeacherClick}
+                />
 
                 <SlidingPanel
                     isOpen={isPanelOpen}
