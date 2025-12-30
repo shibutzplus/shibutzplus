@@ -140,6 +140,35 @@
     overflow-wrap: break-word;
 }
 
+/* Default Variables (Desktop > 600px) */
+.container {
+    --font-size: 1.7vw;
+    --col-width: 1fr;
+}
+
+/* Desktop Range 600px - 1000px overrides */
+@media (min-width: 600px) and (max-width: 1000px) {
+    .container.fewColsDesktop {
+        --col-width: 20vw;
+    }
+
+    .container.manyColsDesktop {
+        --font-size: 1.5vw;
+    }
+}
+
+/* Mobile (< 600px) */
+@media (max-width: 600px) {
+    .container {
+        --font-size: 2.8vw;
+        --col-width: 1fr;
+    }
+
+    .container.fewColsMobile {
+        --font-size: 3.5vw;
+    }
+}
+
 /* < 600px Portrait view */
 @media (max-width: 600px) {
 
