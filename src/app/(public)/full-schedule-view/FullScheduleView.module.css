@@ -3,6 +3,7 @@
     height: 100%;
     margin: 0 auto;
     box-sizing: border-box;
-    padding-top: 2vh;
+    padding-top: 1vh;
+    padding-bottom: 1vh;
     overflow: hidden;
 }

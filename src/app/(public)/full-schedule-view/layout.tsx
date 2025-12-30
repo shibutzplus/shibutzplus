@@ -1,6 +1,6 @@
 import React from "react";
-import PortalPageLayout from "@/components/layout/pageLayouts/PortalPageLayout/PortalPageLayout";
+import PortalFullScreenLayout from "@/components/layout/pageLayouts/PortalFullScreenLayout/PortalFullScreenLayout";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-    return <PortalPageLayout>{children}</PortalPageLayout>;
+    return <PortalFullScreenLayout>{children}</PortalFullScreenLayout>;
 }
