@@ -1,0 +1,29 @@
+.fab {
+    position: fixed;
+    top: 0.2rem;
+    right: 0.2rem;
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 50%;
+    background-color: var(--button-background-color);
+    color: white;
+    opacity: 0.7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    z-index: 1000;
+    border: none;
+    outline: none;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.fab:hover {
+    transform: scale(1.05);
+    background-color: var(--button-hover-background-color);
+}
+
+.fab:active {
+    transform: scale(0.95);
+}

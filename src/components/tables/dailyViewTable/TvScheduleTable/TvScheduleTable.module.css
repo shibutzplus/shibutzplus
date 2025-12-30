@@ -20,10 +20,8 @@
     display: grid;
     height: 8vh;
     width: 100%;
-    grid-template-columns: 3vw 2px repeat(var(--num-cols), var(--col-width));
+    grid-template-columns: minmax(20px, 3vw) 2px repeat(var(--num-cols), var(--col-width));
 }
-
-
 
 .headerCell {
     color: white;
@@ -65,7 +63,7 @@
     flex: 1;
     display: grid;
     width: 100%;
-    grid-template-columns: 3vw 2px repeat(var(--num-cols), var(--col-width));
+    grid-template-columns: minmax(20px, 3vw) 2px repeat(var(--num-cols), var(--col-width));
 }
 
 
@@ -148,10 +146,10 @@
 @media (max-width: 600px) {
 
     .headerRow {
-        grid-template-columns: 3vw 2px repeat(var(--num-cols), 1fr);
+        grid-template-columns: minmax(20px, 3vw) 2px repeat(var(--num-cols), 1fr);
     }
 
     .row {
-        grid-template-columns: 3vw 2px repeat(var(--num-cols), 1fr);
+        grid-template-columns: minmax(20px, 3vw) 2px repeat(var(--num-cols), 1fr);
     }
 }

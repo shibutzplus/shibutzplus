@@ -28,13 +28,23 @@ const TvScheduleTable: React.FC<TvScheduleTableProps> = ({
     const schedule = mainDailyTable[selectedDate];
     const colCount = schedule ? Object.keys(schedule).length : 0;
     const hasShownToast = React.useRef(false);
+    const [windowWidth, setWindowWidth] = React.useState<number>(1200);
 
     React.useEffect(() => {
-        if (window.innerWidth < 500 && colCount > 4 && !hasShownToast.current) {
-            successToast("לצפייה מיטבית, מומלץ לסובב את המכשיר לרוחב. ", 3000);
-            hasShownToast.current = true;
-        }
-    }, [colCount]);
+        // Update width on mount to avoid hydration mismatch
+        setWindowWidth(window.innerWidth);
+
+        const handleResize = () => setWindowWidth(window.innerWidth);
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    //    React.useEffect(() => {
+    //        if (window.innerWidth < 500 && colCount > 4 && !hasShownToast.current) {
+    //            successToast("לצפייה מיטבית, מומלץ לסובב את המכשיר לרוחב. ", 3000);
+    //            hasShownToast.current = true;
+    //        }
+    //    }, [colCount]);
 
     const tableColumns = React.useMemo(() => schedule ? Object.keys(schedule) : [], [schedule]);
 
@@ -91,31 +101,22 @@ const TvScheduleTable: React.FC<TvScheduleTableProps> = ({
         },
         screen_over_1000px: {
             minWidth: 1000,
-            fontSize: "1.8vw"
+            fontSize: "1.7vw"
         },
         screen_600_to_1000px_few_cols: {
-            maxColumns: 4,
-            fontSize: "1.8vw",
+            maxColumns: 2,
+            fontSize: "1.7vw",
         },
         screen_600_to_1000px_many_cols: {
             minColumns: 7, // more than 6
             fontSize: "1.5vw",
         },
         screen_600_to_1000px_default: {
-            fontSize: "1.8vw",
+            fontSize: "1.7vw",
         },
     };
 
-    // Track window width for config
-    const [windowWidth, setWindowWidth] = React.useState<number>(
-        typeof window !== "undefined" ? window.innerWidth : 1200
-    );
 
-    React.useEffect(() => {
-        const handleResize = () => setWindowWidth(window.innerWidth);
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
 
     // Determine Layout Values
     let colWidth: string;
