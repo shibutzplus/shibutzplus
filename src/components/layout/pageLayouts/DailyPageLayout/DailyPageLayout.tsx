@@ -20,7 +20,7 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
     const { daysSelectOptions, selectedDate, isLoading, isEditMode, handleDayChange, mainDailyTable } =
         useDailyTableContext();
 
-    const handlePrintClick = async () => {
+    const saveToPDF = async () => {
         try {
             const { pdf } = await import('@react-pdf/renderer');
             const { default: DailySchedulePdf } = await import('@/components/pdf/DailySchedulePdf');
@@ -81,7 +81,7 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
                             <span title="שמירה לקובץ PDF" className={styles.pdfBtnWrapper}>
                                 <IconBtn
                                     Icon={<Icons.toPDF size={20} />}
-                                    onClick={handlePrintClick}
+                                    onClick={saveToPDF}
                                     hasBorder
                                 />
                             </span>

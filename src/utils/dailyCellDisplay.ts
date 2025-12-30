@@ -12,7 +12,7 @@ export interface CellDisplayData {
 
 /**
  * Shared logic for determining what to display in a teacher cell.
- * Used by both PreviewTeacherCell (Screen) and DailySchedulePdf (Print).
+ * Used by both PreviewTeacherCell (Screen) and DailySchedulePdf.
  */
 export const getCellDisplayData = (
     cell: DailyScheduleCell | undefined,
