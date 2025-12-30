@@ -3,6 +3,6 @@
     height: 100%;
     margin: 0 auto;
     box-sizing: border-box;
-    padding-top: var(--padding-top-desktop);
+    padding-top: 2vh;
     overflow: hidden;
 }
