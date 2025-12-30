@@ -70,7 +70,6 @@
     display: grid;
     width: 100%;
     grid-template-columns: 3vw 2px repeat(var(--num-cols), var(--col-width));
-    /* border-bottom removed to prevent extension into empty space */
 }
 
 @media (max-width: 600px) {

@@ -9,7 +9,6 @@ import { COLOR_BY_TYPE } from "@/models/constant/daily";
 import { calculateVisibleRowsForDaily } from "@/utils/tableUtils";
 import { AppType } from "@/models/types";
 import { successToast } from "@/lib/toast";
-import { toast } from "react-hot-toast";
 
 type TvScheduleTableProps = {
     mainDailyTable: DailySchedule;
@@ -37,15 +36,13 @@ const TvScheduleTable: React.FC<TvScheduleTableProps> = ({
         }
     }, [colCount]);
 
-    // Handle empty state
-    if ((!schedule || Object.keys(schedule).length === 0) && EmptyTable) {
-        return <EmptyTable date={selectedDate} />;
-    }
+    const tableColumns = React.useMemo(() => schedule ? Object.keys(schedule) : [], [schedule]);
 
-    const tableColumns = schedule ? Object.keys(schedule) : [];
-    const sortedTableColumns = schedule
-        ? sortDailyColumnIdsByPosition(tableColumns, schedule)
-        : [];
+    const sortedTableColumns = React.useMemo(() => {
+        return schedule
+            ? sortDailyColumnIdsByPosition(tableColumns, schedule)
+            : [];
+    }, [schedule, tableColumns]);
 
     // Map column types
     const columnTypes = React.useMemo(() => {
@@ -76,6 +73,11 @@ const TvScheduleTable: React.FC<TvScheduleTableProps> = ({
             hoursNum
         );
     }, [schedule, sortedTableColumns, columnTypes, hoursNum, appType]);
+
+    // Handle empty state
+    if ((!schedule || Object.keys(schedule).length === 0) && EmptyTable) {
+        return <EmptyTable date={selectedDate} />;
+    }
 
     // Define grid columns style
     let colWidth: string;
