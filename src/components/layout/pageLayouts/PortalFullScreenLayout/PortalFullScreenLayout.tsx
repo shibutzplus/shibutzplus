@@ -89,7 +89,12 @@ export default function PortalFullScreenLayout({ children }: PortalFullScreenLay
 
     // Render children directly without PageLayout or Header
     return (
-        <div style={{ width: "100%", height: "100vh", overflow: "hidden", position: "relative" }}>
+        <div style={{
+            width: "100%",
+            height: "100dvh",
+            overflow: "hidden",
+            position: "relative"
+        }}>
             <button
                 className={styles.fab}
                 onClick={() => nav.push(router.publishedPortal.p)}
