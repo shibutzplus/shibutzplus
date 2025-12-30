@@ -27,13 +27,14 @@ const TvScheduleTable: React.FC<TvScheduleTableProps> = ({
 }) => {
     const schedule = mainDailyTable[selectedDate];
     const colCount = schedule ? Object.keys(schedule).length : 0;
+    const hasShownToast = React.useRef(false);
 
-    //    React.useEffect(() => {
-    //        if (window.innerWidth < 500 && colCount > 4 && !hasShownToast.current) {
-    //            successToast("לצפייה מיטבית, מומלץ לסובב את המכשיר לרוחב. ", 3000);
-    //            hasShownToast.current = true;
-    //        }
-    //    }, [colCount]);
+    React.useEffect(() => {
+        if (window.innerWidth < 500 && colCount > 4 && !hasShownToast.current) {
+            successToast("לצפייה מיטבית, מומלץ לסובב את המכשיר לרוחב. ", 3000);
+            hasShownToast.current = true;
+        }
+    }, [colCount]);
 
     const tableColumns = React.useMemo(() => schedule ? Object.keys(schedule) : [], [schedule]);
 
