@@ -22,9 +22,6 @@ export default function PortalFullScreenLayout({ children }: PortalFullScreenLay
         handlePublishedRefresh,
     } = usePortalContext();
 
-    // We don't need useTeacherTableContext here as this is specific for full screen view which is likely public/published data
-    // But if we needed it, we would import it. For now, mirroring the refresh logic relevant to full schedule.
-
     const refreshRef = React.useRef<(() => Promise<void>) | null>(null);
     const { resetUpdate } = usePollingUpdates(refreshRef);
 
@@ -51,14 +48,6 @@ export default function PortalFullScreenLayout({ children }: PortalFullScreenLay
 
     // -- Auto Refresh at 16:00 -- //
     React.useEffect(() => {
-        // Only run if we have teacher context or if we decide this logic is needed for public view too.
-        // Original PortalPageLayout says `if (!teacher) return;`. 
-        // However, full-schedule-view might be used without a teacher logged in? 
-        // Checking original code: PortalPageLayout uses `usePortalContext`. 
-        // If this is a public view, maybe `teacher` is null. 
-        // But the original code specifically checks `if (!teacher) return;` for the auto-switch logic.
-        // I will preserve that behavior for safety, assuming this might be used by logged-in users too 
-        // or that the context provides the teacher if available.
 
         if (!teacher) return;
 

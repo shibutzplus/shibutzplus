@@ -28,23 +28,13 @@ const TvScheduleTable: React.FC<TvScheduleTableProps> = ({
     const schedule = mainDailyTable[selectedDate];
     const colCount = schedule ? Object.keys(schedule).length : 0;
     const hasShownToast = React.useRef(false);
-    const [windowWidth, setWindowWidth] = React.useState<number>(1200);
 
     React.useEffect(() => {
-        // Update width on mount to avoid hydration mismatch
-        setWindowWidth(window.innerWidth);
-
-        const handleResize = () => setWindowWidth(window.innerWidth);
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
-
-    //    React.useEffect(() => {
-    //        if (window.innerWidth < 500 && colCount > 4 && !hasShownToast.current) {
-    //            successToast("לצפייה מיטבית, מומלץ לסובב את המכשיר לרוחב. ", 3000);
-    //            hasShownToast.current = true;
-    //        }
-    //    }, [colCount]);
+        if (window.innerWidth < 500 && colCount > 4 && !hasShownToast.current) {
+            successToast("לצפייה מיטבית, מומלץ לסובב את המכשיר לרוחב. ", 3000);
+            hasShownToast.current = true;
+        }
+    }, [colCount]);
 
     const tableColumns = React.useMemo(() => schedule ? Object.keys(schedule) : [], [schedule]);
 
@@ -89,73 +79,25 @@ const TvScheduleTable: React.FC<TvScheduleTableProps> = ({
         return <EmptyTable date={selectedDate} />;
     }
 
-    // --- Font Size Configuration ---
-    const FONT_SIZE_CONFIG = {
-        screen_under_600px: {
-            maxWidth: 600,
-            fontSize: "2.8vw",
-            fewColumns: {
-                maxColumns: 4,
-                fontSize: "3.5vw"
-            }
-        },
-        screen_over_1000px: {
-            minWidth: 1000,
-            fontSize: "1.7vw"
-        },
-        screen_600_to_1000px_few_cols: {
-            maxColumns: 2,
-            fontSize: "1.7vw",
-        },
-        screen_600_to_1000px_many_cols: {
-            minColumns: 7, // more than 6
-            fontSize: "1.5vw",
-        },
-        screen_600_to_1000px_default: {
-            fontSize: "1.7vw",
-        },
-    };
+    // Determine Layout Classes based on column count
+    const isFewColsMobile = sortedTableColumns.length < 4;
+    const isFewColsDesktop = sortedTableColumns.length < 2;
+    const isManyColsDesktop = sortedTableColumns.length >= 7;
 
+    const containerClasses = [
+        styles.container,
+        isFewColsMobile ? styles.fewColsMobile : "",
+        isFewColsDesktop ? styles.fewColsDesktop : "",
+        isManyColsDesktop ? styles.manyColsDesktop : ""
+    ].filter(Boolean).join(" ");
 
-
-    // Determine Layout Values
-    let colWidth: string;
-    let fontSize: string;
-
-    if (windowWidth <= FONT_SIZE_CONFIG.screen_under_600px.maxWidth) {
-        // Mobile (< 600px)
-        colWidth = "1fr";
-        if (sortedTableColumns.length < FONT_SIZE_CONFIG.screen_under_600px.fewColumns.maxColumns) {
-            fontSize = FONT_SIZE_CONFIG.screen_under_600px.fewColumns.fontSize;
-        } else {
-            fontSize = FONT_SIZE_CONFIG.screen_under_600px.fontSize;
-        }
-    } else if (windowWidth > FONT_SIZE_CONFIG.screen_over_1000px.minWidth) {
-        // Large Screen (> 1000px)
-        colWidth = "1fr";
-        fontSize = FONT_SIZE_CONFIG.screen_over_1000px.fontSize;
-    } else if (sortedTableColumns.length < FONT_SIZE_CONFIG.screen_600_to_1000px_few_cols.maxColumns) {
-        // Desktop (600px - 1000px) - Few Columns
-        colWidth = "20vw";
-        fontSize = FONT_SIZE_CONFIG.screen_600_to_1000px_few_cols.fontSize;
-    } else if (sortedTableColumns.length >= FONT_SIZE_CONFIG.screen_600_to_1000px_many_cols.minColumns) {
-        // Desktop (600px - 1000px) - Many Columns
-        colWidth = "1fr";
-        fontSize = FONT_SIZE_CONFIG.screen_600_to_1000px_many_cols.fontSize;
-    } else {
-        // Desktop (600px - 1000px) - Default
-        colWidth = "1fr";
-        fontSize = FONT_SIZE_CONFIG.screen_600_to_1000px_default.fontSize;
-    }
 
     const gridStyle = {
         "--num-cols": sortedTableColumns.length,
-        "--col-width": colWidth,
-        "--font-size": fontSize,
     } as React.CSSProperties;
 
     return (
-        <div className={styles.container}>
+        <div className={containerClasses}>
             {/* Header Row */}
             <div className={styles.headerRow} style={gridStyle}>
                 <div className={styles.rowNumberHeader}></div>
