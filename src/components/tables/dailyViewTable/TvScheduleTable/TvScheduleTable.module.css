@@ -66,8 +66,6 @@
     grid-template-columns: minmax(20px, 3vw) 2px repeat(var(--num-cols), var(--col-width));
 }
 
-
-
 .rowNumberCell {
     background-color: var(--table-gray-color);
     color: var(--dark-text-color);
