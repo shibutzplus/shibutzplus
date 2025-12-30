@@ -4,6 +4,7 @@ import { DailySchedule, ColumnTypeValues, ColumnType } from '@/models/types/dail
 import { RubikRegularBase64, RubikMediumBase64 } from '@/components/pdf/fontData';
 import { sortDailyColumnIdsByPosition } from '@/utils/sort';
 import { getCellDisplayData } from '@/utils/dailyCellDisplay';
+import { calculateVisibleRowsForDaily } from '@/utils/tableUtils';
 
 // Register font using Base64 data
 Font.register({
@@ -122,33 +123,12 @@ const DailySchedulePdf: React.FC<DailySchedulePdfProps> = ({ mainDailyTable, sel
         columnTypes[colId] = colFirstObj?.headerCol?.type || "event";
     });
 
-    // Calculate the maximum hour that has data
-    let maxHour = 0;
-    columnIds.forEach((colId) => {
-        const colData = schedule[colId];
-        const columnType = columnTypes[colId] || 'empty';
-
-        Object.keys(colData).forEach((hourKey) => {
-            const hour = parseInt(hourKey);
-            // Skip non-numeric keys or headerCol (if stored as a key, though usually nested)
-            if (isNaN(hour)) return;
-
-            const cell = colData[hourKey];
-            const { text, subTeacherName, isMissing, isEmpty } = getCellDisplayData(cell, columnType);
-
-            // If the cell produces any visible content, update maxHour
-            if (!isEmpty) {
-                if (hour > maxHour) {
-                    maxHour = hour;
-                }
-            }
-        });
-    });
-
-    // Ensure we have at least some rows if table is empty, or strictly follow maxHour
-    // User requested removing empty end rows but keeping at least 6.
-    const usedMaxHour = Math.max(maxHour, 6);
-    const rows = Array.from({ length: usedMaxHour }, (_, i) => i + 1);
+    // Calculate visible rows using shared utility
+    const rows = calculateVisibleRowsForDaily(
+        schedule,
+        sortedColumnIds,
+        columnTypes
+    );
 
     return (
         <Document>

@@ -19,7 +19,7 @@ import { BsMegaphoneFill, BsCalendar4Event, BsThreeDotsVertical, BsFiletypePdf }
 import { MdPersonAdd, MdPerson, MdSwapHoriz, MdOpenInNew, MdFileUpload } from "react-icons/md";
 import { FaPlus } from "react-icons/fa6";
 import { FaSave, FaShareAlt, FaQuestion } from "react-icons/fa";
-import { PiChairLight } from "react-icons/pi";
+import { PiChairLight, PiMonitor, PiMonitorFill } from "react-icons/pi";
 import { GoHistory } from "react-icons/go";
 import { LuEye } from "react-icons/lu";
 import { FiCheckCircle } from "react-icons/fi";
@@ -61,6 +61,8 @@ const Icons = {
     group: IoPeopleOutline,
     menuVertical: BsThreeDotsVertical,
     toPDF: BsFiletypePdf,
+    tv: PiMonitor,
+    tvSolid: PiMonitorFill,
 };
 
 export default Icons;

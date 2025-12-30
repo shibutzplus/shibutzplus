@@ -1,0 +1,154 @@
+.container {
+    width: 100vw;
+    height: 100%;
+    overflow: hidden;
+    background-color: white;
+    direction: rtl;
+}
+
+.container {
+    width: 100vw;
+    height: 100%;
+    overflow: hidden;
+    background-color: white;
+    direction: rtl;
+    display: flex;
+    flex-direction: column;
+}
+
+.headerRow {
+    display: grid;
+    height: 8vh;
+    width: 100%;
+    grid-template-columns: 3vw 2px repeat(var(--num-cols), var(--col-width));
+}
+
+@media (max-width: 600px) {
+    .headerRow {
+        grid-template-columns: 3vw 2px repeat(var(--num-cols), 1fr);
+    }
+}
+
+.headerCell {
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 1.2vw 1.2vw 0 0;
+    font-size: var(--font-size);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.headerContent {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 0 0.3vw;
+    line-height: 1.2;
+}
+
+.rowNumberHeader {
+    background-color: var(--table-gray-color);
+    border: 1px solid #ddd;
+    border-radius: 1.2vw 1.2vw 0 0;
+}
+
+.bodyContainer {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    overflow: hidden;
+}
+
+.row {
+    flex: 1;
+    display: grid;
+    width: 100%;
+    grid-template-columns: 3vw 2px repeat(var(--num-cols), var(--col-width));
+    /* border-bottom removed to prevent extension into empty space */
+}
+
+@media (max-width: 600px) {
+    .row {
+        grid-template-columns: 3vw 2px repeat(var(--num-cols), 1fr);
+    }
+}
+
+.rowNumberCell {
+    background-color: var(--table-gray-color);
+    color: var(--dark-text-color);
+    font-weight: bold;
+    text-align: center;
+    font-size: var(--font-size);
+    border: 1px solid #ddd;
+    border-bottom: 1px solid var(--inner-background-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cell {
+    background-color: var(--inner-background-color-empty);
+    text-align: center;
+    border-left: 1px solid var(--inner-background-color);
+    border-bottom: 1px solid var(--inner-background-color);
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.spacerCell {
+    border-bottom: 1px solid var(--inner-background-color);
+}
+
+.cellContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 0.3vh 0.3vw;
+}
+
+.mainText {
+    font-size: calc(var(--font-size) - 0.1vw);
+    color: var(--dark-text-color);
+    font-weight: 500;
+    line-height: 1.1;
+}
+
+.activity .mainText {
+    font-weight: bold;
+}
+
+.subText {
+    font-size: var(--font-size);
+    font-weight: bold;
+    color: #444;
+    margin-top: 0.5vh;
+}
+
+.missingText {
+    font-size: var(--font-size);
+    color: var(--missing-teacher-text-color);
+    margin-top: 0.5vh;
+}
+
+.eventText {
+    font-size: var(--font-size);
+    color: var(--dark-text-color);
+    font-weight: 500;
+    line-height: 1.2;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}

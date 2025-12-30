@@ -5,8 +5,8 @@ import { TableRows } from "@/models/constant/table";
 import TeacherRow from "../TeacherRow/TeacherRow";
 import styles from "./TeacherTable.module.css";
 import { useTeacherTableContext } from "@/context/TeacherTableContext";
+import { calculateVisibleRowsForTeacher } from "@/utils/tableUtils";
 import { TeacherType } from "@/models/types/teachers";
-
 import NotPublished from "@/components/empty/NotPublished/NotPublished";
 import Preloader from "@/components/ui/Preloader/Preloader";
 
@@ -15,7 +15,6 @@ type TeacherTableProps = {
     selectedDate: string;
     isInsidePanel?: boolean;
     hoursNum?: number;
-    fitToSchedule?: boolean;    // FFU
 };
 
 const TeacherTable: React.FC<TeacherTableProps> = ({
@@ -23,18 +22,17 @@ const TeacherTable: React.FC<TeacherTableProps> = ({
     selectedDate,
     isInsidePanel,
     hoursNum,
-    fitToSchedule,
 }) => {
     const { mainPortalTable, hasFetched, isPortalLoading } = useTeacherTableContext();
     const dayTable = selectedDate ? mainPortalTable[selectedDate] : undefined;
 
     let rowsCount = hoursNum || TableRows;
-    if (fitToSchedule && dayTable) {
-        const hours = Object.keys(dayTable).map(Number);
-        if (hours.length > 0) {
-            const maxHour = Math.max(...hours);
-            rowsCount = maxHour;
-        }
+
+    // Calculate dynamic rows based on content
+
+    if (dayTable) {
+        const rows = calculateVisibleRowsForTeacher(dayTable, hoursNum);
+        rowsCount = rows.length;
     }
 
     if (!hasFetched || isPortalLoading || !dayTable)

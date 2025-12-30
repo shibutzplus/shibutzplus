@@ -3,8 +3,8 @@
 import React from "react";
 import { motion } from "motion/react";
 import styles from "./PreviewTable.module.css";
-import { TableRows } from "@/models/constant/table";
 import { sortDailyColumnIdsByPosition } from "@/utils/sort";
+import { calculateVisibleRowsForDaily } from "@/utils/tableUtils";
 import { DailySchedule, ColumnType } from "@/models/types/dailySchedule";
 import { AppType } from "@/models/types";
 import { TeacherType } from "@/models/types/teachers";
@@ -53,8 +53,16 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
         return types;
     }, [schedule, sortedTableColumns]);
 
-    // Rows 1 to 8 (or dynamic)
-    const rows = Array.from({ length: hoursNum || TableRows }, (_, i) => i + 1);
+    // Calculate visible rows
+    const rows = React.useMemo(() => {
+        return calculateVisibleRowsForDaily(
+            schedule,
+            sortedTableColumns,
+            columnTypes,
+            appType,
+            hoursNum
+        );
+    }, [schedule, sortedTableColumns, columnTypes, hoursNum, appType]);
 
     const isEmpty = !schedule || Object.keys(schedule).length === 0;
 
