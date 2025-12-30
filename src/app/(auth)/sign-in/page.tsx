@@ -2,7 +2,6 @@
 
 import styles from "./signIn.module.css";
 import { NextPage } from "next";
-import Link from "next/link";
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -16,7 +15,7 @@ import HeroSection from "@/components/auth/HeroSection/HeroSection";
 import { STATUS_LOADING, STATUS_UNAUTH } from "@/models/constant/session";
 
 const SignInContent: React.FC = () => {
-    const { data: session, status } = useSession();
+    const { status } = useSession();
     const searchParams = useSearchParams();
     const googleError = searchParams.get("error");
     const router = useRouter();
@@ -68,7 +67,24 @@ const SignInContent: React.FC = () => {
                         <GoogleIcon /> התחברות
                     </button>
                     {error && <p className={styles.error}>{error}</p>}
+                    
+                    <div className={styles.guestSection}>
+                        <span>מעוניינים להתנסות במערכת?</span>
+                        <button 
+                            type="button" 
+                            className={styles.guestLink}
+                            onClick={handleGoogleSignIn}
+                            disabled={isLoading}
+                        >
+                            הכנסו במצב אורח
+                        </button>
+                    </div>
                 </div>
+                <footer className={styles.footer}>
+                    <p className={styles.teacherAlert}>
+                        מורים יקרים, אין להתחבר דרך מסך זה, אנא בקשו מהנהלת בית הספר קישור מתאים.
+                    </p>
+                </footer>
             </section>
         </main>
     );
