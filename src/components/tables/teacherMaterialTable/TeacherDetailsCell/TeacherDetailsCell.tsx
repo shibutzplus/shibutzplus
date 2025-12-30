@@ -32,10 +32,10 @@ const TeacherDetailsCell: React.FC<TeacherDetailsCellProps> = ({ row, teacher })
     const displayRow = secondary?.type === "replaced" && row?.secondary ? row.secondary : row;
 
     const displayReplaceTeacher = () => {
-        const firstName = teacher?.name?.split(" ")[0] || "";
+
 
         if (isDouble && primary && secondary) {
-            const texts = [primary, secondary].sort((a, b) => {
+            const texts = [primary, secondary].sort((a, _b) => {
                 if (a.type === "replacing") return 1;
                 return -1;
             });

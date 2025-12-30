@@ -49,6 +49,21 @@ const PortalNav: React.FC = () => {
                 )}
                 <span className={styles.btnText}>מערכת בית ספרית</span>
             </button>
+
+            <button
+                type="button"
+                aria-label="מערכת במסך מלא"
+                title="מערכת במסך מלא"
+                onClick={() => route.push("/full-schedule-view")}
+                className={`${styles.topBtn} ${pathname.includes("/full-schedule-view") ? styles.active : ""}`}
+            >
+                {pathname.includes("/full-schedule-view") ? (
+                    <Icons.tvSolid size={22} style={{ marginInlineEnd: "4px" }} />
+                ) : (
+                    <Icons.tv size={22} style={{ marginInlineEnd: "4px" }} />
+                )}
+                <span className={styles.btnText}>מערכת במסך מלא</span>
+            </button>
         </div>
     );
 };
