@@ -151,7 +151,7 @@
 
 /* Default Variables (Desktop > 600px) */
 .container {
-    --font-size: 1.7vw;
+    --font-size: 1.4vw;
     --col-width: 1fr;
 }
 

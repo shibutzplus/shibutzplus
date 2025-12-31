@@ -8,7 +8,6 @@ import { getCellDisplayData } from "@/utils/dailyCellDisplay";
 import { COLOR_BY_TYPE } from "@/models/constant/daily";
 import { calculateVisibleRowsForDaily } from "@/utils/tableUtils";
 import { AppType } from "@/models/types";
-import { successToast } from "@/lib/toast";
 
 type TvScheduleTableProps = {
     mainDailyTable: DailySchedule;
@@ -21,21 +20,11 @@ type TvScheduleTableProps = {
 const TvScheduleTable: React.FC<TvScheduleTableProps> = ({
     mainDailyTable,
     selectedDate,
-    hoursNum = 8, // Default fallback
+    hoursNum = 8, // fallback
     EmptyTable,
     appType = "public",
 }) => {
     const schedule = mainDailyTable[selectedDate];
-    const colCount = schedule ? Object.keys(schedule).length : 0;
-    const hasShownToast = React.useRef(false);
-
-    React.useEffect(() => {
-        if (window.innerWidth < 500 && colCount > 4 && !hasShownToast.current) {
-            successToast("לצפייה מיטבית, מומלץ לסובב את המכשיר לרוחב. ", 3000);
-            hasShownToast.current = true;
-        }
-    }, [colCount]);
-
     const tableColumns = React.useMemo(() => schedule ? Object.keys(schedule) : [], [schedule]);
 
     const sortedTableColumns = React.useMemo(() => {
@@ -63,7 +52,6 @@ const TvScheduleTable: React.FC<TvScheduleTableProps> = ({
     }, [schedule, sortedTableColumns]);
 
     // Calculate visible rows
-    // Using schedule directly in dependency array ensures update on object reference change
     const rows = React.useMemo(() => {
         return calculateVisibleRowsForDaily(
             schedule,
@@ -90,7 +78,6 @@ const TvScheduleTable: React.FC<TvScheduleTableProps> = ({
         isFewColsDesktop ? styles.fewColsDesktop : "",
         isManyColsDesktop ? styles.manyColsDesktop : ""
     ].filter(Boolean).join(" ");
-
 
     const gridStyle = {
         "--num-cols": sortedTableColumns.length,

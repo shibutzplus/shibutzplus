@@ -9,6 +9,7 @@ import Preloader from "@/components/ui/Preloader/Preloader";
 import NotPublished from "@/components/empty/NotPublished/NotPublished";
 import ContactAdminError from "@/components/auth/ContactAdminError/ContactAdminError";
 import { getDayNumberByDateString } from "@/utils/time";
+import { successToast } from "@/lib/toast";
 
 const FullScheduleViewPage: NextPage = () => {
     const {
@@ -21,9 +22,11 @@ const FullScheduleViewPage: NextPage = () => {
         hasFetched,
         settings,
         datesOptions,
+        isPublishLoading,
     } = usePortalContext();
 
     const [showError, setShowError] = React.useState(false);
+    const hasShownToast = React.useRef(false);
 
     useEffect(() => {
         // If teacher is already loaded, we are good
@@ -44,7 +47,25 @@ const FullScheduleViewPage: NextPage = () => {
         return <ContactAdminError />;
     }
 
-    if (!hasFetched || isDatesLoading) {
+    const schedule = mainPublishTable[selectedDate];
+    const colCount = schedule ? Object.keys(schedule).length : 0;
+
+    useEffect(() => {
+        if (!isDatesLoading && !isPublishLoading && window.innerWidth < 500 && colCount > 4 && !hasShownToast.current) {
+            successToast("לצפייה מיטבית, מומלץ לסובב את המכשיר לרוחב. ", 3000);
+            hasShownToast.current = true;
+        }
+    }, [isDatesLoading, isPublishLoading, colCount]);
+
+    const isShabbat = selectedDate ? getDayNumberByDateString(selectedDate) === 7 : false;
+    const isPublished = datesOptions.some((d) => d.value === selectedDate);
+    const getEmptyText = () => {
+        if (isShabbat) return "סוף שבוע נעים";
+        if (isPublished) return "אין עדכונים במערכת שפורסמה";
+        return "המערכת הבית ספרית לא פורסמה";
+    };
+
+    if (!hasFetched || isDatesLoading || isPublishLoading) {
         return (
             <div style={{ position: "relative", width: "100%", height: "100vh" }}>
                 <Preloader
@@ -59,14 +80,6 @@ const FullScheduleViewPage: NextPage = () => {
             </div>
         );
     }
-
-    const isShabbat = selectedDate ? getDayNumberByDateString(selectedDate) === 7 : false;
-    const isPublished = datesOptions.some((d) => d.value === selectedDate);
-    const getEmptyText = () => {
-        if (isShabbat) return "סוף שבוע נעים";
-        if (isPublished) return "אין עדכונים במערכת שפורסמה";
-        return "המערכת הבית ספרית לא פורסמה";
-    };
 
     return (
         <section className={styles.container}>

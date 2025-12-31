@@ -22,6 +22,7 @@ const PublishedPortalPage: NextPage = () => {
         hasFetched,
         settings,
         datesOptions,
+        isPublishLoading,
     } = usePortalContext();
 
     const [showError, setShowError] = React.useState(false);
@@ -45,7 +46,7 @@ const PublishedPortalPage: NextPage = () => {
         return <ContactAdminError />;
     }
 
-    if (!hasFetched || isDatesLoading) {
+    if (!hasFetched || isDatesLoading || isPublishLoading) {
         return (
             <div style={{ position: "relative", width: "100%", height: "100%" }}>
                 <Preloader
