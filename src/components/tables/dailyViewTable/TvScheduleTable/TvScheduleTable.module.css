@@ -29,7 +29,7 @@
     text-align: center;
     border: 1px solid #ddd;
     border-radius: 1.2vw 1.2vw 0 0;
-    font-size: var(--font-size);
+    font-size: calc(var(--font-size) - 0.1vw);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -42,7 +42,16 @@
     width: 100%;
     height: 100%;
     padding: 0 0.3vw;
-    line-height: 1.2;
+    line-height: 1.1;
+}
+
+.headerText {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .rowNumberHeader {
@@ -167,10 +176,6 @@
     .container.fewColsMobile {
         --font-size: 3.5vw;
     }
-}
-
-/* < 600px Portrait view */
-@media (max-width: 600px) {
 
     .headerRow {
         grid-template-columns: minmax(20px, 3vw) 2px repeat(var(--num-cols), 1fr);

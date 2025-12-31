@@ -125,7 +125,9 @@ const TvScheduleTable: React.FC<TvScheduleTableProps> = ({
                             }}
                         >
                             <div className={styles.headerContent}>
-                                {headerText}
+                                <span className={styles.headerText} title={headerText}>
+                                    {headerText}
+                                </span>
                             </div>
                         </div>
                     );
