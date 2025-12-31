@@ -5,29 +5,33 @@ import router from "@/routes";
 import {
     apiAuthPrefix,
     authRoutes,
-    DEFAULT_ERROR_REDIRECT,
     DEFAULT_REDIRECT,
     GUEST_REDIRECT,
     GUEST_UNAUTHORIZED,
-    publicPaths,
     ADMIN_ROUTES,
+    protectedPaths,
 } from "@/routes/protectedAuth";
 
 export async function middleware(req: NextRequest) {
     const { nextUrl: url } = req;
-    console.log("Middleware starting for path:", url.pathname);
     const isLoggedIn = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
     const isApiAuthRoute = url.pathname.startsWith(apiAuthPrefix);
-    const isPublicRoute = publicPaths.some((path) => url.pathname.startsWith(path));
     const isAuthRoute = authRoutes.includes(url.pathname);
+    const isHomePage = url.pathname === router.home.p;
+
+    // Check if the path is in the list of protected paths
+    const isProtected = protectedPaths.some(
+        (path: string) => url.pathname === path || url.pathname.startsWith(`${path}/`),
+    );
 
     if (isApiAuthRoute) {
         return NextResponse.next();
     }
 
     if (isLoggedIn) {
-        if (isAuthRoute || url.pathname === router.home.p) {
+        // If logged in and on home or auth route (sign-in), redirect to dashboard
+        if (isAuthRoute || isHomePage) {
             if (isLoggedIn.role === "admin" || (isLoggedIn as any).user?.role === "admin") {
                 url.pathname = router.schoolSelect.p;
             } else {
@@ -36,17 +40,20 @@ export async function middleware(req: NextRequest) {
             return NextResponse.redirect(url);
         }
 
+        // Guest logic
         if (
-            GUEST_UNAUTHORIZED.some((route) => url.pathname.startsWith(route)) &&
+            GUEST_UNAUTHORIZED.some((route: string) => url.pathname.startsWith(route)) &&
             (isLoggedIn.role === "guest" || (isLoggedIn as any).user?.role === "guest")
         ) {
             url.pathname = GUEST_REDIRECT;
             return NextResponse.redirect(url);
         }
 
+        // Admin logic
         if (
-            ADMIN_ROUTES.some((route) => url.pathname.startsWith(route)) &&
-            (isLoggedIn.role !== "admin" && (isLoggedIn as any).user?.role !== "admin")
+            ADMIN_ROUTES.some((route: string) => url.pathname.startsWith(route)) &&
+            isLoggedIn.role !== "admin" &&
+            (isLoggedIn as any).user?.role !== "admin"
         ) {
             url.pathname = DEFAULT_REDIRECT;
             return NextResponse.redirect(url);
@@ -55,24 +62,25 @@ export async function middleware(req: NextRequest) {
         return NextResponse.next();
     }
 
-    if (!isLoggedIn && !isPublicRoute) {
+    // Not Logged In
+    // If accessing protected route, redirect to home/signin
+    if (isProtected) {
         let callbackUrl = url.pathname;
         if (url.search) {
             callbackUrl += url.search;
         }
 
         const encodedCallbackUrl = encodeURIComponent(callbackUrl);
-        url.pathname = DEFAULT_ERROR_REDIRECT;
+        // Redirect to landing page but with callback if we want to support redirect back after login
+        // Since we are changing login to be on the landing page, we can assume callbackUrl query param is handled there or by next-auth
+
+        url.pathname = "/";
         url.search = `?callbackUrl=${encodedCallbackUrl}`;
 
         return NextResponse.redirect(url);
     }
 
-    if (url.pathname === router.home.p) {
-        url.pathname = DEFAULT_ERROR_REDIRECT;
-        return NextResponse.redirect(url);
-    }
-
+    // Allow public routes (Home, etc)
     return NextResponse.next();
 }
 

@@ -266,7 +266,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
         clearSessionStorage();
         if (isPrivate) {
             clearStorage();
-            signOut({ callbackUrl: routePath.signIn.p });
+            signOut({ callbackUrl: routePath.home.p });
         } else {
             // Read schoolId from teacher stored in localStorage
             const schoolId = getStorageTeacher()?.schoolId;

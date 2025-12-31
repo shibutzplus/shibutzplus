@@ -5,6 +5,35 @@ import Image from "next/image";
 import { motion } from "motion/react";
 import Logo from "@/components/ui/Logo/Logo";
 import styles from "./landing.module.css";
+import Loading from "@/components/loading/Loading/Loading";
+import GoogleIcon from "@/components/ui/assets/googleIcon";
+import { signIn } from "next-auth/react";
+import { useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import router from "@/routes";
+
+const GoogleSignInButton = () => {
+    const [isLoading, setIsLoading] = useState(false);
+    const searchParams = useSearchParams();
+    const callbackUrl = searchParams.get("callbackUrl") || router.dailySchedule.p;
+
+    const handleGoogleSignIn = async () => {
+        setIsLoading(true);
+        await signIn("google", { callbackUrl });
+    };
+
+    return (
+        <button
+            type="button"
+            className={styles.googleButton}
+            onClick={handleGoogleSignIn}
+            disabled={isLoading}
+        >
+            {isLoading ? <Loading /> : null}
+            <GoogleIcon /> התחברות
+        </button>
+    );
+};
 
 // Animation variants
 const fadeInUp = {
@@ -29,9 +58,9 @@ export default function LandingPage() {
             <nav className={styles.navbar}>
                 <div className={styles.navContent}>
                     <Logo size="S" />
-                    <Link href="/sign-in" className={`${styles.btn} ${styles.btnPrimary}`}>
-                        כניסה למערכת
-                    </Link>
+                    <Suspense fallback={<Loading />}>
+                        <GoogleSignInButton />
+                    </Suspense>
                 </div>
             </nav>
 
@@ -97,7 +126,7 @@ export default function LandingPage() {
                         variants={fadeInUp}
                         transition={{ duration: 0.6 }}
                     >
-                        <h2>למה להשתמש בשיבוץ+?</h2>
+                        <h2>למה להשתמש בשיבוץ+ ?</h2>
                         <motion.ul className={styles.featuresList} variants={staggerContainer}>
                             <motion.li variants={fadeInUp}>
                                 <strong>חיסכון בזמן:</strong> מציאת ממלאי מקום בתוך דקות במקום שעות
