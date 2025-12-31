@@ -93,6 +93,7 @@
   overflow: visible;
   position: relative;
   scroll-snap-align: start;
+  scroll-snap-stop: always;
   height: 100%;
 }
 
@@ -184,9 +185,11 @@
 
 /* Value Prop Section */
 .valueProp {
+  min-height: 100vh;
   padding: 50vh 0 30vh 0;
-  background-color: var(--bg-light);
   scroll-snap-align: start;
+  scroll-snap-stop: always;
+  background-color: #2563eb;
 }
 
 .grid2 {
@@ -266,10 +269,12 @@
 .testimonials {
   padding: 100px 0 0 0;
   scroll-snap-align: start;
+  scroll-snap-stop: always;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  background-color: #334155;
 }
 
 .sectionTitle {
@@ -325,12 +330,18 @@
 
 .footer {
   scroll-snap-align: start;
+  scroll-snap-stop: always;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   padding: 40px 0;
   margin-top: auto;
   border-top: 1px solid #e2e8f0;
   text-align: center;
   color: var(--text-light);
   font-size: 0.9rem;
+  background-color: var(--bg-light); 
 }
 
 /* Responsive */
