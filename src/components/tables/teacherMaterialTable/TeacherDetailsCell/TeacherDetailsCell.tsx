@@ -14,12 +14,12 @@ const TeacherDetailsCell: React.FC<TeacherDetailsCellProps> = ({ row, teacher })
     const getReplaceText = (r?: TeacherScheduleType) => {
         if (!r?.issueTeacher) return null;
         if (teacher?.id === r.issueTeacher?.id) {
-            if (r.subTeacher) return { text: r.subTeacher.name, type: "replaced" };
-            if (r.event) return { text: r.event, type: "replaced" };
+            if (r.subTeacher) return { text: r.subTeacher.name?.trim(), type: "replaced" };
+            if (r.event) return { text: r.event?.trim(), type: "replaced" };
             return null;
         } else {
             return {
-                text: r.issueTeacher.name,
+                text: r.issueTeacher.name?.trim(),
                 type: "replacing",
             };
         }
@@ -32,10 +32,10 @@ const TeacherDetailsCell: React.FC<TeacherDetailsCellProps> = ({ row, teacher })
     const displayRow = secondary?.type === "replaced" && row?.secondary ? row.secondary : row;
 
     const displayReplaceTeacher = () => {
-        const firstName = teacher?.name?.split(" ")[0] || "";
+
 
         if (isDouble && primary && secondary) {
-            const texts = [primary, secondary].sort((a, b) => {
+            const texts = [primary, secondary].sort((a, _b) => {
                 if (a.type === "replacing") return 1;
                 return -1;
             });
@@ -70,7 +70,7 @@ const TeacherDetailsCell: React.FC<TeacherDetailsCellProps> = ({ row, teacher })
                 {displayRow?.classes?.map((c) => c.name).join(", ")}
                 {displayRow?.subject?.name &&
                     !displayRow?.classes?.some((c) => c.activity) &&
-                    ` | ${displayRow.subject.name}`}
+                    `, ${displayRow.subject.name}`}
             </div>
             <div className={`${styles.subTeacher} ${isDouble ? styles.doubleRow : ""}`}>
                 {displayReplaceTeacher()}

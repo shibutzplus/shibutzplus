@@ -12,6 +12,7 @@ import { useColumnAnimation } from "./useColumnAnimation";
 import { useMainContext } from "@/context/MainContext";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import { HOURS_IN_DAY } from "@/utils/time";
+import { calculateVisibleRowsForDaily } from "@/utils/tableUtils";
 import { TeacherType } from "@/models/types/teachers";
 
 type AnimatedHeaderWrapperProps = {
@@ -129,8 +130,6 @@ const DailyTable: React.FC<DailyTableProps> = ({
         prevSortedColumnsRef.current = sortedTableColumns;
     }, [sortedTableColumns]);
 
-    const rows = Array.from({ length: hoursNum }, (_, i) => i + 1);
-
     // Use Custom Hook for Animation
     const { animatingWidths, handleColumnAnimation } = useColumnAnimation(sortedTableColumns, selectedDate);
 
@@ -159,6 +158,19 @@ const DailyTable: React.FC<DailyTableProps> = ({
         });
         return types;
     }, [schedule, sortedTableColumns]);
+
+    const rows = useMemo(() => {
+        if (isEditMode) {
+            return Array.from({ length: hoursNum }, (_, i) => i + 1);
+        }
+        return calculateVisibleRowsForDaily(
+            schedule,
+            sortedTableColumns,
+            columnTypes,
+            "private",
+            hoursNum
+        );
+    }, [isEditMode, hoursNum, schedule, sortedTableColumns, columnTypes]);
 
     const getColorClass = (type: ColumnType) => {
         switch (type) {
@@ -230,7 +242,7 @@ const DailyTable: React.FC<DailyTableProps> = ({
                     </tr>
                 </thead>
                 <tbody>
-                    {rows.map((row) => (
+                    {rows.map((row: number) => (
                         <tr key={row}>
                             <td
                                 className={styles.rowNumberCell}

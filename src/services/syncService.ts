@@ -2,7 +2,7 @@
  * Sync Service
  * Handles push/poll for updates from the sync API
  */
-import { DAILY_TEACHER_COL_DATA_CHANGED, DAILY_SCHOOL_DATA_CHANGED, LISTS_DATA_CHANGED, PUBLISH_DATA_CHANGED, MATERIAL_CHANGED } from "@/models/constant/sync";
+import { DAILY_TEACHER_COL_DATA_CHANGED, DAILY_SCHOOL_DATA_CHANGED, PUBLISH_DATA_CHANGED, MATERIAL_CHANGED } from "@/models/constant/sync";
 import { SyncChannel } from "@/models/types/sync";
 
 export type { SyncChannel };
@@ -84,8 +84,6 @@ export const getChannelsForPath = (
   pathname: string,
   teacherPortalPath: string
 ): SyncChannel[] => {
-  // On teacher screen, listen to teacher columns events only
-  // On schedule screen, listen to both teacher and events columns changes
   if (pathname.includes(teacherPortalPath)) {
     return [DAILY_TEACHER_COL_DATA_CHANGED, PUBLISH_DATA_CHANGED, MATERIAL_CHANGED];
   }

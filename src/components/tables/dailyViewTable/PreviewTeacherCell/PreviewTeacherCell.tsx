@@ -1,8 +1,9 @@
-import React, { useMemo } from "react";
+import React from "react";
 import styles from "./PreviewTeacherCell.module.css";
-import { ColumnType, ColumnTypeValues, DailyScheduleCell } from "@/models/types/dailySchedule";
+import { ColumnType, DailyScheduleCell } from "@/models/types/dailySchedule";
 import EmptyCell from "@/components/ui/table/EmptyCell/EmptyCell";
 import { AppType } from "@/models/types";
+import { getCellDisplayData } from '@/utils/dailyCellDisplay';
 
 type PreviewTeacherCellProps = {
     columnId: string;
@@ -11,35 +12,10 @@ type PreviewTeacherCellProps = {
     appType?: AppType;
 };
 
-const PreviewTeacherCell: React.FC<PreviewTeacherCellProps> = ({ cell, appType }) => {
-    const classesData = cell?.classes;
-    const subjectData = cell?.subject;
-    const subTeacherData = cell?.subTeacher;
-    const teacherText = cell?.event;
-    const isMissingTeacher = cell?.headerCol?.type === ColumnTypeValues.missingTeacher;
-    const isActivity = useMemo(() => classesData?.some((cls) => cls.activity), [classesData]);
+const PreviewTeacherCell: React.FC<PreviewTeacherCellProps> = ({ cell, type, appType = "private" }) => {
+    const { text, subTeacherName, isMissing, isEmpty, isActivity } = getCellDisplayData(cell, type, appType);
 
-    const getTextContent = () => {
-        if (!classesData?.length) return "";
-        const classNames = classesData.map((cls) => cls.name).join(", ");
-        return classNames + (!isActivity && subjectData ? " | " + subjectData.name : "");
-    };
-
-    if (appType === "public" && isActivity) {
-        return (
-            <div className={styles.cellContent}>
-                <EmptyCell />
-            </div>
-        );
-    }
-
-    // If there is no sub teacher and no event, and there is also no class/subject to show
-    // return an empty cell.
-    if (
-        !subTeacherData &&
-        !teacherText &&
-        (!isMissingTeacher || (!classesData?.length && !subjectData))
-    ) {
+    if (isEmpty) {
         return (
             <div className={styles.cellContent}>
                 <EmptyCell />
@@ -51,16 +27,13 @@ const PreviewTeacherCell: React.FC<PreviewTeacherCellProps> = ({ cell, appType }
         <div className={styles.cellContent}>
             <div className={styles.innerCellContent}>
                 <span
-                    className={`${styles.textContent} ${isActivity ? styles.activityText : ""
-                        }`}
+                    className={`${styles.textContent} ${isActivity ? styles.activityText : ""}`}
                 >
-                    {getTextContent()}
+                    {text}
                 </span>
-                {subTeacherData ? (
-                    <div className={styles.subTeacherName}>{subTeacherData.name}</div>
-                ) : teacherText ? (
-                    <div className={styles.subTeacherName}>{teacherText}</div>
-                ) : isMissingTeacher && !isActivity ? (
+                {subTeacherName ? (
+                    <div className={styles.subTeacherName}>{subTeacherName}</div>
+                ) : isMissing ? (
                     <div className={styles.missingSubTeacherName}>אין ממלא מקום</div>
                 ) : null}
             </div>

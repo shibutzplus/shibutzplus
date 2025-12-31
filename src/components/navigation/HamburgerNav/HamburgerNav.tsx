@@ -166,6 +166,11 @@ const linkGroups: ILinkGroup[] = [
                 Icon: <Icons.group size={24} />,
                 isForGuest: false,
             },
+            {
+                name: "מערכת במסך מלא",
+                p: "/full-schedule-view",
+                Icon: <Icons.tv size={24} />,
+            },
         ],
     },
     {
