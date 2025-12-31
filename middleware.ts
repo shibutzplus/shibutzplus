@@ -43,10 +43,7 @@ export async function middleware(req: NextRequest) {
         return NextResponse.redirect(url);
     }
 
-    if (url.pathname === router.home.p) {
-        url.pathname = DEFAULT_ERROR_REDIRECT;
-        return NextResponse.redirect(url);
-    }
+
 
     return NextResponse.next();
 }
