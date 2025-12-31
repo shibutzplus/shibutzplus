@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 import { motion } from "motion/react";
 import Logo from "@/components/ui/Logo/Logo";
@@ -31,6 +30,35 @@ const GoogleSignInButton = () => {
         >
             {isLoading ? <Loading /> : null}
             <GoogleIcon /> התחברות
+        </button>
+    );
+};
+
+const HeroSignInButton = () => {
+    const [isLoading, setIsLoading] = useState(false);
+    const searchParams = useSearchParams();
+    const callbackUrl = searchParams.get("callbackUrl") || router.dailySchedule.p;
+
+    const handleGoogleSignIn = async () => {
+        setIsLoading(true);
+        await signIn("google", { callbackUrl });
+    };
+
+    return (
+        <button
+            type="button"
+            className={styles.btnHero}
+            onClick={handleGoogleSignIn}
+            disabled={isLoading}
+            style={{
+                border: "none",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "10px"
+            }}
+        >
+            {isLoading ? <Loading /> : null} התחברות למנהלים
         </button>
     );
 };
@@ -91,7 +119,7 @@ export default function LandingPage() {
                                 variants={fadeInUp}
                                 transition={{ duration: 0.6, delay: 0.1 }}
                             >
-                                שיבוץ מילוי מקום בקלות וביעילות
+                                שיבוץ ממלא מקום בקלות וביעילות
                             </motion.h1>
                             <motion.p
                                 className={styles.heroTitle3}
@@ -102,9 +130,7 @@ export default function LandingPage() {
                             </motion.p>
 
                             <motion.div variants={fadeInUp} transition={{ duration: 0.6, delay: 0.2 }}>
-                                <Link href="/sign-up" className={styles.btnHero}>
-                                    התחברות למנהלים
-                                </Link>
+                                <HeroSignInButton />
                             </motion.div>
                         </motion.div>
 
@@ -142,21 +168,30 @@ export default function LandingPage() {
                             variants={fadeInUp}
                             transition={{ duration: 0.6 }}
                         >
-                            <h2>למה להשתמש בשיבוץ+ ?</h2>
+                            <h2>למה שיבוץ+ ?</h2>
                             <motion.ul className={styles.featuresList} variants={staggerContainer}>
                                 <motion.li variants={fadeInUp}>
-                                    <strong>חיסכון בזמן:</strong> מציאת ממלאי מקום בתוך דקות במקום שעות
-                                    של טלפונים.
+                                    <strong>חיסכון בזמן:</strong> איתור ממלאי מקום פנויים בעזרת המלצות חכמות.
                                 </motion.li>
                                 <motion.li variants={fadeInUp}>
-                                    <strong>דיוק מקסימלי:</strong> אלגוריתם חכם המתחשב בהתמחויות המורים
-                                    ובזמינותם.
+                                    <strong>רצף פדגוגי:</strong> המורה החסר מעדכן את החומר הלימודי למחר, והמחליף רואה אותו מיד.
                                 </motion.li>
                                 <motion.li variants={fadeInUp}>
-                                    <strong>שקיפות מלאה:</strong> עדכונים בזמן אמת למורים ולהנהלה ישירות
-                                    לנייד.
+                                    <strong>שקיפות / סנכרון:</strong> המנהל והמורים רואים את כל השינויים והעדכונים אצלם במחשב או בטלפון בזמן אמת.
+                                </motion.li>
+                                <motion.li variants={fadeInUp}>
+                                    <strong>אירועים בית ספריים:</strong> שילוב אירועים ופעילויות מיוחדות בלוח היומי, לקבלת תמונת מצב מלאה ליום המחר.
+                                </motion.li>
+                                <motion.li variants={fadeInUp}>
+                                    <strong>פשטות ונגישות:</strong> מערכת ידידותית וקלה לתפעול, זמינה מכל מחשב או סמארטפון ללא צורך בהתקנה.
+                                </motion.li>
+                                <motion.li variants={fadeInUp}>
+                                    <strong>עלות:</strong> המערכת כרגע בהרצה ולכן השימוש בה בשלב זה הוא ללא עלות.
                                 </motion.li>
                             </motion.ul>
+                            <motion.div variants={fadeInUp} style={{ marginTop: "30px" }}>
+                                <HeroSignInButton />
+                            </motion.div>
                         </motion.div>
                         <motion.div
                             className={styles.videoPlaceholder}
