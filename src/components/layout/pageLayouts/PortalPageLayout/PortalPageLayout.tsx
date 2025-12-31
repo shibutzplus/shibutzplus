@@ -44,8 +44,11 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
             // For teacher portal, we always want to refresh if we have a valid date
             // If the date became invalid, handleRefreshDates should have given us a new valid one (effectiveDate)
             if (isValidDate) await handlePortalRefresh(teacher, effectiveDate);
-        } else if (pathname.includes(router.publishedPortal.p)) {
-            // For published portal, always refresh with the effective date (which might be the new default or empty)
+        } else if (
+            pathname.includes(router.publishedPortal.p) ||
+            pathname.includes(router.fullScheduleView.p)
+        ) {
+            // For published portal or full schedule view, always refresh with the effective date
             await handlePublishedRefresh(undefined, effectiveDate, undefined);
         }
         // reset update badge after successful refresh

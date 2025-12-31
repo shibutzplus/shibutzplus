@@ -14,8 +14,6 @@
     box-sizing: border-box;
 }
 
-@media (max-width: 450px) {
-    .mobileNav button svg {
-        display: none;
-    }
+.mobileNav button svg {
+    display: none;
 }

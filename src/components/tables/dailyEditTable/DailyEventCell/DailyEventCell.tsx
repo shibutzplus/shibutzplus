@@ -110,14 +110,18 @@ const DailyEventCell: React.FC<DailyEventCellProps> = ({ columnId, cell }) => {
             className={`${styles.cellContent} ${hasScroll ? styles.hasScroll : ""}`}
             ref={cellRef}
         >
-            <InputTextArea
-                value={info}
-                onChange={(e) => setInfo(e.target.value)}
-                onBlur={(e) => handleChange(e.target.value)}
-                placeholder={isEditMode ? "מה מתוכנן?" : ""}
-                disabled={isLoading}
-                autoGrow
-            />
+            {isEditMode ? (
+                <InputTextArea
+                    value={info}
+                    onChange={(e) => setInfo(e.target.value)}
+                    onBlur={(e) => handleChange(e.target.value)}
+                    placeholder="מה מתוכנן?"
+                    disabled={isLoading}
+                    autoGrow
+                />
+            ) : (
+                <div className={styles.eventText}>{info}</div>
+            )}
         </div>
     );
 };

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Heebo } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
 import Script from "next/script";
@@ -12,6 +12,12 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
     variable: "--font-geist-mono",
     subsets: ["latin"],
+});
+
+const heebo = Heebo({
+    variable: "--font-heebo",
+    subsets: ["hebrew", "latin"],
+    weight: ["300", "400", "700", "900"],
 });
 
 export const metadata: Metadata = {
@@ -29,6 +35,10 @@ export const viewport: Viewport = {
         { media: "(prefers-color-scheme: light)", color: "#ffffff" },
         { media: "(prefers-color-scheme: dark)", color: "#000000" },
     ],
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
 };
 
 export default function RootLayout({
@@ -38,7 +48,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="he" dir="rtl">
-            <body className={`${geistSans.variable} ${geistMono.variable}`}>
+            <body className={`${geistSans.variable} ${geistMono.variable} ${heebo.variable}`}>
                 <Providers>{children}</Providers>
                 <Script
                     id="clarity-script"

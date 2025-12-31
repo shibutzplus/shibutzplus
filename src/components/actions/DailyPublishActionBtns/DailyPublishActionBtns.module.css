@@ -46,6 +46,10 @@
     height: 40px;
 }
 
+.publishedStatus svg {
+    color: #16a34a;
+}
+
 
 .clickableStatus {
     cursor: pointer;
@@ -58,7 +62,7 @@
 
 
 
-@media (max-width: 505px) {
+@media (max-width: 540px) {
     .topNavBtnContainer {
         gap: 0px;
     }
@@ -84,5 +88,16 @@
 
     .topNavBtnContainer button {
         border: none !important;
+    }
+
+    .pdfBtnWrapper button {
+        border: none !important;
+    }
+}
+
+/* <= 340px */
+@media (max-width: 340px) {
+    .topNavBtnContainer {
+        --daily-btn-width: 40px;
     }
 }
