@@ -9,7 +9,7 @@
     max-height: var(--table-daily-cell-height);
     background-color: var(--tab-color);
     border-radius: var(--border-radius-cell);
-    padding: 10px 15px;
+    padding: 10px 12px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -27,5 +27,5 @@
 }
 
 .hasScroll {
-    padding: 2px 15px;
+    padding: 2px 12px;
 }

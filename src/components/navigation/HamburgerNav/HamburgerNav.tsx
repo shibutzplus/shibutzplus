@@ -149,6 +149,11 @@ const linkGroups: ILinkGroup[] = [
                 p: routePath.publishedPortal.p,
                 Icon: <Icons.group size={24} />,
             },
+            {
+                name: "מערכת במסך מלא",
+                p: "/full-schedule-view",
+                Icon: <Icons.tv size={24} />,
+            },
         ],
     },
     {

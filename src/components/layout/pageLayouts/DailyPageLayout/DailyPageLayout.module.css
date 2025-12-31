@@ -6,8 +6,6 @@
     justify-content: center;
 }
 
-
-
 .bar1DateContainer {
     width: 250px;
     min-width: 250px;
@@ -54,8 +52,8 @@
 }
 
 
-/* <= 785px */
-@media (max-width: 785px) {
+/* <= 810px */
+@media (max-width: 810px) {
 
     .bar1DateContainer,
     .spacer {
@@ -73,9 +71,20 @@
     }
 }
 
-/* <= 885px */
-@media (max-width: 885px) {
-    .previewModeLabel {
-        display: none;
+/* <= 540px */
+@media (max-width: 540px) {
+    .topBarActionBtns {
+        border: none;
+    }
+
+    .pdfBtnWrapper button {
+        border: none !important;
+    }
+}
+
+/* <= 340px */
+@media (max-width: 340px) {
+    .pdfBtnWrapper button {
+        width: 40px !important;
     }
 }

@@ -62,6 +62,7 @@ const router: Record<string, IRoute> = {
     faqManager: { id: "faqManager", p: "/faqManager", private: true, title: "שאלות נפוצות" },
     faqTeachers: { id: "faqTeachers", p: "/faqTeachers", private: true, title: "שאלות נפוצות" },
     adminSignIn: { id: "adminSignIn", p: "/admin-sign-in", private: false, title: "כניסת מנהל" },
+    fullScheduleView: { id: "fullScheduleView", p: "/full-schedule-view", private: false, title: "מערכת במסך מלא", },
 };
 
 export default router;
