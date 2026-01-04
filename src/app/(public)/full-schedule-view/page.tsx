@@ -51,8 +51,8 @@ const FullScheduleViewPage: NextPage = () => {
     const colCount = schedule ? Object.keys(schedule).length : 0;
 
     useEffect(() => {
-        if (!isDatesLoading && !isPublishLoading && window.innerWidth < 500 && colCount > 4 && !hasShownToast.current) {
-            successToast("לצפייה מיטבית, מומלץ לסובב את המכשיר לרוחב. ", 3000);
+        if (!isDatesLoading && !isPublishLoading && window.innerWidth < 500 && colCount > 6 && !hasShownToast.current) {
+            successToast("לצפייה מיטבית, מומלץ לסובב את המכשיר לרוחב. ", 2500);
             hasShownToast.current = true;
         }
     }, [isDatesLoading, isPublishLoading, colCount]);
