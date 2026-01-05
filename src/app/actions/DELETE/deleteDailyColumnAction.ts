@@ -5,7 +5,7 @@ import { DailyScheduleType } from "@/models/types/dailySchedule";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq, isNull, inArray } from "drizzle-orm";
 
 export async function deleteDailyColumnAction(
     schoolId: string,
@@ -34,18 +34,48 @@ export async function deleteDailyColumnAction(
                     ),
                 );
 
-            return await db.query.dailySchedule.findMany({
+            const s = await db.query.dailySchedule.findMany({
                 where: and(
                     eq(schema.dailySchedule.schoolId, schoolId),
                     eq(schema.dailySchedule.date, date),
                 ),
                 with: {
                     school: true,
-                    class: true,
                     subject: true,
                     issueTeacher: true,
                     subTeacher: true,
                 },
+            });
+
+            // Handle classes array manually
+            const allClassIds = new Set<string>();
+            s.forEach((schedule: any) => {
+                if (schedule.classIds && Array.isArray(schedule.classIds)) {
+                    schedule.classIds.forEach((id: string) => allClassIds.add(id));
+                }
+            });
+
+            const classesData =
+                allClassIds.size > 0
+                    ? await db.query.classes.findMany({
+                        where: inArray(schema.classes.id, Array.from(allClassIds)),
+                    })
+                    : [];
+
+            const classesMap = new Map(classesData.map((c: any) => [c.id, c]));
+
+            return s.map((schedule: any) => {
+                let classes = [];
+                if (schedule.classIds && Array.isArray(schedule.classIds)) {
+                    classes = schedule.classIds
+                        .map((id: string) => classesMap.get(id))
+                        .filter(Boolean);
+                }
+
+                return {
+                    ...schedule,
+                    classes,
+                };
             });
         });
 
@@ -58,7 +88,7 @@ export async function deleteDailyColumnAction(
                     hour: schedule.hour,
                     columnId: schedule.columnId,
                     school: schedule.school,
-                    class: schedule.class,
+                    classes: schedule.classes,
                     subject: schedule.subject,
                     issueTeacher: schedule.issueTeacher,
                     issueTeacherType: schedule.issueTeacherType,

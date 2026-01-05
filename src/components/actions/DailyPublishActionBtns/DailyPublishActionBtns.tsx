@@ -9,8 +9,10 @@ import { useDailyTableContext } from "@/context/DailyTableContext";
 import useDeletePopup from "@/hooks/useDeletePopup";
 
 const DailyPublishActionBtns: React.FC = () => {
-    const { togglePreviewMode } = useDailyTableContext();
+    const { togglePreviewMode, mainDailyTable, selectedDate } = useDailyTableContext();
 
+    const currentSchedule = mainDailyTable[selectedDate] || {};
+    const isEmpty = Object.keys(currentSchedule).length === 0;
 
     const {
         publishDailySchedule,
@@ -38,11 +40,12 @@ const DailyPublishActionBtns: React.FC = () => {
 
     return (
         <div className={styles.topNavBtnContainer}>
-            <span title="תצוגה מקדימה">
+            <span title={isEmpty ? "אין נתונים לתצוגה מקדימה" : "תצוגה מקדימה"}>
                 <IconBtn
                     Icon={<Icons.eye size={24} />}
                     onClick={togglePreviewMode}
                     hasBorder
+                    disabled={isEmpty}
                 />
             </span>
 
@@ -62,8 +65,8 @@ const DailyPublishActionBtns: React.FC = () => {
                 <button
                     className={styles.publishBtn}
                     onClick={publishDailySchedule}
-                    disabled={publishLoading}
-                    title="פרסום המערכת היומית"
+                    disabled={publishLoading || isEmpty}
+                    title={isEmpty ? "אין נתונים לפרסום" : "פרסום המערכת היומית"}
                 >
                     {publishLoading ? (
                         <Loading size="S" />

@@ -33,6 +33,14 @@
     background-color: var(--top-color-hover);
 }
 
+.topNavBtnContainer .publishBtn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    background-color: transparent;
+    transform: none;
+    color: var(--gray-text-color);
+}
+
 .publishedStatus {
     display: flex;
     align-items: center;

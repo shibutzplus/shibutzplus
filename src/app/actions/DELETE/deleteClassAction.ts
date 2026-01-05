@@ -5,7 +5,7 @@ import { AnnualScheduleType } from "@/models/types/annualSchedule";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
-import { and, eq } from "drizzle-orm";
+import { and, eq, arrayContains } from "drizzle-orm";
 import { ClassType } from "@/models/types/classes";
 
 export async function deleteClassAction(
@@ -35,7 +35,7 @@ export async function deleteClassAction(
                 .where(
                     and(
                         eq(schema.dailySchedule.schoolId, schoolId),
-                        eq(schema.dailySchedule.classId, classId),
+                        arrayContains(schema.dailySchedule.classIds, [classId]),
                     ),
                 );
 
