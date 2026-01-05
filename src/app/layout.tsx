@@ -31,7 +31,7 @@ export const viewport: Viewport = {
     ],
     width: "device-width",
     initialScale: 1,
-    maximumScale: 4,
+    maximumScale: 3,
     userScalable: true,
 };
 
