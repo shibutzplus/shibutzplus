@@ -15,7 +15,7 @@ export default function TeacherSignIn() {
 
     if (teacherData && teacherData.schoolId && teacherData.id) {
       // If data exists, redirect to the teacher portal
-      router.push(`${routePath.teacherPortal.p}/${teacherData.schoolId}/${teacherData.id}`);
+      router.push(`${routePath.teacherMaterialPortal.p}/${teacherData.schoolId}/${teacherData.id}`);
     }
   }, [router]);
 

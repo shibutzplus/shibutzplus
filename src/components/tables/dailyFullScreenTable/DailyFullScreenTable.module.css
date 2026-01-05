@@ -65,11 +65,15 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    overflow: hidden;
+    overflow-y: auto;
+    /* Allow scrolling */
+    overflow-x: hidden;
 }
 
 .row {
     flex: 1;
+    min-height: 12vh;
+    /* Ensure rows don't shrink too much */
     display: grid;
     width: 100%;
     grid-template-columns: minmax(20px, 3vw) 2px repeat(var(--num-cols), var(--col-width));
@@ -137,6 +141,7 @@
     font-size: var(--font-size);
     color: var(--missing-teacher-text-color);
     margin-top: 0.5vh;
+    font-weight: bold;
 }
 
 .eventText {
@@ -147,34 +152,60 @@
     white-space: pre-wrap;
     word-break: break-word;
     overflow-wrap: break-word;
+    overflow-y: auto;
+    max-height: 100%;
+    width: 100%;
+    scrollbar-width: thin;
 }
 
-/* Default Variables (Desktop > 600px) */
-.container {
-    --font-size: 1.4vw;
-    --col-width: 1fr;
-}
+/* > 1000px */
+@media (min-width: 1000px) {
+    .container {
+        --font-size: 1.25vw;
+        --col-width: 1fr;
+    }
 
-/* Desktop Range 600px - 1000px overrides */
-@media (min-width: 600px) and (max-width: 1000px) {
-    .container.fewColsDesktop {
+    .container.fewCols {
+        --font-size: 1.3vw;
         --col-width: 20vw;
     }
 
-    .container.manyColsDesktop {
-        --font-size: 1.5vw;
+    .container.manyCols {
+        --font-size: 1.1vw;
     }
 }
 
-/* Mobile (< 600px) */
+/* > 600px and < 1000px */
+@media (min-width: 600px) and (max-width: 1000px) {
+    .container {
+        --font-size: 1.5vw;
+        --col-width: 1fr;
+    }
+
+    .container.fewCols {
+        --font-size: 1.6vw;
+        --col-width: 20vw;
+    }
+
+    .container.manyCols {
+        --font-size: 1.6vw;
+    }
+
+}
+
+/* < 600px */
 @media (max-width: 600px) {
     .container {
         --font-size: 2.8vw;
         --col-width: 1fr;
     }
 
-    .container.fewColsMobile {
-        --font-size: 3.5vw;
+    .container.fewCols {
+        --font-size: 3.3vw;
+    }
+
+    .container.manyCols {
+        --font-size: 2vw;
     }
 
     .headerRow {

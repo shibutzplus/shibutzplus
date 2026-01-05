@@ -37,7 +37,7 @@ export const usePollingUpdates = (
 
         // on teacher screen, listen to teacher columns events only
         // on schedule screen, listen to both teacher and events columns changes
-        const channels = getChannelsForPath(pathname, router.teacherPortal.p);
+        const channels = getChannelsForPath(pathname, router.teacherMaterialPortal.p);
 
         const checkUpdates = async () => {
             const since = lastTsRef.current;

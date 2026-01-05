@@ -117,7 +117,7 @@ export default function TeacherSignInPage() {
                         schoolId: t.schoolId,
                     };
                     setStorageTeacher(safeTeacher);
-                    route.push(`${router.teacherPortal.p}/${schoolId}/${t.id}`);
+                    route.push(`${router.teacherMaterialPortal.p}/${schoolId}/${t.id}`);
                     return;
                 }
                 errorToast(messages.auth.login.failed);

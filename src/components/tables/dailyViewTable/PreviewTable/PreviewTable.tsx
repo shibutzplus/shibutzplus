@@ -13,6 +13,9 @@ import PreviewEventHeader from "../PreviewEventHeader/PreviewEventHeader";
 import PreviewTeacherCell from "../PreviewTeacherCell/PreviewTeacherCell";
 import PreviewEventCell from "../PreviewEventCell/PreviewEventCell";
 
+//
+//  Used in History Page (private) and in School Schedule Portal (public)
+//
 type PreviewTableProps = {
     mainDailyTable: DailySchedule;
     selectedDate: string;

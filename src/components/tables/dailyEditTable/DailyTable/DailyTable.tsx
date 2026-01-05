@@ -1,19 +1,17 @@
 import React, { useMemo } from "react";
 import { motion } from "motion/react";
-import styles from "./DailyTable.module.css";
+import { useMainContext } from "@/context/MainContext";
 import EmptyTable from "@/components/empty/EmptyTable/EmptyTable";
-import { DailySchedule, ColumnType } from "@/models/types/dailySchedule";
-import { sortDailyColumnIdsByPosition } from "@/utils/sort";
 import DailyTeacherHeader from "../DailyTeacherHeader/DailyTeacherHeader";
-import DailyEventHeader from "../DailyEventHeader/DailyEventHeader";
 import DailyTeacherCell from "../DailyTeacherCell/DailyTeacherCell";
+import DailyEventHeader from "../DailyEventHeader/DailyEventHeader";
 import DailyEventCell from "../DailyEventCell/DailyEventCell";
 import { useColumnAnimation } from "./useColumnAnimation";
-import { useMainContext } from "@/context/MainContext";
-import { useDailyTableContext } from "@/context/DailyTableContext";
+import { sortDailyColumnIdsByPosition } from "@/utils/sort";
 import { HOURS_IN_DAY } from "@/utils/time";
-import { calculateVisibleRowsForDaily } from "@/utils/tableUtils";
 import { TeacherType } from "@/models/types/teachers";
+import { DailySchedule, ColumnType } from "@/models/types/dailySchedule";
+import styles from "./DailyTable.module.css";
 
 type AnimatedHeaderWrapperProps = {
     colIndex: number;
@@ -95,7 +93,7 @@ const DailyTable: React.FC<DailyTableProps> = ({
     onTeacherClick,
 }) => {
     const { settings } = useMainContext();
-    const { isEditMode } = useDailyTableContext(); // Get isEditMode
+
     const hoursNum = settings?.hoursNum || HOURS_IN_DAY;
 
     const schedule = mainDailyTable[selectedDate];
@@ -160,17 +158,8 @@ const DailyTable: React.FC<DailyTableProps> = ({
     }, [schedule, sortedTableColumns]);
 
     const rows = useMemo(() => {
-        if (isEditMode) {
-            return Array.from({ length: hoursNum }, (_, i) => i + 1);
-        }
-        return calculateVisibleRowsForDaily(
-            schedule,
-            sortedTableColumns,
-            columnTypes,
-            "private",
-            hoursNum
-        );
-    }, [isEditMode, hoursNum, schedule, sortedTableColumns, columnTypes]);
+        return Array.from({ length: hoursNum }, (_, i) => i + 1);
+    }, [hoursNum]);
 
     const getColorClass = (type: ColumnType) => {
         switch (type) {
@@ -191,7 +180,7 @@ const DailyTable: React.FC<DailyTableProps> = ({
     }
 
     return (
-        <div className={`${styles.tableContainer} ${!isEditMode ? styles.previewMode : ''}`}>
+        <div className={styles.tableContainer}>
             <table className={styles.table}>
                 <thead>
                     <tr>

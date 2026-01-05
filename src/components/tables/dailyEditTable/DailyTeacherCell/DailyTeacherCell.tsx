@@ -20,7 +20,7 @@ type DailyTeacherCellProps = {
 };
 
 const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, type }) => {
-    const { teachers, classes } = useMainContext();
+    const { teachers, classes, school } = useMainContext();
     const {
         mainDailyTable,
         mapAvailableTeachers,
@@ -28,7 +28,6 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
         updateTeacherCell,
         clearTeacherCell,
         teacherClassMap,
-        isEditMode,
     } = useDailyTableContext();
 
     const hour = cell?.hour;
@@ -44,6 +43,8 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
     );
 
     const day = getDayNameByDateString(selectedDate);
+
+    const isPublished = useMemo(() => school?.publishDates?.includes(selectedDate), [school, selectedDate]);
 
     // build classId -> activity map
     const classActivityById = useMemo(
@@ -95,7 +96,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
     const getTooltipText = () => {
         if (!classesData?.length) return "";
         const classNames = classesData.map((cls) => cls.name).join(", ");
-        return classNames + (!isActivity && subjectData ? " | " + subjectData.name : "");
+        return classNames + (!isActivity && subjectData ? ", " + subjectData.name : "");
     };
 
     const handleTeacherChange = async (methodType: "update" | "create", value: string) => {
@@ -165,48 +166,13 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
 
     const isMissingTeacher = headerData?.type === "missingTeacher";
 
-    // Preview Content Logic
-    const renderPreviewContent = () => {
-        if (
-            !subTeacherData &&
-            !teacherText &&
-            (!isMissingTeacher || (!classesData?.length && !subjectData))
-        ) {
-            return (
-                <div className={styles.cellContent}>
-                    <EmptyCell />
-                </div>
-            );
-        }
 
-        return (
-            <div className={styles.cellContent}>
-                <div className={styles.innerCellContent}>
-                    <Tooltip content={getTooltipText()} on={["click", "scroll"]}>
-                        <div
-                            className={`${styles.classAndSubject} ${isActivity ? styles.activityText : ""
-                                }`}
-                        >
-                            {getTooltipText()}
-                        </div>
-                    </Tooltip>
-                    <div className={styles.teacherSelect}>
-                        {subTeacherData ? (
-                            <div className={styles.subTeacherName}>{subTeacherData.name}</div>
-                        ) : teacherText ? (
-                            <div className={styles.subTeacherName}>{teacherText}</div>
-                        ) : isMissingTeacher && !isActivity ? (
-                            <div className={styles.missingSubTeacherName}>אין ממלא מקום</div>
-                        ) : null}
-                    </div>
-                </div>
-            </div>
-        );
-    };
+
+    const shouldHighlightMissing = isPublished && isMissingTeacher && !subTeacherData && !teacherText && !isActivity;
 
     return (
         <>
-            <div style={{ display: isEditMode ? "block" : "none", width: "100%", height: "100%" }}>
+            <div style={{ width: "100%", height: "100%" }}>
                 {(!classesData?.length && !subjectData && !subTeacherData && !teacherText) ? (
                     <div className={styles.cellContent}>
                         <EmptyCell />
@@ -236,16 +202,21 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
                                     backgroundColor="transparent"
                                     onCreate={(value: string) => handleTeacherChange("create", value)}
                                     menuWidth="220px"
-                                    color={isActivity ? "var(--disabled-text-color)" : undefined}
+                                    color={
+                                        isActivity
+                                            ? "var(--disabled-text-color)"
+                                            : shouldHighlightMissing
+                                                ? "var(--missing-teacher-text-color)"
+                                                : undefined
+                                    }
+                                    fontWeight={shouldHighlightMissing ? "bold" : undefined}
                                 />
                             </div>
                         </div>
                     </div>
                 )}
             </div>
-            <div style={{ display: !isEditMode ? "block" : "none", width: "100%", height: "100%" }}>
-                {renderPreviewContent()}
-            </div>
+
         </>
     );
 };

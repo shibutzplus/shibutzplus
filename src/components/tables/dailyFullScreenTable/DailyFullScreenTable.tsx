@@ -1,28 +1,31 @@
 "use client";
 
 import React from "react";
-import styles from "./TvScheduleTable.module.css";
+import styles from "./DailyFullScreenTable.module.css";
 import { DailySchedule, ColumnType } from "@/models/types/dailySchedule";
 import { sortDailyColumnIdsByPosition } from "@/utils/sort";
 import { getCellDisplayData } from "@/utils/dailyCellDisplay";
 import { COLOR_BY_TYPE } from "@/models/constant/daily";
 import { calculateVisibleRowsForDaily } from "@/utils/tableUtils";
 import { AppType } from "@/models/types";
+import type { TeacherType } from "@/models/types/teachers";
 
-type TvScheduleTableProps = {
+type DailyFullScreenTableProps = {
     mainDailyTable: DailySchedule;
     selectedDate: string;
     hoursNum?: number;
     EmptyTable?: React.FC<{ date?: string }>;
     appType?: AppType;
+    onTeacherClick?: (teacher: TeacherType) => void;
 };
 
-const TvScheduleTable: React.FC<TvScheduleTableProps> = ({
+const DailyFullScreenTable: React.FC<DailyFullScreenTableProps> = ({
     mainDailyTable,
     selectedDate,
-    hoursNum = 8, // fallback
+    hoursNum = 8,
     EmptyTable,
     appType = "public",
+    onTeacherClick,
 }) => {
     const schedule = mainDailyTable[selectedDate];
     const tableColumns = React.useMemo(() => schedule ? Object.keys(schedule) : [], [schedule]);
@@ -62,21 +65,45 @@ const TvScheduleTable: React.FC<TvScheduleTableProps> = ({
         );
     }, [schedule, sortedTableColumns, columnTypes, hoursNum, appType]);
 
+    const bodyRef = React.useRef<HTMLDivElement>(null);
+    const [scrollbarWidth, setScrollbarWidth] = React.useState(0);
+
+    React.useLayoutEffect(() => {
+        const measureScrollbar = () => {
+            if (bodyRef.current) {
+                const width = bodyRef.current.offsetWidth - bodyRef.current.clientWidth;
+                setScrollbarWidth(prev => prev !== width ? width : prev);
+            }
+        };
+
+        measureScrollbar();
+        window.addEventListener('resize', measureScrollbar);
+
+        // Also measure when content might change (e.g. data load)
+        const observer = new ResizeObserver(measureScrollbar);
+        if (bodyRef.current) {
+            observer.observe(bodyRef.current);
+        }
+
+        return () => {
+            window.removeEventListener('resize', measureScrollbar);
+            observer.disconnect();
+        };
+    }, []);
+
     // Handle empty state
     if ((!schedule || Object.keys(schedule).length === 0) && EmptyTable) {
         return <EmptyTable date={selectedDate} />;
     }
 
     // Determine Layout Classes based on column count
-    const isFewColsMobile = sortedTableColumns.length < 4;
-    const isFewColsDesktop = sortedTableColumns.length < 2;
-    const isManyColsDesktop = sortedTableColumns.length >= 7;
+    const isFewCols = sortedTableColumns.length < 4;
+    const isManyCols = sortedTableColumns.length > 8;
 
     const containerClasses = [
         styles.container,
-        isFewColsMobile ? styles.fewColsMobile : "",
-        isFewColsDesktop ? styles.fewColsDesktop : "",
-        isManyColsDesktop ? styles.manyColsDesktop : ""
+        isFewCols ? styles.fewCols : "",
+        isManyCols ? styles.manyCols : ""
     ].filter(Boolean).join(" ");
 
     const gridStyle = {
@@ -86,7 +113,13 @@ const TvScheduleTable: React.FC<TvScheduleTableProps> = ({
     return (
         <div className={containerClasses}>
             {/* Header Row */}
-            <div className={styles.headerRow} style={gridStyle}>
+            <div
+                className={styles.headerRow}
+                style={{
+                    ...gridStyle,
+                    paddingLeft: `${scrollbarWidth}px` // Add padding to compensate for scrollbar on the left (RTL)
+                }}
+            >
                 <div className={styles.rowNumberHeader}></div>
                 <div /> {/* 5px Spacer */}
                 {sortedTableColumns.map((colId) => {
@@ -95,13 +128,18 @@ const TvScheduleTable: React.FC<TvScheduleTableProps> = ({
 
                     // Determine header text
                     let headerText = "";
+                    let headerTeacher: TeacherType | undefined;
+
                     if (type === "event") {
                         const headerCell = Object.values(column).find(c => c?.headerCol?.headerEvent);
                         headerText = headerCell?.headerCol?.headerEvent || "אירוע";
                     } else {
                         const headerCell = Object.values(column).find(c => c?.headerCol?.headerTeacher);
                         headerText = headerCell?.headerCol?.headerTeacher?.name || "";
+                        headerTeacher = headerCell?.headerCol?.headerTeacher;
                     }
+
+                    const isClickable = !!onTeacherClick && type !== "event" && !!headerTeacher;
 
                     return (
                         <div
@@ -109,6 +147,12 @@ const TvScheduleTable: React.FC<TvScheduleTableProps> = ({
                             className={styles.headerCell}
                             style={{
                                 backgroundColor: COLOR_BY_TYPE[type] || "#ccc",
+                                cursor: isClickable ? "pointer" : "default"
+                            }}
+                            onClick={() => {
+                                if (isClickable && headerTeacher && onTeacherClick) {
+                                    onTeacherClick(headerTeacher);
+                                }
                             }}
                         >
                             <div className={styles.headerContent}>
@@ -122,7 +166,7 @@ const TvScheduleTable: React.FC<TvScheduleTableProps> = ({
             </div>
 
             {/* Body Rows Container */}
-            <div className={styles.bodyContainer}>
+            <div className={styles.bodyContainer} ref={bodyRef}>
                 {rows.map((row) => (
                     <div key={row} className={styles.row} style={gridStyle}>
                         <div className={styles.rowNumberCell}>
@@ -181,4 +225,4 @@ const TvScheduleTable: React.FC<TvScheduleTableProps> = ({
     );
 };
 
-export default TvScheduleTable;
+export default DailyFullScreenTable;

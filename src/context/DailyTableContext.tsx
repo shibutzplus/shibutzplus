@@ -1,13 +1,7 @@
 "use client";
 
 import { SelectOption } from "@/models/types";
-import {
-    ColumnType,
-    DailySchedule,
-    DailyScheduleCell,
-    DailyScheduleType,
-    TeacherHourlyScheduleItem,
-} from "@/models/types/dailySchedule";
+import { ColumnType, DailySchedule, DailyScheduleCell, DailyScheduleType, TeacherHourlyScheduleItem, } from "@/models/types/dailySchedule";
 import useDailySelectedDate from "@/hooks/daily/useDailySelectedDate";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { useMainContext } from "./MainContext";
@@ -24,13 +18,8 @@ import { deleteDailyColumnAction } from "@/app/actions/DELETE/deleteDailyColumnA
 import useDailyEventActions from "@/hooks/daily/useDailyEventActions";
 import { pushSyncUpdate } from "@/services/syncService";
 import { DAILY_TEACHER_COL_DATA_CHANGED, DAILY_SCHOOL_DATA_CHANGED } from "@/models/constant/sync";
-import {
-    mapAnnualTeachers,
-    populateDailyScheduleTable,
-    mapAnnualTeacherClasses,
-} from "@/services/daily/populate";
+import { mapAnnualTeachers, populateDailyScheduleTable, mapAnnualTeacherClasses, } from "@/services/daily/populate";
 import { createNewEmptyColumn } from "@/services/daily/setEmpty";
-import { useDailyEditMode } from "@/hooks/daily/useDailyEditMode";
 import { sortDailyColumnIdsByPosition } from "@/utils/sort";
 import { ColumnTypeValues } from "@/models/types/dailySchedule";
 
@@ -46,8 +35,7 @@ interface DailyTableContextType {
     mapAvailableTeachers: AvailableTeachers;
     teacherClassMap: TeacherClassMap;
     isLoading: boolean;
-    isEditMode: boolean;
-    isLoadingEditPage: boolean;
+    isPreviewMode: boolean;
     selectedDate: string;
     addNewEmptyColumn: (colType: ColumnType) => void;
     deleteColumn: (columnId: string) => Promise<boolean>;
@@ -95,7 +83,7 @@ interface DailyTableContextType {
     ) => Promise<boolean | undefined>;
     daysSelectOptions: () => SelectOption[];
     handleDayChange: (value: string) => void;
-    changeDailyMode: () => void;
+    togglePreviewMode: () => void;
     moveColumn: (columnId: string, direction: "left" | "right") => Promise<void>;
 }
 
@@ -139,7 +127,12 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     const [mapAvailableTeachers, setMapAvailableTeachers] = useState<AvailableTeachers>({});
     const [teacherClassMap, setTeacherClassMap] = useState<TeacherClassMap>({});
 
-    const { isEditMode, isLoadingEditPage, changeDailyMode } = useDailyEditMode();
+    // Preview Mode State
+    const [isPreviewMode, setIsPreviewMode] = useState(false);
+
+    const togglePreviewMode = () => {
+        setIsPreviewMode((prev) => !prev);
+    };
 
     // Select Date
     const { daysSelectOptions, selectedDate, handleDayChange } = useDailySelectedDate();
@@ -452,8 +445,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 selectedDate,
                 mainDailyTable,
                 isLoading,
-                isEditMode,
-                isLoadingEditPage,
+                isPreviewMode,
                 mapAvailableTeachers,
                 teacherClassMap,
                 addNewEmptyColumn,
@@ -467,7 +459,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 addEventCell,
                 updateEventCell,
                 deleteEventCell,
-                changeDailyMode,
+                togglePreviewMode,
                 moveColumn,
             }}
         >

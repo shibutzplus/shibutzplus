@@ -47,22 +47,22 @@ const router: Record<string, IRoute> = {
         private: false,
         title: "כניסה למורים",
     },
-    teacherPortal: {
-        id: "teacherPortal",
-        p: "/teacher-portal",
+    teacherMaterialPortal: {
+        id: "teacherMaterialPortal",
+        p: "/teacher-material",
         private: false,
         title: "המערכת שלי",
     },
-    publishedPortal: {
-        id: "publishedPortal",
-        p: "/publish-portal",
+    scheduleViewPortal: {
+        id: "scheduleViewPortal",
+        p: "/schedule-view",
         private: false,
         title: "מערכת יומית",
     },
     faqManager: { id: "faqManager", p: "/faqManager", private: true, title: "שאלות נפוצות" },
     faqTeachers: { id: "faqTeachers", p: "/faqTeachers", private: true, title: "שאלות נפוצות" },
     adminSignIn: { id: "adminSignIn", p: "/admin-sign-in", private: false, title: "כניסת מנהל" },
-    fullScheduleView: { id: "fullScheduleView", p: "/full-schedule-view", private: false, title: "מערכת במסך מלא", },
+    fullScheduleView: { id: "fullScheduleView", p: "/schedule-full", private: false, title: "מערכת במסך מלא", },
 };
 
 export default router;

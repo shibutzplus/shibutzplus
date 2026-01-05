@@ -77,14 +77,14 @@ export const checkForUpdates = async (
 /**
  * Gets the appropriate channels based on the current pathname
  * @param pathname - Current pathname from Next.js router
- * @param teacherPortalPath - The teacher portal path to check against
+ * @param teacherMaterialPortalPath - The teacher portal path to check against
  * @returns Array of channels to listen to
  */
 export const getChannelsForPath = (
   pathname: string,
-  teacherPortalPath: string
+  teacherMaterialPortalPath: string
 ): SyncChannel[] => {
-  if (pathname.includes(teacherPortalPath)) {
+  if (pathname.includes(teacherMaterialPortalPath)) {
     return [DAILY_TEACHER_COL_DATA_CHANGED, PUBLISH_DATA_CHANGED, MATERIAL_CHANGED];
   }
   return [DAILY_TEACHER_COL_DATA_CHANGED, DAILY_SCHOOL_DATA_CHANGED, PUBLISH_DATA_CHANGED];
