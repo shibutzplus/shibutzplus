@@ -6,8 +6,7 @@ import { AUTO_SWITCH_TIME } from "@/utils/time";
 import { usePollingUpdates } from "@/hooks/usePollingUpdates";
 import { usePathname, useRouter } from "next/navigation";
 import router from "@/routes";
-import styles from "./PortalFullScreenLayout.module.css";
-import Icons from "@/style/icons";
+import FullScreenContainer from "./FullScreenContainer";
 
 type PortalFullScreenLayoutProps = {
     children: React.ReactNode;
@@ -15,7 +14,7 @@ type PortalFullScreenLayoutProps = {
 
 export default function PortalFullScreenLayout({ children }: PortalFullScreenLayoutProps) {
     const pathname = usePathname();
-    const nav = useRouter(); // Renamed to avoid conflict if any, but 'router' import is the routes object
+    const nav = useRouter();
     const {
         teacher,
         handleRefreshDates,
@@ -33,7 +32,7 @@ export default function PortalFullScreenLayout({ children }: PortalFullScreenLay
 
         // Ensure we are in the correct route logic (similar to PortalPageLayout)
         if (
-            pathname.includes(router.publishedPortal.p) ||
+            pathname.includes(router.scheduleViewPortal.p) ||
             pathname.includes(router.fullScheduleView.p)
         ) {
             // For published portal or full schedule view, always refresh with the effective date
@@ -76,23 +75,10 @@ export default function PortalFullScreenLayout({ children }: PortalFullScreenLay
         return cleanup;
     }, [teacher]);
 
-    // Render children directly without PageLayout or Header
+    // Render children wrapped in FullScreenContainer
     return (
-        <div style={{
-            width: "100%",
-            height: "100dvh",
-            overflow: "hidden",
-            position: "relative"
-        }}>
-            <button
-                className={styles.fab}
-                onClick={() => nav.push(router.publishedPortal.p)}
-                title="חזרה למערכת בית ספרית"
-                aria-label="Exit Full Screen"
-            >
-                <Icons.close size={24} />
-            </button>
+        <FullScreenContainer onExit={() => nav.push(router.scheduleViewPortal.p)}>
             {children}
-        </div>
+        </FullScreenContainer>
     );
 }

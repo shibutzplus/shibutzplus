@@ -40,12 +40,12 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
         const freshOptions = res.options || [];
         const isValidDate = freshOptions.some(d => d.value === effectiveDate);
 
-        if (pathname.includes(router.teacherPortal.p)) {
+        if (pathname.includes(router.teacherMaterialPortal.p)) {
             // For teacher portal, we always want to refresh if we have a valid date
             // If the date became invalid, handleRefreshDates should have given us a new valid one (effectiveDate)
             if (isValidDate) await handlePortalRefresh(teacher, effectiveDate);
         } else if (
-            pathname.includes(router.publishedPortal.p) ||
+            pathname.includes(router.scheduleViewPortal.p) ||
             pathname.includes(router.fullScheduleView.p)
         ) {
             // For published portal or full schedule view, always refresh with the effective date
@@ -92,28 +92,37 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
 
     // -- Title Logic -- //
     const getTitle = () => {
+        // 1. Calculate "When"
+        let when = "";
         const today = getTodayDateString();
         const tomorrow = getTomorrowDateString();
-        const isToday = selectedDate === today;
-        const isTomorrow = selectedDate === tomorrow;
 
-        let suffix = "";
-        if (isToday) suffix = "להיום";
-        else if (isTomorrow) suffix = "מחר";
+        if (selectedDate === today) when = "להיום";
+        else if (selectedDate === tomorrow) when = "מחר";
         else {
-            // Fallback: DD/MM
             const [, m, d] = selectedDate.split("-");
-            // selectedDate is YYYY-MM-DD
-            if (d && m) suffix = `${d}/${m}`;
+            if (d && m) when = `${d}/${m}`;
         }
 
-        const isTeacherPortal = pathname.includes(router.teacherPortal.p);
-        const baseTitle = isTeacherPortal ? "המערכת שלך" : "שינויים";
+        // 2. Calculate "What" based on context
+        const isTeacherPortal = pathname.includes(router.teacherMaterialPortal.p);
+        const isRegular = teacher?.role === TeacherRoleValues.REGULAR;
+
+        let title = `שינויים ${when}`; // Default for public/other
+
+        if (isTeacherPortal) {
+            if (isRegular) {
+                const connector = when.startsWith("ל") ? " " : " ל";
+                title = `הנחיות${connector}${when}`;
+            } else {    // Substitute
+                title = `המערכת שלך ${when}`;
+            }
+        }
 
         return (
             <div className={styles.titleContainer}>
                 <div>{greetingTeacher(teacher)}</div>
-                <div className={styles.subTitle}>{`${baseTitle} ${suffix}`}</div>
+                <div className={styles.subTitle}>{title}</div>
             </div>
         );
     };

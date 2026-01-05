@@ -5,10 +5,12 @@ import styles from "./DailyPublishActionBtns.module.css";
 import usePublish from "@/hooks/usePublish";
 import Loading from "@/components/loading/Loading/Loading";
 import { useDailyTableContext } from "@/context/DailyTableContext";
+
 import useDeletePopup from "@/hooks/useDeletePopup";
 
 const DailyPublishActionBtns: React.FC = () => {
-    const { isEditMode, isLoadingEditPage, changeDailyMode } = useDailyTableContext();
+    const { togglePreviewMode } = useDailyTableContext();
+
 
     const {
         publishDailySchedule,
@@ -36,14 +38,14 @@ const DailyPublishActionBtns: React.FC = () => {
 
     return (
         <div className={styles.topNavBtnContainer}>
-            <span title={isEditMode ? "תצוגה מקדימה" : "חזרה לשיבוץ"}>
+            <span title="תצוגה מקדימה">
                 <IconBtn
-                    Icon={isEditMode ? <Icons.eye size={24} /> : <Icons.edit size={20} />}
-                    onClick={changeDailyMode}
-                    disabled={isLoadingEditPage}
+                    Icon={<Icons.eye size={24} />}
+                    onClick={togglePreviewMode}
                     hasBorder
                 />
             </span>
+
 
             {isDisabled ? (
                 <div

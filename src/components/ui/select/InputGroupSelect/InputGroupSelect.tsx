@@ -31,6 +31,7 @@ export interface InputGroupSelectProps {
     onCreate?: (value: string) => Promise<void>;
     menuWidth?: string;
     color?: string;
+    fontWeight?: string | number;
 }
 
 const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
@@ -50,6 +51,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     onCreate,
     menuWidth,
     color,
+    fontWeight,
 }) => {
     const [inputValue, setInputValue] = useState("");
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -102,7 +104,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     // removed unused selectRef
     const { selectRef: mobileScrollRef, handleMenuOpen } = useMobileSelectScroll();
 
-    const baseStyles = customStyles(error || "", hasBorder, true, backgroundColor, color);
+    const baseStyles = customStyles(error || "", hasBorder, true, backgroundColor, color, color);
     const stylesOverride: StylesConfig<SelectOption, false, GroupOption> = {
         ...(baseStyles as StylesConfig<SelectOption, false, GroupOption>),
         control: (prov: any, state: any) => {
@@ -139,6 +141,13 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
             fontSize: "15px",
             backgroundColor: TabColor,
         }),
+        placeholder: (prov: any) => {
+            const b = typeof (baseStyles as any).placeholder === "function" ? (baseStyles as any).placeholder(prov) : prov;
+            return {
+                ...b,
+                fontWeight: fontWeight || b.fontWeight,
+            };
+        },
         singleValue: (prov: any) => ({
             ...prov,
             fontWeight: "bold",

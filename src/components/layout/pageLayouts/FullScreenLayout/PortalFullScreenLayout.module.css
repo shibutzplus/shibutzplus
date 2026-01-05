@@ -1,9 +1,9 @@
 .fab {
     position: fixed;
-    top: 0.2rem;
-    right: 0.2rem;
-    width: 2.4rem;
-    height: 2.4rem;
+    top: 0.8vw;
+    right: 0.2vw;
+    width: 2.6vw;
+    height: 2.6vw;
     border-radius: 50%;
     background-color: var(--button-background-color);
     color: white;
@@ -26,4 +26,27 @@
 
 .fab:active {
     transform: scale(0.95);
+}
+
+@media (max-width: 1000px) {
+    .fab {
+        width: 5vw;
+        height: 5vw;
+    }
+}
+
+@media (max-width: 600px) {
+    .fab {
+        top: 3vw;
+        width: 7vw;
+        height: 7vw;
+    }
+}
+
+@media (max-width: 400px) {
+    .fab {
+        top: 3vw;
+        width: 9vw;
+        height: 9vw;
+    }
 }

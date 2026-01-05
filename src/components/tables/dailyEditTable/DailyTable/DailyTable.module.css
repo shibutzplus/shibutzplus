@@ -215,19 +215,3 @@
     background-color: #eee;
     margin: 4px 0;
 }
-
-
-.staticHeaderText {
-    font-size: 18px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-weight: 600;
-    padding: 0 15px 0 5px;
-    color: white;
-    text-align: right;
-}
-
-.previewMode {
-    --table-daily-col-width-edit: var(--table-daily-col-width-preview);
-}

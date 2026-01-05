@@ -3,7 +3,6 @@ import { ColumnType, DailyScheduleCell } from "@/models/types/dailySchedule";
 import styles from "./PreviewTeacherHeader.module.css";
 import { COLOR_BY_TYPE } from "@/models/constant/daily";
 import { useStickyHeader } from "@/hooks/scroll/useStickyHeader";
-import Icons from "@/style/icons";
 import { AppType } from "@/models/types";
 import { TeacherType } from "@/models/types/teachers";
 import { useTeacherTableContext } from "@/context/TeacherTableContext";
@@ -51,15 +50,8 @@ const PreviewTeacherHeader: React.FC<PreviewTeacherHeaderProps> = ({
                 className={`${styles.columnHeader} ${isClicked ? styles.clicked : ""}`}
                 style={{ backgroundColor: COLOR_BY_TYPE[type] }}
                 onClick={handleClick}
-                title={
-                    appType === "private"
-                        ? "לחצו כאן כדי לצפות או להזין את חומרי הלימוד"
-                        : undefined
-                }
             >
-                {appType === "private" && (
-                    <Icons.eye className={styles.eyeIcon} size={22} />
-                )}
+
                 <div className={styles.headerText}>{selectedTeacherData?.name || ""}</div>
             </div>
         </div>

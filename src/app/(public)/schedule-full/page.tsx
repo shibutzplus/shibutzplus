@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import { NextPage } from "next";
 import styles from "./FullScheduleView.module.css";
-import TvScheduleTable from "@/components/tables/dailyViewTable/TvScheduleTable/TvScheduleTable";
+import DailyFullScreenTable from "@/components/tables/dailyFullScreenTable/DailyFullScreenTable";
 import { usePortalContext } from "@/context/PortalContext";
 import Preloader from "@/components/ui/Preloader/Preloader";
 import NotPublished from "@/components/empty/NotPublished/NotPublished";
@@ -41,11 +41,8 @@ const FullScheduleViewPage: NextPage = () => {
 
     useEffect(() => {
         fetchPublishScheduleData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedDate, teacher?.id, schoolId]);
-
-    if (showError && !teacher) {
-        return <ContactAdminError />;
-    }
 
     const schedule = mainPublishTable[selectedDate];
     const colCount = schedule ? Object.keys(schedule).length : 0;
@@ -56,6 +53,10 @@ const FullScheduleViewPage: NextPage = () => {
             hasShownToast.current = true;
         }
     }, [isDatesLoading, isPublishLoading, colCount]);
+
+    if (showError && !teacher) {
+        return <ContactAdminError />;
+    }
 
     const isShabbat = selectedDate ? getDayNumberByDateString(selectedDate) === 7 : false;
     const isPublished = datesOptions.some((d) => d.value === selectedDate);
@@ -83,7 +84,7 @@ const FullScheduleViewPage: NextPage = () => {
 
     return (
         <section className={styles.container}>
-            <TvScheduleTable
+            <DailyFullScreenTable
                 mainDailyTable={mainPublishTable}
                 selectedDate={selectedDate}
                 EmptyTable={(props) => (

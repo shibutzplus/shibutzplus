@@ -33,7 +33,7 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
     isLast,
 }) => {
     const { teachers } = useMainContext();
-    const { deleteColumn, mainDailyTable, selectedDate, moveColumn, populateTeacherColumn, mapAvailableTeachers, isEditMode } =
+    const { deleteColumn, mainDailyTable, selectedDate, moveColumn, populateTeacherColumn, mapAvailableTeachers } =
         useDailyTableContext();
     const { fetchTeacherScheduleDate } = useTeacherTableContext(); // Added context
     const [isLoading, setIsLoading] = useState(false);
@@ -116,33 +116,31 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
 
     return (
         <div className={styles.headerContentWrapper}>
-            {isEditMode && (
-                <DailyColumnMenu
-                    onDelete={handleDeleteClick}
-                    onMoveRight={() => moveColumn && moveColumn(columnId, "right")}
-                    onMoveLeft={() => moveColumn && moveColumn(columnId, "left")}
-                    isFirst={isFirst}
-                    isLast={isLast}
-                >
-                    {onTeacherClick && selectedTeacherData
-                        ? ({ closeMenu }) => (
-                            <div
-                                onClick={() => {
-                                    handlePreviewClick();
-                                    closeMenu();
-                                }}
-                                className={styles.menuItem}
-                            >
-                                <Icons.eye size={14} />
-                                <span>חומר הלימוד</span>
-                            </div>
-                        )
-                        : null}
-                </DailyColumnMenu>
-            )}
+            <DailyColumnMenu
+                onDelete={handleDeleteClick}
+                onMoveRight={() => moveColumn && moveColumn(columnId, "right")}
+                onMoveLeft={() => moveColumn && moveColumn(columnId, "left")}
+                isFirst={isFirst}
+                isLast={isLast}
+            >
+                {onTeacherClick && selectedTeacherData
+                    ? ({ closeMenu }) => (
+                        <div
+                            onClick={() => {
+                                handlePreviewClick();
+                                closeMenu();
+                            }}
+                            className={styles.menuItem}
+                        >
+                            <Icons.eye size={14} />
+                            <span>חומר הלימוד</span>
+                        </div>
+                    )
+                    : null}
+            </DailyColumnMenu>
 
             <div className={styles.inputSelectWrapper}>
-                <div style={{ display: isEditMode ? "block" : "none", width: "100%" }}>
+                <div style={{ width: "100%" }}>
                     <DynamicInputSelect
                         options={filteredTeacherOptions}
                         value={selectedTeacherData?.id || ""}
@@ -157,17 +155,6 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
                         fontSize="18px"
                         caretColor="#cccccc"
                     />
-                </div>
-                <div
-                    className={styles.staticHeaderText}
-                    title={selectedTeacherData?.name}
-                    style={{
-                        display: isEditMode ? "none" : "flex",
-                        cursor: selectedTeacherData ? "pointer" : "default"
-                    }}
-                    onClick={handlePreviewClick}
-                >
-                    {selectedTeacherData?.name || ""}
                 </div>
             </div>
         </div>

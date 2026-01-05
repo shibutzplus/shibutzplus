@@ -11,11 +11,11 @@ const PortalNav: React.FC = () => {
     const { teacher } = usePortalContext();
 
     const pushToTeacherPortalWrite = () => {
-        if (teacher) route.push(`${router.teacherPortal.p}/${teacher.schoolId}/${teacher.id}`);
+        if (teacher) route.push(`${router.teacherMaterialPortal.p}/${teacher.schoolId}/${teacher.id}`);
     };
 
     const pushToDailySchedulePortal = () => {
-        route.push(`${router.publishedPortal.p}`);
+        route.push(`${router.scheduleViewPortal.p}`);
     };
 
     return (
@@ -25,9 +25,9 @@ const PortalNav: React.FC = () => {
                 aria-label="המערכת שלי"
                 title="המערכת שלי"
                 onClick={pushToTeacherPortalWrite}
-                className={`${styles.topBtn} ${pathname.includes(router.teacherPortal.p) ? styles.active : ""}`}
+                className={`${styles.topBtn} ${pathname.includes(router.teacherMaterialPortal.p) ? styles.active : ""}`}
             >
-                {pathname.includes(router.teacherPortal.p) ? (
+                {pathname.includes(router.teacherMaterialPortal.p) ? (
                     <Icons.teacherSolid size={22} style={{ marginInlineEnd: "4px" }} />
                 ) : (
                     <Icons.teacher size={18} style={{ marginInlineEnd: "4px" }} />
@@ -40,9 +40,9 @@ const PortalNav: React.FC = () => {
                 aria-label="מערכת בית ספרית"
                 title="מערכת בית ספרית"
                 onClick={pushToDailySchedulePortal}
-                className={`${styles.topBtn} ${pathname.includes(router.publishedPortal.p) ? styles.active : ""}`}
+                className={`${styles.topBtn} ${pathname.includes(router.scheduleViewPortal.p) ? styles.active : ""}`}
             >
-                {pathname.includes(router.publishedPortal.p) ? (
+                {pathname.includes(router.scheduleViewPortal.p) ? (
                     <Icons.groupSolid size={22} style={{ marginInlineEnd: "4px" }} />
                 ) : (
                     <Icons.group size={22} style={{ marginInlineEnd: "4px" }} />
@@ -54,10 +54,10 @@ const PortalNav: React.FC = () => {
                 type="button"
                 aria-label="מערכת במסך מלא"
                 title="מערכת במסך מלא"
-                onClick={() => route.push("/full-schedule-view")}
-                className={`${styles.topBtn} ${pathname.includes("/full-schedule-view") ? styles.active : ""}`}
+                onClick={() => route.push(router.fullScheduleView.p)}
+                className={`${styles.topBtn} ${pathname.includes(router.fullScheduleView.p) ? styles.active : ""}`}
             >
-                {pathname.includes("/full-schedule-view") ? (
+                {pathname.includes(router.fullScheduleView.p) ? (
                     <Icons.tvSolid size={22} style={{ marginInlineEnd: "4px" }} />
                 ) : (
                     <Icons.tv size={22} style={{ marginInlineEnd: "4px" }} />

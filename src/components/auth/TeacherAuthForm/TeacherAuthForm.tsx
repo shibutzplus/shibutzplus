@@ -74,7 +74,7 @@ const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({
             setStorageTeacher(safeTeacher);
         }
 
-        route.push(`${router.teacherPortal.p}/${schoolId}/${selectedTeacher}`);
+        route.push(`${router.teacherMaterialPortal.p}/${schoolId}/${selectedTeacher}`);
     };
 
     return (
