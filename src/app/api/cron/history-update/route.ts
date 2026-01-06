@@ -93,7 +93,7 @@ export async function GET(request: Request) {
                 columnPosition: schedule.position,
                 columnType: columnType,
                 originalTeacher: getTeacherName(schedule.issueTeacherId),
-                classes: classNames,
+                classes: classNames ? classNames.join(', ') : null,
                 subject: getSubjectName(schedule.subjectId),
                 subTeacher: getTeacherName(schedule.subTeacherId),
                 instructions: schedule.instructions,

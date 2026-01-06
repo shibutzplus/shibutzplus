@@ -11,7 +11,7 @@ export const history = pgTable('history', {
     columnPosition: integer('column_position').notNull(),   // e.g. 1000, 2000, 3000
     columnType: integer('column_type').notNull(),           // 0 - missingTeacher, 1 - existingTeacher, 2 - event
     originalTeacher: text('original_teacher'),
-    classes: text('classes').array(),
+    classes: text('classes'),
     subject: text('subject'),
     subTeacher: text('sub_teacher'),
     instructions: text('instructions'),
