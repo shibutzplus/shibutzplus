@@ -85,3 +85,7 @@
     content: none;
   }
 }
+
+.activityText {
+  color: var(--disabled-text-color);
+}

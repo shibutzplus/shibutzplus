@@ -10,12 +10,12 @@ export const getInstructionPlaceholder = (row?: TeacherScheduleType, teacher?: T
 
     // If I am the main teacher
     if (isIssueTeacher) {
-        return row.subTeacher ? "הזינו כאן את חומר הלימוד" : "";
+        return row.subTeacher ? "הזינו כאן הנחיות למורה המחליף" : "";
     }
 
     // If I am the substitute teacher
     if (isSubTeacher) {
-        return "לא הוזן חומר לימוד לשיעור זה";
+        return "לא הוזנו הנחיות לשיעור זה מהמורה";
     }
 
     // Default for all others
