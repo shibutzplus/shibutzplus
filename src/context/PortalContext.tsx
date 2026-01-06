@@ -10,7 +10,7 @@ import { SchoolSettingsType } from "@/models/types/settings";
 import { chooseDefaultDate } from "@/utils/time";
 import { selectSelectedDate } from "@/services/portalTeacherService";
 import { getStorageTeacher } from "@/lib/localStorage";
-import { DailySchedule } from "@/models/types/dailySchedule";
+import { DailySchedule, GetDailyScheduleResponse } from "@/models/types/dailySchedule";
 import { usePublished } from "@/hooks/portal/usePublished";
 
 interface PortalContextType {
@@ -31,7 +31,7 @@ interface PortalContextType {
         overrideSchoolId?: string,
         overrideDate?: string,
         overrideTeacher?: TeacherType
-    ) => Promise<boolean>;
+    ) => Promise<GetDailyScheduleResponse | null>;
     handlePublishedRefresh: (
         overrideSchoolId?: string,
         overrideDate?: string,
