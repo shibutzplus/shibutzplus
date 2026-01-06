@@ -4,8 +4,9 @@ import * as dotenv from 'dotenv';
 // Load environment variables from .env.local
 dotenv.config({ path: '.env.local' });
 
-// Get the DATABASE_URL from environment variables
-const connectionString = process.env.DATABASE_URL || 'postgresql://user:password@localhost:5432/shibutzplus';
+const connectionString = (process.env.NODE_ENV === 'production' 
+  ? process.env.DATABASE_URL 
+  : (process.env.DATABASE_URL_STAGING || process.env.DATABASE_URL)) || 'postgresql://user:password@localhost:5432/shibutzplus';
 
 export default {
   schema: './src/db/schema/index.ts',
