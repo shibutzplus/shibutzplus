@@ -9,7 +9,9 @@ const messages = {
         paramRequired: "פרמטר נדרש",
         login: {
             failed: "ההתחברות נכשלה",
-            success: "ההתחברות הצליחה"
+            success: "ההתחברות הצליחה",
+            invalidCredentials: "אימייל או סיסמה שגויים",
+            adminOnly: "כניסה זו מיועדת למנהלי מערכת בלבד"
         },
         register: {
             failed: "ההרשמה נכשלה",
