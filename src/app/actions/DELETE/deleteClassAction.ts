@@ -5,7 +5,7 @@ import { AnnualScheduleType } from "@/models/types/annualSchedule";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
-import { and, eq, arrayContains } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { ClassType } from "@/models/types/classes";
 
 export async function deleteClassAction(
@@ -31,13 +31,11 @@ export async function deleteClassAction(
 
             // Delete all daily schedule records for this class
             await db
-                .delete(schema.dailySchedule)
-                .where(
-                    and(
-                        eq(schema.dailySchedule.schoolId, schoolId),
-                        arrayContains(schema.dailySchedule.classIds, [classId]),
-                    ),
-                );
+                .update(schema.dailySchedule)
+                .set({
+                    classIds: sql`array_remove(${schema.dailySchedule.classIds}, ${classId})`,
+                })
+                .where(eq(schema.dailySchedule.schoolId, schoolId));
 
             const schedules = await db.query.annualSchedule.findMany({
                 where: eq(schema.annualSchedule.schoolId, schoolId),

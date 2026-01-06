@@ -20,9 +20,10 @@ export async function deleteDailyColumnAction(
 
         const schedules = await executeQuery(async () => {
             // Handle legacy data where columnId might be NULL (mapped to "undefined" string in state)
-            const columnCondition = (columnId === "undefined" || columnId === "null")
-                ? isNull(schema.dailySchedule.columnId)
-                : eq(schema.dailySchedule.columnId, columnId);
+            const columnCondition =
+                columnId === "undefined" || columnId === "null"
+                    ? isNull(schema.dailySchedule.columnId)
+                    : eq(schema.dailySchedule.columnId, columnId);
 
             await db
                 .delete(schema.dailySchedule)
@@ -47,36 +48,21 @@ export async function deleteDailyColumnAction(
                 },
             });
 
-            // Handle classes array manually
-            const allClassIds = new Set<string>();
-            s.forEach((schedule: any) => {
-                if (schedule.classIds && Array.isArray(schedule.classIds)) {
-                    schedule.classIds.forEach((id: string) => allClassIds.add(id));
-                }
-            });
+            const uniqueClassIds = [...new Set(s.flatMap((item) => item.classIds || []))];
 
             const classesData =
-                allClassIds.size > 0
+                uniqueClassIds.length > 0
                     ? await db.query.classes.findMany({
-                        where: inArray(schema.classes.id, Array.from(allClassIds)),
-                    })
+                          where: inArray(schema.classes.id, uniqueClassIds),
+                      })
                     : [];
 
-            const classesMap = new Map(classesData.map((c: any) => [c.id, c]));
+            const classesMap = new Map(classesData.map((c) => [c.id, c]));
 
-            return s.map((schedule: any) => {
-                let classes = [];
-                if (schedule.classIds && Array.isArray(schedule.classIds)) {
-                    classes = schedule.classIds
-                        .map((id: string) => classesMap.get(id))
-                        .filter(Boolean);
-                }
-
-                return {
-                    ...schedule,
-                    classes,
-                };
-            });
+            return s.map((schedule) => ({
+                ...schedule,
+                classes: (schedule.classIds || []).map((id) => classesMap.get(id)).filter(Boolean),
+            }));
         });
 
         const dailySchedules = schedules.map(
