@@ -3,7 +3,8 @@ import { COOKIES_EXPIRE_TIME } from "@/utils/time";
 
 // Cookies keys
 export const COOKIES_KEYS = {
-    FFU: "shibutz_ffu", 
+    FFU: "shibutz_ffu",
+    ROTATE_DEVICE_TOAST: "shibutz_rotate_device",
 };
 
 export const getCookie = <T = string>(key: string): T | null => {

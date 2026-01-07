@@ -10,7 +10,7 @@ import DynamicInputGroupSelect from "@/components/ui/select/InputGroupSelect/Dyn
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { sortDailyTeachers } from "@/utils/sort";
-import { activityOptionsMapValToLabel } from "@/resources/dailySelectActivities";
+
 import EmptyCell from "@/components/ui/table/EmptyCell/EmptyCell";
 
 type DailyTeacherCellProps = {
@@ -148,7 +148,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
                 } else if (isEventOption) {
                     data = { event: value.trim() };
                 } else if (isActivityOption) {
-                    data = { event: activityOptionsMapValToLabel(value) };
+                    data = { event: value };
                 }
                 const response = await updateTeacherCell(
                     selectedDate,
