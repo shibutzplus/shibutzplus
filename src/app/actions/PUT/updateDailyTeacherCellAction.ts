@@ -16,7 +16,6 @@ export async function updateDailyTeacherCellAction(
     try {
         const {
             school,
-            class: classData,
             classes,
             subject,
             issueTeacher,
@@ -35,11 +34,10 @@ export async function updateDailyTeacherCellAction(
             hour: scheduleData.hour,
             columnId: scheduleData.columnId,
             schoolId: school.id,
-            classId: classData?.id,
             classesIds: classes?.map((c) => c.id),
             subjectId: subject?.id,
         });
-        if (authError || !classData || !subject) {
+        if (authError || !subject) {
             return authError as ActionResponse;
         }
 
@@ -50,7 +48,6 @@ export async function updateDailyTeacherCellAction(
             hour: scheduleData.hour,
             columnId: scheduleData.columnId,
             schoolId: school.id,
-            classId: classData.id,
             classIds: classes?.map((c) => c.id),
             subjectId: subject.id,
             issueTeacherId: issueTeacher?.id,
@@ -94,7 +91,6 @@ export async function updateDailyTeacherCellAction(
                 columnId: updateSchedule.columnId,
                 createdAt: updateSchedule.createdAt,
                 updatedAt: updateSchedule.updatedAt,
-                class: classData,
                 classes,
                 school,
                 subject,

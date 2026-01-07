@@ -5,13 +5,13 @@ import { useMainContext } from "@/context/MainContext";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import { ActivityValues, ColumnType, DailyScheduleCell } from "@/models/types/dailySchedule";
 import { EmptyValue } from "@/models/constant/daily";
+import { getCellDisplayData } from "@/utils/dailyCellDisplay";
 import DynamicInputGroupSelect from "@/components/ui/select/InputGroupSelect/DynamicInputGroupSelect";
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { sortDailyTeachers } from "@/utils/sort";
 import { activityOptionsMapValToLabel } from "@/resources/dailySelectActivities";
 import EmptyCell from "@/components/ui/table/EmptyCell/EmptyCell";
-import Tooltip from "@/components/ui/Tooltip/Tooltip";
 
 type DailyTeacherCellProps = {
     columnId: string;
@@ -87,17 +87,21 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
         ],
     );
 
+    const { text: displayText, isActivity } = useMemo(() => {
+        return getCellDisplayData(
+            {
+                ...cell,
+                classes: classesData,
+                subject: subjectData,
+            } as any, // casting as the types might slightly differ in strictness but structure is same
+            headerData?.type || "event"
+        );
+    }, [cell, classesData, subjectData, headerData]);
+
     const checkIfActivity = (value: string) =>
         Object.values(ActivityValues).some((option) => option === value);
 
-    const isActivity = useMemo(() => classesData?.some((cls) => cls.activity), [classesData]);
-
-    // TODO: move to utils
-    const getTooltipText = () => {
-        if (!classesData?.length) return "";
-        const classNames = classesData.map((cls) => cls.name).join(", ");
-        return classNames + (!isActivity && subjectData ? ", " + subjectData.name : "");
-    };
+    const getDisplayText = () => displayText;
 
     const handleTeacherChange = async (methodType: "update" | "create", value: string) => {
         if (!hour || !columnId || !selectedDate || !headerData) return;
@@ -180,14 +184,12 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
                 ) : (
                     <div className={styles.cellContent}>
                         <div className={styles.innerCellContent}>
-                            <Tooltip content={getTooltipText()} on={["click", "scroll"]}>
-                                <div
-                                    className={`${styles.classAndSubject} ${isActivity ? styles.activityText : ""
-                                        }`}
-                                >
-                                    {getTooltipText()}
-                                </div>
-                            </Tooltip>
+                            <div
+                                className={`${styles.classAndSubject} ${isActivity ? styles.activityText : ""
+                                    }`}
+                            >
+                                {getDisplayText()}
+                            </div>
                             <div className={styles.teacherSelect}>
                                 <DynamicInputGroupSelect
                                     options={sortedTeacherOptions}

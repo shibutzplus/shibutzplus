@@ -99,10 +99,6 @@ export const dailyScheduleRelations = relations(dailySchedule, ({ one }) => ({
     fields: [dailySchedule.schoolId],
     references: [schools.id],
   }),
-  class: one(classes, {
-    fields: [dailySchedule.classId],
-    references: [classes.id],
-  }),
   subject: one(subjects, {
     fields: [dailySchedule.subjectId],
     references: [subjects.id],

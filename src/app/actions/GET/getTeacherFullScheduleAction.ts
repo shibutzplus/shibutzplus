@@ -27,7 +27,6 @@ const getTeacherFullScheduleAction = async (
                     ),
                 ),
                 with: {
-                    class: true,
                     subject: true,
                     issueTeacher: true,
                     subTeacher: true,
@@ -36,7 +35,7 @@ const getTeacherFullScheduleAction = async (
                 orderBy: schema.dailySchedule.hour,
             });
 
-            // Handle classes array manually since it's an array of IDs
+            // Fetch classes array manually since it's an array of IDs
             const allClassIds = new Set<string>();
             dailySchedules.forEach((schedule: any) => {
                 if (schedule.classIds && Array.isArray(schedule.classIds)) {
@@ -63,7 +62,7 @@ const getTeacherFullScheduleAction = async (
                         .map((id: string) => classesMap.get(id))
                         .filter(Boolean);
                 }
-                return schedule.class ? [schedule.class] : [];
+                return [];
             };
 
             const results: DailyScheduleType[] = dailySchedules
@@ -76,7 +75,6 @@ const getTeacherFullScheduleAction = async (
                     eventTitle: schedule.eventTitle || undefined,
                     event: schedule.event || undefined,
                     school: schedule.school,
-                    class: schedule.class || undefined,
                     classes: getClasses(schedule),
                     subject: schedule.subject || undefined,
                     issueTeacher: schedule.issueTeacher || undefined,
