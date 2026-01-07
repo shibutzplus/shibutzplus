@@ -92,32 +92,20 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
 
     // -- Title Logic -- //
     const getTitle = () => {
-        // 1. Calculate "When"
+        const isToday = selectedDate === getTodayDateString();
+        const isTomorrow = selectedDate === getTomorrowDateString();
+        const [y, m, d] = selectedDate.split("-");
+        const hasDate = Boolean(y && m && d);
+
         let when = "";
-        const today = getTodayDateString();
-        const tomorrow = getTomorrowDateString();
-
-        if (selectedDate === today) when = "להיום";
-        else if (selectedDate === tomorrow) when = "מחר";
-        else {
-            const [, m, d] = selectedDate.split("-");
-            if (d && m) when = `${d}/${m}`;
+        if (isToday) when = "להיום";
+        else if (isTomorrow) when = "למחר";
+        else if (hasDate) {
+            const isRegularPortal = pathname.includes(router.teacherMaterialPortal.p) && teacher?.role === TeacherRoleValues.REGULAR;
+            when = isRegularPortal ? `ל${d}/${m}` : `${d}/${m}`;
         }
 
-        // 2. Calculate "What" based on context
-        const isTeacherPortal = pathname.includes(router.teacherMaterialPortal.p);
-        const isRegular = teacher?.role === TeacherRoleValues.REGULAR;
-
-        let title = `שינויים ${when}`; // Default for public/other
-
-        if (isTeacherPortal) {
-            if (isRegular) {
-                const connector = when.startsWith("ל") ? " " : " ל";
-                title = `הנחיות${connector}${when}`;
-            } else {    // Substitute
-                title = `המערכת שלך ${when}`;
-            }
-        }
+        const title = `מערכת ${when}`;
 
         return (
             <div className={styles.titleContainer}>
