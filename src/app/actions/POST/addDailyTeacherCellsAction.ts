@@ -44,7 +44,6 @@ export async function addDailyTeacherCellsAction(
                 hour,
                 columnId,
                 school,
-                class: classData,
                 classes,
                 subject,
                 issueTeacher,
@@ -56,7 +55,7 @@ export async function addDailyTeacherCellsAction(
             } = cellData;
 
             // Basic validation per item
-            if (!classData || !subject || !classes) {
+            if (!subject || !classes) {
                 continue; // Skip invalid items or handle error
             }
 
@@ -67,7 +66,6 @@ export async function addDailyTeacherCellsAction(
                 columnId: columnId,
                 schoolId: school.id,
                 subjectId: subject.id,
-                classId: classData.id,
                 classIds: classes.map((c) => c.id),
                 issueTeacherId: issueTeacher?.id,
                 issueTeacherType: issueTeacherType,
@@ -108,7 +106,6 @@ export async function addDailyTeacherCellsAction(
                 columnId: dbRecord.columnId,
                 createdAt: dbRecord.createdAt,
                 updatedAt: dbRecord.updatedAt,
-                class: input?.class,
                 classes: input?.classes,
                 school: input?.school,
                 issueTeacher: input?.issueTeacher,

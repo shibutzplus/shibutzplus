@@ -156,19 +156,19 @@ const linkGroups: ILinkGroup[] = [
         links: [
             {
                 name: "המערכת שלי",
-                p: routePath.teacherPortal.p,
+                p: routePath.teacherMaterialPortal.p,
                 Icon: <Icons.teacher size={22} />,
                 isForGuest: false,
             },
             {
                 name: "מערכת בית ספרית",
-                p: routePath.publishedPortal.p,
+                p: routePath.scheduleViewPortal.p,
                 Icon: <Icons.group size={24} />,
                 isForGuest: false,
             },
             {
                 name: "מערכת במסך מלא",
-                p: "/full-schedule-view",
+                p: routePath.fullScheduleView.p,
                 Icon: <Icons.tv size={24} />,
             },
         ],
@@ -181,7 +181,7 @@ const linkGroups: ILinkGroup[] = [
         links: [
             {
                 name: "המערכת שלי",
-                p: routePath.teacherPortal.p,
+                p: routePath.teacherMaterialPortal.p,
                 Icon: <Icons.teacher size={24} />,
                 isForGuest: false,
             },
@@ -300,13 +300,13 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                 group.type === "substitute" &&
                 (schoolSettings?.displaySchedule2Susb || context?.settings?.displaySchedule2Susb)
             ) {
-                const hasLink = links.some((l) => l.p === routePath.publishedPortal.p);
+                const hasLink = links.some((l) => l.p === routePath.scheduleViewPortal.p);
                 if (!hasLink) {
                     links = [
                         ...links,
                         {
                             name: "מערכת בית ספרית",
-                            p: routePath.publishedPortal.p,
+                            p: routePath.scheduleViewPortal.p,
                             Icon: <Icons.group size={24} />,
                         },
                     ];
@@ -316,10 +316,10 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
             return {
                 ...group,
                 links: links.map((link) => {
-                    if (link.p === routePath.teacherPortal.p && teacher) {
+                    if (link.p === routePath.teacherMaterialPortal.p && teacher) {
                         return {
                             ...link,
-                            p: `${routePath.teacherPortal.p}/${teacher.schoolId}/${teacher.id}`,
+                            p: `${routePath.teacherMaterialPortal.p}/${teacher.schoolId}/${teacher.id}`,
                         };
                     }
                     return link;

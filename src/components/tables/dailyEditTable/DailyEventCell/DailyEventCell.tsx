@@ -10,7 +10,7 @@ import { formatTMDintoDMY } from "@/utils/time";
 type DailyEventCellProps = { columnId: string; cell: DailyScheduleCell };
 
 const DailyEventCell: React.FC<DailyEventCellProps> = ({ columnId, cell }) => {
-    const { mainDailyTable, addEventCell, updateEventCell, deleteEventCell, selectedDate, populateEventColumn, isEditMode } =
+    const { mainDailyTable, addEventCell, updateEventCell, deleteEventCell, selectedDate, populateEventColumn } =
         useDailyTableContext();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -110,18 +110,14 @@ const DailyEventCell: React.FC<DailyEventCellProps> = ({ columnId, cell }) => {
             className={`${styles.cellContent} ${hasScroll ? styles.hasScroll : ""}`}
             ref={cellRef}
         >
-            {isEditMode ? (
-                <InputTextArea
-                    value={info}
-                    onChange={(e) => setInfo(e.target.value)}
-                    onBlur={(e) => handleChange(e.target.value)}
-                    placeholder="מה מתוכנן?"
-                    disabled={isLoading}
-                    autoGrow
-                />
-            ) : (
-                <div className={styles.eventText}>{info}</div>
-            )}
+            <InputTextArea
+                value={info}
+                onChange={(e) => setInfo(e.target.value)}
+                onBlur={(e) => handleChange(e.target.value)}
+                placeholder="מה מתוכנן?"
+                disabled={isLoading}
+                autoGrow
+            />
         </div>
     );
 };

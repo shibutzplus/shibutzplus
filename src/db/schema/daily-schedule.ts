@@ -11,7 +11,6 @@ export const dailySchedule = pgTable('daily_schedule', {
   event: text('event'),
   columnId: text('column_id'),
   schoolId: text('school_id').notNull(),
-  classId: text('class_id'), // Unused,should be removed
   classIds: text('class_ids').array(),
   subjectId: text('subject_id'),
   subTeacherId: text('sub_teacher_id'),

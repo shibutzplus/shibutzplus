@@ -46,7 +46,6 @@ export async function getDailyScheduleAction(
                     eq(schema.dailySchedule.date, date),
                 ),
                 with: {
-                    class: true,
                     subject: true,
                     issueTeacher: true,
                     subTeacher: true,
@@ -55,7 +54,7 @@ export async function getDailyScheduleAction(
             });
 
             // TODO: ugly
-            // Handle classes array manually since it's an array of IDs
+            // Fetch classes array manually since it's an array of IDs
             const allClassIds = new Set<string>();
             schedules.forEach((schedule: any) => {
                 if (schedule.classIds && Array.isArray(schedule.classIds)) {
@@ -82,7 +81,7 @@ export async function getDailyScheduleAction(
                         .map((id: string) => classesMap.get(id))
                         .filter(Boolean);
                 }
-                return schedule.class ? [schedule.class] : [];
+                return [];
             };
 
             return schedules.map(
@@ -96,7 +95,6 @@ export async function getDailyScheduleAction(
                         eventTitle: schedule.eventTitle,
                         event: schedule.event,
                         school: schedule.school,
-                        class: schedule.class,
                         classes: getClasses(schedule),
                         subject: schedule.subject,
                         issueTeacher: schedule.issueTeacher,

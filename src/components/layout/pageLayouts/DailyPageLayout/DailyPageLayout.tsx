@@ -9,41 +9,15 @@ import MobileNavLayout from "../../MobileNavLayout/MobileNavLayout";
 import DailyActionBtns from "@/components/actions/DailyActionBtns/DailyActionBtns";
 import DailyPublishActionBtns from "@/components/actions/DailyPublishActionBtns/DailyPublishActionBtns";
 import PageLayout from "../../PageLayout/PageLayout";
-import IconBtn from "@/components/ui/buttons/IconBtn/IconBtn";
-import Icons from "@/style/icons";
 
 type DailyPageLayoutProps = {
     children: React.ReactNode;
 };
 
 export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
-    const { daysSelectOptions, selectedDate, isLoading, isEditMode, handleDayChange, mainDailyTable } =
-        useDailyTableContext();
+    const { daysSelectOptions, selectedDate, isLoading, isPreviewMode, handleDayChange } = useDailyTableContext();
 
-    const saveToPDF = async () => {
-        try {
-            const { pdf } = await import('@react-pdf/renderer');
-            const { default: DailySchedulePdf } = await import('@/components/pdf/DailySchedulePdf');
-
-            const blob = await pdf(
-                <DailySchedulePdf
-                    mainDailyTable={mainDailyTable}
-                    selectedDate={selectedDate}
-                />
-            ).toBlob();
-
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `daily-schedule-${selectedDate}.pdf`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-        } catch (error) {
-            console.error("Error generating PDF:", error);
-        }
-    };
+    if (isPreviewMode) return <>{children}</>;
 
     return (
         <PageLayout
@@ -71,22 +45,9 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
 
                     <div className={styles.spacer} />
 
-                    {isEditMode ? (
-                        <div className={styles.topBarActionBtns}>
-                            <DailyActionBtns position="left" />
-                        </div>
-                    ) : (
-                        // FFU
-                        false && (
-                            <span title="שמירה לקובץ PDF" className={styles.pdfBtnWrapper}>
-                                <IconBtn
-                                    Icon={<Icons.toPDF size={20} />}
-                                    onClick={saveToPDF}
-                                    hasBorder
-                                />
-                            </span>
-                        )
-                    )}
+                    <div className={styles.topBarActionBtns}>
+                        <DailyActionBtns position="left" />
+                    </div>
                 </>
             }
             HeaderLeftActions={<DailyPublishActionBtns />}
@@ -108,17 +69,13 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
                 </div>
             }
             MobileActions={
-                isEditMode ? (
-                    <div className={styles.bottomBarActionBtns}>
-                        <MobileNavLayout>
-                            <DailyActionBtns position="top" />
-                        </MobileNavLayout>
-                    </div>
-                ) : null
+                <div className={styles.bottomBarActionBtns}>
+                    <MobileNavLayout>
+                        <DailyActionBtns position="top" />
+                    </MobileNavLayout>
+                </div>
             }
-            contentClassName={
-                isEditMode ? styles.contentWithBottomMargin : styles.contentFullHeight
-            }
+            contentClassName={styles.contentWithBottomMargin}
         >
             {children}
         </PageLayout>

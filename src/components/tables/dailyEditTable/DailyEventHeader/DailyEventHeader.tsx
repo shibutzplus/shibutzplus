@@ -16,7 +16,7 @@ type DailyEventHeaderProps = {
 };
 
 const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete, isFirst, isLast }) => {
-    const { populateEventColumn, deleteColumn, mainDailyTable, selectedDate, moveColumn, isEditMode } =
+    const { populateEventColumn, deleteColumn, mainDailyTable, selectedDate, moveColumn } =
         useDailyTableContext();
 
     const selectedEventData =
@@ -73,17 +73,15 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete,
 
     return (
         <div className={styles.headerContentWrapper}>
-            {isEditMode && (
-                <DailyColumnMenu
-                    onDelete={handleDeleteClick}
-                    onMoveRight={() => moveColumn && moveColumn(columnId, "right")}
-                    onMoveLeft={() => moveColumn && moveColumn(columnId, "left")}
-                    isFirst={isFirst}
-                    isLast={isLast}
-                />
-            )}
+            <DailyColumnMenu
+                onDelete={handleDeleteClick}
+                onMoveRight={() => moveColumn && moveColumn(columnId, "right")}
+                onMoveLeft={() => moveColumn && moveColumn(columnId, "left")}
+                isFirst={isFirst}
+                isLast={isLast}
+            />
             <div className={styles.inputSelectWrapper}>
-                <div style={{ display: isEditMode ? "block" : "none", width: "100%" }}>
+                <div style={{ width: "100%" }}>
                     <InputText
                         placeholder="כותרת האירוע"
                         value={value}
@@ -93,13 +91,6 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete,
                         hasBorder={false}
                         fontSize="18px"
                     />
-                </div>
-                <div
-                    className={styles.staticHeaderText}
-                    title={value || selectedEventData || ""}
-                    style={{ display: isEditMode ? "none" : "flex" }}
-                >
-                    {value || selectedEventData || ""}
                 </div>
             </div>
         </div>

@@ -5,7 +5,7 @@ import { DailyScheduleType } from "@/models/types/dailySchedule";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq, isNull, inArray } from "drizzle-orm";
 
 export async function deleteDailyColumnAction(
     schoolId: string,
@@ -20,9 +20,10 @@ export async function deleteDailyColumnAction(
 
         const schedules = await executeQuery(async () => {
             // Handle legacy data where columnId might be NULL (mapped to "undefined" string in state)
-            const columnCondition = (columnId === "undefined" || columnId === "null")
-                ? isNull(schema.dailySchedule.columnId)
-                : eq(schema.dailySchedule.columnId, columnId);
+            const columnCondition =
+                columnId === "undefined" || columnId === "null"
+                    ? isNull(schema.dailySchedule.columnId)
+                    : eq(schema.dailySchedule.columnId, columnId);
 
             await db
                 .delete(schema.dailySchedule)
@@ -34,19 +35,34 @@ export async function deleteDailyColumnAction(
                     ),
                 );
 
-            return await db.query.dailySchedule.findMany({
+            const s = await db.query.dailySchedule.findMany({
                 where: and(
                     eq(schema.dailySchedule.schoolId, schoolId),
                     eq(schema.dailySchedule.date, date),
                 ),
                 with: {
                     school: true,
-                    class: true,
                     subject: true,
                     issueTeacher: true,
                     subTeacher: true,
                 },
             });
+
+            const uniqueClassIds = [...new Set(s.flatMap((item) => item.classIds || []))];
+
+            const classesData =
+                uniqueClassIds.length > 0
+                    ? await db.query.classes.findMany({
+                          where: inArray(schema.classes.id, uniqueClassIds),
+                      })
+                    : [];
+
+            const classesMap = new Map(classesData.map((c) => [c.id, c]));
+
+            return s.map((schedule) => ({
+                ...schedule,
+                classes: (schedule.classIds || []).map((id) => classesMap.get(id)).filter(Boolean),
+            }));
         });
 
         const dailySchedules = schedules.map(
@@ -58,7 +74,7 @@ export async function deleteDailyColumnAction(
                     hour: schedule.hour,
                     columnId: schedule.columnId,
                     school: schedule.school,
-                    class: schedule.class,
+                    classes: schedule.classes,
                     subject: schedule.subject,
                     issueTeacher: schedule.issueTeacher,
                     issueTeacherType: schedule.issueTeacherType,

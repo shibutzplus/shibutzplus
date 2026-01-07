@@ -5,12 +5,16 @@ import styles from "./DailyPublishActionBtns.module.css";
 import usePublish from "@/hooks/usePublish";
 import Loading from "@/components/loading/Loading/Loading";
 import { useDailyTableContext } from "@/context/DailyTableContext";
+
 import useDeletePopup from "@/hooks/useDeletePopup";
 import { useSession } from "next-auth/react";
 import useGuestModePopup from "@/hooks/useGuestModePopup";
 
 const DailyPublishActionBtns: React.FC = () => {
-    const { isEditMode, isLoadingEditPage, changeDailyMode } = useDailyTableContext();
+    const { togglePreviewMode, mainDailyTable, selectedDate } = useDailyTableContext();
+
+    const currentSchedule = mainDailyTable[selectedDate] || {};
+    const isEmpty = Object.keys(currentSchedule).length === 0;
 
     const {
         publishDailySchedule,
@@ -46,7 +50,7 @@ const DailyPublishActionBtns: React.FC = () => {
                 "כן",
                 "לא",
                 <Icons.faq size={40} />,
-                "yes" // defaultAnswer
+                "yes", // defaultAnswer
             );
         }
     };
@@ -74,17 +78,14 @@ const DailyPublishActionBtns: React.FC = () => {
 
     return (
         <div className={styles.topNavBtnContainer}>
-            <div style={isGuest ? guestWrapperStyle : undefined}>
-                <span title={isEditMode ? "תצוגה מקדימה" : "חזרה לשיבוץ"}>
-                    <IconBtn
-                        Icon={isEditMode ? <Icons.eye size={24} /> : <Icons.edit size={20} />}
-                        onClick={() => handleAction(changeDailyMode)}
-                        disabled={isLoadingEditPage}
-                        hasBorder
-                    />
-                </span>
-                {isGuest && <GuestOverlay />}
-            </div>
+            <span title={isEmpty ? "אין נתונים לתצוגה מקדימה" : "תצוגה מקדימה"}>
+                <IconBtn
+                    Icon={<Icons.eye size={24} />}
+                    onClick={togglePreviewMode}
+                    hasBorder
+                    disabled={isEmpty}
+                />
+            </span>
 
             {isDisabled ? (
                 <div style={isGuest ? guestWrapperStyle : undefined}>
@@ -101,25 +102,21 @@ const DailyPublishActionBtns: React.FC = () => {
                     </div>
                 </div>
             ) : (
-                <div style={isGuest ? guestWrapperStyle : undefined}>
-                    <button
-                        className={styles.publishBtn}
-                        onClick={() => handleAction(publishDailySchedule)}
-                        disabled={publishLoading}
-                        title="פרסום המערכת היומית"
-                        style={{ cursor: isGuest ? "not-allowed" : "pointer" }}
-                    >
-                        {publishLoading ? (
-                            <Loading size="S" />
-                        ) : (
-                            <>
-                                <Icons.publish size={20} />
-                                <span>פרסום</span>
-                            </>
-                        )}
-                    </button>
-                    {isGuest && <GuestOverlay />}
-                </div>
+                <button
+                    className={styles.publishBtn}
+                    onClick={publishDailySchedule}
+                    disabled={publishLoading || isEmpty}
+                    title={isEmpty ? "אין נתונים לפרסום" : "פרסום המערכת היומית"}
+                >
+                    {publishLoading ? (
+                        <Loading size="S" />
+                    ) : (
+                        <>
+                            <Icons.publish size={20} />
+                            <span>פרסום</span>
+                        </>
+                    )}
+                </button>
             )}
 
             <div style={isGuest ? guestWrapperStyle : undefined}>
@@ -133,7 +130,7 @@ const DailyPublishActionBtns: React.FC = () => {
                 </span>
                 {isGuest && <GuestOverlay />}
             </div>
-        </div >
+        </div>
     );
 };
 

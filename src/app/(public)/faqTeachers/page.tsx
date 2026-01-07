@@ -16,7 +16,7 @@ export default function FAQPage() {
         const teacher = getStorageTeacher();
         if (teacher?.id && teacher?.schoolId) {
             setTeacherLink(
-                `${window.location.origin}${router.teacherPortal.p}/${teacher.schoolId}/${teacher.id}`,
+                `${window.location.origin}${router.teacherMaterialPortal.p}/${teacher.schoolId}/${teacher.id}`,
             );
         }
     }, []);

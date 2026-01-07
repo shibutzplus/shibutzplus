@@ -5,6 +5,7 @@ import { SchoolStatus, SchoolLevel } from '@/models/types/school';
 export const schools = pgTable('schools', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
   name: varchar('name', { length: 100 }).notNull().unique(),
+  city: varchar('city', { length: 50 }),
   type: varchar('type', { length: 20 }).notNull().$type<SchoolLevel>().default('Elementary'),
   status: varchar('status', { length: 20 }).notNull().$type<SchoolStatus>().default('onboarding'),
   hoursNum: integer('hours_num').default(10).notNull(),

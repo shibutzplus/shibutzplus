@@ -5,6 +5,8 @@ import styles from "./TeacherDetailsCell.module.css";
 import { TeacherScheduleType } from "@/models/types/portalSchedule";
 import { TeacherType } from "@/models/types/teachers";
 
+import { getCellDisplayData } from "@/utils/dailyCellDisplay";
+
 type TeacherDetailsCellProps = {
     row?: TeacherScheduleType;
     teacher?: TeacherType;
@@ -64,18 +66,17 @@ const TeacherDetailsCell: React.FC<TeacherDetailsCellProps> = ({ row, teacher })
         return item?.text;
     };
 
+    const { text: displayText, isActivity } = getCellDisplayData(displayRow as any, "missingTeacher" /* FFU */);
+
     return (
         <div className={`${row ? styles.cellContent : styles.emptyCell}`}>
-            <div className={styles.classAndSubject}>
-                {displayRow?.classes?.map((c) => c.name).join(", ")}
-                {displayRow?.subject?.name &&
-                    !displayRow?.classes?.some((c) => c.activity) &&
-                    `, ${displayRow.subject.name}`}
+            <div className={`${styles.classAndSubject} ${isActivity ? styles.activityText : ""}`}>
+                {displayText}
             </div>
             <div className={`${styles.subTeacher} ${isDouble ? styles.doubleRow : ""}`}>
                 {displayReplaceTeacher()}
             </div>
-        </div>
+        </div >
     );
 };
 export default TeacherDetailsCell;
