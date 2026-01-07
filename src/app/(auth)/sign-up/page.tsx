@@ -1,27 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { NextPage } from "next";
 import InputText from "@/components/ui/inputs/InputText/InputText";
-import InputPassword from "@/components/ui/inputs/InputPassword/InputPassword";
 import SubmitBtn from "@/components/ui/buttons/SubmitBtn/SubmitBtn";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import styles from "./signUp.module.css";
 import routePath from "../../../routes";
 import { RegisterRequest, UserGender, UserRole } from "@/models/types/auth";
 import { SchoolLevel } from "@/db/schema";
-import { genderOptions, roleOptions, schoolLevelOptions } from "@/resources/onboarding";
+import { genderOptions, roleOptions } from "@/resources/onboarding";
 import { registerSchema } from "@/models/validation/register";
 import signUp from "@/app/actions/POST/signUpAction";
+import { getSchoolsMinAction } from "@/app/actions/GET/getSchoolsMinAction";
 
 const SignUpPage: NextPage = () => {
     const router = useRouter();
     const [formData, setFormData] = useState<RegisterRequest>({
         name: "",
         email: "",
-        password: "",
+        password: "12345678",
         schoolName: "",
+        city: "",
         role: "admin" as UserRole,
         gender: "female" as UserGender,
         level: "Elementary" as SchoolLevel,
@@ -31,9 +32,34 @@ const SignUpPage: NextPage = () => {
     const [validationErrors, setValidationErrors] = useState<
         Partial<Record<keyof RegisterRequest, string>>
     >({});
+    const [schools, setSchools] = useState<Array<{ name: string; city: string }>>([]);
+
+    // Derive disabled state from selected school
+    const isCityDisabled = schools.some(s => s.name === formData.schoolName);
+
+    useEffect(() => {
+        const fetchSchools = async () => {
+            try {
+                const res = await getSchoolsMinAction();
+                setSchools(res.map((s) => ({ name: s.name, city: s.city })));
+            } catch (error) {
+                console.error("Failed to fetch schools", error);
+            }
+        };
+        fetchSchools();
+    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSchoolChange = (v: string) => {
+        const selectedSchool = schools.find((s) => s.name === v);
+        setFormData((prev) => ({
+            ...prev,
+            schoolName: v,
+            city: selectedSchool ? selectedSchool.city : "",
+        }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -68,6 +94,30 @@ const SignUpPage: NextPage = () => {
     return (
         <div className={styles.container}>
             <form className={styles.form} onSubmit={handleSubmit}>
+                <DynamicInputSelect
+                    label="שם בית ספר"
+                    id="schoolName"
+                    options={schools.map((s) => ({ value: s.name, label: s.name }))}
+                    value={formData.schoolName}
+                    onChange={handleSchoolChange}
+                    placeholder="בחר או הקלד שם בית ספר חדש"
+                    hasBorder={true}
+                    error={validationErrors.schoolName}
+                    isCreatable={true}
+                    formatCreateLabel={(inputValue: string) => `צור "${inputValue}"`}
+                />
+
+                <InputText
+                    label="עיר"
+                    id="city"
+                    name="city"
+                    value={formData.city}
+                    onChange={handleChange}
+                    required
+                    error={validationErrors.city}
+                    disabled={isCityDisabled}
+                />
+
                 <InputText
                     label="שם מלא"
                     id="name"
@@ -89,15 +139,6 @@ const SignUpPage: NextPage = () => {
                     error={validationErrors.email}
                 />
 
-                <InputPassword
-                    label="סיסמה"
-                    id="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
-                    error={validationErrors.password}
-                />
 
                 <DynamicInputSelect
                     label="מגדר"
@@ -129,31 +170,9 @@ const SignUpPage: NextPage = () => {
                     hasBorder={true}
                 />
 
-                <InputText
-                    label="שם בית ספר"
-                    id="schoolName"
-                    name="schoolName"
-                    value={formData.schoolName}
-                    onChange={handleChange}
-                    required
-                    error={validationErrors.schoolName}
-                />
 
-                <DynamicInputSelect
-                    label="סוג בית ספר"
-                    options={schoolLevelOptions}
-                    value={formData.level}
-                    onChange={(v: string) =>
-                        setFormData((prev) => ({
-                            ...prev,
-                            level: v as SchoolLevel,
-                        }))
-                    }
-                    placeholder="בחר את סוג בית הספר..."
-                    hasBorder={true}
-                />
 
-                <SubmitBtn type="submit" isLoading={isLoading} buttonText="הרשמה" error={error} />
+                <SubmitBtn type="submit" isLoading={isLoading} buttonText="הוספה" error={error} />
             </form>
         </div>
     );

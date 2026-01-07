@@ -8,7 +8,7 @@ interface IRoute {
 const router: Record<string, IRoute> = {
     home: { id: "home", p: "/", private: false, title: "" },
     signIn: { id: "signIn", p: "/sign-in", private: false, title: "כניסה" },
-    signUp: { id: "signUp", p: "/sign-up", private: true, title: "הרשמה" },
+    signUp: { id: "signUp", p: "/sign-up", private: true, title: "בית ספר/מנהל חדש" },
     schoolSelect: {
         id: "schoolSelect",
         p: "/school-select",
