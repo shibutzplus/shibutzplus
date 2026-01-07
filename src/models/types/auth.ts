@@ -26,6 +26,7 @@ export type RegisterRequest = {
     role: UserRole;
     gender: UserGender;
     schoolName: string;
+    city: string;
     level: SchoolLevel;
 };
 

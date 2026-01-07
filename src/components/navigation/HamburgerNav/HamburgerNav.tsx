@@ -122,12 +122,12 @@ const linkGroups: ILinkGroup[] = [
         isCollapse: true,
         links: [
             {
-                name: "משתמש חדש",
+                name: "הוספת בית ספר/מנהל",
                 p: routePath.signUp.p,
                 Icon: <Icons.users size={24} />,
             },
             {
-                name: "ייבוא מערכת",
+                name: "ייבוא מערכת שנתית",
                 p: "/annual-import",
                 Icon: <Icons.upload size={24} />,
             },

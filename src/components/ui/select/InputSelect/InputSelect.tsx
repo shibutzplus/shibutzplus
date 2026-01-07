@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
+import CreatableSelect from "react-select/creatable";
 import Select, { ActionMeta, OnChangeValue, StylesConfig, components, SingleValueProps } from "react-select";
 import { SelectOption } from "@/models/types";
 import { customStyles } from "@/style/selectStyle";
@@ -35,6 +36,8 @@ type InputSelectProps = {
     isCentered?: boolean;
     fontSize?: string;
     caretColor?: string;
+    isCreatable?: boolean;
+    formatCreateLabel?: (inputValue: string) => string;
 };
 
 const InputSelect: React.FC<InputSelectProps> = ({
@@ -58,6 +61,8 @@ const InputSelect: React.FC<InputSelectProps> = ({
     isCentered = false,
     fontSize,
     caretColor,
+    isCreatable = false,
+    formatCreateLabel,
 }) => {
     const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
     const [isMounted, setIsMounted] = useState(false);
@@ -68,9 +73,10 @@ const InputSelect: React.FC<InputSelectProps> = ({
             setSelectedOption(null);
             return;
         }
-        const selected = options.find((o) => o.value === value) ?? null;
+        // Try to find existing option
+        const selected = options.find((o) => o.value === value) ?? (isCreatable ? { label: value, value: value } : null);
         setSelectedOption(selected);
-    }, [value, options]);
+    }, [value, options, isCreatable]);
 
     // Client-only portal target for menus to avoid SSR warning
     useEffect(() => {
@@ -98,7 +104,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
         onChange(next, meta.action as SelectMethod);
     };
 
-    const stylesOverride: StylesConfig<SelectOption, false> = React.useMemo(() => {
+    const stylesOverride: StylesConfig<SelectOption, false> = useMemo(() => {
         const baseStyles = customStyles(
             error || "",
             hasBorder,
@@ -275,9 +281,11 @@ const InputSelect: React.FC<InputSelectProps> = ({
         );
     };
 
+    const SelectComponent = isCreatable ? CreatableSelect : Select;
+
     return (
         <SelectLayout resolvedId={id || ""} error={error} label={label}>
-            <Select
+            <SelectComponent
                 inputId={id}
                 value={selectedOption}
                 onChange={handleChange}
@@ -293,6 +301,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
                 menuPlacement="auto"
                 menuPosition="fixed"
                 noOptionsMessage={() => <div>לא נמצאו אפשרויות</div>}
+                formatCreateLabel={formatCreateLabel}
                 styles={stylesOverride}
                 classNamePrefix="react-select"
                 components={{
