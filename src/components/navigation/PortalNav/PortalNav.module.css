@@ -11,9 +11,9 @@
     gap: 8px;
     padding: 0 15px;
     height: var(--input-height);
-    width: 185px;
+    width: 170px;
     font-size: 16px;
-    background-color: transparent;
+    background-color: #f8f8f8;
     color: var(--dark-text-color);
     border-radius: var(--border-radius-cell);
     border: var(--border-primary);
@@ -23,6 +23,10 @@
 
 .btnText {
     display: inline;
+}
+
+.topBtn svg {
+    display: none;
 }
 
 .topBtn:hover {
@@ -40,6 +44,10 @@
     .topBtn {
         width: 60px;
         border: var(--border-primary);
+    }
+
+    .topBtn svg {
+        display: block;
     }
 
     .btnText {
