@@ -77,7 +77,13 @@ export default function PortalFullScreenLayout({ children }: PortalFullScreenLay
 
     // Render children wrapped in FullScreenContainer
     return (
-        <FullScreenContainer onExit={() => nav.push(router.scheduleViewPortal.p)}>
+        <FullScreenContainer onExit={() => {
+            if (teacher) {
+                nav.push(`${router.teacherMaterialPortal.p}/${teacher.schoolId}/${teacher.id}`);
+            } else {
+                nav.push(router.scheduleViewPortal.p);
+            }
+        }}>
             {children}
         </FullScreenContainer>
     );
