@@ -26,7 +26,7 @@ import { HOURS_IN_DAY } from "@/utils/time";
 import { SchoolSettingsType } from "@/models/types/settings";
 
 export interface ILink {
-    name: string;
+    name: string | React.ReactNode;
     p: string;
     Icon: React.ReactNode;
 }
@@ -147,10 +147,15 @@ const linkGroups: ILinkGroup[] = [
             {
                 name: "מערכת בית ספרית",
                 p: routePath.scheduleViewPortal.p,
-                Icon: <Icons.group size={24} />,
+                Icon: <Icons.table size={22} />,
             },
             {
-                name: "מערכת במסך מלא",
+                name: (
+                    <div style={{ display: "flex", flexDirection: "column", lineHeight: "1.2" }}>
+                        <span>מערכת בית ספרית</span>
+                        <span style={{ fontSize: "0.85em" }}>(מסך מלא)</span>
+                    </div>
+                ),
                 p: routePath.fullScheduleView.p,
                 Icon: <Icons.tv size={24} />,
             },
