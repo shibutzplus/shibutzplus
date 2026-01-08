@@ -1,12 +1,13 @@
 .landingPage {
   direction: rtl;
   font-family: var(--font-heebo), 'Heebo', sans-serif;
+  scroll-snap-type: y mandatory;
+  overflow-y: scroll;
   height: 100vh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
 }
 
+/* CSS Variables */
+/* CSS Variables */
 .landingPage {
   --primary: #2563eb;
   --primary-hover: #1d4ed8;
@@ -18,30 +19,25 @@
   --nav-height: 65px;
 }
 
-.scrollableContent {
-  flex: 1;
-  overflow-y: auto;
-  scroll-snap-type: y mandatory;
-  position: relative;
-}
-
 .container {
   max-width: 1100px;
   margin: 0 auto;
   padding: 0 20px;
 }
 
+/* Navbar */
 .navbar {
   height: var(--nav-height);
   width: 100%;
   display: flex;
   align-items: center;
   border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
   background: rgba(255, 255, 255, 0.95);
   z-index: 1000;
-  padding: 0 20px;
+  padding: 0 3vw;
   box-sizing: border-box;
-  flex-shrink: 0;
 }
 
 .navContent {
@@ -51,6 +47,17 @@
   width: 100%;
 }
 
+.logo {
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--primary);
+}
+
+.logo span {
+  color: var(--text-dark);
+}
+
+/* Buttons */
 .btn {
   text-decoration: none;
   padding: 10px 24px;
@@ -58,6 +65,26 @@
   font-weight: 700;
   transition: all 0.2s;
   display: inline-block;
+}
+
+.btnPrimary {
+  background-color: var(--primary);
+  color: white;
+}
+
+.btnPrimary:hover {
+  background-color: var(--primary-hover);
+}
+
+.btnLarge {
+  background-color: var(--text-dark);
+  color: white;
+  padding: 16px 32px;
+  font-size: 1.1rem;
+}
+
+.btnLarge:hover {
+  background-color: #334155;
 }
 
 .googleButton {
@@ -100,13 +127,10 @@
 .heroWrapper {
   position: relative;
   margin: 0 auto;
+  padding: calc(var(--nav-height) + 6vh) 0 0;
   box-sizing: border-box;
   text-align: center;
-  height: 82vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  height: 85vh;
   background-color: #f8fafc;
   background-image:
     radial-gradient(circle at 0% 0%, rgba(37, 99, 235, 0.1) 0%, transparent 35%),
@@ -120,47 +144,45 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 2vh;
 }
 
-.heroProductName {
-  font-size: 24px;
-  font-weight: 700;
-  color: #6a49a2;
-}
-
-.heroTitle1 {
-  font-size: 1.9vw;
-  line-height: 1.8;
+.heroTitle {
+  font-size: 3rem;
+  line-height: 1.2;
   font-weight: 900;
-  color: #475569;
-  max-width: 50vw;
-  margin: 0 auto;
-  opacity: 0.9;
-}
-
-.underlined {
-  text-decoration: underline;
-  text-underline-offset: 5px;
-}
-
-.heroTitle2 {
-  font-size: 1.6vw;
-  line-height: 1.8;
-  font-weight: 800;
-  color: #475569;
+  color: #1e293b;
   max-width: 40vw;
   margin: 0 auto;
-  opacity: 0.8;
 }
 
-.heroTitle3 {
-  font-size: 1.2vw;
-  line-height: 2;
-  font-weight: 800;
-  color: #475569;
-  max-width: 40vw;
+.highlight {
+  color: #2563eb;
+}
+
+.hero p {
+  font-size: 1.05rem;
+  color: #64748b;
+  max-width: 680px;
   margin: 0 auto;
-  opacity: 0.7;
+  line-height: 1.4;
+}
+
+.alert {
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  padding: 15px 24px;
+  margin: 0 auto 0 !important; /* override default p margins if any */
+  max-width: 500px !important;
+  color: #2444ad !important; /* darker blue for text */
+  font-size: 0.95rem !important;
+  line-height: 1.5;
+  text-align: center;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .btnHero {
@@ -173,8 +195,6 @@
   display: inline-block;
   transition: all 0.2s;
   font-size: 0.95rem;
-  margin-top: 2.5vh;
-  margin-bottom: 2vh;
 }
 
 .btnHero:hover {
@@ -183,13 +203,14 @@
 }
 
 .heroMockup {
-  position: relative;
+  position: absolute;
+  left: 0;
+  bottom: -5vw;
   z-index: 10;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 2vh;
 }
 
 .laptopImgWrapper {
@@ -290,35 +311,86 @@
   width: 40px;
 }
 
+/* Testimonials */
+.testimonials {
+  padding: calc(var(--nav-height) + 6vh) 0 0 0;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.sectionTitle {
+  text-align: center;
+  font-size: 2.2rem;
+  margin-bottom: 1em;
+}
+
+.testimonialsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+
+.testimonialCard {
+  padding: 30px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  transition: box-shadow 0.3s;
+}
+
+.testimonialCard:hover {
+  box-shadow: var(--shadow);
+}
+
+.schoolInfo {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.schoolLogo {
+  width: 60px;
+  height: 60px;
+  background: #e2e8f0;
+  border-radius: 8px;
+  margin-left: 15px;
+  flex-shrink: 0;
+}
+
+.schoolName {
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 4px;
+  color: var(--text-dark);
+}
+
+.deputyName {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  font-weight: 400;
+}
+
+.testimonialCard p {
+  font-size: 16px;
+}
+
 .footer {
-  width: 100%;
-  padding: 15px 0;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 40px 0;
+  margin-top: auto;
   border-top: 1px solid #e2e8f0;
   text-align: center;
   color: var(--text-light);
   font-size: 0.9rem;
   background-color: var(--bg-light);
-  z-index: 100;
-  flex-shrink: 0;
-}
-
-.termsLink {
-  background: none;
-  border: none;
-  color: var(--text-light);
-  text-decoration: underline;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: inherit;
-  padding: 0;
-}
-
-.termsLink:hover {
-  color: var(--primary);
-}
-
-.footerSeparator {
-  margin: 0 5px;
 }
 
 /* Responsive */
@@ -337,6 +409,11 @@
     margin-bottom: 40px;
   }
 
+  .heroTitle {
+    font-size: 2rem;
+    line-height: 1.3;
+    max-width: 100%;
+  }
 
   .hero p {
     font-size: 1rem;
