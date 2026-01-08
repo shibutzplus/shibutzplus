@@ -1,4 +1,4 @@
-/* > 720px */
+/* > 780px */
 .container {
     width: calc(100% - (var(--padding-width) * 2));
     margin: 0 auto;
@@ -20,8 +20,8 @@
     text-align: center;
 }
 
-/* < 720px */
-@media (max-width: 720px) {
+/* < 780px */
+@media (max-width: 780px) {
     .container {
         padding-top: var(--padding-top-mobile);
         padding-bottom: var(--padding-top-mobile);
