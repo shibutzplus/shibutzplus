@@ -115,6 +115,11 @@ export default function AnnualViewPageLayout({ children }: AnnualViewPageLayoutP
                     {pdfDownloadButton}
                 </div>
             }
+            HeaderLeftActions={
+                <div className={styles.pdfLeftContainer}>
+                    {pdfDownloadButton}
+                </div>
+            }
         >
             {children}
         </PageLayout>

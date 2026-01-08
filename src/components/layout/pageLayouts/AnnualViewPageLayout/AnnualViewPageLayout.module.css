@@ -13,6 +13,11 @@
     margin-right: 5px;
 }
 
+.pdfLeftContainer {
+    display: none;
+    margin-left: 10px;
+}
+
 .bar2Container {
     width: 230px;
     min-width: 230px;
@@ -58,10 +63,10 @@
     .bar2Container {
         display: flex;
         justify-content: center;
-        padding: 10px 20px;
+        padding: 10px 10px;
         width: 100%;
         max-width: 100%;
-        gap: 15px;
+        gap: 10px;
         align-items: center;
     }
 
@@ -69,5 +74,16 @@
         width: 100%;
         max-width: 230px;
         flex: 1;
+    }
+}
+
+/* < 440px */
+@media (max-width: 440px) {
+    .pdfLeftContainer {
+        display: block;
+    }
+
+    .bar2Container .pdfButton {
+        display: none;
     }
 }

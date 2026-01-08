@@ -155,8 +155,6 @@ const InputSelect: React.FC<InputSelectProps> = ({
                     fontSize: fontSize || base.fontSize,
                     maxWidth: "100%",
                     overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
                     fontWeight: isBold ? 600 : 400,
                     textAlign: isCentered ? "center" : "right",
                     width: isCentered ? "100%" : "auto",
@@ -238,7 +236,15 @@ const InputSelect: React.FC<InputSelectProps> = ({
         const [isHovered, setIsHovered] = useState(false);
         return (
             <components.SingleValue {...props}>
-                {props.children}
+                <div style={{
+                    flex: "1",
+                    overflow: "hidden",
+                    textOverflow: "clip",
+                    whiteSpace: "nowrap",
+                    textAlign: isCentered ? "center" : "right"
+                }}>
+                    {props.children}
+                </div>
                 {isClearable && selectedOption && (
                     <div
                         onMouseDown={(e) => {
@@ -263,6 +269,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
                             zIndex: 5,
                             position: "relative",
                             pointerEvents: "auto",
+                            flexShrink: 0
                         }}
                     >
                         <svg
