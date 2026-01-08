@@ -50,8 +50,8 @@
     }
 }
 
-/* < 720px - Scroll starts here */
-@media (max-width: 720px) {
+/* < 780px - Scroll starts here */
+@media (max-width: 780px) {
     .scheduleCell {
         width: var(--table-annual-col-width-mobile);
         min-width: var(--table-annual-col-width-mobile);

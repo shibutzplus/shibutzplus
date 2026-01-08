@@ -4,6 +4,7 @@ import { WeeklySchedule } from "@/models/types/annualSchedule";
 import { SubjectType } from "@/models/types/subjects";
 import { TeacherType } from "@/models/types/teachers";
 import { ClassType } from "@/models/types/classes";
+import { getAnnualCellDisplayData } from "@/utils/annualCellDisplay";
 
 type AnnualViewCellProps = {
     day: string;
@@ -30,6 +31,7 @@ const AnnualViewCell: React.FC<AnnualViewCellProps> = ({
     // If Class is selected, we use Class ID.
     // If only Teacher is selected, we use Teacher ID.
     const lookupId = selectedClassId || selectedTeacherId;
+    const isBothSelected = !!(selectedClassId && selectedTeacherId);
 
     if (!lookupId || !schedule[lookupId] || !schedule[lookupId][day] || !schedule[lookupId][day][hour]) {
         return (
@@ -40,71 +42,39 @@ const AnnualViewCell: React.FC<AnnualViewCellProps> = ({
     }
 
     const cellData = schedule[lookupId][day][hour];
-    const { teachers: teacherIds, subjects: subjectIds, classes: classesIds } = cellData;
+    // shared component logic
+    const { subjectsText, secondaryText, shouldRender } = getAnnualCellDisplayData(
+        cellData,
+        selectedClassId,
+        selectedTeacherId,
+        subjects,
+        teachers,
+        classes
+    );
 
-    // Helper to get names
-    const getSubjectName = (id: string) => subjects.find((s) => s.id === id)?.name || "";
-    const getTeacherName = (id: string) => teachers.find((t) => t.id === id)?.name || "";
-    const getClassName = (id: string) => classes.find((c) => c.id === id)?.name || "";
-    const isActivityClass = (id: string) => classes.find((c) => c.id === id)?.activity;
-
-    // Logic for display based on selection:
-    // 1. Only Class Selected: Show Subject + Teacher
-    // 2. Only Teacher Selected: Show Class + Subject
-    // 3. Both Selected: Show Subject (only if teacher matches)
-
-    let content = null;
-
-    if (selectedClassId && !selectedTeacherId) {
-        // Scenario 1: Only Class Selected -> Subject + Teacher
-        content = (
-            <>
-                {!isActivityClass(selectedClassId) && subjectIds.map((sid) => (
-                    <div key={sid} className={styles.subject}>
-                        {getSubjectName(sid)}
-                    </div>
-                ))}
-                {teacherIds.map((tid) => (
-                    <div key={tid} className={styles.teacher}>
-                        {getTeacherName(tid)}
-                    </div>
-                ))}
-            </>
+    if (!shouldRender) {
+        // Fallback similar to empty cell logic if not rendering
+        return (
+            <td className={styles.scheduleCell}>
+                <div className={`${styles.cellContent} ${styles.viewOnly}`}></div>
+            </td>
         );
-    } else if (!selectedClassId && selectedTeacherId) {
-        // Scenario 2: Only Teacher Selected -> Class + Subject
-        content = (
-            <>
-                {classesIds && classesIds.length > 0 && (
-                    <div className={styles.class}>
-                        {classesIds.map((id) => getClassName(id)).join(", ")}
-                    </div>
-                )}
-                {!classesIds?.some((id) => isActivityClass(id)) && subjectIds.map((sid) => (
-                    <div key={sid} className={styles.subject}>
-                        {getSubjectName(sid)}
-                    </div>
-                ))}
-            </>
-        );
-    } else if (selectedClassId && selectedTeacherId) {
-        // Scenario 3: Both Selected -> Subject (only if teacher is in this cell)
-        // The schedule is populated by Class ID (from Context logic).
-        // We need to check if the selected teacher is in this cell.
-        const isTeacherInCell = teacherIds.includes(selectedTeacherId);
-
-        if (isTeacherInCell) {
-            content = (
-                <>
-                    {subjectIds.map((sid) => (
-                        <div key={sid} className={styles.subject} style={{ fontWeight: "normal" }}>
-                            {getSubjectName(sid)}
-                        </div>
-                    ))}
-                </>
-            );
-        }
     }
+
+    const content = (
+        <>
+            {subjectsText && (
+                <div className={styles.subject} style={isBothSelected ? { fontWeight: "normal" } : {}}>
+                    {subjectsText}
+                </div>
+            )}
+            {secondaryText && (
+                <div className={selectedTeacherId ? styles.class : styles.teacher}>
+                    {secondaryText}
+                </div>
+            )}
+        </>
+    );
 
     return (
         <td className={styles.scheduleCell}>

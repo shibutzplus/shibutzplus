@@ -9,6 +9,7 @@ import { DAYS_OF_WORK_WEEK, HOURS_IN_DAY } from "@/utils/time";
 import AnnualViewRow from "@/components/tables/annualViewTable/AnnualViewRow/AnnualViewRow";
 import styles from "./AnnualViewTable.module.css";
 import { useMainContext } from "@/context/MainContext";
+import { getAnnualScheduleDimensions } from "@/utils/annualCellDisplay";
 
 type AnnualViewTableProps = {
     schedule: WeeklySchedule;
@@ -32,6 +33,13 @@ const AnnualViewTable: React.FC<AnnualViewTableProps> = ({
 
     const isDisabled = !schedule || !subjects || !classes;
 
+    const { rowsCount } = getAnnualScheduleDimensions(
+        schedule,
+        selectedClassId,
+        selectedTeacherId,
+        hoursNum
+    );
+
     return (
         <div className={styles.tableContainer}>
             <table className={styles.scheduleTable}>
@@ -51,7 +59,7 @@ const AnnualViewTable: React.FC<AnnualViewTableProps> = ({
                     </tr>
                 </thead>
                 <tbody className={styles.scheduleTableBody}>
-                    {Array.from({ length: hoursNum }, (_, i) => i + 1).map((hour) => (
+                    {Array.from({ length: rowsCount }, (_, i) => i + 1).map((hour) => (
                         <AnnualViewRow
                             key={hour}
                             hour={hour}
