@@ -8,15 +8,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 0 15px;
     height: var(--input-height);
-    width: 170px;
-    font-size: 16px;
+    width: 150px;
+    font-size: 14px;
     background-color: #f8f8f8;
     color: var(--dark-text-color);
-    border-radius: var(--border-radius-cell);
+    border-radius: 12px;
     border: var(--border-primary);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     cursor: pointer;
     transition: all 0.1s ease-in-out;
 }
