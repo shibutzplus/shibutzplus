@@ -49,7 +49,7 @@ export default function ManualHistoryPage() {
                 </p>
                 <div className={styles.buttonWrapper} style={{ gap: '10px' }}>
                     <ActionBtn
-                        label="הפעל תהליך עדכון (אתמול)"
+                        label="יש להפעיל תהליך עדכון עבור היום - אחרי שעה 16:00"
                         func={handleRunUpdate}
                         isLoading={loading}
                         isDisabled={loading}

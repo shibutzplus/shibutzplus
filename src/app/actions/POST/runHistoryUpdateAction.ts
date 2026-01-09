@@ -18,9 +18,6 @@ export async function runHistoryUpdateAction() {
             };
         }
 
-        // Optional: Add admin check if strict security is needed
-        // if (session.user.role !== 'admin') { ... }
-
         const result = await processHistoryUpdate();
 
         return {

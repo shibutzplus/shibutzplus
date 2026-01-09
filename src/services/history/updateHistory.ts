@@ -18,13 +18,12 @@ export async function processHistoryUpdate(dateString?: string, force: boolean =
     };
 
     try {
-        // 1. Determine "Yesterday" if date not provided
+        // 1. Determine "Today" if date not provided
         let targetDate = dateString;
         if (!targetDate) {
             const today = new Date();
-            const yesterday = new Date(today);
-            yesterday.setDate(yesterday.getDate() - 1);
-            targetDate = yesterday.toISOString().split('T')[0];
+            // Default is now Today (per user request), usually run afterschool hours or manually
+            targetDate = today.toISOString().split('T')[0];
         }
 
         log(`Processing history for date: ${targetDate}${force ? ' (Force Mode)' : ''}`);
