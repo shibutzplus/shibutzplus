@@ -13,7 +13,7 @@ type PreviewTeacherCellProps = {
 };
 
 const PreviewTeacherCell: React.FC<PreviewTeacherCellProps> = ({ cell, type, appType = "private" }) => {
-    const { text, subTeacherName, isMissing, isEmpty, isActivity } = getCellDisplayData(cell, type, appType);
+    const { text, subTeacherName, isEmpty, isActivity } = getCellDisplayData(cell, type, appType);
 
     if (isEmpty) {
         return (

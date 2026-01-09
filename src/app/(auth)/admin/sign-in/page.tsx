@@ -63,7 +63,7 @@ const AdminSignInPage: NextPage = () => {
             } else if (result?.ok) {
                 setIsLoading(true);
             }
-        } catch (err) {
+        } catch (_err) {
             setError(messages.common.serverError);
             setIsLoading(false);
         }

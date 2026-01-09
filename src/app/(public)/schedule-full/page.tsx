@@ -42,9 +42,6 @@ const FullScheduleViewPage: NextPage = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedDate, teacher?.id, schoolId]);
 
-    const schedule = mainPublishTable[selectedDate];
-    const colCount = schedule ? Object.keys(schedule).length : 0;
-
     if (showError && !teacher) {
         return <ContactAdminError />;
     }
