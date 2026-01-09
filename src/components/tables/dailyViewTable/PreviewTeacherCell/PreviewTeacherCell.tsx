@@ -33,8 +33,6 @@ const PreviewTeacherCell: React.FC<PreviewTeacherCellProps> = ({ cell, type, app
                 </span>
                 {subTeacherName ? (
                     <div className={styles.subTeacherName}>{subTeacherName}</div>
-                ) : isMissing ? (
-                    <div className={styles.missingSubTeacherName}>אין ממלא מקום</div>
                 ) : null}
             </div>
         </div>

@@ -36,7 +36,9 @@ export const getCellDisplayData = (
     let text = "";
     if (classesData?.length) {
         const classNames = classesData.map((cls) => cls.name).join(", ");
-        text = classNames + (!isActivity && subjectData ? ` (${subjectData.name})` : "");
+        const subjectName = subjectData?.name || "";
+        const sameAsSubject = subjectName && classNames === subjectName;
+        text = classNames + (!isActivity && subjectData && !sameAsSubject ? ` (${subjectData.name})` : "");
     }
 
     // 2. Logic for when to hide the cell entirely (Empty)

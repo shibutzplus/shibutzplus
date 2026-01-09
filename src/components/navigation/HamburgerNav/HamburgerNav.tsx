@@ -117,12 +117,12 @@ const linkGroups: ILinkGroup[] = [
     },
     {
         id: "admin",
-        title: "מסכי מנהל",
+        title: "Admin",
         type: "private",
         isCollapse: true,
         links: [
             {
-                name: "הוספת בית ספר/מנהל",
+                name: "הוספת מנהל",
                 p: routePath.signUp.p,
                 Icon: <Icons.users size={24} />,
             },
@@ -130,6 +130,11 @@ const linkGroups: ILinkGroup[] = [
                 name: "ייבוא מערכת שנתית",
                 p: "/annual-import",
                 Icon: <Icons.upload size={24} />,
+            },
+            {
+                name: "עדכון היסטוריה",
+                p: "/historyUpdateManual",
+                Icon: <Icons.history size={24} />,
             },
         ],
     },
@@ -356,13 +361,16 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                     <div onClick={onClose} className={styles.logoContainer}>
                         <Logo size="XS" />
                     </div>
-                    <button
-                        className={styles.closeButton}
-                        onClick={onClose}
-                        aria-label="Close menu"
-                    >
-                        <Icons.close size={24} />
-                    </button>
+                    <div className={styles.headerActions}>
+                        {school?.name && <span className={styles.schoolName}>{school.name}</span>}
+                        <button
+                            className={styles.closeButton}
+                            onClick={onClose}
+                            aria-label="Close menu"
+                        >
+                            <Icons.close size={24} />
+                        </button>
+                    </div>
                 </div>
 
                 <div className={styles.menuContent}>

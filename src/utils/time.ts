@@ -156,11 +156,14 @@ export const daysInMonth = (year: number, month1to12: number) => {
 // -- Date Component Utilities -- //
 
 // Get current date components as strings
-export const getCurrentDateComponents = () => {
-    const now = new Date();
-    const year = `${now.getFullYear()}`;
-    const month = `${now.getMonth() + 1}`; // 1-12
-    const day = `${now.getDate()}`;
+
+
+export const getYesterdayDateComponents = () => {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const year = `${yesterday.getFullYear()}`;
+    const month = `${yesterday.getMonth() + 1}`; // 1-12
+    const day = `${yesterday.getDate()}`;
     return { year, month, day };
 };
 

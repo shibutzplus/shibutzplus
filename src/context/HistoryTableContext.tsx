@@ -3,14 +3,14 @@
 import React, { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react";
 import { SelectOption } from "@/models/types";
 import {
-    getCurrentDateComponents,
+    getYesterdayDateComponents,
     buildDateString,
     generateDayOptions,
     clampDayToMonth,
 } from "@/utils/time";
 import { DailySchedule } from "@/models/types/dailySchedule";
 import { useMainContext } from "./MainContext";
-import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
+import { getHistoryScheduleAction } from "@/app/actions/GET/getHistoryScheduleAction";
 import { populateDailyScheduleTable } from "@/services/daily/populate";
 import { errorToast } from "@/lib/toast";
 
@@ -42,7 +42,7 @@ interface HistoryTableProviderProps {
 
 export const HistoryTableProvider: React.FC<HistoryTableProviderProps> = ({ children }) => {
     const { school } = useMainContext();
-    const { year: currentYear, month: currentMonth, day: currentDay } = getCurrentDateComponents();
+    const { year: currentYear, month: currentMonth, day: currentDay } = getYesterdayDateComponents();
 
     const [selectedYear, setSelectedYear] = useState<string>(currentYear);
     const [selectedMonth, setSelectedMonth] = useState<string>(currentMonth);
@@ -80,7 +80,7 @@ export const HistoryTableProvider: React.FC<HistoryTableProviderProps> = ({ chil
             if (!school?.id || !selectedYearDate) return;
             try {
                 setIsLoading(true);
-                const response = await getDailyScheduleAction(school.id, selectedYearDate);
+                const response = await getHistoryScheduleAction(school.id, selectedYearDate);
                 if (response.success && response.data) {
                     const newSchedule = await populateDailyScheduleTable(
                         mainDailyTable,
