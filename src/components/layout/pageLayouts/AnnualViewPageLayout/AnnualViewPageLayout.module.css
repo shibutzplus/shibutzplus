@@ -1,4 +1,4 @@
-/* > 720px */
+/* > 780px */
 .pageTitle {
     white-space: nowrap;
 }
@@ -9,6 +9,15 @@
     max-width: 230px;
 }
 
+.pdfContainer {
+    margin-right: 5px;
+}
+
+.pdfLeftContainer {
+    display: none;
+    margin-left: 10px;
+}
+
 .bar2Container {
     width: 230px;
     min-width: 230px;
@@ -16,20 +25,48 @@
     display: none;
 }
 
-/* <= 720px */
-@media (max-width: 720px) {
+.pdfButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    background-color: transparent;
+    border: none;
+    color: #555;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.pdfButton:hover {
+    color: #000;
+    transform: translateY(-1px);
+}
+
+.pdfButtonDisabled {
+    opacity: 0.3;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+/* <= 780px */
+@media (max-width: 780px) {
 
     .bar1Container {
+        display: none;
+    }
+
+    .pdfContainer {
         display: none;
     }
 
     .bar2Container {
         display: flex;
         justify-content: center;
-        padding: 10px 20px;
+        padding: 10px 10px;
         width: 100%;
         max-width: 100%;
-        gap: 15px;
+        gap: 10px;
         align-items: center;
     }
 
@@ -37,5 +74,16 @@
         width: 100%;
         max-width: 230px;
         flex: 1;
+    }
+}
+
+/* < 440px */
+@media (max-width: 440px) {
+    .pdfLeftContainer {
+        display: block;
+    }
+
+    .bar2Container .pdfButton {
+        display: none;
     }
 }

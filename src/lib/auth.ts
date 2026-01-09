@@ -62,7 +62,7 @@ export const authOptions: NextAuthOptions = {
         updateAge: TWENTY_FOUR_HOURS,
     },
     callbacks: {
-        async signIn({ account, profile, user }) {
+        async signIn({ account, profile, user: _user }) {
             if (account?.provider === "credentials") {
                 return true;
             }

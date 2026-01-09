@@ -3,8 +3,6 @@ import { UserRole, UserGender } from "../types/auth";
 import { SchoolLevel } from "../types/school";
 
 export const registerSchema = z.object({
-    systemPassword: z
-        .string(),
     password: z
         .string()
         .min(2, "סיסמה חייבת להכיל לפחות 2 תווים"),
@@ -25,6 +23,9 @@ export const registerSchema = z.object({
     schoolName: z
         .string()
         .min(2, "שם בית ספר חייב להכיל לפחות 2 תווים"),
+    city: z
+        .string()
+        .min(2, "עיר חייבת להכיל לפחות 2 תווים"),
     level: z
         .custom<SchoolLevel>((val) => ["Elementary", "Middle", "High"].includes(val as string), {
             message: "שלב בית ספר לא תקין"

@@ -28,7 +28,7 @@ import { SchoolSettingsType } from "@/models/types/settings";
 import useGuestModePopup from "@/hooks/useGuestModePopup";
 
 export interface ILink {
-    name: string;
+    name: string | React.ReactNode;
     p: string;
     Icon: React.ReactNode;
     isForGuest?: boolean;
@@ -130,21 +130,26 @@ const linkGroups: ILinkGroup[] = [
     },
     {
         id: "admin",
-        title: "מסכי מנהל",
+        title: "Admin",
         type: "private",
         isCollapse: true,
         links: [
             {
-                name: "משתמש חדש",
+                name: "הוספת מנהל",
                 p: routePath.signUp.p,
                 Icon: <Icons.users size={24} />,
                 isForGuest: false,
             },
             {
-                name: "ייבוא מערכת",
+                name: "ייבוא מערכת שנתית",
                 p: "/annual-import",
                 Icon: <Icons.upload size={24} />,
                 isForGuest: false,
+            },
+            {
+                name: "עדכון היסטוריה",
+                p: "/historyUpdateManual",
+                Icon: <Icons.history size={24} />,
             },
         ],
     },
@@ -167,7 +172,12 @@ const linkGroups: ILinkGroup[] = [
                 isForGuest: false,
             },
             {
-                name: "מערכת במסך מלא",
+                name: (
+                    <div style={{ display: "flex", flexDirection: "column", lineHeight: "1.2" }}>
+                        <span>מערכת בית ספרית</span>
+                        <span style={{ fontSize: "0.85em" }}>(מסך מלא)</span>
+                    </div>
+                ),
                 p: routePath.fullScheduleView.p,
                 Icon: <Icons.tv size={24} />,
             },
@@ -386,13 +396,16 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                     <div onClick={onClose} className={styles.logoContainer}>
                         <Logo size="XS" />
                     </div>
-                    <button
-                        className={styles.closeButton}
-                        onClick={onClose}
-                        aria-label="Close menu"
-                    >
-                        <Icons.close size={24} />
-                    </button>
+                    <div className={styles.headerActions}>
+                        {school?.name && <span className={styles.schoolName}>{school.name}</span>}
+                        <button
+                            className={styles.closeButton}
+                            onClick={onClose}
+                            aria-label="Close menu"
+                        >
+                            <Icons.close size={24} />
+                        </button>
+                    </div>
                 </div>
 
                 <div className={styles.menuContent}>

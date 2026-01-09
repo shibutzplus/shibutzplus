@@ -9,6 +9,9 @@ import { COLOR_BY_TYPE } from "@/models/constant/daily";
 import { calculateVisibleRowsForDaily } from "@/utils/tableUtils";
 import { AppType } from "@/models/types";
 import type { TeacherType } from "@/models/types/teachers";
+import { successToast } from "@/lib/toast";
+
+import { getCookie, setCookie, COOKIES_KEYS } from "@/lib/cookies";
 
 type DailyFullScreenTableProps = {
     mainDailyTable: DailySchedule;
@@ -90,6 +93,18 @@ const DailyFullScreenTable: React.FC<DailyFullScreenTableProps> = ({
             observer.disconnect();
         };
     }, []);
+
+    const hasShownToast = React.useRef(false);
+
+    React.useEffect(() => {
+        const hasSeenToast = getCookie(COOKIES_KEYS.ROTATE_DEVICE_TOAST);
+
+        if (!hasSeenToast && window.innerWidth < 500 && sortedTableColumns.length > 5 && !hasShownToast.current) {
+            successToast("לצפייה מיטבית, מומלץ לסובב את המכשיר לרוחב. ", Infinity);
+            setCookie(COOKIES_KEYS.ROTATE_DEVICE_TOAST, "true", { expires: 365 });
+            hasShownToast.current = true;
+        }
+    }, [sortedTableColumns.length]);
 
     // Handle empty state
     if ((!schedule || Object.keys(schedule).length === 0) && EmptyTable) {

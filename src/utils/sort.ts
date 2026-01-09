@@ -4,7 +4,6 @@ import { ColumnTypeValues, DailySchedule, DailyScheduleCell, } from "@/models/ty
 import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import { dayToNumber } from "./time";
 import { createSelectOptions } from "./format";
-import { dailySelectActivity } from "@/resources/dailySelectActivities";
 
 // DailySchedule Header Dropdown: Filter header teacher options: only regular teachers, avoid duplicates
 export const filterDailyHeaderTeachers = (
@@ -325,12 +324,7 @@ export const sortDailyTeachers = (
             collapsed: true,
             options: freeDayTeachers.map((t) => ({ value: t.id, label: t.name })),
         },
-        {
-            label: "אפשרויות נוספות",
-            collapsed: true,
-            hideCount: false,
-            options: dailySelectActivity,
-        },
+
     ];
 
     return groups;

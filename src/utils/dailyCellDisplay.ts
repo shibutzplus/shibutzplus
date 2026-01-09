@@ -11,8 +11,7 @@ export interface CellDisplayData {
 }
 
 /**
- * Shared logic for determining what to display in a teacher cell.
- * Used by both PreviewTeacherCell (Screen) and DailySchedulePdf.
+ * Shared logic for determining what to display in a Daily Schedule Teacher cell.
  */
 export const getCellDisplayData = (
     cell: DailyScheduleCell | undefined,
@@ -37,7 +36,9 @@ export const getCellDisplayData = (
     let text = "";
     if (classesData?.length) {
         const classNames = classesData.map((cls) => cls.name).join(", ");
-        text = classNames + (!isActivity && subjectData ? ` (${subjectData.name})` : "");
+        const subjectName = subjectData?.name || "";
+        const sameAsSubject = subjectName && classNames === subjectName;
+        text = classNames + (!isActivity && subjectData && !sameAsSubject ? ` (${subjectData.name})` : "");
     }
 
     // 2. Logic for when to hide the cell entirely (Empty)

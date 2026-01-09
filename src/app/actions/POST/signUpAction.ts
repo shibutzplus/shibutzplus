@@ -8,9 +8,9 @@ import bcrypt from "bcryptjs";
 
 const signUp = async (params: RegisterRequest): Promise<RegisterResponse> => {
     try {
-        const { name, email, password, role, gender, schoolName, level } = params;
+        const { name, email, password, role, gender, schoolName, city, level } = params;
 
-        if (!name || !email || !password || !role || !gender || !schoolName || !level) {
+        if (!name || !email || !password || !role || !gender || !schoolName || !city || !level) {
             return { success: false, message: msg.auth.register.invalid };
         }
 
@@ -45,6 +45,7 @@ const signUp = async (params: RegisterRequest): Promise<RegisterResponse> => {
                     .insert(schema.schools)
                     .values({
                         name: schoolName,
+                        city,
                         type: level,
                         status: "annual",
                         publishDates: [],

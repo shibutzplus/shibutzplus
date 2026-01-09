@@ -13,7 +13,7 @@ type PreviewTeacherCellProps = {
 };
 
 const PreviewTeacherCell: React.FC<PreviewTeacherCellProps> = ({ cell, type, appType = "private" }) => {
-    const { text, subTeacherName, isMissing, isEmpty, isActivity } = getCellDisplayData(cell, type, appType);
+    const { text, subTeacherName, isEmpty, isActivity } = getCellDisplayData(cell, type, appType);
 
     if (isEmpty) {
         return (
@@ -33,8 +33,6 @@ const PreviewTeacherCell: React.FC<PreviewTeacherCellProps> = ({ cell, type, app
                 </span>
                 {subTeacherName ? (
                     <div className={styles.subTeacherName}>{subTeacherName}</div>
-                ) : isMissing ? (
-                    <div className={styles.missingSubTeacherName}>אין ממלא מקום</div>
                 ) : null}
             </div>
         </div>

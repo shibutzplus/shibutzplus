@@ -9,7 +9,6 @@ import Preloader from "@/components/ui/Preloader/Preloader";
 import NotPublished from "@/components/empty/NotPublished/NotPublished";
 import ContactAdminError from "@/components/auth/ContactAdminError/ContactAdminError";
 import { getDayNumberByDateString } from "@/utils/time";
-import { successToast } from "@/lib/toast";
 
 const FullScheduleViewPage: NextPage = () => {
     const {
@@ -26,7 +25,6 @@ const FullScheduleViewPage: NextPage = () => {
     } = usePortalContext();
 
     const [showError, setShowError] = React.useState(false);
-    const hasShownToast = React.useRef(false);
 
     useEffect(() => {
         // If teacher is already loaded, we are good
@@ -43,16 +41,6 @@ const FullScheduleViewPage: NextPage = () => {
         fetchPublishScheduleData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedDate, teacher?.id, schoolId]);
-
-    const schedule = mainPublishTable[selectedDate];
-    const colCount = schedule ? Object.keys(schedule).length : 0;
-
-    useEffect(() => {
-        if (!isDatesLoading && !isPublishLoading && window.innerWidth < 500 && colCount > 6 && !hasShownToast.current) {
-            successToast("לצפייה מיטבית, מומלץ לסובב את המכשיר לרוחב. ", 2500);
-            hasShownToast.current = true;
-        }
-    }, [isDatesLoading, isPublishLoading, colCount]);
 
     if (showError && !teacher) {
         return <ContactAdminError />;

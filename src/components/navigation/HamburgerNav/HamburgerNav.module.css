@@ -60,7 +60,20 @@
     justify-content: center;
     transition: background-color 0.2s ease;
     border-radius: 50%;
+}
+
+.headerActions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     margin-right: auto;
+}
+
+.schoolName {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--dark-text-color);
+    opacity: 0.5;
 }
 
 .closeButton:hover {
