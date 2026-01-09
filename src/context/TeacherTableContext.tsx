@@ -4,6 +4,7 @@ import React, { createContext, useContext, ReactNode, useState } from "react";
 import { TeacherType } from "@/models/types/teachers";
 import { PortalSchedule, TeacherScheduleType } from "@/models/types/portalSchedule";
 import getTeacherFullScheduleAction from "@/app/actions/GET/getTeacherFullScheduleAction";
+import { getTeacherHistoryScheduleAction } from "@/app/actions/GET/getTeacherHistoryScheduleAction";
 import { populatePortalTable } from "@/services/portalTeacherService";
 import { errorToast } from "@/lib/toast";
 import { updateDailyInstructionAction } from "@/app/actions/PUT/updateDailyInstractionAction";
@@ -38,9 +39,10 @@ export const useTeacherTableContext = () => {
 
 type TeacherTableProviderProps = {
     children: ReactNode;
+    isHistoryMode?: boolean;
 };
 
-export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ children }) => {
+export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ children, isHistoryMode = false }) => {
     const [mainPortalTable, setMainPortalTable] = useState<PortalSchedule>({});
     const [isPortalLoading, setIsPortalLoading] = useState<boolean>(false);
     const [isSavingLoading, setIsSavingLoading] = useState<boolean>(false);
@@ -60,7 +62,16 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
             if (!mainPortalTable[selectedDate]) {
                 setIsPortalLoading(true);
             }
-            const response = await getTeacherFullScheduleAction(teacher.id, selectedDate);
+
+            let response;
+            if (isHistoryMode && teacher.name) {
+                const schoolId = teacher.schoolId;
+                if (!schoolId) throw new Error("School ID missing for history fetch");
+                response = await getTeacherHistoryScheduleAction(teacher.name, schoolId, selectedDate);
+            } else {
+                response = await getTeacherFullScheduleAction(teacher.id, selectedDate);
+            }
+
             if (response.success && response.data) {
                 const newSchedule = populatePortalTable(
                     response.data,

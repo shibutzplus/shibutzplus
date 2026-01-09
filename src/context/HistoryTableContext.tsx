@@ -3,7 +3,7 @@
 import React, { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react";
 import { SelectOption } from "@/models/types";
 import {
-    getCurrentDateComponents,
+    getYesterdayDateComponents,
     buildDateString,
     generateDayOptions,
     clampDayToMonth,
@@ -42,7 +42,7 @@ interface HistoryTableProviderProps {
 
 export const HistoryTableProvider: React.FC<HistoryTableProviderProps> = ({ children }) => {
     const { school } = useMainContext();
-    const { year: currentYear, month: currentMonth, day: currentDay } = getCurrentDateComponents();
+    const { year: currentYear, month: currentMonth, day: currentDay } = getYesterdayDateComponents();
 
     const [selectedYear, setSelectedYear] = useState<string>(currentYear);
     const [selectedMonth, setSelectedMonth] = useState<string>(currentMonth);

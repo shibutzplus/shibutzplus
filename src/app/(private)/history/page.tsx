@@ -44,7 +44,7 @@ const HistorySchedulePage: NextPage = () => {
         );
 
     return (
-        <TeacherTableProvider>
+        <TeacherTableProvider isHistoryMode={true}>
             <section className={styles.container}>
                 <PreviewTable
                     mainDailyTable={mainDailyTable}
