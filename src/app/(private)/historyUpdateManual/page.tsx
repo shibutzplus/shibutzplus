@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import ActionBtn from "@/components/ui/buttons/ActionBtn/ActionBtn";
 import { runHistoryUpdateAction } from "@/app/actions/POST/runHistoryUpdateAction";
-import { runAllHistoryUpdateAction } from "@/app/actions/POST/runAllHistoryUpdateAction";
+
 import styles from "./historyUpdateManual.module.css";
 import { successToast, errorToast } from "@/lib/toast";
 
@@ -37,30 +37,7 @@ export default function ManualHistoryPage() {
         }
     };
 
-    const handleRunAllUpdate = async () => {
-        setLoading(true);
-        setLogs([]);
-        setStats(null);
-        try {
-            const result = await runAllHistoryUpdateAction();
 
-            if (result.success) {
-                successToast(result.message);
-            } else {
-                errorToast(result.message);
-            }
-
-            setLogs(result.logs || []);
-            if (result.stats) {
-                setStats(result.stats);
-            }
-        } catch (e) {
-            console.error(e);
-            errorToast("אירעה שגיאה לא צפויה.");
-        } finally {
-            setLoading(false);
-        }
-    };
 
     return (
         <div className={styles.container}>
@@ -78,13 +55,7 @@ export default function ManualHistoryPage() {
                         isDisabled={loading}
                         className={styles.actionButton}
                     />
-                    <ActionBtn
-                        label="עדכון מלא (מההתחלה עד אתמול)"
-                        func={handleRunAllUpdate}
-                        isLoading={loading}
-                        isDisabled={loading}
-                        className={styles.actionButton}
-                    />
+
                 </div>
             </div>
 
