@@ -8,13 +8,14 @@ import { processHistoryUpdate } from '@/services/history/updateHistory';
 //
 // PROCESS:
 // 1. It identifies "Today" (or a specific date provided manually).
-// 2. It finds all schools that have PUBLISHED the schedule for that date.
-// 3. It fetches the DailySchedule records for those schools/dates.
+// 2. It finds all schools for that date.
+// 3. It fetches the DailySchedule records for those schools/date.
 // 4. It archives them into the "history" table.
+// 5. It cleans up "DailySchedule" records older than 4 days.
 //
 // TRIGGERS:
 // Vercel Cron Job: configured in `vercel.json`
-// runs daily at 16:00 UTC (after 18:00 IL time), Sun-Fri (doesnt run on Saturday).
+// runs daily at 16:00 UTC (after ~18:00 IL time), Sun-Fri (does not run on Saturday).
 //
 // RELATED FILES:
 // - Logic: `src/services/history/updateHistory.ts` (Core logic residing here)

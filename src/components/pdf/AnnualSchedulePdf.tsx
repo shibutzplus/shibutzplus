@@ -183,10 +183,10 @@ const AnnualSchedulePdf: React.FC<AnnualSchedulePdfProps> = ({
                         <View style={[styles.cell, styles.hourCell]}>
                             <Text></Text>
                         </View>
-                        {/* Day Headers */}
+                        {/* Day Headers (Note! Because of Hebrew its a must to add a real apostrophe) */}
                         {DAYS_OF_WORK_WEEK.map((dayLabel, index) => (
                             <View key={index} style={[styles.cell, styles.headerCell]}>
-                                <Text>יום {dayLabel}'</Text>
+                                <Text>יום {dayLabel}׳</Text>
                             </View>
                         ))}
                     </View>

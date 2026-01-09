@@ -1,7 +1,7 @@
 
 import { db } from '@/db';
 import { history, dailySchedule, teachers, classes, subjects, schools } from '@/db/schema';
-import { eq, inArray, arrayContains, and } from 'drizzle-orm';
+import { eq, inArray, and, lte } from 'drizzle-orm';
 
 interface HistoryUpdateResult {
     success: boolean;
@@ -22,31 +22,24 @@ export async function processHistoryUpdate(dateString?: string, force: boolean =
         let targetDate = dateString;
         if (!targetDate) {
             const today = new Date();
-            // Default is now Today (per user request), usually run afterschool hours or manually
             targetDate = today.toISOString().split('T')[0];
         }
 
         log(`Processing history for date: ${targetDate}${force ? ' (Force Mode)' : ''}`);
 
-        // 2. Find schools that have published this date
-        let schoolsQuery = db
+        // 2. Find ALL schools (regardless of publish status)
+        const schoolsQuery = db
             .select({ id: schools.id, name: schools.name })
             .from(schools);
 
-        if (!force) {
-            schoolsQuery.where(arrayContains(schools.publishDates, [targetDate]));
-        }
+        const targetSchools = await schoolsQuery;
 
-        const publishedSchools = await schoolsQuery;
-
-        if (publishedSchools.length === 0) {
-            log(`No schools found ${force ? '' : `with published schedule `}for ${targetDate}`);
+        if (targetSchools.length === 0) {
             return { success: true, logs, schoolsUpdated: 0, recordsCount: 0 };
         }
 
-        const publishedSchoolIds = publishedSchools.map(s => s.id);
-        const publishedSchoolNames = publishedSchools.map(s => s.name).join(', ');
-        log(`Found ${publishedSchoolIds.length} schools${force ? '' : ' with published schedule'}: ${publishedSchoolNames}`);
+        const targetSchoolIds = targetSchools.map(s => s.id);
+        const targetSchoolNames = targetSchools.map(s => s.name).join(', ');
 
         // 3. Fetch daily schedules
         const schedules = await db
@@ -55,16 +48,13 @@ export async function processHistoryUpdate(dateString?: string, force: boolean =
             .where(
                 and(
                     eq(dailySchedule.date, targetDate),
-                    inArray(dailySchedule.schoolId, publishedSchoolIds)
+                    inArray(dailySchedule.schoolId, targetSchoolIds)
                 )
             );
 
         if (schedules.length === 0) {
-            log('No schedules found to archive.');
-            return { success: true, logs, schoolsUpdated: publishedSchoolIds.length, recordsCount: 0 };
+            return { success: true, logs, schoolsUpdated: targetSchoolIds.length, recordsCount: 0 };
         }
-
-        log(`Found ${schedules.length} schedule records to archive.`);
 
         // 4. Fetch reference data
         const allTeachers = await db.select({ id: teachers.id, name: teachers.name }).from(teachers);
@@ -117,23 +107,33 @@ export async function processHistoryUpdate(dateString?: string, force: boolean =
                 .where(
                     and(
                         eq(history.date, targetDate),
-                        inArray(history.schoolId, publishedSchoolIds)
+                        inArray(history.schoolId, targetSchoolIds)
                     )
                 );
-            log(`Deleted existing history records for ${targetDate} for ${publishedSchoolIds.length} schools.`);
 
             await db.insert(history).values(historyRecords);
             log(`Successfully inserted ${historyRecords.length} records into history.`);
         }
 
+        // 6. Cleanup old daily schedules (4 days ago or older)
+        const cleanupDate = new Date();
+        cleanupDate.setDate(cleanupDate.getDate() - 4);
+        const cleanupDateStr = cleanupDate.toISOString().split('T')[0];
+
+        await db.delete(dailySchedule)
+            .where(lte(dailySchedule.date, cleanupDateStr));
+
+        log(`Cleanup: Removed dailySchedule records on or before ${cleanupDateStr}.`);
+
         return {
             success: true,
             logs,
-            schoolsUpdated: publishedSchoolIds.length,
+            schoolsUpdated: targetSchoolIds.length,
             recordsCount: historyRecords.length
         };
 
     } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('History update failed:', error);
         log(`Error: ${error instanceof Error ? error.message : String(error)}`);
         return { success: false, logs, schoolsUpdated: 0, recordsCount: 0 };

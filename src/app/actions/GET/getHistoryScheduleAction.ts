@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { history, schools } from "@/db/schema";
+import { history } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
 import { DailyScheduleType, ColumnType } from "@/models/types/dailySchedule";
 import { ActionResponse } from "@/models/types/actions";
@@ -100,6 +100,7 @@ export async function getHistoryScheduleAction(schoolId: string, date: string): 
         };
 
     } catch (error) {
+        // eslint-disable-next-line no-console
         console.error("Error fetching history schedule:", error);
         return {
             success: false,
