@@ -7,14 +7,14 @@ import { processHistoryUpdate } from '@/services/history/updateHistory';
 // This API endpoint handles the daily archiving of "DailySchedule" into "History".
 //
 // PROCESS:
-// 1. It identifies "Yesterday" (or a specific date provided manually).
+// 1. It identifies "Today" (or a specific date provided manually).
 // 2. It finds all schools that have PUBLISHED the schedule for that date.
 // 3. It fetches the DailySchedule records for those schools/dates.
 // 4. It archives them into the "history" table.
 //
 // TRIGGERS:
-// 1. Vercel Cron Job: configured in `vercel.json` (runs daily).
-// 2. Manual Trigger: via `/historyUpdateManual` page (admin internal tool).
+// Vercel Cron Job: configured in `vercel.json`
+// runs daily at 16:00 UTC (after 18:00 IL time), Sun-Fri (doesnt run on Saturday).
 //
 // RELATED FILES:
 // - Logic: `src/services/history/updateHistory.ts` (Core logic residing here)
