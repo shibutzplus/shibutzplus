@@ -5,6 +5,7 @@ import Icons from "@/style/icons";
 import { EventColor, ExistingTeacherColor, MissingTeacherColor } from "@/style/root";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import { PositionSide } from "@/models/types/ui";
+import { useClickOutside } from "@/hooks/useClickOutside";
 import styles from "./DailyActionBtns.module.css";
 
 type DailyActionBtnsProps = {
@@ -18,23 +19,7 @@ const DailyActionBtns: React.FC<DailyActionBtnsProps> = ({ position, useShortLab
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const containerRef = React.useRef<HTMLDivElement>(null);
 
-    React.useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-                setIsMenuOpen(false);
-            }
-        };
-
-        if (isMenuOpen) {
-            document.addEventListener("mousedown", handleClickOutside);
-        } else {
-            document.removeEventListener("mousedown", handleClickOutside);
-        }
-
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, [isMenuOpen]);
+    useClickOutside(containerRef, () => setIsMenuOpen(false), isMenuOpen);
 
     const getButtonClass = (position: PositionSide) => {
         const classes = [];
