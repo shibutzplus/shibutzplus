@@ -81,7 +81,7 @@ interface DailyTableContextType {
         columnId: string,
         dailyScheduleId: string,
     ) => Promise<boolean | undefined>;
-    daysSelectOptions: () => SelectOption[];
+    daysSelectOptions: (short?: boolean) => SelectOption[];
     handleDayChange: (value: string) => void;
     togglePreviewMode: () => void;
     moveColumn: (columnId: string, direction: "left" | "right") => Promise<void>;

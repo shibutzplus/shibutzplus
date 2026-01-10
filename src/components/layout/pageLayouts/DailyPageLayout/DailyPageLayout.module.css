@@ -1,4 +1,4 @@
-/* Desktop > 1335px */
+/* Desktop > 1330px */
 .titleContainer {
     display: flex;
     flex-direction: column;
@@ -19,22 +19,52 @@
     display: none;
 }
 
+.bar2DateContainerShort {
+    width: 155px;
+    min-width: 155px;
+    max-width: 155px;
+    display: none;
+}
+
+.bar2DateSection {
+    display: none;
+}
+
 .spacer {
     width: 15px;
 }
 
-.topBarActionBtns {
-    display: flex;
+.topBarActionBtnsShort {
+    display: none;
     gap: 15px;
 }
 
-.bottomBarActionBtns {
-    display: none;
+.topBarActionBtns {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: nowrap;
 }
 
-/* <= 1335px */
-@media (max-width: 1335px) {
+/* <= 1340px */
+@media (max-width: 1340px) {
     .topBarActionBtns {
+        display: none;
+    }
+
+    .topBarActionBtnsShort {
+        display: flex;
+    }
+
+    .contentWithBottomMargin {
+        margin-bottom: 0;
+    }
+}
+
+/* <= 1250px */
+@media (max-width: 1250px) {
+    .topBarActionBtnsShort {
         display: none;
     }
 
@@ -42,12 +72,20 @@
         display: none;
     }
 
-    .bottomBarActionBtns {
-        display: block;
+    .bar2DateSection {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-top: 10px;
+        padding-inline: 15px;
+        gap: 15px;
     }
 
-    .contentWithBottomMargin {
-        margin-bottom: var(--header-height);
+    .secondRowActionBtns {
+        display: flex;
+        flex-direction: row;
+        gap: 15px;
+        align-items: center;
     }
 }
 
@@ -65,9 +103,35 @@
     }
 
     .bar2DateSection {
+
+        justify-content: space-between;
+    }
+}
+
+/* <= 730px */
+@media (max-width: 730px) {
+    .bar2DateContainer {
+        display: none;
+    }
+
+    .bar2DateContainerShort {
+        display: block;
+    }
+}
+
+.mobileActionMenu {
+    display: none;
+}
+
+/* <= 620px */
+@media (max-width: 620px) {
+    .secondRowActionBtns {
+        display: none;
+    }
+
+    .mobileActionMenu {
         display: flex;
-        justify-content: center;
-        padding-top: 10px;
+        justify-content: flex-end;
     }
 }
 
@@ -77,14 +141,4 @@
         border: none;
     }
 
-    .pdfBtnWrapper button {
-        border: none !important;
-    }
-}
-
-/* <= 340px */
-@media (max-width: 340px) {
-    .pdfBtnWrapper button {
-        width: 40px !important;
-    }
 }
