@@ -49,9 +49,6 @@ const staggerContainer = {
     hidden: { opacity: 0 },
     visible: {
         opacity: 1,
-        transition: {
-            staggerChildren: 0.1,
-        },
     },
 };
 
@@ -62,7 +59,7 @@ export default function LandingPage() {
             <nav className={styles.navbar}>
                 <div className={styles.navContent}>
                     <Suspense fallback={<Loading />}>
-                        <HeroSignInButton title="התחברות"/>
+                        <HeroSignInButton title="התחברות" />
                     </Suspense>
                     <Logo size="S" />
                 </div>
@@ -87,16 +84,22 @@ export default function LandingPage() {
                             </div>
                             <div>בבית הספר</div>
                         </motion.h1>
-                        <motion.p variants={fadeInUp} transition={{ duration: 0.6, delay: 0.1 }}>
+                        {/* <motion.p variants={fadeInUp} transition={{ duration: 0.6, delay: 0.1 }}>
                             שיבוץ ממלא מקום בקלות וביעילות
-                        </motion.p>
+                        </motion.p> */}
+                        <motion.div
+                            className={styles.alert}
+                            variants={fadeInUp}
+                            transition={{ duration: 0.6, delay: 0.1 }}
+                        >
+                            <div>המערכת מיועדת עבור מנהלי המערכת בבית הספר</div>
+                            <div>
+                                מורים, צרו קשר עם הנהלת בית הספר לקבלת קישור מתאים
+                            </div>
+                        </motion.div>
                         <motion.div variants={fadeInUp} transition={{ duration: 0.6, delay: 0.2 }}>
                             <HeroSignInButton title="התחברות למנהלים" />
                         </motion.div>
-                        <motion.p className={styles.alert} variants={fadeInUp} transition={{ duration: 0.6, delay: 0.1 }}>
-                            <div>מיועד עבור מנהלי המערכת בבית הספר</div>
-                            <div>מורים, צרו קשר עם <u>הנהלת בית הספר</u> לקבלת קישור מתאים</div>
-                        </motion.p>
                     </motion.div>
 
                     <motion.div
@@ -182,7 +185,7 @@ export default function LandingPage() {
             </section>
 
             {/* Testimonials Section */}
-            <section className={styles.testimonials} style={{display: "none"}}>
+            <section className={styles.testimonials} style={{ display: "none" }}>
                 <div className={styles.container}>
                     <motion.h2
                         className={styles.sectionTitle}

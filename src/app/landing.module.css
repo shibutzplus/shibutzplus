@@ -31,10 +31,10 @@
   width: 100%;
   display: flex;
   align-items: center;
-  border-bottom: 1px solid #e2e8f0;
   position: sticky;
   top: 0;
-  background: rgba(255, 255, 255, 0.95);
+  /* border-bottom: 1px solid #e2e8f0; */
+  /* background: rgba(255, 255, 255, 0.95); */
   z-index: 1000;
   padding: 0 3vw;
   box-sizing: border-box;
@@ -127,7 +127,7 @@
 .heroWrapper {
   position: relative;
   margin: 0 auto;
-  padding: calc(var(--nav-height) + 6vh) 0 0;
+  padding: 6vh 0 0;
   box-sizing: border-box;
   text-align: center;
   height: 85vh;
