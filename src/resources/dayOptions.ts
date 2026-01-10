@@ -5,7 +5,7 @@ import {
     getCurrentMonth, getCurrentYear, israelToday, DAYS_OF_WEEK_FORMAT, formatTMDintoDMY,
 } from "@/utils/time";
 
-export function getIsraeliDateOptions(): SelectOption[] {
+export function getIsraeliDateOptions(short: boolean = false): SelectOption[] {
     const options: SelectOption[] = [];
 
     // Helper function to format date and create option
@@ -22,11 +22,18 @@ export function getIsraeliDateOptions(): SelectOption[] {
         const tomorrow = new Date(israelToday);
         tomorrow.setDate(israelToday.getDate() + 1);
 
-        let label = `${formatTMDintoDMY(dateString)} | ${hebrewDay}`;
+        let formattedDate = formatTMDintoDMY(dateString);
+        if (short) {
+            // Remove year: DD-MM-YYYY -> DD-MM
+            const parts = formattedDate.split("-");
+            formattedDate = `${parts[0]}-${parts[1]}`;
+        }
+
+        let label = `${formattedDate} | ${hebrewDay}`;
 
         if (date.toDateString() === israelToday.toDateString()) {
             label += " (היום)";
-        } else if (date.toDateString() === tomorrow.toDateString()) {
+        } else if (!short && date.toDateString() === tomorrow.toDateString()) {
             label += " (מחר)";
         }
 

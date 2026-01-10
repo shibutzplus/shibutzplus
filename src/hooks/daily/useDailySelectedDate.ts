@@ -3,7 +3,7 @@ import { getIsraeliDateOptions, getTomorrowOption } from "@/resources/dayOptions
 import { AUTO_SWITCH_TIME } from "@/utils/time";
 
 const useDailySelectedDate = () => {
-    const daysSelectOptions = () => getIsraeliDateOptions();
+    const daysSelectOptions = (short?: boolean) => getIsraeliDateOptions(short);
 
     // Pick today if before switch time, otherwise tomorrow; skip to tomorrow if today not in options (weekend/holiday)
     const [selectedDate, setSelectedDayId] = useState<string>(() => {
