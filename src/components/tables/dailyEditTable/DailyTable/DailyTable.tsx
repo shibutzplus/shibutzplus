@@ -10,7 +10,7 @@ import { useColumnAnimation } from "./useColumnAnimation";
 import { sortDailyColumnIdsByPosition } from "@/utils/sort";
 import { HOURS_IN_DAY } from "@/utils/time";
 import { TeacherType } from "@/models/types/teachers";
-import { DailySchedule, ColumnType } from "@/models/types/dailySchedule";
+import { DailySchedule, ColumnType, ColumnTypeValues } from "@/models/types/dailySchedule";
 import styles from "./DailyTable.module.css";
 
 type AnimatedHeaderWrapperProps = {
@@ -101,7 +101,7 @@ const DailyTable: React.FC<DailyTableProps> = ({
         if (!schedule) return [];
         const tableColumns = Object.keys(schedule);
         return sortDailyColumnIdsByPosition(tableColumns, schedule);
-    }, [schedule, mainDailyTable, selectedDate]);
+    }, [schedule]);
 
     const prevSortedColumnsRef = React.useRef<string[]>([]);
 
@@ -140,9 +140,7 @@ const DailyTable: React.FC<DailyTableProps> = ({
             const columnData = schedule[colId];
 
             // Fallback to type from ID prefix for old data stability
-            let inferredType: ColumnType = "existingTeacher";
-            if (colId.startsWith("missingTeacher-")) inferredType = "missingTeacher";
-            else if (colId.startsWith("event-")) inferredType = "event";
+            const inferredType: ColumnType = ColumnTypeValues.missingTeacher;
 
             if (!columnData) {
                 types[colId] = inferredType;
@@ -163,11 +161,11 @@ const DailyTable: React.FC<DailyTableProps> = ({
 
     const getColorClass = (type: ColumnType) => {
         switch (type) {
-            case "existingTeacher":
+            case ColumnTypeValues.existingTeacher:
                 return styles.headerBlue;
-            case "missingTeacher":
+            case ColumnTypeValues.missingTeacher:
                 return styles.headerRed;
-            case "event":
+            case ColumnTypeValues.event:
                 return styles.headerGreen;
             default:
                 return styles.headerBlue;
@@ -192,7 +190,7 @@ const DailyTable: React.FC<DailyTableProps> = ({
                         </th>
 
                         {sortedTableColumns.map((colId: string, colIndex: number) => {
-                            const type = columnTypes[colId] || "event";
+                            const type = columnTypes[colId] || ColumnTypeValues.event;
                             const headerColorClass = getColorClass(type);
                             const width = animatingWidths[colId];
                             const isAnimating = width !== undefined;
@@ -208,7 +206,7 @@ const DailyTable: React.FC<DailyTableProps> = ({
                                     width={width}
                                     headerColorClass={headerColorClass}
                                 >
-                                    {type === "event" ? (
+                                    {type === ColumnTypeValues.event ? (
                                         <DailyEventHeader
                                             columnId={colId}
                                             onDelete={isAnimating ? undefined : (id) => handleColumnAnimation(id, "remove")}
@@ -242,7 +240,7 @@ const DailyTable: React.FC<DailyTableProps> = ({
                             </td>
 
                             {sortedTableColumns.map((colId: string, colIndex: number) => {
-                                const type = columnTypes[colId] || "event";
+                                const type = columnTypes[colId] || ColumnTypeValues.event;
                                 const columnData = schedule[colId];
                                 if (!columnData) return null;
                                 const cellData = columnData[row]; // row is the hour index
@@ -254,7 +252,7 @@ const DailyTable: React.FC<DailyTableProps> = ({
                                         colIndex={colIndex}
                                         width={width}
                                     >
-                                        {type === "event" ? (
+                                        {type === ColumnTypeValues.event ? (
                                             <DailyEventCell cell={cellData} columnId={colId} />
                                         ) : (
                                             <DailyTeacherCell

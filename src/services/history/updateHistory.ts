@@ -13,6 +13,7 @@ interface HistoryUpdateResult {
 export async function processHistoryUpdate(dateString?: string, force: boolean = false): Promise<HistoryUpdateResult> {
     const logs: string[] = [];
     const log = (msg: string) => {
+        // eslint-disable-next-line no-console
         console.log(msg);
         logs.push(msg);
     };
@@ -39,7 +40,7 @@ export async function processHistoryUpdate(dateString?: string, force: boolean =
         }
 
         const targetSchoolIds = targetSchools.map(s => s.id);
-        const targetSchoolNames = targetSchools.map(s => s.name).join(', ');
+
 
         // 3. Fetch daily schedules
         const schedules = await db
@@ -74,7 +75,7 @@ export async function processHistoryUpdate(dateString?: string, force: boolean =
                 : null;
 
             let columnType = 0;
-            switch (schedule.issueTeacherType) {
+            switch (schedule.columnType) {
                 case 'missingTeacher': columnType = 0; break;
                 case 'existingTeacher': columnType = 1; break;
                 case 'event': columnType = 2; break;
@@ -91,7 +92,7 @@ export async function processHistoryUpdate(dateString?: string, force: boolean =
                 columnId: schedule.columnId || '',
                 columnPosition: schedule.position,
                 columnType: columnType,
-                originalTeacher: getTeacherName(schedule.issueTeacherId),
+                originalTeacher: getTeacherName(schedule.originalTeacherId),
                 classes: classNames ? classNames.join(', ') : null,
                 subject: getSubjectName(schedule.subjectId),
                 subTeacher: getTeacherName(schedule.subTeacherId),

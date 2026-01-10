@@ -35,8 +35,8 @@ export async function deleteTeacherAction(
                 .where(
                     and(
                         eq(schema.dailySchedule.schoolId, schoolId),
-                        eq(schema.dailySchedule.issueTeacherId, teacherId) ||
-                            eq(schema.dailySchedule.subTeacherId, teacherId),
+                        eq(schema.dailySchedule.originalTeacherId, teacherId) ||
+                        eq(schema.dailySchedule.subTeacherId, teacherId),
                     ),
                 );
 

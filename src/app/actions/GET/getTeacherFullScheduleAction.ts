@@ -17,18 +17,18 @@ const getTeacherFullScheduleAction = async (
         }
 
         const result = await executeQuery(async () => {
-            // Get daily schedule entries where teacher is either subTeacher or issueTeacher
+            // Get daily schedule entries where teacher is either subTeacher or originalTeacher
             const dailySchedules = await db.query.dailySchedule.findMany({
                 where: and(
                     eq(schema.dailySchedule.date, date),
                     or(
                         eq(schema.dailySchedule.subTeacherId, teacherId),
-                        eq(schema.dailySchedule.issueTeacherId, teacherId),
+                        eq(schema.dailySchedule.originalTeacherId, teacherId),
                     ),
                 ),
                 with: {
                     subject: true,
-                    issueTeacher: true,
+                    originalTeacher: true,
                     subTeacher: true,
                     school: true,
                 },
@@ -77,8 +77,8 @@ const getTeacherFullScheduleAction = async (
                     school: schedule.school,
                     classes: getClasses(schedule),
                     subject: schedule.subject || undefined,
-                    issueTeacher: schedule.issueTeacher || undefined,
-                    issueTeacherType: schedule.issueTeacherType || undefined,
+                    originalTeacher: schedule.originalTeacher || undefined,
+                    columnType: schedule.columnType || undefined,
                     subTeacher: schedule.subTeacher || undefined,
                     position: schedule.position || 0,
                     instructions: schedule.instructions || undefined,

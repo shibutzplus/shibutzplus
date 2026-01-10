@@ -14,14 +14,14 @@ type TeacherDetailsCellProps = {
 
 const TeacherDetailsCell: React.FC<TeacherDetailsCellProps> = ({ row, teacher }) => {
     const getReplaceText = (r?: TeacherScheduleType) => {
-        if (!r?.issueTeacher) return null;
-        if (teacher?.id === r.issueTeacher?.id) {
+        if (!r?.originalTeacher) return null;
+        if (teacher?.id === r.originalTeacher?.id) {
             if (r.subTeacher) return { text: r.subTeacher.name?.trim(), type: "replaced" };
             if (r.event) return { text: r.event?.trim(), type: "replaced" };
             return null;
         } else {
             return {
-                text: r.issueTeacher.name?.trim(),
+                text: r.originalTeacher.name?.trim(),
                 type: "replacing",
             };
         }

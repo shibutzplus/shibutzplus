@@ -23,7 +23,7 @@ const TeacherInstructionsCell: React.FC<TeacherInstructionsCellProps> = ({
     const [instructions, setInstructions] = useState<string>(row?.instructions || "");
     const [prevInstructions, setPrevInstructions] = useState<string>(row?.instructions || "");
 
-    const isIssueTeacher = teacher?.id === row?.issueTeacher?.id;
+    const isOriginalTeacher = teacher?.id === row?.originalTeacher?.id;
 
     useEffect(() => {
         if (!row) return;
@@ -46,7 +46,7 @@ const TeacherInstructionsCell: React.FC<TeacherInstructionsCellProps> = ({
                     onChangeHTML={setInstructions}
                     onBlurHTML={handleChange}
                     placeholder={getInstructionPlaceholder(row, teacher)}
-                    importantPlaceholder={isIssueTeacher && !!row.subTeacher} // red if there isnt a sub teacher
+                    importantPlaceholder={isOriginalTeacher && !!row.subTeacher} // red if there isnt a sub teacher
                     minHeight={60}
                     maxLines={10}
                 />

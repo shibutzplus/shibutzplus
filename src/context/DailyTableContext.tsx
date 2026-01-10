@@ -230,20 +230,25 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         return false;
     };
 
-
-
     const deleteColumn = async (columnId: string) => {
         if (!school?.id) return false;
         const prevSchedule = { ...mainDailyTable };
 
         const updatedSchedule = { ...mainDailyTable };
+        // Create a shallow copy of the specific day's schedule to avoid mutation
+        if (updatedSchedule[selectedDate]) {
+            updatedSchedule[selectedDate] = { ...updatedSchedule[selectedDate] };
+        }
+
         const columnToDelete = updatedSchedule[selectedDate]?.[columnId];
 
         // Check if any cell in this column has a DBid. 
         // If so, it means there are records in the database that need to be deleted.
         const hasSavedData = columnToDelete ? Object.values(columnToDelete).some(cell => !!cell.DBid) : false;
 
-        delete updatedSchedule[selectedDate]?.[columnId];
+        if (updatedSchedule[selectedDate]) {
+            delete updatedSchedule[selectedDate][columnId];
+        }
         setMainAndStorageTable(updatedSchedule);
 
         // If no data was saved to DB, we don't need to call the API
@@ -313,7 +318,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     };
 
     const addNewEmptyColumn = (type: ColumnType) => {
-        const newColumnId = `${type}-${generateId()}`;
+        const newColumnId = generateId();
 
         const schedule = mainDailyTable[selectedDate] || {};
         const existingColumns = Object.keys(schedule);
@@ -356,9 +361,17 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
             const spliceIndex = insertAfterIndex + 1;
             newColsList.splice(spliceIndex, 0, newColumnId);
 
+            // Create a copy for mutation
+            const tempSchedule = { ...mainDailyTable };
+            if (tempSchedule[selectedDate]) {
+                tempSchedule[selectedDate] = { ...tempSchedule[selectedDate] };
+            } else {
+                tempSchedule[selectedDate] = {};
+            }
+
             // Create empty column first with placeholder pos
-            const tempSchedule = createNewEmptyColumn(
-                mainDailyTable,
+            createNewEmptyColumn(
+                tempSchedule,
                 selectedDate,
                 newColumnId,
                 type,
@@ -372,8 +385,16 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         }
 
         // Normal Insert
-        const finalSchedule = createNewEmptyColumn(
-            mainDailyTable,
+        // Create a copy for mutation
+        const finalSchedule = { ...mainDailyTable };
+        if (finalSchedule[selectedDate]) {
+            finalSchedule[selectedDate] = { ...finalSchedule[selectedDate] };
+        } else {
+            finalSchedule[selectedDate] = {};
+        }
+
+        createNewEmptyColumn(
+            finalSchedule,
             selectedDate,
             newColumnId,
             type,

@@ -1,6 +1,6 @@
 {
-  "id": "02acfb21-eca5-4828-a0b4-5295506c6ae9",
-  "prevId": "e7d4f5f8-a93a-4380-9707-94fb1f9cddea",
+  "id": "86b58c0e-0e06-467b-a698-0a73cf2c7c8a",
+  "prevId": "02acfb21-eca5-4828-a0b4-5295506c6ae9",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -294,8 +294,8 @@
           "notNull": true,
           "default": "'missingTeacher'"
         },
-        "issue_teacher_id": {
-          "name": "issue_teacher_id",
+        "original_teacher_id": {
+          "name": "original_teacher_id",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -377,7 +377,7 @@
           "name": "idx_daily_issue_teacher_date_hour",
           "columns": [
             {
-              "expression": "issue_teacher_id",
+              "expression": "original_teacher_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
