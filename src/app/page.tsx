@@ -121,7 +121,9 @@ export default function LandingPage() {
                             variants={fadeInUp} 
                             transition={{ duration: 0.6, delay: 0.2 }}
                         >
-                            <HeroSignInButton title="התחברות למנהלים" />
+                            <Suspense fallback={<Loading />}>
+                                <HeroSignInButton title="התחברות למנהלים" />
+                            </Suspense>
                         </motion.div>
                     </motion.div>
 
