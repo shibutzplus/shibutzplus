@@ -87,8 +87,12 @@ const DailyActionBtns: React.FC<DailyActionBtnsProps> = ({ position, useShortLab
         return (
             <div className={styles.mobileMenuContainer} ref={containerRef}>
                 <ActionBtn
-                    Icon={<Icons.plus size={16} />}
-                    label="שיבוץ"
+                    label={
+                        <span style={{ display: "flex", alignItems: "center" }}>
+                            שיבוץ
+                            <Icons.arrowDropDown size={32} />
+                        </span>
+                    }
                     isDisabled={isLoading}
                     func={() => setIsMenuOpen((prev) => !prev)}
                     className={styles.mobileMenuTrigger}

@@ -4,9 +4,13 @@
 }
 
 .mobileMenuTrigger {
-    width: 80px !important;
+    width: 90px !important;
     padding: 0 !important;
     justify-content: center !important;
+    background-color: transparent !important;
+    border-radius: 4px;
+    font-size: 16px !important;
+    font-weight: 500 !important;
 }
 
 .mobileDropdown {
