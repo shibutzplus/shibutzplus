@@ -9,7 +9,6 @@ import Icons from "@/style/icons";
 import { motion, AnimatePresence } from "motion/react";
 import { useAccessibility } from "../../../hooks/browser/useAccessibility";
 import routePath from "../../../routes";
-import { errorToast } from "@/lib/toast";
 import { clearStorage, getStorageTeacher } from "@/lib/localStorage";
 import { usePopup } from "@/context/PopupContext";
 import SettingsPopup from "@/components/popups/SettingsPopup/SettingsPopup";
