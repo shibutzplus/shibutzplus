@@ -5,7 +5,7 @@ import Loading from "@/components/loading/Loading/Loading";
 const ActionBtn: React.FC<{
     type?: string;
     Icon?: React.ReactNode;
-    label?: React.ReactNode;
+    label?: string;
     tooltip?: string;
     style?: React.CSSProperties;
     func: () => void;
