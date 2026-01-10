@@ -47,7 +47,7 @@
 
     --input-height: 40px;
 
-    --border-primary: 1px solid var(--dark-border-color);
+    --border-primary: 1px solid var(--bright-border-color);
 
     --border-radius-input: 4px;
     --border-radius-table: 20px;
