@@ -70,6 +70,7 @@ const linkGroups: ILinkGroup[] = [
                 name: routePath.statistics.title,
                 p: routePath.statistics.p,
                 Icon: <Icons.stats size={24} />,
+                isForGuest: false,
             },
         ],
     },
@@ -214,25 +215,22 @@ const LinkComponent: React.FC<LinkComponentProps> = ({ link, onClose, currentPat
     const { data: session } = useSession();
     const userRole = (session?.user as any)?.role;
     const isGuest = userRole === "guest";
-    const isDisabled = isGuest && !link.isForGuest;
+    const guest = isGuest && !link.isForGuest;
     const { handleOpenGuestPopup } = useGuestModePopup();
 
     return (
         <div className={styles.linkWrapper}>
             <Link
-                href={isDisabled ? "#" : link.p}
-                className={`${styles.navLink} ${isActive ? styles.active : ""} ${
-                    isDisabled ? styles.disabled : ""
-                }`}
+                href={guest ? "#" : link.p}
+                className={`${styles.navLink} ${isActive ? styles.active : ""}`}
                 onClick={(e) => {
-                    if (isDisabled) {
+                    if (guest) {
                         e.preventDefault();
                         handleOpenGuestPopup();
                         return;
                     }
                     onClose();
                 }}
-                aria-disabled={isDisabled}
             >
                 {link.Icon}
                 <span>{link.name}</span>
@@ -375,10 +373,10 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                     context?.setSchool((prev) =>
                         prev
                             ? {
-                                ...prev,
-                                hoursNum: newSettings.hoursNum,
-                                displaySchedule2Susb: newSettings.displaySchedule2Susb,
-                            }
+                                  ...prev,
+                                  hoursNum: newSettings.hoursNum,
+                                  displaySchedule2Susb: newSettings.displaySchedule2Susb,
+                              }
                             : prev,
                     );
                 }}
@@ -401,7 +399,6 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                         <Logo size="XS" />
                     </div>
                     <div className={styles.headerActions}>
-                        {/* {school?.name && <span className={styles.schoolName}>{school.name}</span>} */}
                         <button
                             className={styles.closeButton}
                             onClick={onClose}
@@ -501,16 +498,9 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                             </Link>
                             {isPrivate && (
                                 <div
-                                    className={`${styles.navLink} ${
-                                        isGuest ? styles.disabled : ""
-                                    }`}
-                                    onClick={
-                                        isGuest
-                                            ? handleOpenGuestPopup
-                                            : handleOpenSettings
-                                    }
+                                    className={styles.navLink}
+                                    onClick={isGuest ? handleOpenGuestPopup : handleOpenSettings}
                                     aria-label="הגדרות מערכת"
-                                    aria-disabled={isGuest}
                                 >
                                     <Icons.settings size={24} />
                                     <span>הגדרות מערכת</span>

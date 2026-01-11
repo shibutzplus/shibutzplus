@@ -26,19 +26,19 @@ const DailyPublishActionBtns: React.FC = () => {
 
     const { handleOpenPopup } = useDeletePopup();
     const { data: session } = useSession();
-    const isGuest = (session?.user as any)?.role === "guest";
+    const guest = (session?.user as any)?.role === "guest";
     const { handleOpenGuestPopup } = useGuestModePopup();
 
-    const handleAction = (action: () => void) => {
-        if (isGuest) {
+    const handleClickAction = (action: () => void) => {
+        if (guest) {
             handleOpenGuestPopup();
-        } else {
-            action();
+            return;
         }
+        action();
     };
 
     const handleUnpublishClick = () => {
-        if (isGuest) {
+        if (guest) {
             handleOpenGuestPopup();
             return;
         }
@@ -55,47 +55,25 @@ const DailyPublishActionBtns: React.FC = () => {
         }
     };
 
-    const GuestOverlay = () => (
-        <div
-            onClick={(e) => {
-                e.stopPropagation();
-                handleOpenGuestPopup();
-            }}
-            style={{
-                position: "absolute",
-                inset: 0,
-                cursor: "not-allowed",
-                zIndex: 10,
-            }}
-            title="אפשרות זו אינה זמינה לאורח"
-        />
-    );
-
-    const guestWrapperStyle: React.CSSProperties = {
-        position: "relative",
-        opacity: 0.5,
-    };
-
     return (
         <div className={styles.topNavBtnContainer}>
             <span title={isEmpty ? "אין נתונים לתצוגה מקדימה" : "תצוגה מקדימה"}>
                 <IconBtn
                     Icon={<Icons.eye size={24} />}
-                    onClick={togglePreviewMode}
+                    onClick={() => handleClickAction(togglePreviewMode)}
                     hasBorder
                     disabled={isEmpty}
                 />
             </span>
 
             {isDisabled ? (
-                <div style={isGuest ? guestWrapperStyle : undefined}>
+                <div>
                     <div
                         className={`${styles.publishedStatus} ${styles.clickableStatus}`}
                         onClick={handleUnpublishClick}
                         title="לחצו לביטול הפרסום"
                         role="button"
                         tabIndex={0}
-                        style={{ cursor: isGuest ? "not-allowed" : "pointer" }}
                     >
                         <Icons.success size={20} />
                         <span>פורסם</span>
@@ -104,7 +82,7 @@ const DailyPublishActionBtns: React.FC = () => {
             ) : (
                 <button
                     className={styles.publishBtn}
-                    onClick={publishDailySchedule}
+                    onClick={() => handleClickAction(publishDailySchedule)}
                     disabled={publishLoading || isEmpty}
                     title={isEmpty ? "אין נתונים לפרסום" : "פרסום המערכת היומית"}
                 >
@@ -119,16 +97,15 @@ const DailyPublishActionBtns: React.FC = () => {
                 </button>
             )}
 
-            <div style={isGuest ? guestWrapperStyle : undefined}>
+            <div>
                 <span title="שיתוף קישור למורים מן המניין">
                     <IconBtn
                         Icon={<Icons.share size={16} />}
-                        onClick={() => handleAction(onShareLink)}
+                        onClick={() => onShareLink(guest)}
                         disabled={publishLoading}
                         hasBorder
                     />
                 </span>
-                {isGuest && <GuestOverlay />}
             </div>
         </div>
     );
