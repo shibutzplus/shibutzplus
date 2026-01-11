@@ -110,7 +110,9 @@ export const pushSyncUpdate = async (type: SyncChannel): Promise<void> => {
       url = `${baseUrl}${url}`;
     }
 
-    void fetch(url, { method: "POST", keepalive: true });
+    void fetch(url, { method: "POST", keepalive: true }).catch((error) =>
+      console.error("Error pushing sync update (fetch):", error)
+    );
   } catch (error) {
     console.error("Error pushing sync update:", error);
   }
