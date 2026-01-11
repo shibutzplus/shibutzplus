@@ -136,11 +136,7 @@ const linkGroups: ILinkGroup[] = [
                 p: "/annual-import",
                 Icon: <Icons.upload size={24} />,
             },
-            {
-                name: "עדכון היסטוריה",
-                p: "/historyUpdateManual",
-                Icon: <Icons.history size={24} />,
-            },
+
         ],
     },
     {
