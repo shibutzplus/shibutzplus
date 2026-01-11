@@ -3,7 +3,6 @@ import {
     BorderSecondary,
     BoxShadowPrimary,
     BrightBorderColor,
-    DarkBorderColor,
     ErrorColor,
     FontSize,
     InputBackgroundColor,

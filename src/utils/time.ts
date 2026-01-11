@@ -6,8 +6,17 @@ export const DAYS_OF_WEEK_FORMAT = ["יום א", "יום ב", "יום ג", "יו
 export const SUNDAY_NUMBER = 0;
 export const SATURDAY_NUMBER = 6;
 
-export const THREE_WEEKS = 21;
-export const ONE_WEEK = 7;
+export const SCHOOL_MONTHS = [
+    "ספטמבר", "אוקטובר", "נובמבר", "דצמבר",
+    "ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני",
+    "יולי", "אוגוסט"
+];
+
+export const getHebrewMonthName = (monthIndex: number): string => {
+    // SCHOOL_MONTHS starts at September (index 0).
+    return SCHOOL_MONTHS[(monthIndex + 4) % 12];
+};
+
 export const ONE_DAY = 1;
 
 // Number of hours in a day
