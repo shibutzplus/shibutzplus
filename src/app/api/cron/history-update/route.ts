@@ -19,8 +19,8 @@ import { processHistoryUpdate } from '@/services/history/updateHistory';
 //
 // RELATED FILES:
 // - Logic: `src/services/history/updateHistory.ts` (Core logic residing here)
-// - Manual Action: `src/app/actions/POST/runHistoryUpdateAction.ts`
-// - Manual UI: `src/app/(private)/historyUpdateManual/page.tsx`
+
+
 // - Config: `vercel.json` (Cron schedule)
 // ==============================================================================
 
