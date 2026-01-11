@@ -25,13 +25,7 @@
     text-anchor: end;
 }
 
-.barMonths {
-    fill: #8884d8;
-}
 
-.barTeachers {
-    fill: #82ca9d;
-}
 
 .teacherAxisTick {
     font-size: 11px;

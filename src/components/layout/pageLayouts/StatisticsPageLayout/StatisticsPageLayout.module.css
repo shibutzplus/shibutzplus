@@ -49,7 +49,7 @@
     display: none;
 }
 
-/* < 560px */
+/* < 560px: Short Stats Selector */
 @media (max-width: 560px) {
     .selectContainer {
         min-width: 0;
@@ -65,17 +65,18 @@
         flex: 1;
     }
 
-    .monthSelectWrapper {
-        width: 80px;
-        min-width: 80px;
-        max-width: 80px;
-    }
-
-    .desktopOnly {
+    .statsSelectWrapper .desktopOnly {
         display: none;
     }
 
-    .mobileOnly {
+    .statsSelectWrapper .mobileOnly {
         display: block;
+    }
+}
+
+/* < 380px: Hide Title */
+@media (max-width: 380px) {
+    .pageTitle {
+        display: none;
     }
 }

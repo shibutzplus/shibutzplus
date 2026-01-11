@@ -16,8 +16,8 @@ type StatisticsPageLayoutProps = {
 
 const OPTIONS = [
     { value: StatisticTypeValues.months, label: "היעדרות לפי חודשים" },
-    { value: StatisticTypeValues.teachers, label: "היעדרויות לפי מורים" },
-    { value: StatisticTypeValues.days, label: "היעדרויות לפי ימי השבוע" },
+    { value: StatisticTypeValues.teachers, label: "היעדרות לפי מורים" },
+    { value: StatisticTypeValues.days, label: "היעדרות לפי ימי השבוע" },
 ];
 
 const MONTH_OPTIONS = [
