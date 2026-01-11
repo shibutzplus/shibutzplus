@@ -1,10 +1,10 @@
-'use server'
-
-import { db } from "@/db"
-import { history } from "@/db/schema/history"
-import { eq, and, sql } from "drizzle-orm"
-import { ActionResponse } from "@/models/types/actions"
-import { getHebrewMonthName } from "@/utils/time"
+"use server";
+import { db, schema, executeQuery } from "@/db";
+import { eq, and, sql } from "drizzle-orm";
+import { ActionResponse } from "@/models/types/actions";
+import { getHebrewMonthName } from "@/utils/time";
+import { checkAuthAndParams } from "@/utils/authUtils";
+import messages from "@/resources/messages";
 
 export type AbsenceByMonth = {
     month: string;
@@ -13,21 +13,35 @@ export type AbsenceByMonth = {
 
 export const getAbsencesByMonthAction = async (schoolId: string): Promise<ActionResponse<AbsenceByMonth[]>> => {
     try {
-        const result = await db
-            .select({
-                year: sql<number>`EXTRACT(YEAR FROM ${history.date})`,
-                monthNum: sql<number>`EXTRACT(MONTH FROM ${history.date})`,
-                count: sql<number>`count(DISTINCT CONCAT(${history.originalTeacher}, ${history.date}))`
-            })
-            .from(history)
-            .where(
-                and(
-                    eq(history.schoolId, schoolId),
-                    eq(history.columnType, 0) // 0 is missingTeacher
+        const authError = await checkAuthAndParams({ schoolId });
+        if (authError) {
+            return authError as ActionResponse<AbsenceByMonth[]>;
+        }
+
+        const result = await executeQuery(async () => {
+            return await db
+                .select({
+                    year: sql<number>`EXTRACT(YEAR FROM ${schema.history.date})`,
+                    monthNum: sql<number>`EXTRACT(MONTH FROM ${schema.history.date})`,
+                    count: sql<number>`count(DISTINCT CONCAT(${schema.history.originalTeacher}, ${schema.history.date}))`
+                })
+                .from(schema.history)
+                .where(
+                    and(
+                        eq(schema.history.schoolId, schoolId),
+                        eq(schema.history.columnType, 0) // 0 is missingTeacher
+                    )
                 )
-            )
-            .groupBy(sql`EXTRACT(YEAR FROM ${history.date})`, sql`EXTRACT(MONTH FROM ${history.date})`)
-            .orderBy(sql`EXTRACT(YEAR FROM ${history.date})`, sql`EXTRACT(MONTH FROM ${history.date})`);
+                .groupBy(sql`EXTRACT(YEAR FROM ${schema.history.date})`, sql`EXTRACT(MONTH FROM ${schema.history.date})`)
+                .orderBy(sql`EXTRACT(YEAR FROM ${schema.history.date})`, sql`EXTRACT(MONTH FROM ${schema.history.date})`);
+        });
+
+        if (!result) {
+            return {
+                success: true,
+                data: [],
+            };
+        }
 
         const formattedResult = result.map(row => {
             const monthIndex = Number(row.monthNum) - 1;
@@ -40,13 +54,13 @@ export const getAbsencesByMonthAction = async (schoolId: string): Promise<Action
         return {
             success: true,
             data: formattedResult,
-        }
+        };
 
     } catch (error) {
-        console.error("Error fetching absences by month:", error)
+        console.error("Error fetching absences by month:", error);
         return {
             success: false,
-            message: "Failed to fetch absences by month",
-        }
+            message: messages.common.serverError,
+        };
     }
 }
