@@ -10,6 +10,7 @@ import { calculateVisibleRowsForDaily } from "@/utils/tableUtils";
 import { AppType } from "@/models/types";
 import type { TeacherType } from "@/models/types/teachers";
 import { successToast } from "@/lib/toast";
+import { toast } from "react-hot-toast";
 
 import { getCookie, setCookie, COOKIES_KEYS } from "@/lib/cookies";
 
@@ -223,7 +224,18 @@ const DailyFullScreenTable: React.FC<DailyFullScreenTableProps> = ({
                                 <div key={`${colId}-${row}`} className={styles.cell}>
                                     {!cellDisplay.isEmpty && (
                                         <div className={`${styles.cellContent} ${cellDisplay.isActivity ? styles.activity : ""}`}>
-                                            <span className={cellDisplay.isEvent ? styles.eventText : styles.mainText}>
+                                            <span
+                                                className={cellDisplay.isEvent ? styles.eventText : styles.mainText}
+                                                onClick={() => {
+                                                    if (window.innerWidth < 800) {
+                                                        toast.dismiss();
+                                                        let message = cellDisplay.main;
+                                                        if (cellDisplay.sub) message += `\n${cellDisplay.sub}`;
+                                                        if (cellDisplay.isMissing && !cellDisplay.sub) message += "\n(אין ממלא מקום)";
+                                                        successToast(message, Infinity);
+                                                    }
+                                                }}
+                                            >
                                                 {cellDisplay.main}
                                             </span>
                                             {cellDisplay.sub && !cellDisplay.isEvent && <span className={styles.subText}>{cellDisplay.sub}</span>}
