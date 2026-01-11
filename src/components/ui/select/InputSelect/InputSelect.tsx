@@ -169,6 +169,8 @@ const InputSelect: React.FC<InputSelectProps> = ({
             },
             input: (provided: any) => ({
                 ...provided,
+                width: isSearchable ? "100%" : "0",
+                opacity: isSearchable ? 1 : 0,
                 fontSize: fontSize || provided.fontSize,
                 gridArea: "1/1/2/3",
                 visibility: "visible",
@@ -214,6 +216,18 @@ const InputSelect: React.FC<InputSelectProps> = ({
                     justifyContent: "center",
                     "&:hover": {
                         color: "red",
+                    },
+                };
+            },
+            indicatorsContainer: (provided: any) => {
+                const base =
+                    typeof (baseStyles as any).indicatorsContainer === "function"
+                        ? (baseStyles as any).indicatorsContainer(provided)
+                        : provided;
+                return {
+                    ...base,
+                    "@media only screen and (max-width: 560px)": {
+                        padding: "1px",
                     },
                 };
             },
@@ -295,9 +309,9 @@ const InputSelect: React.FC<InputSelectProps> = ({
             <SelectComponent
                 inputId={id}
                 value={selectedOption}
-                onChange={handleChange}
+                // isSearchable={isSearchable}
+                onChange={isSearchable ? () => "" : handleChange}
                 options={options}
-                isSearchable={isSearchable}
                 isClearable={isClearable}
                 isDisabled={isDisabled}
                 placeholder={placeholder}
