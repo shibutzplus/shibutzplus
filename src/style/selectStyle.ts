@@ -3,7 +3,6 @@ import {
     BorderSecondary,
     BoxShadowPrimary,
     BrightBorderColor,
-    DarkBorderColor,
     ErrorColor,
     FontSize,
     InputBackgroundColor,
@@ -117,10 +116,19 @@ export const customStyles = (
             ...provided,
             color: color,
             padding: "8px", /// "0 4px"
+            "@media only screen and (max-width: 560px)": {
+                padding: "2px",
+            },
             "&:hover": {
                 color: colorHover,
             },
             display: hasArrow ? "block" : "none",
+        }),
+        indicatorsContainer: (provided: any) => ({
+            ...provided,
+            "@media only screen and (max-width: 560px)": {
+                padding: "2px",
+            },
         }),
         clearIndicator: (provided: any) => ({
             ...provided,

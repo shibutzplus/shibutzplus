@@ -33,7 +33,7 @@ export function getIsraeliDateOptions(short: boolean = false): SelectOption[] {
 
         if (date.toDateString() === israelToday.toDateString()) {
             label += " (היום)";
-        } else if (!short && date.toDateString() === tomorrow.toDateString()) {
+        } else if (date.toDateString() === tomorrow.toDateString()) {
             label += " (מחר)";
         }
 

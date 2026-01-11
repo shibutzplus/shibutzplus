@@ -1,0 +1,55 @@
+.pageTitle {
+    white-space: nowrap;
+    display: block;
+}
+
+.selectContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+}
+
+.statsSelectWrapper {
+    width: 220px;
+}
+
+.monthSelectWrapper {
+    width: 140px;
+}
+
+/* Default: Hide mobile elements */
+.mobileOnly {
+    display: none;
+}
+
+/* < 560px */
+@media (max-width: 560px) {
+    .selectContainer {
+        min-width: 0;
+        max-width: unset;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .statsSelectWrapper {
+        width: auto !important;
+        max-width: 120px;
+        flex: 1;
+    }
+
+    .monthSelectWrapper {
+        width: 80px;
+        min-width: 80px;
+        max-width: 80px;
+    }
+
+    .desktopOnly {
+        display: none;
+    }
+
+    .mobileOnly {
+        display: block;
+    }
+}

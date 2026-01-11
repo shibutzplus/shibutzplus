@@ -13,6 +13,7 @@ import {
     IoPeopleSharp,
     IoArrowBack,
     IoArrowForward,
+    IoStatsChart,
 } from "react-icons/io5";
 import { IoMdRefresh } from "react-icons/io";
 import { RiEdit2Fill, RiDeleteBin6Line } from "react-icons/ri";
@@ -66,6 +67,7 @@ const Icons = {
     tv: PiMonitor,
     tvSolid: PiMonitorFill,
     table: BsTable,
+    stats: IoStatsChart,
 };
 
 export default Icons;
