@@ -22,6 +22,7 @@ export const history = pgTable('history', {
 }, (table) => {
     return {
         schoolIdDateIdx: index('idx_history_school_date').on(table.schoolId, table.date),
+        schoolStatsIdx: index('idx_history_school_stats').on(table.schoolId, table.columnType, table.date),
     };
 });
 

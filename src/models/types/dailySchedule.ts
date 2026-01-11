@@ -15,8 +15,8 @@ export type DailyScheduleType = {
     school: SchoolType;
     classes?: ClassType[];
     subject?: SubjectType;
-    issueTeacher?: TeacherType;
-    issueTeacherType: ColumnType;
+    originalTeacher?: TeacherType;
+    columnType: ColumnType;
     subTeacher?: TeacherType;
     instructions?: string;
     position: number;
@@ -34,8 +34,8 @@ export type DailyScheduleRequest = {
     school: SchoolType;
     classes?: ClassType[];
     subject?: SubjectType;
-    issueTeacher?: TeacherType;
-    issueTeacherType: ColumnType;
+    originalTeacher?: TeacherType;
+    columnType: ColumnType;
     subTeacher?: TeacherType;
     position: number;
     instructions?: string;

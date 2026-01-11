@@ -5,11 +5,11 @@ import { TeacherType } from "@/models/types/teachers";
 export const getInstructionPlaceholder = (row?: TeacherScheduleType, teacher?: TeacherType) => {
     if (!row || !teacher) return "חומר הלימוד";
 
-    const isIssueTeacher = teacher.id === row.issueTeacher?.id;
+    const isOriginalTeacher = teacher.id === row.originalTeacher?.id;
     const isSubTeacher = teacher.id === row.subTeacher?.id;
 
     // If I am the main teacher
-    if (isIssueTeacher) {
+    if (isOriginalTeacher) {
         return row.subTeacher ? "הזינו כאן הנחיות למורה המחליף" : "";
     }
 

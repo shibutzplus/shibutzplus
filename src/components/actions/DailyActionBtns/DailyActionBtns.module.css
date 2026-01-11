@@ -1,0 +1,58 @@
+.mobileMenuContainer {
+    position: relative;
+    display: inline-block;
+}
+
+.mobileMenuTrigger {
+    width: 40px !important;
+    height: 40px !important;
+    padding: 0 !important;
+    justify-content: center !important;
+    border-radius: 20% !important;
+}
+
+.mobileDropdown {
+    position: absolute;
+    top: 100%;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: var(--top-color);
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 5px;
+    min-width: 130px;
+    width: 140px;
+    left: 0;
+}
+
+.menuItemBtn {
+    width: 100% !important;
+    justify-content: flex-start !important;
+    padding-inline: 10px !important;
+    height: 40px !important;
+    border-left: 10px solid var(--btn-color) !important;
+    padding-left: 15px !important;
+}
+
+.shortBtn {
+    width: 130px !important;
+}
+
+.borderLeft {
+    border-left: 10px solid var(--btn-color) !important;
+}
+
+.borderRight {
+    border-right: 10px solid var(--btn-color) !important;
+}
+
+.borderTop {
+    border-top: 10px solid var(--btn-color) !important;
+}
+
+.borderBottom {
+    border-bottom: 10px solid var(--btn-color) !important;
+}

@@ -11,7 +11,7 @@ export type TeacherScheduleType = {
     school?: SchoolType;
     classes?: ClassType[];
     subject?: SubjectType;
-    issueTeacher?: TeacherType;
+    originalTeacher?: TeacherType;
     subTeacher?: TeacherType;
     event?: string;
     instructions?: string;

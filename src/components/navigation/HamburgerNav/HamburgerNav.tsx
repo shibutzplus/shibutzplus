@@ -66,6 +66,11 @@ const linkGroups: ILinkGroup[] = [
                 Icon: <Icons.history size={24} />,
                 isForGuest: false,
             },
+            {
+                name: routePath.statistics.title,
+                p: routePath.statistics.p,
+                Icon: <Icons.stats size={24} />,
+            },
         ],
     },
 
@@ -396,7 +401,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                         <Logo size="XS" />
                     </div>
                     <div className={styles.headerActions}>
-                        {school?.name && <span className={styles.schoolName}>{school.name}</span>}
+                        {/* {school?.name && <span className={styles.schoolName}>{school.name}</span>} */}
                         <button
                             className={styles.closeButton}
                             onClick={onClose}

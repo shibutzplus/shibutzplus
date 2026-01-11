@@ -43,7 +43,7 @@ export async function deleteDailyColumnAction(
                 with: {
                     school: true,
                     subject: true,
-                    issueTeacher: true,
+                    originalTeacher: true,
                     subTeacher: true,
                 },
             });
@@ -53,8 +53,8 @@ export async function deleteDailyColumnAction(
             const classesData =
                 uniqueClassIds.length > 0
                     ? await db.query.classes.findMany({
-                          where: inArray(schema.classes.id, uniqueClassIds),
-                      })
+                        where: inArray(schema.classes.id, uniqueClassIds),
+                    })
                     : [];
 
             const classesMap = new Map(classesData.map((c) => [c.id, c]));
@@ -76,8 +76,8 @@ export async function deleteDailyColumnAction(
                     school: schedule.school,
                     classes: schedule.classes,
                     subject: schedule.subject,
-                    issueTeacher: schedule.issueTeacher,
-                    issueTeacherType: schedule.issueTeacherType,
+                    originalTeacher: schedule.originalTeacher,
+                    columnType: schedule.columnType,
                     subTeacher: schedule.subTeacher,
                     createdAt: schedule.createdAt,
                     updatedAt: schedule.updatedAt,

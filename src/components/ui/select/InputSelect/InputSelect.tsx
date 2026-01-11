@@ -1,18 +1,22 @@
 "use client";
-
 import React, { useEffect, useState, useMemo } from "react";
 import CreatableSelect from "react-select/creatable";
-import Select, { ActionMeta, OnChangeValue, StylesConfig, components, SingleValueProps } from "react-select";
+import Select, {
+    ActionMeta,
+    OnChangeValue,
+    StylesConfig,
+    components,
+    SingleValueProps,
+} from "react-select";
 import { SelectOption } from "@/models/types";
 import { customStyles } from "@/style/selectStyle";
 import SelectLayout from "../SelectLayout/SelectLayout";
 import { InputBackgroundColor, InputColor, InputColorHover, PlaceholderColor } from "@/style/root";
 import { SelectMethod } from "@/models/types/actions";
-
 /**
  * Sign-Up
  * Teachers Sign-In
- * Annual By Teacher 
+ * Annual By Teacher
  * Daily Schedule Header
  */
 type InputSelectProps = {
@@ -39,7 +43,6 @@ type InputSelectProps = {
     isCreatable?: boolean;
     formatCreateLabel?: (inputValue: string) => string;
 };
-
 const InputSelect: React.FC<InputSelectProps> = ({
     label,
     options,
@@ -66,7 +69,6 @@ const InputSelect: React.FC<InputSelectProps> = ({
 }) => {
     const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
     const [isMounted, setIsMounted] = useState(false);
-
     // Sync selected option from incoming value
     useEffect(() => {
         if (!value) {
@@ -74,36 +76,32 @@ const InputSelect: React.FC<InputSelectProps> = ({
             return;
         }
         // Try to find existing option
-        const selected = options.find((o) => o.value === value) ?? (isCreatable ? { label: value, value: value } : null);
+        const selected =
+            options.find((o) => o.value === value) ??
+            (isCreatable ? { label: value, value: value } : null);
         setSelectedOption(selected);
     }, [value, options, isCreatable]);
-
     // Client-only portal target for menus to avoid SSR warning
     useEffect(() => {
         if (!isMounted) setIsMounted(true);
     }, [isMounted]);
-
     const handleChange = (
         opt: OnChangeValue<SelectOption, false>,
         meta: ActionMeta<SelectOption>,
     ) => {
         const nextOption = opt ?? null;
         const next = nextOption?.value ?? "";
-
         // Intercept clear/remove actions to allow confirmation
         if (onBeforeRemove && (meta.action === "clear" || meta.action === "remove-value")) {
             const removedLabel = selectedOption?.label ?? null;
-
             return onBeforeRemove(removedLabel, () => {
                 setSelectedOption(nextOption);
                 onChange(next, meta.action as SelectMethod);
             });
         }
-
         setSelectedOption(nextOption);
         onChange(next, meta.action as SelectMethod);
     };
-
     const stylesOverride: StylesConfig<SelectOption, false> = useMemo(() => {
         const baseStyles = customStyles(
             error || "",
@@ -114,7 +112,6 @@ const InputSelect: React.FC<InputSelectProps> = ({
             placeholderColor,
             colorHover,
         );
-
         return {
             ...(baseStyles as StylesConfig<SelectOption, false>),
             control: (provided: any) => {
@@ -144,7 +141,6 @@ const InputSelect: React.FC<InputSelectProps> = ({
                     minWidth: 0, // Allow shrinking below content size
                 };
             },
-
             singleValue: (provided: any) => {
                 const base =
                     typeof baseStyles.singleValue === "function"
@@ -231,18 +227,19 @@ const InputSelect: React.FC<InputSelectProps> = ({
         isCentered,
         caretColor,
     ]);
-
     const CustomSingleValue = (props: SingleValueProps<SelectOption>) => {
         const [isHovered, setIsHovered] = useState(false);
         return (
             <components.SingleValue {...props}>
-                <div style={{
-                    flex: "1",
-                    overflow: "hidden",
-                    textOverflow: "clip",
-                    whiteSpace: "nowrap",
-                    textAlign: isCentered ? "center" : "right"
-                }}>
+                <div
+                    style={{
+                        flex: "1",
+                        overflow: "hidden",
+                        textOverflow: "clip",
+                        whiteSpace: "nowrap",
+                        textAlign: isCentered ? "center" : "right",
+                    }}
+                >
                     {props.children}
                 </div>
                 {isClearable && selectedOption && (
@@ -269,7 +266,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
                             zIndex: 5,
                             position: "relative",
                             pointerEvents: "auto",
-                            flexShrink: 0
+                            flexShrink: 0,
                         }}
                     >
                         <svg
@@ -287,9 +284,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
             </components.SingleValue>
         );
     };
-
     const SelectComponent = isCreatable ? CreatableSelect : Select;
-
     return (
         <SelectLayout resolvedId={id || ""} error={error} label={label}>
             <SelectComponent
@@ -319,5 +314,4 @@ const InputSelect: React.FC<InputSelectProps> = ({
         </SelectLayout>
     );
 };
-
 export default InputSelect;

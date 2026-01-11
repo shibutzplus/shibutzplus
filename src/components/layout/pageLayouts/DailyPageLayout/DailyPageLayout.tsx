@@ -5,7 +5,6 @@ import styles from "./DailyPageLayout.module.css";
 import router from "@/routes";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
-import MobileNavLayout from "../../MobileNavLayout/MobileNavLayout";
 import DailyActionBtns from "@/components/actions/DailyActionBtns/DailyActionBtns";
 import DailyPublishActionBtns from "@/components/actions/DailyPublishActionBtns/DailyPublishActionBtns";
 import PageLayout from "../../PageLayout/PageLayout";
@@ -48,6 +47,9 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
                     <div className={styles.topBarActionBtns}>
                         <DailyActionBtns position="left" />
                     </div>
+                    <div className={styles.topBarActionBtnsShort}>
+                        <DailyActionBtns position="left" useShortLabels={true} />
+                    </div>
                 </>
             }
             HeaderLeftActions={<DailyPublishActionBtns />}
@@ -66,13 +68,25 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
                             isCentered
                         />
                     </div>
-                </div>
-            }
-            MobileActions={
-                <div className={styles.bottomBarActionBtns}>
-                    <MobileNavLayout>
-                        <DailyActionBtns position="top" />
-                    </MobileNavLayout>
+                    <div className={styles.bar2DateContainerShort}>
+                        <DynamicInputSelect
+                            options={daysSelectOptions(true)}
+                            value={selectedDate}
+                            isDisabled={isLoading}
+                            onChange={handleDayChange}
+                            isSearchable={false}
+                            placeholder="בחר יום..."
+                            hasBorder={true}
+                            isBold={false}
+                            isCentered
+                        />
+                    </div>
+                    <div className={styles.secondRowActionBtns}>
+                        <DailyActionBtns position="left" useShortLabels={true} />
+                    </div>
+                    <div className={styles.mobileActionMenu}>
+                        <DailyActionBtns position="left" useMobileMenu={true} useShortLabels={true} />
+                    </div>
                 </div>
             }
             contentClassName={styles.contentWithBottomMargin}

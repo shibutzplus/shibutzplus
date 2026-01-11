@@ -3,7 +3,7 @@
 import { db } from "@/db";
 import { history } from "@/db/schema";
 import { and, eq, or } from "drizzle-orm";
-import { DailyScheduleType, ColumnType, GetDailyScheduleResponse } from "@/models/types/dailySchedule";
+import { DailyScheduleType, ColumnType, GetDailyScheduleResponse, ColumnTypeValues } from "@/models/types/dailySchedule";
 import { TeacherType } from "@/models/types/teachers";
 import { SubjectType } from "@/models/types/subjects";
 import { ClassType } from "@/models/types/classes";
@@ -57,10 +57,10 @@ export async function getTeacherHistoryScheduleAction(
             };
 
             // Map ColumnType integer back to string literal
-            let issueTeacherType: ColumnType = "existingTeacher";
-            if (record.columnType === 0) issueTeacherType = "missingTeacher";
-            else if (record.columnType === 1) issueTeacherType = "existingTeacher";
-            else if (record.columnType === 2) issueTeacherType = "event";
+            let columnType: ColumnType = ColumnTypeValues.existingTeacher;
+            if (record.columnType === 0) columnType = ColumnTypeValues.missingTeacher;
+            else if (record.columnType === 1) columnType = ColumnTypeValues.existingTeacher;
+            else if (record.columnType === 2) columnType = ColumnTypeValues.event;
 
 
             // Mock School Object (minimal)
@@ -87,8 +87,8 @@ export async function getTeacherHistoryScheduleAction(
                 school: mockSchool,
                 classes: makeClasses(record.classes),
                 subject: makeSubject(record.subject),
-                issueTeacher: makeTeacher(record.originalTeacher),
-                issueTeacherType: issueTeacherType,
+                originalTeacher: makeTeacher(record.originalTeacher),
+                columnType: columnType,
                 subTeacher: makeTeacher(record.subTeacher),
                 instructions: record.instructions || undefined,
                 position: record.columnPosition,

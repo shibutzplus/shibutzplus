@@ -107,7 +107,7 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
     ) => {
         if (!row || !selectedDate) return;
         const schoolId = row.schoolId ?? row.school?.id;
-        const issueTeacherId = row.issueTeacher?.id ?? undefined;
+        const originalTeacherId = row.originalTeacher?.id ?? undefined;
         const subTeacherId = row.subTeacher?.id ?? undefined;
 
         try {
@@ -118,7 +118,7 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
                 instructions,
                 row.hour,
                 schoolId,
-                issueTeacherId,
+                originalTeacherId,
                 subTeacherId,
             );
             if (response.success) {

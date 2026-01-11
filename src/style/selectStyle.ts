@@ -2,7 +2,7 @@ import {
     BorderRadiusInput,
     BorderSecondary,
     BoxShadowPrimary,
-    DarkBorderColor,
+    BrightBorderColor,
     ErrorColor,
     FontSize,
     InputBackgroundColor,
@@ -13,7 +13,6 @@ import {
     SelectBackgroundColor,
     SelectBackgroundColorHover,
 } from "./root";
-
 export const customStyles = (
     error: any,
     hasBorder: boolean,
@@ -29,7 +28,7 @@ export const customStyles = (
             width: "100%",
             minHeight: InputHeight,
             borderWidth: hasBorder ? "1px" : "0px",
-            borderColor: DarkBorderColor,
+            borderColor: BrightBorderColor,
             boxShadow: "none",
             fontSize: FontSize,
             backgroundColor: backgroundColor,
@@ -38,7 +37,7 @@ export const customStyles = (
             fontWeight: "normal",
             cursor: "pointer",
             "&:hover": {
-                borderColor: error ? ErrorColor : DarkBorderColor,
+                borderColor: error ? ErrorColor : BrightBorderColor,
             },
         }),
         menuPlacement: "auto",
@@ -77,8 +76,8 @@ export const customStyles = (
             backgroundColor: state.isSelected
                 ? SelectBackgroundColor
                 : state.isFocused
-                    ? SelectBackgroundColorHover
-                    : InputBackgroundColor,
+                  ? SelectBackgroundColorHover
+                  : InputBackgroundColor,
             color: state.isSelected ? InputBackgroundColor : InputColor,
             padding: "10px 12px",
             fontSize: FontSize,

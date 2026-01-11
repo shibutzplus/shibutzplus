@@ -71,7 +71,7 @@ const useDailyEventActions = (
                     hour: 0,
                     columnId,
                     school: school,
-                    issueTeacherType: ColumnTypeValues.event,
+                    columnType: ColumnTypeValues.event,
                     eventTitle,
                     event: eventPlaceholder,
                     position: currentPosition,

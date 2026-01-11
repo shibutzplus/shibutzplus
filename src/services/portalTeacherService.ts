@@ -62,7 +62,7 @@ export const populatePortalTable = (
                 classes: entry.classes,
                 subject: entry.subject,
                 subTeacher: entry.subTeacher,
-                issueTeacher: entry.issueTeacher,
+                originalTeacher: entry.originalTeacher,
                 event: entry.event,
                 instructions: entry.instructions,
             };

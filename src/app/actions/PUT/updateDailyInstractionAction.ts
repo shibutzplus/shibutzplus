@@ -16,7 +16,7 @@ export async function updateDailyInstructionAction(
     instructions?: string,
     hour?: number,
     schoolId?: string,
-    issueTeacherId?: string,
+    originalTeacherId?: string,
     subTeacherId?: string,
 ): Promise<ActionResponse> {
     try {
@@ -42,7 +42,7 @@ export async function updateDailyInstructionAction(
 
             // Update one DB row normally, or 2 rows if it's a cross-reference swap
             // 2 rows usecase: 2 teachers in the same day and hour replaced each other (cross-reference case)
-            if (hour != null && schoolId && issueTeacherId && subTeacherId) {
+            if (hour != null && schoolId && originalTeacherId && subTeacherId) {
                 return await db
                     .update(schema.dailySchedule)
                     .set(payload)
@@ -53,12 +53,12 @@ export async function updateDailyInstructionAction(
                             eq(schema.dailySchedule.schoolId, schoolId),
                             or(
                                 and(
-                                    eq(schema.dailySchedule.issueTeacherId, issueTeacherId),
+                                    eq(schema.dailySchedule.originalTeacherId, originalTeacherId),
                                     eq(schema.dailySchedule.subTeacherId, subTeacherId),
                                 ),
                                 and(
-                                    eq(schema.dailySchedule.issueTeacherId, subTeacherId),
-                                    eq(schema.dailySchedule.subTeacherId, issueTeacherId),
+                                    eq(schema.dailySchedule.originalTeacherId, subTeacherId),
+                                    eq(schema.dailySchedule.subTeacherId, originalTeacherId),
                                 ),
                             ),
                         ),

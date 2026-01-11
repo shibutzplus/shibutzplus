@@ -72,18 +72,30 @@ const useDailyTeacherActions = (
             }
 
             // Capture the state needed for deletion BEFORE async operations
-            const alreadyExists = mainDailyTable[selectedDate]?.[columnId];
-            if (alreadyExists) {
-                const response = await deleteDailyColumnAction(school.id, columnId, selectedDate);
-                if (!response.success || !response.dailySchedules) {
-                    console.error("Failed to delete teacher daily column:", response.message);
+            const colData = mainDailyTable[selectedDate]?.[columnId];
+            const hasSavedData = colData ? Object.values(colData).some((cell) => !!cell.DBid) : false;
+
+            // Start promises in parallel
+            let deletePromise: ReturnType<typeof deleteDailyColumnAction> | undefined;
+            if (hasSavedData) {
+                deletePromise = deleteDailyColumnAction(school.id, columnId, selectedDate);
+            }
+
+            const fetchPromise = getTeacherScheduleByDayAction(schoolId, dayNumber, teacherId);
+
+            // Await both
+            const [deleteResponse, fetchResponse] = await Promise.all([deletePromise, fetchPromise]);
+
+            if (deleteResponse) {
+                if (!deleteResponse.success || !deleteResponse.dailySchedules) {
+                    console.error("Failed to delete teacher daily column:", deleteResponse.message);
                 }
             }
 
             // NOTE: We do NOT call clearColumn again here to avoid flicker.
             // The DB is cleared (if delete succeeded), and the UI shows the optimistic teacher.
 
-            const response = await getTeacherScheduleByDayAction(schoolId, dayNumber, teacherId);
+            const response = fetchResponse;
             if (response.success && response.data) {
                 if (response.data.length > 0) {
                     const pendingInserts: {

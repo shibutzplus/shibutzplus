@@ -38,10 +38,10 @@ export const populateTable = (dataColumns: DailyScheduleType[], selectedDate: st
     for (const columnCell of dataColumns) {
         const columnId = columnCell.columnId;
 
-        const { issueTeacher, issueTeacherType } = columnCell;
+        const { originalTeacher, columnType } = columnCell;
 
         let cellData: DailyScheduleCell;
-        if (issueTeacher) {
+        if (originalTeacher) {
             cellData = initDailyTeacherCellData(columnCell);
         } else {
             cellData = initDailyEventCellData(columnCell);
@@ -50,7 +50,7 @@ export const populateTable = (dataColumns: DailyScheduleType[], selectedDate: st
         if (!seenColumnIds.has(columnId)) {
             columnsToCreate.push({
                 id: columnId,
-                type: issueTeacherType,
+                type: columnType,
             });
             seenColumnIds.add(columnId);
         }

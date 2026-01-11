@@ -8,6 +8,7 @@ export const InputColorHover: string = "#535252";
 export const SelectBackgroundColor: string = "#4b97c2";
 export const SelectBackgroundColorHover: string = "#b3e5fc5e";
 export const TabColor: string = "#FFFFFF";
+export const BrightBorderColor: string = "#e0e0e0";
 export const DarkBorderColor: string = "#CECECE";
 export const ExistingTeacherColor: string = "#80B0FF";
 export const MissingTeacherColor: string = "#ED7A7A";
