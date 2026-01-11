@@ -91,6 +91,16 @@ export default function StatisticsPage() {
                                     bottom: 5,
                                 }}
                             >
+                                <defs>
+                                    <linearGradient id="colorMonth" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
+                                        <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
+                                    </linearGradient>
+                                    <linearGradient id="colorMonthGradient" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stopColor="#8884d8" stopOpacity={1} />
+                                        <stop offset="100%" stopColor="#605ca8" stopOpacity={1} />
+                                    </linearGradient>
+                                </defs>
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis
                                     dataKey="month"
@@ -109,8 +119,8 @@ export default function StatisticsPage() {
                                     orientation="left"
                                     tick={{ className: styles.axisTick }}
                                 />
-                                <Tooltip />
-                                <Bar name="ימי היעדרות" dataKey="count" className={styles.barMonths} barSize={50} />
+                                <Tooltip cursor={{ fill: 'transparent' }} />
+                                <Bar name="ימי היעדרות" dataKey="count" fill="url(#colorMonthGradient)" radius={[4, 4, 0, 0]} barSize={50} />
                             </BarChart>
                         ) : statType === StatisticTypeValues.teachers ? (
                             <BarChart
@@ -123,8 +133,14 @@ export default function StatisticsPage() {
                                     bottom: 5,
                                 }}
                             >
+                                <defs>
+                                    <linearGradient id="colorTeacherGradient" x1="0" y1="0" x2="1" y2="0">
+                                        <stop offset="0%" stopColor="#82ca9d" stopOpacity={1} />
+                                        <stop offset="100%" stopColor="#4fab72" stopOpacity={1} />
+                                    </linearGradient>
+                                </defs>
                                 <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis type="number" allowDecimals={false} />
+                                <XAxis type="number" allowDecimals={false} label={{ value: "מספר ימי היעדרות", position: "insideBottom", offset: -5, style: { fill: '#666', fontSize: '12px' } }} />
                                 <YAxis
                                     dataKey="teacherName"
                                     type="category"
@@ -132,8 +148,8 @@ export default function StatisticsPage() {
                                     tick={{ className: styles.teacherAxisTick }}
                                     interval={0} // Show all labels
                                 />
-                                <Tooltip />
-                                <Bar name="ימי היעדרויות" dataKey="count" className={styles.barTeachers} barSize={20} />
+                                <Tooltip cursor={{ fill: 'transparent' }} />
+                                <Bar name="ימי היעדרויות" dataKey="count" fill="url(#colorTeacherGradient)" radius={[0, 4, 4, 0]} barSize={20} />
                             </BarChart>
                         ) : (
                             <BarChart
@@ -145,6 +161,12 @@ export default function StatisticsPage() {
                                     bottom: 5,
                                 }}
                             >
+                                <defs>
+                                    <linearGradient id="colorDayGradient" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stopColor="#8884d8" stopOpacity={1} />
+                                        <stop offset="100%" stopColor="#605ca8" stopOpacity={1} />
+                                    </linearGradient>
+                                </defs>
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis
                                     dataKey="day"
@@ -163,8 +185,8 @@ export default function StatisticsPage() {
                                     orientation="left"
                                     tick={{ className: styles.axisTick }}
                                 />
-                                <Tooltip />
-                                <Bar name="ימי היעדרויות" dataKey="count" className={styles.barMonths} barSize={50} />
+                                <Tooltip cursor={{ fill: 'transparent' }} />
+                                <Bar name="ימי היעדרויות" dataKey="count" fill="url(#colorDayGradient)" radius={[4, 4, 0, 0]} barSize={50} />
                             </BarChart>
                         )}
                     </ResponsiveContainer>
