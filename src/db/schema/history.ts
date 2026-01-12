@@ -9,7 +9,7 @@ export const history = pgTable('history', {
     hour: integer('hour').notNull(),                        // hour of day 1-12
     columnId: text('column_id').notNull(),
     columnPosition: integer('column_position').notNull(),   // e.g. 1000, 2000, 3000
-    columnType: integer('column_type').notNull(),           // 0 - missingTeacher, 1 - existingTeacher, 2 - event
+    columnType: integer('column_type').notNull(),           // See ColumnTypeValues
     originalTeacher: text('original_teacher'),
     classes: text('classes'),
     subject: text('subject'),

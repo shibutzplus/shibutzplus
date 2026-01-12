@@ -1,7 +1,7 @@
 "use client";
 
 import { SelectOption } from "@/models/types";
-import { ColumnType, DailySchedule, DailyScheduleCell, DailyScheduleType, TeacherHourlyScheduleItem, } from "@/models/types/dailySchedule";
+import { ColumnType, DailySchedule, DailyScheduleCell, DailyScheduleType, TeacherHourlyScheduleItem, ColumnTypeValues } from "@/models/types/dailySchedule";
 import useDailySelectedDate from "@/hooks/daily/useDailySelectedDate";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { useMainContext } from "./MainContext";
@@ -21,13 +21,11 @@ import { DAILY_TEACHER_COL_DATA_CHANGED, DAILY_SCHOOL_DATA_CHANGED } from "@/mod
 import { mapAnnualTeachers, populateDailyScheduleTable, mapAnnualTeacherClasses, } from "@/services/daily/populate";
 import { createNewEmptyColumn } from "@/services/daily/setEmpty";
 import { sortDailyColumnIdsByPosition } from "@/utils/sort";
-import { ColumnTypeValues } from "@/models/types/dailySchedule";
 
 const COLUMN_PRIORITY: Record<ColumnType, number> = {
     [ColumnTypeValues.missingTeacher]: 0,
     [ColumnTypeValues.existingTeacher]: 1,
     [ColumnTypeValues.event]: 2,
-    [ColumnTypeValues.empty]: 1,
 };
 
 interface DailyTableContextType {
@@ -332,7 +330,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
 
         for (let i = 0; i < sortedColumns.length; i++) {
             const colId = sortedColumns[i];
-            const colType = schedule[colId]?.["1"]?.headerCol?.type || ColumnTypeValues.existingTeacher;
+            const colType = schedule[colId]?.["1"]?.headerCol?.type ?? ColumnTypeValues.existingTeacher;
             const colPriority = COLUMN_PRIORITY[colType] ?? 1;
 
             if (colPriority <= newPriority) {

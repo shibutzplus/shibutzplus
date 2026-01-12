@@ -2,11 +2,7 @@ import React from "react";
 import styles from "./EmptyTable.module.css";
 import Icons from "@/style/icons";
 import ActionBtn from "../../ui/buttons/ActionBtn/ActionBtn";
-import {
-    EventColorDisabled,
-    ExistingTeacherColorDisabled,
-    MissingTeacherColorDisabled,
-} from "@/style/root";
+import { EventColorDisabled, ExistingTeacherColorDisabled, MissingTeacherColorDisabled } from "@/style/root";
 
 type EmptyTableProps = {
     message?: string;

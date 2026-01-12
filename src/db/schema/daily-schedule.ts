@@ -1,6 +1,5 @@
 import { pgTable, text, timestamp, integer, index, date } from 'drizzle-orm/pg-core';
 import { createId } from '@paralleldrive/cuid2';
-import { ColumnType } from '@/models/types/dailySchedule';
 
 export const dailySchedule = pgTable('daily_schedule', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
@@ -10,8 +9,7 @@ export const dailySchedule = pgTable('daily_schedule', {
   hour: integer('hour').notNull(),
   columnId: text('column_id'),
   position: integer('position').notNull(),
-  columnType: text('column_type').notNull().$type<ColumnType>().default('missingTeacher'),
-  columnTypeInt: integer('column_type_int'),  // 0 - missingTeacher, 1 - existingTeacher, 2 - event
+  columnTypeInt: integer('column_type_int').notNull().default(0),  // 0 - missingTeacher, 1 - existingTeacher, 2 - event
   originalTeacherId: text('original_teacher_id'),
   classIds: text('class_ids').array(),
   subjectId: text('subject_id'),

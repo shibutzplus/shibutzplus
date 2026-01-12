@@ -74,14 +74,7 @@ export async function processHistoryUpdate(dateString?: string, force: boolean =
                 ? schedule.classIds.map(id => classMap.get(id)).filter((name): name is string => !!name)
                 : null;
 
-            let columnType = 0;
-            switch (schedule.columnType) {
-                case 'missingTeacher': columnType = 0; break;
-                case 'existingTeacher': columnType = 1; break;
-                case 'event': columnType = 2; break;
-                default: columnType = 0;
-            }
-
+            const columnType = schedule.columnTypeInt;
             const day = schedule.day || 0;
 
             return {
