@@ -2,7 +2,7 @@
 import { db, schema, executeQuery } from "@/db";
 import { eq, and, sql } from "drizzle-orm";
 import { ActionResponse } from "@/models/types/actions";
-import { getHebrewMonthName } from "@/utils/time";
+import { getHebrewMonthName, getCurrentSchoolYearRange } from "@/utils/time";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 
@@ -18,6 +18,8 @@ export const getAbsencesByMonthAction = async (schoolId: string): Promise<Action
             return authError as ActionResponse<AbsenceByMonth[]>;
         }
 
+        const { start, end } = getCurrentSchoolYearRange();
+
         const result = await executeQuery(async () => {
             return await db
                 .select({
@@ -29,7 +31,8 @@ export const getAbsencesByMonthAction = async (schoolId: string): Promise<Action
                 .where(
                     and(
                         eq(schema.history.schoolId, schoolId),
-                        eq(schema.history.columnType, 0) // 0 is missingTeacher
+                        eq(schema.history.columnType, 0), // 0 is missingTeacher
+                        sql`${schema.history.date} >= ${start} AND ${schema.history.date} <= ${end}`
                     )
                 )
                 .groupBy(sql`EXTRACT(YEAR FROM ${schema.history.date})`, sql`EXTRACT(MONTH FROM ${schema.history.date})`)
