@@ -9,7 +9,6 @@
     direction: ltr;
     outline: none;
     padding-bottom: var(--padding-top-desktop);
-    overscroll-behavior: none;
 }
 
 .chartContainer :global(.recharts-wrapper),
