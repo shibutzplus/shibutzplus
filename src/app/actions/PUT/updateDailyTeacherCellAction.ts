@@ -25,7 +25,7 @@ export async function updateDailyTeacherCellAction(
             event,
             position,
             instructions,
-            dayInt,
+            day,
             date,
             hour,
             columnId,
@@ -34,7 +34,7 @@ export async function updateDailyTeacherCellAction(
         const authError = await publicAuthAndParams({
             id,
             date: date,
-            dayInt: dayInt,
+            day: day,
             hour: hour,
             columnId: columnId,
             schoolId: school.id,
@@ -48,7 +48,7 @@ export async function updateDailyTeacherCellAction(
         // Build update payload (minimal change: handle instructions conditionally)
         const updateData: Partial<NewDailyScheduleSchema> = {
             date: getDateReturnString(scheduleData.date),
-            dayInt: dayInt,
+            day: day,
             hour: scheduleData.hour,
             columnId: scheduleData.columnId,
             schoolId: school.id,
@@ -90,7 +90,7 @@ export async function updateDailyTeacherCellAction(
             data: {
                 id: updateSchedule.id,
                 date: getStringReturnDate(updateSchedule.date),
-                dayInt: updateSchedule.dayInt,
+                day: updateSchedule.day,
                 hour: updateSchedule.hour,
                 columnId: updateSchedule.columnId,
                 createdAt: updateSchedule.createdAt,

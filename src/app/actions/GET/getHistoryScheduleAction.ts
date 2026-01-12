@@ -75,7 +75,7 @@ export async function getHistoryScheduleAction(schoolId: string, date: string): 
             return {
                 id: record.id,
                 date: new Date(record.date),
-                dayInt: record.day,
+                day: record.day,
                 hour: record.hour,
                 columnId: record.columnId,
                 eventTitle: record.eventTitle || undefined,

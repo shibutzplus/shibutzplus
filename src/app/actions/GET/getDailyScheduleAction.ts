@@ -89,7 +89,7 @@ export async function getDailyScheduleAction(
                     ({
                         id: schedule.id,
                         date: schedule.date,
-                        dayInt: schedule.dayInt,
+                        day: schedule.day,
                         hour: schedule.hour,
                         columnId: schedule.columnId,
                         eventTitle: schedule.eventTitle,
