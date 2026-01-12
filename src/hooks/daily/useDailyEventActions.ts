@@ -63,11 +63,11 @@ const useDailyEventActions = (
             updatedSchedule = initDailySchedule(updatedSchedule, selectedDate, columnId);
             // Create a new entry in DB
             if (school?.id) {
-                const dayNum = getDayNumberByDateString(selectedDate).toString();
+                const dayInt = getDayNumberByDateString(selectedDate);
 
                 const response = await addDailyEventCellAction({
                     date: new Date(selectedDate),
-                    day: dayNum,
+                    dayInt: dayInt,
                     hour: 0,
                     columnId,
                     school: school,

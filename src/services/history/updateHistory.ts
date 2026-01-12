@@ -82,7 +82,7 @@ export async function processHistoryUpdate(dateString?: string, force: boolean =
                 default: columnType = 0;
             }
 
-            const dayInt = parseInt(schedule.day, 10) || 0;
+            const dayInt = schedule.dayInt || 0;
 
             return {
                 schoolId: schedule.schoolId,

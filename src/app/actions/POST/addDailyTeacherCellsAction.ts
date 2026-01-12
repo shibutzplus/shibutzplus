@@ -28,6 +28,7 @@ export async function addDailyTeacherCellsAction(
         const firstItem = scheduleCellsData[0];
         const authError = await checkAuthAndParams({
             schoolId: firstItem.school.id,
+            dayInt: firstItem.dayInt,
         });
 
         if (authError) {
@@ -40,7 +41,7 @@ export async function addDailyTeacherCellsAction(
         for (const cellData of scheduleCellsData) {
             const {
                 date,
-                day,
+                dayInt,
                 hour,
                 columnId,
                 school,
@@ -61,7 +62,7 @@ export async function addDailyTeacherCellsAction(
 
             const newRow: NewDailyScheduleSchema = {
                 date: getDateReturnString(date),
-                day: day,
+                dayInt: dayInt,
                 hour: hour,
                 columnId: columnId,
                 schoolId: school.id,
@@ -101,7 +102,7 @@ export async function addDailyTeacherCellsAction(
             return {
                 id: dbRecord.id,
                 date: new Date(dbRecord.date),
-                day: dbRecord.day,
+                dayInt: dbRecord.dayInt,
                 hour: dbRecord.hour,
                 columnId: dbRecord.columnId,
                 createdAt: dbRecord.createdAt,

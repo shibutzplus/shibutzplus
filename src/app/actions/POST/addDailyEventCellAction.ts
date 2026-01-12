@@ -13,10 +13,11 @@ export async function addDailyEventCellAction(
     scheduleCellData: DailyScheduleRequest,
 ): Promise<ActionResponse & { data?: DailyScheduleType }> {
     try {
-        const { date, day, hour, columnId, school, eventTitle, event, position } = scheduleCellData;
+        const { date, dayInt, hour, columnId, school, eventTitle, event, position } = scheduleCellData;
 
         const authError = await checkAuthAndParams({
             date: date,
+            dayInt: dayInt,
             hour: hour,
             columnId: columnId,
             schoolId: school.id,
@@ -31,7 +32,7 @@ export async function addDailyEventCellAction(
         const resEvent = event === eventPlaceholder ? "" : event;
         const newRow: NewDailyScheduleSchema = {
             date: getDateReturnString(date),
-            day: day,
+            dayInt: dayInt,
             hour: hour,
             columnId: columnId,
             schoolId: school.id,
@@ -62,7 +63,7 @@ export async function addDailyEventCellAction(
             data: {
                 id: newDailySchedule.id,
                 date: new Date(newDailySchedule.date),
-                day: newDailySchedule.day,
+                dayInt: newDailySchedule.dayInt!,
                 hour: newDailySchedule.hour,
                 columnId: newDailySchedule.columnId,
                 createdAt: newDailySchedule.createdAt,
