@@ -69,7 +69,7 @@ const getTeacherFullScheduleAction = async (
                 .map((schedule: any) => ({
                     id: schedule.id,
                     date: new Date(schedule.date),
-                    dayInt: schedule.dayInt,
+                    day: schedule.day,
                     hour: schedule.hour,
                     columnId: schedule.columnId || `daily-${schedule.id}`,
                     eventTitle: schedule.eventTitle || undefined,

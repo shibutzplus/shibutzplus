@@ -26,7 +26,7 @@ export const addNewEventCell = (
     }
     const dailyCellData: DailyScheduleRequest = {
         date: getStringReturnDate(selectedDate),
-        dayInt: getDayNumberByDateString(selectedDate),
+        day: getDayNumberByDateString(selectedDate),
         eventTitle: headerCol.headerEvent,
         columnType: ColumnTypeValues.event,
         columnId,
@@ -61,7 +61,7 @@ export const addNewTeacherValueCell = (
 
     const dailyCellDataRequests: DailyScheduleRequest = {
         date: getStringReturnDate(selectedDate),
-        dayInt: getDayNumberByDateString(selectedDate),
+        day: getDayNumberByDateString(selectedDate),
         originalTeacher: headerCol.headerTeacher,
         columnType: type,
         eventTitle: undefined,

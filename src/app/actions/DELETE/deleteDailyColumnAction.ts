@@ -70,7 +70,7 @@ export async function deleteDailyColumnAction(
                 ({
                     id: schedule.id,
                     date: new Date(schedule.date),
-                    dayInt: schedule.dayInt,
+                    day: schedule.day,
                     hour: schedule.hour,
                     columnId: schedule.columnId,
                     school: schedule.school,

@@ -82,12 +82,12 @@ export async function processHistoryUpdate(dateString?: string, force: boolean =
                 default: columnType = 0;
             }
 
-            const dayInt = schedule.dayInt || 0;
+            const day = schedule.day || 0;
 
             return {
                 schoolId: schedule.schoolId,
                 date: schedule.date,
-                day: dayInt,
+                day: day,
                 hour: schedule.hour,
                 columnId: schedule.columnId || '',
                 columnPosition: schedule.position,

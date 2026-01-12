@@ -14,12 +14,12 @@ export async function updateDailyEventCellAction(
     scheduleData: DailyScheduleRequest,
 ): Promise<ActionResponse & { data?: DailyScheduleType }> {
     try {
-        const { date, dayInt, hour, columnId, school, eventTitle, event, position } = scheduleData;
+        const { date, day, hour, columnId, school, eventTitle, event, position } = scheduleData;
 
         const authError = await checkAuthAndParams({
             id,
             date: date,
-            dayInt: dayInt,
+            day: day,
             hour: hour,
             columnId: columnId,
             schoolId: school.id,
@@ -36,7 +36,7 @@ export async function updateDailyEventCellAction(
                 .update(schema.dailySchedule)
                 .set({
                     date: getDateReturnString(date),
-                    dayInt: dayInt,
+                    day: day,
                     hour: hour,
                     columnId: columnId,
                     schoolId: school.id,
@@ -67,7 +67,7 @@ export async function updateDailyEventCellAction(
             data: {
                 id: updateSchedule.id,
                 date: getStringReturnDate(updateSchedule.date),
-                dayInt: updateSchedule.dayInt,
+                day: updateSchedule.day,
                 hour: updateSchedule.hour,
                 columnId: updateSchedule.columnId,
                 createdAt: updateSchedule.createdAt,

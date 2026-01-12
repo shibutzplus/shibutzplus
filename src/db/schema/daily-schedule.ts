@@ -6,7 +6,7 @@ export const dailySchedule = pgTable('daily_schedule', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
   schoolId: text('school_id').notNull(),
   date: date('date').notNull(),
-  dayInt: integer('day_int').notNull(),                 // day of week 1-7
+  day: integer('day').notNull(),                 // day of week 1-7
   hour: integer('hour').notNull(),
   columnId: text('column_id'),
   position: integer('position').notNull(),
