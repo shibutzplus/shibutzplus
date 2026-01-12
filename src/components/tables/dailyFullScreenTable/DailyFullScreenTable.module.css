@@ -68,6 +68,7 @@
     overflow-y: auto;
     /* Allow scrolling */
     overflow-x: hidden;
+    overscroll-behavior: none;
 }
 
 .row {
