@@ -2,7 +2,7 @@
 import { db, schema, executeQuery } from "@/db";
 import { eq, and, sql, desc } from "drizzle-orm";
 import { ActionResponse } from "@/models/types/actions";
-import { SCHOOL_MONTHS } from "@/utils/time";
+import { SCHOOL_MONTHS, getCurrentSchoolYearRange } from "@/utils/time";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 
@@ -18,9 +18,12 @@ export const getAbsencesByTeacherAction = async (schoolId: string, month?: strin
             return authError as ActionResponse<AbsenceByTeacher[]>;
         }
 
+        const { start, end } = getCurrentSchoolYearRange();
+
         const conditions = [
             eq(schema.history.schoolId, schoolId),
-            eq(schema.history.columnType, 0) // 0 is missingTeacher
+            eq(schema.history.columnType, 0), // 0 is missingTeacher
+            sql`${schema.history.date} >= ${start} AND ${schema.history.date} <= ${end}`
         ];
 
         if (month && month !== "all") {

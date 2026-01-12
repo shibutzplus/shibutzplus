@@ -229,3 +229,35 @@ export const chooseDefaultDate = (_options?: SelectOption[]): string => {
     // If this date is not in options, PortalContext will handle it as an "Empty Schedule" (NotPublished).
     return defaultTimeBased;
 };
+
+// -- School Year -- //
+export const getCurrentSchoolYearRange = (): { start: string; end: string } => {
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth(); // 0-11 (0=Jan, 8=Sept)
+
+    let startYear: number;
+    let endYear: number;
+
+    // School year starts September 1st
+    // If current date is Jan-Aug (0-7), we are in the second half of the school year (started prev year)
+    // If current date is Sept-Dec (8-11), we are in the first half of the school year (started this year)
+
+    if (currentMonth < 8) {
+        // Jan - Aug
+        startYear = currentYear - 1;
+        endYear = currentYear;
+    } else {
+        // Sept - Dec
+        startYear = currentYear;
+        endYear = currentYear + 1;
+    }
+
+    const startDate = new Date(startYear, 8, 1); // Sept 1st
+    const endDate = new Date(endYear, 7, 31); // Aug 31st
+
+    return {
+        start: getDateReturnString(startDate),
+        end: getDateReturnString(endDate),
+    };
+};
