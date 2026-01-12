@@ -3,64 +3,54 @@ import {
     DAYS_OF_WEEK, getDateReturnString, getDayNumberByDate, getTodayDateString,
     getTomorrowDateString, SATURDAY_NUMBER, ONE_DAY, israelTimezoneDate, generateDateRange,
     getCurrentMonth, getCurrentYear, israelToday, DAYS_OF_WEEK_FORMAT, formatTMDintoDMY,
+    AUTO_SWITCH_TIME,
 } from "@/utils/time";
 
+// Used in Daily Schedule
 export function getIsraeliDateOptions(short: boolean = false): SelectOption[] {
-    const options: SelectOption[] = [];
 
-    // Helper function to format date and create option
-    const createDateOption = (date: Date): SelectOption => {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-        const day = String(date.getDate()).padStart(2, "0");
-        const dateString = `${year}-${month}-${day}`;
+    // 1. Determine "Time State" (Before/After 16:00)
+    const nowIsrael = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Jerusalem" }));
+    const [switchHour, switchMinute] = AUTO_SWITCH_TIME.split(":").map(Number);
+    const isAfterSwitch = nowIsrael.getHours() > switchHour ||
+        (nowIsrael.getHours() === switchHour && nowIsrael.getMinutes() >= switchMinute);
 
-        const dayOfWeek = date.getDay();
-        const hebrewDay = DAYS_OF_WEEK_FORMAT[dayOfWeek];
+    // 2. Define Date Range (Yesterday -> Today + 1 Month)
+    const start = new Date(israelToday);
+    start.setDate(start.getDate() - 1);
 
-        // Check if it's today or tomorrow
-        const tomorrow = new Date(israelToday);
-        tomorrow.setDate(israelToday.getDate() + 1);
+    const end = new Date(israelToday);
+    end.setMonth(end.getMonth() + 1);
 
-        let formattedDate = formatTMDintoDMY(dateString);
-        if (short) {
-            // Remove year: DD-MM-YYYY -> DD-MM
-            const parts = formattedDate.split("-");
-            formattedDate = `${parts[0]}-${parts[1]}`;
-        }
+    // 3. Constants for comparison
+    const todayStr = getDateReturnString(israelToday);
+    const tomorrowStr = getTomorrowDateString();
 
-        let label = `${formattedDate} | ${hebrewDay}`;
+    // 4. Generate & Map
+    return generateDateRange(start, end)
+        .filter(dateStr => new Date(dateStr).getDay() !== SATURDAY_NUMBER) // Filter Saturdays
+        .map(dateStr => {
+            const date = new Date(dateStr);
+            const hebrewDay = DAYS_OF_WEEK_FORMAT[date.getDay()];
 
-        if (date.toDateString() === israelToday.toDateString()) {
-            label += " (היום)";
-        } else if (date.toDateString() === tomorrow.toDateString()) {
-            label += " (מחר)";
-        }
+            // Format Date (DD-MM-YYYY or DD-MM)
+            let dateDisplay = formatTMDintoDMY(dateStr);
+            if (short) {
+                const [d, m] = dateDisplay.split("-");
+                dateDisplay = `${d}-${m}`;
+            }
 
-        return {
-            value: dateString,
-            label: label,
-        };
-    };
+            let label = `${dateDisplay} | ${hebrewDay}`;
 
-    // Calculate start date (1 day ago) and end date (1 month from today)
-    const startDate = new Date(israelToday);
-    startDate.setDate(israelToday.getDate() - ONE_DAY);
+            // Add Contextual Label (Today/Tomorrow)
+            if (!isAfterSwitch && dateStr === todayStr) {
+                label += " (היום)";
+            } else if (isAfterSwitch && dateStr === tomorrowStr) {
+                label += " (מחר)";
+            }
 
-    const endDate = new Date(israelToday);
-    endDate.setMonth(endDate.getMonth() + 1)
-
-    // Generate all dates in the range
-    const currentDate = new Date(startDate);
-    while (currentDate <= endDate) {
-        options.push(createDateOption(new Date(currentDate)));
-        currentDate.setDate(currentDate.getDate() + 1);
-    }
-
-    // Filter out Saturday days ('יום ש')
-    const filteredOptions = options.filter((option) => !option.label.includes("יום ש"));
-
-    return filteredOptions;
+            return { value: dateStr, label };
+        });
 }
 
 export function getPublishedDatesOptions(dates: string[]): SelectOption[] {
