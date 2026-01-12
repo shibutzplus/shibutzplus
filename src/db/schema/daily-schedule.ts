@@ -6,11 +6,13 @@ export const dailySchedule = pgTable('daily_schedule', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
   schoolId: text('school_id').notNull(),
   date: date('date').notNull(),
-  day: text('day').notNull(), // day of week 1-7 (should have been integer)
+  day: text('day'), // DEPRECATED: use dayInt instead
+  dayInt: integer('day_int').notNull(),                 // day of week 1-7
   hour: integer('hour').notNull(),
   columnId: text('column_id'),
   position: integer('position').notNull(),
   columnType: text('column_type').notNull().$type<ColumnType>().default('missingTeacher'),
+  columnTypeInt: integer('column_type_int'),  // 0 - missingTeacher, 1 - existingTeacher, 2 - event
   originalTeacherId: text('original_teacher_id'),
   classIds: text('class_ids').array(),
   subjectId: text('subject_id'),

@@ -7,7 +7,7 @@ import { ActionResponse } from "./actions";
 export type DailyScheduleType = {
     id: string;
     date: Date;
-    day: string; // 1-7
+    dayInt: number; // 1-7
     hour: number; // 1-7
     columnId: string;
     eventTitle?: string;
@@ -26,7 +26,7 @@ export type DailyScheduleType = {
 
 export type DailyScheduleRequest = {
     date: Date;
-    day: string; // 1-7
+    dayInt: number; // 1-7
     hour: number;
     columnId: string;
     eventTitle?: string;
