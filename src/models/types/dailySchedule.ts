@@ -16,7 +16,7 @@ export type DailyScheduleType = {
     classes?: ClassType[];
     subject?: SubjectType;
     originalTeacher?: TeacherType;
-    columnType: ColumnType;
+    columnTypeInt: ColumnType;
     subTeacher?: TeacherType;
     instructions?: string;
     position: number;
@@ -35,7 +35,7 @@ export type DailyScheduleRequest = {
     classes?: ClassType[];
     subject?: SubjectType;
     originalTeacher?: TeacherType;
-    columnType: ColumnType;
+    columnTypeInt: ColumnType;
     subTeacher?: TeacherType;
     position: number;
     instructions?: string;
@@ -85,23 +85,12 @@ export type GetTeacherByIdResponse = ActionResponse & {
     data?: TeacherType;
 };
 
-export const ActivityValues = {
-    missingTeacher: "missing" as const,
-    test: "test" as const,
-    trip: "trip" as const,
-    show: "show" as const,
-    returns: "returns" as const,
-    home: "home" as const,
-};
-export type ActivityOptions = (typeof ActivityValues)[keyof typeof ActivityValues];
-
 export const ColumnTypeValues = {
-    existingTeacher: "existingTeacher" as const,
-    missingTeacher: "missingTeacher" as const,
-    event: "event" as const,
-    empty: "empty" as const,
-};
-export type ColumnType = keyof typeof ColumnTypeValues;
+    missingTeacher: 0,
+    existingTeacher: 1,
+    event: 2,
+} as const;
+export type ColumnType = 0 | 1 | 2;
 
 ///---
 

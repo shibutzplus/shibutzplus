@@ -3,7 +3,7 @@ import styles from "./ActionBtn.module.css";
 import Loading from "@/components/loading/Loading/Loading";
 
 const ActionBtn: React.FC<{
-    type?: string;
+    type?: string | number;
     Icon?: React.ReactNode;
     label?: string;
     tooltip?: string;

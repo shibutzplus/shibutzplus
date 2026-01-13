@@ -3,7 +3,7 @@ import { getDayNameByDateString } from "@/utils/time";
 import styles from "./DailyTeacherCell.module.css";
 import { useMainContext } from "@/context/MainContext";
 import { useDailyTableContext } from "@/context/DailyTableContext";
-import { ActivityValues, ColumnType, DailyScheduleCell } from "@/models/types/dailySchedule";
+import { ColumnType, ColumnTypeValues, DailyScheduleCell } from "@/models/types/dailySchedule";
 import { EmptyValue } from "@/models/constant/daily";
 import { getCellDisplayData } from "@/utils/dailyCellDisplay";
 import DynamicInputGroupSelect from "@/components/ui/select/InputGroupSelect/DynamicInputGroupSelect";
@@ -94,12 +94,9 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
                 classes: classesData,
                 subject: subjectData,
             } as any, // casting as the types might slightly differ in strictness but structure is same
-            headerData?.type || "event"
+            headerData?.type ?? ColumnTypeValues.event
         );
     }, [cell, classesData, subjectData, headerData]);
-
-    const checkIfActivity = (value: string) =>
-        Object.values(ActivityValues).some((option) => option === value);
 
     const getDisplayText = () => displayText;
 
@@ -128,8 +125,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
                 return;
             }
 
-            const isTeacherOption = !checkIfActivity(value) && methodType === "update";
-            const isActivityOption = checkIfActivity(value) && methodType === "update";
+            const isTeacherOption = methodType === "update";
             const isEventOption = methodType === "create";
 
             let newSubTeacherData;
@@ -147,8 +143,6 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
                     data = { subTeacher: newSubTeacherData };
                 } else if (isEventOption) {
                     data = { event: value.trim() };
-                } else if (isActivityOption) {
-                    data = { event: value };
                 }
                 const response = await updateTeacherCell(
                     selectedDate,
@@ -168,10 +162,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
         }
     };
 
-    const isMissingTeacher = headerData?.type === "missingTeacher";
-
-
-
+    const isMissingTeacher = headerData?.type === ColumnTypeValues.missingTeacher;
     const shouldHighlightMissing = isPublished && isMissingTeacher && !subTeacherData && !teacherText && !isActivity;
 
     return (

@@ -1,10 +1,10 @@
 "use server";
 
 import { DailyScheduleType, DailyScheduleRequest } from "@/models/types/dailySchedule";
+import { ActionResponse } from "@/models/types/actions";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "../../../db";
-import { ActionResponse } from "@/models/types/actions";
 import { NewDailyScheduleSchema } from "@/db/schema";
 import { getDateReturnString } from "@/utils/time";
 
@@ -48,7 +48,7 @@ export async function addDailyTeacherCellsAction(
                 classes,
                 subject,
                 originalTeacher,
-                columnType,
+                columnTypeInt,
                 subTeacher,
                 eventTitle,
                 event,
@@ -69,7 +69,7 @@ export async function addDailyTeacherCellsAction(
                 subjectId: subject.id,
                 classIds: classes.map((c) => c.id),
                 originalTeacherId: originalTeacher?.id,
-                columnType: columnType,
+                columnTypeInt: columnTypeInt,
                 subTeacherId: subTeacher?.id,
                 eventTitle: eventTitle,
                 event: event,
@@ -110,7 +110,7 @@ export async function addDailyTeacherCellsAction(
                 classes: input?.classes,
                 school: input?.school,
                 originalTeacher: input?.originalTeacher,
-                columnType: input?.columnType,
+                columnTypeInt: input?.columnTypeInt,
                 subTeacher: input?.subTeacher,
                 subject: input?.subject,
                 eventTitle: input?.eventTitle,

@@ -10,7 +10,7 @@ export const initDailyTeacherCellData = (entry: DailyScheduleType) => {
         hour: entry.hour,
         classes: entry.classes,
         subject: entry.subject,
-        headerCol: { headerTeacher: entry.originalTeacher, type: entry.columnType, position: entry.position },
+        headerCol: { headerTeacher: entry.originalTeacher, type: entry.columnTypeInt, position: entry.position },
     };
 
     if (entry.subTeacher) {

@@ -2,6 +2,7 @@
 import { db, schema, executeQuery } from "@/db";
 import { eq, and, sql } from "drizzle-orm";
 import { ActionResponse } from "@/models/types/actions";
+import { ColumnTypeValues } from "@/models/types/dailySchedule";
 import { getHebrewMonthName, getCurrentSchoolYearRange } from "@/utils/time";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
@@ -31,7 +32,7 @@ export const getAbsencesByMonthAction = async (schoolId: string): Promise<Action
                 .where(
                     and(
                         eq(schema.history.schoolId, schoolId),
-                        eq(schema.history.columnType, 0), // 0 is missingTeacher
+                        eq(schema.history.columnType, ColumnTypeValues.missingTeacher),
                         sql`${schema.history.date} >= ${start} AND ${schema.history.date} <= ${end}`
                     )
                 )

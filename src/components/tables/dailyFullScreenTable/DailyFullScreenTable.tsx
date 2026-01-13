@@ -2,7 +2,7 @@
 
 import React from "react";
 import styles from "./DailyFullScreenTable.module.css";
-import { DailySchedule, ColumnType } from "@/models/types/dailySchedule";
+import { DailySchedule, ColumnType, ColumnTypeValues } from "@/models/types/dailySchedule";
 import { sortDailyColumnIdsByPosition } from "@/utils/sort";
 import { getCellDisplayData } from "@/utils/dailyCellDisplay";
 import { COLOR_BY_TYPE } from "@/models/constant/daily";
@@ -50,9 +50,9 @@ const DailyFullScreenTable: React.FC<DailyFullScreenTableProps> = ({
 
             const colFirstObj =
                 columnData["1"] ||
-                Object.values(columnData).find((cell) => cell?.headerCol?.type);
+                Object.values(columnData).find((cell) => cell?.headerCol?.type !== undefined);
 
-            types[colId] = colFirstObj?.headerCol?.type || "event";
+            types[colId] = colFirstObj?.headerCol?.type ?? ColumnTypeValues.event;
         });
         return types;
     }, [schedule, sortedTableColumns]);
@@ -138,14 +138,14 @@ const DailyFullScreenTable: React.FC<DailyFullScreenTableProps> = ({
                 <div className={styles.rowNumberHeader}></div>
                 <div /> {/* 5px Spacer */}
                 {sortedTableColumns.map((colId) => {
-                    const type = columnTypes[colId] || "event";
+                    const type = columnTypes[colId] ?? ColumnTypeValues.event;
                     const column = schedule[colId];
 
                     // Determine header text
                     let headerText = "";
                     let headerTeacher: TeacherType | undefined;
 
-                    if (type === "event") {
+                    if (type === ColumnTypeValues.event) {
                         const headerCell = Object.values(column).find(c => c?.headerCol?.headerEvent);
                         headerText = headerCell?.headerCol?.headerEvent || "אירוע";
                     } else {
@@ -154,7 +154,7 @@ const DailyFullScreenTable: React.FC<DailyFullScreenTableProps> = ({
                         headerTeacher = headerCell?.headerCol?.headerTeacher;
                     }
 
-                    const isClickable = !!onTeacherClick && type !== "event" && !!headerTeacher;
+                    const isClickable = !!onTeacherClick && type !== ColumnTypeValues.event && !!headerTeacher;
 
                     return (
                         <div
@@ -189,7 +189,7 @@ const DailyFullScreenTable: React.FC<DailyFullScreenTableProps> = ({
                         </div>
                         <div className={styles.spacerCell} /> {/* 2px Spacer */}
                         {sortedTableColumns.map((colId) => {
-                            const type = columnTypes[colId] || "event";
+                            const type = columnTypes[colId] ?? ColumnTypeValues.event;
                             const columnData = schedule[colId];
                             const cellData = columnData?.[row];
 
@@ -202,7 +202,7 @@ const DailyFullScreenTable: React.FC<DailyFullScreenTableProps> = ({
                                 isEvent: false
                             };
 
-                            if (type === "event") {
+                            if (type === ColumnTypeValues.event) {
                                 const eventText = cellData?.event;
                                 cellDisplay.isEmpty = !eventText;
                                 cellDisplay.main = eventText || "";
