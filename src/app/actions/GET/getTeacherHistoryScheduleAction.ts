@@ -81,7 +81,7 @@ export async function getTeacherHistoryScheduleAction(
                 classes: makeClasses(record.classes),
                 subject: makeSubject(record.subject),
                 originalTeacher: makeTeacher(record.originalTeacher),
-                columnTypeInt: record.columnType as ColumnType,
+                columnType: record.columnType as ColumnType,
                 subTeacher: makeTeacher(record.subTeacher),
                 instructions: record.instructions || undefined,
                 position: record.columnPosition,

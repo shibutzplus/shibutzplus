@@ -98,7 +98,7 @@ export async function getDailyScheduleAction(
                         classes: getClasses(schedule),
                         subject: schedule.subject,
                         originalTeacher: schedule.originalTeacher,
-                        columnTypeInt: schedule.columnTypeInt,
+                        columnType: schedule.columnType,
                         subTeacher: schedule.subTeacher,
                         position: schedule.position,
                         createdAt: schedule.createdAt,
