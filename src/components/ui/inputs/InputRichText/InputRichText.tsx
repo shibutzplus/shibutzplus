@@ -16,6 +16,7 @@ type InputRichTextProps = {
     minHeight?: number;
     importantPlaceholder?: boolean;
     maxLines?: number;
+    readOnly?: boolean;
 };
 
 const normalize = (html: string) => {
@@ -32,6 +33,7 @@ const InputRichText: React.FC<InputRichTextProps> = ({
     minHeight = 40,
     importantPlaceholder = false,
     maxLines,
+    readOnly = false,
 }) => {
     const extensions = React.useMemo(() => [
         StarterKit.configure({
@@ -61,6 +63,7 @@ const InputRichText: React.FC<InputRichTextProps> = ({
         return paragraphs.length || 1;
     };
     const editor = useEditor({
+        editable: !readOnly,
         immediatelyRender: false,
         extensions,
         content: value || "",

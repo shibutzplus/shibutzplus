@@ -30,6 +30,7 @@
 
 @media (max-width: 1000px) {
     .fab {
+        top: 1vw;
         width: 5vw;
         height: 5vw;
     }
@@ -37,16 +38,17 @@
 
 @media (max-width: 600px) {
     .fab {
-        top: 3vw;
-        width: 7vw;
-        height: 7vw;
+        top: 2vw;
+        width: 5.5vw;
+        height: 5.5vw;
     }
 }
 
 @media (max-width: 400px) {
     .fab {
-        top: 3vw;
-        width: 9vw;
-        height: 9vw;
+        top: 3.5vw;
+        right: 0.5vw;
+        width: 8vw;
+        height: 8vw;
     }
 }

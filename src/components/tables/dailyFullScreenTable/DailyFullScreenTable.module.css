@@ -55,9 +55,11 @@
 }
 
 .rowNumberHeader {
-    background-color: var(--table-gray-color);
-    border: 1px solid #ddd;
-    border-radius: 1.2vw 1.2vw 0 0;
+    background-color: transparent;
+}
+
+.bodyContainer .row:first-child .rowNumberCell {
+    border-radius: 20px 20px 0 0;
 }
 
 .bodyContainer {

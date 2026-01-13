@@ -25,6 +25,7 @@ interface TeacherTableContextType {
         selectedDate?: string,
     ) => Promise<void>;
     hasFetched: boolean;
+    isHistoryMode: boolean;
 }
 
 const TeacherTableContext = createContext<TeacherTableContextType | undefined>(undefined);
@@ -143,6 +144,7 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
         fetchTeacherScheduleDate,
         saveInstractions,
         hasFetched,
+        isHistoryMode,
     };
 
     return <TeacherTableContext.Provider value={value}>{children}</TeacherTableContext.Provider>;

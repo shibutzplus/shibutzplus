@@ -64,7 +64,8 @@
     flex-direction: column;
     align-items: unset;
     gap: 10px;
-    height: var(--table-teacher-cell-height);
+    height: 100%;
+    min-height: var(--table-teacher-cell-height);
     padding: 10px 15px;
   }
 

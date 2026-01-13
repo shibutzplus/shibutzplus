@@ -39,6 +39,7 @@
     box-sizing: border-box;
     width: var(--table-teacher-details-col-width);
     display: table-cell;
+    height: 1px;
 }
 
 .scheduleInstructionsCell {
@@ -63,7 +64,7 @@
 }
 
 .teacherRow {
-    height: var(--table-teacher-cell-height);
+    --table-teacher-cell-height: 100px;
 }
 
 .mobileDetails {
