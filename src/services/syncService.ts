@@ -106,7 +106,10 @@ export const pushSyncUpdate = async (type: SyncChannel): Promise<void> => {
 
     // If running on dev server, prepend base URL
     if (typeof window === "undefined") {
-      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+      const baseUrl =
+        process.env.NEXT_PUBLIC_APP_URL ||
+        (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+
       url = `${baseUrl}${url}`;
     }
 
