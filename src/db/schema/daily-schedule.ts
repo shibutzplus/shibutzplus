@@ -9,7 +9,7 @@ export const dailySchedule = pgTable('daily_schedule', {
   hour: integer('hour').notNull(),
   columnId: text('column_id'),
   position: integer('position').notNull(),
-  columnTypeInt: integer('column_type_int').notNull().default(0),  // 0 - missingTeacher, 1 - existingTeacher, 2 - event
+  columnType: integer('column_type').notNull().default(0),  // 0 - missingTeacher, 1 - existingTeacher, 2 - event
   originalTeacherId: text('original_teacher_id'),
   classIds: text('class_ids').array(),
   subjectId: text('subject_id'),

@@ -15,7 +15,7 @@ export interface CellDisplayData {
  */
 export const getCellDisplayData = (
     cell: DailyScheduleCell | undefined,
-    columnTypeInt: ColumnType, // Explicitly passed to ensure consistency
+    columnType: ColumnType, // Explicitly passed to ensure consistency
     appType: AppType = "private"
 ): CellDisplayData => {
     if (!cell) {
@@ -28,8 +28,8 @@ export const getCellDisplayData = (
     const teacherText = cell.event;
 
     // Derived states
-    const isMissingTeacher = columnTypeInt === ColumnTypeValues.missingTeacher;
-    const isExistingTeacher = columnTypeInt === ColumnTypeValues.existingTeacher;
+    const isMissingTeacher = columnType === ColumnTypeValues.missingTeacher;
+    const isExistingTeacher = columnType === ColumnTypeValues.existingTeacher;
     const isActivity = classesData?.some((cls) => cls.activity) || false;
 
     // 1. Text Content Calculation
