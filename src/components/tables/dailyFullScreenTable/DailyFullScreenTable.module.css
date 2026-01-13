@@ -129,9 +129,7 @@
     line-height: 1.1;
 }
 
-.activity .mainText {
-    font-weight: bold;
-}
+
 
 .subText {
     font-size: var(--font-size);

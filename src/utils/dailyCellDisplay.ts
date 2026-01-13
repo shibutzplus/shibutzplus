@@ -43,9 +43,9 @@ export const getCellDisplayData = (
 
     // 2. Logic for when to hide the cell entirely (Empty)
 
-    // Case A: Public view + Activity -> Hide
-    if (appType === "public" && isActivity) {
-        return { text, subTeacherName: subTeacherData?.name || null, isMissing: false, isEmpty: true, isActivity };
+    // Case A: Public view + Activity -> Hide (Unless there is a sub teacher or event text)
+    if (appType === "public" && isActivity && !subTeacherData && !teacherText) {
+        return { text, subTeacherName: null, isMissing: false, isEmpty: true, isActivity };
     }
 
     // Case B: Existing Teachers (Blue) -> ONLY show if there's a substitute or event text (Change).
