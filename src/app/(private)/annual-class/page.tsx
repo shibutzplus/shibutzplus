@@ -11,7 +11,7 @@ import { initializeEmptyAnnualSchedule } from "@/services/annual/initialize";
 
 const AnnualSchedulePage: NextPage = () => {
     const { classes, teachers, subjects, school } = useMainContext();
-    const { annualScheduleTable, selectedClassId, schedule, setSchedule, setIsLoading, setIsSaving, isSaving, handleAddNewRow, } = useAnnualByClass();
+    const { annualScheduleTable, selectedClassId, schedule, setSchedule, setIsLoading, setIsSaving, isSaving, handleScheduleUpdate, } = useAnnualByClass();
 
     // Initialize and populate schedule for all classes on first render
     const blockRef = useRef<boolean>(true);
@@ -52,7 +52,7 @@ const AnnualSchedulePage: NextPage = () => {
                     setIsLoading={setIsLoading}
                     setIsSaving={setIsSaving}
                     isSaving={isSaving}
-                    handleAddNewRow={handleAddNewRow}
+                    handleScheduleUpdate={handleScheduleUpdate}
                 />
             ) : (
                 <div className={styles.placeholder}>בחרו כיתה כדי להציג את המערכת</div>

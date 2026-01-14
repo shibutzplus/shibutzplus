@@ -20,7 +20,7 @@ type AnnualCellProps = {
     subjects: SubjectType[];
     classes: ClassType[];
     isDisabled: boolean;
-    handleAddNewRow: (
+    handleScheduleUpdate: (
         type: AnnualInputCellType,
         elementIds: string[],
         day: string,
@@ -38,12 +38,12 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
     subjects,
     classes,
     isDisabled,
-    handleAddNewRow,
+    handleScheduleUpdate,
 }) => {
     const { handleOpenPopup } = useDeletePopup();
 
     const handleSubjectChange = (value: string, method?: SelectMethod) => {
-        handleAddNewRow("subjects", value ? [value] : [], day, hour, method || "select-option");
+        handleScheduleUpdate("subjects", value ? [value] : [], day, hour, method || "select-option");
 
         if (value) {
             const selectedSubjectObj = subjects.find((s) => s.id === value);
@@ -52,7 +52,7 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
                     (c) => c.name === selectedSubjectObj.name && c.activity
                 );
                 if (matchingClass) {
-                    handleAddNewRow(
+                    handleScheduleUpdate(
                         "classes",
                         [matchingClass.id],
                         day,
@@ -65,7 +65,7 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
     };
 
     const handleClassChange = (values: string[], method: SelectMethod) => {
-        handleAddNewRow("classes", values, day, hour, method);
+        handleScheduleUpdate("classes", values, day, hour, method);
 
         if (values.length > 0) {
             const activityClass = classes.find((c) => values.includes(c.id) && c.activity);
@@ -74,7 +74,7 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
                     (s) => s.name === activityClass.name && s.activity
                 );
                 if (matchingSubject) {
-                    handleAddNewRow(
+                    handleScheduleUpdate(
                         "subjects",
                         [matchingSubject.id],
                         day,

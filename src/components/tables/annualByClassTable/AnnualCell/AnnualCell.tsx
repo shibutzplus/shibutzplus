@@ -23,7 +23,7 @@ type AnnualCellProps = {
     isDisabled: boolean;
     onCreateSubject: (day: string, hour: number, value: string) => Promise<string | undefined>;
     onCreateTeacher: (day: string, hour: number, value: string) => Promise<string | undefined>;
-    handleAddNewRow: (
+    handleScheduleUpdate: (
         type: AnnualInputCellType,
         elementIds: string[],
         day: string,
@@ -44,7 +44,7 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
     isDisabled,
     onCreateSubject,
     onCreateTeacher,
-    handleAddNewRow,
+    handleScheduleUpdate,
 }) => {
     const { handleOpenPopup } = useDeletePopup();
 
@@ -54,11 +54,11 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
     }, [teachers]);
 
     const handleSubjectChange = (values: string[], method: SelectMethod) => {
-        handleAddNewRow("subjects", values, day, hour, method);
+        handleScheduleUpdate("subjects", values, day, hour, method);
     };
 
     const handleTeacherChange = (values: string[], method: SelectMethod) => {
-        handleAddNewRow("teachers", values, day, hour, method);
+        handleScheduleUpdate("teachers", values, day, hour, method);
 
         if (values.length > 0) {
             const selectedClassObj = classes.find((c) => c.id === selectedClassId);
@@ -67,7 +67,7 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
                 const currentSubjects = schedule[selectedClassId]?.[day]?.[hour]?.subjects || [];
 
                 if (matchingSubject && !currentSubjects.includes(matchingSubject.id)) {
-                    handleAddNewRow("subjects", [matchingSubject.id], day, hour, method);
+                    handleScheduleUpdate("subjects", [matchingSubject.id], day, hour, method);
                 }
             }
         }
