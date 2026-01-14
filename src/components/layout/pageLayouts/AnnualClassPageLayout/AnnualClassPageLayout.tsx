@@ -6,19 +6,61 @@ import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputS
 import router from "@/routes";
 import { useAnnualByClass } from "@/context/AnnualByClassContext";
 import PageLayout from "../../PageLayout/PageLayout";
+import { useValidation } from "@/context/ValidationContext";
+import { usePopup, PopupAction } from "@/context/PopupContext";
+import ConfirmPopup from "@/components/popups/ConfirmPopup/ConfirmPopup";
+import { removeIncompleteCells } from "@/utils/scheduleValidation";
 
 type AnnualClassPageLayoutProps = {
     children: React.ReactNode;
 };
 
 export default function AnnualClassPageLayout({ children }: AnnualClassPageLayoutProps) {
-    const { classesSelectOptions, selectedClassId, handleClassChange, isSaving, isLoading } =
+    const { classesSelectOptions, selectedClassId, handleClassChange: originalHandleClassChange, isSaving, isLoading, schedule, setSchedule } =
         useAnnualByClass();
+    const { validate } = useValidation();
+    const { openPopup } = usePopup();
+
+    const handleClassChange = (val: string) => {
+        handleBeforeMenuOpen().then((shouldProceed) => {
+            if (shouldProceed) {
+                originalHandleClassChange(val);
+            }
+        });
+    };
+
+    const handleBeforeMenuOpen = (): Promise<boolean> => {
+        return new Promise((resolve) => {
+            if (validate()) {
+                resolve(true);
+            } else {
+                openPopup(
+                    PopupAction.warning,
+                    "S",
+                    <ConfirmPopup
+                        text="שימו ❤️: שעות ללא שיוך מלא (מורה + מקצוע) לא יישמרו."
+                        yesText="להישאר במסך ולתקן"
+                        noText="להמשיך ללא שמירה"
+                        onYes={async () => {
+                            resolve(false);
+                        }}
+                        onNo={() => {
+                            const cleanedSchedule = removeIncompleteCells(schedule);
+                            setSchedule(cleanedSchedule);
+                            resolve(true);
+                        }}
+                        defaultAnswer="yes"
+                    />
+                );
+            }
+        });
+    };
 
     return (
         <PageLayout
             appType="private"
             leftSideWidth={50}
+            onBeforeMenuOpen={handleBeforeMenuOpen}
             HeaderRightActions={
                 <>
                     <h3 className={styles.pageTitleLong}>{router.annualByClass.title}</h3>

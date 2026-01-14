@@ -3,7 +3,7 @@ import InputText from "../../../ui/inputs/InputText/InputText";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
-import useDeletePopup from "@/hooks/useDeletePopup";
+import useConfirmPopup from "@/hooks/useConfirmPopup";
 import styles from "../DailyTable/DailyTable.module.css";
 import { formatTMDintoDMY } from "@/utils/time";
 import DailyColumnMenu from "../DailyColumnMenu/DailyColumnMenu";
@@ -50,7 +50,7 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete,
         }
     };
 
-    const { handleOpenPopup } = useDeletePopup();
+    const { handleOpenPopup } = useConfirmPopup();
 
     const deleteCol = async () => {
         const response = await deleteColumn(columnId);

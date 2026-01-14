@@ -9,7 +9,7 @@ import { ClassType } from "@/models/types/classes";
 import DynamicInputMultiSelect from "@/components/ui/select/InputMultiSelect/DynamicInputSelect";
 import { SelectMethod } from "@/models/types/actions";
 
-import useDeletePopup from "@/hooks/useDeletePopup";
+import useConfirmPopup from "@/hooks/useConfirmPopup";
 import { PopupAction } from "@/context/PopupContext";
 
 type AnnualCellProps = {
@@ -46,7 +46,7 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
     onCreateTeacher,
     handleScheduleUpdate,
 }) => {
-    const { handleOpenPopup } = useDeletePopup();
+    const { handleOpenPopup } = useConfirmPopup();
 
     const sortedTeacherOptions = useMemo(() => {
         const regularTeachers = (teachers || []).filter((t) => t.role === TeacherRoleValues.REGULAR);
@@ -76,10 +76,12 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
     const confirmRemove = (what: string | null, proceed: () => void) => {
         handleOpenPopup(
             PopupAction.deleteTeacher,
-            what ? `למחוק את ${what} מהרשימה?` : "למחוק את הפריט מהרשימה?",
+            what ? `האם למחוק את ${what}?` : "האם למחוק את הפריט?",
             async () => {
                 proceed();
             },
+            "מחיקה",
+            "ביטול"
         );
     };
 

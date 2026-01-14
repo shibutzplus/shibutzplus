@@ -3,7 +3,7 @@ import { useMainContext } from "@/context/MainContext";
 import { SubjectType } from "@/models/types/subjects";
 import { subjectSchema } from "@/models/validation/subject";
 import ListRow from "@/components/ui/list/ListRow/ListRow";
-import useDeletePopup from "@/hooks/useDeletePopup";
+import useConfirmPopup from "@/hooks/useConfirmPopup";
 import useSubmit from "@/hooks/useSubmit";
 import messages from "@/resources/messages";
 import { PopupAction } from "@/context/PopupContext";
@@ -14,7 +14,7 @@ type SubjectRowProps = {
 
 const SubjectRow: React.FC<SubjectRowProps> = ({ subject }) => {
     const { deleteSubject, school, updateSubject } = useMainContext();
-    const { handleOpenPopup } = useDeletePopup();
+    const { handleOpenPopup } = useConfirmPopup();
 
     const { handleSubmitDelete } = useSubmit(
         () => { },
@@ -31,7 +31,7 @@ const SubjectRow: React.FC<SubjectRowProps> = ({ subject }) => {
     const handleDeleteSubject = (subject: SubjectType) => {
         handleOpenPopup(
             PopupAction.deleteSubject,
-            `האם אתה בטוח שברצונך למחוק את המקצוע ${subject.name}`,
+            `האם למחוק את המקצוע ${subject.name}`,
             () => handleDeleteSubjectFromState(subject.id),
         );
     };

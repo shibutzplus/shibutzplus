@@ -2,27 +2,25 @@
 
 import React, { useState } from "react";
 import { usePopup } from "@/context/PopupContext";
-import DeleteSvg from "@/components/ui/assets/deleteBtn";
+import Icons from "@/style/icons";
 import Loading from "@/components/loading/Loading/Loading";
-import styles from "./DeletePopup.module.css";
+import styles from "./ConfirmPopup.module.css";
 
-interface DeletePopupProps {
-    text: string;
-    onDelete: () => Promise<void>;
-    onCancel: () => void;
-    confirmText?: string;
-    cancelText?: string;
-    Icon?: React.ElementType | React.ReactNode;
+interface ConfirmPopupProps {
+    text: string | React.ReactNode;
+    onYes: () => Promise<void>;
+    onNo: () => void;
+    yesText?: string;
+    noText?: string;
     defaultAnswer?: "yes" | "no";
 }
 
-const DeletePopup: React.FC<DeletePopupProps> = ({
+const ConfirmPopup: React.FC<ConfirmPopupProps> = ({
     text,
-    onDelete,
-    onCancel,
-    confirmText = "מחיקה",
-    cancelText = "ביטול",
-    Icon,
+    onYes,
+    onNo,
+    yesText = "כן",
+    noText = "לא",
     defaultAnswer = "yes"
 }) => {
     const { closePopup } = usePopup();
@@ -30,30 +28,29 @@ const DeletePopup: React.FC<DeletePopupProps> = ({
 
     const handleDelete = async () => {
         setIsLoading(true);
-        await onDelete();
+        await onYes();
         setIsLoading(false);
         closePopup();
     };
 
     const handleCancel = () => {
-        onCancel();
+        onNo();
         closePopup();
     };
 
+    const IconToRender = Icons.faq;
+
     return (
         <div className={styles.popupContent}>
-            <div className={styles.iconContainer}>
-                <div className={styles.iconBackground}>
-                    {Icon ? (
-                        /* Check if Icon is a function component (React.ElementType) or a node */
-                        typeof Icon === 'function' ? <Icon size={40} /> : Icon
-                    ) : (
-                        <DeleteSvg />
-                    )}
+            {IconToRender && (
+                <div className={styles.iconContainer}>
+                    <div className={styles.iconBackground}>
+                        {typeof IconToRender === 'function' ? <IconToRender size={28} /> : IconToRender}
+                    </div>
                 </div>
-            </div>
+            )}
 
-            <h2 className={styles.title}>{text}</h2>
+            {typeof text === 'string' ? <h2 className={styles.title}>{text}</h2> : text}
 
             <div className={styles.buttonContainer}>
                 <button
@@ -62,18 +59,18 @@ const DeletePopup: React.FC<DeletePopupProps> = ({
                     disabled={isLoading}
                     autoFocus={defaultAnswer === "yes"}
                 >
-                    {isLoading ? <Loading size="S" /> : confirmText}
+                    {isLoading ? <Loading size="S" /> : yesText}
                 </button>
                 <button
                     className={defaultAnswer === "no" ? styles.deleteButton : styles.cancelButton}
                     onClick={handleCancel}
                     autoFocus={defaultAnswer === "no"}
                 >
-                    {cancelText}
+                    {noText}
                 </button>
             </div>
         </div>
     );
 };
 
-export default DeletePopup;
+export default ConfirmPopup;

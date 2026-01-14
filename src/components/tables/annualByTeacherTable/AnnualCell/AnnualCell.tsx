@@ -7,7 +7,7 @@ import { WeeklySchedule, AnnualInputCellType } from "@/models/types/annualSchedu
 import { ClassType } from "@/models/types/classes";
 import { SelectMethod } from "@/models/types/actions";
 
-import useDeletePopup from "@/hooks/useDeletePopup";
+import useConfirmPopup from "@/hooks/useConfirmPopup";
 import { PopupAction } from "@/context/PopupContext";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import DynamicInputMultiSelect from "@/components/ui/select/InputMultiSelect/DynamicInputSelect";
@@ -40,7 +40,7 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
     isDisabled,
     handleScheduleUpdate,
 }) => {
-    const { handleOpenPopup } = useDeletePopup();
+    const { handleOpenPopup } = useConfirmPopup();
 
     const handleSubjectChange = (value: string, method?: SelectMethod) => {
         handleScheduleUpdate("subjects", value ? [value] : [], day, hour, method || "select-option");
@@ -89,10 +89,12 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
     const confirmRemove = (what: string | null, proceed: () => void) => {
         handleOpenPopup(
             PopupAction.deleteTeacher,
-            what ? `למחוק את ${what} מהרשימה?` : "למחוק את הפריט מהרשימה?",
+            what ? `האם למחוק את ${what}?` : "האם למחוק את הפריט?",
             async () => {
                 proceed();
             },
+            "מחיקה",
+            "ביטול"
         );
     };
 

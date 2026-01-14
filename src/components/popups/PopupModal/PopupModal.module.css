@@ -67,6 +67,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -77,6 +78,7 @@
     transform: translateY(-20px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -84,11 +86,14 @@
 }
 
 @media (max-width: 768px) {
-  .sizeS, .sizeM, .sizeL {
-    width: 95%;
-    max-width: 95%;
+
+  .sizeS,
+  .sizeM,
+  .sizeL {
+    width: 80%;
+    max-width: 80%;
   }
-  
+
   .modalContent {
     padding: 1.5rem;
   }

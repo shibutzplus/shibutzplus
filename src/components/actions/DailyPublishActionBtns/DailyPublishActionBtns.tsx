@@ -6,7 +6,7 @@ import usePublish from "@/hooks/usePublish";
 import Loading from "@/components/loading/Loading/Loading";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 
-import useDeletePopup from "@/hooks/useDeletePopup";
+import useConfirmPopup from "@/hooks/useConfirmPopup";
 
 const DailyPublishActionBtns: React.FC = () => {
     const { togglePreviewMode, mainDailyTable, selectedDate } = useDailyTableContext();
@@ -22,7 +22,7 @@ const DailyPublishActionBtns: React.FC = () => {
         isDisabled,
     } = usePublish();
 
-    const { handleOpenPopup } = useDeletePopup();
+    const { handleOpenPopup } = useConfirmPopup();
 
     const handleUnpublishClick = () => {
         if (unpublishDailySchedule) {
@@ -30,10 +30,9 @@ const DailyPublishActionBtns: React.FC = () => {
                 "deleteDailyCol",
                 "האם לבטל את הפרסום?",
                 unpublishDailySchedule,
-                "כן",
-                "לא",
-                <Icons.faq size={40} />,
-                "yes" // defaultAnswer
+                undefined,  //  כן
+                undefined,  //  לא  
+                "yes"       // defaultAnswer
             );
         }
     };
