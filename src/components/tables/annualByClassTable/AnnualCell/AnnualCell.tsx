@@ -90,7 +90,7 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
         if (selectedClassObj?.activity) {
             return subjects.filter((s) => s.name === selectedClassObj.name);
         }
-        return subjects.filter((s) => !s.activity) || [];
+        return subjects || [];
     }, [classes, selectedClassId, subjects]);
 
     const isActivity = classes.find((c) => c.id === selectedClassId)?.activity;
