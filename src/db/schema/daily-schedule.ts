@@ -1,6 +1,7 @@
 import { pgTable, text, timestamp, integer, index, date } from 'drizzle-orm/pg-core';
 import { createId } from '@paralleldrive/cuid2';
 import { teachers } from './teachers';
+import { subjects } from './subjects';
 
 export const dailySchedule = pgTable('daily_schedule', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
@@ -13,7 +14,7 @@ export const dailySchedule = pgTable('daily_schedule', {
   columnType: integer('column_type').notNull().default(0),  // 0 - missingTeacher, 1 - existingTeacher, 2 - event
   originalTeacherId: text('original_teacher_id').references(() => teachers.id, { onDelete: 'cascade' }),
   classIds: text('class_ids').array(),
-  subjectId: text('subject_id'),
+  subjectId: text('subject_id').references(() => subjects.id, { onDelete: 'cascade' }),
   subTeacherId: text('sub_teacher_id').references(() => teachers.id, { onDelete: 'set null' }),
   instructions: text('instructions'),
   eventTitle: text('event_title'),

@@ -19,16 +19,6 @@ export async function deleteSubjectAction(
         }
 
         const { annualSchedule, remainingSubjects } = await executeQuery(async () => {
-            // Delete all daily schedule records for this class
-            await db
-                .delete(schema.dailySchedule)
-                .where(
-                    and(
-                        eq(schema.dailySchedule.schoolId, schoolId),
-                        eq(schema.dailySchedule.subjectId, subjectId),
-                    ),
-                );
-
             // Delete the subject
             await db
                 .delete(schema.subjects)
