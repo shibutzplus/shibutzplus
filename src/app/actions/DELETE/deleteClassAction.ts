@@ -27,6 +27,11 @@ export async function deleteClassAction(
                 })
                 .where(eq(schema.dailySchedule.schoolId, schoolId));
 
+            // Delete the class
+            await db
+                .delete(schema.classes)
+                .where(and(eq(schema.classes.schoolId, schoolId), eq(schema.classes.id, classId)));
+
             const schedules = await db.query.annualSchedule.findMany({
                 where: eq(schema.annualSchedule.schoolId, schoolId),
                 with: {
@@ -51,11 +56,6 @@ export async function deleteClassAction(
                         updatedAt: schedule.updatedAt,
                     }) as AnnualScheduleType,
             );
-
-            // Delete the class
-            await db
-                .delete(schema.classes)
-                .where(and(eq(schema.classes.schoolId, schoolId), eq(schema.classes.id, classId)));
 
             // Get the remaining classes for this school
             const remainingClasses = await db

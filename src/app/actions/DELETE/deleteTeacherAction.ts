@@ -19,16 +19,6 @@ export async function deleteTeacherAction(
         }
 
         const { annualSchedule, remainingTeachers } = await executeQuery(async () => {
-            // Delete all annual schedule records for this teacher
-            await db
-                .delete(schema.annualSchedule)
-                .where(
-                    and(
-                        eq(schema.annualSchedule.schoolId, schoolId),
-                        eq(schema.annualSchedule.teacherId, teacherId),
-                    ),
-                );
-
             // Delete all daily schedule records where this teacher is issue or substitute
             await db
                 .delete(schema.dailySchedule)
@@ -38,6 +28,13 @@ export async function deleteTeacherAction(
                         eq(schema.dailySchedule.originalTeacherId, teacherId) ||
                         eq(schema.dailySchedule.subTeacherId, teacherId),
                     ),
+                );
+
+            // Delete the teacher
+            await db
+                .delete(schema.teachers)
+                .where(
+                    and(eq(schema.teachers.schoolId, schoolId), eq(schema.teachers.id, teacherId)),
                 );
 
             const schedules = await db.query.annualSchedule.findMany({
@@ -64,13 +61,6 @@ export async function deleteTeacherAction(
                         updatedAt: schedule.updatedAt,
                     }) as AnnualScheduleType,
             );
-
-            // Delete the teacher
-            await db
-                .delete(schema.teachers)
-                .where(
-                    and(eq(schema.teachers.schoolId, schoolId), eq(schema.teachers.id, teacherId)),
-                );
 
             // Get the remaining teachers for this school
             const remainingTeachers = await db

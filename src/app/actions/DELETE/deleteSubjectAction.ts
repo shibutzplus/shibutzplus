@@ -29,6 +29,13 @@ export async function deleteSubjectAction(
                     ),
                 );
 
+            // Delete the subject
+            await db
+                .delete(schema.subjects)
+                .where(
+                    and(eq(schema.subjects.schoolId, schoolId), eq(schema.subjects.id, subjectId)),
+                );
+
             const schedules = await db.query.annualSchedule.findMany({
                 where: eq(schema.annualSchedule.schoolId, schoolId),
                 with: {
@@ -53,13 +60,6 @@ export async function deleteSubjectAction(
                         updatedAt: schedule.updatedAt,
                     }) as AnnualScheduleType,
             );
-
-            // Delete the subject
-            await db
-                .delete(schema.subjects)
-                .where(
-                    and(eq(schema.subjects.schoolId, schoolId), eq(schema.subjects.id, subjectId)),
-                );
 
             // Get the remaining subjects for this school
             const remainingSubjects = await db
