@@ -27,6 +27,7 @@ export const dailySchedule = pgTable('daily_schedule', {
     originalTeacherIdIdx: index('idx_daily_issue_teacher_date_hour').on(table.originalTeacherId, table.date, table.hour),
     subTeacherIdIdx: index('idx_daily_sub_teacher_date_hour').on(table.subTeacherId, table.date, table.hour),
     columnIdIdx: index('idx_daily_school_date_column').on(table.schoolId, table.date, table.columnId),
+    subjectIdIdx: index('idx_daily_subject_id').on(table.subjectId),
   };
 });
 
