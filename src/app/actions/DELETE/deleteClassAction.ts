@@ -5,7 +5,7 @@ import { AnnualScheduleType } from "@/models/types/annualSchedule";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, sql, asc } from "drizzle-orm";
 import { ClassType } from "@/models/types/classes";
 
 export async function deleteClassAction(
@@ -19,16 +19,6 @@ export async function deleteClassAction(
         }
 
         const { annualSchedule, remainingClasses } = await executeQuery(async () => {
-            // Delete all annual schedule records for this class
-            await db
-                .delete(schema.annualSchedule)
-                .where(
-                    and(
-                        eq(schema.annualSchedule.schoolId, schoolId),
-                        eq(schema.annualSchedule.classId, classId),
-                    ),
-                );
-
             // Delete all daily schedule records for this class
             await db
                 .update(schema.dailySchedule)
@@ -36,6 +26,11 @@ export async function deleteClassAction(
                     classIds: sql`array_remove(${schema.dailySchedule.classIds}, ${classId})`,
                 })
                 .where(eq(schema.dailySchedule.schoolId, schoolId));
+
+            // Delete the class
+            await db
+                .delete(schema.classes)
+                .where(and(eq(schema.classes.schoolId, schoolId), eq(schema.classes.id, classId)));
 
             const schedules = await db.query.annualSchedule.findMany({
                 where: eq(schema.annualSchedule.schoolId, schoolId),
@@ -62,16 +57,12 @@ export async function deleteClassAction(
                     }) as AnnualScheduleType,
             );
 
-            // Delete the class
-            await db
-                .delete(schema.classes)
-                .where(and(eq(schema.classes.schoolId, schoolId), eq(schema.classes.id, classId)));
-
             // Get the remaining classes for this school
             const remainingClasses = await db
                 .select()
                 .from(schema.classes)
-                .where(eq(schema.classes.schoolId, schoolId));
+                .where(eq(schema.classes.schoolId, schoolId))
+                .orderBy(asc(schema.classes.name));
 
             return { annualSchedule, remainingClasses };
         });
@@ -79,8 +70,8 @@ export async function deleteClassAction(
         return {
             success: true,
             message: messages.classes.deleteClassSuccess,
-            annualSchedules: annualSchedule,
             classes: remainingClasses,
+            annualSchedules: annualSchedule,
         };
     } catch (error) {
         console.error("Error deleting class:", error);

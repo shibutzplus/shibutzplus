@@ -2,6 +2,7 @@
 import { db } from '@/db';
 import { history, dailySchedule, teachers, classes, subjects, schools } from '@/db/schema';
 import { eq, inArray, and, lte } from 'drizzle-orm';
+import { DAILY_KEEP_HISTORY_DAYS } from "@/utils/time";
 
 interface HistoryUpdateResult {
     success: boolean;
@@ -109,9 +110,9 @@ export async function processHistoryUpdate(dateString?: string, force: boolean =
             log(`Successfully inserted ${historyRecords.length} records into history.`);
         }
 
-        // 6. Cleanup old daily schedules (4 days ago or older)
+        // 6. Cleanup old daily schedules (DAILY_KEEP_HISTORY_DAYS days ago or older)
         const cleanupDate = new Date();
-        cleanupDate.setDate(cleanupDate.getDate() - 4);
+        cleanupDate.setDate(cleanupDate.getDate() - DAILY_KEEP_HISTORY_DAYS);
         const cleanupDateStr = cleanupDate.toISOString().split('T')[0];
 
         await db.delete(dailySchedule)
