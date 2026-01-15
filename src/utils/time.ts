@@ -152,7 +152,8 @@ export const getSessionMaxAge = (remember: boolean) => (remember ? 30 * 24 * 60 
 
 export const COOKIES_EXPIRE_TIME = 365;
 
-// -- History -- //
+// -- How much time we keep History in daily schedules table -- //
+export const DAILY_KEEP_HISTORY_DAYS = 3;
 
 export const pad2 = (n: number) => {
     return n < 10 ? `0${n}` : `${n}`;
