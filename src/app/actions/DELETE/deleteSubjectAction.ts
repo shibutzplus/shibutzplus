@@ -5,7 +5,7 @@ import { AnnualScheduleType } from "@/models/types/annualSchedule";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
-import { and, eq } from "drizzle-orm";
+import { and, eq, asc } from "drizzle-orm";
 import { SubjectType } from "@/models/types/subjects";
 
 export async function deleteSubjectAction(
@@ -65,7 +65,8 @@ export async function deleteSubjectAction(
             const remainingSubjects = await db
                 .select()
                 .from(schema.subjects)
-                .where(eq(schema.subjects.schoolId, schoolId));
+                .where(eq(schema.subjects.schoolId, schoolId))
+                .orderBy(asc(schema.subjects.name));
 
             return { annualSchedule, remainingSubjects };
         });

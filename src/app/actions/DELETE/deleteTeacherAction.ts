@@ -5,7 +5,7 @@ import { AnnualScheduleType } from "@/models/types/annualSchedule";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
-import { and, eq } from "drizzle-orm";
+import { and, eq, asc } from "drizzle-orm";
 import { TeacherType } from "@/models/types/teachers";
 
 export async function deleteTeacherAction(
@@ -19,17 +19,6 @@ export async function deleteTeacherAction(
         }
 
         const { annualSchedule, remainingTeachers } = await executeQuery(async () => {
-            // Delete all daily schedule records where this teacher is issue or substitute
-            await db
-                .delete(schema.dailySchedule)
-                .where(
-                    and(
-                        eq(schema.dailySchedule.schoolId, schoolId),
-                        eq(schema.dailySchedule.originalTeacherId, teacherId) ||
-                        eq(schema.dailySchedule.subTeacherId, teacherId),
-                    ),
-                );
-
             // Delete the teacher
             await db
                 .delete(schema.teachers)
@@ -66,7 +55,8 @@ export async function deleteTeacherAction(
             const remainingTeachers = await db
                 .select()
                 .from(schema.teachers)
-                .where(eq(schema.teachers.schoolId, schoolId));
+                .where(eq(schema.teachers.schoolId, schoolId))
+                .orderBy(asc(schema.teachers.name));
 
             return { annualSchedule, remainingTeachers };
         });
