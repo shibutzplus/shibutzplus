@@ -21,7 +21,7 @@ type AnnualTeacherTableProps = {
     classes: ClassType[] | undefined;
     setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
     isSaving: boolean;
-    handleAddNewRow: (
+    handleScheduleUpdate: (
         type: AnnualInputCellType,
         elementIds: string[],
         day: string,
@@ -39,7 +39,7 @@ const AnnualTeacherTable: React.FC<AnnualTeacherTableProps> = ({
     classes,
     setIsLoading,
     isSaving,
-    handleAddNewRow,
+    handleScheduleUpdate,
 }) => {
     const { school } = useMainContext();
     const isDisabled = isSaving || !schedule || !subjects || !classes;
@@ -76,7 +76,7 @@ const AnnualTeacherTable: React.FC<AnnualTeacherTableProps> = ({
                                 subjects={subjects || []}
                                 teachers={teachers || []}
                                 classes={classes || []}
-                                handleAddNewRow={handleAddNewRow}
+                                handleScheduleUpdate={handleScheduleUpdate}
                             />
                         ),
                     )}

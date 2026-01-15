@@ -35,7 +35,7 @@ interface AnnualByClassContextType {
     setIsSaving: React.Dispatch<React.SetStateAction<boolean>>;
     handleClassChange: (value: string) => void;
     classesSelectOptions: () => { value: string; label: string }[];
-    handleAddNewRow: (
+    handleScheduleUpdate: (
         type: AnnualInputCellType,
         elementIds: string[],
         day: string,
@@ -180,7 +180,7 @@ export const AnnualByClassProvider: React.FC<{ children: ReactNode }> = ({ child
         }
     };
 
-    const handleAddNewRow = async (
+    const handleScheduleUpdate = async (
         type: AnnualInputCellType,
         elementIds: string[],
         day: string,
@@ -189,25 +189,25 @@ export const AnnualByClassProvider: React.FC<{ children: ReactNode }> = ({ child
         newElementObj?: TeacherType | SubjectType,
     ) => {
         if (!school?.id) return;
+
+        // Check if the cell was fully populated (valid) BEFORE any changes
+        const currentCell = schedule[selectedClassId]?.[day]?.[hour];
+        const wasComplete = (currentCell?.teachers?.length || 0) > 0 && (currentCell?.subjects?.length || 0) > 0;
+
         let newSchedule = { ...schedule };
         newSchedule = setNewScheduleTemplate(newSchedule, selectedClassId, day, hour);
 
         newSchedule[selectedClassId][day][hour][type] = elementIds;
-        const teacherIds = schedule[selectedClassId][day][hour].teachers;
-        const subjectIds = schedule[selectedClassId][day][hour].subjects;
+        const teacherIds = newSchedule[selectedClassId][day][hour].teachers;
+        const subjectIds = newSchedule[selectedClassId][day][hour].subjects;
         setSchedule(newSchedule);
 
-        // 1) Handle deletions first
-        if (method === "remove-value" || method === "clear") {
-            const dayNum = dayToNumber(day);
-            if (subjectIds.length === 0 || teacherIds.length === 0) {
-                await deleteAnnualScheduleItem(dayNum, hour, selectedClassId, school.id);
-                return; // stop here
-            }
-        }
-
-        // 2) Incomplete pair → do nothing yet (no warning)
+        // Handle incomplete data (deletion or partial creation)
         if (subjectIds.length === 0 || teacherIds.length === 0) {
+            if (method === "remove-value" && wasComplete) {
+                const dayNum = dayToNumber(day);
+                await deleteAnnualScheduleItem(dayNum, hour, selectedClassId, school.id);
+            }
             return;
         }
 
@@ -247,7 +247,7 @@ export const AnnualByClassProvider: React.FC<{ children: ReactNode }> = ({ child
                 setIsSaving,
                 handleClassChange,
                 classesSelectOptions,
-                handleAddNewRow,
+                handleScheduleUpdate,
             }}
         >
             {children}

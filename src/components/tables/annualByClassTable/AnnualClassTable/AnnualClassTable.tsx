@@ -24,7 +24,7 @@ type AnnualClassTableProps = {
     setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
     setIsSaving: React.Dispatch<React.SetStateAction<boolean>>;
     isSaving: boolean;
-    handleAddNewRow: (
+    handleScheduleUpdate: (
         type: AnnualInputCellType,
         elementIds: string[],
         day: string,
@@ -43,7 +43,7 @@ const AnnualClassTable: React.FC<AnnualClassTableProps> = ({
     setIsLoading,
     setIsSaving,
     isSaving,
-    handleAddNewRow,
+    handleScheduleUpdate,
 }) => {
     const { school, addNewTeacher, addNewSubject } = useMainContext();
 
@@ -65,7 +65,7 @@ const AnnualClassTable: React.FC<AnnualClassTableProps> = ({
             };
             const res = await addNewTeacher(newTeacher);
             if (res) {
-                await handleAddNewRow("teachers", [res.id], day, hour, "create-option", res);
+                await handleScheduleUpdate("teachers", [res.id], day, hour, "create-option", res);
                 successToast(messages.teachers.createSuccess);
                 return res.id;
             }
@@ -85,7 +85,7 @@ const AnnualClassTable: React.FC<AnnualClassTableProps> = ({
             const newSubject: SubjectRequest = { name: value, schoolId: school.id };
             const res = await addNewSubject(newSubject);
             if (res) {
-                await handleAddNewRow("subjects", [res.id], day, hour, "create-option", res);
+                await handleScheduleUpdate("subjects", [res.id], day, hour, "create-option", res);
                 successToast(messages.subjects.createSuccess);
                 return res.id;
             }
@@ -129,7 +129,7 @@ const AnnualClassTable: React.FC<AnnualClassTableProps> = ({
                             classes={classes || []}
                             onCreateSubject={handleCreateSubject}
                             onCreateTeacher={handleCreateTeacher}
-                            handleAddNewRow={handleAddNewRow}
+                            handleScheduleUpdate={handleScheduleUpdate}
                         />
                     ))}
                 </tbody>

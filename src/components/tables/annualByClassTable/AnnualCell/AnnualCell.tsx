@@ -9,7 +9,7 @@ import { ClassType } from "@/models/types/classes";
 import DynamicInputMultiSelect from "@/components/ui/select/InputMultiSelect/DynamicInputSelect";
 import { SelectMethod } from "@/models/types/actions";
 
-import useDeletePopup from "@/hooks/useDeletePopup";
+import useConfirmPopup from "@/hooks/useConfirmPopup";
 import { PopupAction } from "@/context/PopupContext";
 
 type AnnualCellProps = {
@@ -23,7 +23,7 @@ type AnnualCellProps = {
     isDisabled: boolean;
     onCreateSubject: (day: string, hour: number, value: string) => Promise<string | undefined>;
     onCreateTeacher: (day: string, hour: number, value: string) => Promise<string | undefined>;
-    handleAddNewRow: (
+    handleScheduleUpdate: (
         type: AnnualInputCellType,
         elementIds: string[],
         day: string,
@@ -44,9 +44,9 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
     isDisabled,
     onCreateSubject,
     onCreateTeacher,
-    handleAddNewRow,
+    handleScheduleUpdate,
 }) => {
-    const { handleOpenPopup } = useDeletePopup();
+    const { handleOpenPopup } = useConfirmPopup();
 
     const sortedTeacherOptions = useMemo(() => {
         const regularTeachers = (teachers || []).filter((t) => t.role === TeacherRoleValues.REGULAR);
@@ -54,11 +54,11 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
     }, [teachers]);
 
     const handleSubjectChange = (values: string[], method: SelectMethod) => {
-        handleAddNewRow("subjects", values, day, hour, method);
+        handleScheduleUpdate("subjects", values, day, hour, method);
     };
 
     const handleTeacherChange = (values: string[], method: SelectMethod) => {
-        handleAddNewRow("teachers", values, day, hour, method);
+        handleScheduleUpdate("teachers", values, day, hour, method);
 
         if (values.length > 0) {
             const selectedClassObj = classes.find((c) => c.id === selectedClassId);
@@ -67,7 +67,7 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
                 const currentSubjects = schedule[selectedClassId]?.[day]?.[hour]?.subjects || [];
 
                 if (matchingSubject && !currentSubjects.includes(matchingSubject.id)) {
-                    handleAddNewRow("subjects", [matchingSubject.id], day, hour, method);
+                    handleScheduleUpdate("subjects", [matchingSubject.id], day, hour, method);
                 }
             }
         }
@@ -76,10 +76,12 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
     const confirmRemove = (what: string | null, proceed: () => void) => {
         handleOpenPopup(
             PopupAction.deleteTeacher,
-            what ? `למחוק את ${what} מהרשימה?` : "למחוק את הפריט מהרשימה?",
+            what ? `האם למחוק את ${what}?` : "האם למחוק את הפריט?",
             async () => {
                 proceed();
             },
+            "מחיקה",
+            "ביטול"
         );
     };
 
@@ -88,7 +90,7 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
         if (selectedClassObj?.activity) {
             return subjects.filter((s) => s.name === selectedClassObj.name);
         }
-        return subjects.filter((s) => !s.activity) || [];
+        return subjects || [];
     }, [classes, selectedClassId, subjects]);
 
     const isActivity = classes.find((c) => c.id === selectedClassId)?.activity;

@@ -3,7 +3,7 @@ import { useMainContext } from "@/context/MainContext";
 import { ClassType } from "@/models/types/classes";
 import { classSchema } from "@/models/validation/class";
 import ListRow from "@/components/ui/list/ListRow/ListRow";
-import useDeletePopup from "@/hooks/useDeletePopup";
+import useConfirmPopup from "@/hooks/useConfirmPopup";
 import useSubmit from "@/hooks/useSubmit";
 import messages from "@/resources/messages";
 import { PopupAction } from "@/context/PopupContext";
@@ -14,7 +14,7 @@ type ClassRowProps = {
 
 const ClassRow: React.FC<ClassRowProps> = ({ classItem }) => {
     const { updateClass, school, deleteClass } = useMainContext();
-    const { handleOpenPopup } = useDeletePopup();
+    const { handleOpenPopup } = useConfirmPopup();
 
     const { handleSubmitDelete } = useSubmit(
         () => { },
@@ -34,7 +34,7 @@ const ClassRow: React.FC<ClassRowProps> = ({ classItem }) => {
         const entityName = classItem.activity ? "הקבוצה" : "הכיתה";
         handleOpenPopup(
             PopupAction.deleteClass,
-            `האם אתה בטוח שברצונך למחוק את ${entityName} ${classItem.name}`,
+            `האם למחוק את ${entityName} ${classItem.name}`,
             () => handleDeleteClassFromState(classItem.id),
         );
     };

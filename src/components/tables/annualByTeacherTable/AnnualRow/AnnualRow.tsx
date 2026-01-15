@@ -16,7 +16,7 @@ type AnnualRowProps = {
     teachers: TeacherType[];
     classes: ClassType[];
     isDisabled: boolean;
-    handleAddNewRow: (
+    handleScheduleUpdate: (
         type: AnnualInputCellType,
         elementIds: string[],
         day: string,

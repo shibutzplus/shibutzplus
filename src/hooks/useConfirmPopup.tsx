@@ -1,29 +1,27 @@
 import { PopupType, usePopup } from "@/context/PopupContext";
-import DeletePopup from "@/components/popups/DeletePopup/DeletePopup";
+import ConfirmPopup from "@/components/popups/ConfirmPopup/ConfirmPopup";
 import React from "react";
 
-const useDeletePopup = () => {
+const useConfirmPopup = () => {
     const { openPopup, closePopup } = usePopup();
 
     const handleOpenPopup = (
         type: PopupType,
         text: string,
         onDeleteAction: () => Promise<void>,
-        confirmBtnText?: string,
-        cancelBtnText?: string,
-        Icon?: React.ElementType | React.ReactNode,
+        yesText?: string,
+        noText?: string,
         defaultAnswer?: "yes" | "no",
     ) => {
         openPopup(
             type,
             "S",
-            <DeletePopup
+            <ConfirmPopup
                 text={text}
-                onDelete={onDeleteAction}
-                onCancel={closePopup}
-                confirmText={confirmBtnText}
-                cancelText={cancelBtnText}
-                Icon={Icon}
+                onYes={onDeleteAction}
+                onNo={closePopup}
+                yesText={yesText}
+                noText={noText}
                 defaultAnswer={defaultAnswer}
             />,
         );
@@ -34,4 +32,4 @@ const useDeletePopup = () => {
     };
 };
 
-export default useDeletePopup;
+export default useConfirmPopup;

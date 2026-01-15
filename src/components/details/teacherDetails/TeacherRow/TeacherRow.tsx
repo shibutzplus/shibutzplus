@@ -4,7 +4,7 @@ import { TeacherType } from "@/models/types/teachers";
 import { teacherSchema } from "@/models/validation/teacher";
 import ListRow from "@/components/ui/list/ListRow/ListRow";
 import { TeacherRoleValues } from "@/models/types/teachers";
-import useDeletePopup from "@/hooks/useDeletePopup";
+import useConfirmPopup from "@/hooks/useConfirmPopup";
 import useSubmit from "@/hooks/useSubmit";
 import messages from "@/resources/messages";
 import { PopupAction } from "@/context/PopupContext";
@@ -15,7 +15,7 @@ type TeacherRowProps = {
 };
 
 const TeacherRow: React.FC<TeacherRowProps> = ({ teacher }) => {
-    const { handleOpenPopup } = useDeletePopup();
+    const { handleOpenPopup } = useConfirmPopup();
     const { deleteTeacher, school, updateTeacher } = useMainContext();
 
     const { handleSubmitDelete } = useSubmit(
@@ -31,8 +31,10 @@ const TeacherRow: React.FC<TeacherRowProps> = ({ teacher }) => {
     };
 
     const handleDeleteTeacher = (teacher: TeacherType) => {
-        handleOpenPopup(PopupAction.deleteTeacher, `האם למחוק את המורה ${teacher.name}`, () =>
-            handleDeleteTeacherFromState(teacher.id),
+        handleOpenPopup(
+            PopupAction.deleteTeacher,
+            `האם למחוק את המורה ${teacher.name}`,
+            () => handleDeleteTeacherFromState(teacher.id),
         );
     };
 
