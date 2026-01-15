@@ -3,12 +3,13 @@ import { createId } from '@paralleldrive/cuid2';
 import { classes } from './classes';
 import { subjects } from './subjects';
 import { teachers } from './teachers';
+import { schools } from './schools';
 
 export const annualSchedule = pgTable('annual_schedule', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
   day: integer('day').notNull(), // 1-7 representing days of the week
   hour: integer('hour').notNull(),
-  schoolId: text('school_id').notNull(),
+  schoolId: text('school_id').notNull().references(() => schools.id),
   classId: text('class_id').notNull().references(() => classes.id, { onDelete: 'cascade' }),
   teacherId: text('teacher_id').notNull().references(() => teachers.id, { onDelete: 'cascade' }),
   subjectId: text('subject_id').notNull().references(() => subjects.id, { onDelete: 'cascade' }),

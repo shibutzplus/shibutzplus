@@ -1,9 +1,10 @@
 import { pgTable, text, timestamp, integer, index, date } from 'drizzle-orm/pg-core';
 import { createId } from '@paralleldrive/cuid2';
+import { schools } from './schools';
 
 export const history = pgTable('history', {
     id: text('id').primaryKey().$defaultFn(() => createId()),
-    schoolId: text('school_id').notNull(),
+    schoolId: text('school_id').notNull().references(() => schools.id),
     date: date('date').notNull(),
     day: integer('day').notNull(),                          // day of week 1-7
     hour: integer('hour').notNull(),                        // hour of day 1-12

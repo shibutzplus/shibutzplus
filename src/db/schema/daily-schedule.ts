@@ -2,10 +2,11 @@ import { pgTable, text, timestamp, integer, index, date } from 'drizzle-orm/pg-c
 import { createId } from '@paralleldrive/cuid2';
 import { teachers } from './teachers';
 import { subjects } from './subjects';
+import { schools } from './schools';
 
 export const dailySchedule = pgTable('daily_schedule', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
-  schoolId: text('school_id').notNull(),
+  schoolId: text('school_id').notNull().references(() => schools.id),
   date: date('date').notNull(),
   day: integer('day').notNull(),                 // day of week 1-7
   hour: integer('hour').notNull(),
