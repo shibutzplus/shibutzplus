@@ -7,7 +7,6 @@ export const teachers = pgTable('teachers', {
   name: varchar('name', { length: 100 }).notNull(),
   role: varchar('role', { length: 50 }).notNull().$type<TeacherRole>(),
   schoolId: text('school_id').notNull(),
-  userId: text('user_id'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 }, (table) => {

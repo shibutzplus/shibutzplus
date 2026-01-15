@@ -19,16 +19,6 @@ export async function deleteClassAction(
         }
 
         const { annualSchedule, remainingClasses } = await executeQuery(async () => {
-            // Delete all annual schedule records for this class
-            await db
-                .delete(schema.annualSchedule)
-                .where(
-                    and(
-                        eq(schema.annualSchedule.schoolId, schoolId),
-                        eq(schema.annualSchedule.classId, classId),
-                    ),
-                );
-
             // Delete all daily schedule records for this class
             await db
                 .update(schema.dailySchedule)
@@ -79,8 +69,8 @@ export async function deleteClassAction(
         return {
             success: true,
             message: messages.classes.deleteClassSuccess,
-            annualSchedules: annualSchedule,
             classes: remainingClasses,
+            annualSchedules: annualSchedule,
         };
     } catch (error) {
         console.error("Error deleting class:", error);

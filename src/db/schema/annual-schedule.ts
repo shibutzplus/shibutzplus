@@ -1,12 +1,13 @@
 import { pgTable, text, timestamp, integer, index } from 'drizzle-orm/pg-core';
 import { createId } from '@paralleldrive/cuid2';
+import { classes } from './classes';
 
 export const annualSchedule = pgTable('annual_schedule', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
   day: integer('day').notNull(), // 1-7 representing days of the week
   hour: integer('hour').notNull(),
   schoolId: text('school_id').notNull(),
-  classId: text('class_id').notNull(),
+  classId: text('class_id').notNull().references(() => classes.id, { onDelete: 'cascade' }),
   teacherId: text('teacher_id').notNull(),
   subjectId: text('subject_id').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),

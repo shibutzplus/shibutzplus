@@ -5,14 +5,12 @@ export type TeacherType = {
     name: string;
     role: TeacherRole;
     schoolId: string;
-    userId?: string | null;
 };
 
 export type TeacherRequest = {
     name: string;
     role: TeacherRole;
     schoolId: string;
-    userId?: string | null;
 };
 
 export type GetTeachersResponse = ActionResponse & {
