@@ -31,6 +31,7 @@ const TeacherDetailsCell: React.FC<TeacherDetailsCellProps> = ({ row, teacher })
     const primary = getReplaceText(row);
     const secondary = getReplaceText(row?.secondary);
     const isDouble = !!(primary && secondary);
+    const hasSub = !!(primary || secondary);
 
     const displayRow = secondary?.type === "replaced" && row?.secondary ? row.secondary : row;
 
@@ -71,7 +72,7 @@ const TeacherDetailsCell: React.FC<TeacherDetailsCellProps> = ({ row, teacher })
 
     return (
         <div className={`${row ? styles.cellContent : styles.emptyCell}`}>
-            <div className={`${styles.classAndSubject} ${isActivity ? styles.activityText : ""}`}>
+            <div className={`${styles.classAndSubject} ${isActivity ? styles.activityText : ""} ${hasSub ? styles.hasSub : ""}`}>
                 {displayText}
             </div>
             <div className={`${styles.subTeacher} ${isDouble ? styles.doubleRow : ""}`}>

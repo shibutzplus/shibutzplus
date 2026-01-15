@@ -64,7 +64,7 @@
 }
 
 .teacherRow {
-    --table-teacher-cell-height: 100px;
+    --table-teacher-cell-height: 90px;
 }
 
 .mobileDetails {
@@ -90,13 +90,13 @@
 
     .scheduleInstructionsCell {
         width: auto;
-        padding-bottom: 20px;
+        padding-bottom: 18px;
     }
 
     .mobileDetails {
         display: block;
         width: 100%;
-        margin-bottom: 5px;
+        margin-bottom: 4px;
     }
 
     .desktopOnly {
