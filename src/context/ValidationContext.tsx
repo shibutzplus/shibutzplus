@@ -18,6 +18,11 @@ type ValidationContextType = {
     validate: () => boolean;
 };
 
+/**
+ * This context provides a centralized mechanism for registering and running validation logic across different components.
+ * It is primarily used in the "Annual Class" and "Annual Teacher" pages to validate data integrity
+ * before performing actions like saving changes or switching views.
+ */
 const ValidationContext = createContext<ValidationContextType | null>(null);
 
 export const ValidationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
