@@ -3,7 +3,8 @@
   font-family: var(--font-heebo), 'Heebo', sans-serif;
   scroll-snap-type: y mandatory;
   overflow-y: scroll;
-  height: 100vh;
+  height: calc(100vh - var(--nav-height));
+  margin-top: var(--nav-height);
 }
 
 /* CSS Variables */
@@ -20,7 +21,7 @@
   --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-  --nav-height: 10vh;
+  --nav-height: 55px;
   --glass: rgba(255, 255, 255, 0.7);
   --glass-border: rgba(255, 255, 255, 0.5);
 }
@@ -76,21 +77,22 @@
 }
 
 .navLogin {
-  background-color: transparent;
-  color: var(--text-dark);
+  background-color: var(--text-dark);
+  color: white;
   padding: 0.5rem 1.25rem;
   border-radius: 8px;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  border: 1px solid rgba(15, 23, 42, 0.2) !important;
+  border: none !important;
+  box-shadow: var(--shadow-sm);
 }
 
 .navLogin:hover {
-  background-color: var(--text-dark);
+  background-color: #000;
+  transform: translateY(-2px);
   color: white;
-  border-color: var(--text-dark) !important;
 }
 
 .logo {
@@ -207,7 +209,7 @@
   margin: 0 auto;
   padding: 0 5vw;
   box-sizing: border-box;
-  height: 100%;
+  height: 80%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -218,8 +220,8 @@
 .heroContent {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  text-align: right;
+  align-items: center;
+  text-align: center;
   gap: 1.5rem;
   flex: 1.2;
   max-width: 600px;
@@ -235,7 +237,7 @@
 }
 
 .highlight {
-  color: var(--primary);
+  color: #581c87;
   position: relative;
   display: inline-block;
 }
@@ -249,21 +251,37 @@
 }
 
 .alert {
-  background: rgba(239, 246, 255, 0.5);
+  background: rgba(250, 245, 255, 0.5);
   backdrop-filter: blur(8px);
-  border: 1px solid rgba(191, 219, 254, 0.5);
+  border: 1px solid rgba(233, 213, 255, 0.5);
   border-radius: 12px;
   padding: 1rem 1.5rem;
   margin: 0;
-  max-width: 500px;
-  color: #1e40af;
-  font-size: 0.9rem;
+  max-width: 600px;
+  color: #3b0764;
+  font-size: 1.25rem;
+  font-weight: 700;
   line-height: 1.5;
-  text-align: right;
+  text-align: center;
   box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 4px;
+}
+
+.heroBtnContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 1rem;
+}
+
+.teacherInstruction {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  font-weight: 500;
+  text-align: center;
 }
 
 .btnHero {
@@ -312,9 +330,8 @@
 .laptopImg {
   object-fit: contain;
   /* Multi-layered shadow for all-around focus and depth */
-  filter: 
-    drop-shadow(0 0 40px rgba(0, 0, 0, 0.08)) 
-    drop-shadow(0 25px 50px rgba(0, 0, 0, 0.15));
+  filter:
+    drop-shadow(0 0 40px rgba(0, 0, 0, 0.08)) drop-shadow(0 25px 50px rgba(0, 0, 0, 0.15));
   /* Force a new layer to prevent flickering during repaints of fixed elements above it */
   transform: translateZ(0);
   backface-visibility: hidden;
@@ -338,7 +355,6 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  padding: 100px 0 0 0;
   scroll-snap-align: start;
   scroll-snap-stop: always;
 }
@@ -557,12 +573,14 @@
     max-width: 1600px;
   }
 
-  .navContent, .footerContent {
+  .navContent,
+  .footerContent {
     max-width: 1800px;
   }
 
   .heroTitle {
-    font-size: 4rem; /* Approx 10% increase from 3.61rem */
+    font-size: 4rem;
+    /* Approx 10% increase from 3.61rem */
   }
 
   .heroContent {
@@ -678,14 +696,17 @@
   }
 
   .valueProp {
-    min-height: auto; /* Allow section to grow on mobile */
+    min-height: auto;
+    /* Allow section to grow on mobile */
     height: auto;
     padding: 80px 0 0 0;
-    scroll-snap-align: none; /* Disable snapping if content is long */
+    scroll-snap-align: none;
+    /* Disable snapping if content is long */
   }
 
   .valuePropContent {
-    display: block; /* Stack naturally */
+    display: block;
+    /* Stack naturally */
     padding-bottom: 40px;
   }
 

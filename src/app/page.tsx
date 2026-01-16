@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion } from "motion/react";
 import Logo from "@/components/ui/Logo/Logo";
 import styles from "./landing.module.css";
+import Icons from "@/style/icons";
 import Loading from "@/components/loading/Loading/Loading";
 import { useState, Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -61,7 +62,7 @@ const HeroSignInButton = (props: { title: string; className?: string }) => {
                 gap: "10px",
             }}
         >
-            {isLoading ? <Loading /> : null} {props.title}
+            {isLoading ? <Loading /> : <Icons.google size={22} />} {props.title}
         </button>
     );
 };
@@ -127,25 +128,16 @@ export default function LandingPage() {
                             variants={fadeInUp}
                             transition={{ duration: 0.6 }}
                         >
-                            <div>
-                                ניהול מערכת שעות <span className={styles.highlight}>יומית</span>
-                            </div>
-                            <div>בבית הספר</div>
+                            <div>ניהול המערכת השעות</div>
+                            <span className={styles.highlight}>היומית</span>
                         </motion.h1>
-                        <motion.p
-                            className={styles.heroDescription}
-                            variants={fadeInUp}
-                            transition={{ duration: 0.6, delay: 0.1 }}
-                        >
-                            שיבוץ ממלא מקום בקלות וביעילות
-                        </motion.p>
                         <motion.div
                             className={styles.alert}
                             variants={fadeInUp}
                             transition={{ duration: 0.6, delay: 0.1 }}
                         >
-                            <div>מיועד עבור מנהלי המערכת בבית הספר</div>
-                            <div>מורים, צרו קשר עם הנהלת בית הספר לקבלת קישור מתאים</div>
+                            <div>המערכת אשר חוסכת זמן יקר לצוות הניהול</div>
+                            <div>ומאפשרת שיבוץ מורים מחליפים בקלות.✨</div>
                         </motion.div>
                         <motion.div
                             className={styles.heroBtnContainer}
@@ -155,6 +147,9 @@ export default function LandingPage() {
                             <Suspense fallback={<Loading />}>
                                 <HeroSignInButton title="התחברות למנהלים" />
                             </Suspense>
+                            <div className={styles.teacherInstruction}>
+                                <strong>מורים?</strong> אנא פנו להנהלת בית הספר לקבלת קישור אישי לכניסה.
+                            </div>
                         </motion.div>
                     </motion.div>
 
