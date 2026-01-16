@@ -128,16 +128,19 @@ export default function LandingPage() {
                             variants={fadeInUp}
                             transition={{ duration: 0.6 }}
                         >
-                            <div>ניהול המערכת השעות</div>
-                            <span className={styles.highlight}>היומית</span>
+                            <span className={styles.highlight}>שיבוץ+</span>
+                            <br />
+                            <br />
+                            <div>ניהול מערכת השעות</div>
+                            <span>היומית</span>
                         </motion.h1>
                         <motion.div
                             className={styles.alert}
                             variants={fadeInUp}
                             transition={{ duration: 0.6, delay: 0.1 }}
                         >
-                            <div>המערכת אשר חוסכת זמן יקר לצוות הניהול</div>
-                            <div>ומאפשרת שיבוץ מורים מחליפים בקלות.✨</div>
+                            <div>כלי עזר החוסך זמן יקר לסגני מנהלים</div>
+                            <div>ומאפשר שיבוץ מורים מחליפים בקלות.✨</div>
                         </motion.div>
                         <motion.div
                             className={styles.heroBtnContainer}
@@ -162,7 +165,7 @@ export default function LandingPage() {
                         <div className={styles.mockupDecoration} />
                         <div className={styles.laptopImgWrapper}>
                             <Image
-                                src="/mockup_img.png"
+                                src="/mockup_img.webp"
                                 alt="שיבוץ+ Dashboard"
                                 fill
                                 className={styles.laptopImg}
