@@ -64,6 +64,7 @@
     align-items: unset;
     gap: 10px;
     height: 100%;
+    max-height: unset;
     min-height: var(--table-teacher-cell-height);
     padding: 10px 15px;
   }
