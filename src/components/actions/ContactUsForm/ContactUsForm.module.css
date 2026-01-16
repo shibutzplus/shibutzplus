@@ -32,9 +32,9 @@
     border: 1px solid #e0e0e0;
     border-radius: 10px;
     cursor: pointer;
-    font-weight: 500;
+    font-weight: 600;
     white-space: nowrap;
-    align-self: center; /* Center button by default like faq */
+    align-self: center;
     min-width: 80px;
     display: flex;
     justify-content: center;
@@ -48,17 +48,24 @@
 
 /* Variant for popup style (filled purple button) */
 .submitButton.filled {
-    background-color: #b57edc;
+    background-color: #000000;
     color: white;
     border: none;
-    width: 100%; /* Full width for popups usually */
+    width: 100%;
+    /* Full width for popups usually */
 }
 
 .submitButton.filled:hover {
-    background-color: #a06cd5;
+    background-color: #333333;
 }
 
 .submitButton:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+
+.submitButton.filled:disabled {
+    background-color: #cccccc;
+    color: #666666;
+    opacity: 1;
 }
