@@ -61,19 +61,7 @@ export default function FAQPage() {
 
     const faqItems = [
         {
-            question: "האם ניתן להוסיף קישור חיצוני בשדה חומר הלימוד?",
-            answer: (
-                <>
-                    כן!
-                    <br />
-                    יש להדביק את הכתובת וללחוץ Enter בסיום כדי שהוא יזוהה.
-                    <br />
-                    כאשר הקישור מזוהה, הוא יופיע בצבע כחול.
-                </>
-            ),
-        },
-        {
-            question: "האם אפשר לקבל קישור ישיר למשתמש שלי בלי שאצטרך להזדהות כל פעם מחדש?",
+            question: "האם אפשר לקבל קישור אישי ישיר בלי שאצטרך להזדהות כל פעם מחדש?",
             answer: (
                 <>
                     כן!
@@ -83,8 +71,10 @@ export default function FAQPage() {
                     {teacherLink ? (
                         <div className="teacher-link">
                             <a href={teacherLink} target="_blank" rel="noopener noreferrer">
-                                <strong>קישור אישי</strong>
+                                <strong>הקישור האישי שלכם</strong>
                             </a>
+                            &nbsp;&nbsp;
+                            <span>(שימרו אותו)</span>
                         </div>
                     ) : (
                         <p>כדי לראות את הקישור הייחודי שלך, יש להתחבר קודם למערכת</p>
@@ -92,53 +82,16 @@ export default function FAQPage() {
                 </>
             ),
         },
+
         {
-            question: "האם אפשר להתקין את האתר כאפליקציה בטלפון כדי שתהיה לי גישה מהירה?",
+            question: "האם ניתן להוסיף קישור בשדה חומר הלימוד?",
             answer: (
                 <>
-                    כן,
+                    כן!
                     <br />
-                    עבור משתמשי אנדרואיד ניתן להיעזר בסרטון הבא:
+                    יש להדביק את הכתובת וללחוץ Enter בסיום כדי שהוא יזוהה.
                     <br />
-                    <a
-                        href="https://www.youtube.com/shorts/1TkmsiS1ELg"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        https://www.youtube.com/shorts/1TkmsiS1ELg
-                    </a>
-                    <br />
-                    1. פתחו את האתר בדפדפן כרום בטלפון
-                    <br />
-                    2. לחצו על שלוש הנקודות למעלה בצד ימין
-                    <br />
-                    3. בחרו באפשרות הוסף למסך הבית
-                    <br />
-                    4. אשרו את ההוספה – האייקון יופיע במסך האפליקציות
-                    <br />
-                    <br />
-                    עבור משתמשי אייפון ניתן להיעזר בסרטון הבא:
-                    <br />
-                    <a
-                        href="https://www.youtube.com/shorts/oWHuZoN571Y"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        https://www.youtube.com/shorts/oWHuZoN571Y
-                    </a>
-                    <br />
-                    1. פתחו את האתר בדפדפן מסוג ספארי (באייפון התקנה עובדת רק מתוך ספארי)
-                    <br />
-                    2. לחצו על כפתור **שיתוף** (הריבוע עם החץ למעלה)
-                    <br />
-                    3. לחצו על כפתור **עוד**
-                    <br />
-                    3. גללו למטה ובחרו **הוסף למסך הבית**
-                    <br />
-                    4. אשרו את ההוספה – האייקון יופיע במסך האפליקציות
-                    <br />
-                    <br />
-                    מומלץ להתחבר עם הקישור האישי שלכם.
+                    כאשר הקישור מזוהה, הוא יופיע בצבע כחול.
                 </>
             ),
         },

@@ -58,7 +58,7 @@ summary {
     padding: 15px 10px;
     cursor: pointer;
     font-weight: 500;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     list-style: none;
     display: flex;
     justify-content: space-between;
@@ -174,7 +174,7 @@ a {
     }
 
     summary {
-        font-size: 1rem;
+        font-size: 1.1rem;
         padding: 12px 6px;
     }
 
