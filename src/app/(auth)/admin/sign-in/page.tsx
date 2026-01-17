@@ -9,7 +9,7 @@ import SignInLoadingPage from "@/components/loading/SignInLoadingPage/SignInLoad
 import routes from "@/routes";
 import { STATUS_AUTH, STATUS_LOADING, STATUS_UNAUTH } from "@/models/constant/session";
 import messages from "@/resources/messages";
-import styles from "../../sign-in/signIn.module.css";
+import styles from "./signIn.module.css";
 
 const AdminSignInPage: NextPage = () => {
     const { data: session, status } = useSession();

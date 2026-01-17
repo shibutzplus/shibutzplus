@@ -49,16 +49,6 @@ export async function middleware(req: NextRequest) {
             return NextResponse.redirect(url);
         }
 
-        // Admin logic
-        if (
-            ADMIN_ROUTES.some((route: string) => url.pathname.startsWith(route)) &&
-            isLoggedIn.role !== "admin" &&
-            (isLoggedIn as any).user?.role !== "admin"
-        ) {
-            url.pathname = DEFAULT_REDIRECT;
-            return NextResponse.redirect(url);
-        }
-
         return NextResponse.next();
     }
 

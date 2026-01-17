@@ -59,10 +59,10 @@ export const getConfigMatcher = (): string[] => {
 export const protectedPaths = getProtectedPaths();
 export const publicPaths = getPublicPaths();
 export const configMatcher = getConfigMatcher();
-export const authRoutes = [router.signIn.p, router.signUp.p, router.adminSignIn.p];
+export const authRoutes = [router.signUp.p, router.adminSignIn.p];
 export const apiAuthPrefix = "/api/auth";
 export const DEFAULT_REDIRECT = router.dailySchedule.p;
-export const DEFAULT_ERROR_REDIRECT = router.signIn.p;
+export const DEFAULT_ERROR_REDIRECT = router.home.p;
 export const GUEST_REDIRECT = router.dailySchedule.p;
 export const GUEST_UNAUTHORIZED = [
     router.subjects.p,
