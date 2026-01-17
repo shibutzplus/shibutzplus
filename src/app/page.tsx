@@ -220,15 +220,28 @@ export default function LandingPage() {
                                 </motion.li>
                             </motion.ul>
                         </motion.div>
+
                         <motion.div
                             className={styles.videoPlaceholder}
                             variants={fadeInUp}
                             transition={{ duration: 0.6, delay: 0.2 }}
                         >
                             <iframe
+                                className={styles.desktopVideo}
                                 width="100%"
                                 height="100%"
                                 src="https://www.youtube.com/embed/4S4qAJ7zbjg"
+                                title="שיבוץ+ - סרטון הסבר"
+                                frameBorder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                                style={{ borderRadius: "16px" }}
+                            />
+                            <iframe
+                                className={styles.mobileVideo}
+                                width="100%"
+                                height="100%"
+                                src="https://www.youtube.com/embed/lAQN61gnVz8"
                                 title="שיבוץ+ - סרטון הסבר"
                                 frameBorder="0"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

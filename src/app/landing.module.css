@@ -62,7 +62,7 @@
 
 .navLink {
   color: var(--text-dark);
-  font-weight: 500;
+  font-weight: 600;
   font-size: 0.95rem;
   transition: color 0.2s;
   text-decoration: none;
@@ -196,6 +196,7 @@
   flex-direction: column;
   gap: 12px;
   margin-top: 1rem;
+  align-items: center;
 }
 
 .teacherInstruction {
@@ -339,7 +340,16 @@
   left: 0;
   width: 100%;
   height: 100%;
+  height: 100%;
   border: none;
+}
+
+.desktopVideo {
+  display: block;
+}
+
+.mobileVideo {
+  display: none;
 }
 
 .testimonials {
@@ -487,11 +497,18 @@
     flex: none;
   }
 
+  .btnHero {
+    width: 45vw;
+    font-size: 3.5vw;
+    padding: 1rem 0;
+  }
+
   .heroTitle {
     font-size: 5vw;
   }
 
   .alert {
+    width: 85vw;
     font-size: 2.5vw;
   }
 
@@ -569,5 +586,59 @@
     flex-direction: column;
     gap: 10px;
     text-align: center;
+  }
+}
+
+/* < 540px */
+@media (max-width: 540px) {
+
+  .valueProp {
+    padding: 30px 0 0 0;
+  }
+
+  .heroTitle {
+    font-size: 6vw;
+  }
+
+  .alert {
+    font-size: 3.5vw;
+  }
+
+  .btnHero {
+    width: 40vw;
+    font-size: 3vw;
+  }
+
+  .grid2 {
+    gap: 0px;
+  }
+
+  .videoPlaceholder {
+    aspect-ratio: 9 / 16;
+  }
+
+  .desktopVideo {
+    display: none;
+  }
+
+  .mobileVideo {
+    display: block;
+  }
+}
+
+/* < 400px */
+@media (max-width:400px) {
+
+  .heroTitle {
+    font-size: 6vw;
+  }
+
+  .alert {
+    font-size: 4vw;
+  }
+
+  .btnHero {
+    width: 55vw;
+    font-size: 4vw;
   }
 }
