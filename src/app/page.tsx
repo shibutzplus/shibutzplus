@@ -89,6 +89,9 @@ export default function LandingPage() {
             <nav className={styles.navbar}>
                 <div className={styles.navContent}>
                     <div className={styles.navLinks}>
+                        <Suspense fallback={<Loading />}>
+                            <HeroSignInButton title="התחברות" className={styles.navLogin} />
+                        </Suspense>
                         <button
                             type="button"
                             onClick={handleOpenContactPopup}
@@ -102,9 +105,6 @@ export default function LandingPage() {
                         >
                             צרו קשר
                         </button>
-                        <Suspense fallback={<Loading />}>
-                            <HeroSignInButton title="התחברות" className={styles.navLogin} />
-                        </Suspense>
                     </div>
                     <Logo size="S" />
                 </div>
@@ -129,8 +129,6 @@ export default function LandingPage() {
                             transition={{ duration: 0.6 }}
                         >
                             <span className={styles.highlight}>שיבוץ+</span>
-                            <br />
-                            <br />
                             <div>ניהול מערכת השעות</div>
                             <span>היומית</span>
                         </motion.h1>
@@ -151,7 +149,7 @@ export default function LandingPage() {
                                 <HeroSignInButton title="התחברות למנהלים" />
                             </Suspense>
                             <div className={styles.teacherInstruction}>
-                                <strong>מורים?</strong> אנא פנו להנהלת בית הספר לקבלת קישור אישי לכניסה.
+                                <strong>מורים?</strong> פנו להנהלת בית הספר לקבלת קישור לכניסה.
                             </div>
                         </motion.div>
                     </motion.div>
@@ -283,124 +281,6 @@ export default function LandingPage() {
                 </footer>
             </section>
 
-            {/* Testimonials Section */}
-            <section className={styles.testimonials} style={{ display: "none" }}>
-                <div className={styles.container}>
-                    <motion.h2
-                        className={styles.sectionTitle}
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: "-100px" }}
-                        transition={{ duration: 0.6 }}
-                    >
-                        מה אומרים עלינו בשטח?
-                    </motion.h2>
-                    <motion.div
-                        className={styles.testimonialsGrid}
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, margin: "-100px" }}
-                        variants={staggerContainer}
-                    >
-                        <motion.div
-                            className={styles.testimonialCard}
-                            variants={fadeInUp}
-                            transition={{ duration: 0.5 }}
-                        >
-                            <div className={styles.schoolInfo}>
-                                <div className={styles.schoolLogo}>
-                                    <Image
-                                        src="/schoolLogos/school_img_sh.jpg"
-                                        alt="שרת קריית אונו"
-                                        width={60}
-                                        height={60}
-                                        style={{ objectFit: "cover", borderRadius: "8px" }}
-                                    />
-                                </div>
-                                <div>
-                                    <div className={styles.schoolName}>שרת קריית אונו</div>
-                                    <div className={styles.deputyName}>אתי יוסף, סגנית מנהלת</div>
-                                </div>
-                            </div>
-                            <p>
-                                &quot;השינוי הכי משמעותי שעשינו השנה. הבקרים שלי הפכו רגועים הרבה
-                                יותר.&quot;
-                            </p>
-                        </motion.div>
-                        <motion.div
-                            className={styles.testimonialCard}
-                            variants={fadeInUp}
-                            transition={{ duration: 0.5 }}
-                        >
-                            <div className={styles.schoolInfo}>
-                                <div className={styles.schoolLogo}>
-                                    <Image
-                                        src="/schoolLogos/school_img_bbl.png"
-                                        alt="בבלי ירושלמי"
-                                        width={60}
-                                        height={60}
-                                        style={{ objectFit: "cover", borderRadius: "8px" }}
-                                    />
-                                </div>
-                                <div>
-                                    <div className={styles.schoolName}>בבלי ירושלמי</div>
-                                    <div className={styles.deputyName}>קרן פאר, סגנית מנהלת</div>
-                                </div>
-                            </div>
-                            <p>
-                                &quot;מערכת אינטואיטיבית וקלה לתפעול. המורים מרוצים מהסדר
-                                והארגון.&quot;
-                            </p>
-                        </motion.div>
-                        <motion.div
-                            className={styles.testimonialCard}
-                            variants={fadeInUp}
-                            transition={{ duration: 0.5 }}
-                        >
-                            <div className={styles.schoolInfo}>
-                                <div className={styles.schoolLogo}>
-                                    <Image
-                                        src="/schoolLogos/school_img_ko.png"
-                                        alt="קורצ'אק רמת גן"
-                                        width={60}
-                                        height={60}
-                                        style={{ objectFit: "cover", borderRadius: "8px" }}
-                                    />
-                                </div>
-                                <div>
-                                    <div className={styles.schoolName}>קורצ&apos;אק רמת גן</div>
-                                    <div className={styles.deputyName}>הלית פנחס, סגנית מנהלת</div>
-                                </div>
-                            </div>
-                            <p>
-                                &quot;סוף סוף כלי שמבין את הצרכים האמיתיים של בתי הספר בישראל.&quot;
-                            </p>
-                        </motion.div>
-                        <motion.div
-                            className={styles.testimonialCard}
-                            variants={fadeInUp}
-                            transition={{ duration: 0.5 }}
-                        >
-                            <div className={styles.schoolInfo}>
-                                <div className={styles.schoolLogo}>
-                                    <Image
-                                        src="/schoolLogos/school_img_ron.jpg"
-                                        alt="רונה רמון"
-                                        width={60}
-                                        height={60}
-                                        style={{ objectFit: "cover", borderRadius: "8px" }}
-                                    />
-                                </div>
-                                <div>
-                                    <div className={styles.schoolName}>רונה רמון</div>
-                                    <div className={styles.deputyName}>ליאת ששון, סגנית מנהלת</div>
-                                </div>
-                            </div>
-                            <p>&quot;מציאת ממלא מקום הפכה למשימה של שתי דקות. פשוט מדהים.&quot;</p>
-                        </motion.div>
-                    </motion.div>
-                </div>
-            </section>
         </div>
     );
 }
