@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from "react";
-import { useSession } from "next-auth/react";
 import { filterDailyHeaderTeachers } from "@/utils/sort";
 import DynamicInputSelect from "../../../ui/select/InputSelect/DynamicInputSelect";
 import { useDailyTableContext } from "@/context/DailyTableContext";
@@ -10,7 +9,7 @@ import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { BrightTextColor, BrightTextColorHover } from "@/style/root";
 import styles from "../DailyTable/DailyTable.module.css";
-import useDeletePopup from "@/hooks/useDeletePopup";
+import useConfirmPopup from "@/hooks/useConfirmPopup";
 import DailyColumnMenu from "../DailyColumnMenu/DailyColumnMenu";
 import Icons from "@/style/icons";
 import { TeacherType } from "@/models/types/teachers";
@@ -34,19 +33,11 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
     isLast,
 }) => {
     const { teachers } = useMainContext();
-    const {
-        deleteColumn,
-        mainDailyTable,
-        selectedDate,
-        moveColumn,
-        populateTeacherColumn,
-        mapAvailableTeachers,
-    } = useDailyTableContext();
-    const { fetchTeacherScheduleDate } = useTeacherTableContext();
+    const { deleteColumn, mainDailyTable, selectedDate, moveColumn, populateTeacherColumn, mapAvailableTeachers } =
+        useDailyTableContext();
+    const { fetchTeacherScheduleDate } = useTeacherTableContext(); // Added context
     const [isLoading, setIsLoading] = useState(false);
-    const { handleOpenPopup } = useDeletePopup();
-    const { data: session } = useSession();
-    const isGuest = (session?.user as any)?.role === "guest";
+    const { handleOpenPopup } = useConfirmPopup();
 
     const selectedTeacherData =
         mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.headerTeacher;
@@ -134,17 +125,17 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
             >
                 {onTeacherClick && selectedTeacherData
                     ? ({ closeMenu }) => (
-                          <div
-                              onClick={() => {
-                                  handlePreviewClick();
-                                  closeMenu();
-                              }}
-                              className={styles.menuItem}
-                          >
-                              <Icons.eye size={14} />
-                              <span>חומר הלימוד</span>
-                          </div>
-                      )
+                        <div
+                            onClick={() => {
+                                handlePreviewClick();
+                                closeMenu();
+                            }}
+                            className={styles.menuItem}
+                        >
+                            <Icons.eye size={14} />
+                            <span>חומר הלימוד</span>
+                        </div>
+                    )
                     : null}
             </DailyColumnMenu>
 
@@ -171,3 +162,4 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
 };
 
 export default DailyTeacherHeader;
+

@@ -11,7 +11,7 @@ import { pushSyncUpdate } from "@/services/syncService";
 import { PUBLISH_DATA_CHANGED } from "@/models/constant/sync";
 
 const usePublish = () => {
-    const { school, setSchool } = useMainContext();
+    const { school, setSchool } = useMainContext()
     const { selectedDate } = useDailyTableContext();
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [btnTitle, setBtnTitle] = useState<string>("פרסום המערכת");
@@ -41,16 +41,7 @@ const usePublish = () => {
             if (response.success) {
                 setSessionPublishDates(selectedDate);
                 // Update school context to include the newly published date (Local Storage not updated, currently unused)
-                setSchool((prev) =>
-                    prev
-                        ? {
-                              ...prev,
-                              publishDates: Array.from(
-                                  new Set([...(prev.publishDates || []), selectedDate]),
-                              ),
-                          }
-                        : prev,
-                );
+                setSchool(prev => prev ? { ...prev, publishDates: Array.from(new Set([...(prev.publishDates || []), selectedDate])) } : prev)
                 void pushSyncUpdate(PUBLISH_DATA_CHANGED);
                 successToast(messages.publish.success, 3000);
                 setBtnTitle("המערכת פורסמה");
@@ -74,21 +65,12 @@ const usePublish = () => {
                 // Update session storage: remove the date
                 const storageDates = getSessionPublishDates();
                 if (storageDates) {
-                    const newStorageDates = storageDates.filter((d) => d !== selectedDate);
-                    sessionStorage.setItem("publish_dates", JSON.stringify(newStorageDates));
+                    const newStorageDates = storageDates.filter(d => d !== selectedDate);
+                    sessionStorage.setItem('publish_dates', JSON.stringify(newStorageDates));
                 }
 
                 // Update school context
-                setSchool((prev) =>
-                    prev
-                        ? {
-                              ...prev,
-                              publishDates: (prev.publishDates || []).filter(
-                                  (d) => d !== selectedDate,
-                              ),
-                          }
-                        : prev,
-                );
+                setSchool(prev => prev ? { ...prev, publishDates: (prev.publishDates || []).filter(d => d !== selectedDate) } : prev);
 
                 void pushSyncUpdate(PUBLISH_DATA_CHANGED);
                 successToast("הפרסום בוטל בהצלחה", 3000);
@@ -104,35 +86,18 @@ const usePublish = () => {
         }
     };
 
-    const onShareLink = async (isGuest: boolean) => {
-        if (isGuest) {
-            const text = "wow";
-            try {
-                await navigator.clipboard.writeText(text);
-                successToast("link copied", 2000);
-            } catch {
-                errorToast("failed to copy link", Infinity);
-            }
-        } else {
-            if (!school) return;
-            const text = `קישור התחברות למורי בית הספר:\n${generateSchoolUrl(school.id)}`;
-            try {
-                await navigator.clipboard.writeText(text);
-                successToast("הקישור הועתק בהצלחה וניתן לשלוח למורים.", 2000);
-            } catch {
-                errorToast("לא ניתן להעתיק את הקישור, אנא פנו לתמיכה", Infinity);
-            }
+    const onShareLink = async () => {
+        if (!school) return;
+        const text = `קישור התחברות למורי בית הספר:\n${generateSchoolUrl(school.id)}`;
+        try {
+            await navigator.clipboard.writeText(text);
+            successToast("הקישור הועתק בהצלחה וניתן לשלוח למורים.", 2000)
+        } catch {
+            errorToast("לא ניתן להעתיק את הקישור, אנא פנו לתמיכה", Infinity);
         }
     };
 
-    return {
-        publishDailySchedule,
-        unpublishDailySchedule,
-        isLoading,
-        onShareLink,
-        btnTitle,
-        isDisabled,
-    };
+    return { publishDailySchedule, unpublishDailySchedule, isLoading, onShareLink, btnTitle, isDisabled };
 };
 
 export default usePublish;

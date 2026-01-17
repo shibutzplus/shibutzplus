@@ -5,7 +5,7 @@
 //
 import { db, schema, executeQuery } from "@/db";
 import { eq, and } from "drizzle-orm";
-import { checkAuthAndParams, checkIsNotGuest } from "@/utils/authUtils";
+import { checkAuthAndParams } from "@/utils/authUtils";
 import { TeacherRoleValues, TeacherRole } from "@/models/types/teachers";
 import { parseCsvToBlocks, extractNameFromBlock, CsvAnalysisConfig } from "@/utils/importUtils";
 
@@ -25,11 +25,6 @@ export async function importAnnualScheduleAction(
     try {
         const authError = await checkAuthAndParams({ schoolId });
         if (authError) return authError as ImportResponse;
-
-        const guestError = await checkIsNotGuest();
-        if (guestError) {
-            return guestError as ImportResponse;
-        }
 
         if ((!csvData || csvData.length === 0) && (!manualEntityList || manualEntityList.length === 0)) {
             return { success: false, message: "נתונים ריקים" };
