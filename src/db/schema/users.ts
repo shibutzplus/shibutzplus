@@ -9,7 +9,7 @@ export const users = pgTable("users", {
     name: varchar("name", { length: 255 }).notNull(),
     email: varchar("email", { length: 255 }).notNull().unique(),
     password: varchar("password", { length: 255 }).notNull(),
-    role: varchar("role", { length: 20 }).notNull().$type<UserRole>().default("admin"),
+    role: varchar("role", { length: 20 }).notNull().$type<UserRole>().default("guest"),
     gender: varchar("gender", { length: 20 }).notNull().$type<UserGender>().default("female"),
     authType: varchar("auth_type", { length: 20 }).notNull().$type<AuthType>().default("google"),
     schoolId: text("school_id"),

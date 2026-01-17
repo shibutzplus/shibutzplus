@@ -13,7 +13,7 @@ export const registerSchema = z.object({
         .string()
         .email("כתובת אימייל לא תקינה"),
     role: z
-        .custom<UserRole>((val) => ["admin", "principal", "deputy_principal", "teacher"].includes(val as string), {
+        .custom<UserRole>((val) => ["admin", "principal", "deputy_principal", "teacher", "guest"].includes(val as string), {
             message: "סוג משתמש לא תקין"
         }),
     gender: z
