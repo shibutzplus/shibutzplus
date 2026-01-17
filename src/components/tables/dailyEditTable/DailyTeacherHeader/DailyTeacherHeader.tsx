@@ -9,7 +9,7 @@ import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { BrightTextColor, BrightTextColorHover } from "@/style/root";
 import styles from "../DailyTable/DailyTable.module.css";
-import useConfirmPopup from "@/hooks/useConfirmPopup";
+import useDeletePopup from "@/hooks/useDeletePopup";
 import DailyColumnMenu from "../DailyColumnMenu/DailyColumnMenu";
 import Icons from "@/style/icons";
 import { TeacherType } from "@/models/types/teachers";
@@ -37,7 +37,7 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
         useDailyTableContext();
     const { fetchTeacherScheduleDate } = useTeacherTableContext(); // Added context
     const [isLoading, setIsLoading] = useState(false);
-    const { handleOpenPopup } = useConfirmPopup();
+    const { handleOpenPopup } = useDeletePopup();
 
     const selectedTeacherData =
         mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.headerTeacher;

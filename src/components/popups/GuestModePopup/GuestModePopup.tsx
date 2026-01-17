@@ -29,17 +29,11 @@ const GuestModePopup: React.FC<GuestModePopupProps> = ({ onClose }) => {
 
     return (
         <div className={styles.popupContent}>
-            <div className={styles.iconContainer}>
-                <div className={styles.iconBackground}>
-                    <Icons.faq size={40} />
-                </div>
-            </div>
 
-            <h2 className={styles.title}>המערכת פועלת כעת במצב אור להתרשמות כללית ממערכת שיבוץ+</h2>
+            <h2 className={styles.title}>מוכנים להתחיל לעבוד על הדבר האמיתי?</h2>
 
             <div className={styles.bodyText}>
-                כדי לעבוד באופן מלא – לנהל מערכת שעות יומית, לשבץ מורים ולשמור נתונים – נדרש רישום של בית הספר והפעלת חשבון מורשה.
-                <div style={{ marginTop: 7 }}>נשמח ללוות בתהליך קצר ופשוט.</div>
+                סיימתם להתרשם מבית הספר לדוגמה? בואו נפתח לכם סביבת עבודה לבית הספר שלכם. זה לוקח רגע.
             </div>
 
             <div className={styles.contactForm}>
@@ -47,15 +41,15 @@ const GuestModePopup: React.FC<GuestModePopupProps> = ({ onClose }) => {
                     onSend={handleSend}
                     onSuccess={handleClose}
                     submitText="יצירת קשר"
-                    placeholder={`כתבו כאן את ההודעה שלכם
-כולל מספר טלפון לקשר מהיר בווטסאפ או כתובת מייל...`}
+                    placeholder={`כיתבו לנו,
+כולל מספר טלפון לקשר מהיר בווטסאפ...`}
                     buttonVariant="filled"
                     className=""
                 />
             </div>
 
             <div className={styles.buttonContainer}>
-                 {/* Close button provided by ContactUsForm implicitly via flow or explicit below */}
+                {/* Close button provided by ContactUsForm implicitly via flow or explicit below */}
                 <button
                     className={styles.closeButton}
                     onClick={handleClose}
