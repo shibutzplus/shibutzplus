@@ -2,7 +2,7 @@
 
 import { TeacherType, TeacherRequest } from "@/models/types/teachers";
 import { ActionResponse } from "@/models/types/actions";
-import { checkAuthAndParams } from "@/utils/authUtils";
+import { checkAuthAndParams, checkIsNotGuest } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { eq } from "drizzle-orm";
@@ -19,6 +19,11 @@ export async function updateTeacherAction(
             schoolId: teacherData.schoolId,
         });
         if (authError) return authError as ActionResponse;
+
+        const guestError = await checkIsNotGuest();
+        if (guestError) {
+            return guestError as ActionResponse;
+        }
 
         const updatedTeacher = await executeQuery(async () => {
             return (

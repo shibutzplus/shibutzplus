@@ -71,7 +71,7 @@ export const authOptions: NextAuthOptions = {
                 const name = typeof profile?.name === "string" ? profile.name : undefined;
                 if (!email || !name) return false;
                 try {
-                    const response = await registerNewGoogleUserAction({ email });
+                    const response = await registerNewGoogleUserAction({ email, name });
                     if (!response.success) return false;
                 } catch {
                     return false;
@@ -127,8 +127,8 @@ export const authOptions: NextAuthOptions = {
         },
     },
     pages: {
-        signIn: "/sign-in",
-        error: "/sign-in",
+        signIn: "/",
+        error: "/",
         newUser: "/sign-up",
     },
     secret: process.env.NEXTAUTH_SECRET,

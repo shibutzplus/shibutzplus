@@ -58,6 +58,21 @@ export async function publicAuthAndParams(
     return null;
 }
 
+/**
+ * Checks if the user is not a guest
+ * @returns An ActionResponse object with success status and message if guest, otherwise null
+ */
+export async function checkIsNotGuest(): Promise<ActionResponse | null> {
+    const session = await getServerSession(authOptions);
+    if (session?.user?.role === "guest") {
+        return {
+            success: false,
+            message: messages.auth.unauthorized,
+        };
+    }
+    return null;
+}
+
 export const authUser = async (
     response: any,
     credentialsPass: string,

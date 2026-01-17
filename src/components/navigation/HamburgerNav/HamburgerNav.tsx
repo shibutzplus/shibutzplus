@@ -24,11 +24,13 @@ import Logo from "../../ui/Logo/Logo";
 import { TeacherRoleValues } from "@/models/types/teachers";
 import { HOURS_IN_DAY } from "@/utils/time";
 import { SchoolSettingsType } from "@/models/types/settings";
+import useGuestModePopup from "@/hooks/useGuestModePopup";
 
 export interface ILink {
     name: string | React.ReactNode;
     p: string;
     Icon: React.ReactNode;
+    isForGuest?: boolean;
 }
 
 interface ILinkGroup {
@@ -50,21 +52,25 @@ const linkGroups: ILinkGroup[] = [
                 name: routePath.dailySchedule.title,
                 p: routePath.dailySchedule.p,
                 Icon: <Icons.dailyCalendar size={24} />,
+                isForGuest: true,
             },
             {
                 name: routePath.annualView.title,
                 p: routePath.annualView.p,
                 Icon: <Icons.calendar size={24} />,
+                isForGuest: true,
             },
             {
                 name: routePath.history.title,
                 p: routePath.history.p,
                 Icon: <Icons.history size={24} />,
+                isForGuest: false,
             },
             {
                 name: routePath.statistics.title,
                 p: routePath.statistics.p,
                 Icon: <Icons.stats size={24} />,
+                isForGuest: false,
             },
         ],
     },
@@ -79,26 +85,31 @@ const linkGroups: ILinkGroup[] = [
                 name: routePath.teachers.title,
                 p: routePath.teachers.p,
                 Icon: <Icons.teacher size={24} />,
+                isForGuest: false,
             },
             {
                 name: routePath.substitute.title,
                 p: routePath.substitute.p,
                 Icon: <Icons.substituteTeacher size={24} />,
+                isForGuest: false,
             },
             {
                 name: routePath.subjects.title,
                 p: routePath.subjects.p,
                 Icon: <Icons.book size={24} />,
+                isForGuest: false,
             },
             {
                 name: routePath.classes.title,
                 p: routePath.classes.p,
                 Icon: <Icons.chair size={24} />,
+                isForGuest: false,
             },
             {
                 name: routePath.groups.title,
                 p: routePath.groups.p,
                 Icon: <Icons.users size={24} />,
+                isForGuest: false,
             },
         ],
     },
@@ -112,11 +123,13 @@ const linkGroups: ILinkGroup[] = [
                 name: "לפי כיתה",
                 p: routePath.annualByClass.p,
                 Icon: <Icons.calendar size={24} />,
+                isForGuest: false,
             },
             {
                 name: "לפי מורה",
                 p: routePath.annualByTeacher.p,
                 Icon: <Icons.calendar size={24} />,
+                isForGuest: false,
             },
         ],
     },
@@ -130,11 +143,13 @@ const linkGroups: ILinkGroup[] = [
                 name: "הוספת מנהל",
                 p: routePath.signUp.p,
                 Icon: <Icons.users size={24} />,
+                isForGuest: false,
             },
             {
                 name: "ייבוא מערכת שנתית",
                 p: "/annual-import",
                 Icon: <Icons.upload size={24} />,
+                isForGuest: false,
             },
 
         ],
@@ -149,11 +164,13 @@ const linkGroups: ILinkGroup[] = [
                 name: "המערכת שלי",
                 p: routePath.teacherMaterialPortal.p,
                 Icon: <Icons.teacher size={22} />,
+                isForGuest: false,
             },
             {
                 name: "מערכת בית ספרית",
                 p: routePath.scheduleViewPortal.p,
-                Icon: <Icons.table size={22} />,
+                Icon: <Icons.group size={24} />,
+                isForGuest: false,
             },
             {
                 name: (
@@ -177,6 +194,7 @@ const linkGroups: ILinkGroup[] = [
                 name: "המערכת שלי",
                 p: routePath.teacherMaterialPortal.p,
                 Icon: <Icons.teacher size={24} />,
+                isForGuest: false,
             },
         ],
     },
@@ -190,13 +208,25 @@ type LinkComponentProps = {
 
 const LinkComponent: React.FC<LinkComponentProps> = ({ link, onClose, currentPath }) => {
     const isActive = currentPath.startsWith(link.p);
+    const { data: session } = useSession();
+    const userRole = (session?.user as any)?.role;
+    const isGuest = userRole === "guest";
+    const guest = isGuest && !link.isForGuest;
+    const { handleOpenGuestPopup } = useGuestModePopup();
 
     return (
         <div className={styles.linkWrapper}>
             <Link
-                href={link.p}
+                href={guest ? "#" : link.p}
                 className={`${styles.navLink} ${isActive ? styles.active : ""}`}
-                onClick={onClose}
+                onClick={(e) => {
+                    if (guest) {
+                        e.preventDefault();
+                        handleOpenGuestPopup();
+                        return;
+                    }
+                    onClose();
+                }}
             >
                 {link.Icon}
                 <span>{link.name}</span>
@@ -227,6 +257,8 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
     const { data: session } = useSession();
     const userRole = (session?.user as any)?.role;
     const [teacher, setTeacher] = React.useState<any>(null);
+    const isGuest = userRole === "guest";
+    const { handleOpenGuestPopup } = useGuestModePopup();
 
     useAccessibility({ isOpen, navRef, onClose });
 
@@ -242,7 +274,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
         clearSessionStorage();
         if (isPrivate) {
             clearStorage();
-            signOut({ callbackUrl: routePath.signIn.p });
+            signOut({ callbackUrl: routePath.home.p });
         } else {
             // Read schoolId from teacher stored in localStorage
             const schoolId = getStorageTeacher()?.schoolId;
@@ -337,10 +369,10 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                     context?.setSchool((prev) =>
                         prev
                             ? {
-                                ...prev,
-                                hoursNum: newSettings.hoursNum,
-                                displaySchedule2Susb: newSettings.displaySchedule2Susb,
-                            }
+                                  ...prev,
+                                  hoursNum: newSettings.hoursNum,
+                                  displaySchedule2Susb: newSettings.displaySchedule2Susb,
+                              }
                             : prev,
                     );
                 }}
@@ -363,7 +395,6 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                         <Logo size="XS" />
                     </div>
                     <div className={styles.headerActions}>
-                        {/* {school?.name && <span className={styles.schoolName}>{school.name}</span>} */}
                         <button
                             className={styles.closeButton}
                             onClick={onClose}
@@ -464,7 +495,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                             {isPrivate && (
                                 <div
                                     className={styles.navLink}
-                                    onClick={handleOpenSettings}
+                                    onClick={isGuest ? handleOpenGuestPopup : handleOpenSettings}
                                     aria-label="הגדרות מערכת"
                                 >
                                     <Icons.settings size={24} />

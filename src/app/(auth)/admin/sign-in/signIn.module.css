@@ -23,8 +23,9 @@
 
 .formContainer {
     display: flex;
+    align-items: center;
     flex-direction: column;
-    gap: 3rem;
+    gap: 10px;
 }
 
 .googleButton {
@@ -61,21 +62,51 @@
     text-align: center;
 }
 
-.problemLink {
+.footer {
+    margin: 0 auto;
+    width: 550px;
+    text-align: center;
+}
+
+.teacherAlert {
+    background-color: #fbf5ff;
+    border: 1px solid #ecc8f0;
+    color: #66356d;
+    padding: 14px 20px;
+    border-radius: 16px;
+    font-size: 0.9em;
+    font-weight: 500;
+    line-height: 1.5;
+    box-shadow: 0 4px 12px rgba(220, 200, 150, 0.15);
+    margin-top: 0.5rem;
+    backdrop-filter: blur(4px);
+}
+
+.guestSection {
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 0.95rem;
+    color: var(--dark-text-color);
     display: flex;
     flex-direction: column;
+    gap: 0.25rem;
     align-items: center;
 }
 
-.emailLine {
-    display: block;
-    margin-top: 0.75rem;
+.guestLink {
+    background: none;
+    border: none;
+    color: var(--dark-text-color);
     text-decoration: underline;
-    color: #007bff;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: inherit;
+    padding: 0;
+    transition: opacity 0.2s;
 }
 
-.problemLink:hover .emailLine {
-    color: #3399ff;
+.guestLink:hover {
+    opacity: 0.8;
 }
 
 /* < 1024px */

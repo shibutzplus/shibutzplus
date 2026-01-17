@@ -1,0 +1,70 @@
+.popupContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 10px;
+    direction: rtl;
+}
+
+.iconContainer {
+    margin-bottom: 20px;
+}
+
+.iconBackground {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #e8f1ff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    color: #4a90e2;
+}
+
+.title {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 15px 0;
+    color: #333;
+    line-height: 28px;
+}
+
+.bodyText {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 20px;
+    line-height: 1.6;
+    white-space: pre-line;
+}
+
+/* Styles for contact form wrapper if needed */
+.contactForm {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.buttonContainer {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.closeButton {
+    border-radius: 6px;
+    border: none;
+    background-color: transparent;
+    color: #666;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.closeButton:hover {
+    color: #333;
+}

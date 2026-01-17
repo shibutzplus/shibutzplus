@@ -2,7 +2,7 @@
 
 import { ClassType, ClassRequest } from "@/models/types/classes";
 import { ActionResponse } from "@/models/types/actions";
-import { checkAuthAndParams } from "@/utils/authUtils";
+import { checkAuthAndParams, checkIsNotGuest } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { eq } from "drizzle-orm";
@@ -21,6 +21,11 @@ export async function updateClassAction(
 
         if (authError) {
             return authError as ActionResponse;
+        }
+
+        const guestError = await checkIsNotGuest();
+        if (guestError) {
+            return guestError as ActionResponse;
         }
 
         const updatedClass = await executeQuery(async () => {
