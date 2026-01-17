@@ -25,15 +25,15 @@
 
 .title {
     font-size: 24px;
-    font-weight: 800;
+    font-weight: 600;
     margin: 0 0 12px 0;
     color: #0f172a;
     line-height: 1.2;
 }
 
 .bodyText {
-    font-size: 16px;
-    color: #64748b;
+    font-size: 18px;
+    color: rgb(53, 53, 53);
     margin-bottom: 28px;
     line-height: 1.6;
     max-width: 320px;
@@ -47,7 +47,7 @@
 .closeButton {
     background: none;
     border: none;
-    color: #94a3b8;
+    color: rgb(80, 80, 80);
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
@@ -56,5 +56,5 @@
 }
 
 .closeButton:hover {
-    color: #475569;
+    color: black;
 }

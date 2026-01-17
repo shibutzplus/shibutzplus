@@ -257,11 +257,11 @@ export default function LandingPage() {
                                 צרו קשר
                             </button>
                             <span className={styles.footerDivider}>|</span>
-                            <Link href="/terms" className={styles.footerLink}>
+                            <Link href="/terms" className={styles.footerLink} target="_blank" rel="noopener noreferrer">
                                 תנאי שימוש
                             </Link>
                             <span className={styles.footerDivider}>|</span>
-                            <Link href="/privacy" className={styles.footerLink}>
+                            <Link href="/privacy" className={styles.footerLink} target="_blank" rel="noopener noreferrer">
                                 מדיניות פרטיות
                             </Link>
                         </div>

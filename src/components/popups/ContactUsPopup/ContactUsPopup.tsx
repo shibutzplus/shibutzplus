@@ -33,7 +33,7 @@ const ContactUsPopup: React.FC<ContactUsPopupProps> = ({ onClose }) => {
                 <Logo size="L" />
             </div>
 
-            <h2 className={styles.title}>רוצים להתקדם לשיבוץ+?</h2>
+            <h2 className={styles.title}>רוצים להתקדם לשיבוץ+</h2>
 
             <div className={styles.bodyText}>
                 לקבלת פרטים נוספים או הצטרפות לתוכנית ההרצה, כתבו לנו כאן ונחזור אליכם מיד.
@@ -44,7 +44,7 @@ const ContactUsPopup: React.FC<ContactUsPopupProps> = ({ onClose }) => {
                     onSend={handleSend}
                     onSuccess={handleClose}
                     submitText="שליחה"
-                    placeholder={`שמכם, דרך ליצירת קשר ונושא הפנייה...`}
+                    placeholder={`שמכם, דרך ליצירת קשר ונושא הפנייה`}
                     buttonVariant="filled"
                     className=""
                 />
