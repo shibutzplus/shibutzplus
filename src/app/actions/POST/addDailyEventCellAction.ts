@@ -17,6 +17,7 @@ export async function addDailyEventCellAction(
 
         const authError = await checkAuthAndParams({
             date: date,
+            day: day,
             hour: hour,
             columnId: columnId,
             schoolId: school.id,
@@ -62,7 +63,7 @@ export async function addDailyEventCellAction(
             data: {
                 id: newDailySchedule.id,
                 date: new Date(newDailySchedule.date),
-                day: newDailySchedule.day,
+                day: newDailySchedule.day!,
                 hour: newDailySchedule.hour,
                 columnId: newDailySchedule.columnId,
                 createdAt: newDailySchedule.createdAt,

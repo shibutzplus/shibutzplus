@@ -5,7 +5,7 @@ import { AnnualScheduleType } from "@/models/types/annualSchedule";
 import { checkAuthAndParams, checkIsNotGuest } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
-import { and, eq } from "drizzle-orm";
+import { and, eq, asc } from "drizzle-orm";
 import { SubjectType } from "@/models/types/subjects";
 
 export async function deleteSubjectAction(
@@ -24,24 +24,11 @@ export async function deleteSubjectAction(
         }
 
         const { annualSchedule, remainingSubjects } = await executeQuery(async () => {
-            // Delete all annual schedule records for this subject
+            // Delete the subject
             await db
-                .delete(schema.annualSchedule)
+                .delete(schema.subjects)
                 .where(
-                    and(
-                        eq(schema.annualSchedule.schoolId, schoolId),
-                        eq(schema.annualSchedule.subjectId, subjectId),
-                    ),
-                );
-
-            // Delete all daily schedule records for this class
-            await db
-                .delete(schema.dailySchedule)
-                .where(
-                    and(
-                        eq(schema.dailySchedule.schoolId, schoolId),
-                        eq(schema.dailySchedule.subjectId, subjectId),
-                    ),
+                    and(eq(schema.subjects.schoolId, schoolId), eq(schema.subjects.id, subjectId)),
                 );
 
             const schedules = await db.query.annualSchedule.findMany({
@@ -69,18 +56,12 @@ export async function deleteSubjectAction(
                     }) as AnnualScheduleType,
             );
 
-            // Delete the subject
-            await db
-                .delete(schema.subjects)
-                .where(
-                    and(eq(schema.subjects.schoolId, schoolId), eq(schema.subjects.id, subjectId)),
-                );
-
             // Get the remaining subjects for this school
             const remainingSubjects = await db
                 .select()
                 .from(schema.subjects)
-                .where(eq(schema.subjects.schoolId, schoolId));
+                .where(eq(schema.subjects.schoolId, schoolId))
+                .orderBy(asc(schema.subjects.name));
 
             return { annualSchedule, remainingSubjects };
         });

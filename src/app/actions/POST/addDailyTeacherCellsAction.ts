@@ -1,10 +1,10 @@
 "use server";
 
 import { DailyScheduleType, DailyScheduleRequest } from "@/models/types/dailySchedule";
+import { ActionResponse } from "@/models/types/actions";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "../../../db";
-import { ActionResponse } from "@/models/types/actions";
 import { NewDailyScheduleSchema } from "@/db/schema";
 import { getDateReturnString } from "@/utils/time";
 
@@ -28,6 +28,7 @@ export async function addDailyTeacherCellsAction(
         const firstItem = scheduleCellsData[0];
         const authError = await checkAuthAndParams({
             schoolId: firstItem.school.id,
+            day: firstItem.day,
         });
 
         if (authError) {

@@ -8,10 +8,24 @@ import { useMainContext } from "@/context/MainContext";
 import { useAnnualByClass } from "@/context/AnnualByClassContext";
 import { populateAllClassesSchedule } from "@/services/annual/populate";
 import { initializeEmptyAnnualSchedule } from "@/services/annual/initialize";
+import { useValidation } from "@/context/ValidationContext";
+import { hasIncompleteCells } from "@/utils/scheduleValidation";
 
 const AnnualSchedulePage: NextPage = () => {
     const { classes, teachers, subjects, school } = useMainContext();
-    const { annualScheduleTable, selectedClassId, schedule, setSchedule, setIsLoading, setIsSaving, isSaving, handleAddNewRow, } = useAnnualByClass();
+    const { annualScheduleTable, selectedClassId, schedule, setSchedule, setIsLoading, setIsSaving, isSaving, handleScheduleUpdate, } = useAnnualByClass();
+
+    // Register validator
+    const { registerValidator } = useValidation();
+
+    useEffect(() => {
+        const checkSchedule = () => {
+            // Return false if incomplete (validation fails)
+            return !hasIncompleteCells(schedule);
+        };
+        const unregister = registerValidator(checkSchedule);
+        return unregister;
+    }, [registerValidator, schedule]);
 
     // Initialize and populate schedule for all classes on first render
     const blockRef = useRef<boolean>(true);
@@ -52,7 +66,7 @@ const AnnualSchedulePage: NextPage = () => {
                     setIsLoading={setIsLoading}
                     setIsSaving={setIsSaving}
                     isSaving={isSaving}
-                    handleAddNewRow={handleAddNewRow}
+                    handleScheduleUpdate={handleScheduleUpdate}
                 />
             ) : (
                 <div className={styles.placeholder}>בחרו כיתה כדי להציג את המערכת</div>

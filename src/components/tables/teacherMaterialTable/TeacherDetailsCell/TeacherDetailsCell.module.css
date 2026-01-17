@@ -4,13 +4,15 @@
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   width: 100%;
   height: 40px;
   background-color: var(--tab-color);
   border-radius: var(--border-radius-cell);
   padding: 5px 2px;
   box-sizing: border-box;
+  color: gray;
+  max-height: 90px;
 }
 
 .emptyCell {
@@ -25,6 +27,11 @@
   box-sizing: border-box;
   overflow-wrap: break-word;
   line-height: 1.3;
+  font-weight: 600;
+}
+
+.hasSub::after {
+  content: ",";
 }
 
 .subTeacher {
@@ -50,21 +57,15 @@
   white-space: nowrap;
 }
 
-.subName::before {
-  content: "(";
-}
-
-.subName::after {
-  content: ")";
-}
-
 /* > 600 */
 @media (min-width: 600px) {
   .cellContent {
     flex-direction: column;
     align-items: unset;
     gap: 10px;
-    height: var(--table-teacher-cell-height);
+    height: 100%;
+    max-height: unset;
+    min-height: var(--table-teacher-cell-height);
     padding: 10px 15px;
   }
 
@@ -72,19 +73,17 @@
     height: var(--table-teacher-cell-height);
   }
 
+  .hasSub::after {
+    content: none;
+  }
+
   .doubleRow {
     font-weight: 600;
     white-space: normal;
   }
-
-  .subName::before {
-    content: none;
-  }
-
-  .subName::after {
-    content: none;
-  }
 }
+
+
 
 .activityText {
   color: var(--disabled-text-color);

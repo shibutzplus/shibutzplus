@@ -1,10 +1,11 @@
 import { pgTable, text, varchar, timestamp, boolean, index, uniqueIndex } from 'drizzle-orm/pg-core'
 import { createId } from '@paralleldrive/cuid2';
+import { schools } from './schools';
 
 export const classes = pgTable('classes', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
   name: varchar('name', { length: 100 }).notNull(),
-  schoolId: text('school_id').notNull(),
+  schoolId: text('school_id').notNull().references(() => schools.id),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
   activity: boolean('activity').default(false).notNull(),

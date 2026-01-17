@@ -18,6 +18,7 @@ type PageLayoutProps = {
     hideLogo?: boolean;
     contentClassName?: string;
     schoolSettings?: SchoolSettingsType;
+    onBeforeMenuOpen?: () => Promise<boolean> | boolean;
 };
 
 export default function PageLayout({
@@ -31,8 +32,25 @@ export default function PageLayout({
     hideLogo = false,
     contentClassName = "",
     schoolSettings,
+    onBeforeMenuOpen,
 }: PageLayoutProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    const handleHamburgerClick = async () => {
+        if (isMenuOpen) {
+            setIsMenuOpen(false);
+            return;
+        }
+
+        if (onBeforeMenuOpen) {
+            const shouldOpen = await onBeforeMenuOpen();
+            if (shouldOpen) {
+                setIsMenuOpen(true);
+            }
+        } else {
+            setIsMenuOpen(true);
+        }
+    };
 
     return (
         <>
@@ -43,7 +61,7 @@ export default function PageLayout({
                     <section className={styles.topBarSection}>
                         <div className={styles.topNavRight}>
                             <HamburgerButton
-                                onClick={() => setIsMenuOpen((v) => !v)}
+                                onClick={handleHamburgerClick}
                                 isOpen={isMenuOpen}
                             />
                             {HeaderRightActions}

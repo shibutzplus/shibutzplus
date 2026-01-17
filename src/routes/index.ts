@@ -29,7 +29,7 @@ const router: Record<string, IRoute> = {
     faqTeachers: { id: "faqTeachers", p: "/faqTeachers", private: true, title: "שאלות נפוצות" },
     adminSignIn: { id: "adminSignIn", p: "/admin/sign-in", private: false, title: "כניסת מנהל" },
     fullScheduleView: { id: "fullScheduleView", p: "/schedule-full", private: false, title: "מערכת במסך מלא", },
-    historyUpdateManual: { id: "historyUpdateManual", p: "/historyUpdateManual", private: true, title: "עדכון היסטוריה ידני", },
+
 };
 
 export default router;

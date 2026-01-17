@@ -32,7 +32,6 @@ export async function updateTeacherAction(
                     .set({
                         name: teacherData.name,
                         role: teacherData.role,
-                        userId: teacherData.userId,
                         updatedAt: new Date(),
                     })
                     .where(eq(schema.teachers.id, teacherId))

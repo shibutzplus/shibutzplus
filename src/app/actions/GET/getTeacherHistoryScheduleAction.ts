@@ -3,7 +3,7 @@
 import { db } from "@/db";
 import { history } from "@/db/schema";
 import { and, eq, or } from "drizzle-orm";
-import { DailyScheduleType, ColumnType, GetDailyScheduleResponse, ColumnTypeValues } from "@/models/types/dailySchedule";
+import { DailyScheduleType, ColumnType, GetDailyScheduleResponse } from "@/models/types/dailySchedule";
 import { TeacherType } from "@/models/types/teachers";
 import { SubjectType } from "@/models/types/subjects";
 import { ClassType } from "@/models/types/classes";
@@ -56,13 +56,6 @@ export async function getTeacherHistoryScheduleAction(
                 }));
             };
 
-            // Map ColumnType integer back to string literal
-            let columnType: ColumnType = ColumnTypeValues.existingTeacher;
-            if (record.columnType === 0) columnType = ColumnTypeValues.missingTeacher;
-            else if (record.columnType === 1) columnType = ColumnTypeValues.existingTeacher;
-            else if (record.columnType === 2) columnType = ColumnTypeValues.event;
-
-
             // Mock School Object (minimal)
             const mockSchool: SchoolType = {
                 id: record.schoolId,
@@ -79,7 +72,7 @@ export async function getTeacherHistoryScheduleAction(
             return {
                 id: record.id,
                 date: new Date(record.date),
-                day: record.day.toString(),
+                day: record.day,
                 hour: record.hour,
                 columnId: record.columnId,
                 eventTitle: record.eventTitle || undefined,
@@ -88,7 +81,7 @@ export async function getTeacherHistoryScheduleAction(
                 classes: makeClasses(record.classes),
                 subject: makeSubject(record.subject),
                 originalTeacher: makeTeacher(record.originalTeacher),
-                columnType: columnType,
+                columnType: record.columnType as ColumnType,
                 subTeacher: makeTeacher(record.subTeacher),
                 instructions: record.instructions || undefined,
                 position: record.columnPosition,

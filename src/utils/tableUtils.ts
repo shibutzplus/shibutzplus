@@ -1,5 +1,5 @@
 
-import { DailySchedule, ColumnType } from "@/models/types/dailySchedule";
+import { DailySchedule, ColumnType, ColumnTypeValues } from "@/models/types/dailySchedule";
 import { TeacherScheduleType } from "@/models/types/portalSchedule";
 import { AppType } from "@/models/types";
 import { getCellDisplayData } from "@/utils/dailyCellDisplay";
@@ -28,15 +28,15 @@ export const calculateVisibleRowsForDaily = (
             Object.keys(columnData).forEach(rowKey => {
                 const rowNum = parseInt(rowKey);
                 const cell = columnData[rowNum];
-                const type = columnTypes[colId] || "event";
+                const typeInt = columnTypes[colId] ?? ColumnTypeValues.event;
 
-                if (type === "event") {
+                if (typeInt === ColumnTypeValues.event) {
                     if (cell?.event) {
                         if (rowNum > maxRowWithData) maxRowWithData = rowNum;
                     }
                 } else {
                     // For teacher cells
-                    const { isEmpty } = getCellDisplayData(cell, type, appType);
+                    const { isEmpty } = getCellDisplayData(cell, typeInt, appType);
                     if (!isEmpty) {
                         if (rowNum > maxRowWithData) maxRowWithData = rowNum;
                     }

@@ -120,7 +120,7 @@ export default function StatisticsPage() {
                                     tick={{ className: styles.axisTick }}
                                 />
                                 <Tooltip cursor={{ fill: 'transparent' }} />
-                                <Bar name="ימי היעדרות" dataKey="count" fill="url(#colorMonthGradient)" radius={[4, 4, 0, 0]} barSize={50} />
+                                <Bar name="ימי היעדרות" dataKey="count" fill="url(#colorMonthGradient)" radius={[4, 4, 0, 0]} maxBarSize={150} />
                             </BarChart>
                         ) : statType === StatisticTypeValues.teachers ? (
                             <BarChart
@@ -149,7 +149,7 @@ export default function StatisticsPage() {
                                     interval={0} // Show all labels
                                 />
                                 <Tooltip cursor={{ fill: 'transparent' }} />
-                                <Bar name="ימי היעדרויות" dataKey="count" fill="url(#colorTeacherGradient)" radius={[0, 4, 4, 0]} barSize={20} />
+                                <Bar name="ימי היעדרויות" dataKey="count" fill="url(#colorTeacherGradient)" radius={[0, 4, 4, 0]} barSize={40} />
                             </BarChart>
                         ) : (
                             <BarChart
@@ -186,7 +186,7 @@ export default function StatisticsPage() {
                                     tick={{ className: styles.axisTick }}
                                 />
                                 <Tooltip cursor={{ fill: 'transparent' }} />
-                                <Bar name="ימי היעדרויות" dataKey="count" fill="url(#colorDayGradient)" radius={[4, 4, 0, 0]} barSize={50} />
+                                <Bar name="ימי היעדרויות" dataKey="count" fill="url(#colorDayGradient)" radius={[4, 4, 0, 0]} maxBarSize={150} />
                             </BarChart>
                         )}
                     </ResponsiveContainer>

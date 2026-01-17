@@ -19,7 +19,7 @@ const TeacherInstructionsCell: React.FC<TeacherInstructionsCellProps> = ({
     teacher,
     selectedDate,
 }) => {
-    const { saveInstractions } = useTeacherTableContext();
+    const { saveInstractions, isHistoryMode } = useTeacherTableContext();
     const [instructions, setInstructions] = useState<string>(row?.instructions || "");
     const [prevInstructions, setPrevInstructions] = useState<string>(row?.instructions || "");
 
@@ -48,7 +48,7 @@ const TeacherInstructionsCell: React.FC<TeacherInstructionsCellProps> = ({
                     placeholder={getInstructionPlaceholder(row, teacher)}
                     importantPlaceholder={isOriginalTeacher && !!row.subTeacher} // red if there isnt a sub teacher
                     minHeight={60}
-                    maxLines={10}
+                    readOnly={isHistoryMode}
                 />
             ) : null}
         </div>

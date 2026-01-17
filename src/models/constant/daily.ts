@@ -7,8 +7,7 @@ export const PublishLimitNumber = 6;
 export const DailyTableLimitNumber = 14;
 
 export const COLOR_BY_TYPE = {
-    missingTeacher: MissingTeacherColor,
-    existingTeacher: ExistingTeacherColor,
-    event: EventColor,
-    empty: "transparent",
+    0: MissingTeacherColor,
+    1: ExistingTeacherColor,
+    2: EventColor,
 } as const;

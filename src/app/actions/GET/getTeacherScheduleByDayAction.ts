@@ -55,10 +55,10 @@ export async function getTeacherScheduleByDayAction(
                 }
 
                 if (schedule.class) {
-                     const classExists = acc[hour].classes.some(c => c.id === schedule.class.id);
-                     if (!classExists) {
-                         acc[hour].classes.push(schedule.class);
-                     }
+                    const classExists = acc[hour].classes.some(c => c.id === schedule.class.id);
+                    if (!classExists) {
+                        acc[hour].classes.push(schedule.class);
+                    }
                 }
 
                 return acc;

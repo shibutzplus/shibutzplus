@@ -55,9 +55,11 @@
 }
 
 .rowNumberHeader {
-    background-color: var(--table-gray-color);
-    border: 1px solid #ddd;
-    border-radius: 1.2vw 1.2vw 0 0;
+    background-color: transparent;
+}
+
+.bodyContainer .row:first-child .rowNumberCell {
+    border-radius: 20px 20px 0 0;
 }
 
 .bodyContainer {
@@ -68,6 +70,7 @@
     overflow-y: auto;
     /* Allow scrolling */
     overflow-x: hidden;
+    overscroll-behavior: none;
 }
 
 .row {
@@ -126,9 +129,7 @@
     line-height: 1.1;
 }
 
-.activity .mainText {
-    font-weight: bold;
-}
+
 
 .subText {
     font-size: var(--font-size);

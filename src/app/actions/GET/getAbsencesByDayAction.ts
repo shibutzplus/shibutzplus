@@ -2,7 +2,8 @@
 import { db, schema, executeQuery } from "@/db";
 import { eq, and, sql } from "drizzle-orm";
 import { ActionResponse } from "@/models/types/actions";
-import { DAYS_OF_WEEK_FORMAT, SCHOOL_MONTHS } from "@/utils/time";
+import { ColumnTypeValues } from "@/models/types/dailySchedule";
+import { DAYS_OF_WEEK_FORMAT, SCHOOL_MONTHS, getCurrentSchoolYearRange } from "@/utils/time";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 
@@ -18,9 +19,12 @@ export const getAbsencesByDayAction = async (schoolId: string, month?: string): 
             return authError as ActionResponse<AbsenceByDay[]>;
         }
 
+        const { start, end } = getCurrentSchoolYearRange();
+
         const conditions = [
             eq(schema.history.schoolId, schoolId),
-            eq(schema.history.columnType, 0) // 0 is missingTeacher
+            eq(schema.history.columnType, ColumnTypeValues.missingTeacher),
+            sql`${schema.history.date} >= ${start} AND ${schema.history.date} <= ${end}`
         ];
 
         if (month && month !== "all") {

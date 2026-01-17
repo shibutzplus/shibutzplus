@@ -3,7 +3,7 @@
 import { db } from "@/db";
 import { history } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
-import { DailyScheduleType, ColumnType, ColumnTypeValues } from "@/models/types/dailySchedule";
+import { DailyScheduleType, ColumnType } from "@/models/types/dailySchedule";
 import { ActionResponse } from "@/models/types/actions";
 import { TeacherType } from "@/models/types/teachers";
 import { SubjectType } from "@/models/types/subjects";
@@ -52,13 +52,6 @@ export async function getHistoryScheduleAction(schoolId: string, date: string): 
                 }));
             };
 
-            // Map ColumnType integer back to string literal
-            let columnType: ColumnType = ColumnTypeValues.existingTeacher;
-            if (record.columnType === 0) columnType = ColumnTypeValues.missingTeacher;
-            else if (record.columnType === 1) columnType = ColumnTypeValues.existingTeacher;
-            else if (record.columnType === 2) columnType = ColumnTypeValues.event;
-
-
             // Mock School Object (minimal)
             const mockSchool: SchoolType = {
                 id: record.schoolId,
@@ -75,7 +68,7 @@ export async function getHistoryScheduleAction(schoolId: string, date: string): 
             return {
                 id: record.id,
                 date: new Date(record.date),
-                day: record.day.toString(),
+                day: record.day,
                 hour: record.hour,
                 columnId: record.columnId,
                 eventTitle: record.eventTitle || undefined,
@@ -84,7 +77,7 @@ export async function getHistoryScheduleAction(schoolId: string, date: string): 
                 classes: makeClasses(record.classes),
                 subject: makeSubject(record.subject),
                 originalTeacher: makeTeacher(record.originalTeacher),
-                columnType: columnType,
+                columnType: record.columnType as ColumnType,
                 subTeacher: makeTeacher(record.subTeacher),
                 instructions: record.instructions || undefined,
                 position: record.columnPosition,

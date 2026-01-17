@@ -5,7 +5,7 @@ import { motion } from "motion/react";
 import styles from "./PreviewTable.module.css";
 import { sortDailyColumnIdsByPosition } from "@/utils/sort";
 import { calculateVisibleRowsForDaily } from "@/utils/tableUtils";
-import { DailySchedule, ColumnType } from "@/models/types/dailySchedule";
+import { DailySchedule, ColumnType, ColumnTypeValues } from "@/models/types/dailySchedule";
 import { AppType } from "@/models/types";
 import { TeacherType } from "@/models/types/teachers";
 import PreviewTeacherHeader from "../PreviewTeacherHeader/PreviewTeacherHeader";
@@ -49,9 +49,9 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
 
             const colFirstObj =
                 columnData["1"] ||
-                Object.values(columnData).find((cell) => cell?.headerCol?.type);
+                Object.values(columnData).find((cell) => cell?.headerCol?.type !== undefined);
 
-            types[colId] = colFirstObj?.headerCol?.type || "event";
+            types[colId] = colFirstObj?.headerCol?.type ?? ColumnTypeValues.event;
         });
         return types;
     }, [schedule, sortedTableColumns]);
@@ -88,7 +88,7 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
                         </th>
 
                         {sortedTableColumns.map((colId, index) => {
-                            const type = columnTypes[colId] || "event";
+                            const type = columnTypes[colId] ?? ColumnTypeValues.event;
                             const column = schedule[colId];
 
                             return (
@@ -102,7 +102,7 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
                                         animate={{ opacity: 1 }}
                                         transition={{ duration: 0.3, delay: index * 0.02 }}
                                     >
-                                        {type === "event" ? (
+                                        {type === ColumnTypeValues.event ? (
                                             <PreviewEventHeader type={type} column={column} />
                                         ) : (
                                             <PreviewTeacherHeader
@@ -127,7 +127,7 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
                             </td>
 
                             {sortedTableColumns.map((colId, index) => {
-                                const type = columnTypes[colId] || "event";
+                                const type = columnTypes[colId] ?? ColumnTypeValues.event;
                                 const columnData = schedule[colId];
                                 const cellData = columnData?.[row];
 
@@ -142,7 +142,7 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
                                             animate={{ opacity: 1 }}
                                             transition={{ duration: 0.3, delay: index * 0.02 }}
                                         >
-                                            {type === "event" ? (
+                                            {type === ColumnTypeValues.event ? (
                                                 <PreviewEventCell cell={cellData} columnId={colId} />
                                             ) : (
                                                 <PreviewTeacherCell

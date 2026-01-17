@@ -151,11 +151,7 @@ const linkGroups: ILinkGroup[] = [
                 Icon: <Icons.upload size={24} />,
                 isForGuest: false,
             },
-            {
-                name: "עדכון היסטוריה",
-                p: "/historyUpdateManual",
-                Icon: <Icons.history size={24} />,
-            },
+
         ],
     },
     {

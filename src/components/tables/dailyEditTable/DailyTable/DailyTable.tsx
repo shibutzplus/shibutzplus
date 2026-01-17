@@ -150,7 +150,7 @@ const DailyTable: React.FC<DailyTableProps> = ({
             const headerCol = columnData["1"]?.headerCol ||
                 Object.values(columnData).find(cell => cell.headerCol)?.headerCol;
 
-            types[colId] = headerCol?.type || inferredType;
+            types[colId] = headerCol?.type ?? inferredType;
         });
         return types;
     }, [schedule, sortedTableColumns]);
@@ -190,7 +190,7 @@ const DailyTable: React.FC<DailyTableProps> = ({
                         </th>
 
                         {sortedTableColumns.map((colId: string, colIndex: number) => {
-                            const type = columnTypes[colId] || ColumnTypeValues.event;
+                            const type = columnTypes[colId] ?? ColumnTypeValues.event;
                             const headerColorClass = getColorClass(type);
                             const width = animatingWidths[colId];
                             const isAnimating = width !== undefined;
@@ -240,7 +240,7 @@ const DailyTable: React.FC<DailyTableProps> = ({
                             </td>
 
                             {sortedTableColumns.map((colId: string, colIndex: number) => {
-                                const type = columnTypes[colId] || ColumnTypeValues.event;
+                                const type = columnTypes[colId] ?? ColumnTypeValues.event;
                                 const columnData = schedule[colId];
                                 if (!columnData) return null;
                                 const cellData = columnData[row]; // row is the hour index

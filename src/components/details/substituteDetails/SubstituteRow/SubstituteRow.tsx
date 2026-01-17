@@ -5,7 +5,7 @@ import { teacherSchema } from "@/models/validation/teacher";
 import ListRow from "@/components/ui/list/ListRow/ListRow";
 import { generateSchoolUrl } from "@/utils";
 import { TeacherRoleValues } from "@/models/types/teachers";
-import useDeletePopup from "@/hooks/useDeletePopup";
+import useConfirmPopup from "@/hooks/useConfirmPopup";
 import useSubmit from "@/hooks/useSubmit";
 import messages from "@/resources/messages";
 import { PopupAction } from "@/context/PopupContext";
@@ -16,10 +16,10 @@ type SubstituteRowProps = {
 
 const SubstituteRow: React.FC<SubstituteRowProps> = ({ teacher }) => {
     const { deleteTeacher, school, updateTeacher } = useMainContext();
-    const { handleOpenPopup } = useDeletePopup();
+    const { handleOpenPopup } = useConfirmPopup();
 
     const { handleSubmitDelete } = useSubmit(
-        () => {},
+        () => { },
         messages.teachers.deleteSuccess,
         messages.teachers.deleteError,
         messages.teachers.invalid,
@@ -31,8 +31,10 @@ const SubstituteRow: React.FC<SubstituteRowProps> = ({ teacher }) => {
     };
 
     const handleDeleteTeacher = (teacher: TeacherType) => {
-        handleOpenPopup(PopupAction.deleteTeacher, `האם למחוק את המורה ${teacher.name}`, () =>
-            handleDeleteTeacherFromState(teacher.id),
+        handleOpenPopup(
+            PopupAction.deleteTeacher,
+            `האם למחוק את המורה ${teacher.name}`,
+            () => handleDeleteTeacherFromState(teacher.id),
         );
     };
 

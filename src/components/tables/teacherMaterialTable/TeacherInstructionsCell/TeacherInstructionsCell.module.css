@@ -5,10 +5,10 @@
   justify-content: center;
   width: 100%;
   min-height: var(--table-teacher-cell-height);
-  max-height: 250px;
+  max-height: 300px;
   background-color: var(--tab-color);
   border-radius: var(--border-radius-cell);
-  padding: 10px 15px;
+  padding: 10px 12px;
   box-sizing: border-box;
   overflow-y: auto;
 }
@@ -24,8 +24,7 @@
 @media (min-width: 600px) {
   .cellContent {
     justify-content: flex-start;
+    padding: 10px 15px;
     min-height: var(--table-teacher-cell-height);
-    max-height: var(--table-teacher-cell-height);
-    overflow-y: scroll;
   }
 }
