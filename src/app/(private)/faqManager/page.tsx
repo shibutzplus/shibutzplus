@@ -2,39 +2,58 @@
 
 import "@/components/faq/faq.css";
 import { useSession } from "next-auth/react";
+import { useState } from "react";
+import { errorToast, successToast } from "@/lib/toast";
 import Icons from "@/style/icons";
 import { motion } from "motion/react";
 import { sendAdminContactEmail } from "@/app/actions/POST/sendEmailAction";
-import ContactUsForm from "@/components/actions/ContactUsForm/ContactUsForm";
 
 export default function FAQPage() {
+    const [contactMessage, setContactMessage] = useState<string>("");
+    const [isSending, setIsSending] = useState<boolean>(false);
     const { data: session } = useSession();
 
+    const handleSendContactEmail = async () => {
+        if (!contactMessage.trim() || isSending) {
+            return;
+        }
+
+        const adminName = session?.user?.name || "לא מחובר";
+        const adminEmail = session?.user?.email || "לא מחובר";
+
+        try {
+            setIsSending(true);
+
+            await sendAdminContactEmail({
+                adminName,
+                adminEmail,
+                message: contactMessage.trim(),
+            });
+
+            successToast("ההודעה נשלחה בהצלחה. ניצור איתכם קשר בהקדם ✨", Infinity);
+            setContactMessage(""); // clear input after send
+        } catch (error: unknown) {
+            const err = error as any;
+            const raw = err?.text || err?.message || err?.toString() || "";
+            const shortError = raw.split(".")[0] + ".";
+            errorToast(
+                `אירעה שגיאה בשליחת ההודעה. יש להעביר את פרטי השגיאה למנהל בבית הספר כדי שיוכל לדווח למפתחי שיבוץ פלוס.\n\n${shortError || "לא זמינים"}`,
+                Infinity,
+            );
+        } finally {
+            setIsSending(false);
+        }
+    };
+
     const faqItems = [
-        {
-            question: "מה ההבדל בין מורי בית הספר למורים ממלאי מקום?",
-            answer: (
-                <>
-                    <strong>מורים</strong> – מורי בית הספר הקבועים, בעלי מערכת שעות קבועה לאורך
-                    השנה.
-                    <br />
-                    <strong>מורים ממלאי מקום</strong> – מורים ללא מערכת קבועה שאינם בצוות הקבוע,
-                    המוזמנים לפי הצורך.
-                    <br />
-                    <br />
-                    מורה ממלא מקום רואה רק את המערכת האישית שלו ואינו חשוף לשינויים במערכת הבית
-                    ספרית.
-                    <br />
-                    אפשר לשנות את זה דרך הגדרות המערכת (<Icons.settings size={16} />
-                    ).
-                </>
-            ),
-        },
         {
             question: "איזה קישור צריך לשלוח למורים ואיך?",
             answer: (
                 <>
                     <strong>מורי בית הספר</strong>
+                    <br />
+                    מורי בית הספר הקבועים, בעלי מערכת שעות קבועה לאורך השנה.
+                    <br />
                     <br />
                     אפשרות 1 – קישור בית־ספרי דרך מסך השיבוץ היומי:
                     <br />
@@ -52,11 +71,17 @@ export default function FAQPage() {
                     <br />
                     <strong>מורים למילוי מקום</strong>
                     <br />
-                    נכנסים למסך מורים ממלאי מקום ומפיקים לכל אחד מהם קישור אישי ייחודי ושולחים להם
+                    מורים ללא מערכת קבועה שאינם בצוות הקבוע, המוזמנים לפי הצורך.
+                    <br />
+                    יכולים להתחבר רק דרך קישור אישי.<br />
+                    נכנסים למסך מורים ממלאי מקום, לוחצים על כפתור השיתוף ושולחים להם
                     את הקישור האישי.
                     <br />
+                    מורה ממלא מקום רואה רק את המערכת האישית שלו ואינו חשוף לשינויים במערכת הבית ספרית.
+                    אפשר לשנות את זה דרך הגדרות המערכת (<Icons.settings size={16} />).
                     <br />
-                    מרגע שנשלח הקישור הוא נשאר תקף לתמיד ואין צורך לשלוח אותו שוב.
+                    <br />
+                    <strong>מרגע שנשלח הקישור הוא נשאר תקף לתמיד ואין צורך לשלוח אותו שוב.</strong>
                 </>
             ),
         },
@@ -102,8 +127,6 @@ export default function FAQPage() {
                     ).
                     <br />
                     במסך שייפתח תוצג המערכת היומית כפי שהמורים רואים.
-                    <br />
-                    כאן ניתן לראות שכל השיבוצים בוצעו בצורה מלאה.
                 </>
             ),
         },
@@ -111,10 +134,10 @@ export default function FAQPage() {
             question: "כיצד ניתן לראות או לעדכן חומר לימוד שמורה חסר הזין במערכת?",
             answer: (
                 <>
-                    במסך שיבוץ יומי - צפיה מקדימה/בדיקה, לחצו על כותרת העמודות עם שמות המורים.
+                    במסך שיבוץ יומי - צפיה מקדימה, לחצו על כותרת העמודות עם שמות המורים.
                     <br />
                     במסך שייפתח תוצג המערכת היומית של המורה ושם ניתן לצפות בחומר הלימוד שהוזן או
-                    לעדכן אותו במקרה הצורך.
+                    לעדכן אותו במידת הצורך.
                 </>
             ),
         },
@@ -124,56 +147,8 @@ export default function FAQPage() {
                 <>
                     כן.
                     <br />
-                    לאחר שהמערכת היומית פורסמה כל שינוי נוסף נשמר ומוצג למורים באופן אוטומטי ללא
+                    לאחר שהמערכת היומית פורסמה כל שינוי נוסף מוצג למורים באופן אוטומטי ללא
                     צורך בשום פעולה נוספת.
-                </>
-            ),
-        },
-        {
-            question: "האם אפשר להתקין את האתר כאפליקציה בטלפון כדי שתהיה לי גישה מהירה?",
-            answer: (
-                <>
-                    כן,
-                    <br />
-                    עבור משתמשי אנדרואיד ניתן להיעזר בסרטון הבא:
-                    <br />
-                    <a
-                        href="https://www.youtube.com/shorts/1TkmsiS1ELg"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        https://www.youtube.com/shorts/1TkmsiS1ELg
-                    </a>
-                    <br />
-                    1. פתחו את האתר בדפדפן כרום בטלפון
-                    <br />
-                    2. לחצו על שלוש הנקודות למעלה בצד ימין
-                    <br />
-                    3. בחרו באפשרות הוסף למסך הבית
-                    <br />
-                    4. אשרו את ההוספה – האייקון יופיע במסך האפליקציות
-                    <br />
-                    <br />
-                    עבור משתמשי אייפון ניתן להיעזר בסרטון הבא:
-                    <br />
-                    <a
-                        href="https://www.youtube.com/shorts/oWHuZoN571Y"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        https://www.youtube.com/shorts/oWHuZoN571Y
-                    </a>
-                    <br />
-                    1. פתחו את האתר בדפדפן מסוג ספארי (באייפון התקנה עובדת רק מתוך ספארי)
-                    <br />
-                    2. לחצו על כפתור **שיתוף** (הריבוע עם החץ למעלה)
-                    <br />
-                    3. לחצו על כפתור **עוד**
-                    <br />
-                    3. גללו למטה ובחרו **הוסף למסך הבית**
-                    <br />
-                    4. אשרו את ההוספה – האייקון יופיע במסך האפליקציות
-                    <br />
                 </>
             ),
         },
@@ -202,21 +177,26 @@ export default function FAQPage() {
             ))}
 
             <br />
-            <br />
             <div className="contact-section">
                 שאלות? הצעות? צרו איתנו קשר
                 <br />
-                <ContactUsForm
-                    onSend={async (message) => {
-                        const adminName = session?.user?.name || "לא מחובר";
-                        const adminEmail = session?.user?.email || "לא מחובר";
-                        await sendAdminContactEmail({
-                            adminName,
-                            adminEmail,
-                            message,
-                        });
-                    }}
-                />
+                <div className="contact-inline-form">
+                    <textarea
+                        placeholder={`כתבו כאן את ההודעה שלכם
+כולל מספר טלפון לקשר מהיר בווטסאפ או כתובת מייל`}
+                        value={contactMessage}
+                        onChange={(e) => setContactMessage(e.target.value)}
+                        className="contact-textarea"
+                    />
+
+                    <button
+                        type="button"
+                        onClick={handleSendContactEmail}
+                        disabled={!contactMessage.trim() || isSending}
+                    >
+                        {isSending ? <div className="loader"></div> : "שליחה"}
+                    </button>
+                </div>
             </div>
         </div>
     );

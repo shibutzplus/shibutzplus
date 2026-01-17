@@ -3,13 +3,15 @@
 import "@/components/faq/faq.css";
 import { useEffect, useState } from "react";
 import { getStorageTeacher } from "@/lib/localStorage";
+import { errorToast, successToast } from "@/lib/toast";
 import { motion } from "motion/react";
 import { sendTeacherContactEmail } from "@/app/actions/POST/sendEmailAction";
 import router from "@/routes";
-import ContactUsForm from "@/components/actions/ContactUsForm/ContactUsForm";
 
 export default function FAQPage() {
     const [teacherLink, setTeacherLink] = useState<string>("");
+    const [contactMessage, setContactMessage] = useState<string>("");
+    const [isSending, setIsSending] = useState<boolean>(false);
 
     useEffect(() => {
         // Get teacher info from localStorage
@@ -21,21 +23,45 @@ export default function FAQPage() {
         }
     }, []);
 
+    const handleSendContactEmail = async () => {
+        if (!contactMessage.trim() || isSending) {
+            // Do nothing if message is empty or already sending
+            return;
+        }
+
+        const teacher = getStorageTeacher();
+        const schoolCode = teacher?.schoolId || "לא צוין";
+        const teacherCode = teacher?.id || "לא צוין";
+        const teacherName = teacher?.name || "לא צוין";
+
+        try {
+            setIsSending(true);
+
+            await sendTeacherContactEmail({
+                schoolCode,
+                teacherCode,
+                teacherName,
+                message: contactMessage.trim(),
+            });
+
+            successToast("ההודעה נשלחה בהצלחה. ניצור איתכם קשר בהקדם ✨", Infinity);
+            setContactMessage(""); // clear input after send
+        } catch (error: any) {
+            const raw = error?.text || error?.message || error?.toString() || "";
+            const shortError = raw.split(".")[0] + ".";
+            errorToast(
+                `אירעה שגיאה בשליחת ההודעה. יש להעביר את פרטי השגיאה למנהל בבית הספר כדי שיוכל לדווח למפתחי שיבוץ פלוס.\n\n${shortError || "לא זמינים"
+                }`,
+                Infinity,
+            );
+        } finally {
+            setIsSending(false);
+        }
+    };
+
     const faqItems = [
         {
-            question: "האם ניתן להוסיף קישור חיצוני בשדה חומר הלימוד?",
-            answer: (
-                <>
-                    כן!
-                    <br />
-                    יש להדביק את הכתובת וללחוץ Enter בסיום כדי שהוא יזוהה.
-                    <br />
-                    כאשר הקישור מזוהה, הוא יופיע בצבע כחול.
-                </>
-            ),
-        },
-        {
-            question: "האם אפשר לקבל קישור ישיר למשתמש שלי בלי שאצטרך להזדהות כל פעם מחדש?",
+            question: "האם אפשר לקבל קישור אישי ישיר בלי שאצטרך להזדהות כל פעם מחדש?",
             answer: (
                 <>
                     כן!
@@ -45,8 +71,10 @@ export default function FAQPage() {
                     {teacherLink ? (
                         <div className="teacher-link">
                             <a href={teacherLink} target="_blank" rel="noopener noreferrer">
-                                <strong>קישור אישי</strong>
+                                <strong>הקישור האישי שלכם</strong>
                             </a>
+                            &nbsp;&nbsp;
+                            <span>(שימרו אותו)</span>
                         </div>
                     ) : (
                         <p>כדי לראות את הקישור הייחודי שלך, יש להתחבר קודם למערכת</p>
@@ -54,53 +82,16 @@ export default function FAQPage() {
                 </>
             ),
         },
+
         {
-            question: "האם אפשר להתקין את האתר כאפליקציה בטלפון כדי שתהיה לי גישה מהירה?",
+            question: "האם ניתן להוסיף קישור בשדה חומר הלימוד?",
             answer: (
                 <>
-                    כן,
+                    כן!
                     <br />
-                    עבור משתמשי אנדרואיד ניתן להיעזר בסרטון הבא:
+                    יש להדביק את הכתובת וללחוץ Enter בסיום כדי שהוא יזוהה.
                     <br />
-                    <a
-                        href="https://www.youtube.com/shorts/1TkmsiS1ELg"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        https://www.youtube.com/shorts/1TkmsiS1ELg
-                    </a>
-                    <br />
-                    1. פתחו את האתר בדפדפן כרום בטלפון
-                    <br />
-                    2. לחצו על שלוש הנקודות למעלה בצד ימין
-                    <br />
-                    3. בחרו באפשרות הוסף למסך הבית
-                    <br />
-                    4. אשרו את ההוספה – האייקון יופיע במסך האפליקציות
-                    <br />
-                    <br />
-                    עבור משתמשי אייפון ניתן להיעזר בסרטון הבא:
-                    <br />
-                    <a
-                        href="https://www.youtube.com/shorts/oWHuZoN571Y"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        https://www.youtube.com/shorts/oWHuZoN571Y
-                    </a>
-                    <br />
-                    1. פתחו את האתר בדפדפן מסוג ספארי (באייפון התקנה עובדת רק מתוך ספארי)
-                    <br />
-                    2. לחצו על כפתור **שיתוף** (הריבוע עם החץ למעלה)
-                    <br />
-                    3. לחצו על כפתור **עוד**
-                    <br />
-                    3. גללו למטה ובחרו **הוסף למסך הבית**
-                    <br />
-                    4. אשרו את ההוספה – האייקון יופיע במסך האפליקציות
-                    <br />
-                    <br />
-                    מומלץ להתחבר עם הקישור האישי שלכם.
+                    כאשר הקישור מזוהה, הוא יופיע בצבע כחול.
                 </>
             ),
         },
@@ -130,24 +121,26 @@ export default function FAQPage() {
             ))}
 
             <br />
-            <br />
             <div className="contact-section">
                 שאלות? הצעות? צרו איתנו קשר
                 <br />
-                <ContactUsForm
-                    onSend={async (message) => {
-                        const teacher = getStorageTeacher();
-                        const schoolCode = teacher?.schoolId || "לא צוין";
-                        const teacherCode = teacher?.id || "לא צוין";
-                        const teacherName = teacher?.name || "לא צוין";
-                        await sendTeacherContactEmail({
-                            schoolCode,
-                            teacherCode,
-                            teacherName,
-                            message,
-                        });
-                    }}
-                />
+                <div className="contact-inline-form">
+                    <textarea
+                        placeholder={`כתבו כאן את ההודעה שלכם
+כולל מספר טלפון לקשר מהיר בווטסאפ או כתובת מייל`}
+                        value={contactMessage}
+                        onChange={(e) => setContactMessage(e.target.value)}
+                        className="contact-textarea"
+                    />
+
+                    <button
+                        type="button"
+                        onClick={handleSendContactEmail}
+                        disabled={!contactMessage.trim() || isSending}
+                    >
+                        {isSending ? <div className="loader"></div> : "שליחה"}
+                    </button>
+                </div>
             </div>
         </div>
     );

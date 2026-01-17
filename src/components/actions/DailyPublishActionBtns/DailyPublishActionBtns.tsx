@@ -6,9 +6,7 @@ import usePublish from "@/hooks/usePublish";
 import Loading from "@/components/loading/Loading/Loading";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 
-import useDeletePopup from "@/hooks/useDeletePopup";
-import { useSession } from "next-auth/react";
-import useGuestModePopup from "@/hooks/useGuestModePopup";
+import useConfirmPopup from "@/hooks/useConfirmPopup";
 
 const DailyPublishActionBtns: React.FC = () => {
     const { togglePreviewMode, mainDailyTable, selectedDate } = useDailyTableContext();
@@ -24,33 +22,17 @@ const DailyPublishActionBtns: React.FC = () => {
         isDisabled,
     } = usePublish();
 
-    const { handleOpenPopup } = useDeletePopup();
-    const { data: session } = useSession();
-    const guest = (session?.user as any)?.role === "guest";
-    const { handleOpenGuestPopup } = useGuestModePopup();
-
-    const handleClickAction = (action: () => void) => {
-        if (guest) {
-            handleOpenGuestPopup();
-            return;
-        }
-        action();
-    };
+    const { handleOpenPopup } = useConfirmPopup();
 
     const handleUnpublishClick = () => {
-        if (guest) {
-            handleOpenGuestPopup();
-            return;
-        }
         if (unpublishDailySchedule) {
             handleOpenPopup(
                 "deleteDailyCol",
                 "האם לבטל את הפרסום?",
                 unpublishDailySchedule,
-                "כן",
-                "לא",
-                <Icons.faq size={40} />,
-                "yes", // defaultAnswer
+                undefined,  //  כן
+                undefined,  //  לא  
+                "yes"       // defaultAnswer
             );
         }
     };
@@ -60,29 +42,28 @@ const DailyPublishActionBtns: React.FC = () => {
             <span title={isEmpty ? "אין נתונים לתצוגה מקדימה" : "תצוגה מקדימה"}>
                 <IconBtn
                     Icon={<Icons.eye size={24} />}
-                    onClick={() => handleClickAction(togglePreviewMode)}
+                    onClick={togglePreviewMode}
                     hasBorder
                     disabled={isEmpty}
                 />
             </span>
 
+
             {isDisabled ? (
-                <div>
-                    <div
-                        className={`${styles.publishedStatus} ${styles.clickableStatus}`}
-                        onClick={handleUnpublishClick}
-                        title="לחצו לביטול הפרסום"
-                        role="button"
-                        tabIndex={0}
-                    >
-                        <Icons.success size={20} />
-                        <span>פורסם</span>
-                    </div>
+                <div
+                    className={`${styles.publishedStatus} ${styles.clickableStatus}`}
+                    onClick={handleUnpublishClick}
+                    title="לחצו לביטול הפרסום"
+                    role="button"
+                    tabIndex={0}
+                >
+                    <Icons.success size={20} />
+                    <span>פורסם</span>
                 </div>
             ) : (
                 <button
                     className={styles.publishBtn}
-                    onClick={() => handleClickAction(publishDailySchedule)}
+                    onClick={publishDailySchedule}
                     disabled={publishLoading || isEmpty}
                     title={isEmpty ? "אין נתונים לפרסום" : "פרסום המערכת היומית"}
                 >
@@ -97,17 +78,18 @@ const DailyPublishActionBtns: React.FC = () => {
                 </button>
             )}
 
-            <div>
-                <span title="שיתוף קישור למורים מן המניין">
-                    <IconBtn
-                        Icon={<Icons.share size={16} />}
-                        onClick={() => onShareLink(guest)}
-                        disabled={publishLoading}
-                        hasBorder
-                    />
-                </span>
-            </div>
-        </div>
+            <span title="שיתוף קישור למורים מן המניין">
+                <IconBtn
+                    Icon={<Icons.share size={16} />}
+                    onClick={onShareLink}
+                    disabled={publishLoading}
+                    hasBorder
+                />
+            </span>
+
+
+
+        </div >
     );
 };
 
