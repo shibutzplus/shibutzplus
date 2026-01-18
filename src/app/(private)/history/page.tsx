@@ -52,6 +52,7 @@ const HistorySchedulePage: NextPage = () => {
                     EmptyTable={NotPublished}
                     onTeacherClick={handleTeacherClick}
                     hoursNum={settings?.hoursNum}
+                    screenType="history"
                 />
             </section>
             <SlidingPanel

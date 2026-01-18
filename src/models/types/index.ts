@@ -13,3 +13,10 @@ export type GroupOption = {
 export type Pair = [string, string];
 
 export type AppType = "public" | "private";
+
+export type ScreenType =
+    | "history"
+    | "dailySchedule"
+    | "publicSchedule"
+    | "statistics"
+    | "teacherMaterial";

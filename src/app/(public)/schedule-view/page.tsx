@@ -84,6 +84,7 @@ const PublishedPortalPage: NextPage = () => {
                     />
                 )}
                 hoursNum={settings?.hoursNum}
+                screenType="publicSchedule"
             />
         </section>
     );
