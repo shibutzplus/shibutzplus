@@ -12,7 +12,7 @@ export const signInWithGoogle = async () => {
         if (res?.error) {
             return { success: false, message: msg.auth.login.failed };
         } else {
-            return { success: true, message: msg.auth.login.success };
+            return { success: true, message: msg.auth.login.success, url: res?.url };
         }
     } catch {
         return { success: false, message: msg.common.serverError };

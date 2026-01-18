@@ -15,6 +15,7 @@ export interface RegisterGoogleUserInput {
 
 export interface RegisterGoogleUserResponse extends ActionResponse {
     data?: UserSchema;
+    isNewUser?: boolean;
 }
 
 export async function registerNewGoogleUserAction({
@@ -31,6 +32,7 @@ export async function registerNewGoogleUserAction({
                 success: true,
                 message: messages.auth.register.success,
                 data: existing,
+                isNewUser: false,
             };
         }
 
@@ -59,6 +61,7 @@ export async function registerNewGoogleUserAction({
                 success: true,
                 message: messages.auth.register.success,
                 data: newUser,
+                isNewUser: true,
             };
         }
 

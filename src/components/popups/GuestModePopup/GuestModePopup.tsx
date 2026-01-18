@@ -3,7 +3,6 @@
 import React from "react";
 import { usePopup } from "@/context/PopupContext";
 import styles from "./GuestModePopup.module.css";
-import Icons from "@/style/icons";
 import { sendAdminContactEmail } from "@/app/actions/POST/sendEmailAction";
 import ContactUsForm from "@/components/actions/ContactUsForm/ContactUsForm";
 
@@ -40,7 +39,7 @@ const GuestModePopup: React.FC<GuestModePopupProps> = ({ onClose }) => {
                 <ContactUsForm
                     onSend={handleSend}
                     onSuccess={handleClose}
-                    submitText="יצירת קשר"
+                    submitText="שליחה"
                     placeholder={`כיתבו לנו,
 כולל מספר טלפון לקשר מהיר בווטסאפ...`}
                     buttonVariant="filled"

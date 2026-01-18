@@ -8,7 +8,6 @@ import {
     DEFAULT_REDIRECT,
     GUEST_REDIRECT,
     GUEST_UNAUTHORIZED,
-    ADMIN_ROUTES,
     protectedPaths,
 } from "@/routes/protectedAuth";
 

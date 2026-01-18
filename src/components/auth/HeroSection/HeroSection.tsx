@@ -5,10 +5,9 @@ import Logo from "@/components/ui/Logo/Logo";
 type HeroSectionProps = {
     title: string;
     description: string;
-    forUsersTitle?: string;
 };
 
-const HeroSection: React.FC<HeroSectionProps> = ({ title, description, forUsersTitle }) => {
+const HeroSection: React.FC<HeroSectionProps> = ({ title, description }) => {
     return (
         <div className={styles.heroSection}>
             <div className={styles.schoolIcon}>

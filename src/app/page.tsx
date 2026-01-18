@@ -46,6 +46,8 @@ const HeroSignInButton = (props: { title: string; className?: string }) => {
         if (!res.success) {
             errorToast(res.message);
             setIsLoading(false);
+        } else if (res.url) {
+            router.push(res.url);
         }
     };
 

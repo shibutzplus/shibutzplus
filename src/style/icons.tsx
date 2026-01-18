@@ -14,6 +14,7 @@ import {
     IoArrowBack,
     IoArrowForward,
     IoStatsChart,
+    IoInformationCircleOutline,
 } from "react-icons/io5";
 import { IoMdRefresh } from "react-icons/io";
 import { RiEdit2Fill, RiDeleteBin6Line } from "react-icons/ri";
@@ -70,6 +71,7 @@ const Icons = {
     table: BsTable,
     stats: IoStatsChart,
     google: FcGoogle,
+    info: IoInformationCircleOutline,
 };
 
 export default Icons;

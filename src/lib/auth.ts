@@ -100,6 +100,7 @@ export const authOptions: NextAuthOptions = {
                     token.gender = response.data.gender;
                     token.schoolId = response.data.schoolId;
                     token.status = response.data.status;
+                    token.createdAt = response.data.createdAt;
                 }
                 token.email = email;
                 token.name = user?.name || profile?.name;
@@ -120,6 +121,7 @@ export const authOptions: NextAuthOptions = {
                 session.user.gender = token.gender as UserGender;
                 session.user.schoolId = token.schoolId as string;
                 session.user.status = token.status as string;
+                session.user.createdAt = token.createdAt as Date;
                 session.user.maxAge = token.maxAge as number;
                 session.expires = new Date((token.exp as number) * 1000).toISOString();
             }
