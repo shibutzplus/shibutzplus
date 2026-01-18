@@ -28,6 +28,10 @@ export const metadata: Metadata = {
         icon: "/favicon.png",
         apple: "/logo192.png",
     },
+    robots: {
+        index: false,
+        follow: false,
+    },
 };
 
 export const viewport: Viewport = {
