@@ -175,10 +175,19 @@ export default function LandingPage() {
                         </div>
                     </motion.div>
                 </div>
+                <button
+                    onClick={() => {
+                        document.getElementById("value-proposition")?.scrollIntoView({ behavior: "smooth" });
+                    }}
+                    className={styles.scrollDownFab}
+                    aria-label="גלול למטה"
+                >
+                    <Icons.arrowDown size={24} />
+                </button>
             </header>
 
             {/* Value Proposition Section */}
-            <section className={styles.valueProp}>
+            <section id="value-proposition" className={styles.valueProp}>
                 <div className={styles.valuePropContent}>
                     <motion.div
                         className={`${styles.container} ${styles.grid2}`}
