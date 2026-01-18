@@ -153,6 +153,15 @@ export default function LandingPage() {
                             <div className={styles.teacherInstruction}>
                                 <strong>מורים?</strong> פנו להנהלת בית הספר לקבלת קישור לכניסה.
                             </div>
+                            <button
+                                onClick={() => {
+                                    document.getElementById("value-proposition")?.scrollIntoView({ behavior: "smooth" });
+                                }}
+                                className={`${styles.scrollDownFab} ${styles.mobileFab}`}
+                                aria-label="גלול למטה"
+                            >
+                                <Icons.arrowDown size={24} />
+                            </button>
                         </motion.div>
                     </motion.div>
 
@@ -179,7 +188,7 @@ export default function LandingPage() {
                     onClick={() => {
                         document.getElementById("value-proposition")?.scrollIntoView({ behavior: "smooth" });
                     }}
-                    className={styles.scrollDownFab}
+                    className={`${styles.scrollDownFab} ${styles.desktopFab}`}
                     aria-label="גלול למטה"
                 >
                     <Icons.arrowDown size={24} />
