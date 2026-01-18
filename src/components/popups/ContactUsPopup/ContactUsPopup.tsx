@@ -23,7 +23,7 @@ const ContactUsPopup: React.FC<ContactUsPopupProps> = ({ onClose }) => {
         await sendAdminContactEmail({
             adminName: "Landing Page User",
             adminEmail: "landing@shibutzplus.com",
-            message: `פנייה מהדף הראשי: ${message}`,
+            message: `פנייה מדף הנחיתה: ${message}`,
         });
     };
 

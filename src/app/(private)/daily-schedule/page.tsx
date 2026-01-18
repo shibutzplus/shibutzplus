@@ -14,7 +14,6 @@ import TeacherTable from "@/components/tables/teacherMaterialTable/TeacherTable/
 import styles from "./DailySchedule.module.css";
 import { TeacherType } from "@/models/types/teachers";
 import { useEffect } from "react";
-// import { successToast } from "@/lib/toast"; // Removed as per request
 import { useSession } from "next-auth/react";
 import { usePopup } from "@/context/PopupContext";
 import MsgPopup from "@/components/popups/MsgPopup/MsgPopup";
@@ -63,10 +62,10 @@ const DailyScheduleContent: React.FC = () => {
                                 <div style={{ textAlign: "right" }}>
                                     <p style={{ fontWeight: "bold", marginBottom: "20px", fontSize: "24px" }}>ברוכים הבאים לשיבוץ+</p>
                                     <p style={{ marginBottom: "10px" }}>
-                                        אתם נמצאים במצב "התנסות" בבית ספר לדוגמה.
+                                        אתם נמצאים במצב &quot;התנסות&quot; בבית ספר לדוגמה.
                                     </p>
                                     <p style={{ marginBottom: "10px" }}>
-                                        מוזמנים "לשחק" ולהתנסות בשיבוץ המערכת היומית.
+                                        מוזמנים להתנסות בשיבוץ המערכת היומית.
                                     </p>
                                 </div>
                             }
@@ -76,7 +75,7 @@ const DailyScheduleContent: React.FC = () => {
                 }
             }
         }
-    }, [session]);
+    }, [session, openPopup]);
 
     if (isLoading)
         return (

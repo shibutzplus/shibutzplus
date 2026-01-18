@@ -32,7 +32,7 @@ const GuestModePopup: React.FC<GuestModePopupProps> = ({ onClose }) => {
             <h2 className={styles.title}>מוכנים להתחיל לעבוד על הדבר האמיתי?</h2>
 
             <div className={styles.bodyText}>
-                סיימתם להתרשם מבית הספר לדוגמה? בואו נפתח לכם סביבת עבודה לבית הספר שלכם. זה לוקח רגע.
+                בואו נפתח לכם סביבת עבודה לבית הספר שלכם. זה לוקח רגע.
             </div>
 
             <div className={styles.contactForm}>

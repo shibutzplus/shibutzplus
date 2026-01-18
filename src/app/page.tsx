@@ -92,7 +92,7 @@ export default function LandingPage() {
                 <div className={styles.navContent}>
                     <div className={styles.navLinks}>
                         <Suspense fallback={<Loading />}>
-                            <HeroSignInButton title="התחברות" className={styles.navLogin} />
+                            <HeroSignInButton title="התחברות למנהלים" className={styles.navLogin} />
                         </Suspense>
                         <button
                             type="button"
@@ -139,8 +139,8 @@ export default function LandingPage() {
                             variants={fadeInUp}
                             transition={{ duration: 0.6, delay: 0.1 }}
                         >
-                            <div>כלי עזר החוסך זמן יקר לסגני מנהלים</div>
-                            <div>ומאפשר שיבוץ מורים מחליפים בקלות.✨</div>
+                            <div>מאפשר שיבוץ מחליפים בקלות.✨</div>
+                            <div>חוסך זמן יקר לסגני מנהלים/רכזי מערכת.</div>
                         </motion.div>
                         <motion.div
                             className={styles.heroBtnContainer}
@@ -208,7 +208,7 @@ export default function LandingPage() {
                                 </motion.li>
                                 <motion.li variants={fadeInUp}>
                                     <strong>אירועים בית ספריים:</strong> שילוב אירועים ופעילויות
-                                    מיוחדות בלוח היומי, לקבלת תמונת מצב מלאה ליום המחר.
+                                    מיוחדות במערכת היומית, לקבלת תמונת מצב מלאה.
                                 </motion.li>
                                 <motion.li variants={fadeInUp}>
                                     <strong>פשטות ונגישות:</strong> מערכת ידידותית וקלה לתפעול,
