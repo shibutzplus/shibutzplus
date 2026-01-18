@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Heebo } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
 import Script from "next/script";
@@ -14,6 +14,12 @@ const geistMono = Geist_Mono({
     subsets: ["latin"],
 });
 
+const heebo = Heebo({
+    variable: "--font-heebo",
+    subsets: ["hebrew", "latin"],
+    weight: ["300", "400", "700", "900"],
+});
+
 export const metadata: Metadata = {
     title: "שיבוץ+",
     description: "ניהול מערכת שעות יומית ושיבוץ מורים בקלות וביעילות, מותאם לסגני מנהלים ולרכזי מערכת בבתי ספר.",
@@ -21,6 +27,10 @@ export const metadata: Metadata = {
     icons: {
         icon: "/favicon.png",
         apple: "/logo192.png",
+    },
+    robots: {
+        index: false,
+        follow: false,
     },
 };
 
@@ -42,7 +52,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="he" dir="rtl">
-            <body className={`${geistSans.variable} ${geistMono.variable}`}>
+            <body className={`${geistSans.variable} ${geistMono.variable} ${heebo.variable}`}>
                 <Providers>{children}</Providers>
                 <Script
                     id="clarity-script"

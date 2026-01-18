@@ -1,23 +1,26 @@
-"use server";
 import "server-only";
 
-import { db, executeQuery } from "@/db";
+import { db, executeQuery, schema } from "@/db";
 import { users } from "@/db/schema/users";
 import { eq } from "drizzle-orm";
 import type { ActionResponse } from "@/models/types/actions";
 import messages from "@/resources/messages";
 import type { UserSchema } from "@/db/schema/users";
+import bcrypt from "bcryptjs";
 
 export interface RegisterGoogleUserInput {
     email: string;
+    name: string;
 }
 
 export interface RegisterGoogleUserResponse extends ActionResponse {
     data?: UserSchema;
+    isNewUser?: boolean;
 }
 
 export async function registerNewGoogleUserAction({
     email,
+    name,
 }: RegisterGoogleUserInput): Promise<RegisterGoogleUserResponse> {
     try {
         const existing = await executeQuery(async () => {
@@ -29,6 +32,36 @@ export async function registerNewGoogleUserAction({
                 success: true,
                 message: messages.auth.register.success,
                 data: existing,
+                isNewUser: false,
+            };
+        }
+
+        // User does not exist, create new user
+        const hashedPassword = await bcrypt.hash("123456", 10);
+        const schoolId = "ebrb8pj1ofvug78ratnbyd4o"; // Hardcoded school ID for "הדגמה"
+
+        const newUser = await executeQuery(async () => {
+            const [createdUser] = await db
+                .insert(schema.users)
+                .values({
+                    name: name,
+                    email: email,
+                    password: hashedPassword,
+                    role: "guest",
+                    gender: "female",
+                    authType: "google",
+                    schoolId: schoolId,
+                })
+                .returning();
+            return createdUser;
+        });
+
+        if (newUser) {
+            return {
+                success: true,
+                message: messages.auth.register.success,
+                data: newUser,
+                isNewUser: true,
             };
         }
 

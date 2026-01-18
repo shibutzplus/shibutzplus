@@ -55,6 +55,11 @@
   transition: background-color 0.2s;
 }
 
+.closeButton:focus {
+  outline: none;
+  background-color: #0000000d;
+}
+
 .closeButton:hover {
   background-color: #0000000d;
 }

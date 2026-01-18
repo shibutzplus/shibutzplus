@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { ActionResponse } from "@/models/types/actions";
 import { SchoolSettingsType } from "@/models/types/settings";
+import { checkIsNotGuest } from "@/utils/authUtils";
 
 export type UpdateSettingsResponse = ActionResponse & {
     data?: SchoolSettingsType;
@@ -17,9 +18,14 @@ export type UpdateSettingsParams = {
 };
 
 export async function updateSettingsAction(
-    params: UpdateSettingsParams
+    params: UpdateSettingsParams,
 ): Promise<UpdateSettingsResponse> {
     try {
+        const guestError = await checkIsNotGuest();
+        if (guestError) {
+            return guestError as ActionResponse;
+        }
+
         const { hoursNum, displaySchedule2Susb, schoolId } = params;
 
         await db
@@ -37,7 +43,7 @@ export async function updateSettingsAction(
             id: 0, // Placeholder, not used practically in new flow
             schoolId,
             hoursNum,
-            displaySchedule2Susb
+            displaySchedule2Susb,
         };
 
         return {

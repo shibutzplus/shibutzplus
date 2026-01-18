@@ -13,12 +13,17 @@ import DailyTable from "@/components/tables/dailyEditTable/DailyTable/DailyTable
 import TeacherTable from "@/components/tables/teacherMaterialTable/TeacherTable/TeacherTable";
 import styles from "./DailySchedule.module.css";
 import { TeacherType } from "@/models/types/teachers";
+import { useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { usePopup } from "@/context/PopupContext";
+import MsgPopup from "@/components/popups/MsgPopup/MsgPopup";
 
 const DailyScheduleContent: React.FC = () => {
     const { isLoading, selectedDate, mainDailyTable, isPreviewMode, togglePreviewMode } =
         useDailyTableContext();
     const { settings } = useMainContext();
     const { fetchTeacherScheduleDate } = useTeacherTableContext();
+    const { openPopup } = usePopup();
 
     const [isPanelOpen, setIsPanelOpen] = useState<boolean>(false);
     const [teacher, setTeacher] = useState<TeacherType>();
@@ -36,6 +41,41 @@ const DailyScheduleContent: React.FC = () => {
     const handleClosePanel = () => {
         setIsPanelOpen(false);
     };
+
+    const { data: session } = useSession();
+
+    useEffect(() => {
+        if (session?.user?.createdAt) {
+            const createdAt = new Date(session.user.createdAt).getTime();
+            const now = Date.now();
+            const isNewUser = (now - createdAt) < 60000;
+
+            if (isNewUser) {
+                const hasShown = sessionStorage.getItem("welcomeToastShown");
+                if (!hasShown) {
+                    openPopup(
+                        "msgPopup",
+                        "S",
+                        <MsgPopup
+                            displayIcon={false}
+                            message={
+                                <div style={{ textAlign: "right" }}>
+                                    <p style={{ fontWeight: "bold", marginBottom: "20px", fontSize: "24px" }}>ברוכים הבאים לשיבוץ+</p>
+                                    <p style={{ marginBottom: "10px" }}>
+                                        אתם נמצאים במצב &quot;התנסות&quot; בבית ספר לדוגמה.
+                                    </p>
+                                    <p style={{ marginBottom: "10px" }}>
+                                        מוזמנים להתנסות בשיבוץ המערכת היומית.
+                                    </p>
+                                </div>
+                            }
+                        />
+                    );
+                    sessionStorage.setItem("welcomeToastShown", "true");
+                }
+            }
+        }
+    }, [session, openPopup]);
 
     if (isLoading)
         return (

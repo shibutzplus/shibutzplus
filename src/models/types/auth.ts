@@ -43,6 +43,7 @@ declare module "next-auth" {
             schoolId?: string;
             status?: string;
             maxAge?: number;
+            createdAt?: Date;
         };
     }
 
@@ -53,5 +54,6 @@ declare module "next-auth" {
         schoolId?: string;
         status?: string;
         maxAge?: number;
+        createdAt?: Date;
     }
 }

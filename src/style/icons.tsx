@@ -14,6 +14,7 @@ import {
     IoArrowBack,
     IoArrowForward,
     IoStatsChart,
+    IoInformationCircleOutline,
 } from "react-icons/io5";
 import { IoMdRefresh } from "react-icons/io";
 import { RiEdit2Fill, RiDeleteBin6Line } from "react-icons/ri";
@@ -26,6 +27,7 @@ import { GoHistory } from "react-icons/go";
 import { LuEye } from "react-icons/lu";
 import { FiCheckCircle } from "react-icons/fi";
 import { GrSchedule } from "react-icons/gr";
+import { FcGoogle } from "react-icons/fc";
 
 const Icons = {
     addTeacher: MdPersonAdd,
@@ -68,6 +70,8 @@ const Icons = {
     tvSolid: PiMonitorFill,
     table: BsTable,
     stats: IoStatsChart,
+    google: FcGoogle,
+    info: IoInformationCircleOutline,
 };
 
 export default Icons;
