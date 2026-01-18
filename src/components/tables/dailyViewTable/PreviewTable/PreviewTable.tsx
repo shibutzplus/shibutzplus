@@ -6,7 +6,7 @@ import styles from "./PreviewTable.module.css";
 import { sortDailyColumnIdsByPosition } from "@/utils/sort";
 import { calculateVisibleRowsForDaily } from "@/utils/tableUtils";
 import { DailySchedule, ColumnType, ColumnTypeValues } from "@/models/types/dailySchedule";
-import { AppType } from "@/models/types";
+import { AppType, ScreenType } from "@/models/types";
 import { TeacherType } from "@/models/types/teachers";
 import PreviewTeacherHeader from "../PreviewTeacherHeader/PreviewTeacherHeader";
 import PreviewEventHeader from "../PreviewEventHeader/PreviewEventHeader";
@@ -21,8 +21,9 @@ type PreviewTableProps = {
     selectedDate: string;
     onTeacherClick?: (teacher: TeacherType) => Promise<void>;
     appType?: AppType;
-    EmptyTable?: React.FC<{ date?: string }>;
+    EmptyTable?: React.FC<{ date?: string; screenType?: ScreenType }>;
     hoursNum?: number;
+    screenType?: ScreenType;
 };
 
 const PreviewTable: React.FC<PreviewTableProps> = ({
@@ -32,6 +33,7 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
     EmptyTable,
     appType = "private",
     hoursNum,
+    screenType,
 }) => {
     const schedule = mainDailyTable[selectedDate];
     const tableColumns = schedule ? Object.keys(schedule) : [];
@@ -70,7 +72,7 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
     const isEmpty = !schedule || Object.keys(schedule).length === 0;
 
     if (isEmpty && EmptyTable) {
-        return <EmptyTable date={selectedDate} />;
+        return <EmptyTable date={selectedDate} screenType={screenType} />;
     }
 
     if (isEmpty) {

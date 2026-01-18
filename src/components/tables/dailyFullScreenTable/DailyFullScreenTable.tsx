@@ -7,7 +7,7 @@ import { sortDailyColumnIdsByPosition } from "@/utils/sort";
 import { getCellDisplayData } from "@/utils/dailyCellDisplay";
 import { COLOR_BY_TYPE } from "@/models/constant/daily";
 import { calculateVisibleRowsForDaily } from "@/utils/tableUtils";
-import { AppType } from "@/models/types";
+import { AppType, ScreenType } from "@/models/types";
 import type { TeacherType } from "@/models/types/teachers";
 import { successToast } from "@/lib/toast";
 
@@ -17,9 +17,10 @@ type DailyFullScreenTableProps = {
     mainDailyTable: DailySchedule;
     selectedDate: string;
     hoursNum?: number;
-    EmptyTable?: React.FC<{ date?: string }>;
+    EmptyTable?: React.FC<{ date?: string; screenType?: ScreenType }>;
     appType?: AppType;
     onTeacherClick?: (teacher: TeacherType) => void;
+    screenType?: ScreenType;
 };
 
 const DailyFullScreenTable: React.FC<DailyFullScreenTableProps> = ({
@@ -29,6 +30,7 @@ const DailyFullScreenTable: React.FC<DailyFullScreenTableProps> = ({
     EmptyTable,
     appType = "public",
     onTeacherClick,
+    screenType,
 }) => {
     const schedule = mainDailyTable[selectedDate];
     const tableColumns = React.useMemo(() => schedule ? Object.keys(schedule) : [], [schedule]);
@@ -108,7 +110,7 @@ const DailyFullScreenTable: React.FC<DailyFullScreenTableProps> = ({
 
     // Handle empty state
     if ((!schedule || Object.keys(schedule).length === 0) && EmptyTable) {
-        return <EmptyTable date={selectedDate} />;
+        return <EmptyTable date={selectedDate} screenType={screenType} />;
     }
 
     // Determine Layout Classes based on column count
