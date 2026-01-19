@@ -21,16 +21,48 @@ const heebo = Heebo({
 });
 
 export const metadata: Metadata = {
-    title: "שיבוץ+",
+    title: {
+        default: "שיבוץ+ | ניהול מערכת שעות חכם",
+        template: "%s | שיבוץ+",
+    },
     description: "ניהול מערכת שעות יומית ושיבוץ מורים בקלות וביעילות, מותאם לסגני מנהלים ולרכזי מערכת בבתי ספר.",
     manifest: "/manifest.json",
     icons: {
         icon: "/favicon.png",
         apple: "/logo192.png",
     },
+    openGraph: {
+        title: "שיבוץ+ | ניהול מערכת שעות חכם",
+        description: "המערכת המתקדמת ביותר לניהול שיבוץ מורים ומערכת שעות יומית בבתי ספר.",
+        url: "https://shibutzplus.com",
+        siteName: "שיבוץ+",
+        images: [
+            {
+                url: "/og_image.png",
+                width: 1200,
+                height: 630,
+                alt: "שיבוץ+ - ניהול מערכת שעות יומית",
+            },
+        ],
+        locale: "he_IL",
+        type: "website",
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "שיבוץ+ | ניהול מערכת שעות חכם",
+        description: "ניהול מערכת שעות יומית ושיבוץ מורים בקלות וביעילות.",
+        images: ["/og_image.png"],
+    },
     robots: {
-        index: false,
-        follow: false,
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+            "max-video-preview": -1,
+            "max-image-preview": "large",
+            "max-snippet": -1,
+        },
     },
 };
 
