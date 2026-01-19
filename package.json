@@ -16,6 +16,8 @@
     },
     "dependencies": {
         "@auth/mongodb-adapter": "^3.9.1",
+        "@aws-sdk/client-s3": "^3.971.0",
+        "@aws-sdk/s3-request-presigner": "^3.971.0",
         "@neondatabase/serverless": "^1.0.1",
         "@paralleldrive/cuid2": "^2.2.2",
         "@react-pdf/renderer": "^4.3.2",

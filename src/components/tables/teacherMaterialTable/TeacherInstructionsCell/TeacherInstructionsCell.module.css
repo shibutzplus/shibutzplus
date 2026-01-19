@@ -9,6 +9,7 @@
   background-color: var(--tab-color);
   border-radius: var(--border-radius-cell);
   padding: 10px 12px;
+  padding-left: 2px;
   box-sizing: border-box;
   overflow-y: auto;
 }

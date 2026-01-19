@@ -72,11 +72,13 @@ const TeacherDetailsCell: React.FC<TeacherDetailsCellProps> = ({ row, teacher })
 
     return (
         <div className={`${row ? styles.cellContent : styles.emptyCell}`}>
-            <div className={`${styles.classAndSubject} ${isActivity ? styles.activityText : ""} ${hasSub ? styles.hasSub : ""}`}>
-                {displayText}
-            </div>
-            <div className={`${styles.subTeacher} ${isDouble ? styles.doubleRow : ""}`}>
-                {displayReplaceTeacher()}
+            <div className={styles.combinedContent}>
+                <span className={`${styles.classAndSubject} ${isActivity ? styles.activityText : ""} ${hasSub ? styles.hasSub : ""}`}>
+                    {displayText}
+                </span>
+                <span className={`${styles.subTeacher} ${isDouble ? styles.doubleRow : ""}`}>
+                    {displayReplaceTeacher()}
+                </span>
             </div>
         </div >
     );

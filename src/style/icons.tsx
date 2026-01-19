@@ -19,15 +19,16 @@ import {
 import { IoMdRefresh } from "react-icons/io";
 import { RiEdit2Fill, RiDeleteBin6Line } from "react-icons/ri";
 import { BsMegaphoneFill, BsCalendar4Event, BsThreeDotsVertical, BsFiletypePdf, BsTable } from "react-icons/bs";
-import { MdPersonAdd, MdPerson, MdSwapHoriz, MdOpenInNew, MdFileUpload } from "react-icons/md";
+import { MdPersonAdd, MdPerson, MdSwapHoriz, MdOpenInNew } from "react-icons/md";
 import { FaPlus } from "react-icons/fa6";
-import { FaSave, FaShareAlt, FaQuestion } from "react-icons/fa";
+import { FaSave, FaShareAlt, FaQuestion, FaLink } from "react-icons/fa";
 import { PiChairLight, PiMonitor, PiMonitorFill } from "react-icons/pi";
 import { GoHistory } from "react-icons/go";
 import { LuEye } from "react-icons/lu";
 import { FiCheckCircle } from "react-icons/fi";
-import { GrSchedule } from "react-icons/gr";
+import { GrSchedule, GrDocumentUpload } from "react-icons/gr";
 import { FcGoogle } from "react-icons/fc";
+import { AiOutlineHourglass } from "react-icons/ai";
 
 const Icons = {
     addTeacher: MdPersonAdd,
@@ -61,7 +62,7 @@ const Icons = {
     success: FiCheckCircle,
     users: IoPeopleOutline,
     settings: IoSettingsOutline,
-    upload: MdFileUpload,
+    upload: GrDocumentUpload,
     groupSolid: IoPeopleSharp,
     group: IoPeopleOutline,
     menuVertical: BsThreeDotsVertical,
@@ -72,6 +73,8 @@ const Icons = {
     stats: IoStatsChart,
     google: FcGoogle,
     info: IoInformationCircleOutline,
+    link: FaLink,
+    hourglass: AiOutlineHourglass,
 };
 
 export default Icons;

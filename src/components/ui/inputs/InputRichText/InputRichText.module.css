@@ -3,22 +3,62 @@
     height: 100%;
     box-sizing: border-box;
     position: relative;
+    display: flex;
+    flex-direction: row;
+    border: 1px solid transparent;
+}
+
+.editorContainer {
+    flex-grow: 1;
+    position: relative;
+    height: 100%;
     text-align: right;
+    min-width: 0;
+}
+
+.toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 34px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.toolbarBtn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    padding-left: 0;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #888;
+    transition: all 0.2s;
+    font-size: 14px;
+}
+
+.toolbarBtn:hover {
+    color: #000;
+}
+
+.active {
+    color: #555;
 }
 
 .placeholder {
     position: absolute;
     top: 0;
+    right: 0;
     color: var(--placeholder-color);
     pointer-events: none;
     font-size: 16px;
     line-height: 22px;
+    padding: 0;
     z-index: 1;
     white-space: pre-line;
-}
-
-.wrapper div {
-    height: 100%;
 }
 
 .editor {
@@ -28,35 +68,30 @@
     direction: rtl;
     width: 100%;
     height: 100%;
-}
-
-.editor p.is-editor-empty::before {
-    content: attr(data-placeholder);
-    color: var(--placeholder-color);
-    pointer-events: none;
-    float: right;
-    height: 0;
-}
-
-.editor a {
-    color: var(--link-color);
-    text-decoration: underline;
-}
-
-.editor:focus {
     outline: none;
 }
 
-.placeholder {
-    color: var(--placeholder-color);
+/* Ensure the editor content inside EditorContent component fills height */
+.editorContainer>div {
+    height: 100%;
 }
 
+.editor a {
+    color: var(--primary-color, blue);
+    text-decoration: underline;
+    cursor: pointer;
+}
 
-@keyframes pulseColor {
-    0%,
-    100% {
-        color: black;
+.spinning {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
     }
-    50% {
-        color: var(--placeholder-color);
-    }}
+
+    to {
+        transform: rotate(360deg);
+    }
+}

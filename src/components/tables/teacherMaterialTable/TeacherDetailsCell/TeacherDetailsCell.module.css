@@ -4,7 +4,7 @@
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  gap: 10px;
+  gap: 0;
   width: 100%;
   height: 40px;
   background-color: var(--tab-color);
@@ -22,6 +22,11 @@
   border-radius: var(--border-radius-cell);
 }
 
+.combinedContent {
+  display: inline;
+  width: 100%;
+}
+
 .classAndSubject {
   max-width: calc(var(--table-teacher-details-col-width) - 30px);
   box-sizing: border-box;
@@ -31,14 +36,12 @@
 }
 
 .hasSub::after {
-  content: ",";
+  content: ", ";
 }
 
 .subTeacher {
   font-weight: 600;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  display: inline;
 }
 
 .doubleRow {
@@ -73,8 +76,21 @@
     height: var(--table-teacher-cell-height);
   }
 
+  .combinedContent {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+
   .hasSub::after {
     content: none;
+  }
+
+  .subTeacher {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
   }
 
   .doubleRow {
@@ -82,8 +98,6 @@
     white-space: normal;
   }
 }
-
-
 
 .activityText {
   color: var(--disabled-text-color);
