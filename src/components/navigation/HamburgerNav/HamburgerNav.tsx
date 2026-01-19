@@ -484,7 +484,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                         <section className={styles.menuSection}>
                             <div className={styles.groupDivider} />
                             <Link
-                                href={isPrivate ? "/faqManager" : "/faqTeachers"}
+                                href={isPrivate ? routePath.faqManager.p : routePath.faqTeachers.p}
                                 className={styles.navLink}
                                 onClick={onClose}
                                 aria-label="שאלות נפוצות"

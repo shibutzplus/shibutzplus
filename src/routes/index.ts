@@ -25,8 +25,8 @@ const router: Record<string, IRoute> = {
     teacherSignIn: { id: "teacherSignIn", p: "/teacher-sign-in", private: false, title: "כניסה למורים", },
     teacherMaterialPortal: { id: "teacherMaterialPortal", p: "/teacher-material", private: false, title: "המערכת שלי", },
     scheduleViewPortal: { id: "scheduleViewPortal", p: "/schedule-view", private: false, title: "מערכת יומית", },
-    faqManager: { id: "faqManager", p: "/faqManager", private: true, title: "שאלות נפוצות" },
-    faqTeachers: { id: "faqTeachers", p: "/faqTeachers", private: true, title: "שאלות נפוצות" },
+    faqManager: { id: "faqManager", p: "/faq-manager", private: true, title: "שאלות נפוצות" },
+    faqTeachers: { id: "faqTeachers", p: "/faq-teachers", private: true, title: "שאלות נפוצות" },
     adminSignIn: { id: "adminSignIn", p: "/admin/sign-in", private: false, title: "כניסת מנהל" },
     fullScheduleView: { id: "fullScheduleView", p: "/schedule-full", private: false, title: "מערכת במסך מלא", },
 
