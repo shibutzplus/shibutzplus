@@ -28,6 +28,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
         updateTeacherCell,
         clearTeacherCell,
         teacherClassMap,
+        systemRecommendations, // Get from context
     } = useDailyTableContext();
 
     const hour = cell?.hour;
@@ -57,6 +58,20 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
         [classes],
     );
 
+    // Calculate recommended IDs
+    const recommendedTeacherIds = useMemo(() => {
+        if (!hour || !headerData?.headerTeacher?.name || !systemRecommendations) return [];
+        const hourStr = hour.toString();
+        const teacherName = headerData.headerTeacher.name;
+
+        const recommendedNames = systemRecommendations[hourStr]?.[teacherName] || [];
+        if (recommendedNames.length === 0) return [];
+
+        return recommendedNames
+            .map(name => teachers?.find(t => t.name === name)?.id)
+            .filter((id): id is string => !!id);
+    }, [hour, headerData?.headerTeacher?.name, systemRecommendations, teachers]);
+
     const sortedTeacherOptions = useMemo(
         () =>
             sortDailyTeachers(
@@ -69,6 +84,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
                 classNameById,
                 headerData?.headerTeacher?.id,
                 classActivityById,
+                recommendedTeacherIds,
             ),
         [
             teachers,
@@ -84,6 +100,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
             subTeacherData,
             teacherText,
             classActivityById,
+            recommendedTeacherIds,
         ],
     );
 

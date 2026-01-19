@@ -28,6 +28,8 @@ const COLUMN_PRIORITY: Record<ColumnType, number> = {
     [ColumnTypeValues.event]: 2,
 };
 
+import { getSystemRecommendationsAction } from "@/app/actions/GET/getSystemRecommendationsAction";
+
 interface DailyTableContextType {
     mainDailyTable: DailySchedule;
     mapAvailableTeachers: AvailableTeachers;
@@ -35,6 +37,7 @@ interface DailyTableContextType {
     isLoading: boolean;
     isPreviewMode: boolean;
     selectedDate: string;
+    systemRecommendations: Record<string, Record<string, string[]>>; // New State
     addNewEmptyColumn: (colType: ColumnType) => void;
     deleteColumn: (columnId: string) => Promise<boolean>;
     populateTeacherColumn: (
@@ -124,6 +127,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [mapAvailableTeachers, setMapAvailableTeachers] = useState<AvailableTeachers>({});
     const [teacherClassMap, setTeacherClassMap] = useState<TeacherClassMap>({});
+    const [systemRecommendations, setSystemRecommendations] = useState<Record<string, Record<string, string[]>>>({});
 
     // Preview Mode State
     const [isPreviewMode, setIsPreviewMode] = useState(false);
@@ -191,6 +195,21 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
             if (!school?.id || !selectedDate) return;
             try {
                 setIsLoading(true);
+
+                // Fetch Recommendations
+                try {
+                    const day = new Date(selectedDate).getDay() + 1;
+                    const recResponse = await getSystemRecommendationsAction(school.id, day);
+                    if (recResponse.success && recResponse.data) {
+                        setSystemRecommendations(recResponse.data);
+                    } else {
+                        setSystemRecommendations({});
+                    }
+                } catch (recError) {
+                    console.error("Error fetching recommendations:", recError);
+                    setSystemRecommendations({});
+                }
+
                 const populateFromStorage = populateTableFromStorage();
                 if (populateFromStorage) return;
                 const targetDate = selectedDate || getTomorrowOption();
@@ -467,6 +486,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 isPreviewMode,
                 mapAvailableTeachers,
                 teacherClassMap,
+                systemRecommendations,
                 addNewEmptyColumn,
                 deleteColumn,
                 daysSelectOptions,
