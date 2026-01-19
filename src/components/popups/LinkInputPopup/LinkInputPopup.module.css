@@ -1,0 +1,128 @@
+.popupContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    gap: 20px;
+}
+
+.title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.inputContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: right;
+}
+
+.label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+    text-align: right;
+}
+
+.input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 15px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    direction: ltr;
+    text-align: left;
+}
+
+.input:focus {
+    border-color: #000;
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+.input::placeholder {
+    color: #aaa;
+}
+
+.input.error {
+    border-color: #d32f2f;
+}
+
+.input.error:focus {
+    box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.1);
+}
+
+.errorMessage {
+    color: #d32f2f;
+    font-size: 12px;
+    margin-top: 4px;
+    text-align: right;
+}
+
+.buttonContainer {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.confirmButton,
+.cancelButton {
+    flex: 1;
+    border-radius: 6px;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.confirmButton {
+    background-color: black;
+    color: white;
+}
+
+.confirmButton:hover {
+    background-color: #333;
+}
+
+.confirmButton:active {
+    transform: scale(0.98);
+}
+
+.confirmButtonDisabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.confirmButtonDisabled:hover {
+    background-color: #ccc;
+}
+
+.confirmButtonDisabled:active {
+    transform: none;
+}
+
+.cancelButton {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.cancelButton:hover {
+    background-color: #e0e0e0;
+}
+
+.cancelButton:active {
+    transform: scale(0.98);
+}

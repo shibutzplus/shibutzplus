@@ -11,6 +11,7 @@ import styles from "./InputRichText.module.css";
 import { getPresignedUrl } from "@/app/actions/upload";
 import MsgPopup from "@/components/popups/MsgPopup/MsgPopup";
 import PopupModal from "@/components/popups/PopupModal/PopupModal";
+import LinkInputPopup from "@/components/popups/LinkInputPopup/LinkInputPopup";
 import { MAX_FILE_SIZE, UPLOAD_ERROR_MESSAGES } from "@/models/constant/upload";
 
 type InputRichTextProps = {
@@ -42,6 +43,7 @@ const InputRichText: React.FC<InputRichTextProps> = ({
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [alertConfig, setAlertConfig] = useState({ isOpen: false, message: "" });
     const [isUploading, setIsUploading] = useState(false);
+    const [linkDialogConfig, setLinkDialogConfig] = useState({ isOpen: false, initialUrl: "" });
 
     const closeAlert = () => setAlertConfig({ isOpen: false, message: "" });
 
@@ -128,11 +130,17 @@ const InputRichText: React.FC<InputRichTextProps> = ({
         }
     };
 
-    const setLink = () => {
+    const openLinkDialog = () => {
         if (!editor) return;
-        const previousUrl = editor.getAttributes('link').href;
-        const url = window.prompt('URL', previousUrl);
-        if (url === null) return;
+        const previousUrl = editor.getAttributes('link').href || "";
+        setLinkDialogConfig({ isOpen: true, initialUrl: previousUrl });
+    };
+
+    const handleLinkConfirm = (url: string) => {
+        if (!editor) return;
+
+        setLinkDialogConfig({ isOpen: false, initialUrl: "" });
+
         if (url === '') {
             editor.chain().focus().extendMarkRange('link').unsetLink().run();
             return;
@@ -149,6 +157,10 @@ const InputRichText: React.FC<InputRichTextProps> = ({
         }
 
         editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+    };
+
+    const handleLinkCancel = () => {
+        setLinkDialogConfig({ isOpen: false, initialUrl: "" });
     };
 
     const addFile = () => {
@@ -238,12 +250,12 @@ const InputRichText: React.FC<InputRichTextProps> = ({
                 {!readOnly && (
                     <div className={styles.toolbar}>
                         <button
-                            onClick={setLink}
+                            onClick={openLinkDialog}
                             onMouseDown={(e) => e.preventDefault()}
                             className={`${styles.toolbarBtn} ${editor.isActive('link') ? styles.active : ''}`}
                             type="button"
                         >
-                            <Icons.link />
+                            <Icons.link size={16} />
                         </button>
                         <button
                             onClick={addFile}
@@ -273,6 +285,18 @@ const InputRichText: React.FC<InputRichTextProps> = ({
                     displayIcon={false}
                     onOk={closeAlert}
                     preventGlobalClose={true}
+                />
+            </PopupModal>
+
+            <PopupModal
+                isOpen={linkDialogConfig.isOpen}
+                onClose={handleLinkCancel}
+                size="S"
+            >
+                <LinkInputPopup
+                    initialUrl={linkDialogConfig.initialUrl}
+                    onConfirm={handleLinkConfirm}
+                    onCancel={handleLinkCancel}
                 />
             </PopupModal>
         </>
