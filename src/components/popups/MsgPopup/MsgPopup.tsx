@@ -10,6 +10,7 @@ interface MsgPopupProps {
     onOk?: () => void;
     okText?: string;
     displayIcon?: boolean;
+    preventGlobalClose?: boolean;
 }
 
 const MsgPopup: React.FC<MsgPopupProps> = ({
@@ -17,12 +18,15 @@ const MsgPopup: React.FC<MsgPopupProps> = ({
     onOk,
     okText = "אישור",
     displayIcon = true,
+    preventGlobalClose = false,
 }) => {
     const { closePopup } = usePopup();
 
     const handleOk = () => {
         if (onOk) onOk();
-        closePopup();
+        if (!preventGlobalClose) {
+            closePopup();
+        }
     };
 
     const IconToRender = Icons.info;

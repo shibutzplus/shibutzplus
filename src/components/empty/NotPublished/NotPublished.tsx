@@ -18,7 +18,7 @@ const NotPublished: React.FC<NotPublishedProps> = ({ date, text, screenType }) =
         <section className={styles.emptyTable}>
             {dateTitle && <h3 className={styles.dateText}>{dateTitle}</h3>}
             <h3 className={styles.text}>
-                {screenType === "history" ? "אין נתוני היסטוריה ביום שנבחר" : text || "אין שינויים במערכת"}
+                {screenType === "history" ? "אין נתוני היסטוריה ליום שנבחר" : text || "אין שינויים במערכת"}
             </h3>
         </section>
     );
