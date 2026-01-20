@@ -1,4 +1,27 @@
 User-agent: *
 Allow: /
 
+Disallow: /api/
+Disallow: /sign-up
+Disallow: /classes
+Disallow: /groups
+Disallow: /teachers
+Disallow: /subjects
+Disallow: /substitute
+Disallow: /annual-class
+Disallow: /annual-teacher
+Disallow: /annual-view
+Disallow: /daily-schedule
+Disallow: /profile
+Disallow: /history
+Disallow: /statistics
+Disallow: /faq-manager
+Disallow: /admin/
+Disallow: /teacher-sign-in
+Disallow: /schedule-full
+Disallow: /schedule-view
+Disallow: /teacher-material
+Disallow: /faq-teachers
+Disallow: /school-select
+
 Sitemap: https://shibutzplus.com/sitemap.xml
