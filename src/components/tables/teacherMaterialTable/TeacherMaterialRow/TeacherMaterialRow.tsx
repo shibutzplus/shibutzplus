@@ -1,18 +1,18 @@
 import React from "react";
-import styles from "./TeacherRow.module.css";
+import styles from "./TeacherMaterialRow.module.css";
 import TeacherDetailsCell from "../TeacherDetailsCell/TeacherDetailsCell";
 import TeacherInstructionsCell from "../TeacherInstructionsCell/TeacherInstructionsCell";
 import { TeacherScheduleType } from "@/models/types/portalSchedule";
 import { TeacherType } from "@/models/types/teachers";
 
-type TeacherRowProps = {
+type TeacherMaterialRowProps = {
     hour: number;
     row?: TeacherScheduleType;
     teacher?: TeacherType;
     selectedDate: string;
 };
 
-const TeacherRow: React.FC<TeacherRowProps> = ({ hour, row, teacher, selectedDate }) => {
+const TeacherMaterialRow: React.FC<TeacherMaterialRowProps> = ({ hour, row, teacher, selectedDate }) => {
     return (
         <tr className={styles.teacherRow}>
             <td className={styles.emptyCell}></td>
@@ -35,4 +35,4 @@ const TeacherRow: React.FC<TeacherRowProps> = ({ hour, row, teacher, selectedDat
     );
 };
 
-export default TeacherRow;
+export default TeacherMaterialRow;
