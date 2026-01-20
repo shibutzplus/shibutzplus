@@ -21,6 +21,7 @@ import { DAILY_TEACHER_COL_DATA_CHANGED, DAILY_SCHOOL_DATA_CHANGED } from "@/mod
 import { mapAnnualTeachers, populateDailyScheduleTable, mapAnnualTeacherClasses, } from "@/services/daily/populate";
 import { createNewEmptyColumn } from "@/services/daily/setEmpty";
 import { sortDailyColumnIdsByPosition } from "@/utils/sort";
+import { validateMaxColumns } from "@/utils/security";
 
 const COLUMN_PRIORITY: Record<ColumnType, number> = {
     [ColumnTypeValues.missingTeacher]: 0,
@@ -335,16 +336,18 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     };
 
     const addNewEmptyColumn = (type: ColumnType) => {
-        const newColumnId = generateId();
-
         const schedule = mainDailyTable[selectedDate] || {};
         const existingColumns = Object.keys(schedule);
+
+        if (!validateMaxColumns(existingColumns.length)) return;
+
+        const newColumnId = generateId();
         const sortedColumns = sortDailyColumnIdsByPosition(existingColumns, schedule);
 
         const newPriority = COLUMN_PRIORITY[type];
 
         // Logic: Insert AFTER the last column that has equal or higher priority (lower priority value).
-        // Priority: Red(0) < Green(1) < Blue(2)
+        // Priority:Red(0) < Green(1) < Blue(2)
         let insertAfterIndex = -1;
 
         for (let i = 0; i < sortedColumns.length; i++) {
