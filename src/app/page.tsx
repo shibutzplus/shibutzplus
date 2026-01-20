@@ -2,8 +2,17 @@ import { Metadata } from "next";
 import LandingPage from "@/components/pages/LandingPage/LandingPage";
 
 export const metadata: Metadata = {
-    title: "שיבוץ+ | הדרך הקלה לניהול מערכת שעות",
-    description: "המערכת החכמה לשיבוץ מורים ומילוי מקום בבתי ספר. חסכו זמן יקר בניהול השינויים היומיים במערכת.",
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+            "max-video-preview": -1,
+            "max-image-preview": "large",
+            "max-snippet": -1,
+        },
+    },
 };
 
 export default function Page() {

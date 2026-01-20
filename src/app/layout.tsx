@@ -21,8 +21,9 @@ const heebo = Heebo({
 });
 
 export const metadata: Metadata = {
+    metadataBase: new URL("https://shibutzplus.com"),
     title: {
-        default: "שיבוץ+ | ניהול מערכת שעות חכם",
+        default: "שיבוץ+ | ניהול מערכת שעות יומית",
         template: "%s | שיבוץ+",
     },
     description: "ניהול מערכת שעות יומית ושיבוץ מורים בקלות וביעילות, מותאם לסגני מנהלים ולרכזי מערכת בבתי ספר.",
@@ -32,8 +33,8 @@ export const metadata: Metadata = {
         apple: "/logo192.png",
     },
     openGraph: {
-        title: "שיבוץ+ | ניהול מערכת שעות חכם",
-        description: "המערכת המתקדמת ביותר לניהול שיבוץ מורים ומערכת שעות יומית בבתי ספר.",
+        title: "שיבוץ+ | ניהול מערכת שעות יומית",
+        description: "ניהול מערכת שעות יומית ושיבוץ מורים בקלות וביעילות, מותאם לסגני מנהלים ולרכזי מערכת בבתי ספר.",
         url: "https://shibutzplus.com",
         siteName: "שיבוץ+",
         images: [
@@ -41,7 +42,7 @@ export const metadata: Metadata = {
                 url: "/og_image.png",
                 width: 1200,
                 height: 630,
-                alt: "שיבוץ+ - ניהול מערכת שעות יומית",
+                alt: "שיבוץ+ | ניהול מערכת שעות יומית",
             },
         ],
         locale: "he_IL",
@@ -49,20 +50,13 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: "summary_large_image",
-        title: "שיבוץ+ | ניהול מערכת שעות חכם",
-        description: "ניהול מערכת שעות יומית ושיבוץ מורים בקלות וביעילות.",
+        title: "שיבוץ+ | ניהול מערכת שעות יומית",
+        description: "ניהול מערכת שעות יומית ושיבוץ מורים בקלות וביעילות, מותאם לסגני מנהלים ולרכזי מערכת בבתי ספר.",
         images: ["/og_image.png"],
     },
     robots: {
-        index: true,
-        follow: true,
-        googleBot: {
-            index: true,
-            follow: true,
-            "max-video-preview": -1,
-            "max-image-preview": "large",
-            "max-snippet": -1,
-        },
+        index: false,
+        follow: false,
     },
 };
 
