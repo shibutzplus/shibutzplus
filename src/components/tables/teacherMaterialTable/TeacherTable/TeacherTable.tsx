@@ -2,7 +2,7 @@
 
 import React from "react";
 import { TableRows } from "@/models/constant/table";
-import TeacherRow from "../TeacherRow/TeacherRow";
+import TeacherMaterialRow from "../TeacherMaterialRow/TeacherMaterialRow";
 import styles from "./TeacherTable.module.css";
 import { useTeacherTableContext } from "@/context/TeacherTableContext";
 import { calculateVisibleRowsForTeacher } from "@/utils/tableUtils";
@@ -66,7 +66,7 @@ const TeacherTable: React.FC<TeacherTableProps> = ({
                     {Array.from({ length: rowsCount }, (_, i) => i + 1).map((hour) => {
                         const row = dayTable?.[String(hour)];
                         return (
-                            <TeacherRow
+                            <TeacherMaterialRow
                                 key={hour}
                                 hour={hour}
                                 row={row}

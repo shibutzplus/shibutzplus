@@ -254,6 +254,7 @@ const InputRichText: React.FC<InputRichTextProps> = ({
                             onMouseDown={(e) => e.preventDefault()}
                             className={`${styles.toolbarBtn} ${editor.isActive('link') ? styles.active : ''}`}
                             type="button"
+                            title="קישור"
                         >
                             <Icons.link size={16} />
                         </button>
@@ -262,6 +263,7 @@ const InputRichText: React.FC<InputRichTextProps> = ({
                             onMouseDown={(e) => e.preventDefault()}
                             className={styles.toolbarBtn}
                             type="button"
+                            title="צירוף קובץ"
                             disabled={isUploading}
                             style={{ opacity: isUploading ? 0.6 : 1, cursor: isUploading ? 'not-allowed' : 'pointer' }}
                         >
