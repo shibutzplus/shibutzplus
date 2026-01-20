@@ -1,24 +1,24 @@
-import "@/components/faq/faq.css";
+import LegalContent from "@/components/legal/LegalContent/LegalContent";
 import termsData from "@/resources/terms.json";
 
 export const metadata = {
     title: "תנאי שימוש | שיבוץ+",
+    description: "תנאי השימוש והתקנון של פלטפורמת שיבוץ+. מידע על זכויות, חובות ותנאי השירות.",
+    alternates: {
+        canonical: "https://shibutzplus.com/terms",
+    },
+    robots: {
+        index: true,
+        follow: true,
+    },
 };
 
 export default function TermsPage() {
     return (
-        <div className="faq-container">
-            <h1>{termsData.title}</h1>
-            <div className="answer">
-                <p>{termsData.intro}</p>
-                {termsData.sections.map((section, index) => (
-                    <p key={index}>
-                        <strong>{section.title}</strong>
-                        <br />
-                        {section.content}
-                    </p>
-                ))}
-            </div>
-        </div>
+        <LegalContent 
+            title={termsData.title}
+            intro={termsData.intro}
+            sections={termsData.sections}
+        />
     );
 }
