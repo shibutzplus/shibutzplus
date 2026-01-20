@@ -152,7 +152,7 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
                 name: (
                     <div style={{ display: "flex", flexDirection: "column", lineHeight: "1.2" }}>
                         <span>מערכת בית ספרית</span>
-                        <span style={{ fontSize: "0.85em" }}>(מסך מלא)</span>
+                        <span style={{ fontSize: "0.85em", paddingTop: "5px" }}>(מסך מלא)</span>
                     </div>
                 ),
                 p: routePath.fullScheduleView.p,
