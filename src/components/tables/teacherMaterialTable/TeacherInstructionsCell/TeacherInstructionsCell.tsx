@@ -36,6 +36,8 @@ const TeacherInstructionsCell: React.FC<TeacherInstructionsCellProps> = ({
         saveInstractions(value, row, selectedDate);
     };
 
+    const isSubstitute = !!(row?.originalTeacher && teacher?.id !== row.originalTeacher?.id);
+
     return (
         <div className={`${row ? styles.cellContent : styles.emptyCell}`}>
             {row ? (
@@ -46,6 +48,7 @@ const TeacherInstructionsCell: React.FC<TeacherInstructionsCellProps> = ({
                     placeholder={getInstructionPlaceholder(row, teacher)}
                     minHeight={60}
                     readOnly={isHistoryMode}
+                    hideButtons={isSubstitute}
                 />
             ) : null}
         </div>
