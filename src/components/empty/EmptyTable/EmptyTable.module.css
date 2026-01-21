@@ -1,4 +1,4 @@
-/* > 600px */
+/* > 660px */
 .emptyTable {
     position: fixed;
     top: 30vh;
@@ -26,13 +26,30 @@
     font-weight: 600;
 }
 
+.desktopText {
+    display: block;
+}
+
+.mobileText {
+    display: none;
+}
+
 /* < 600px */
-@media (max-width: 600px) {
+@media (max-width: 660px) {
     .emptyTable {
         width: 50vw;
     }
 
     .actions {
         flex-direction: column;
+    }
+
+    .desktopText {
+        display: none;
+    }
+
+    .mobileText {
+        display: block;
+        line-height: 1.5;
     }
 }

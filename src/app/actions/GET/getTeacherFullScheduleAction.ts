@@ -17,7 +17,23 @@ const getTeacherFullScheduleAction = async (
         }
 
         const result = await executeQuery(async () => {
-            // Get daily schedule entries where teacher is either subTeacher or originalTeacher
+            // 1. Get Annual Schedule (to show regular schedule graid)
+            const dateObj = new Date(date);
+            const dayOfWeek = dateObj.getDay() + 1; // 1-7 (Sunday is 1)
+
+            const annualSchedules = await db.query.annualSchedule.findMany({
+                where: and(
+                    eq(schema.annualSchedule.teacherId, teacherId),
+                    eq(schema.annualSchedule.day, dayOfWeek),
+                ),
+                with: {
+                    subject: true,
+                    class: true,
+                    school: true,
+                },
+            });
+
+            // 2. Get daily schedule entries
             const dailySchedules = await db.query.dailySchedule.findMany({
                 where: and(
                     eq(schema.dailySchedule.date, date),
@@ -65,29 +81,72 @@ const getTeacherFullScheduleAction = async (
                 return [];
             };
 
-            const results: DailyScheduleType[] = dailySchedules
-                .map((schedule: any) => ({
-                    id: schedule.id,
-                    date: new Date(schedule.date),
-                    day: schedule.day,
-                    hour: schedule.hour,
-                    columnId: schedule.columnId || `daily-${schedule.id}`,
-                    eventTitle: schedule.eventTitle || undefined,
-                    event: schedule.event || undefined,
-                    school: schedule.school,
-                    classes: getClasses(schedule),
-                    subject: schedule.subject || undefined,
-                    originalTeacher: schedule.originalTeacher || undefined,
-                    columnType: schedule.columnType || undefined,
-                    subTeacher: schedule.subTeacher || undefined,
-                    position: schedule.position || 0,
-                    instructions: schedule.instructions || undefined,
-                    createdAt: schedule.createdAt,
-                    updatedAt: schedule.updatedAt,
-                }))
-                .sort((a: any, b: any) => a.hour - b.hour);
+            const dailyMap = new Map<number, any>();
+            dailySchedules.forEach((ds: any) => dailyMap.set(ds.hour, ds));
 
-            return results;
+            const results: DailyScheduleType[] = [];
+            // Process Annual Schedule First
+            annualSchedules.forEach((annual: any) => {
+                const hour = annual.hour;
+                const dailyEntry = dailyMap.get(hour);
+
+                // If there is ANY daily entry for this hour involving this teacher (as original or sub),
+                // it overrides the annual schedule entry.
+                const showAnnual = !dailyEntry;
+
+                if (showAnnual) {
+                    results.push({
+                        id: annual.id,
+                        date: new Date(date),
+                        day: annual.day,
+                        hour: annual.hour,
+                        columnId: `annual-${annual.id}`,
+                        columnType: 1, // existingTeacher
+                        school: annual.school,
+                        classes: annual.class ? [annual.class] : [],
+                        subject: annual.subject,
+                        isRegular: true,
+                        position: 0,
+                        createdAt: annual.createdAt,
+                        updatedAt: annual.updatedAt,
+                    });
+                }
+            });
+
+            // Process Daily Schedules
+            dailySchedules.forEach((ds: any) => {
+                const isSub = ds.subTeacherId === teacherId;
+                const isOriginal = ds.originalTeacherId === teacherId;
+                const isReplaced = ds.subTeacherId && ds.subTeacherId !== teacherId;
+
+                // Show daily item if:
+                // 1. I am the substitute teacher
+                // 2. I am the original teacher (even if replaced, so I can see "Replaced by X")
+                if (isSub || isOriginal) {
+                    results.push({
+                        id: ds.id,
+                        date: new Date(ds.date),
+                        day: ds.day,
+                        hour: ds.hour,
+                        columnId: ds.columnId || `daily-${ds.id}`,
+                        eventTitle: ds.eventTitle || undefined,
+                        event: ds.event || undefined,
+                        school: ds.school,
+                        classes: getClasses(ds),
+                        subject: ds.subject || undefined,
+                        originalTeacher: ds.originalTeacher || undefined,
+                        columnType: ds.columnType || undefined,
+                        subTeacher: ds.subTeacher || undefined,
+                        position: ds.position || 0,
+                        instructions: ds.instructions || undefined,
+                        isRegular: (isOriginal && !isReplaced && ds.columnType === 1 && !ds.event),
+                        createdAt: ds.createdAt,
+                        updatedAt: ds.updatedAt,
+                    });
+                }
+            });
+
+            return results.sort((a: any, b: any) => a.hour - b.hour);
         });
 
         return {

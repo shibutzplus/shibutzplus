@@ -22,6 +22,7 @@ export type DailyScheduleType = {
     position: number;
     createdAt?: Date;
     updatedAt?: Date;
+    isRegular?: boolean;
 };
 
 export type DailyScheduleRequest = {

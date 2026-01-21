@@ -24,20 +24,11 @@
     padding: 0 20px;
     text-align: right;
     height: 100%;
-    color: var(--bright-text-color);
+    color: var(--white-text-color);
     z-index: 5;
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-.eyeIcon {
-    font-size: 16px;
-    transition: opacity 0.2s ease;
-}
-
-.eyeIcon:hover {
-    color: var(--bright-text-color-hover);
 }
 
 .clickable {

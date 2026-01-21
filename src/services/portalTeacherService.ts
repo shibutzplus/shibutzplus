@@ -65,6 +65,7 @@ export const populatePortalTable = (
                 originalTeacher: entry.originalTeacher,
                 event: entry.event,
                 instructions: entry.instructions,
+                isRegular: entry.isRegular,
             };
 
             if (next[selectedDate]![hour]) {

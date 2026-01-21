@@ -23,7 +23,7 @@ export const ONE_DAY = 1;
 export const HOURS_IN_DAY = 10;
 
 // Global auto-switch time configuration (HH:MM)
-export const AUTO_SWITCH_TIME = "16:00";
+export const AUTO_SWITCH_TIME = "18:00";
 
 // YYYY-MM-DD format
 export const getDateReturnString = (date: Date) => {
