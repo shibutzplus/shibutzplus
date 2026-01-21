@@ -22,6 +22,7 @@ type InputRichTextProps = {
     minHeight?: number;
     maxLines?: number;
     readOnly?: boolean;
+    hideButtons?: boolean;
 };
 
 const normalize = (html: string) => {
@@ -39,6 +40,7 @@ const InputRichText: React.FC<InputRichTextProps> = ({
     minHeight = 40,
     maxLines,
     readOnly = false,
+    hideButtons = false,
 }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [alertConfig, setAlertConfig] = useState({ isOpen: false, message: "" });
@@ -247,7 +249,7 @@ const InputRichText: React.FC<InputRichTextProps> = ({
                         </div>
                     ) : null}
                 </div>
-                {!readOnly && (
+                {!readOnly && !hideButtons && (
                     <div className={styles.toolbar}>
                         <button
                             onClick={openLinkDialog}
