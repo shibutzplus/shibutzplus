@@ -25,7 +25,7 @@
     padding: 0 15px;
     text-align: right;
     height: 100%;
-    color: var(--bright-text-color);
+    color: var(--white-text-color);
     z-index: 5;
     display: flex;
     justify-content: center;
@@ -33,7 +33,7 @@
 }
 
 .headerText {
-    color: var(--bright-text-color);
+    color: var(--white-text-color);
     font-size: 18px;
     text-align: center;
     word-break: break-word;

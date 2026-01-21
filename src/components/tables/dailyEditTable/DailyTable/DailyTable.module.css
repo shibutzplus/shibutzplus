@@ -136,10 +136,6 @@
     box-sizing: content-box;
 }
 
-.openMenu:hover {
-    color: var(--bright-text-color-hover);
-}
-
 .regularHeaderCell {
     width: var(--table-daily-col-width-edit);
     min-width: var(--table-daily-col-width-edit);

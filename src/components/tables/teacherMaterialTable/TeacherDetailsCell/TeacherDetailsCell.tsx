@@ -68,12 +68,24 @@ const TeacherDetailsCell: React.FC<TeacherDetailsCellProps> = ({ row, teacher })
         return item?.text;
     };
 
-    const { text: displayText, isActivity } = getCellDisplayData(displayRow as any, ColumnTypeValues.missingTeacher /* FFU */);
+    let { text: displayText, isActivity } = getCellDisplayData(displayRow as any, ColumnTypeValues.missingTeacher /* FFU */);
+
+    // If this is a regular schedule item - not a change/substitution, display the class and subject in grayed color
+    if (row?.isRegular) {
+        const classesData = row.classes;
+        const subjectData = row.subject;
+        if (classesData?.length) {
+            const classNames = classesData.map((cls) => cls.name).join(", ");
+            const subjectName = subjectData?.name || "";
+            const sameAsSubject = subjectName && classNames === subjectName;
+            displayText = classNames + (subjectData && !sameAsSubject ? ` (${subjectData.name})` : "");
+        }
+    }
 
     return (
         <div className={`${row ? styles.cellContent : styles.emptyCell}`}>
             <div className={styles.combinedContent}>
-                <span className={`${styles.classAndSubject} ${isActivity ? styles.activityText : ""} ${hasSub ? styles.hasSub : ""}`}>
+                <span className={`${styles.classAndSubject} ${isActivity ? styles.activityText : ""} ${hasSub ? styles.hasSub : ""} ${row?.isRegular ? styles.regularText : ""}`}>
                     {displayText}
                 </span>
                 <span className={`${styles.subTeacher} ${isDouble ? styles.doubleRow : ""}`}>

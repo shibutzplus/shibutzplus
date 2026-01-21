@@ -48,7 +48,7 @@ const TeacherInstructionsCell: React.FC<TeacherInstructionsCellProps> = ({
                     placeholder={getInstructionPlaceholder(row, teacher)}
                     minHeight={60}
                     readOnly={isHistoryMode}
-                    hideButtons={isSubstitute}
+                    hideButtons={isSubstitute || row?.isRegular}
                 />
             ) : null}
         </div>

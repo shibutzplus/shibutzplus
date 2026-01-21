@@ -16,6 +16,7 @@ export type TeacherScheduleType = {
     event?: string;
     instructions?: string;
     secondary?: TeacherScheduleType;
+    isRegular?: boolean;
 };
 
 export type PortalSchedule = {

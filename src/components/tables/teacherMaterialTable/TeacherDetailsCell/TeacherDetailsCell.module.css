@@ -35,6 +35,11 @@
   font-weight: 600;
 }
 
+.regularText {
+  font-weight: normal;
+  color: var(--disabled-text-color);
+}
+
 .hasSub::after {
   content: ", ";
 }
