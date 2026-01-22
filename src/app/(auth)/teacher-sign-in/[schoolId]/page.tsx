@@ -19,7 +19,7 @@ import { getTeachersAction } from "@/app/actions/GET/getTeachersAction";
 import SignInLoadingPage from "@/components/loading/SignInLoadingPage/SignInLoadingPage";
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
-import { TeacherType } from "@/models/types/teachers";
+import { TeacherType, TeacherRoleValues } from "@/models/types/teachers";
 import { setStorageTeacher, getStorageTeacher, removeStorageTeacher } from "@/lib/localStorage";
 import { getTeacherByIdAction } from "@/app/actions/GET/getTeacherByIdAction";
 import { getSchoolAction } from "@/app/actions/GET/getSchoolAction";
@@ -117,6 +117,10 @@ export default function TeacherSignInPage() {
                         schoolId: t.schoolId,
                     };
                     setStorageTeacher(safeTeacher);
+                    if (t.role === TeacherRoleValues.STAFF) {
+                        route.push(router.scheduleViewPortal.p);
+                        return;
+                    }
                     route.push(`${router.teacherMaterialPortal.p}/${schoolId}/${t.id}`);
                     return;
                 }

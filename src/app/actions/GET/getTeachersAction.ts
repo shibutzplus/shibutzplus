@@ -33,7 +33,7 @@ export async function getTeachersAction(
                     .where(
                         and(
                             eq(schema.teachers.schoolId, schoolId),
-                            ne(schema.teachers.role, TeacherRoleValues.SUBSTITUTE),
+                            eq(schema.teachers.role, TeacherRoleValues.REGULAR),
                         ),
                     )
                     .orderBy(asc(schema.teachers.name));

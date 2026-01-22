@@ -15,6 +15,7 @@ const router: Record<string, IRoute> = {
     teachers: { id: "teachers", p: "/teachers", private: true, title: "מורים" },
     subjects: { id: "subjects", p: "/subjects", private: true, title: "מקצועות" },
     substitute: { id: "substitute", p: "/substitute", private: true, title: "מורים מילוי מקום" },
+    staff: { id: "staff", p: "/staff", private: true, title: "מנהלה" },
     annualByClass: { id: "annualByClass", p: "/annual-class", private: true, title: "מערכת שנתית לפי כיתה", },
     annualByTeacher: { id: "annualByTeacher", p: "/annual-teacher", private: true, title: "מערכת שנתית לפי מורה", },
     annualView: { id: "annualView", p: "/annual-view", private: true, title: "מערכת שנתית" },

@@ -87,6 +87,12 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
                 Icon: <Icons.users size={24} />,
                 isForGuest: false,
             },
+            {
+                name: routePath.staff.title,
+                p: routePath.staff.p,
+                Icon: <Icons.teacherSolid size={24} />,
+                isForGuest: false,
+            },
         ],
     },
     {
