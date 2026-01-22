@@ -151,6 +151,8 @@ export const sortDailyTeachers = (
 
     for (const teacher of allTeachers) {
         if (missingTeacherIds.has(teacher.id)) continue;
+        // Staff members should not be selectable for substitution
+        if (teacher.role === TeacherRoleValues.STAFF) continue;
 
         // skip the column's header teacher as it should not appear in its own dropdown
         if (currentHeaderTeacherId && teacher.id === currentHeaderTeacherId) continue;

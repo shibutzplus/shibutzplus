@@ -1,4 +1,4 @@
-import { pgTable, text, varchar, timestamp, uniqueIndex } from 'drizzle-orm/pg-core';
+import { pgTable, text, varchar, timestamp, uniqueIndex, index } from 'drizzle-orm/pg-core';
 import { createId } from '@paralleldrive/cuid2';
 import { TeacherRole } from '@/models/types/teachers';
 import { schools } from './schools';
@@ -13,6 +13,7 @@ export const teachers = pgTable('teachers', {
 }, (table) => {
   return {
     schoolIdNameIdx: uniqueIndex('idx_teachers_school_id_name').on(table.schoolId, table.name),
+    schoolIdRoleIdx: index('idx_teachers_school_role').on(table.schoolId, table.role),
   };
 });
 

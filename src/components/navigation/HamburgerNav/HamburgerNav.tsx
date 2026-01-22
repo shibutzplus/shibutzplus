@@ -120,7 +120,6 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
     const displayedGroups = NAV_LINK_GROUPS
         .filter((group) => {
             if (group.id === "admin" && userRole !== "admin") return false;
-
             if (hamburgerType === "private") return group.type === "private";
             if (hamburgerType === "public") {
                 if (isSubstituteTeacher) return group.type === "substitute";
@@ -151,14 +150,20 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
             return {
                 ...group,
                 links: links.map((link) => {
-                    if (link.p === routePath.teacherMaterialPortal.p && teacher) {
-                        return {
-                            ...link,
-                            p: `${routePath.teacherMaterialPortal.p}/${teacher.schoolId}/${teacher.id}`,
-                        };
+                    if (link.p === routePath.teacherMaterialPortal.p) {
+                        // Staff members -> Hide "My Schedule"
+                        if (teacher?.role === TeacherRoleValues.STAFF) {
+                            return null;
+                        }
+                        if (teacher) {
+                            return {
+                                ...link,
+                                p: `${routePath.teacherMaterialPortal.p}/${teacher.schoolId}/${teacher.id}`,
+                            };
+                        }
                     }
                     return link;
-                }),
+                }).filter(Boolean) as ILink[],
             };
         });
 

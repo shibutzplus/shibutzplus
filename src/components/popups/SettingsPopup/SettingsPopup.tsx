@@ -80,7 +80,7 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({
                 />
 
                 <InputSelect
-                    label="הצגת השינויים במערכת בית הספר גם למורים שאינם בצוות הקבוע:"
+                    label="הצגת מערכת בית הספר המלאה גם למורים שאינם בצוות הקבוע:"
                     options={externalTeacherOptions}
                     value={showExternal}
                     onChange={(val) => setShowExternal(val)}

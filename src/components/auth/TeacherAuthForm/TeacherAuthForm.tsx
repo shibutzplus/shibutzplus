@@ -74,6 +74,11 @@ const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({
             setStorageTeacher(safeTeacher);
         }
 
+        if (fullTeacher?.role === TeacherRoleValues.STAFF) {
+            route.push(router.scheduleViewPortal.p);
+            return;
+        }
+
         route.push(`${router.teacherMaterialPortal.p}/${schoolId}/${selectedTeacher}`);
     };
 
