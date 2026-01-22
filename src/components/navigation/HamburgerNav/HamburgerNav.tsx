@@ -25,7 +25,7 @@ import { TeacherRoleValues } from "@/models/types/teachers";
 import { HOURS_IN_DAY } from "@/utils/time";
 import { SchoolSettingsType } from "@/models/types/settings";
 import useGuestModePopup from "@/hooks/useGuestModePopup";
-import { NAV_LINK_GROUPS, ILink, ILinkGroup } from "@/resources/navigation";
+import { NAV_LINK_GROUPS, ILink } from "@/resources/navigation";
 
 type LinkComponentProps = {
     link: ILink;
@@ -196,10 +196,10 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                     context?.setSchool((prev) =>
                         prev
                             ? {
-                                  ...prev,
-                                  hoursNum: newSettings.hoursNum,
-                                  displaySchedule2Susb: newSettings.displaySchedule2Susb,
-                              }
+                                ...prev,
+                                hoursNum: newSettings.hoursNum,
+                                displaySchedule2Susb: newSettings.displaySchedule2Susb,
+                            }
                             : prev,
                     );
                 }}
