@@ -4,7 +4,7 @@ import { GetTeachersResponse, TeacherRoleValues } from "@/models/types/teachers"
 import { checkAuthAndParams, publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
-import { eq, ne, and, asc } from "drizzle-orm";
+import { eq, and, asc } from "drizzle-orm";
 
 export async function getTeachersAction(
     schoolId: string,
