@@ -8,7 +8,7 @@ export interface FaqItemResource {
 
 export const FAQ_TEACHERS_ITEMS = (teacherLink: string): FaqItemResource[] => [
     {
-        question: "מה הקישור האישי ישיר בלי שאצטרך להזדהות כל פעם מחדש?",
+        question: "מה הקישור האישי שלי בלי שאצטרך להזדהות כל פעם מחדש?",
         answer: () => (
             <>
                 {teacherLink ? (
