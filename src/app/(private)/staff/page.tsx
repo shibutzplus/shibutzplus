@@ -41,6 +41,11 @@ const StaffPage: NextPage = () => {
             }
             details={sortedTeachers}
             headerAction={<AddStaffRow onSearch={setSearchTerm} />}
+            footer={
+                <div style={{ padding: "10px", fontSize: "0.85rem", textAlign: "center", color: "var(--light-text-color)" }}>
+                    אנשי מנהלה הם חברי סגל (כגון מזכירות) שאינם עוסקים בהוראה, אך ניתנת להם הרשאת צפייה במערכת.
+                </div>
+            }
         >
             {sortedTeachers?.map((teacher: TeacherType) => (
                 <StaffRow key={teacher.id} teacher={teacher} />

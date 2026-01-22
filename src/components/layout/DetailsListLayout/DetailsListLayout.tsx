@@ -9,6 +9,7 @@ type DetailsListLayoutProps<T> = {
     details: T[] | undefined;
     headerAction?: React.ReactNode;
     children: React.ReactNode;
+    footer?: React.ReactNode;
 };
 
 const DetailsListLayout = <T,>({
@@ -17,6 +18,7 @@ const DetailsListLayout = <T,>({
     details,
     headerAction,
     children,
+    footer,
 }: DetailsListLayoutProps<T>) => {
     const listRef = useRef<HTMLElement>(null);
     const [scrollbarWidth, setScrollbarWidth] = useState(0);
@@ -65,7 +67,9 @@ const DetailsListLayout = <T,>({
                 ) : (
                     children
                 )}
+
             </section>
+            {footer && <footer className={styles.footer}>{footer}</footer>}
         </main>
     );
 };

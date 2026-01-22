@@ -69,6 +69,13 @@
     overscroll-behavior: none;
 }
 
+.footer {
+    width: 98%;
+    margin: 0 auto 5px;
+    font-size: 0.8rem;
+    line-height: 1.5;
+}
+
 /* <= 800 */
 @media (max-width: 800px) {
     .container {
