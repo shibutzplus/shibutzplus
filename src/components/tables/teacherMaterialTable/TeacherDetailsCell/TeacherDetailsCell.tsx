@@ -68,7 +68,8 @@ const TeacherDetailsCell: React.FC<TeacherDetailsCellProps> = ({ row, teacher })
         return item?.text;
     };
 
-    let { text: displayText, isActivity } = getCellDisplayData(displayRow as any, ColumnTypeValues.missingTeacher /* FFU */);
+    const { text: initialText, isActivity } = getCellDisplayData(displayRow as any, ColumnTypeValues.missingTeacher /* FFU */);
+    let displayText = initialText;
 
     // If this is a regular schedule item - not a change/substitution, display the class and subject in grayed color
     if (row?.isRegular) {

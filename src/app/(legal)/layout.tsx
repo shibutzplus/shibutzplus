@@ -1,7 +1,5 @@
 import React from "react";
 import LegalPageLayout from "@/components/layout/pageLayouts/LegalPageLayout/LegalPageLayout";
-
-import Logo from "@/components/ui/Logo/Logo";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

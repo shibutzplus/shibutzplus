@@ -91,7 +91,7 @@
 }
 
 .closeIcon:hover {
-  color: var(--dark-text-color-active);
+  color: black;
 }
 
 .content {

@@ -3,7 +3,6 @@
 import "@/components/faq/faq.css";
 import { useSession } from "next-auth/react";
 import { errorToast, successToast } from "@/lib/toast";
-import Icons from "@/style/icons";
 import { sendAdminContactEmail } from "@/app/actions/POST/sendEmailAction";
 import FaqContent from "@/components/faq/FaqContent/FaqContent";
 import { FAQ_MANAGER_ITEMS } from "@/resources/faq";
@@ -42,9 +41,9 @@ export default function FAQPage() {
     }));
 
     return (
-        <FaqContent 
-            faqItems={faqItems} 
-            onSendContact={handleSendContactEmail} 
+        <FaqContent
+            faqItems={faqItems}
+            onSendContact={handleSendContactEmail}
         />
     );
 }

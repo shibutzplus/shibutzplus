@@ -46,13 +46,12 @@ const AnimatedHeaderWrapper: React.FC<AnimatedHeaderWrapperProps> = React.memo((
 });
 AnimatedHeaderWrapper.displayName = "AnimatedHeaderWrapper";
 
-type AnimatedCellWrapperProps = {
-    colIndex: number;
+type CellWrapperProps = {
     width: number | undefined;
     children: React.ReactNode;
 };
 
-const AnimatedCellWrapper: React.FC<AnimatedCellWrapperProps> = React.memo(({ colIndex, width, children }) => {
+const CellWrapper: React.FC<CellWrapperProps> = React.memo(({ width, children }) => {
     const isAnimating = width !== undefined;
     return (
         <td
@@ -65,18 +64,15 @@ const AnimatedCellWrapper: React.FC<AnimatedCellWrapperProps> = React.memo(({ co
                 padding: 0
             } : undefined}
         >
-            <motion.div
+            <div
                 className={styles.cellContent}
-                initial={{ opacity: 0.4 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3, delay: colIndex * 0.02 }}
             >
                 {children}
-            </motion.div>
+            </div>
         </td>
     );
 });
-AnimatedCellWrapper.displayName = "AnimatedCellWrapper";
+CellWrapper.displayName = "CellWrapper";
 
 
 // --- Main Properties ---
@@ -239,7 +235,7 @@ const DailyTable: React.FC<DailyTableProps> = ({
                                 </div>
                             </td>
 
-                            {sortedTableColumns.map((colId: string, colIndex: number) => {
+                            {sortedTableColumns.map((colId: string) => {
                                 const type = columnTypes[colId] ?? ColumnTypeValues.event;
                                 const columnData = schedule[colId];
                                 if (!columnData) return null;
@@ -247,9 +243,8 @@ const DailyTable: React.FC<DailyTableProps> = ({
                                 const width = animatingWidths[colId];
 
                                 return (
-                                    <AnimatedCellWrapper
+                                    <CellWrapper
                                         key={`${colId}-${row}`}
-                                        colIndex={colIndex}
                                         width={width}
                                     >
                                         {type === ColumnTypeValues.event ? (
@@ -262,7 +257,7 @@ const DailyTable: React.FC<DailyTableProps> = ({
                                                 type={type}
                                             />
                                         )}
-                                    </AnimatedCellWrapper>
+                                    </CellWrapper>
                                 );
                             })}
                         </tr>
