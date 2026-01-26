@@ -1,24 +1,13 @@
 import {
-    IoCalendarOutline,
-    IoCalendarSharp,
-    IoLogOutOutline,
-    IoPeopleOutline,
-    IoMenuOutline,
-    IoCloseOutline,
-    IoBookOutline,
-    IoChevronDown,
-    IoSettingsOutline,
-    IoPersonOutline,
-    IoPersonRemoveOutline,
-    IoPeopleSharp,
-    IoArrowBack,
-    IoArrowForward,
-    IoStatsChart,
-    IoInformationCircleOutline,
+    IoCalendarOutline, IoCalendarSharp, IoLogOutOutline, IoPeopleOutline,
+    IoMenuOutline, IoCloseOutline, IoBookOutline,
+    IoChevronDown, IoSettingsOutline, IoPersonOutline,
+    IoPersonRemoveOutline, IoPeopleSharp, IoArrowBack,
+    IoArrowForward, IoStatsChart, IoInformationCircleOutline,
 } from "react-icons/io5";
 import { IoMdRefresh } from "react-icons/io";
 import { RiEdit2Fill, RiDeleteBin6Line } from "react-icons/ri";
-import { BsMegaphoneFill, BsCalendar4Event, BsThreeDotsVertical, BsFiletypePdf, BsTable } from "react-icons/bs";
+import { BsMegaphoneFill, BsCalendar4Event, BsThreeDotsVertical, BsFiletypePdf, BsTable, BsMagic } from "react-icons/bs";
 import { MdPersonAdd, MdPerson, MdSwapHoriz, MdOpenInNew } from "react-icons/md";
 import { FaPlus } from "react-icons/fa6";
 import { FaSave, FaShareAlt, FaQuestion, FaLink } from "react-icons/fa";
@@ -75,6 +64,7 @@ const Icons = {
     info: IoInformationCircleOutline,
     link: FaLink,
     hourglass: AiOutlineHourglass,
+    magic: BsMagic,
 };
 
 export default Icons;

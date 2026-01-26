@@ -2,7 +2,7 @@ import LegalContent from "@/components/legal/LegalContent/LegalContent";
 import privacyData from "@/resources/privacy.json";
 
 export const metadata = {
-    title: "מדיניות פרטיות | שיבוץ+",
+    title: "מדיניות פרטיות",
     description: "מדיניות הפרטיות של שיבוץ+. כאן תוכלו לקרוא כיצד אנו שומרים על המידע שלכם ומשתמשים בו.",
     alternates: {
         canonical: "https://shibutzplus.com/privacy",
@@ -15,7 +15,7 @@ export const metadata = {
 
 export default function PrivacyPage() {
     return (
-        <LegalContent 
+        <LegalContent
             title={privacyData.title}
             intro={privacyData.intro}
             sections={privacyData.sections}

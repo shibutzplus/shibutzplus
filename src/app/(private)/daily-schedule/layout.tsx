@@ -5,7 +5,7 @@ import Preloader from "@/components/ui/Preloader/Preloader";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
-    title: "שיבוץ יומי | שיבוץ+",
+    title: "שיבוץ יומי",
     robots: "noindex, nofollow",
 };
 

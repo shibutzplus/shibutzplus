@@ -2,7 +2,7 @@ import LegalContent from "@/components/legal/LegalContent/LegalContent";
 import termsData from "@/resources/terms.json";
 
 export const metadata = {
-    title: "תנאי שימוש | שיבוץ+",
+    title: "תנאי שימוש",
     description: "תנאי השימוש והתקנון של פלטפורמת שיבוץ+. מידע על זכויות, חובות ותנאי השירות.",
     alternates: {
         canonical: "https://shibutzplus.com/terms",
@@ -15,7 +15,7 @@ export const metadata = {
 
 export default function TermsPage() {
     return (
-        <LegalContent 
+        <LegalContent
             title={termsData.title}
             intro={termsData.intro}
             sections={termsData.sections}

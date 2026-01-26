@@ -1,40 +1,17 @@
 .container {
     padding: 2rem;
-    max-width: 80%;
+    max-width: 800px;
     margin: 0 auto;
 }
 
-.uploadSection {
-    width: 50%;
+.stepContainer {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    align-items: center;
-    justify-content: center;
-    padding: 3rem;
-    border: 2px dashed #d1d5db;
+    gap: 1rem;
+    background-color: white;
+    padding: 2rem;
     border-radius: 0.5rem;
-    background-color: #f9fafb;
-    transition: all 0.2s;
-}
-
-.uploadSection:hover {
-    border-color: #8b5cf6;
-    background-color: #f3f4f6;
-}
-
-.configSection {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-}
-
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #e5e7eb;
-    padding-bottom: 1rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
 }
 
 .title {
@@ -43,216 +20,237 @@
     color: #1f2937;
 }
 
-.resetButton {
-    font-size: 0.875rem;
-    color: #ef4444;
-    text-decoration: underline;
-    background: none;
-    border: none;
-    cursor: pointer;
+/* Step 6 Layout */
+.configSection {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-.resetButton:hover {
-    color: #b91c1c;
-}
-
-
-
-.formCard {
-    width: 300px;
+/* Preview Grid */
+.previewColumn {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    background-color: white;
-    padding: 1.5rem;
-    border-radius: 0.75rem;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    border: 1px solid #e5e7eb;
 }
 
-.sectionTitle {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 0.5rem;
-}
-
-/* Actions Bar (Navigation) */
-.actions {
-    width: 80%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding-top: 1rem;
-    border-top: 1px solid #e5e7eb;
-    gap: 1rem;
-}
-
-.buttonsRow {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
+.teacherSelectWrapper {
     width: 100%;
-}
-
-.actions button {
-    width: 150px;
-}
-
-/* Update Button Container */
-.updateButtonContainer {
-    width: 100%;
+    max-width: 350px;
     display: flex;
-    justify-content: flex-start;
-    margin-top: 1rem;
-    margin-bottom: 2rem;
+    align-items: center;
+    gap: 8px;
 }
 
-.btnSecondary {
-    background-color: #f3f4f6;
-    color: #1f2937;
-    border: 1px solid #d1d5db;
-    transition: all 0.2s;
-    border-radius: 0.5rem;
-    height: 40px;
+.navArrow {
+    background-color: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1rem;
+    flex-shrink: 0;
 }
 
-.btnSecondary:hover {
-    background-color: #e5e7eb;
-    border-color: #9ca3af;
+.navArrow:hover:not(:disabled) {
+    background-color: #e2e8f0;
+    color: #334155;
+    border-color: #94a3b8;
 }
 
-.btnPrimary {
-    background-color: #2563eb;
-    color: white;
-    font-weight: 700;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    transition: all 0.2s;
-    border-radius: 0.5rem;
-    height: 40px;
-}
-
-.btnPrimary:hover {
-    background-color: #1d4ed8;
-}
-
-.btnSuccess {
-    background-color: #16a34a;
-    color: white;
-    font-weight: 700;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    transition: all 0.2s;
-    border-radius: 0.5rem;
-    height: 40px;
-}
-
-.btnSuccess:hover {
-    background-color: #15803d;
-}
-
-.btnUpdate {
-    background-color: black;
-    color: white;
-    font-weight: 700;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    transition: all 0.2s;
-    border-radius: 0.5rem;
-    height: 40px;
-    width: 200px !important;
-}
-
-.btnUpdate:hover {
-    background-color: #374151;
-}
-
-.btnUpdate:disabled {
-    opacity: 0.7;
+.navArrow:disabled {
+    opacity: 0.4;
     cursor: not-allowed;
 }
 
-/* Table Layout for Step 2 */
-.stepTable {
-    width: 80%;
-    border-collapse: separate;
-    border-spacing: 0;
+.previewContainer {
+    background-color: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    min-height: 200px;
 }
 
-.cellConfig {
-    vertical-align: top;
-    width: 33.333%;
-    min-width: 300px;
-    padding-left: 1rem;
-}
-
-.cellList {
-    vertical-align: top;
-    width: 66.666%;
-}
-
-.listHeight {
-    height: 600px;
-}
-
-.formCardWidth {
+.previewTable {
     width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
 }
 
-.stepLabel {
-    width: 100%;
-    text-align: right;
-    color: #6b7280;
-    /* text-gray-500 */
+.tableHeader {
+    background-color: #f1f5f9;
+    color: #475569;
+    font-weight: 600;
+    padding: 0.75rem;
+    text-align: center;
+    border-bottom: 1px solid #e2e8f0;
 }
 
-/* Flex utilities replacement */
-.flexGap {
+.hourCell {
+    background-color: #f8fafc;
+    color: #64748b;
+    font-weight: 600;
+    text-align: center;
+    border-right: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+    width: 50px;
+}
+
+.dataCell {
+    border: 1px solid #e2e8f0;
+    height: 60px;
+    vertical-align: middle;
+    text-align: center;
+    padding: 0.25rem;
+    width: 14%;
+    /* 100% / 7 columns approx */
+}
+
+.invalidCell {
+    background-color: #fef2f2;
+}
+
+.cellContent {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.125rem;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
 }
 
-.mt2 {
-    margin-top: 0.5rem;
+.subjectText {
+    font-weight: 600;
+    color: #334155;
+    font-size: 0.8rem;
 }
 
-.mt4 {
-    margin-top: 1rem;
+.classText {
+    color: #64748b;
+    font-size: 0.75rem;
 }
 
-.flexEnd {
+.textRed {
+    color: #ef4444;
+}
+
+.originalTextHint {
+    color: #393d43;
+    font-size: 0.7rem;
+    font-style: italic;
+    margin-top: 2px;
+}
+
+.emptyStatePreview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    color: #94a3b8;
+    font-size: 1.125rem;
+}
+
+.previewActions {
     display: flex;
     justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e5e7eb;
 }
 
-/* Typography Helpers */
+.btnSingleUpdate {
+    background-color: #4b5563;
+    color: white;
+    padding: 0 1rem;
+    height: 40px;
+    border-radius: 0.5rem;
+}
+
+.btnSingleUpdate:hover {
+    background-color: #374151;
+}
+
 .stepTitle {
-    margin-bottom: 0.1rem;
-}
-
-.subTitle {
-    font-size: 1.25rem;
-    /* text-xl */
-    font-weight: 700;
-    /* font-bold */
     margin-bottom: 0.5rem;
-    /* mb-2 */
 }
 
-.descriptionText {
-    color: #6b7280;
-    /* text-gray-500 */
+.iconContainer {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: 0.5rem;
+    vertical-align: middle;
 }
 
-.textCenter {
-    text-align: center;
+.iconBoth {
+    color: #10b981;
 }
 
-/* Upload Step (Step 1) */
+.iconAi {
+    color: #8b5cf6;
+}
+
+.iconDb {
+    color: #64748b;
+}
+
+.iconManual {
+    color: #0070f3;
+}
+
 .uploadContainer {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 2rem;
     width: 100%;
+    margin-top: 1rem;
+}
+
+.subTitle {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.75rem;
+}
+
+.fileInput {
+    display: block;
+    width: 100%;
+    font-size: 0.875rem;
+    color: #6b7280;
+    padding: 0.5rem;
+    border: 1px dashed #d1d5db;
+    border-radius: 0.375rem;
+}
+
+.fileInput:hover {
+    border-color: #6b7280;
+}
+
+.fileInput::file-selector-button {
+    margin-right: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    border: 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    background-color: #eff6ff;
+    color: #1d4ed8;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.fileInput::file-selector-button:hover {
+    background-color: #dbeafe;
 }
 
 .fileSuccess {
@@ -260,9 +258,74 @@
     color: #16a34a;
     margin-top: 0.5rem;
     display: block;
+    font-weight: 500;
 }
 
-/* Editable List Component Styles */
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.btnPrimary {
+    background-color: #000000;
+    color: white;
+    font-weight: 700;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s;
+    border-radius: 0.5rem;
+    height: 40px;
+    padding: 0 1.5rem;
+}
+
+.btnPrimary:hover {
+    background-color: #1f2937;
+}
+
+.btnPrimary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #9ca3af;
+}
+
+.modalBtnNo {
+    background-color: white;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s;
+}
+
+.modalBtnNo:hover {
+    background-color: #f3f4f6;
+    border-color: #9ca3af;
+}
+
+.btnRefresh {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    padding: 0.25rem;
+    opacity: 0.7;
+    transition: all 0.2s;
+    color: #000000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btnRefresh:hover {
+    opacity: 1;
+}
+
+.btnRefresh:disabled {
+    opacity: 0.3;
+    cursor: wait;
+}
+
 .editableListContainer {
     display: flex;
     flex-direction: column;
@@ -272,6 +335,7 @@
     border: 1px solid #e5e7eb;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     margin-bottom: 1rem;
+    min-height: 400px;
 }
 
 .editableListHeader {
@@ -280,31 +344,21 @@
     align-items: center;
     padding: 0.75rem;
     background-color: #f9fafb;
-    /* bg-gray-50 */
     border-bottom: 1px solid #e5e7eb;
 }
 
 .editableListTitle {
     font-weight: 700;
     color: #374151;
-    /* text-gray-700 */
 }
 
-.editableAddButton {
-    color: #2563eb;
-    font-size: 0.875rem;
-    font-weight: 500;
+.badge {
+    background-color: #e5e7eb;
+    color: #374151;
+    font-size: 0.75rem;
     padding: 0.25rem 0.5rem;
-    background-color: #eff6ff;
-    border-radius: 0.25rem;
-    transition: color 0.2s, background-color 0.2s;
-    border: none;
-    cursor: pointer;
-}
-
-.editableAddButton:hover {
-    color: #1e40af;
-    /* text-blue-800 */
+    border-radius: 9999px;
+    font-weight: 600;
 }
 
 .editableContent {
@@ -315,54 +369,26 @@
     padding: 0.5rem;
     flex: 1;
     height: auto;
+    max-height: 500px;
 }
 
 .editableItem {
     display: flex;
     gap: 0.5rem;
     align-items: center;
+    padding: 0.5rem;
+    border-bottom: 1px solid #f3f4f6;
 }
 
 .editableIndex {
     color: #9ca3af;
-    /* text-gray-400 */
     font-size: 0.75rem;
-    /* text-xs */
-    width: 1rem;
+    width: 2rem;
 }
 
-.editableInput {
-    border: 1px solid #e5e7eb;
-    padding: 0.5rem;
-    border-radius: 0.25rem;
+.editableText {
     font-size: 0.875rem;
-    width: 100%;
-    outline: none;
-    transition: all 0.2s;
-}
-
-.editableInput:focus {
-    border-color: #3b82f6;
-    /* border-blue-500 */
-    box-shadow: 0 0 0 1px #3b82f6;
-}
-
-.editableDeleteButton {
-    color: #9ca3af;
-    /* text-gray-400 */
-    padding: 0.25rem;
-    border-radius: 0.25rem;
-    transition: all 0.2s;
-    background: none;
-    border: none;
-    cursor: pointer;
-}
-
-.editableDeleteButton:hover {
-    color: #ef4444;
-    /* text-red-500 */
-    background-color: #fef2f2;
-    /* bg-red-50 */
+    color: #374151;
 }
 
 .emptyState {
@@ -376,233 +402,81 @@
     margin-top: 2.5rem;
 }
 
-.emptyAddButton {
-    color: #3b82f6;
+.searchContainer {
+    padding: 0.75rem;
+    border-bottom: 1px solid #f3f4f6;
+    background-color: white;
+}
+
+.addInputWrapper {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.searchInput {
+    flex: 1;
+    padding: 0.375rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
     font-size: 0.875rem;
+}
+
+.searchInput:focus {
+    outline: none;
+    border-color: #2563eb;
+}
+
+.addBtn {
+    background-color: #10b981;
+    color: white;
+    font-weight: 700;
+    width: 2.25rem;
+    height: 2.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.375rem;
+    transition: background-color 0.2s;
+    font-size: 1.25rem;
+}
+
+.addBtn:hover:not(:disabled) {
+    background-color: #059669;
+}
+
+.addBtn:disabled {
+    background-color: #d1d5db;
+    cursor: not-allowed;
+}
+
+.deleteBtn {
+    margin-right: auto;
+    color: #9ca3af;
     background: none;
     border: none;
     cursor: pointer;
-}
-
-.emptyAddButton:hover {
-    text-decoration: underline;
-}
-
-/* Verify Helpers */
-.verifyContainer {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    gap: 1rem;
-}
-
-.verifyListWrapper {
-    width: 100%;
-    height: 500px;
-}
-
-@media (min-width: 768px) {
-    .verifyListWrapper {
-        width: 50%;
-    }
-}
-
-
-/* File Input Styles */
-.fileInput {
-    display: block;
-    width: 100%;
-    font-size: 0.875rem;
-    color: #6b7280;
-}
-
-.fileInput::file-selector-button {
-    margin-right: 1rem;
-    padding: 0.5rem 1rem;
+    padding: 0.25rem;
     border-radius: 9999px;
-    border: 0;
-    font-size: 0.875rem;
-    font-weight: 600;
-    background-color: #eff6ff;
-    color: #1d4ed8;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-
-/* Confirmation Modal Styles */
-.modalActions {
-    display: flex;
-    justify-content: center;
-    gap: 1.5rem;
-    margin-top: 1.5rem;
-}
-
-.modalBtnYes {
-    background-color: #2563eb;
-    color: white;
-    padding: 0.5rem 2rem;
-    border-radius: 0.5rem;
-    font-weight: 600;
-    font-size: 1rem;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.modalBtnYes:hover {
-    background-color: #1d4ed8;
-}
-
-.modalBtnNo {
-    background-color: #f3f4f6;
-    color: #374151;
-    padding: 0.5rem 2rem;
-    border-radius: 0.5rem;
-    font-weight: 600;
-    font-size: 1rem;
-    border: 1px solid #d1d5db;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.modalBtnNo:hover {
-    background-color: #e5e7eb;
-    border-color: #9ca3af;
-}
-
-.modalText {
-    font-size: 1.25rem;
-    font-weight: 600;
-    text-align: center;
-    color: #1f2937;
-    margin-bottom: 1rem;
-}
-
-/* Step 6 Preview */
-.previewContainer {
-    flex: 1;
-    border: 1px solid #e5e7eb;
-    overflow: auto;
-    background-color: white;
-    min-height: 300px;
-    max-height: 500px;
-}
-
-.previewTable {
-    width: 100%;
-    text-align: center;
     font-size: 0.75rem;
-    border-collapse: separate;
-}
-
-.tableHeader {
-    padding: 0.5rem;
-    border: 1px solid #e5e7eb;
-    background-color: #f3f4f6;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    font-weight: 700;
-}
-
-.hourCell {
-    border: 1px solid #e5e7eb;
-    background-color: #f9fafb;
-    font-weight: 700;
-}
-
-.dataCell {
-    border: 1px solid #e5e7eb;
-    height: 3rem;
-    vertical-align: middle;
-}
-
-.dataCellActive {
-    background-color: #eff6ff;
-}
-
-.cellContent {
+    width: 1.5rem;
+    height: 1.5rem;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-}
-
-.subjectText {
-    font-weight: 700;
-    color: #1d4ed8;
-    display: block;
-}
-
-.previewColumn {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    height: 100%;
-}
-
-.teacherSelectWrapper {
-    width: 16rem;
-}
-
-.previewActions {
-    display: flex;
-    gap: 1rem;
-    justify-content: flex-end;
-    margin-top: 1rem;
-}
-
-.btnSingleUpdate {
-    color: white;
-    font-weight: 700;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     transition: all 0.2s;
-    border-radius: 0.5rem;
-    height: 40px;
-    width: auto;
-    padding: 0 1.5rem;
 }
 
-.btnSingleUpdate:hover {
-    background-color: #374151;
-}
-
-.validCell {
-    background-color: #dcfce7;
-    /* green-100 */
-}
-
-.invalidCell {
-    background-color: #fee2e2;
-    /* red-100 */
-}
-
-.errorText {
+.deleteBtn:hover {
     color: #ef4444;
-    /* red-500 */
-    font-size: 0.625rem;
-    font-weight: 700;
-    display: block;
+    background-color: #fee2e2;
 }
 
-.inputLabel {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: #374151;
-    /* text-gray-700 */
-}
-
-.emptyStatePreview {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    color: #9ca3af;
-    /* text-gray-400 */
-}
-
-.textRed {
-    color: #b91c1c;
-    /* text-red-700 */
+.warningBox {
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    color: #856404;
+    font-size: 0.9rem;
 }

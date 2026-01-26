@@ -5,7 +5,7 @@ import HistoryPageLayout from "@/components/layout/pageLayouts/HistoryPageLayout
 import Preloader from "@/components/ui/Preloader/Preloader";
 
 export const metadata: Metadata = {
-    title: "היסטוריה | שיבוץ+",
+    title: "היסטוריה",
     robots: "noindex, nofollow",
 };
 
