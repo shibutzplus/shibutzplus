@@ -5,7 +5,7 @@ import Preloader from "@/components/ui/Preloader/Preloader";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
-    title: "מערכת שנתית לפי כיתה | שיבוץ+",
+    title: "מערכת שנתית לפי כיתה",
     robots: "noindex, nofollow",
 };
 

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import FaqPageLayout from "@/components/layout/pageLayouts/FaqPageLayout/FaqPageLayout";
 
 export const metadata: Metadata = {
-    title: "שאלות נפוצות | שיבוץ+",
+    title: "שאלות נפוצות",
     robots: "noindex, nofollow",
 };
 

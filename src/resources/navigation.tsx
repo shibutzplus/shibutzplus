@@ -97,7 +97,7 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
     },
     {
         id: "built_schedule",
-        title: "בניית מערכת שנתית",
+        title: "עדכון מערכת שנתית",
         type: "private",
         isCollapse: true,
         links: [

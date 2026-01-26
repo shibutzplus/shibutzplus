@@ -246,13 +246,24 @@ export async function saveTeacherScheduleAction(
         const missingSubjects: string[] = [];
 
         for (const item of scheduleItems) {
-            const classId = classMap.get(item.className);
+            // For work groups, className is "קבוצה" (placeholder)
+            // The actual work group name is in subjectName
+            // Work groups have BOTH class and subject entries with the same name and activity=true
+            const isWorkGroup = item.className === "קבוצה";
+
+            // For work groups: look up class by subject name (the work group name)
+            // For regular classes: look up class by class name
+            const classLookupName = isWorkGroup ? item.subjectName : item.className;
+            const classId = classMap.get(classLookupName);
             const subjectId = subjectMap.get(item.subjectName);
 
+            // Validate class
             if (!classId) {
-                if (!missingClasses.includes(item.className)) missingClasses.push(item.className);
+                const missingName = isWorkGroup ? item.subjectName : item.className;
+                if (!missingClasses.includes(missingName)) missingClasses.push(missingName);
             }
 
+            // Validate subject/work group
             if (!subjectId) {
                 if (!missingSubjects.includes(item.subjectName)) missingSubjects.push(item.subjectName);
             }
@@ -294,6 +305,9 @@ export async function saveTeacherScheduleAction(
         }
 
         revalidatePath('/annual-import');
+        revalidatePath('/annual-teacher');
+        revalidatePath('/annual-class');
+        revalidatePath('/annual-view');
 
         return { success: true, message: `המערכת נשמרה בהצלחה!` };
 
