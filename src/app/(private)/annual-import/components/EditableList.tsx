@@ -1,59 +1,116 @@
-import React from "react";
-import styles from "../page.module.css";
+import React from 'react';
+import styles from '../page.module.css';
+import { FaCheck, FaMagic, FaDatabase, FaSearch } from 'react-icons/fa';
+
+export interface ListItem {
+    name: string;
+    exists?: boolean; // Deprecated in favor of source, keeping for backward compat if needed during refactor
+    source?: 'db' | 'ai' | 'both' | 'manual';
+}
 
 interface EditableListProps {
     title: string;
-    items: string[];
-    onChange: (items: string[]) => void;
+    items: ListItem[];
+    onSave?: (items: ListItem[]) => void;
+    onAddAndSave?: (newItemName: string) => Promise<void>; // New: Callback now receives the item name
+    fromAI?: boolean;
 }
 
-const EditableList: React.FC<EditableListProps> = ({ title, items, onChange }) => {
-    const handleDelete = (index: number) => {
-        const newItems = items.filter((_, i) => i !== index);
-        onChange(newItems);
+const EditableList: React.FC<EditableListProps> = ({ title, items, onSave, onAddAndSave, fromAI = true }) => {
+    const [newItem, setNewItem] = React.useState("");
+    const [isAdding, setIsAdding] = React.useState(false);
+
+    const handleAdd = async () => {
+        if (newItem.trim()) {
+            const trimmedItem = newItem.trim();
+            const updated = [...items, { name: trimmedItem, exists: false }];
+            if (onSave) onSave(updated);
+            setNewItem("");
+
+            // Auto-save to DB if callback provided
+            if (onAddAndSave) {
+                setIsAdding(true);
+                try {
+                    await onAddAndSave(trimmedItem);
+                } finally {
+                    setIsAdding(false);
+                }
+            }
+        }
     };
 
-    const handleAdd = () => {
-        onChange([...items, ""]);
+    const handleDelete = (indexToDelete: number) => {
+        const updated = items.filter((_, index) => index !== indexToDelete);
+        if (onSave) onSave(updated);
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            handleAdd();
+        }
     };
 
     return (
-        <div className={`${styles.editableListContainer} ${styles.listColumn || ''}`}>
+        <div className={styles.editableListContainer}>
             <div className={styles.editableListHeader}>
-                <h4 className={styles.editableListTitle}>{title} ({items.length})</h4>
-                <button onClick={handleAdd} className={styles.editableAddButton}>+ הוסף</button>
+                <span className={styles.editableListTitle}>{title}</span>
+                <span className={styles.badge}>{items.length}</span>
+            </div>
+
+            <div className={styles.searchContainer}>
+                <div className={styles.addInputWrapper}>
+                    <input
+                        type="text"
+                        value={newItem}
+                        onChange={(e) => setNewItem(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        placeholder="הוסף עוד..."
+                        className={styles.searchInput}
+                    />
+                    <button
+                        onClick={handleAdd}
+                        type="button"
+                        className={styles.addBtn}
+                        disabled={!newItem.trim() || isAdding}
+                    >
+                        {isAdding ? "⏳" : "+"}
+                    </button>
+                </div>
             </div>
 
             <div className={styles.editableContent}>
-                {items.map((item, idx) => (
-                    <div key={idx} className={styles.editableItem}>
-                        <span className={styles.editableIndex}>{idx + 1}.</span>
-                        <input
-                            value={item}
-                            className={styles.editableInput}
-                            onChange={(e) => {
-                                const newItems = [...items];
-                                newItems[idx] = e.target.value;
-                                onChange(newItems);
-                            }}
-                            placeholder="הזן ערך..."
-                        />
-                        <button
-                            onClick={() => handleDelete(idx)}
-                            className={styles.editableDeleteButton}
-                            title="מחק שורה"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M18 6 6 18" /><path d="m6 6 12 12" />
-                            </svg>
-                        </button>
-                    </div>
-                ))}
-                {items.length === 0 && (
-                    <div className={styles.emptyState}>
-                        <span>אין נתונים</span>
-                        <button onClick={handleAdd} className={styles.emptyAddButton}>הוסף פריט ראשון</button>
-                    </div>
+                {items.length === 0 ? (
+                    <div className={styles.emptyState}>אין פריטים להצגה</div>
+                ) : (
+                    items.map((item, index) => (
+                        <div key={index} className={styles.editableItem}>
+                            <span className={styles.editableIndex}>{index + 1}.</span>
+                            <span
+                                className={styles.editableText}
+                            >
+                                {/* Icon Logic */}
+                                <span className={styles.iconContainer}>
+                                    {item.source === 'both' && <FaCheck className={styles.iconBoth} title="קיים ב-DB וזוהה גם על ידי AI" />}
+                                    {item.source === 'ai' && <FaMagic className={styles.iconAi} title="זוהה על ידי AI" />}
+                                    {item.source === 'manual' && <FaSearch className={styles.iconManual} title="נמצא בחיפוש בקוד שלנו" />}
+                                    {item.source === 'db' && <FaDatabase className={styles.iconDb} title="קיים ב-DB" />}
+
+                                    {/* Fallback for old "exists" logic if source is missing */}
+                                    {!item.source && item.exists && fromAI && <span style={{ fontSize: '0.8em', marginRight: '5px' }}>(קיים)</span>}
+                                </span>
+                                {item.name}
+                            </span>
+                            {onSave && (
+                                <button
+                                    onClick={() => handleDelete(index)}
+                                    className={styles.deleteBtn}
+                                    title="מחק"
+                                >
+                                    ✕
+                                </button>
+                            )}
+                        </div>
+                    ))
                 )}
             </div>
         </div>

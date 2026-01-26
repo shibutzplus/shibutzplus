@@ -13,12 +13,7 @@ import { clearStorage, getStorageTeacher } from "@/lib/localStorage";
 import { usePopup } from "@/context/PopupContext";
 import SettingsPopup from "@/components/popups/SettingsPopup/SettingsPopup";
 import { useOptionalMainContext } from "@/context/MainContext";
-import {
-    clearSessionStorage,
-    getSessionStorage,
-    SESSION_KEYS,
-    setSessionStorage,
-} from "@/lib/sessionStorage";
+import { clearSessionStorage, getSessionStorage, SESSION_KEYS, setSessionStorage, } from "@/lib/sessionStorage";
 import { AppType } from "@/models/types";
 import Logo from "../../ui/Logo/Logo";
 import { TeacherRoleValues } from "@/models/types/teachers";
@@ -41,10 +36,21 @@ const LinkComponent: React.FC<LinkComponentProps> = ({ link, onClose, currentPat
     const guest = isGuest && !link.isForGuest;
     const { handleOpenGuestPopup } = useGuestModePopup();
 
+    // Preserve ?schoolId for ADMIN users
+    // This is important for debugging and testing as we loose schoolId when we navigate to a different page
+    let finalHref = link.p;
+    if (userRole === "admin" && typeof window !== "undefined") {
+        const urlParams = new URLSearchParams(window.location.search);
+        const schoolIdParam = urlParams.get("schoolId");
+        if (schoolIdParam) {
+            finalHref = `${link.p}?schoolId=${encodeURIComponent(schoolIdParam)}`;
+        }
+    }
+
     return (
         <div className={styles.linkWrapper}>
             <Link
-                href={guest ? "#" : link.p}
+                href={guest ? "#" : finalHref}
                 className={`${styles.navLink} ${isActive ? styles.active : ""}`}
                 onClick={(e) => {
                     if (guest) {
