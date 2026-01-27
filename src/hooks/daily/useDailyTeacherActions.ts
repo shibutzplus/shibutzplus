@@ -16,17 +16,17 @@ import { addNewTeacherValueCell } from "@/services/daily/add";
 import { fillLeftRowsWithEmptyCells } from "@/services/daily/populate";
 import { setEmptyTeacherColumn } from "@/services/daily/setEmpty";
 import { updateAddCell } from "@/services/daily/update";
-import { pushSyncUpdate } from "@/services/syncService";
 
 const useDailyTeacherActions = (
     mainDailyTable: DailySchedule,
     setMainAndStorageTable: (newSchedule: DailySchedule) => void,
     clearColumn: (day: string, columnId: string) => void,
+    handlePushUpdate: (channel: typeof DAILY_TEACHER_COL_DATA_CHANGED) => void
 ) => {
     const { school, teachers, settings } = useMainContext();
 
-    const pushIfPublished = (selectedDate: string) => {
-        if (!!school?.publishDates?.includes(selectedDate)) pushSyncUpdate(DAILY_TEACHER_COL_DATA_CHANGED);
+    const pushDailyUpdate = () => {
+        handlePushUpdate(DAILY_TEACHER_COL_DATA_CHANGED);
     };
 
     const populateTeacherColumn = async (
@@ -165,7 +165,7 @@ const useDailyTeacherActions = (
                         settings?.hoursNum,
                     );
                     setMainAndStorageTable(updatedSchedule);
-                    pushIfPublished(selectedDate);
+                    pushDailyUpdate();
                 } else {
                     // If the teacher does not teach on this day, create an empty column
                     // We re-affirm the empty column with the teacher header
@@ -225,7 +225,7 @@ const useDailyTeacherActions = (
                     data,
                 );
                 setMainAndStorageTable(updatedSchedule);
-                pushIfPublished(selectedDate);
+                pushDailyUpdate();
                 return response.data;
             }
         }
@@ -264,7 +264,7 @@ const useDailyTeacherActions = (
                     { subTeacher: undefined, event: undefined },
                 );
                 setMainAndStorageTable(updatedSchedule);
-                pushIfPublished(selectedDate);
+                pushDailyUpdate();
                 return response.data;
             }
         }

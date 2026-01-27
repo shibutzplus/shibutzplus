@@ -5,19 +5,22 @@ import { usePathname } from "next/navigation";
 import router from "@/routes";
 import { checkForUpdates, getChannelsForPath } from "@/services/syncService";
 
-const POLL_INTERVAL_MS = 30000; // 30 seconds
+import { POLL_INTERVAL_MS } from "@/models/constant/sync";
 
 type UsePollingUpdatesReturn = {
     hasUpdate: boolean;
     resetUpdate: () => void;
+    setLastTs: (ts: number) => void;
 };
 
 /**
  * Custom hook for polling server updates and managing update notifications
  * @returns Object containing hasUpdate state and resetUpdate function
  */
+import { SyncChannel } from "@/services/syncService";
+
 export const usePollingUpdates = (
-    onRefreshRef?: { current: (() => Promise<void> | void) | null }
+    onRefreshRef?: { current: ((channels: SyncChannel[]) => Promise<void> | void) | null }
 ): UsePollingUpdatesReturn => {
     const pathname = usePathname();
 
@@ -41,7 +44,7 @@ export const usePollingUpdates = (
 
         const checkUpdates = async () => {
             const since = lastTsRef.current;
-            const { hasUpdates, latestTs } = await checkForUpdates({ since, channels });
+            const { hasUpdates, latestTs, channels: updatedChannels } = await checkForUpdates({ since, channels });
 
             if (mounted && hasUpdates) {
                 //successToast("המערכת היומית עודכנה...", 3000);
@@ -50,7 +53,7 @@ export const usePollingUpdates = (
 
                 // Trigger auto-refresh if callback provided
                 if (onRefreshRef?.current) {
-                    onRefreshRef.current();
+                    onRefreshRef.current(updatedChannels);
                 }
             }
         };
@@ -89,5 +92,6 @@ export const usePollingUpdates = (
     return {
         hasUpdate,
         resetUpdate,
+        setLastTs,
     };
 };

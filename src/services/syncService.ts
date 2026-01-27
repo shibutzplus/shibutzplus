@@ -2,7 +2,7 @@
  * Sync Service
  * Handles push/poll for updates from the sync API
  */
-import { DAILY_TEACHER_COL_DATA_CHANGED, DAILY_SCHOOL_DATA_CHANGED, PUBLISH_DATA_CHANGED, MATERIAL_CHANGED } from "@/models/constant/sync";
+import { DAILY_TEACHER_COL_DATA_CHANGED, DAILY_SCHEDULE_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED, MATERIAL_CHANGED } from "@/models/constant/sync";
 import { SyncChannel } from "@/models/types/sync";
 
 export type { SyncChannel };
@@ -59,18 +59,21 @@ const pollUpdates = async (params: PollUpdatesParams): Promise<SyncPollResponse 
  */
 export const checkForUpdates = async (
   params: PollUpdatesParams
-): Promise<{ hasUpdates: boolean; latestTs: number }> => {
+): Promise<{ hasUpdates: boolean; latestTs: number; channels: SyncChannel[] }> => {
   const data = await pollUpdates(params);
 
   if (!data) {
-    return { hasUpdates: false, latestTs: params.since };
+    return { hasUpdates: false, latestTs: params.since, channels: [] };
   }
 
   const hasUpdates = data.latestTs > params.since;
+  const newItems = data.items.filter(item => item.ts > params.since);
+  const channels = Array.from(new Set(newItems.map(item => item.channel)));
 
   return {
     hasUpdates,
     latestTs: data.latestTs,
+    channels
   };
 };
 
@@ -85,9 +88,9 @@ export const getChannelsForPath = (
   teacherMaterialPortalPath: string
 ): SyncChannel[] => {
   if (pathname.includes(teacherMaterialPortalPath)) {
-    return [DAILY_TEACHER_COL_DATA_CHANGED, PUBLISH_DATA_CHANGED, MATERIAL_CHANGED];
+    return [DAILY_TEACHER_COL_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED, MATERIAL_CHANGED];
   }
-  return [DAILY_TEACHER_COL_DATA_CHANGED, DAILY_SCHOOL_DATA_CHANGED, PUBLISH_DATA_CHANGED];
+  return [DAILY_TEACHER_COL_DATA_CHANGED, DAILY_SCHEDULE_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED];
 };
 
 /**
@@ -95,7 +98,7 @@ export const getChannelsForPath = (
  * @param type - The type of sync event to push
  * @returns Promise that resolves when the push is complete
  */
-export const pushSyncUpdate = async (type: SyncChannel): Promise<void> => {
+export const pushSyncUpdate = async (type: SyncChannel): Promise<number | null> => {
   try {
     // Skip push when running in development
     //if (process.env.NODE_ENV === "development") {
@@ -113,10 +116,13 @@ export const pushSyncUpdate = async (type: SyncChannel): Promise<void> => {
       url = `${baseUrl}${url}`;
     }
 
-    void fetch(url, { method: "POST", keepalive: true }).catch((error) =>
-      console.error("Error pushing sync update (fetch):", error)
-    );
+    const res = await fetch(url, { method: "POST", keepalive: true });
+    if (res.ok) {
+      const data = await res.json();
+      return data.ts;
+    }
   } catch (error) {
     console.error("Error pushing sync update:", error);
   }
+  return null;
 };

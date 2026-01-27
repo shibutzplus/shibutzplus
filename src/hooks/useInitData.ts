@@ -11,20 +11,11 @@ import { getSchoolAction as getSchoolFromDB } from "@/app/actions/GET/getSchoolA
 import { getTeachersAction as getTeachersFromDB } from "@/app/actions/GET/getTeachersAction";
 import { getSubjectsAction as getSubjectsFromDB } from "@/app/actions/GET/getSubjectsAction";
 import { getClassesAction as getClassesFromDB } from "@/app/actions/GET/getClassesAction";
-import {
-    getCacheTimestamp,
-    getStorageClasses,
-    getStorageSubjects,
-    getStorageTeachers,
-    setCacheTimestamp,
-    setStorageClasses,
-    setStorageSubjects,
-    setStorageTeachers,
-} from "@/lib/localStorage";
+import { getCacheTimestamp, getStorageClasses, getStorageSubjects, getStorageTeachers, setCacheTimestamp, setStorageClasses, setStorageSubjects, setStorageTeachers, } from "@/lib/localStorage";
 import { isCacheFresh } from "@/utils/time";
 import { checkForUpdates } from "@/services/syncService";
 import { compareHebrew, sortByName } from "@/utils/sort";
-import { LISTS_DATA_CHANGED } from "@/models/constant/sync";
+import { ENTITIES_DATA_CHANGED, POLL_INTERVAL_MS } from "@/models/constant/sync";
 
 interface useInitDataProps {
     school: SchoolType | undefined;
@@ -56,6 +47,21 @@ const useInitData = ({
 }: useInitDataProps) => {
     const { data: session, status } = useSession();
 
+    // Determine effective school ID
+    const userRole = (session?.user as any)?.role;
+    let picked: string | null = null;
+    if (typeof window !== "undefined") {
+        try {
+            picked = new URLSearchParams(window.location.search).get("schoolId");
+        } catch {
+            picked = null;
+        }
+    }
+
+    const effectiveSchoolId = status === STATUS_AUTH && session?.user?.schoolId
+        ? (userRole === "admin" && picked?.trim() ? picked.trim() : session.user.schoolId)
+        : null;
+
     // Promise that checks if data is in cache, if not, fetches from DB. School data is always fetched from DB.
     const promiseFromCacheOrDB = <T, R>(
         schoolId: string,
@@ -68,61 +74,71 @@ const useInitData = ({
     };
 
     useEffect(() => {
-        const fetchData = async (schoolId: string) => {
+        if (!effectiveSchoolId) return;
+
+        const fetchData = async () => {
+
             try {
-                let schoolPromise: Promise<GetSchoolResponse> | undefined;
-                let classesPromise: Promise<GetClassesResponse> | undefined;
-                let teachersPromise: Promise<GetTeachersResponse> | undefined;
-                let subjectsPromise: Promise<GetSubjectsResponse> | undefined;
-
-                if (!school) {
-                    // fetch school from DB
-                    schoolPromise = getSchoolFromDB(schoolId);
-                }
-
-                // single poll for any data change across entities
+                // Check for updates
                 const lastSeen = Number(
                     (typeof window !== "undefined" && localStorage.getItem(SYNC_TS_KEY)) || 0,
                 );
-                let changed = false;
 
                 const { hasUpdates, latestTs } = await checkForUpdates({
                     since: lastSeen,
-                    channels: [LISTS_DATA_CHANGED],
+                    channels: [ENTITIES_DATA_CHANGED],
                 });
 
+                let changed = false;
                 if (hasUpdates) {
                     changed = true;
                     if (typeof window !== "undefined") {
                         localStorage.setItem(SYNC_TS_KEY, String(latestTs));
                     }
+
                 }
 
-                if (!classes) {
+                // If no updates and we already have data, skip
+                if (!changed && school && teachers && subjects && classes) {
+
+                    return;
+                }
+
+                let schoolPromise: Promise<GetSchoolResponse> | undefined;
+                let classesPromise: Promise<GetClassesResponse> | undefined;
+                let teachersPromise: Promise<GetTeachersResponse> | undefined;
+                let subjectsPromise: Promise<GetSubjectsResponse> | undefined;
+
+                // Always fetch school if missing or if changed
+                if (!school) {
+                    schoolPromise = getSchoolFromDB(effectiveSchoolId);
+                }
+
+                if (changed || !classes) {
                     classesPromise = changed
-                        ? getClassesFromDB(schoolId)
+                        ? getClassesFromDB(effectiveSchoolId)
                         : promiseFromCacheOrDB<ClassType[], GetClassesResponse>(
-                            schoolId,
+                            effectiveSchoolId,
                             getStorageClasses(),
                             getClassesFromDB,
                         );
                 }
 
-                if (!teachers) {
+                if (changed || !teachers) {
                     teachersPromise = changed
-                        ? getTeachersFromDB(schoolId)
+                        ? getTeachersFromDB(effectiveSchoolId)
                         : promiseFromCacheOrDB<TeacherType[], GetTeachersResponse>(
-                            schoolId,
+                            effectiveSchoolId,
                             getStorageTeachers(),
                             getTeachersFromDB,
                         );
                 }
 
-                if (!subjects) {
+                if (changed || !subjects) {
                     subjectsPromise = changed
-                        ? getSubjectsFromDB(schoolId)
+                        ? getSubjectsFromDB(effectiveSchoolId)
                         : promiseFromCacheOrDB<SubjectType[], GetSubjectsResponse>(
-                            schoolId,
+                            effectiveSchoolId,
                             getStorageSubjects(),
                             getSubjectsFromDB,
                         );
@@ -158,7 +174,7 @@ const useInitData = ({
                     setStorageClasses(sortedClasses);
                 }
 
-                // Update cache timestamp only when real change detected
+                // Update cache timestamp only when real change detected (and data was fetched)
                 if (changed) {
                     setCacheTimestamp(Date.now().toString());
                 }
@@ -167,21 +183,21 @@ const useInitData = ({
             }
         };
 
-        if (status === STATUS_AUTH && typeof window !== "undefined" && session?.user?.schoolId) {
-            // prefer ?schoolId for Admin User
-            const userRole = (session.user as any)?.role;
-            let picked: string | null = null;
-            try {
-                picked = new URLSearchParams(window.location.search).get("schoolId");
-            } catch {
-                picked = null;
-            }
-            const effectiveSchoolId =
-                userRole === "admin" && picked?.trim() ? picked.trim() : session.user.schoolId;
+        // Initial fetch
+        fetchData();
 
-            fetchData(effectiveSchoolId);
-        }
-    }, [session, status]);
+        // Setup polling
+        const intervalId = setInterval(() => {
+            // Only poll if tab is visible
+            if (!document.hidden) {
+                fetchData();
+            }
+        }, POLL_INTERVAL_MS);
+
+        return () => clearInterval(intervalId);
+
+    }, [effectiveSchoolId, school, teachers, subjects, classes]); // Re-run if dependencies change, but mainly just effectiveSchoolId determines the start
+
 };
 
 export default useInitData;
