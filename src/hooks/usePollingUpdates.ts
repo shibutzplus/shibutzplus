@@ -47,7 +47,6 @@ export const usePollingUpdates = (
             const { hasUpdates, latestTs, channels: updatedChannels } = await checkForUpdates({ since, channels });
 
             if (mounted && hasUpdates) {
-                //successToast("המערכת היומית עודכנה...", 3000);
                 setHasUpdate(true);
                 setLastTs(latestTs);
 
