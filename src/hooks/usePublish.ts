@@ -7,12 +7,12 @@ import messages from "@/resources/messages";
 import { generateSchoolUrl } from "@/utils";
 import { useEffect, useState } from "react";
 import { getSessionPublishDates, setSessionPublishDates } from "@/lib/sessionStorage";
-import { pushSyncUpdate } from "@/services/syncService";
-import { PUBLISH_DATA_CHANGED } from "@/models/constant/sync";
+
+import { DAILY_PUBLISH_DATA_CHANGED } from "@/models/constant/sync";
 
 const usePublish = () => {
     const { school, setSchool } = useMainContext()
-    const { selectedDate } = useDailyTableContext();
+    const { selectedDate, handlePushUpdate } = useDailyTableContext();
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [btnTitle, setBtnTitle] = useState<string>("פרסום המערכת");
     const [isDisabled, setIsDisabled] = useState<boolean>(false);
@@ -42,8 +42,8 @@ const usePublish = () => {
                 setSessionPublishDates(selectedDate);
                 // Update school context to include the newly published date (Local Storage not updated, currently unused)
                 setSchool(prev => prev ? { ...prev, publishDates: Array.from(new Set([...(prev.publishDates || []), selectedDate])) } : prev)
-                void pushSyncUpdate(PUBLISH_DATA_CHANGED);
-                successToast(messages.publish.success, 3000);
+                await handlePushUpdate(DAILY_PUBLISH_DATA_CHANGED);
+                successToast(messages.publish.success, 2500);
                 setBtnTitle("המערכת פורסמה");
                 setIsDisabled(true);
             } else {
@@ -72,8 +72,8 @@ const usePublish = () => {
                 // Update school context
                 setSchool(prev => prev ? { ...prev, publishDates: (prev.publishDates || []).filter(d => d !== selectedDate) } : prev);
 
-                void pushSyncUpdate(PUBLISH_DATA_CHANGED);
-                successToast("הפרסום בוטל בהצלחה", 3000);
+                await handlePushUpdate(DAILY_PUBLISH_DATA_CHANGED);
+                successToast("הפרסום בוטל בהצלחה", 2500);
                 setBtnTitle("פרסום המערכת");
                 setIsDisabled(false);
             } else {
