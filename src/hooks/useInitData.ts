@@ -16,6 +16,7 @@ import { isCacheFresh } from "@/utils/time";
 import { checkForUpdates } from "@/services/syncService";
 import { compareHebrew, sortByName } from "@/utils/sort";
 import { ENTITIES_DATA_CHANGED, POLL_INTERVAL_MS } from "@/models/constant/sync";
+import { useSearchParams } from "next/navigation";
 
 interface useInitDataProps {
     school: SchoolType | undefined;
@@ -46,17 +47,11 @@ const useInitData = ({
     setClasses,
 }: useInitDataProps) => {
     const { data: session, status } = useSession();
+    const searchParams = useSearchParams();
 
     // Determine effective school ID
     const userRole = (session?.user as any)?.role;
-    let picked: string | null = null;
-    if (typeof window !== "undefined") {
-        try {
-            picked = new URLSearchParams(window.location.search).get("schoolId");
-        } catch {
-            picked = null;
-        }
-    }
+    const picked = searchParams.get("schoolId");
 
     const effectiveSchoolId = status === STATUS_AUTH && session?.user?.schoolId
         ? (userRole === "admin" && picked?.trim() ? picked.trim() : session.user.schoolId)
@@ -99,7 +94,9 @@ const useInitData = ({
                 }
 
                 // If no updates and we already have data, skip
-                if (!changed && school && teachers && subjects && classes) {
+                // BUT only if effectiveSchoolId matches the current school
+                const schoolsMatch = school?.id === effectiveSchoolId;
+                if (!changed && schoolsMatch && teachers && subjects && classes) {
 
                     return;
                 }
@@ -109,13 +106,17 @@ const useInitData = ({
                 let teachersPromise: Promise<GetTeachersResponse> | undefined;
                 let subjectsPromise: Promise<GetSubjectsResponse> | undefined;
 
-                // Always fetch school if missing or if changed
-                if (!school) {
+                // Always fetch school if missing or if changed or if IDs mismatch
+                if (!schoolsMatch) {
                     schoolPromise = getSchoolFromDB(effectiveSchoolId);
                 }
 
-                if (changed || !classes) {
-                    classesPromise = changed
+                // If schools do NOT match, force reload of everything from DB for the new school
+                // If schools DO match, use standard logic (changed ? DB : Cache)
+                const shouldFetchFromDB = changed || !schoolsMatch;
+
+                if (shouldFetchFromDB || !classes) {
+                    classesPromise = shouldFetchFromDB
                         ? getClassesFromDB(effectiveSchoolId)
                         : promiseFromCacheOrDB<ClassType[], GetClassesResponse>(
                             effectiveSchoolId,
@@ -124,8 +125,8 @@ const useInitData = ({
                         );
                 }
 
-                if (changed || !teachers) {
-                    teachersPromise = changed
+                if (shouldFetchFromDB || !teachers) {
+                    teachersPromise = shouldFetchFromDB
                         ? getTeachersFromDB(effectiveSchoolId)
                         : promiseFromCacheOrDB<TeacherType[], GetTeachersResponse>(
                             effectiveSchoolId,
@@ -134,8 +135,8 @@ const useInitData = ({
                         );
                 }
 
-                if (changed || !subjects) {
-                    subjectsPromise = changed
+                if (shouldFetchFromDB || !subjects) {
+                    subjectsPromise = shouldFetchFromDB
                         ? getSubjectsFromDB(effectiveSchoolId)
                         : promiseFromCacheOrDB<SubjectType[], GetSubjectsResponse>(
                             effectiveSchoolId,
@@ -175,6 +176,8 @@ const useInitData = ({
                 }
 
                 // Update cache timestamp only when real change detected (and data was fetched)
+                // If we forced a fetch due to mismatch, we also updated storage, so we could update TS,
+                // but let's stick to 'changed' signal for now or maybe just leave it be.
                 if (changed) {
                     setCacheTimestamp(Date.now().toString());
                 }
