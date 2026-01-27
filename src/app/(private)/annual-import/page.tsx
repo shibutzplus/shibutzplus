@@ -15,6 +15,7 @@ import styles from "./page.module.css";
 import { usePopup } from "@/context/PopupContext";
 import MsgPopup from "@/components/popups/MsgPopup/MsgPopup";
 import EditCellPopup from "./components/EditCellPopup";
+import Preloader from "@/components/ui/Preloader/Preloader";
 
 interface ScheduleItem {
     teacher: string;
@@ -34,7 +35,7 @@ interface AnalyzedData {
     unmapped?: string[];
 }
 
-const AnnualImportPage = () => {
+const AnnualImportContent = () => {
     const searchParams = useSearchParams();
     const schoolId = searchParams.get("schoolId");
 
@@ -667,6 +668,14 @@ const AnnualImportPage = () => {
 
             </div>
         </AnnualImportPageLayout>
+    );
+};
+
+const AnnualImportPage = () => {
+    return (
+        <React.Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', marginTop: '20vh' }}><Preloader /></div>}>
+            <AnnualImportContent />
+        </React.Suspense>
     );
 };
 
