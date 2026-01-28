@@ -23,7 +23,7 @@ import { mapAnnualTeachers, populateDailyScheduleTable, mapAnnualTeacherClasses,
 import { createNewEmptyColumn } from "@/services/daily/setEmpty";
 import { sortDailyColumnIdsByPosition } from "@/utils/sort";
 import { validateMaxColumns } from "@/utils/security";
-import { usePollingUpdates } from "@/hooks/usePollingUpdates";
+// import { usePollingUpdates } from "@/hooks/usePollingUpdates";
 
 const COLUMN_PRIORITY: Record<ColumnType, number> = {
     [ColumnTypeValues.missingTeacher]: 0,
@@ -131,7 +131,8 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     const [teacherClassMap, setTeacherClassMap] = useState<TeacherClassMap>({});
     const [systemRecommendations, setSystemRecommendations] = useState<Record<string, Record<string, string[]>>>({});
     const refreshScheduleRef = useRef<((channels: import("@/services/syncService").SyncChannel[]) => Promise<void> | void) | null>(null);
-    const { setLastTs } = usePollingUpdates(refreshScheduleRef);
+    // const { setLastTs } = usePollingUpdates(refreshScheduleRef); // lior removed temp
+    const setLastTs = (ts: number) => { };  // lior added temp
 
     // Preview Mode State
     const [isPreviewMode, setIsPreviewMode] = useState(false);
