@@ -17,7 +17,6 @@ import { deleteClassAction } from "@/app/actions/DELETE/deleteClassAction";
 import { deleteSubjectAction } from "@/app/actions/DELETE/deleteSubjectAction";
 import { deleteTeacherAction } from "@/app/actions/DELETE/deleteTeacherAction";
 import useInitData from "@/hooks/useInitData";
-import { setStorageClasses, setStorageSubjects, setStorageTeachers } from "@/lib/localStorage";
 import { errorToast } from "@/lib/toast";
 import { pushSyncUpdate } from "@/services/syncService";
 import { ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
@@ -101,7 +100,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
                 if (!response.data) return prev;
                 const updatedSubjects = prev ? [...prev, response.data] : [response.data];
                 updatedSubjects.sort(sortByName);
-                setStorageSubjects(updatedSubjects);
+
                 return updatedSubjects;
             });
             removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
@@ -119,7 +118,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         const response = await updateSubjectAction(subjectId, subjectData);
         if (response.success && response.data) {
             setSubjects(response.data as SubjectType[]);
-            setStorageSubjects(response.data as SubjectType[]);
+
             removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
             void pushSyncUpdate(ENTITIES_DATA_CHANGED);
             return response.data;
@@ -131,7 +130,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         const response = await deleteSubjectAction(schoolId, subjectId);
         if (response.success && response.subjects && response.annualSchedules) {
             setSubjects(response.subjects);
-            setStorageSubjects(response.subjects);
+
             setAnnualAfterDelete(response.annualSchedules);
             removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
             void pushSyncUpdate(ENTITIES_DATA_CHANGED);
@@ -150,7 +149,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
                     if (a.activity !== b.activity) return a.activity ? 1 : -1;
                     return compareHebrew(a.name, b.name);
                 });
-                setStorageClasses(updatedClasses);
+
                 return updatedClasses;
             });
 
@@ -179,7 +178,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         const response = await updateClassAction(classId, classData);
         if (response.success && response.data) {
             setClasses(response.data as ClassType[]);
-            setStorageClasses(response.data as ClassType[]);
+
 
             if (originalClass?.activity && originalClass.name !== classData.name) {
                 const subjectToUpdate = subjects?.find(
@@ -207,7 +206,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         const response = await deleteClassAction(schoolId, classId);
         if (response.success && response.classes && response.annualSchedules) {
             setClasses(response.classes);
-            setStorageClasses(response.classes);
+
             setAnnualAfterDelete(response.annualSchedules);
 
             if (classToDelete?.activity && classToDelete.name) {
@@ -234,7 +233,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
                 if (!response.data) return prev;
                 const updatedTeachers = prev ? [...prev, response.data] : [response.data];
                 updatedTeachers.sort(sortByName);
-                setStorageTeachers(updatedTeachers);
+
                 return updatedTeachers;
             });
             removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
@@ -251,7 +250,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         const response = await updateTeacherAction(teacherId, teacherData);
         if (response.success && response.data) {
             setTeachers(response.data as TeacherType[]);
-            setStorageTeachers(response.data as TeacherType[]);
+
             removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
             void pushSyncUpdate(ENTITIES_DATA_CHANGED);
             return response.data;
@@ -263,7 +262,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         const response = await deleteTeacherAction(schoolId, teacherId);
         if (response.success && response.teachers && response.annualSchedules) {
             setTeachers(response.teachers);
-            setStorageTeachers(response.teachers);
+
             setAnnualAfterDelete(response.annualSchedules);
             removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
             void pushSyncUpdate(ENTITIES_DATA_CHANGED);

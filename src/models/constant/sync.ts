@@ -20,4 +20,4 @@ export const DAILY_PUBLISH_DATA_CHANGED = "publish";
 export const MATERIAL_CHANGED = "material";
 
 // Polling configuration
-export const POLL_INTERVAL_MS = 30000; // 30 seconds
+export const POLL_INTERVAL_MS = 40000; // 40 seconds

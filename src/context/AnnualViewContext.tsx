@@ -81,7 +81,7 @@ export const AnnualViewProvider: React.FC<{ children: ReactNode }> = ({ children
 
         setSchedule(newSchedule);
         setIsLoading(false);
-    }, [selectedClassId, selectedTeacherId, annualScheduleTable]);
+    }, [selectedClassId, selectedTeacherId, annualScheduleTable, school]);
 
     const classesSelectOptions = () => {
         const sortedClasses = [...(classes || [])].sort((a, b) => {

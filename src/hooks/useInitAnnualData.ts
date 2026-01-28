@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { getAnnualScheduleAction as getAnnualScheduleFromDB } from "@/app/actions/GET/getAnnualScheduleAction";
 import { STATUS_AUTH } from "@/models/constant/session";
 import { AnnualScheduleType } from "@/models/types/annualSchedule";
-import { setCacheTimestamp } from "@/lib/localStorage";
+
 
 interface useInitAnnualDataProps {
     annualScheduleTable: AnnualScheduleType[] | undefined;
@@ -39,10 +39,7 @@ const useInitAnnualData = ({
                     setAnnualScheduleTable(annualRes.data);
                 }
 
-                // Update cache timestamp if any data was fetched
-                if (annualPromise) {
-                    setCacheTimestamp(Date.now().toString());
-                }
+
             } catch (error) {
                 console.error("Error fetching data:", error);
             }

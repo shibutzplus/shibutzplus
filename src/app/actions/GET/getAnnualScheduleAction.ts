@@ -18,12 +18,6 @@ export async function getAnnualScheduleAction(
         const annualSchedule = await executeQuery(async () => {
             const schedules = await db.query.annualSchedule.findMany({
                 where: eq(schema.annualSchedule.schoolId, schoolId),
-                with: {
-                    school: true,
-                    class: true,
-                    teacher: true,
-                    subject: true,
-                },
             });
 
             return schedules.map(
@@ -32,13 +26,13 @@ export async function getAnnualScheduleAction(
                         id: schedule.id,
                         day: schedule.day,
                         hour: schedule.hour,
-                        school: schedule.school,
-                        class: schedule.class,
-                        teacher: schedule.teacher,
-                        subject: schedule.subject,
+                        schoolId: schedule.schoolId,
+                        classId: schedule.classId,
+                        teacherId: schedule.teacherId,
+                        subjectId: schedule.subjectId,
                         createdAt: schedule.createdAt,
                         updatedAt: schedule.updatedAt,
-                    }) as AnnualScheduleType,
+                    }) as unknown as AnnualScheduleType,
             );
         });
 

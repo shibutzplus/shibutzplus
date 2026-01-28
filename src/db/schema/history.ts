@@ -25,6 +25,7 @@ export const history = pgTable('history', {
         schoolIdDateIdx: index('idx_history_school_date').on(table.schoolId, table.date),
         schoolStatsIdx: index('idx_history_school_stats').on(table.schoolId, table.columnType, table.date),
         recommendationsIdx: index('idx_history_recommendations').on(table.schoolId, table.day, table.hour),
+        historySearchIdx: index('idx_history_search_optimized').on(table.schoolId, table.day, table.hour, table.originalTeacher, table.subTeacher),
     };
 });
 

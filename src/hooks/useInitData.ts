@@ -3,16 +3,10 @@
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { STATUS_AUTH } from "@/models/constant/session";
-import { SchoolType, GetSchoolResponse } from "@/models/types/school";
-import { GetSubjectsResponse, SubjectType } from "@/models/types/subjects";
-import { GetTeachersResponse, TeacherType } from "@/models/types/teachers";
-import { ClassType, GetClassesResponse } from "@/models/types/classes";
-import { getSchoolAction as getSchoolFromDB } from "@/app/actions/GET/getSchoolAction";
-import { getTeachersAction as getTeachersFromDB } from "@/app/actions/GET/getTeachersAction";
-import { getSubjectsAction as getSubjectsFromDB } from "@/app/actions/GET/getSubjectsAction";
-import { getClassesAction as getClassesFromDB } from "@/app/actions/GET/getClassesAction";
-import { getCacheTimestamp, getStorageClasses, getStorageSubjects, getStorageTeachers, setCacheTimestamp, setStorageClasses, setStorageSubjects, setStorageTeachers, } from "@/lib/localStorage";
-import { isCacheFresh } from "@/utils/time";
+import { SchoolType } from "@/models/types/school";
+import { SubjectType } from "@/models/types/subjects";
+import { TeacherType } from "@/models/types/teachers";
+import { ClassType } from "@/models/types/classes";
 import { checkForUpdates } from "@/services/syncService";
 import { compareHebrew, sortByName } from "@/utils/sort";
 import { ENTITIES_DATA_CHANGED, POLL_INTERVAL_MS } from "@/models/constant/sync";
@@ -21,7 +15,6 @@ import { useSearchParams } from "next/navigation";
 interface useInitDataProps {
     school: SchoolType | undefined;
     setSchool: (school: SchoolType | undefined) => void;
-
     teachers: TeacherType[] | undefined;
     setTeachers: (teachers: TeacherType[] | undefined) => void;
     subjects: SubjectType[] | undefined;
@@ -33,8 +26,8 @@ interface useInitDataProps {
 const SYNC_TS_KEY = "sync_ts_lists";
 
 /**
- * Initialize data for the app
- * Checks local storage for data, if not found, fetches from server
+ * Initialize app data.
+ * Fetches data from DB only if changes are detected (Smart Polling).
  */
 const useInitData = ({
     school,
@@ -57,22 +50,10 @@ const useInitData = ({
         ? (userRole === "admin" && picked?.trim() ? picked.trim() : session.user.schoolId)
         : null;
 
-    // Promise that checks if data is in cache, if not, fetches from DB. School data is always fetched from DB.
-    const promiseFromCacheOrDB = <T, R>(
-        schoolId: string,
-        storage: T | null,
-        getFromDB: (id: string) => Promise<R>,
-    ) => {
-        return storage && isCacheFresh(getCacheTimestamp())
-            ? Promise.resolve({ success: true, message: "", data: storage })
-            : getFromDB(schoolId);
-    };
-
     useEffect(() => {
         if (!effectiveSchoolId) return;
 
         const fetchData = async () => {
-
             try {
                 // Check for updates
                 const lastSeen = Number(
@@ -84,103 +65,44 @@ const useInitData = ({
                     channels: [ENTITIES_DATA_CHANGED],
                 });
 
-                let changed = false;
-                if (hasUpdates) {
-                    changed = true;
-                    if (typeof window !== "undefined") {
-                        localStorage.setItem(SYNC_TS_KEY, String(latestTs));
-                    }
-
-                }
-
-                // If no updates and we already have data, skip
+                // If no updates and we already have data for the current school, skip
                 // BUT only if effectiveSchoolId matches the current school
                 const schoolsMatch = school?.id === effectiveSchoolId;
-                if (!changed && schoolsMatch && teachers && subjects && classes) {
+                const shouldFetch = hasUpdates || !schoolsMatch || !school || !teachers || !subjects || !classes;
 
+                if (!shouldFetch) {
                     return;
                 }
 
-                let schoolPromise: Promise<GetSchoolResponse> | undefined;
-                let classesPromise: Promise<GetClassesResponse> | undefined;
-                let teachersPromise: Promise<GetTeachersResponse> | undefined;
-                let subjectsPromise: Promise<GetSubjectsResponse> | undefined;
-
-                // Always fetch school if missing or if changed or if IDs mismatch
-                if (!schoolsMatch) {
-                    schoolPromise = getSchoolFromDB(effectiveSchoolId);
+                if (typeof window !== "undefined" && latestTs > 0) {
+                    localStorage.setItem(SYNC_TS_KEY, String(latestTs));
                 }
 
-                // If schools do NOT match, force reload of everything from DB for the new school
-                // If schools DO match, use standard logic (changed ? DB : Cache)
-                const shouldFetchFromDB = changed || !schoolsMatch;
+                const { getInitialDataAction } = await import("@/app/actions/GET/getInitialDataAction");
+                const { school: fetchedSchool, teachers: fetchedTeachers, subjects: fetchedSubjects, classes: fetchedClasses } = await getInitialDataAction(effectiveSchoolId);
 
-                if (shouldFetchFromDB || !classes) {
-                    classesPromise = shouldFetchFromDB
-                        ? getClassesFromDB(effectiveSchoolId)
-                        : promiseFromCacheOrDB<ClassType[], GetClassesResponse>(
-                            effectiveSchoolId,
-                            getStorageClasses(),
-                            getClassesFromDB,
-                        );
+                if (fetchedSchool.success && fetchedSchool.data) {
+                    setSchool(fetchedSchool.data);
                 }
 
-                if (shouldFetchFromDB || !teachers) {
-                    teachersPromise = shouldFetchFromDB
-                        ? getTeachersFromDB(effectiveSchoolId)
-                        : promiseFromCacheOrDB<TeacherType[], GetTeachersResponse>(
-                            effectiveSchoolId,
-                            getStorageTeachers(),
-                            getTeachersFromDB,
-                        );
+                if (fetchedTeachers.success && fetchedTeachers.data) {
+                    const sorted = [...fetchedTeachers.data].sort(sortByName);
+                    setTeachers(sorted);
                 }
 
-                if (shouldFetchFromDB || !subjects) {
-                    subjectsPromise = shouldFetchFromDB
-                        ? getSubjectsFromDB(effectiveSchoolId)
-                        : promiseFromCacheOrDB<SubjectType[], GetSubjectsResponse>(
-                            effectiveSchoolId,
-                            getStorageSubjects(),
-                            getSubjectsFromDB,
-                        );
+                if (fetchedSubjects.success && fetchedSubjects.data) {
+                    const sorted = [...fetchedSubjects.data].sort(sortByName);
+                    setSubjects(sorted);
                 }
 
-                const [schoolRes, classesRes, teachersRes, subjectsRes] = await Promise.all([
-                    schoolPromise || Promise.resolve(null),
-                    classesPromise || Promise.resolve(null),
-                    teachersPromise || Promise.resolve(null),
-                    subjectsPromise || Promise.resolve(null),
-                ]);
-
-                if (schoolRes && schoolRes.success && schoolRes.data) {
-                    setSchool(schoolRes.data);
-                }
-
-                if (teachersRes && teachersRes.success && teachersRes.data) {
-                    const sortedTeachers = [...teachersRes.data].sort(sortByName);
-                    setTeachers(sortedTeachers);
-                    setStorageTeachers(sortedTeachers);
-                }
-                if (subjectsRes && subjectsRes.success && subjectsRes.data) {
-                    const sortedSubjects = [...subjectsRes.data].sort(sortByName);
-                    setSubjects(sortedSubjects);
-                    setStorageSubjects(sortedSubjects);
-                }
-                if (classesRes && classesRes.success && classesRes.data) {
-                    const sortedClasses = [...classesRes.data].sort((a, b) => {
+                if (fetchedClasses.success && fetchedClasses.data) {
+                    const sorted = [...fetchedClasses.data].sort((a, b) => {
                         if (a.activity !== b.activity) return a.activity ? 1 : -1;
                         return compareHebrew(a.name, b.name);
                     });
-                    setClasses(sortedClasses);
-                    setStorageClasses(sortedClasses);
+                    setClasses(sorted);
                 }
 
-                // Update cache timestamp only when real change detected (and data was fetched)
-                // If we forced a fetch due to mismatch, we also updated storage, so we could update TS,
-                // but let's stick to 'changed' signal for now or maybe just leave it be.
-                if (changed) {
-                    setCacheTimestamp(Date.now().toString());
-                }
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
@@ -199,7 +121,7 @@ const useInitData = ({
 
         return () => clearInterval(intervalId);
 
-    }, [effectiveSchoolId, school, teachers, subjects, classes]); // Re-run if dependencies change, but mainly just effectiveSchoolId determines the start
+    }, [effectiveSchoolId, school, teachers, subjects, classes]);
 
 };
 

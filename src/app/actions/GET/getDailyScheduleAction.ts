@@ -3,7 +3,7 @@
 import { DailyScheduleType, GetDailyScheduleResponse } from "@/models/types/dailySchedule";
 import { checkAuthAndParams, publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db, schema, executeQuery } from "../../../db";
 
 export async function getDailyScheduleAction(
@@ -45,44 +45,7 @@ export async function getDailyScheduleAction(
                     eq(schema.dailySchedule.schoolId, schoolId),
                     eq(schema.dailySchedule.date, date),
                 ),
-                with: {
-                    subject: true,
-                    originalTeacher: true,
-                    subTeacher: true,
-                    school: true,
-                },
             });
-
-            // TODO: ugly
-            // Fetch classes array manually since it's an array of IDs
-            const allClassIds = new Set<string>();
-            schedules.forEach((schedule: any) => {
-                if (schedule.classIds && Array.isArray(schedule.classIds)) {
-                    schedule.classIds.forEach((id: string) => allClassIds.add(id));
-                }
-            });
-
-            const classesData =
-                allClassIds.size > 0
-                    ? await db.query.classes.findMany({
-                        where: inArray(schema.classes.id, Array.from(allClassIds)),
-                    })
-                    : [];
-
-            const classesMap = new Map(classesData.map((c: any) => [c.id, c]));
-
-            const getClasses = (schedule: any) => {
-                if (
-                    schedule.classIds &&
-                    Array.isArray(schedule.classIds) &&
-                    schedule.classIds.length > 0
-                ) {
-                    return schedule.classIds
-                        .map((id: string) => classesMap.get(id))
-                        .filter(Boolean);
-                }
-                return [];
-            };
 
             return schedules.map(
                 (schedule: any) =>
@@ -94,16 +57,16 @@ export async function getDailyScheduleAction(
                         columnId: schedule.columnId,
                         eventTitle: schedule.eventTitle,
                         event: schedule.event,
-                        school: schedule.school,
-                        classes: getClasses(schedule),
-                        subject: schedule.subject,
-                        originalTeacher: schedule.originalTeacher,
+                        schoolId: schedule.schoolId,
+                        classIds: schedule.classIds,
+                        subjectId: schedule.subjectId,
+                        originalTeacherId: schedule.originalTeacherId,
                         columnType: schedule.columnType,
-                        subTeacher: schedule.subTeacher,
+                        subTeacherId: schedule.subTeacherId,
                         position: schedule.position,
                         createdAt: schedule.createdAt,
                         updatedAt: schedule.updatedAt,
-                    }) as DailyScheduleType,
+                    }) as unknown as DailyScheduleType, // Cast to maintain type compat for now, will fix frontend next
             );
         });
 

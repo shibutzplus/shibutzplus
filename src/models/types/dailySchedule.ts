@@ -12,12 +12,17 @@ export type DailyScheduleType = {
     columnId: string;
     eventTitle?: string;
     event?: string;
-    school: SchoolType;
+    school?: SchoolType; // Made optional
+    schoolId?: string;   // Added
     classes?: ClassType[];
+    classIds?: string[]; // Added
     subject?: SubjectType;
+    subjectId?: string;  // Added
     originalTeacher?: TeacherType;
+    originalTeacherId?: string; // Added
     columnType: ColumnType;
     subTeacher?: TeacherType;
+    subTeacherId?: string; // Added
     instructions?: string;
     position: number;
     createdAt?: Date;

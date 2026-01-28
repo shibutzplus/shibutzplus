@@ -11,7 +11,7 @@ export const populateAllClassesSchedule = (
     if (!annualScheduleTable || annualScheduleTable.length === 0) return newSchedule;
 
     annualScheduleTable.forEach((entry) => {
-        const classId = entry.class?.id;
+        const classId = entry.classId || entry.class?.id;
         if (!classId || !newSchedule[classId]) return;
 
         const dayName = DAYS_OF_WEEK[entry.day - 1];
@@ -28,14 +28,17 @@ export const populateAllClassesSchedule = (
 
         const cell = newSchedule[classId][dayName][entry.hour];
 
-        if (entry.teacher?.id && !cell.teachers.includes(entry.teacher.id)) {
-            cell.teachers.push(entry.teacher.id);
+        const teacherId = entry.teacherId || entry.teacher?.id;
+        if (teacherId && !cell.teachers.includes(teacherId)) {
+            cell.teachers.push(teacherId);
         }
-        if (entry.subject?.id && !cell.subjects.includes(entry.subject.id)) {
-            cell.subjects.push(entry.subject.id);
+        const subjectId = entry.subjectId || entry.subject?.id;
+        if (subjectId && !cell.subjects.includes(subjectId)) {
+            cell.subjects.push(subjectId);
         }
-        if (entry.class?.id && !cell.classes.includes(entry.class.id)) {
-            cell.classes.push(entry.class.id);
+        // const classId is already defined
+        if (classId && !cell.classes.includes(classId)) {
+            cell.classes.push(classId);
         }
     });
 
@@ -52,7 +55,7 @@ export const populateAllTeachersSchedule = (
     if (!annualScheduleTable || annualScheduleTable.length === 0) return newSchedule;
 
     annualScheduleTable.forEach((entry) => {
-        const teacherId = entry.teacher?.id;
+        const teacherId = entry.teacherId || entry.teacher?.id;
         if (!teacherId || !newSchedule[teacherId]) return;
 
         const dayName = DAYS_OF_WEEK[entry.day - 1];
@@ -69,14 +72,17 @@ export const populateAllTeachersSchedule = (
 
         const cell = newSchedule[teacherId][dayName][entry.hour];
 
-        if (entry.teacher?.id && !cell.teachers.includes(entry.teacher.id)) {
-            cell.teachers.push(entry.teacher.id);
+        // teacherId already defined
+        if (teacherId && !cell.teachers.includes(teacherId)) {
+            cell.teachers.push(teacherId);
         }
-        if (entry.subject?.id && !cell.subjects.includes(entry.subject.id)) {
-            cell.subjects.push(entry.subject.id);
+        const subjectId = entry.subjectId || entry.subject?.id;
+        if (subjectId && !cell.subjects.includes(subjectId)) {
+            cell.subjects.push(subjectId);
         }
-        if (entry.class?.id && !cell.classes.includes(entry.class.id)) {
-            cell.classes.push(entry.class.id);
+        const classId = entry.classId || entry.class?.id;
+        if (classId && !cell.classes.includes(classId)) {
+            cell.classes.push(classId);
         }
     });
 

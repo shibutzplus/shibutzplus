@@ -1,15 +1,53 @@
+import { useEffect, useState } from "react";
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
-import { errorToast } from "@/lib/toast";
+import { getClassesAction } from "@/app/actions/GET/getClassesAction";
+import { getSubjectsAction } from "@/app/actions/GET/getSubjectsAction";
+import { getTeachersAction } from "@/app/actions/GET/getTeachersAction";
+import { getSchoolAction } from "@/app/actions/GET/getSchoolAction";
 import { DailySchedule, GetDailyScheduleResponse } from "@/models/types/dailySchedule";
+import { ClassType } from "@/models/types/classes";
+import { SubjectType } from "@/models/types/subjects";
 import { TeacherType } from "@/models/types/teachers";
 import messages from "@/resources/messages";
 import { populateDailyScheduleTable } from "@/services/daily/populate";
-import { useState } from "react";
+import { HOURS_IN_DAY } from "@/utils/time";
+import { errorToast } from "@/lib/toast";
 
 export const usePublished = (schoolId?: string, selectedDate?: string, teacher?: TeacherType) => {
     const [isPublishLoading, setIsPublishLoading] = useState<boolean>(false);
     const [mainPublishTable, setMainPublishTable] = useState<DailySchedule>({});
     const [hasFetched, setHasFetched] = useState<boolean>(false);
+
+    // Entity lists for hydration
+    const [allTeachers, setAllTeachers] = useState<TeacherType[] | undefined>(undefined);
+    const [allSubjects, setAllSubjects] = useState<SubjectType[] | undefined>(undefined);
+    const [allClasses, setAllClasses] = useState<ClassType[] | undefined>(undefined);
+    const [schoolHours, setSchoolHours] = useState<number>(HOURS_IN_DAY);
+
+    // Fetch lists when schoolId changes
+    useEffect(() => {
+        if (!schoolId) return;
+
+        const fetchLists = async () => {
+            try {
+                const [teachersRes, subjectsRes, classesRes, schoolRes] = await Promise.all([
+                    getTeachersAction(schoolId, { isPrivate: false, hasSub: true }),
+                    getSubjectsAction(schoolId, { isPrivate: false }),
+                    getClassesAction(schoolId, { isPrivate: false }),
+                    getSchoolAction(schoolId) // Public school info
+                ]);
+
+                if (teachersRes.success && teachersRes.data) setAllTeachers(teachersRes.data);
+                if (subjectsRes.success && subjectsRes.data) setAllSubjects(subjectsRes.data);
+                if (classesRes.success && classesRes.data) setAllClasses(classesRes.data);
+                if (schoolRes.success && schoolRes.data) setSchoolHours(schoolRes.data.hoursNum || HOURS_IN_DAY);
+
+            } catch (e) {
+                console.error("Error fetching public lists:", e);
+            }
+        };
+        fetchLists();
+    }, [schoolId]);
 
     const fetchPublishScheduleData = async (
         overrideSchoolId?: string,
@@ -25,6 +63,9 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
             setHasFetched(true);
             return null;
         }
+
+
+
         try {
             setIsPublishLoading(true);
             const response = await getDailyScheduleAction(effectiveSchoolId, effectiveDate, { isPrivate: false });
@@ -33,6 +74,10 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
                     mainPublishTable,
                     effectiveDate,
                     response.data,
+                    schoolHours,
+                    allTeachers || [],
+                    allClasses || [],
+                    allSubjects || []
                 );
                 if (newSchedule) setMainPublishTable(newSchedule);
             } else {
@@ -56,8 +101,7 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
     ) => {
         const response = await fetchPublishScheduleData(overrideSchoolId, overrideDate, overrideTeacher);
 
-        // If response is null, it's a validation/exception error -> Toast
-        // If response exists but success is false, check if it's "Already published" (Wait no, "Not Published")
+
         if (!response) {
             errorToast("בעיה בטעינת המידע, נסו שוב");
             return;

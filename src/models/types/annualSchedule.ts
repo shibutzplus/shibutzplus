@@ -4,14 +4,19 @@ import { SchoolType } from "./school";
 import { SubjectType } from "./subjects";
 import { TeacherType } from "./teachers";
 
+
 export type AnnualScheduleType = {
     id: string;
     day: number; // 1-7 representing days of the week
     hour: number; // period within the day
-    school: SchoolType;
-    class: ClassType;
-    teacher: TeacherType;
-    subject: SubjectType;
+    school?: SchoolType; // Optional
+    schoolId?: string;   // Added
+    class?: ClassType;   // Optional
+    classId?: string;    // Added
+    teacher?: TeacherType; // Optional
+    teacherId?: string;    // Added
+    subject?: SubjectType; // Optional
+    subjectId?: string;    // Added
     createdAt?: Date;
     updatedAt?: Date;
 };

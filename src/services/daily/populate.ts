@@ -107,7 +107,7 @@ export const mapAnnualTeachers = (data: AnnualScheduleType[]) => {
     data.forEach((schedule) => {
         const day = schedule.day.toString();
         const hour = schedule.hour.toString();
-        const teacherId = schedule.teacher?.id;
+        const teacherId = schedule.teacherId || schedule.teacher?.id;
 
         if (!teacherMapping[day]) {
             teacherMapping[day] = {};
@@ -138,8 +138,8 @@ export const mapAnnualTeacherClasses = (data: AnnualScheduleType[]) => {
     data.forEach((schedule) => {
         const day = schedule.day.toString();
         const hour = schedule.hour.toString();
-        const teacherId = schedule.teacher?.id;
-        const classId = schedule.class?.id;
+        const teacherId = schedule.teacherId || schedule.teacher?.id;
+        const classId = schedule.classId || schedule.class?.id;
 
         if (!teacherId || !classId) return;
 
@@ -170,6 +170,9 @@ export const populateDailyScheduleTable = async (
     selectedDate: string,
     dataColumns: DailyScheduleType[],
     hoursNum: number = HOURS_IN_DAY,
+    teachers: any[] = [],
+    classes: any[] = [],
+    subjects: any[] = []
 ) => {
     try {
         if (!dataColumns) return;
@@ -177,7 +180,28 @@ export const populateDailyScheduleTable = async (
             return setEmptyColumn(mainDailyTable, selectedDate);
         }
 
-        const entriesByDayAndHeader = populateTable(dataColumns, selectedDate);
+        // Create Maps for fast lookup
+        const teacherMap = new Map(teachers.map(t => [t.id, t]));
+        const classMap = new Map(classes.map(c => [c.id, c]));
+        const subjectMap = new Map(subjects.map(s => [s.id, s]));
+
+        // Hydrate the data columns
+        const hydratedColumns = dataColumns.map(col => {
+            const getClasses = (ids: string[]) => {
+                if (!ids || !Array.isArray(ids)) return [];
+                return ids.map(id => classMap.get(id)).filter(Boolean);
+            };
+
+            return {
+                ...col,
+                originalTeacher: col.originalTeacherId ? teacherMap.get(col.originalTeacherId) : col.originalTeacher,
+                subTeacher: col.subTeacherId ? teacherMap.get(col.subTeacherId) : col.subTeacher,
+                subject: col.subjectId ? subjectMap.get(col.subjectId) : col.subject,
+                classes: col.classIds ? getClasses(col.classIds) : col.classes,
+            } as DailyScheduleType;
+        });
+
+        const entriesByDayAndHeader = populateTable(hydratedColumns, selectedDate);
 
         // Populate all schedule data at once
         const newSchedule: DailySchedule = {};

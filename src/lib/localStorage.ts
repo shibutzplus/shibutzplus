@@ -1,14 +1,8 @@
-import { SubjectType } from "@/models/types/subjects";
 import { TeacherType } from "@/models/types/teachers";
-import { ClassType } from "@/models/types/classes";
 
 // Local storage keys
 export const STORAGE_KEYS = {
-    CACHE_TIMESTAMP: "cache_timestamp",
-    CLASSES_DATA: "classes_data",
-    TEACHERS_DATA: "teachers_data",
-    SUBJECTS_DATA: "subjects_data",
-    TEACHER_DATA: "teacher_data",
+    TEACHER_DATA: "teacher_data",   // Used by Teacher Portal public pages
 };
 
 export const getStorage = <T>(key: string) => {
@@ -38,52 +32,6 @@ export const clearStorage = () => {
     localStorage.clear();
 };
 
-
-
-//
-// CacheTimestamp
-//
-export const getCacheTimestamp = () => {
-    return getStorage<string>(STORAGE_KEYS.CACHE_TIMESTAMP);
-};
-
-export const setCacheTimestamp = (timestamp: string) => {
-    return setStorage(STORAGE_KEYS.CACHE_TIMESTAMP, timestamp);
-};
-
-//
-// Teachers
-//
-export const getStorageTeachers = () => {
-    return getStorage<TeacherType[]>(STORAGE_KEYS.TEACHERS_DATA);
-};
-
-export const setStorageTeachers = (teachers: TeacherType[]) => {
-    return setStorage(STORAGE_KEYS.TEACHERS_DATA, teachers);
-};
-
-//
-// Subjects
-//
-export const getStorageSubjects = () => {
-    return getStorage<SubjectType[]>(STORAGE_KEYS.SUBJECTS_DATA);
-};
-
-export const setStorageSubjects = (subjects: SubjectType[]) => {
-    return setStorage(STORAGE_KEYS.SUBJECTS_DATA, subjects);
-};
-
-//
-// Classes
-//
-export const getStorageClasses = () => {
-    return getStorage<ClassType[]>(STORAGE_KEYS.CLASSES_DATA);
-};
-
-export const setStorageClasses = (classes: ClassType[]) => {
-    return setStorage(STORAGE_KEYS.CLASSES_DATA, classes);
-};
-
 //
 // Current logged in Teacher
 //
@@ -99,3 +47,4 @@ export const removeStorageTeacher = () => {
     if (typeof window === "undefined") return;
     localStorage.removeItem(STORAGE_KEYS.TEACHER_DATA);
 };
+

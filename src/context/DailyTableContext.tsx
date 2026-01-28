@@ -122,7 +122,7 @@ interface DailyTableProviderProps {
 }
 
 export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children }) => {
-    const { school, setSchool, teachers, settings } = useMainContext();
+    const { school, setSchool, teachers, subjects, classes, settings } = useMainContext();
 
     // Main state for table object storage
     const [mainDailyTable, setMainDailyTable] = useState<DailySchedule>({});
@@ -201,26 +201,38 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         fetchAnnualSchedule();
     }, [school?.id]);
 
-    // Get Daily rows by selected date and populate the table
+    // Fetch System Recommendations (Depends only on school/date)
+    useEffect(() => {
+        const fetchRecommendations = async () => {
+            // Need school ID and a date
+            if (!school?.id || !selectedDate) {
+                setSystemRecommendations({});
+                return;
+            }
+
+            try {
+                const day = new Date(selectedDate).getDay() + 1;
+                const recResponse = await getSystemRecommendationsAction(school.id, day);
+                if (recResponse.success && recResponse.data) {
+                    setSystemRecommendations(recResponse.data);
+                } else {
+                    setSystemRecommendations({});
+                }
+            } catch (recError) {
+                console.error("Error fetching recommendations:", recError);
+                setSystemRecommendations({});
+            }
+        };
+
+        fetchRecommendations();
+    }, [school?.id, selectedDate]);
+
+    // Get Daily rows by selected date and populate the table (Depends on teachers, settings, etc.)
     useEffect(() => {
         const fetchDataForDate = async (forceRefresh = false) => {
             if (!school?.id || !selectedDate) return;
             try {
                 setIsLoading(true);
-
-                // Fetch Recommendations
-                try {
-                    const day = new Date(selectedDate).getDay() + 1;
-                    const recResponse = await getSystemRecommendationsAction(school.id, day);
-                    if (recResponse.success && recResponse.data) {
-                        setSystemRecommendations(recResponse.data);
-                    } else {
-                        setSystemRecommendations({});
-                    }
-                } catch (recError) {
-                    console.error("Error fetching recommendations:", recError);
-                    setSystemRecommendations({});
-                }
 
                 if (!forceRefresh) {
                     const populateFromStorage = populateTableFromStorage();
@@ -234,7 +246,10 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                         mainDailyTable,
                         selectedDate,
                         response.data,
-                        settings?.hoursNum
+                        settings?.hoursNum,
+                        teachers || [],
+                        classes || [],
+                        subjects || []
                     );
                     if (newSchedule) setMainAndStorageTable(newSchedule);
                 } else {
