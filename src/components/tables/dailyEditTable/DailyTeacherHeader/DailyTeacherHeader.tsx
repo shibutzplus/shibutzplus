@@ -35,7 +35,7 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
     const { teachers } = useMainContext();
     const { deleteColumn, mainDailyTable, selectedDate, moveColumn, populateTeacherColumn, mapAvailableTeachers } =
         useDailyTableContext();
-    const { fetchTeacherScheduleDate } = useTeacherTableContext(); // Added context
+    const { fetchTeacherScheduleDate } = useTeacherTableContext();
     const [isLoading, setIsLoading] = useState(false);
     const { handleOpenPopup } = useConfirmPopup();
 

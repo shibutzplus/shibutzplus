@@ -75,6 +75,7 @@ interface DailyTableContextType {
         columnId: string,
         dailyScheduleId: string,
     ) => Promise<boolean | undefined>;
+    pasteEventColumn: (columnId: string, pastedColumnData: { [hour: string]: DailyScheduleCell }) => Promise<boolean>;
     daysSelectOptions: (short?: boolean) => SelectOption[];
     handleDayChange: (value: string) => void;
     togglePreviewMode: () => void;
@@ -161,7 +162,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     );
 
     // Event Column
-    const { populateEventColumn, addEventCell, updateEventCell, deleteEventCell } =
+    const { populateEventColumn, addEventCell, updateEventCell, deleteEventCell, pasteEventColumn } =
         useDailyEventActions(mainDailyTable, setMainDailyTable, clearColumn, selectedDate, handlePushUpdate);
 
     // Fetch annual schedule and map available teachers for each day and hour
@@ -548,6 +549,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 togglePreviewMode,
                 moveColumn,
                 handlePushUpdate,
+                pasteEventColumn,
             }}
         >
             {children}

@@ -1,4 +1,5 @@
 import { deleteDailyCellAction } from "@/app/actions/DELETE/deleteDailyCellAction";
+import { deleteDailyColumnAction } from "@/app/actions/DELETE/deleteDailyColumnAction";
 import { addDailyEventCellAction } from "@/app/actions/POST/addDailyEventCellAction";
 import { updateDailyEventCellAction } from "@/app/actions/PUT/updateDailyEventCellAction";
 import { updateDailyEventHeaderAction } from "@/app/actions/PUT/updateDailyEventHeaderAction";
@@ -20,7 +21,7 @@ const useDailyEventActions = (
     selectedDate: string,
     handlePushUpdate: (channel: typeof DAILY_SCHEDULE_DATA_CHANGED) => void
 ) => {
-    const { school } = useMainContext();
+    const { school, settings } = useMainContext();
 
     const pushDailyUpdate = () => {
         handlePushUpdate(DAILY_SCHEDULE_DATA_CHANGED);
@@ -95,7 +96,7 @@ const useDailyEventActions = (
             headerEvent: eventTitle,
             type: ColumnTypeValues.event,
             position: currentPosition,
-        });
+        }, settings?.hoursNum);
         setMainAndStorageTable(updatedSchedule);
     };
 
@@ -176,12 +177,108 @@ const useDailyEventActions = (
         }
     };
 
+    const pasteEventColumn = async (
+        columnId: string,
+        pastedColumnData: { [hour: string]: DailyScheduleCell },
+    ) => {
+        const schoolId = school?.id;
+        if (!schoolId) return false;
+
+        const currentPosition = mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.position || 0;
+        const eventTitle = pastedColumnData["1"]?.headerCol?.headerEvent || eventPlaceholder;
+
+        try {
+            // 1. Clear existing data in DB
+            const colData = mainDailyTable[selectedDate]?.[columnId];
+            const hasSavedData = colData ? Object.values(colData).some(cell => !!cell.DBid) : false;
+
+            if (hasSavedData) {
+                await deleteDailyColumnAction(schoolId, columnId, selectedDate);
+            }
+
+            let updatedSchedule: DailySchedule = { ...mainDailyTable };
+            if (updatedSchedule[selectedDate]) {
+                updatedSchedule[selectedDate] = { ...updatedSchedule[selectedDate] };
+                updatedSchedule[selectedDate][columnId] = {};
+            }
+
+            const day = getDayNumberByDateString(selectedDate);
+
+            // Paste header row 0
+            const headerResponse = await addDailyEventCellAction({
+                date: new Date(selectedDate),
+                day: day,
+                hour: 0,
+                columnId,
+                school: school,
+                columnType: ColumnTypeValues.event,
+                eventTitle,
+                event: eventPlaceholder,
+                position: currentPosition,
+            });
+
+            if (headerResponse.success && headerResponse.data?.id) {
+                updatedSchedule[selectedDate][columnId]["0"] = {
+                    hour: 0,
+                    DBid: headerResponse.data.id,
+                    headerCol: {
+                        headerEvent: eventTitle,
+                        type: ColumnTypeValues.event,
+                        position: currentPosition,
+                    },
+                };
+                // Immediate feedback: show the cleared column with new header
+                updatedSchedule = { ...updatedSchedule };
+                setMainAndStorageTable(updatedSchedule);
+            }
+
+            // Paste other cells
+            for (const hourKey in pastedColumnData) {
+                const hour = parseInt(hourKey);
+                if (isNaN(hour) || hour === 0) continue;
+
+                const sourceCell = pastedColumnData[hourKey];
+                if (sourceCell.event === undefined) continue; // Skip if no event structure
+
+                const dailyCellData = addNewEventCell(school, sourceCell, columnId, selectedDate, sourceCell.event || "", currentPosition);
+                if (dailyCellData) {
+                    const response = await addDailyEventCellAction(dailyCellData);
+                    if (response?.success && response.data) {
+                        updatedSchedule = updateAddCell(
+                            response.data.id,
+                            updatedSchedule,
+                            selectedDate,
+                            sourceCell,
+                            columnId,
+                            { event: sourceCell.event },
+                            eventTitle
+                        );
+                    }
+                }
+            }
+
+            updatedSchedule = fillLeftRowsWithEmptyCells(updatedSchedule, selectedDate, columnId, {
+                headerEvent: eventTitle,
+                type: ColumnTypeValues.event,
+                position: currentPosition,
+            }, settings?.hoursNum);
+            setMainAndStorageTable(updatedSchedule);
+            pushDailyUpdate();
+            return true;
+        } catch (error) {
+            console.error("Error pasting event column:", error);
+            return false;
+        }
+    };
+
     return {
         populateEventColumn,
         addEventCell,
         updateEventCell,
         deleteEventCell,
+        pasteEventColumn,
     };
 };
 
 export default useDailyEventActions;
+

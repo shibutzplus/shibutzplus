@@ -7,8 +7,6 @@
     left: 0;
     z-index: 5;
     display: flex;
-    justify-content: center;
-    align-items: center;
     will-change: transform;
     z-index: 16;
     box-shadow: -1px 0px 0px 0px var(--background-color),
@@ -22,7 +20,7 @@
     border-radius: var(--border-radius-table) var(--border-radius-table) 0 0;
     gap: 10px;
     width: 100%;
-    padding: 0 15px;
+    padding: 0 20px;
     text-align: right;
     height: 100%;
     color: var(--white-text-color);
@@ -30,11 +28,22 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: default;
 }
 
 .headerText {
     color: var(--white-text-color);
     font-size: 18px;
-    text-align: center;
     word-break: break-word;
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 5px;
+}
+
+.menuContainer {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    z-index: 10;
 }

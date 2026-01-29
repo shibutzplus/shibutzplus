@@ -248,10 +248,14 @@ const DailyTable: React.FC<DailyTableProps> = ({
                                         width={width}
                                     >
                                         {type === ColumnTypeValues.event ? (
-                                            <DailyEventCell cell={cellData} columnId={colId} />
+                                            <DailyEventCell
+                                                key={`${colId}-${row}-${cellData?.event || 'empty'}`}
+                                                cell={cellData}
+                                                columnId={colId}
+                                            />
                                         ) : (
                                             <DailyTeacherCell
-                                                key={`${colId}-${row}-${cellData?.subTeacher?.id || cellData?.classes?.[0]?.id || 'empty'}`}
+                                                key={`${colId}-${row}-${cellData?.subTeacher?.id || cellData?.event || cellData?.classes?.[0]?.id || 'empty'}`}
                                                 cell={cellData}
                                                 columnId={colId}
                                                 type={type}
