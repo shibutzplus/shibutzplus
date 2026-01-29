@@ -81,7 +81,7 @@ export async function updateDailyInstructionAction(
         }
 
         // Fire and forget sync update
-        void pushSyncUpdate(MATERIAL_CHANGED);
+        void pushSyncUpdate(MATERIAL_CHANGED, { schoolId: updatedEntries[0].schoolId, date });
 
         return {
             success: true,

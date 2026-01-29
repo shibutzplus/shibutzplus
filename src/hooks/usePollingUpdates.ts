@@ -17,10 +17,10 @@ type UsePollingUpdatesReturn = {
  * Custom hook for polling server updates and managing update notifications
  * @returns Object containing hasUpdate state and resetUpdate function
  */
-import { SyncChannel } from "@/services/syncService";
+import { SyncItem } from "@/services/syncService";
 
 export const usePollingUpdates = (
-    onRefreshRef?: { current: ((channels: SyncChannel[]) => Promise<void> | void) | null }
+    onRefreshRef?: { current: ((items: SyncItem[]) => Promise<void> | void) | null }
 ): UsePollingUpdatesReturn => {
     const pathname = usePathname();
 
@@ -44,7 +44,7 @@ export const usePollingUpdates = (
 
         const checkUpdates = async () => {
             const since = lastTsRef.current;
-            const { hasUpdates, latestTs, channels: updatedChannels } = await checkForUpdates({ since, channels });
+            const { hasUpdates, latestTs, items } = await checkForUpdates({ since, channels });
 
             if (mounted && hasUpdates) {
                 setHasUpdate(true);
@@ -52,7 +52,7 @@ export const usePollingUpdates = (
 
                 // Trigger auto-refresh if callback provided
                 if (onRefreshRef?.current) {
-                    onRefreshRef.current(updatedChannels);
+                    onRefreshRef.current(items);
                 }
             }
         };

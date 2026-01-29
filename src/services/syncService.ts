@@ -2,18 +2,15 @@
  * Sync Service
  * Handles push/poll for updates from the sync API
  */
-import { DAILY_TEACHER_COL_DATA_CHANGED, DAILY_SCHEDULE_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED, MATERIAL_CHANGED } from "@/models/constant/sync";
-import { SyncChannel } from "@/models/types/sync";
+import { DAILY_TEACHER_COL_DATA_CHANGED, DAILY_SCHEDULE_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED, MATERIAL_CHANGED, ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
+import { SyncChannel, SyncPayload, SyncItem } from "@/models/types/sync";
 
-export type { SyncChannel };
+export type { SyncChannel, SyncPayload, SyncItem };
 
 export interface SyncPollResponse {
   latestTs: number;
   count: number;
-  items: Array<{
-    channel: SyncChannel;
-    ts: number;
-  }>;
+  items: SyncItem[];
 }
 
 export interface PollUpdatesParams {
@@ -59,21 +56,20 @@ const pollUpdates = async (params: PollUpdatesParams): Promise<SyncPollResponse 
  */
 export const checkForUpdates = async (
   params: PollUpdatesParams
-): Promise<{ hasUpdates: boolean; latestTs: number; channels: SyncChannel[] }> => {
+): Promise<{ hasUpdates: boolean; latestTs: number; items: SyncItem[] }> => {
   const data = await pollUpdates(params);
 
   if (!data) {
-    return { hasUpdates: false, latestTs: params.since, channels: [] };
+    return { hasUpdates: false, latestTs: params.since, items: [] };
   }
 
   const hasUpdates = data.latestTs > params.since;
   const newItems = data.items.filter(item => item.ts > params.since);
-  const channels = Array.from(new Set(newItems.map(item => item.channel)));
 
   return {
     hasUpdates,
     latestTs: data.latestTs,
-    channels
+    items: newItems
   };
 };
 
@@ -88,17 +84,18 @@ export const getChannelsForPath = (
   teacherMaterialPortalPath: string
 ): SyncChannel[] => {
   if (pathname.includes(teacherMaterialPortalPath)) {
-    return [DAILY_TEACHER_COL_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED, MATERIAL_CHANGED];
+    return [DAILY_TEACHER_COL_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED, MATERIAL_CHANGED, ENTITIES_DATA_CHANGED];
   }
-  return [DAILY_TEACHER_COL_DATA_CHANGED, DAILY_SCHEDULE_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED];
+  return [DAILY_TEACHER_COL_DATA_CHANGED, DAILY_SCHEDULE_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED, ENTITIES_DATA_CHANGED];
 };
 
 /**
  * Pushes a sync notification to the server
  * @param type - The type of sync event to push
+ * @param payload - Optional metadata (schoolId, date)
  * @returns Promise that resolves when the push is complete
  */
-export const pushSyncUpdate = async (type: SyncChannel): Promise<number | null> => {
+export const pushSyncUpdate = async (type: SyncChannel, payload?: SyncPayload): Promise<number | null> => {
   try {
     // Skip push when running in development
     //if (process.env.NODE_ENV === "development") {
@@ -106,6 +103,8 @@ export const pushSyncUpdate = async (type: SyncChannel): Promise<number | null> 
     //}
 
     let url = `/api/sync/push?type=${type}`;
+    if (payload?.schoolId) url += `&schoolId=${payload.schoolId}`;
+    if (payload?.date) url += `&date=${payload.date}`;
 
     // If running on dev server, prepend base URL
     if (typeof window === "undefined") {

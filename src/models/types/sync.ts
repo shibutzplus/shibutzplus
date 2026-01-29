@@ -12,3 +12,15 @@ export type SyncChannel =
     | typeof ENTITIES_DATA_CHANGED
     | typeof DAILY_PUBLISH_DATA_CHANGED
     | typeof MATERIAL_CHANGED;
+
+export interface SyncPayload {
+    schoolId?: string;
+    date?: string; // YYYY-MM-DD
+}
+
+export interface SyncItem {
+    channel: SyncChannel;
+    ts: number;
+    payload?: SyncPayload;
+}
+

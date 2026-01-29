@@ -1,35 +1,36 @@
 "use client";
 
-import { SelectOption } from "@/models/types";
-import { ColumnType, DailySchedule, DailyScheduleCell, DailyScheduleType, TeacherHourlyScheduleItem, ColumnTypeValues } from "@/models/types/dailySchedule";
-import useDailySelectedDate from "@/hooks/daily/useDailySelectedDate";
 import { createContext, ReactNode, useContext, useEffect, useState, useRef } from "react";
 import { useMainContext } from "./MainContext";
-import { getSessionDailyTable, setSessionDailyTable } from "@/lib/sessionStorage";
+import { SelectOption } from "@/models/types";
+import { ColumnType, DailySchedule, DailyScheduleCell, DailyScheduleType, TeacherHourlyScheduleItem, ColumnTypeValues } from "@/models/types/dailySchedule";
 import { TeacherType } from "@/models/types/teachers";
-import useDailyTeacherActions from "@/hooks/daily/useDailyTeacherActions";
-import { getAnnualScheduleAction } from "@/app/actions/GET/getAnnualScheduleAction";
 import { AvailableTeachers, TeacherClassMap } from "@/models/types/annualSchedule";
-import { getTomorrowOption } from "@/resources/dayOptions";
+import { DAILY_TEACHER_COL_DATA_CHANGED, DAILY_SCHEDULE_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED } from "@/models/constant/sync";
+import useDailySelectedDate from "@/hooks/daily/useDailySelectedDate";
+import useDailyTeacherActions from "@/hooks/daily/useDailyTeacherActions";
+import useDailyEventActions from "@/hooks/daily/useDailyEventActions";
+import { usePollingUpdates } from "@/hooks/usePollingUpdates";
+import { getAnnualScheduleAction } from "@/app/actions/GET/getAnnualScheduleAction";
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
 import { getSystemRecommendationsAction } from "@/app/actions/GET/getSystemRecommendationsAction";
-import { errorToast } from "@/lib/toast";
-import { generateId } from "@/utils";
 import { deleteDailyColumnAction } from "@/app/actions/DELETE/deleteDailyColumnAction";
-import useDailyEventActions from "@/hooks/daily/useDailyEventActions";
-import { pushSyncUpdate } from "@/services/syncService";
-import { DAILY_TEACHER_COL_DATA_CHANGED, DAILY_SCHEDULE_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED } from "@/models/constant/sync";
+import { pushSyncUpdate, SyncItem } from "@/services/syncService";
 import { mapAnnualTeachers, populateDailyScheduleTable, mapAnnualTeacherClasses, } from "@/services/daily/populate";
 import { createNewEmptyColumn } from "@/services/daily/setEmpty";
+import { generateId } from "@/utils";
 import { sortDailyColumnIdsByPosition } from "@/utils/sort";
 import { validateMaxColumns } from "@/utils/security";
-import { usePollingUpdates } from "@/hooks/usePollingUpdates";
+import { getTomorrowOption } from "@/resources/dayOptions";
+import { errorToast } from "@/lib/toast";
 
 const COLUMN_PRIORITY: Record<ColumnType, number> = {
     [ColumnTypeValues.missingTeacher]: 0,
     [ColumnTypeValues.existingTeacher]: 1,
     [ColumnTypeValues.event]: 2,
 };
+const POSITION_GAP = 1000;
+const REBALANCE_THRESHOLD = 10; // If gap is smaller than rebalance
 
 interface DailyTableContextType {
     mainDailyTable: DailySchedule;
@@ -38,16 +39,10 @@ interface DailyTableContextType {
     isLoading: boolean;
     isPreviewMode: boolean;
     selectedDate: string;
-    systemRecommendations: Record<string, Record<string, string[]>>; // New State
+    systemRecommendations: Record<string, Record<string, string[]>>;
     addNewEmptyColumn: (colType: ColumnType) => void;
     deleteColumn: (columnId: string) => Promise<boolean>;
-    populateTeacherColumn: (
-        selectedDate: string,
-        columnId: string,
-        dayNumber: number,
-        teacherId: string,
-        type: ColumnType,
-    ) => Promise<TeacherHourlyScheduleItem[] | undefined>;
+    populateTeacherColumn: (selectedDate: string, columnId: string, dayNumber: number, teacherId: string, type: ColumnType,) => Promise<TeacherHourlyScheduleItem[] | undefined>;
     populateEventColumn: (columnId: string, eventTitle: string) => Promise<void>;
     updateTeacherCell: (
         selectedDate: string,
@@ -55,10 +50,7 @@ interface DailyTableContextType {
         cellData: DailyScheduleCell,
         columnId: string,
         dailyScheduleId: string,
-        data: {
-            event?: string;
-            subTeacher?: TeacherType;
-        },
+        data: { event?: string; subTeacher?: TeacherType; },
     ) => Promise<DailyScheduleCell | undefined>;
     clearTeacherCell: (
         selectedDate: string,
@@ -97,7 +89,7 @@ const updateColumnPositionInSchedule = (
 ) => {
     if (!daySchedule[columnId]) return;
 
-    daySchedule[columnId] = { ...daySchedule[columnId] }; // Shallow copy column
+    daySchedule[columnId] = { ...daySchedule[columnId] };
     Object.keys(daySchedule[columnId]).forEach((key) => {
         const cell = daySchedule[columnId][key];
         if (cell && cell.headerCol) {
@@ -122,63 +114,55 @@ interface DailyTableProviderProps {
 }
 
 export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children }) => {
-    const { school, setSchool, teachers, subjects, classes, settings } = useMainContext();
 
-    // Main state for table object storage
+    const { school, setSchool, teachers, subjects, classes, settings } = useMainContext();
     const [mainDailyTable, setMainDailyTable] = useState<DailySchedule>({});
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [mapAvailableTeachers, setMapAvailableTeachers] = useState<AvailableTeachers>({});
     const [teacherClassMap, setTeacherClassMap] = useState<TeacherClassMap>({});
-    const [systemRecommendations, setSystemRecommendations] = useState<Record<string, Record<string, string[]>>>({});
-    const refreshScheduleRef = useRef<((channels: import("@/services/syncService").SyncChannel[]) => Promise<void> | void) | null>(null);
+    const [recommendationsCache, setRecommendationsCache] = useState<Record<number, Record<string, Record<string, string[]>>>>({});
+    const refreshScheduleRef = useRef<((items: SyncItem[]) => Promise<void> | void) | null>(null);
     const { setLastTs } = usePollingUpdates(refreshScheduleRef);
-
-    // Preview Mode State
     const [isPreviewMode, setIsPreviewMode] = useState(false);
-
-    const togglePreviewMode = () => {
-        setIsPreviewMode((prev) => !prev);
-    };
-
-    // Select Date
+    const togglePreviewMode = () => { setIsPreviewMode((prev) => !prev); };
     const { daysSelectOptions, selectedDate, handleDayChange } = useDailySelectedDate();
-
-    const setMainAndStorageTable = (newSchedule: DailySchedule) => {
-        setMainDailyTable({ ...newSchedule });
-        setSessionDailyTable(newSchedule, selectedDate);
-    };
+    const currentDayIndex = selectedDate ? new Date(selectedDate).getDay() + 1 : 0;
+    const systemRecommendations = recommendationsCache[currentDayIndex] || {};
 
     const clearColumn = (day: string, columnId: string) => {
-        const updatedSchedule = { ...mainDailyTable };
+        setMainDailyTable(prev => {
+            const updatedSchedule = { ...prev };
 
-        if (updatedSchedule[day]) {
-            updatedSchedule[day] = { ...updatedSchedule[day] };
-            if (updatedSchedule[day][columnId]) {
-                updatedSchedule[day][columnId] = {};
+            if (updatedSchedule[day]) {
+                updatedSchedule[day] = { ...updatedSchedule[day] };
+                if (updatedSchedule[day][columnId]) {
+                    updatedSchedule[day][columnId] = {};
+                }
             }
-        }
 
-        setMainAndStorageTable(updatedSchedule);
+            return updatedSchedule;
+        });
     };
 
     const handlePushUpdate = async (channel: typeof DAILY_TEACHER_COL_DATA_CHANGED | typeof DAILY_SCHEDULE_DATA_CHANGED | typeof DAILY_PUBLISH_DATA_CHANGED) => {
-        const ts = await pushSyncUpdate(channel);
+        const payload = { schoolId: school?.id, date: selectedDate };
+        const ts = await pushSyncUpdate(channel, payload);
         if (ts) {
             setLastTs(ts);
         }
     };
 
-    // Teacher Column Actions
+    // Teacher Column
     const { populateTeacherColumn, updateTeacherCell, clearTeacherCell } = useDailyTeacherActions(
         mainDailyTable,
-        setMainAndStorageTable,
+        setMainDailyTable,
         clearColumn,
         handlePushUpdate
     );
 
-    // Event Column Actions
+    // Event Column
     const { populateEventColumn, addEventCell, updateEventCell, deleteEventCell } =
-        useDailyEventActions(mainDailyTable, setMainAndStorageTable, clearColumn, selectedDate, handlePushUpdate);
+        useDailyEventActions(mainDailyTable, setMainDailyTable, clearColumn, selectedDate, handlePushUpdate);
 
     // Fetch annual schedule and map available teachers for each day and hour
     useEffect(() => {
@@ -201,59 +185,51 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         fetchAnnualSchedule();
     }, [school?.id]);
 
-    // Fetch System Recommendations (Depends only on school/date)
+    // Fetch System Recommendations (based on school/date)
     useEffect(() => {
         const fetchRecommendations = async () => {
-            // Need school ID and a date
-            if (!school?.id || !selectedDate) {
-                setSystemRecommendations({});
-                return;
-            }
+            if (!school?.id || !selectedDate) return;
 
+            const day = new Date(selectedDate).getDay() + 1;
             try {
-                const day = new Date(selectedDate).getDay() + 1;
                 const recResponse = await getSystemRecommendationsAction(school.id, day);
                 if (recResponse.success && recResponse.data) {
-                    setSystemRecommendations(recResponse.data);
-                } else {
-                    setSystemRecommendations({});
+                    setRecommendationsCache(prev => ({
+                        ...prev,
+                        [day]: recResponse.data
+                    }));
                 }
             } catch (recError) {
                 console.error("Error fetching recommendations:", recError);
-                setSystemRecommendations({});
             }
         };
 
         fetchRecommendations();
     }, [school?.id, selectedDate]);
 
-    // Get Daily rows by selected date and populate the table (Depends on teachers, settings, etc.)
+    // Get Daily rows by date and populate the table
     useEffect(() => {
-        const fetchDataForDate = async (forceRefresh = false) => {
+        const fetchDataForDate = async () => {
             if (!school?.id || !selectedDate) return;
             try {
                 setIsLoading(true);
-
-                if (!forceRefresh) {
-                    const populateFromStorage = populateTableFromStorage();
-                    if (populateFromStorage) return;
-                }
-
                 const targetDate = selectedDate || getTomorrowOption();
                 const response = await getDailyScheduleAction(school.id, targetDate);
                 if (response.success && response.data) {
-                    const newSchedule = await populateDailyScheduleTable(
-                        mainDailyTable,
-                        selectedDate,
-                        response.data,
-                        settings?.hoursNum,
-                        teachers || [],
-                        classes || [],
-                        subjects || []
-                    );
-                    if (newSchedule) setMainAndStorageTable(newSchedule);
+                    setMainDailyTable((prevTable) => {
+                        const newSchedule = populateDailyScheduleTable(
+                            prevTable,
+                            selectedDate,
+                            response.data,
+                            settings?.hoursNum,
+                            teachers || [],
+                            classes || [],
+                            subjects || []
+                        );
+                        return newSchedule || prevTable;
+                    });
                 } else {
-                    errorToast("החיבור למשתמש נכשל. התנתקו ונסו שוב.");
+                    errorToast("חלה שגיאה באימות המשתמש. נא להתנתק ולהתחבר מחדש.");
                 }
             } catch (error) {
                 console.error("Error fetching daily schedule data:", error);
@@ -263,12 +239,18 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         };
 
         fetchDataForDate();
-        refreshScheduleRef.current = async (channels) => {
-            // Always refresh schedule data
-            await fetchDataForDate(true);
 
-            // If publish status changed, refresh school data to update the button
-            if (channels && channels.includes(DAILY_PUBLISH_DATA_CHANGED)) {
+        refreshScheduleRef.current = async (items) => {
+            // 1. Handle School Data Updates (Publish/Unpublish)
+            // These affect the global school object (publishDates array), so we accepting them regardless of the currently selected date.
+            const publishUpdates = items.filter(item => {
+                if (!item.payload) return true; // Assume relevant if no payload
+                if (item.payload.schoolId && item.payload.schoolId !== school?.id) return false;
+                // Note: We intentionally DO NOT filter by date here, because school.publishDates covers all dates.
+                return item.channel === DAILY_PUBLISH_DATA_CHANGED;
+            });
+
+            if (publishUpdates.length > 0) {
                 try {
                     const { getSchoolAction } = await import("@/app/actions/GET/getSchoolAction");
                     if (school?.id) {
@@ -281,41 +263,42 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                     console.error("Failed to refresh school data", e);
                 }
             }
+
+            // 2. Handle Daily Schedule Updates
+            // These are specific to the view, so we strictly filter by the selected date.
+            const scheduleUpdates = items.filter(item => {
+                if (!item.payload) return true;
+                if (Object.keys(item.payload).length === 0) return false; // Ignore empty payload
+                if (item.payload.schoolId && item.payload.schoolId !== school?.id) return false;
+                if (item.payload.date && item.payload.date !== selectedDate) return false;
+
+                // Exclude publish events (handled above)
+                return item.channel !== DAILY_PUBLISH_DATA_CHANGED;
+            });
+
+            if (scheduleUpdates.length > 0) {
+                // Always refresh schedule data
+                await fetchDataForDate();
+            }
         };
     }, [school?.id, selectedDate, teachers, setSchool]);
 
-    const populateTableFromStorage = () => {
-        const tableStorage = getSessionDailyTable();
-        if (tableStorage && tableStorage[selectedDate]) {
-            setMainDailyTable({ [selectedDate]: tableStorage[selectedDate] });
-            // Rebuild columns from storage and restore saved order
-            const storageData = tableStorage[selectedDate];
-            if (storageData && teachers) setIsLoading(false);
-            return true;
-        }
-        return false;
-    };
-
     const deleteColumn = async (columnId: string) => {
         if (!school?.id) return false;
-        const prevSchedule = { ...mainDailyTable };
 
-        const updatedSchedule = { ...mainDailyTable };
-        // Create a shallow copy of the specific day's schedule to avoid mutation
-        if (updatedSchedule[selectedDate]) {
-            updatedSchedule[selectedDate] = { ...updatedSchedule[selectedDate] };
-        }
-
-        const columnToDelete = updatedSchedule[selectedDate]?.[columnId];
-
-        // Check if any cell in this column has a DBid. 
-        // If so, it means there are records in the database that need to be deleted.
+        // Store the column data for potential rollback
+        const columnToDelete = mainDailyTable[selectedDate]?.[columnId];
         const hasSavedData = columnToDelete ? Object.values(columnToDelete).some(cell => !!cell.DBid) : false;
 
-        if (updatedSchedule[selectedDate]) {
-            delete updatedSchedule[selectedDate][columnId];
-        }
-        setMainAndStorageTable(updatedSchedule);
+        // Optimistic delete
+        setMainDailyTable(prev => {
+            const updatedSchedule = { ...prev };
+            if (updatedSchedule[selectedDate]) {
+                updatedSchedule[selectedDate] = { ...updatedSchedule[selectedDate] };
+                delete updatedSchedule[selectedDate][columnId];
+            }
+            return updatedSchedule;
+        });
 
         // If no data was saved to DB, we don't need to call the API
         if (!hasSavedData) {
@@ -330,44 +313,61 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
             }
             throw new Error(response.message || "delete failed");
         } catch (error) {
-            // Rollback
-            setMainAndStorageTable(prevSchedule);
+            // Rollback: refetch to ensure consistency
             console.error("Error deleting daily column:", error);
+            // Force a refresh to get the correct state from server
+            if (school?.id && selectedDate) {
+                const response = await getDailyScheduleAction(school.id, selectedDate);
+                if (response.success && response.data) {
+                    setMainDailyTable((prevTable) => {
+                        const newSchedule = populateDailyScheduleTable(
+                            prevTable,
+                            selectedDate,
+                            response.data,
+                            settings?.hoursNum,
+                            teachers || [],
+                            classes || [],
+                            subjects || []
+                        );
+                        return newSchedule || prevTable;
+                    });
+                }
+            }
             return false;
         }
     };
-
-    const POSITION_GAP = 1000;
-    const REBALANCE_THRESHOLD = 10; // If gap is smaller than this, rebalance
 
     const rebalanceColumns = async (sortedColumnIds: string[], schedule: DailySchedule) => {
         if (!school?.id) return;
 
         const updates: { columnId: string; position: number }[] = [];
-        const newSchedule = { ...schedule };
-        // Create a shallow copy of the day's schedule to avoid mutating the original
-        if (newSchedule[selectedDate]) {
-            newSchedule[selectedDate] = { ...newSchedule[selectedDate] };
-        } else {
-            newSchedule[selectedDate] = {};
-        }
 
-        sortedColumnIds.forEach((colId, index) => {
-            const newPos = (index + 1) * POSITION_GAP;
-
-            // Optimization: Only send update to DB if position actually changes
-            const currentColumn = schedule[selectedDate]?.[colId];
-            const currentPos = currentColumn?.["1"]?.headerCol?.position || 0;
-
-            if (currentPos !== newPos) {
-                updates.push({ columnId: colId, position: newPos });
+        setMainDailyTable(prev => {
+            const newSchedule = { ...prev };
+            // Create a shallow copy of the day's schedule to avoid mutating the original
+            if (newSchedule[selectedDate]) {
+                newSchedule[selectedDate] = { ...newSchedule[selectedDate] };
+            } else {
+                newSchedule[selectedDate] = {};
             }
 
-            // Update local state immediately
-            updateColumnPositionInSchedule(newSchedule[selectedDate], colId, newPos);
-        });
+            sortedColumnIds.forEach((colId, index) => {
+                const newPos = (index + 1) * POSITION_GAP;
 
-        setMainAndStorageTable(newSchedule);
+                // Optimization: Only send update to DB if position actually changes
+                const currentColumn = schedule[selectedDate]?.[colId];
+                const currentPos = currentColumn?.["1"]?.headerCol?.position || 0;
+
+                if (currentPos !== newPos) {
+                    updates.push({ columnId: colId, position: newPos });
+                }
+
+                // Update local state immediately
+                updateColumnPositionInSchedule(newSchedule[selectedDate], colId, newPos);
+            });
+
+            return newSchedule;
+        });
 
         try {
             const { updateDailyColumnPositionsAction } = await import("@/app/actions/PUT/updateDailyColumnPositionsAction");
@@ -376,7 +376,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
             console.error("Error rebalancing columns:", error);
         }
 
-        pushSyncUpdate(DAILY_SCHEDULE_DATA_CHANGED);
+        pushSyncUpdate(DAILY_SCHEDULE_DATA_CHANGED, { schoolId: school.id, date: selectedDate });
     };
 
     const addNewEmptyColumn = (type: ColumnType) => {
@@ -465,7 +465,8 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
             calculatedNewPos,
             settings?.hoursNum
         );
-        setMainAndStorageTable(finalSchedule);
+
+        setMainDailyTable(prev => ({ ...prev, ...finalSchedule }));
     };
 
     const moveColumn = async (columnId: string, direction: "left" | "right") => {
@@ -496,18 +497,19 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         ];
 
         // Optimistic update
-        const newSchedule = { ...mainDailyTable };
-        if (newSchedule[selectedDate]) {
-            newSchedule[selectedDate] = { ...newSchedule[selectedDate] };
+        setMainDailyTable(prev => {
+            const newSchedule = { ...prev };
+            if (newSchedule[selectedDate]) {
+                newSchedule[selectedDate] = { ...newSchedule[selectedDate] };
 
-            // Update current column
-            updateColumnPositionInSchedule(newSchedule[selectedDate], columnId, targetPos);
+                // Update current column
+                updateColumnPositionInSchedule(newSchedule[selectedDate], columnId, targetPos);
 
-            // Update target column
-            updateColumnPositionInSchedule(newSchedule[selectedDate], targetColumnId, currentPos);
-        }
-
-        setMainAndStorageTable(newSchedule);
+                // Update target column
+                updateColumnPositionInSchedule(newSchedule[selectedDate], targetColumnId, currentPos);
+            }
+            return newSchedule;
+        });
 
         try {
             const { updateDailyColumnPositionsAction } = await import(
@@ -519,7 +521,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
             // Revert state on error if needed or refetch
         }
 
-        pushSyncUpdate(DAILY_SCHEDULE_DATA_CHANGED);
+        pushSyncUpdate(DAILY_SCHEDULE_DATA_CHANGED, { schoolId: school.id, date: selectedDate });
     };
 
     return (

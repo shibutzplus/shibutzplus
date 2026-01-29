@@ -5,7 +5,7 @@ export const ENTITIES_DATA_CHANGED = "entities";
 
 // TRIGGERED WHEN: Only if a teacher column in the DAILY SCHEDULE is updated (assignments, deletions)
 // CONSUMER: Teacher Portal: Material page & School schedule pages
-export const DAILY_TEACHER_COL_DATA_CHANGED = "teacher";
+export const DAILY_TEACHER_COL_DATA_CHANGED = "teacherCol";
 
 // TRIGGERED WHEN: An event column update OR any column reorder in the DAILY SCHEDULE
 // CONSUMER: Teacher Portal: School schedule page & also Daily Schedule page
@@ -20,4 +20,4 @@ export const DAILY_PUBLISH_DATA_CHANGED = "publish";
 export const MATERIAL_CHANGED = "material";
 
 // Polling configuration
-export const POLL_INTERVAL_MS = 40000; // 40 seconds
+export const POLL_INTERVAL_MS = 30000; // 40 seconds

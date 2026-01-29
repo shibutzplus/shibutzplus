@@ -33,7 +33,7 @@ export async function GET(req: Request) {
     return Response.json({
       latestTs,
       count: filtered.length,
-      items: filtered.map((v: any) => ({ channel: v.channel, ts: v.ts })),
+      items: filtered.map((v: any) => ({ channel: v.channel, ts: v.ts, payload: v.payload })),
     })
   } catch (e) {
     console.error("poll proxy failed", e)

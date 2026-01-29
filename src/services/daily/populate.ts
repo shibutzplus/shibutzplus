@@ -9,7 +9,6 @@ import {
 import { initDailyEventCellData, initDailyTeacherCellData } from "@/services/daily/initialize";
 import { HOURS_IN_DAY } from "@/utils/time";
 import { setColumn } from "./setColumn";
-import { setEmptyColumn } from "./setEmpty";
 
 export const initDailySchedule = (dailySchedule: DailySchedule, date: string, columnId: string) => {
     // Initialize date if it doesn't exist
@@ -165,7 +164,7 @@ export const mapAnnualTeacherClasses = (data: AnnualScheduleType[]) => {
  * it ensures an empty column structure is initialized for the date.
  * @returns A promise that resolves to the updated `DailySchedule` object, or undefined if an error occurs.
  */
-export const populateDailyScheduleTable = async (
+export const populateDailyScheduleTable = (
     mainDailyTable: DailySchedule,
     selectedDate: string,
     dataColumns: DailyScheduleType[],
@@ -177,7 +176,11 @@ export const populateDailyScheduleTable = async (
     try {
         if (!dataColumns) return;
         if (dataColumns.length === 0) {
-            return setEmptyColumn(mainDailyTable, selectedDate);
+            // IMPORTANT: When server returns no columns, we must RESET the entire day
+            // to prevent old cached columns from persisting
+            const emptySchedule = { ...mainDailyTable };
+            emptySchedule[selectedDate] = {}; // Complete reset
+            return emptySchedule;
         }
 
         // Create Maps for fast lookup
@@ -204,7 +207,13 @@ export const populateDailyScheduleTable = async (
         const entriesByDayAndHeader = populateTable(hydratedColumns, selectedDate);
 
         // Populate all schedule data at once
-        const newSchedule: DailySchedule = {};
+        // Initialize with a SHALLOW COPY of the existing table to preserve other dates (SWR Pattern)
+        const newSchedule: DailySchedule = { ...mainDailyTable };
+
+        // Reset the current date to ensure we don't keep stale cells for this specific date
+        // (We rebuild the *entire* day from the server response)
+        newSchedule[selectedDate] = {};
+
         Object.entries(entriesByDayAndHeader).forEach(([date, headerEntries]) => {
             Object.entries(headerEntries).forEach(([columnId, cells]) => {
                 setColumn(cells, newSchedule, columnId, date, hoursNum);

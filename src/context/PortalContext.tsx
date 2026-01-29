@@ -32,7 +32,7 @@ interface PortalContextType {
         overrideDate?: string,
         overrideTeacher?: TeacherType
     ) => Promise<GetDailyScheduleResponse | null>;
-    handlePublishedRefresh: (
+    refreshDailyScheduleTeacherPortal: (
         overrideSchoolId?: string,
         overrideDate?: string,
         overrideTeacher?: TeacherType
@@ -218,7 +218,7 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
 
 
 
-    const { fetchPublishScheduleData, handlePublishedRefresh, mainPublishTable, isPublishLoading, hasFetched } =
+    const { fetchPublishScheduleData, refreshDailyScheduleTeacherPortal, mainPublishTable, isPublishLoading, hasFetched } =
         usePublished(schoolId, dateToFetch, teacher);
 
     const value: PortalContextType = {
@@ -234,7 +234,7 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
         isPublishLoading,
         hasFetched,
         mainPublishTable,
-        handlePublishedRefresh,
+        refreshDailyScheduleTeacherPortal,
         fetchPublishScheduleData,
     };
 

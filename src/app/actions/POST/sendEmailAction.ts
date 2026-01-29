@@ -58,13 +58,10 @@ export interface AdminEmailParams {
 }
 
 export async function sendTeacherContactEmail(params: TeacherEmailParams) {
-    console.log("ROY sendTeacherContactEmail", params);
-    console.log("ROY EMAILJS_TEACHER_TEMPLATE_ID", EMAILJS_TEACHER_TEMPLATE_ID);
     const response = await sendEmailAction(
         EMAILJS_TEACHER_TEMPLATE_ID,
         params as unknown as Record<string, unknown>,
     );
-    console.log("ROY response", response);
     if (response.status !== 200) {
         throw new Error(response.text);
     }

@@ -69,7 +69,7 @@ const AnnualSchedulePage: NextPage = () => {
                     handleScheduleUpdate={handleScheduleUpdate}
                 />
             ) : (
-                <div className={styles.placeholder}>בחרו כיתה כדי להציג את המערכת</div>
+                <div className={styles.placeholder}>בחרו כיתה או קבוצת לימוד כדי להציג את המערכת</div>
             )}
         </div>
     );
