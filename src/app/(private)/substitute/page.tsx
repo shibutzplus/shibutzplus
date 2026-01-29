@@ -26,7 +26,7 @@ const SubstitutePage: NextPage = () => {
 
     return (
         <DetailsListLayout<TeacherType>
-            titles={["שם המורה", "פעולות"]}
+            titles={["שם ממלא המקום", "פעולות"]}
             emptyText={
                 searchTerm ? (
                     <div style={{ textAlign: "center" }}>

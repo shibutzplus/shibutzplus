@@ -1,5 +1,8 @@
 "use client";
 
+//
+//  Used for Teachers Portal Pages only - full screen views
+//
 import React from "react";
 import { usePortalContext } from "@/context/PortalContext";
 import { AUTO_SWITCH_TIME } from "@/utils/time";
@@ -7,6 +10,7 @@ import { usePollingUpdates } from "@/hooks/usePollingUpdates";
 import { usePathname, useRouter } from "next/navigation";
 import router from "@/routes";
 import FullScreenContainer from "./FullScreenContainer";
+import { SyncItem } from "@/services/syncService";
 
 type PortalFullScreenLayoutProps = {
     children: React.ReactNode;
@@ -15,16 +19,23 @@ type PortalFullScreenLayoutProps = {
 export default function PortalFullScreenLayout({ children }: PortalFullScreenLayoutProps) {
     const pathname = usePathname();
     const nav = useRouter();
-    const {
-        teacher,
-        handleRefreshDates,
-        handlePublishedRefresh,
-    } = usePortalContext();
-
-    const refreshRef = React.useRef<(() => Promise<void>) | null>(null);
+    const { teacher, selectedDate, handleRefreshDates, refreshDailyScheduleTeacherPortal, } = usePortalContext();
+    const refreshRef = React.useRef<((items: SyncItem[]) => Promise<void> | void) | null>(null);
     const { resetUpdate } = usePollingUpdates(refreshRef);
 
-    const handleRefresh = async () => {
+    const handleRefresh = async (items?: SyncItem[]) => {
+        // Filter irrelevant updates if items provided
+        if (items && items.length > 0) {
+            const hasRelevantUpdate = items.some(item => {
+                if (!item.payload) return false;    // safty net
+                const schoolMatches = !item.payload.schoolId || !teacher?.schoolId || item.payload.schoolId === teacher.schoolId;
+                const dateMatches = !item.payload.date || !selectedDate || item.payload.date === selectedDate;
+                return schoolMatches && dateMatches;
+            });
+
+            if (!hasRelevantUpdate) return;
+        }
+
         const res = await handleRefreshDates();
 
         // Use the FRESH options returned by handleRefreshDates
@@ -36,16 +47,15 @@ export default function PortalFullScreenLayout({ children }: PortalFullScreenLay
             pathname.includes(router.fullScheduleView.p)
         ) {
             // For published portal or full schedule view, always refresh with the effective date
-            await handlePublishedRefresh(undefined, effectiveDate, undefined);
+            await refreshDailyScheduleTeacherPortal(undefined, effectiveDate, undefined);
         }
         // reset update badge after successful refresh
         resetUpdate();
     };
 
-    // Keep the ref updated with the latest handleRefresh
-    refreshRef.current = handleRefresh;
+    refreshRef.current = handleRefresh; // Keep the ref updated with the latest handleRefresh
 
-    // -- Auto Refresh at 16:00 -- //
+    // -- Auto Refresh at AUTO_SWITCH_TIME -- //
     React.useEffect(() => {
 
         if (!teacher) return;

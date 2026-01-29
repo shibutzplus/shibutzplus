@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { ActionResponse } from "@/models/types/actions";
 import messages from "@/resources/messages";
 import { PublishLimitNumber } from "@/models/constant/daily";
+import { revalidatePath } from "next/cache";
 
 export async function publishDailyScheduleAction(
     schoolId: string,
@@ -23,7 +24,6 @@ export async function publishDailyScheduleAction(
         const publishDates = Array.isArray(school.publishDates) ? school.publishDates : [];
         if (publishDates.includes(date)) {
             console.error("Error publishing daily schedule: Date already published");
-            // Wont show to the user
             return { success: true };
         }
 
@@ -41,6 +41,11 @@ export async function publishDailyScheduleAction(
                     .returning()
             )[0];
         });
+
+        revalidatePath("/(public)/schedule-view", "page");
+        revalidatePath("/(public)/schedule-full", "page");
+        revalidatePath(`/(public)/teacher-material/${schoolId}`, "page");
+
         return { success: true, message: messages.publish.success };
     } catch (error) {
         console.error("Error publishing daily schedule:", error);

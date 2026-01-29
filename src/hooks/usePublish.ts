@@ -6,7 +6,6 @@ import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { generateSchoolUrl } from "@/utils";
 import { useEffect, useState } from "react";
-import { getSessionPublishDates, setSessionPublishDates } from "@/lib/sessionStorage";
 
 import { DAILY_PUBLISH_DATA_CHANGED } from "@/models/constant/sync";
 
@@ -19,11 +18,7 @@ const usePublish = () => {
 
     useEffect(() => {
         if (selectedDate && school) {
-            const storageDates = getSessionPublishDates();
-            if (storageDates?.includes(selectedDate)) {
-                setBtnTitle("המערכת פורסמה");
-                setIsDisabled(true);
-            } else if (school.publishDates?.includes(selectedDate)) {
+            if (school.publishDates?.includes(selectedDate)) {
                 setBtnTitle("המערכת פורסמה");
                 setIsDisabled(true);
             } else {
@@ -39,7 +34,6 @@ const usePublish = () => {
             setIsLoading(true);
             const response = await publishDailyScheduleAction(school.id, selectedDate);
             if (response.success) {
-                setSessionPublishDates(selectedDate);
                 // Update school context to include the newly published date (Local Storage not updated, currently unused)
                 setSchool(prev => prev ? { ...prev, publishDates: Array.from(new Set([...(prev.publishDates || []), selectedDate])) } : prev)
                 await handlePushUpdate(DAILY_PUBLISH_DATA_CHANGED);
@@ -62,13 +56,6 @@ const usePublish = () => {
             setIsLoading(true);
             const response = await unpublishDailyScheduleAction(school.id, selectedDate);
             if (response.success) {
-                // Update session storage: remove the date
-                const storageDates = getSessionPublishDates();
-                if (storageDates) {
-                    const newStorageDates = storageDates.filter(d => d !== selectedDate);
-                    sessionStorage.setItem('publish_dates', JSON.stringify(newStorageDates));
-                }
-
                 // Update school context
                 setSchool(prev => prev ? { ...prev, publishDates: (prev.publishDates || []).filter(d => d !== selectedDate) } : prev);
 

@@ -4,8 +4,11 @@ import { DAILY_TEACHER_COL_DATA_CHANGED, DAILY_SCHEDULE_DATA_CHANGED, ENTITIES_D
 export async function POST(req: Request) {
   try {
 
+    // URL from payload
     const url = new URL(req.url)
     const type = url.searchParams.get("type")
+    const schoolId = url.searchParams.get("schoolId")
+    const date = url.searchParams.get("date")
 
     let channel: string
     if (type === DAILY_TEACHER_COL_DATA_CHANGED) channel = DAILY_TEACHER_COL_DATA_CHANGED   // for dailySchedule teachers columns updates  
@@ -19,7 +22,10 @@ export async function POST(req: Request) {
       id: `daily-${Date.now()}`,
       channel,
       ts: Date.now(),
-      payload: {},
+      payload: {
+        schoolId: schoolId || undefined,
+        date: date || undefined
+      },
     }
 
     // Save to Redis list

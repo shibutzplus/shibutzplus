@@ -53,7 +53,7 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
 
     {
         id: "school_settings",
-        title: "הגדרות בית הספר",
+        title: "בית הספר",
         type: "private",
         isCollapse: true,
         links: [

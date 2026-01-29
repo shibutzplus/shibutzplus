@@ -61,10 +61,8 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
         if (!effectiveSchoolId || !effectiveTeacher || !effectiveDate) {
             setMainPublishTable({});
             setHasFetched(true);
-            return null;
+            return { success: true, data: null } as any;
         }
-
-
 
         try {
             setIsPublishLoading(true);
@@ -94,7 +92,7 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
         }
     };
 
-    const handlePublishedRefresh = async (
+    const refreshDailyScheduleTeacherPortal = async (
         overrideSchoolId?: string,
         overrideDate?: string,
         overrideTeacher?: TeacherType
@@ -118,7 +116,7 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
         mainPublishTable,
         isPublishLoading,
         fetchPublishScheduleData,
-        handlePublishedRefresh,
+        refreshDailyScheduleTeacherPortal,
         hasFetched,
     };
 };

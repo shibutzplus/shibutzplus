@@ -1,9 +1,10 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, ReactNode, useEffect, useRef } from "react";
 import { AnnualScheduleType } from "@/models/types/annualSchedule";
 import { ClassRequest, ClassType } from "@/models/types/classes";
 import { SchoolType } from "@/models/types/school";
+import { ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
 import { SubjectRequest, SubjectType } from "@/models/types/subjects";
 import { TeacherRequest, TeacherType } from "@/models/types/teachers";
 import { SchoolSettingsType } from "@/models/types/settings";
@@ -18,10 +19,9 @@ import { deleteSubjectAction } from "@/app/actions/DELETE/deleteSubjectAction";
 import { deleteTeacherAction } from "@/app/actions/DELETE/deleteTeacherAction";
 import useInitData from "@/hooks/useInitData";
 import { errorToast } from "@/lib/toast";
-import { pushSyncUpdate } from "@/services/syncService";
-import { ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
-import { removeSessionStorage, SESSION_KEYS } from "@/lib/sessionStorage";
+import { pushSyncUpdate, SyncItem } from "@/services/syncService";
 import { compareHebrew, sortByName } from "@/utils/sort";
+import { usePollingUpdates } from "@/hooks/usePollingUpdates";
 
 interface MainContextType {
     school: SchoolType | undefined;
@@ -68,19 +68,11 @@ interface MainContextProviderProps {
 
 export const MainContextProvider: React.FC<MainContextProviderProps> = ({ children }) => {
     const [school, setSchool] = useState<SchoolType | undefined>(undefined);
-    const settings: SchoolSettingsType | undefined = school ? {
-        id: 0,
-        schoolId: school.id,
-        hoursNum: school.hoursNum ?? 10,
-        displaySchedule2Susb: school.displaySchedule2Susb ?? false,
-    } : undefined;
-
+    const settings: SchoolSettingsType | undefined = school ? { id: 0, schoolId: school.id, hoursNum: school.hoursNum ?? 10, displaySchedule2Susb: school.displaySchedule2Susb ?? false, } : undefined;
     const [teachers, setTeachers] = useState<TeacherType[] | undefined>(undefined);
     const [subjects, setSubjects] = useState<SubjectType[] | undefined>(undefined);
     const [classes, setClasses] = useState<ClassType[] | undefined>(undefined);
-    const [annualAfterDelete, setAnnualAfterDelete] = useState<AnnualScheduleType[] | undefined>(
-        undefined,
-    );
+    const [annualAfterDelete, setAnnualAfterDelete] = useState<AnnualScheduleType[] | undefined>(undefined);
 
     useInitData({
         school,
@@ -93,6 +85,44 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         setClasses,
     });
 
+    // Setup polling for entity changes
+    const refreshEntitiesRef = useRef<((items: SyncItem[]) => Promise<void> | void) | null>(null);
+    usePollingUpdates(refreshEntitiesRef);
+
+    useEffect(() => {
+        refreshEntitiesRef.current = async (items) => {
+            const relevantUpdates = items.filter(item => {
+                if (item.channel !== ENTITIES_DATA_CHANGED) return false;
+                // Filter by school if payload exists
+                if (item.payload?.schoolId && item.payload.schoolId !== school?.id) return false;
+                return true;
+            });
+
+            if (relevantUpdates.length > 0 && school?.id) {
+                const { getInitialDataAction } = await import("@/app/actions/GET/getInitialDataAction");
+                const { teachers: fetchedTeachers, subjects: fetchedSubjects, classes: fetchedClasses } = await getInitialDataAction(school.id);
+
+                if (fetchedTeachers.success && fetchedTeachers.data) {
+                    const sorted = [...fetchedTeachers.data].sort(sortByName);
+                    setTeachers(sorted);
+                }
+
+                if (fetchedSubjects.success && fetchedSubjects.data) {
+                    const sorted = [...fetchedSubjects.data].sort(sortByName);
+                    setSubjects(sorted);
+                }
+
+                if (fetchedClasses.success && fetchedClasses.data) {
+                    const sorted = [...fetchedClasses.data].sort((a, b) => {
+                        if (a.activity !== b.activity) return a.activity ? 1 : -1;
+                        return compareHebrew(a.name, b.name);
+                    });
+                    setClasses(sorted);
+                }
+            }
+        };
+    }, [school?.id]);
+
     const addNewSubject = async (newSubject: SubjectRequest) => {
         const response = await addSubjectAction(newSubject);
         if (response.success && response.data) {
@@ -100,15 +130,13 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
                 if (!response.data) return prev;
                 const updatedSubjects = prev ? [...prev, response.data] : [response.data];
                 updatedSubjects.sort(sortByName);
-
                 return updatedSubjects;
             });
-            removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
-            void pushSyncUpdate(ENTITIES_DATA_CHANGED);
+            void pushSyncUpdate(ENTITIES_DATA_CHANGED, { schoolId: newSubject.schoolId });
             return response.data;
         }
         if (!response.success && (response as any).errorCode === "23505") {
-            errorToast(response.message || "שגיאה ביצירת פריט");
+            errorToast(response.message || "שגיאה ביצירת מקצוע");
             return undefined;
         }
         return undefined;
@@ -118,9 +146,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         const response = await updateSubjectAction(subjectId, subjectData);
         if (response.success && response.data) {
             setSubjects(response.data as SubjectType[]);
-
-            removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
-            void pushSyncUpdate(ENTITIES_DATA_CHANGED);
+            void pushSyncUpdate(ENTITIES_DATA_CHANGED, { schoolId: subjectData.schoolId });
             return response.data;
         }
         return undefined;
@@ -130,10 +156,8 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         const response = await deleteSubjectAction(schoolId, subjectId);
         if (response.success && response.subjects && response.annualSchedules) {
             setSubjects(response.subjects);
-
             setAnnualAfterDelete(response.annualSchedules);
-            removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
-            void pushSyncUpdate(ENTITIES_DATA_CHANGED);
+            void pushSyncUpdate(ENTITIES_DATA_CHANGED, { schoolId });
             return true;
         }
         return false;
@@ -161,12 +185,11 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
                 });
             }
 
-            removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
-            void pushSyncUpdate(ENTITIES_DATA_CHANGED);
+            void pushSyncUpdate(ENTITIES_DATA_CHANGED, { schoolId: newClass.schoolId });
             return response.data;
         }
         if (!response.success && (response as any).errorCode === "23505") {
-            errorToast(response.message || "שגיאה ביצירת פריט");
+            errorToast(response.message || "שגיאה ביצירת כיתה");
             return undefined;
         }
         return undefined;
@@ -193,8 +216,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
                 }
             }
 
-            removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
-            void pushSyncUpdate(ENTITIES_DATA_CHANGED);
+            void pushSyncUpdate(ENTITIES_DATA_CHANGED, { schoolId: classData.schoolId });
             return response.data;
         }
         return undefined;
@@ -219,8 +241,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
                 }
             }
 
-            removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
-            void pushSyncUpdate(ENTITIES_DATA_CHANGED);
+            void pushSyncUpdate(ENTITIES_DATA_CHANGED, { schoolId });
             return true;
         }
         return false;
@@ -236,12 +257,11 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
 
                 return updatedTeachers;
             });
-            removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
-            void pushSyncUpdate(ENTITIES_DATA_CHANGED);
+            void pushSyncUpdate(ENTITIES_DATA_CHANGED, { schoolId: newTeacher.schoolId });
             return response.data;
         }
         if (!response.success && (response as any).errorCode === "23505") {
-            errorToast(response.message || "שגיאה ביצירת פריט");
+            errorToast(response.message || "שגיאה ביצירת מורה");
             return undefined;
         }
     };
@@ -251,8 +271,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         if (response.success && response.data) {
             setTeachers(response.data as TeacherType[]);
 
-            removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
-            void pushSyncUpdate(ENTITIES_DATA_CHANGED);
+            void pushSyncUpdate(ENTITIES_DATA_CHANGED, { schoolId: teacherData.schoolId });
             return response.data;
         }
         return undefined;
@@ -264,8 +283,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
             setTeachers(response.teachers);
 
             setAnnualAfterDelete(response.annualSchedules);
-            removeSessionStorage(SESSION_KEYS.DAILY_TABLE_DATA);
-            void pushSyncUpdate(ENTITIES_DATA_CHANGED);
+            void pushSyncUpdate(ENTITIES_DATA_CHANGED, { schoolId });
             return true;
         }
         return false;

@@ -12,6 +12,7 @@ import router from "@/routes";
 import { TeacherRoleValues } from "@/models/types/teachers";
 import { useTeacherTableContext } from "@/context/TeacherTableContext";
 import PageLayout from "../../PageLayout/PageLayout";
+import { SyncItem } from "@/services/syncService";
 
 type PortalPageLayoutProps = {
     children: React.ReactNode;
@@ -19,46 +20,48 @@ type PortalPageLayoutProps = {
 
 export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
     const pathname = usePathname();
-    const {
-        teacher,
-        selectedDate,
-        handleRefreshDates,
-        handlePublishedRefresh,
-        settings,
-    } = usePortalContext();
-    const { handlePortalRefresh } = useTeacherTableContext();
-    const refreshRef = React.useRef<(() => Promise<void>) | null>(null);
+    const { teacher, selectedDate, handleRefreshDates, refreshDailyScheduleTeacherPortal, settings, } = usePortalContext();
+    const { refreshMaterialTeacherPortal } = useTeacherTableContext();
+    const refreshRef = React.useRef<((items: SyncItem[]) => Promise<void> | void) | null>(null);
     const { resetUpdate } = usePollingUpdates(refreshRef);
     const isRegularTeacher = teacher?.role === TeacherRoleValues.REGULAR;
 
-    const handleRefresh = async () => {
+    const handleRefresh = async (items?: SyncItem[]) => {
+        // Filter irrelevant updates if items provided
+        if (items && items.length > 0) {
+            const hasRelevantUpdate = items.some(item => {
+                if (!item.payload) return false;    // safty net
+                const schoolMatches = !item.payload.schoolId || !teacher?.schoolId || item.payload.schoolId === teacher.schoolId;
+                const dateMatches = !item.payload.date || !selectedDate || item.payload.date === selectedDate;
+                return schoolMatches && dateMatches;
+            });
+
+            if (!hasRelevantUpdate) return;
+        }
+
         const res = await handleRefreshDates();
 
         // Use the FRESH options returned by handleRefreshDates
-        // If res.selected is "", it means no date is selected/available (e.g. unpublish), so we should use "" to clear the view.
         const effectiveDate = res.selected;
         const freshOptions = res.options || [];
         const isValidDate = freshOptions.some(d => d.value === effectiveDate);
 
         if (pathname.includes(router.teacherMaterialPortal.p)) {
-            // For teacher portal, we always want to refresh if we have a valid date
-            // If the date became invalid, handleRefreshDates should have given us a new valid one (effectiveDate)
-            if (isValidDate) await handlePortalRefresh(teacher, effectiveDate);
+            if (isValidDate) await refreshMaterialTeacherPortal(teacher, effectiveDate);
         } else if (
             pathname.includes(router.scheduleViewPortal.p) ||
             pathname.includes(router.fullScheduleView.p)
         ) {
             // For published portal or full schedule view, always refresh with the effective date
-            await handlePublishedRefresh(undefined, effectiveDate, undefined);
+            await refreshDailyScheduleTeacherPortal(undefined, effectiveDate, undefined);
         }
         // reset update badge after successful refresh
         resetUpdate();
     };
 
-    // Keep the ref updated with the latest handleRefresh
-    refreshRef.current = handleRefresh;
+    refreshRef.current = handleRefresh; // Keep the ref updated with the latest handleRefresh
 
-    // -- Auto Refresh at 16:00 -- //
+    // -- Auto Refresh at AUTO_SWITCH_TIME -- //
     React.useEffect(() => {
         if (!teacher) return;
 
@@ -71,8 +74,7 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
             let delay = target.getTime() - now.getTime();
 
             if (delay < 0) {
-                // The requirement: "When we enter the system a refresh timeout is set for next 4 PM (today or tomorrow)"
-                // If it's already past 16:00, schedule for tomorrow 16:00
+                // The requirement: "When we enter the system a refresh timeout is set for next AUTO_SWITCH_TIME (today or tomorrow)"
                 target.setDate(target.getDate() + 1);
                 delay = target.getTime() - now.getTime();
             }

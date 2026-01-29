@@ -7,9 +7,7 @@ import { SchoolType } from "@/models/types/school";
 import { SubjectType } from "@/models/types/subjects";
 import { TeacherType } from "@/models/types/teachers";
 import { ClassType } from "@/models/types/classes";
-import { checkForUpdates } from "@/services/syncService";
 import { compareHebrew, sortByName } from "@/utils/sort";
-import { ENTITIES_DATA_CHANGED, POLL_INTERVAL_MS } from "@/models/constant/sync";
 import { useSearchParams } from "next/navigation";
 
 interface useInitDataProps {
@@ -23,11 +21,8 @@ interface useInitDataProps {
     setClasses: (classes: ClassType[] | undefined) => void;
 }
 
-const SYNC_TS_KEY = "sync_ts_lists";
-
 /**
- * Initialize app data.
- * Fetches data from DB only if changes are detected (Smart Polling).
+ * Initialize app data from DB
  */
 const useInitData = ({
     school,
@@ -55,29 +50,13 @@ const useInitData = ({
 
         const fetchData = async () => {
             try {
-                // Check for updates
-                const lastSeen = Number(
-                    (typeof window !== "undefined" && localStorage.getItem(SYNC_TS_KEY)) || 0,
-                );
-
-                const { hasUpdates, latestTs } = await checkForUpdates({
-                    since: lastSeen,
-                    channels: [ENTITIES_DATA_CHANGED],
-                });
-
-                // If no updates and we already have data for the current school, skip
-                // BUT only if effectiveSchoolId matches the current school
+                // If data is already present for the current school, do nothing
                 const schoolsMatch = school?.id === effectiveSchoolId;
-                const shouldFetch = hasUpdates || !schoolsMatch || !school || !teachers || !subjects || !classes;
+                const matches = schoolsMatch && teachers && subjects && classes;
 
-                if (!shouldFetch) {
+                if (matches) {
                     return;
                 }
-
-                if (typeof window !== "undefined" && latestTs > 0) {
-                    localStorage.setItem(SYNC_TS_KEY, String(latestTs));
-                }
-
                 const { getInitialDataAction } = await import("@/app/actions/GET/getInitialDataAction");
                 const { school: fetchedSchool, teachers: fetchedTeachers, subjects: fetchedSubjects, classes: fetchedClasses } = await getInitialDataAction(effectiveSchoolId);
 
@@ -110,17 +89,6 @@ const useInitData = ({
 
         // Initial fetch
         fetchData();
-
-        // Setup polling
-        const intervalId = setInterval(() => {
-            // Only poll if tab is visible
-            if (!document.hidden) {
-                fetchData();
-            }
-        }, POLL_INTERVAL_MS);
-
-        return () => clearInterval(intervalId);
-
     }, [effectiveSchoolId, school, teachers, subjects, classes]);
 
 };
