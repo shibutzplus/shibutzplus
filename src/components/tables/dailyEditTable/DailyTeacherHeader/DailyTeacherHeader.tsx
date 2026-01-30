@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { filterDailyHeaderTeachers } from "@/utils/sort";
+import Loading from "@/components/loading/Loading/Loading";
 import DynamicInputSelect from "../../../ui/select/InputSelect/DynamicInputSelect";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import { ColumnType } from "@/models/types/dailySchedule";
@@ -116,28 +117,34 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
 
     return (
         <div className={styles.headerContentWrapper}>
-            <DailyColumnMenu
-                onDelete={handleDeleteClick}
-                onMoveRight={() => moveColumn && moveColumn(columnId, "right")}
-                onMoveLeft={() => moveColumn && moveColumn(columnId, "left")}
-                isFirst={isFirst}
-                isLast={isLast}
-            >
-                {onTeacherClick && selectedTeacherData
-                    ? ({ closeMenu }) => (
-                        <div
-                            onClick={() => {
-                                handlePreviewClick();
-                                closeMenu();
-                            }}
-                            className={styles.menuItem}
-                        >
-                            <Icons.eye size={14} />
-                            <span>חומר הלימוד</span>
-                        </div>
-                    )
-                    : null}
-            </DailyColumnMenu>
+            {isLoading ? (
+                <div style={{ padding: "0 10px", flexShrink: 0 }}>
+                    <Loading size="S" color="white" />
+                </div>
+            ) : (
+                <DailyColumnMenu
+                    onDelete={handleDeleteClick}
+                    onMoveRight={() => moveColumn && moveColumn(columnId, "right")}
+                    onMoveLeft={() => moveColumn && moveColumn(columnId, "left")}
+                    isFirst={isFirst}
+                    isLast={isLast}
+                >
+                    {onTeacherClick && selectedTeacherData
+                        ? ({ closeMenu }) => (
+                            <div
+                                onClick={() => {
+                                    handlePreviewClick();
+                                    closeMenu();
+                                }}
+                                className={styles.menuItem}
+                            >
+                                <Icons.eye size={14} />
+                                <span>חומר הלימוד</span>
+                            </div>
+                        )
+                        : null}
+                </DailyColumnMenu>
+            )}
 
             <div className={styles.inputSelectWrapper}>
                 <div style={{ width: "100%" }}>
