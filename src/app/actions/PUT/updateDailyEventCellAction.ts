@@ -6,6 +6,7 @@ import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { eq } from "drizzle-orm";
 import { db, schema, executeQuery } from "../../../db";
+import { dbLog } from "@/services/loggerService";
 import { NewDailyScheduleSchema } from "@/db/schema";
 import { getDateReturnString, getStringReturnDate } from "@/utils/time";
 
@@ -13,8 +14,8 @@ export async function updateDailyEventCellAction(
     id: string,
     scheduleData: DailyScheduleRequest,
 ): Promise<ActionResponse & { data?: DailyScheduleType }> {
+    const { date, day, hour, columnId, school, eventTitle, event, position } = scheduleData;
     try {
-        const { date, day, hour, columnId, school, eventTitle, event, position } = scheduleData;
 
         const authError = await checkAuthAndParams({
             id,
@@ -83,7 +84,11 @@ export async function updateDailyEventCellAction(
             } as DailyScheduleType,
         };
     } catch (error) {
-        console.error("Error updating daily schedule:", error);
+        dbLog({
+            description: `Error updating daily schedule (event cell): ${error instanceof Error ? error.message : String(error)}`,
+            schoolId: school.id,
+            metadata: { columnId, id }
+        });
         return {
             success: false,
             message: messages.common.serverError,

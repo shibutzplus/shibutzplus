@@ -5,6 +5,7 @@ import { publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { eq } from "drizzle-orm";
 import { db, schema, executeQuery } from "../../../db";
+import { dbLog } from "@/services/loggerService";
 import { ActionResponse } from "@/models/types/actions";
 import { NewDailyScheduleSchema } from "@/db/schema";
 import { getDateReturnString, getStringReturnDate } from "@/utils/time";
@@ -13,23 +14,23 @@ export async function updateDailyTeacherCellAction(
     id: string,
     scheduleData: DailyScheduleRequest,
 ): Promise<ActionResponse & { data?: DailyScheduleType }> {
+    const {
+        school,
+        classes,
+        subject,
+        originalTeacher,
+        columnType,
+        subTeacher,
+        eventTitle,
+        event,
+        position,
+        instructions,
+        day,
+        date,
+        hour,
+        columnId,
+    } = scheduleData;
     try {
-        const {
-            school,
-            classes,
-            subject,
-            originalTeacher,
-            columnType,
-            subTeacher,
-            eventTitle,
-            event,
-            position,
-            instructions,
-            day,
-            date,
-            hour,
-            columnId,
-        } = scheduleData;
 
         const authError = await publicAuthAndParams({
             id,
@@ -108,7 +109,11 @@ export async function updateDailyTeacherCellAction(
             } as DailyScheduleType,
         };
     } catch (error) {
-        console.error("Error updating daily schedule:", error);
+        dbLog({
+            description: `Error updating daily schedule (teacher cell): ${error instanceof Error ? error.message : String(error)}`,
+            schoolId: school.id,
+            metadata: { id, date, hour }
+        });
         return {
             success: false,
             message: messages.common.serverError,

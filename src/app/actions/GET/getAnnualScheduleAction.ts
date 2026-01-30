@@ -4,6 +4,7 @@ import { AnnualScheduleType, GetAnnualScheduleResponse } from "@/models/types/an
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { eq } from "drizzle-orm";
+import { dbLog } from "@/services/loggerService";
 import { db, schema, executeQuery } from "../../../db";
 
 export async function getAnnualScheduleAction(
@@ -42,7 +43,7 @@ export async function getAnnualScheduleAction(
             data: annualSchedule,
         };
     } catch (error) {
-        console.error("Error fetching annual schedule:", error);
+        dbLog({ description: `Error fetching annual schedule: ${error instanceof Error ? error.message : String(error)}`, schoolId });
         return {
             success: false,
             message: messages.common.serverError,

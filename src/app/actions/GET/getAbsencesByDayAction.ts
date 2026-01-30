@@ -6,6 +6,7 @@ import { ColumnTypeValues } from "@/models/types/dailySchedule";
 import { DAYS_OF_WEEK_FORMAT, SCHOOL_MONTHS, getCurrentSchoolYearRange } from "@/utils/time";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
+import { dbLog } from "@/services/loggerService";
 
 export type AbsenceByDay = {
     day: string;
@@ -71,7 +72,7 @@ export const getAbsencesByDayAction = async (schoolId: string, month?: string): 
         };
 
     } catch (error) {
-        console.error("Error fetching absences by day:", error);
+        dbLog({ description: `Error fetching absences by day: ${error instanceof Error ? error.message : String(error)}`, schoolId });
         return {
             success: false,
             message: messages.common.serverError,

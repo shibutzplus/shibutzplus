@@ -14,6 +14,7 @@ import { genderOptions, roleOptions } from "@/resources/onboarding";
 import { registerSchema } from "@/models/validation/register";
 import signUp from "@/app/actions/POST/signUpAction";
 import { getSchoolsMinAction } from "@/app/actions/GET/getSchoolsMinAction";
+import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
 const SignUpPage: NextPage = () => {
     const router = useRouter();
@@ -43,7 +44,7 @@ const SignUpPage: NextPage = () => {
                 const res = await getSchoolsMinAction();
                 setSchools(res.map((s) => ({ name: s.name, city: s.city })));
             } catch (error) {
-                console.error("Failed to fetch schools", error);
+                logErrorAction({ description: `Failed to fetch schools (sign-up page): ${error instanceof Error ? error.message : String(error)}` });
             }
         };
         fetchSchools();

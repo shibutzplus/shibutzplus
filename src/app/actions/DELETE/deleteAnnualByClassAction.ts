@@ -6,6 +6,7 @@ import { checkAuthAndParams, checkIsNotGuest } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { and, eq } from "drizzle-orm";
+import { dbLog } from "@/services/loggerService";
 
 export async function deleteAnnualByClassAction(
     day: number,
@@ -88,7 +89,7 @@ export async function deleteAnnualByClassAction(
             deleted,
         };
     } catch (error) {
-        console.error("Error deleting annual schedule entry:", error);
+        dbLog({ description: `Error deleting annual schedule entry: ${error instanceof Error ? error.message : String(error)}`, schoolId });
         return {
             success: false,
             message: messages.annualSchedule.deleteError,

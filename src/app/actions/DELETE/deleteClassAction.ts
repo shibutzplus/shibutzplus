@@ -6,6 +6,7 @@ import { checkAuthAndParams, checkIsNotGuest } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { and, eq, sql, asc } from "drizzle-orm";
+import { dbLog } from "@/services/loggerService";
 import { ClassType } from "@/models/types/classes";
 
 export async function deleteClassAction(
@@ -79,7 +80,7 @@ export async function deleteClassAction(
             annualSchedules: annualSchedule,
         };
     } catch (error) {
-        console.error("Error deleting class:", error);
+        dbLog({ description: `Error deleting class: ${error instanceof Error ? error.message : String(error)}`, schoolId });
         return {
             success: false,
             message: messages.classes.deleteError,

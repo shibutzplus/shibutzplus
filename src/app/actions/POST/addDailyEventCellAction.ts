@@ -8,6 +8,7 @@ import { getDateReturnString } from "@/utils/time";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "../../../db";
 import { NewDailyScheduleSchema } from "@/db/schema";
+import { dbLog } from "@/services/loggerService";
 
 export async function addDailyEventCellAction(
     scheduleCellData: DailyScheduleRequest,
@@ -80,7 +81,7 @@ export async function addDailyEventCellAction(
             } as DailyScheduleType,
         };
     } catch (error) {
-        console.error("Error creating daily schedule entry:", error);
+        dbLog({ description: `Error creating daily schedule entry: ${error instanceof Error ? error.message : String(error)}`, schoolId: scheduleCellData.school.id });
         return {
             success: false,
             message: messages.common.serverError,

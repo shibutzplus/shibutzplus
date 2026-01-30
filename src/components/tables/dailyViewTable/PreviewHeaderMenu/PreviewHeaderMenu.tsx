@@ -62,7 +62,7 @@ const PreviewHeaderMenu: React.FC<PreviewHeaderMenuProps> = ({
                     {/* View Material Option - only show in history mode */}
                     {showViewMaterial && onViewMaterial && (
                         <>
-                            <div className={styles.menuSeparator} />
+                            {onCopy && <div className={styles.menuSeparator} />}
                             <div
                                 onClick={(e) => {
                                     e.stopPropagation();

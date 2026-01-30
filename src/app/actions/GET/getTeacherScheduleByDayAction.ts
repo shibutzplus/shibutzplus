@@ -4,6 +4,7 @@ import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { and, asc, eq } from "drizzle-orm";
+import { dbLog } from "@/services/loggerService";
 import {
     ColumnTypeValues,
     GetTeacherScheduleResponse,
@@ -81,7 +82,11 @@ export async function getTeacherScheduleByDayAction(
             data: teacherSchedule,
         };
     } catch (error) {
-        console.error("Error fetching teacher schedule:", error);
+        dbLog({
+            description: `Error fetching teacher schedule: ${error instanceof Error ? error.message : String(error)}`,
+            schoolId,
+            metadata: { teacherId, day }
+        });
         return {
             success: false,
             message: messages.common.serverError,

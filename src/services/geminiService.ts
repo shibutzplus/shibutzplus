@@ -1,4 +1,5 @@
 import { VertexAI, Part } from '@google-cloud/vertexai';
+import { dbLog } from "@/services/loggerService";
 
 /**
  * Service to interact with Google Vertex AI (Gemini)
@@ -56,7 +57,7 @@ export const geminiService = {
             };
 
         } catch (error) {
-            console.error("Error in geminiService.runGemini:", error);
+            dbLog({ description: `Error in geminiService.runGemini: ${error instanceof Error ? error.message : String(error)}` });
             return {
                 success: false,
                 error: error instanceof Error ? error.message : String(error)

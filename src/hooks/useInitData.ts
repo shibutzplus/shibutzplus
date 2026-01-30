@@ -9,6 +9,7 @@ import { TeacherType } from "@/models/types/teachers";
 import { ClassType } from "@/models/types/classes";
 import { compareHebrew, sortByName } from "@/utils/sort";
 import { useSearchParams } from "next/navigation";
+import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
 interface useInitDataProps {
     school: SchoolType | undefined;
@@ -83,7 +84,10 @@ const useInitData = ({
                 }
 
             } catch (error) {
-                console.error("Error fetching data:", error);
+                logErrorAction({
+                    description: `Error fetching initial data: ${error instanceof Error ? error.message : String(error)}`,
+                    schoolId: effectiveSchoolId || undefined
+                });
             }
         };
 

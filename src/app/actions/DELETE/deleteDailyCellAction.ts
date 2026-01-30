@@ -5,6 +5,7 @@ import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { and, eq } from "drizzle-orm";
+import { dbLog } from "@/services/loggerService";
 
 export async function deleteDailyCellAction(
     schoolId: string,
@@ -42,7 +43,7 @@ export async function deleteDailyCellAction(
             };
         }
     } catch (error) {
-        console.error("Error deleting daily schedule column:", error);
+        dbLog({ description: `Error deleting daily schedule column: ${error instanceof Error ? error.message : String(error)}`, schoolId });
         return {
             success: false,
             message: messages.dailySchedule.deleteError,

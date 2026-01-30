@@ -7,6 +7,7 @@ import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { eq } from "drizzle-orm";
 import { getSubjectsAction } from "@/app/actions/GET/getSubjectsAction";
+import { dbLog } from "@/services/loggerService";
 
 export async function updateSubjectAction(
     subjectId: string,
@@ -56,7 +57,11 @@ export async function updateSubjectAction(
             data: allSubjectsResp.data || [],
         };
     } catch (error) {
-        console.error("Error updating subject:", error);
+        dbLog({
+            description: `Error updating subject: ${error instanceof Error ? error.message : String(error)}`,
+            schoolId: subjectData.schoolId,
+            metadata: { subjectId }
+        });
         return {
             success: false,
             message: messages.common.serverError,

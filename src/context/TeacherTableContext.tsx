@@ -9,6 +9,7 @@ import { populatePortalTable } from "@/services/portalTeacherService";
 import { errorToast } from "@/lib/toast";
 import { updateDailyInstructionAction } from "@/app/actions/PUT/updateDailyInstractionAction";
 import messages from "@/resources/messages";
+import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
 interface TeacherTableContextType {
     isPortalLoading: boolean;
@@ -85,7 +86,7 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
             }
             return true;
         } catch (error) {
-            console.error("Error fetching daily schedule data:", error);
+            logErrorAction({ description: `Error fetching daily schedule data (teacher table): ${error instanceof Error ? error.message : String(error)}` });
             return false;
         } finally {
             setIsPortalLoading(false);
@@ -130,7 +131,10 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
                 errorToast(messages.dailySchedule.error);
             }
         } catch (error) {
-            console.error("Error updating daily schedule entry:", error);
+            logErrorAction({
+                description: `Error updating daily schedule entry: ${error instanceof Error ? error.message : String(error)}`,
+                schoolId
+            });
             errorToast(messages.dailySchedule.error);
         } finally {
             setIsSavingLoading(false);

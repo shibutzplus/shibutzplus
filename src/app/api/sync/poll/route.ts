@@ -1,6 +1,7 @@
 // GET /api/sync/poll?since=TIMESTAMP&channels=teacher,event,lists,publish
 import { redis } from "@/lib/redis"
 import { DAILY_TEACHER_COL_DATA_CHANGED, DAILY_SCHEDULE_DATA_CHANGED, ENTITIES_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED, MATERIAL_CHANGED } from "@/models/constant/sync";
+import { dbLog } from "@/services/loggerService";
 
 export async function GET(req: Request) {
   try {
@@ -36,7 +37,7 @@ export async function GET(req: Request) {
       items: filtered.map((v: any) => ({ channel: v.channel, ts: v.ts, payload: v.payload })),
     })
   } catch (e) {
-    console.error("poll proxy failed", e)
+    dbLog({ description: `sync/poll failed: ${e instanceof Error ? e.message : String(e)}` });
     return new Response("error", { status: 500 })
   }
 }

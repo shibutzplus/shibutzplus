@@ -6,6 +6,7 @@ import { ColumnTypeValues } from "@/models/types/dailySchedule";
 import { SCHOOL_MONTHS, getCurrentSchoolYearRange } from "@/utils/time";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
+import { dbLog } from "@/services/loggerService";
 
 export type AbsenceByTeacher = {
     teacherName: string;
@@ -67,7 +68,7 @@ export const getAbsencesByTeacherAction = async (schoolId: string, month?: strin
         };
 
     } catch (error) {
-        console.error("Error fetching absences by teacher:", error);
+        dbLog({ description: `Error fetching absences by teacher: ${error instanceof Error ? error.message : String(error)}`, schoolId });
         return {
             success: false,
             message: messages.common.serverError,

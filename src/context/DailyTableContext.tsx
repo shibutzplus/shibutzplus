@@ -23,6 +23,7 @@ import { sortDailyColumnIdsByPosition } from "@/utils/sort";
 import { validateMaxColumns } from "@/utils/security";
 import { getTomorrowOption } from "@/resources/dayOptions";
 import { errorToast } from "@/lib/toast";
+import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
 const COLUMN_PRIORITY: Record<ColumnType, number> = {
     [ColumnTypeValues.missingTeacher]: 0,
@@ -179,7 +180,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                     setTeacherClassMap(classMapping);
                 }
             } catch (error) {
-                console.error("Error fetching annual schedule:", error);
+                logErrorAction({ description: `Error fetching annual schedule: ${error instanceof Error ? error.message : String(error)}`, schoolId: school?.id });
             }
         };
 
@@ -201,7 +202,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                     }));
                 }
             } catch (recError) {
-                console.error("Error fetching recommendations:", recError);
+                logErrorAction({ description: `Error fetching recommendations: ${recError instanceof Error ? recError.message : String(recError)}`, schoolId: school?.id });
             }
         };
 
@@ -233,7 +234,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                     errorToast("חלה שגיאה באימות המשתמש. נא להתנתק ולהתחבר מחדש.");
                 }
             } catch (error) {
-                console.error("Error fetching daily schedule data:", error);
+                logErrorAction({ description: `Error fetching daily schedule data (daily table): ${error instanceof Error ? error.message : String(error)}`, schoolId: school?.id });
             } finally {
                 setIsLoading(false);
             }
@@ -261,7 +262,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                         }
                     }
                 } catch (e) {
-                    console.error("Failed to refresh school data", e);
+                    logErrorAction({ description: `Failed to refresh school data (polling): ${e instanceof Error ? e.message : String(e)}`, schoolId: school?.id });
                 }
             }
 
@@ -315,7 +316,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
             throw new Error(response.message || "delete failed");
         } catch (error) {
             // Rollback: refetch to ensure consistency
-            console.error("Error deleting daily column:", error);
+            logErrorAction({ description: `Error deleting daily column: ${error instanceof Error ? error.message : String(error)}`, schoolId: school?.id });
             // Force a refresh to get the correct state from server
             if (school?.id && selectedDate) {
                 const response = await getDailyScheduleAction(school.id, selectedDate);
@@ -374,7 +375,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
             const { updateDailyColumnPositionsAction } = await import("@/app/actions/PUT/updateDailyColumnPositionsAction");
             await updateDailyColumnPositionsAction(school.id, selectedDate, updates);
         } catch (error) {
-            console.error("Error rebalancing columns:", error);
+            logErrorAction({ description: `Error rebalancing columns: ${error instanceof Error ? error.message : String(error)}`, schoolId: school?.id });
         }
 
         pushSyncUpdate(DAILY_SCHEDULE_DATA_CHANGED, { schoolId: school.id, date: selectedDate });
@@ -518,7 +519,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
             );
             await updateDailyColumnPositionsAction(school.id, selectedDate, updates);
         } catch (error) {
-            console.error("Error moving column:", error);
+            logErrorAction({ description: `Error moving column: ${error instanceof Error ? error.message : String(error)}`, schoolId: school?.id });
             // Revert state on error if needed or refetch
         }
 

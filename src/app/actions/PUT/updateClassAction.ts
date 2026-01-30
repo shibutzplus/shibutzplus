@@ -7,6 +7,7 @@ import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { eq } from "drizzle-orm";
 import { getClassesAction } from "../GET/getClassesAction";
+import { dbLog } from "@/services/loggerService";
 
 export async function updateClassAction(
     classId: string,
@@ -56,7 +57,11 @@ export async function updateClassAction(
             data: allClassesResp.data || [],
         };
     } catch (error) {
-        console.error("Error updating class:", error);
+        dbLog({
+            description: `Error updating class: ${error instanceof Error ? error.message : String(error)}`,
+            schoolId: classData.schoolId,
+            metadata: { classId }
+        });
         return {
             success: false,
             message: messages.common.serverError,

@@ -7,6 +7,7 @@ import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "../../../db";
 import { NewDailyScheduleSchema } from "@/db/schema";
 import { getDateReturnString } from "@/utils/time";
+import { dbLog } from "@/services/loggerService";
 
 //
 //  Batch Insert mechanism:
@@ -126,7 +127,10 @@ export async function addDailyTeacherCellsAction(
             data: resultData,
         };
     } catch (error) {
-        console.error("Error creating daily schedule entries:", error);
+        dbLog({
+            description: `Error creating daily schedule entries: ${error instanceof Error ? error.message : String(error)}`,
+            schoolId: scheduleCellsData?.[0]?.school?.id
+        });
         return {
             success: false,
             message: messages.common.serverError,

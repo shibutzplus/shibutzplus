@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { processHistoryUpdate } from '@/services/history/updateHistory';
+import { dbLog } from '@/services/loggerService';
 
 // ==============================================================================
 // HISTORY SCHEDULE UPDATE PROCESS
@@ -45,7 +46,7 @@ export async function GET(request: Request) {
         });
 
     } catch (error) {
-        console.error('Cron job failed:', error);
+        dbLog({ description: `Cron job (history-update) failed: ${error instanceof Error ? error.message : String(error)}` });
         return new NextResponse('Internal Server Error', { status: 500 });
     }
 }

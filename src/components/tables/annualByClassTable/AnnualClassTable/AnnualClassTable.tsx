@@ -14,6 +14,7 @@ import AnnualRow from "../AnnualRow/AnnualRow";
 import styles from "./AnnualClassTable.module.css";
 import { AnnualInputCellType } from "@/models/types/annualSchedule";
 import { SelectMethod } from "@/models/types/actions";
+import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
 type AnnualClassTableProps = {
     schedule: WeeklySchedule;
@@ -61,7 +62,6 @@ const AnnualClassTable: React.FC<AnnualClassTableProps> = ({
                 name: value,
                 role: TeacherRoleValues.REGULAR,
                 schoolId: school.id,
-                userId: null,
             };
             const res = await addNewTeacher(newTeacher);
             if (res) {
@@ -71,7 +71,7 @@ const AnnualClassTable: React.FC<AnnualClassTableProps> = ({
             }
             errorToast(messages.teachers.createError);
         } catch (error) {
-            console.error(error);
+            logErrorAction({ description: `Error creating teacher (annual table): ${error instanceof Error ? error.message : String(error)}`, schoolId: school.id });
             errorToast(messages.teachers.createError);
         } finally {
             setIsSaving(false);
@@ -91,7 +91,7 @@ const AnnualClassTable: React.FC<AnnualClassTableProps> = ({
             }
             errorToast(messages.subjects.createError);
         } catch (error) {
-            console.error(error);
+            logErrorAction({ description: `Error creating subject (annual table): ${error instanceof Error ? error.message : String(error)}`, schoolId: school.id });
             errorToast(messages.subjects.createError);
         } finally {
             setIsSaving(false);

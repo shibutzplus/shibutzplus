@@ -4,6 +4,7 @@ import { publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { eq, and, or } from "drizzle-orm";
 import { db, schema, executeQuery } from "../../../db";
+import { dbLog } from "@/services/loggerService";
 import { ActionResponse } from "@/models/types/actions";
 import { NewDailyScheduleSchema } from "@/db/schema";
 import { dailyInstructionSchema } from "@/models/validation/daily";
@@ -88,7 +89,11 @@ export async function updateDailyInstructionAction(
             message: messages.dailySchedule.updateSuccess,
         };
     } catch (error) {
-        console.error("Error updating daily schedule:", error);
+        dbLog({
+            description: `Error updating daily instruction: ${error instanceof Error ? error.message : String(error)}`,
+            schoolId,
+            metadata: { date, rowId }
+        });
         return {
             success: false,
             message: messages.common.serverError,

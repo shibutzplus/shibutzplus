@@ -6,6 +6,7 @@ import { db } from "@/db";
 import { dailySchedule } from "@/db/schema/daily-schedule";
 import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { dbLog } from "@/services/loggerService";
 
 type ColumnPositionUpdate = {
     columnId: string;
@@ -39,7 +40,11 @@ export async function updateDailyColumnPositionsAction(
         revalidatePath("/daily-schedule");
         return { success: true, message: "Positions updated successfully" };
     } catch (error) {
-        console.error("Error updating column positions:", error);
+        dbLog({
+            description: `Error updating column positions: ${error instanceof Error ? error.message : String(error)}`,
+            schoolId,
+            metadata: { date }
+        });
         return { success: false, message: "Failed to update positions" };
     }
 }

@@ -4,6 +4,7 @@ import { db, executeQuery } from "@/db";
 import { teachers } from "@/db/schema/teachers";
 import { eq } from "drizzle-orm";
 import messages from "@/resources/messages";
+import { dbLog } from "@/services/loggerService";
 import { publicAuthAndParams } from "@/utils/authUtils";
 import { ActionResponse } from "@/models/types/actions";
 import { GetTeacherByIdResponse } from "@/models/types/dailySchedule";
@@ -38,7 +39,10 @@ export async function getTeacherByIdAction(teacherId: string): Promise<GetTeache
             data: teacher,
         };
     } catch (error) {
-        console.error("Error fetching teacher by id:", error);
+        dbLog({
+            description: `Error fetching teacher by id: ${error instanceof Error ? error.message : String(error)}`,
+            metadata: { teacherId }
+        });
         return {
             success: false,
             message: messages.common.serverError,

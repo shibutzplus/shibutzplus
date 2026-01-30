@@ -1,5 +1,6 @@
 import { geminiService } from "@/services/geminiService";
 import * as XLSX from 'xlsx';
+import { dbLog } from "@/services/loggerService";
 
 export const importAnnualService = {
 
@@ -12,7 +13,8 @@ export const importAnnualService = {
         entityType: 'teachers' | 'classes' | 'subjects' | 'workGroups',
         dynamicKeywords?: string[],
         knownTeachers: string[] = [],
-        knownClasses: string[] = []
+        knownClasses: string[] = [],
+        schoolId?: string
     ): Promise<{ success: boolean; data?: { name: string, source: 'ai' | 'manual' }[]; message?: string }> => {
         try {
             let teacherCSV = bufferToCsv(teacherBuffer);
@@ -247,7 +249,7 @@ export const importAnnualService = {
                 parsed = JSON.parse(cleanedText);
             } catch (err) {
                 const error = err as Error;
-                console.error("[extractSingleEntity] JSON Parse Error:", error.message);
+                dbLog({ description: `[extractSingleEntity] JSON Parse Error: ${error.message}`, schoolId });
                 return { success: false, message: `שגיאה בקבלת תוצאות, נסו שוב: ${error.message}` };
             }
 
@@ -285,7 +287,7 @@ export const importAnnualService = {
 
         } catch (error) {
             const err = error as Error;
-            console.error("Error in extractSingleEntity:", err);
+            dbLog({ description: `Error in extractSingleEntity: ${err.message}`, schoolId });
             return { success: false, message: err.message };
         }
     },

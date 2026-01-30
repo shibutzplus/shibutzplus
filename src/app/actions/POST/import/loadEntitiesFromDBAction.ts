@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db, schema } from "@/db";
 import { eq } from "drizzle-orm";
+import { dbLog } from "@/services/loggerService";
 
 const fetchSchoolEntities = async (schoolId: string) => {
     const [dbTeachers, dbClasses, dbSubjects] = await Promise.all([
@@ -50,6 +51,7 @@ const fetchSchoolEntities = async (schoolId: string) => {
  * Fetch existing entities from DB
  */
 export const loadEntitiesFromDBAction = async (formData: FormData) => {
+    let schoolId = "";
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user) {
@@ -57,7 +59,7 @@ export const loadEntitiesFromDBAction = async (formData: FormData) => {
         }
 
         const providedSchoolId = formData.get("schoolId") as string | null;
-        const schoolId = providedSchoolId?.trim() || session.user.schoolId;
+        schoolId = providedSchoolId?.trim() || session.user.schoolId || "";
 
         if (!schoolId) {
             return { success: false, message: "No school ID available" };
@@ -96,7 +98,10 @@ export const loadEntitiesFromDBAction = async (formData: FormData) => {
         };
 
     } catch (error: any) {
-        console.error("Error in loadEntitiesFromDBAction:", error);
+        dbLog({
+            description: `Error in loadEntitiesFromDBAction: ${error instanceof Error ? error.message : String(error)}`,
+            schoolId
+        });
         return {
             success: false,
             message: `Error loading existing data: ${error.message}`

@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { ActionResponse } from "@/models/types/actions";
 import messages from "@/resources/messages";
 import { revalidatePath } from "next/cache";
+import { dbLog } from "@/services/loggerService";
 
 export async function unpublishDailyScheduleAction(
     schoolId: string,
@@ -43,7 +44,11 @@ export async function unpublishDailyScheduleAction(
         revalidatePath(`/(public)/teacher-material/${schoolId}`, "page");
         return { success: true, message: messages.publish.success };
     } catch (error) {
-        console.error("Error unpublishing daily schedule:", error);
+        dbLog({
+            description: `Error unpublishing daily schedule: ${error instanceof Error ? error.message : String(error)}`,
+            schoolId,
+            metadata: { date }
+        });
         return { success: false, message: messages.common.serverError };
     }
 }

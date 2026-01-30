@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db, schema } from "@/db";
 import { eq, and, isNotNull } from "drizzle-orm";
+import { dbLog } from "@/services/loggerService";
 
 type EntityType = 'teachers' | 'classes' | 'subjects' | 'workGroups';
 
@@ -16,6 +17,7 @@ export const extractEntitiesFromFilesAction = async (
     formData: FormData,
     entityType: EntityType
 ) => {
+    let schoolId: string | undefined;
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user) {
@@ -23,7 +25,7 @@ export const extractEntitiesFromFilesAction = async (
         }
 
         const providedSchoolId = formData.get("schoolId") as string | null;
-        const schoolId = providedSchoolId?.trim() || session.user.schoolId;
+        schoolId = providedSchoolId?.trim() || session.user.schoolId;
 
         if (!schoolId) {
             return { success: false, message: "No school ID available" };
@@ -66,7 +68,10 @@ export const extractEntitiesFromFilesAction = async (
                 ]);
                 dynamicKeywords = Array.from(uniqueNames).sort();
             } catch (err) {
-                console.error("Failed to fetch dynamic workGroup keywords:", err);
+                dbLog({
+                    description: `Failed to fetch dynamic workGroup keywords: ${err instanceof Error ? err.message : String(err)}`,
+                    schoolId
+                });
             }
         } else if (entityType === 'subjects') {
             try {
@@ -78,7 +83,10 @@ export const extractEntitiesFromFilesAction = async (
                 const uniqueNames = new Set(globalSubjects.map(s => s.name.trim()));
                 dynamicKeywords = Array.from(uniqueNames).sort();
             } catch (err) {
-                console.error("Failed to fetch dynamic subject keywords:", err);
+                dbLog({
+                    description: `Failed to fetch dynamic subject keywords: ${err instanceof Error ? err.message : String(err)}`,
+                    schoolId
+                });
             }
         }
 
@@ -91,7 +99,11 @@ export const extractEntitiesFromFilesAction = async (
             if (tStr) knownTeachers = JSON.parse(tStr);
             if (cStr) knownClasses = JSON.parse(cStr);
         } catch (e) {
-            console.warn("Failed to parse known entities for cleaning:", e);
+            dbLog({
+                description: `Failed to parse known entities for cleaning: ${e instanceof Error ? e.message : String(e)}`,
+                schoolId,
+                metadata: { entityType }
+            });
         }
 
         // Extract single entity type
@@ -101,7 +113,8 @@ export const extractEntitiesFromFilesAction = async (
             entityType,
             dynamicKeywords,
             knownTeachers,
-            knownClasses
+            knownClasses,
+            schoolId
         );
 
         if (!result.success || !result.data) {
@@ -114,7 +127,11 @@ export const extractEntitiesFromFilesAction = async (
         };
 
     } catch (error) {
-        console.error("Error in extractEntitiesFromFilesAction:", error);
+        dbLog({
+            description: `Error in extractEntitiesFromFilesAction: ${error instanceof Error ? error.message : String(error)}`,
+            schoolId,
+            metadata: { entityType }
+        });
         return {
             success: false,
             message: "Refresh failed"

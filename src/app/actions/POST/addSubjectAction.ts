@@ -7,6 +7,7 @@ import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { NewSubjectSchema } from "@/db/schema";
 import { subjectSchema } from "@/models/validation/subject";
+import { dbLog } from "@/services/loggerService";
 
 export async function addSubjectAction(
     subjectData: SubjectRequest,
@@ -55,8 +56,13 @@ export async function addSubjectAction(
             return {
                 success: false,
                 errorCode: "23505",
-                message: "מקצוע בשם הזה כבר קיים בבית הספר",
+                message: `"${subjectData.name}" כבר ברשימה.`,
             };
+        } else {
+            dbLog({
+                description: `Error adding subject: ${error instanceof Error ? error.message : String(error)}`,
+                schoolId: subjectData.schoolId
+            });
         }
         return { success: false, message: messages.common.serverError };
     }

@@ -21,6 +21,7 @@ import messages from "@/resources/messages";
 import { TeacherType, TeacherRoleValues } from "@/models/types/teachers";
 import { setStorageTeacher, getStorageTeacher, removeStorageTeacher } from "@/lib/localStorage";
 import { getTeacherByIdAction } from "@/app/actions/GET/getTeacherByIdAction";
+import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
 interface TeacherSignInClientProps {
     schoolId: string;
@@ -87,7 +88,7 @@ export default function TeacherSignInClient({
                 }
                 errorToast(messages.auth.login.failed);
             } catch (e) {
-                console.error("Error in teacher_id auto login:", e);
+                logErrorAction({ description: `Error in teacher_id auto login: ${e instanceof Error ? e.message : String(e)}`, schoolId });
                 errorToast(messages.auth.login.failed);
             } finally {
                 setIsLoading(false);

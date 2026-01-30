@@ -21,6 +21,7 @@ import {
     setNewScheduleTemplate,
 } from "@/services/annual/initialize";
 import { getSelectedClass } from "@/services/annual/get";
+import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
 interface AnnualByClassContextType {
     annualScheduleTable: AnnualScheduleType[] | undefined;
@@ -172,7 +173,10 @@ export const AnnualByClassProvider: React.FC<{ children: ReactNode }> = ({ child
                 await addNewAnnualScheduleItem(row);
             }
         } catch (error) {
-            console.error("Error saving annual schedule entry:", error);
+            logErrorAction({
+                description: `Error saving annual schedule entry (by class): ${error instanceof Error ? error.message : String(error)}`,
+                schoolId: school?.id
+            });
             errorToast(messages.annualSchedule.error);
         } finally {
             setQueueRows([]);

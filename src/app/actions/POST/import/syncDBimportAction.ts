@@ -6,6 +6,7 @@ import { db } from "@/db";
 import { teachers, classes, subjects, annualSchedule, type NewAnnualScheduleSchema } from "@/db/schema";
 import { eq, and, notInArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { dbLog } from "@/services/loggerService";
 
 /**
  * Step 2-5: Per-entity list - Add a single entity item to DB
@@ -97,7 +98,11 @@ export const addSingleEntityAction = async (
         revalidatePath('/annual-import');
         return { success: true, message: "Item added successfully" };
     } catch (error: any) {
-        console.error("Error in addSingleEntityAction:", error);
+        dbLog({
+            description: `Error in addSingleEntityAction: ${error instanceof Error ? error.message : String(error)}`,
+            schoolId,
+            metadata: { entityType, itemName }
+        });
         return { success: false, message: `Add failed: ${error.message}` };
     }
 };
@@ -193,7 +198,11 @@ export const syncAllEntityValuesAction = async (
 
         return { success: true, message: "Database updated successfully" };
     } catch (error: any) {
-        console.error("Error in syncAllEntityValuesAction:", error);
+        dbLog({
+            description: `Error in syncAllEntityValuesAction: ${error instanceof Error ? error.message : String(error)}`,
+            schoolId,
+            metadata: { entityType }
+        });
         return { success: false, message: `Update failed: ${error.message}` };
     }
 };
@@ -312,7 +321,11 @@ export async function saveTeacherScheduleAction(
         return { success: true, message: `המערכת נשמרה בהצלחה!` };
 
     } catch (error: any) {
-        console.error("Error in saveTeacherScheduleAction:", error);
+        dbLog({
+            description: `Error in saveTeacherScheduleAction: ${error instanceof Error ? error.message : String(error)}`,
+            schoolId,
+            metadata: { teacherName }
+        });
         return { success: false, message: `Error: ${error.message}` };
     }
 }

@@ -11,8 +11,8 @@ import { TeacherType } from "@/models/types/teachers";
 import { addNewEventCell } from "@/services/daily/add";
 import { fillLeftRowsWithEmptyCells, initDailySchedule } from "@/services/daily/populate";
 import { updateAddCell, updateAllEventHeader, updateDeleteCell } from "@/services/daily/update";
-
 import { formatTMDintoDMY, getDayNumberByDateString } from "@/utils/time";
+import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
 const useDailyEventActions = (
     mainDailyTable: DailySchedule,
@@ -50,7 +50,11 @@ const useDailyEventActions = (
                 isUpdateSuccess = true;
             } else {
                 // If update failed (e.g. not found in DB), we will fall through to create
-                console.warn("Update failed, attempting to create new column", response.message);
+                logErrorAction({
+                    description: `Update failed for daily event header: ${response.message}`,
+                    schoolId: school?.id,
+                    metadata: { selectedDate, columnId, eventTitle }
+                });
             }
         }
 
@@ -88,6 +92,12 @@ const useDailyEventActions = (
                             position: currentPosition,
                         },
                     };
+                } else {
+                    logErrorAction({
+                        description: `Failed to create new daily event column: ${response.message}`,
+                        schoolId: school?.id,
+                        metadata: { selectedDate, columnId, eventTitle }
+                    });
                 }
             }
         }
@@ -124,6 +134,12 @@ const useDailyEventActions = (
                 setMainAndStorageTable(updatedSchedule);
                 pushDailyUpdate();
                 return response.data;
+            } else {
+                logErrorAction({
+                    description: `Failed to add event cell: ${response?.message}`,
+                    schoolId: school?.id,
+                    metadata: { selectedDate, columnId, eventTitle, hour: cellData.hour }
+                });
             }
         }
     };
@@ -151,6 +167,12 @@ const useDailyEventActions = (
                 setMainAndStorageTable(updatedSchedule);
                 pushDailyUpdate();
                 return response.data;
+            } else {
+                logErrorAction({
+                    description: `Failed to update event cell: ${response?.message}`,
+                    schoolId: school?.id,
+                    metadata: { selectedDate, columnId, dailyScheduleId, event, hour: cellData.hour }
+                });
             }
         }
         return undefined;
@@ -174,6 +196,12 @@ const useDailyEventActions = (
             setMainAndStorageTable(updatedSchedule);
             pushDailyUpdate();
             return true;
+        } else {
+            logErrorAction({
+                description: `Failed to delete event cell: ${response?.message}`,
+                schoolId: school?.id,
+                metadata: { selectedDate, columnId, dailyScheduleId }
+            });
         }
     };
 
@@ -266,7 +294,11 @@ const useDailyEventActions = (
             pushDailyUpdate();
             return true;
         } catch (error) {
-            console.error("Error pasting event column:", error);
+            logErrorAction({
+                description: `Error pasting event column: ${error instanceof Error ? error.message : String(error)}`,
+                schoolId: school?.id,
+                metadata: { selectedDate, columnId }
+            });
             return false;
         }
     };
