@@ -3,6 +3,7 @@ import { db } from '@/db';
 import { history, dailySchedule, teachers, classes, subjects, schools } from '@/db/schema';
 import { eq, inArray, and, lte } from 'drizzle-orm';
 import { DAILY_KEEP_HISTORY_DAYS } from "@/utils/time";
+import { dbLog } from "@/services/loggerService";
 
 interface HistoryUpdateResult {
     success: boolean;
@@ -128,8 +129,7 @@ export async function processHistoryUpdate(dateString?: string, force: boolean =
         };
 
     } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('History update failed:', error);
+        dbLog({ description: `History update failed: ${error instanceof Error ? error.message : String(error)}` });
         log(`Error: ${error instanceof Error ? error.message : String(error)}`);
         return { success: false, logs, schoolsUpdated: 0, recordsCount: 0 };
     }

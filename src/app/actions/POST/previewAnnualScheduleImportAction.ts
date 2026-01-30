@@ -1,6 +1,7 @@
 "use server";
 
 import { checkAuthAndParams } from "@/utils/authUtils";
+import { dbLog } from "@/services/loggerService";
 
 type CsvAnalysisConfig = {
     teacherNameRow: number; // 1-based
@@ -120,7 +121,10 @@ export async function previewAnnualScheduleImportAction(
         };
 
     } catch (error: any) {
-        console.error("Preview error:", error);
+        dbLog({
+            description: `Preview error: ${error instanceof Error ? error.message : String(error)}`,
+            schoolId
+        });
         return { success: false, message: "שגיאה בניתוח הנתונים", error: error.message };
     }
 }

@@ -4,6 +4,7 @@
  */
 import { DAILY_TEACHER_COL_DATA_CHANGED, DAILY_SCHEDULE_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED, MATERIAL_CHANGED, ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
 import { SyncChannel, SyncPayload, SyncItem } from "@/models/types/sync";
+import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
 export type { SyncChannel, SyncPayload, SyncItem };
 
@@ -37,14 +38,14 @@ const pollUpdates = async (params: PollUpdatesParams): Promise<SyncPollResponse 
     const res = await fetch(url, { cache: "no-store" });
 
     if (!res.ok) {
-      console.error("Sync poll failed with status:", res.status);
+      logErrorAction({ description: `Sync poll failed with status: ${res.status}` });
       return null;
     }
 
     const data: SyncPollResponse = await res.json();
     return data;
   } catch (error) {
-    console.error("Error polling sync updates:", error);
+    logErrorAction({ description: `Error polling sync updates: ${error instanceof Error ? error.message : String(error)}` });
     return null;
   }
 };
@@ -121,7 +122,7 @@ export const pushSyncUpdate = async (type: SyncChannel, payload?: SyncPayload): 
       return data.ts;
     }
   } catch (error) {
-    console.error("Error pushing sync update:", error);
+    logErrorAction({ description: `Error pushing sync update: ${error instanceof Error ? error.message : String(error)}`, schoolId: payload?.schoolId });
   }
   return null;
 };

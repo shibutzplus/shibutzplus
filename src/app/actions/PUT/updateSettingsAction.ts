@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { ActionResponse } from "@/models/types/actions";
 import { SchoolSettingsType } from "@/models/types/settings";
 import { checkIsNotGuest } from "@/utils/authUtils";
+import { dbLog } from "@/services/loggerService";
 
 export type UpdateSettingsResponse = ActionResponse & {
     data?: SchoolSettingsType;
@@ -52,7 +53,10 @@ export async function updateSettingsAction(
             data: updatedSettings,
         };
     } catch (error) {
-        console.error("Error updating system settings:", error);
+        dbLog({
+            description: `Error updating system settings: ${error instanceof Error ? error.message : String(error)}`,
+            schoolId: params.schoolId
+        });
         return { success: false, message: (error as Error).message };
     }
 }

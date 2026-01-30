@@ -6,6 +6,7 @@ import { ActionResponse } from "@/models/types/actions";
 import { checkAuthAndParams, checkIsNotGuest } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { classSchema } from "@/models/validation/class";
+import { dbLog } from "@/services/loggerService";
 
 export async function addClassAction(
     classData: ClassRequest,
@@ -46,12 +47,16 @@ export async function addClassAction(
     } catch (error: any) {
         const pgCode = error?.code ?? error?.cause?.code ?? error?.originalError?.code;
         if (pgCode === "23505") {
-            const entityName = classData.activity ? "קבוצה" : "כיתה";
             return {
                 success: false,
                 errorCode: "23505",
-                message: `${entityName} בשם הזה כבר קיימת בבית הספר`,
+                message: `"${classData.name}" כבר ברשימה.`,
             };
+        } else {
+            dbLog({
+                description: `Error adding class: ${error instanceof Error ? error.message : String(error)}`,
+                schoolId: classData.schoolId
+            });
         }
         return { success: false, message: messages.common.serverError };
     }

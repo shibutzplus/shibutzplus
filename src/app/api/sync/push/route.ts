@@ -1,13 +1,14 @@
 import { redis } from "@/lib/redis"
 import { DAILY_TEACHER_COL_DATA_CHANGED, DAILY_SCHEDULE_DATA_CHANGED, ENTITIES_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED, MATERIAL_CHANGED } from "@/models/constant/sync";
+import { dbLog } from "@/services/loggerService";
 
 export async function POST(req: Request) {
+  let schoolId: string | null = null;
   try {
-
     // URL from payload
     const url = new URL(req.url)
     const type = url.searchParams.get("type")
-    const schoolId = url.searchParams.get("schoolId")
+    schoolId = url.searchParams.get("schoolId")
     const date = url.searchParams.get("date")
 
     let channel: string
@@ -34,7 +35,7 @@ export async function POST(req: Request) {
     return Response.json({ ts: item.ts });
 
   } catch (err) {
-    console.error("sync update failed", err);
+    dbLog({ description: `sync/push failed: ${err instanceof Error ? err.message : String(err)}`, schoolId: schoolId || undefined });
     return new Response("error", { status: 500 });
   }
 }

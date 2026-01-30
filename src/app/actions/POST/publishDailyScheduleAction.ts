@@ -6,6 +6,7 @@ import { ActionResponse } from "@/models/types/actions";
 import messages from "@/resources/messages";
 import { PublishLimitNumber } from "@/models/constant/daily";
 import { revalidatePath } from "next/cache";
+import { dbLog } from "@/services/loggerService";
 
 export async function publishDailyScheduleAction(
     schoolId: string,
@@ -23,7 +24,7 @@ export async function publishDailyScheduleAction(
         // Don't add duplicate dates
         const publishDates = Array.isArray(school.publishDates) ? school.publishDates : [];
         if (publishDates.includes(date)) {
-            console.error("Error publishing daily schedule: Date already published");
+            dbLog({ description: "Error publishing daily schedule: Date already published", schoolId, metadata: { date } });
             return { success: true };
         }
 
@@ -48,7 +49,7 @@ export async function publishDailyScheduleAction(
 
         return { success: true, message: messages.publish.success };
     } catch (error) {
-        console.error("Error publishing daily schedule:", error);
+        dbLog({ description: `Error publishing daily schedule: ${error instanceof Error ? error.message : String(error)}`, schoolId });
         return { success: false, message: messages.common.serverError };
     }
 }

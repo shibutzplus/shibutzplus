@@ -7,6 +7,7 @@ import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { NewTeacherSchema } from "@/db/schema";
 import { teacherSchema } from "@/models/validation/teacher";
+import { dbLog } from "@/services/loggerService";
 
 export async function addTeacherAction(
     teacherData: TeacherRequest,
@@ -61,9 +62,14 @@ export async function addTeacherAction(
             return {
                 success: false,
                 errorCode: "23505",
-                message: "מורה בשם הזה כבר קיים בבית הספר",
+                message: `"${teacherData.name}" כבר ברשימה.`,
             };
         }
+
+        dbLog({
+            description: `Error adding teacher: ${error instanceof Error ? error.message : String(error)}`,
+            schoolId: teacherData.schoolId
+        });
 
         return { success: false, message: messages.common.serverError };
     }

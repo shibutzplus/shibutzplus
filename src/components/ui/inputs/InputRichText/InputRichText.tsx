@@ -13,6 +13,7 @@ import MsgPopup from "@/components/popups/MsgPopup/MsgPopup";
 import PopupModal from "@/components/popups/PopupModal/PopupModal";
 import LinkInputPopup from "@/components/popups/LinkInputPopup/LinkInputPopup";
 import { MAX_FILE_SIZE, UPLOAD_ERROR_MESSAGES } from "@/models/constant/upload";
+import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
 type InputRichTextProps = {
     value: string;
@@ -186,7 +187,7 @@ const InputRichText: React.FC<InputRichTextProps> = ({
             const { success, url, publicUrl, error } = await getPresignedUrl(file.name, file.type, file.size);
 
             if (!success || !url) {
-                console.error("Upload preparation failed:", error);
+                logErrorAction({ description: `Upload preparation failed: ${error}` });
 
                 const message = error === "File size exceeds limit"
                     ? UPLOAD_ERROR_MESSAGES.FILE_TOO_LARGE
@@ -217,7 +218,7 @@ const InputRichText: React.FC<InputRichTextProps> = ({
             }
 
         } catch (error) {
-            console.error(error);
+            logErrorAction({ description: `File upload failed: ${error instanceof Error ? error.message : String(error)}` });
             setAlertConfig({ isOpen: true, message: UPLOAD_ERROR_MESSAGES.UPLOAD_FAILED });
         } finally {
             setIsUploading(false);

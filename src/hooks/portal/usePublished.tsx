@@ -12,6 +12,7 @@ import messages from "@/resources/messages";
 import { populateDailyScheduleTable } from "@/services/daily/populate";
 import { HOURS_IN_DAY } from "@/utils/time";
 import { errorToast } from "@/lib/toast";
+import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
 export const usePublished = (schoolId?: string, selectedDate?: string, teacher?: TeacherType) => {
     const [isPublishLoading, setIsPublishLoading] = useState<boolean>(false);
@@ -43,7 +44,7 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
                 if (schoolRes.success && schoolRes.data) setSchoolHours(schoolRes.data.hoursNum || HOURS_IN_DAY);
 
             } catch (e) {
-                console.error("Error fetching public lists:", e);
+                logErrorAction({ description: `Error fetching public lists: ${e instanceof Error ? e.message : String(e)}` });
             }
         };
         fetchLists();
@@ -84,7 +85,7 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
             }
             return response;
         } catch (error) {
-            console.error("Error fetching daily schedule data:", error);
+            logErrorAction({ description: `Error fetching daily schedule data (public): ${error instanceof Error ? error.message : String(error)}` });
             return null;
         } finally {
             setIsPublishLoading(false);

@@ -1,6 +1,7 @@
 import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { useState } from "react";
+import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 //(newTeacher: TeacherRequest) => Promise<TeacherType | undefined>
 function useSubmit<T extends { schoolId: string }>(
     setFormData: (value: React.SetStateAction<T>) => void,
@@ -39,7 +40,7 @@ function useSubmit<T extends { schoolId: string }>(
             };
             setFormData(updatedFormData);
         } catch (error) {
-            console.error(error);
+            logErrorAction({ description: `Submit error (add): ${error instanceof Error ? error.message : String(error)}` });
             errorToast(errorMessage);
         } finally {
             setIsLoading(false);
@@ -64,7 +65,7 @@ function useSubmit<T extends { schoolId: string }>(
             const res = await deleteFunction(schoolId, idToDelete);
             successToast(res ? successMessage : errorMessage, 3000);
         } catch (error) {
-            console.error(error);
+            logErrorAction({ description: `Submit error (delete): ${error instanceof Error ? error.message : String(error)}` });
             errorToast(errorMessage);
         } finally {
             setIsLoading(false);

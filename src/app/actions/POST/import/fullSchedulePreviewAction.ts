@@ -1,6 +1,7 @@
 "use server";
 
 import * as XLSX from 'xlsx';
+import { dbLog } from "@/services/loggerService";
 
 
 // Types
@@ -40,7 +41,9 @@ function cleanCSVValue(val: string): string {
 }
 
 export const fullSchedulePreviewAction = async (formData: FormData, entities: { teachers: string[], classes: string[], subjects: string[], workGroups: string[] }): Promise<ServiceResponse> => {
+    let schoolId: string | undefined;
     try {
+        schoolId = formData.get("schoolId") as string || undefined;
         const teacherFile = formData.get("teacherFile") as File;
         const classFile = formData.get("classFile") as File;
         if (!teacherFile || !classFile) {
@@ -195,7 +198,7 @@ export const fullSchedulePreviewAction = async (formData: FormData, entities: { 
                 }
             }
         } catch (err) {
-            console.error("Error parsing class file:", err);
+            dbLog({ description: `Error parsing class file: ${err instanceof Error ? err.message : String(err)}`, schoolId });
         }
 
         // Parse Teacher CSV
@@ -411,8 +414,8 @@ export const fullSchedulePreviewAction = async (formData: FormData, entities: { 
         };
 
     } catch (error) {
-        console.error("Error in fullSchedulePreviewAction:", error);
         const err = error as Error;
+        dbLog({ description: `Schedule generation failed: ${err.message}`, schoolId });
         return {
             success: false,
             message: `Schedule generation failed: ${err.message}`

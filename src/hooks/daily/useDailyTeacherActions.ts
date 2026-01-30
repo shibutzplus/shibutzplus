@@ -16,6 +16,7 @@ import { addNewTeacherValueCell } from "@/services/daily/add";
 import { fillLeftRowsWithEmptyCells } from "@/services/daily/populate";
 import { setEmptyTeacherColumn } from "@/services/daily/setEmpty";
 import { updateAddCell } from "@/services/daily/update";
+import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
 const useDailyTeacherActions = (
     mainDailyTable: DailySchedule,
@@ -88,7 +89,10 @@ const useDailyTeacherActions = (
 
             if (deleteResponse) {
                 if (!deleteResponse.success || !deleteResponse.dailySchedules) {
-                    console.error("Failed to delete teacher daily column:", deleteResponse.message);
+                    logErrorAction({
+                        description: `Failed to delete teacher daily column: ${deleteResponse.message}`,
+                        schoolId: school?.id
+                    });
                 }
             }
 
@@ -186,8 +190,7 @@ const useDailyTeacherActions = (
             }
             return undefined;
         } catch (error) {
-            console.error("Error fetching teacher schedule:", error);
-            // On error we might want to reset? For now, leave it.
+            logErrorAction({ description: `Error fetching teacher schedule: ${error instanceof Error ? error.message : String(error)}`, schoolId: school?.id });
             return undefined;
         }
     };

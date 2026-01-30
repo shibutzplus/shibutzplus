@@ -4,6 +4,7 @@ import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { eq, and } from "drizzle-orm";
 import { db, schema, executeQuery } from "../../../db";
+import { dbLog } from "@/services/loggerService";
 import { ActionResponse } from "@/models/types/actions";
 import { NewDailyScheduleSchema } from "@/db/schema";
 
@@ -43,7 +44,10 @@ export async function updateDailyEventHeaderAction(
             message: messages.dailySchedule.updateSuccess,
         };
     } catch (error) {
-        console.error("Error updating daily schedule:", error);
+        dbLog({
+            description: `Error updating daily event header: ${error instanceof Error ? error.message : String(error)}`,
+            metadata: { date, columnId }
+        });
         return {
             success: false,
             message: messages.common.serverError,

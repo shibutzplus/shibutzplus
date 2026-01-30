@@ -6,6 +6,7 @@ import { checkAuthAndParams, checkIsNotGuest } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { eq } from "drizzle-orm";
+import { dbLog } from "@/services/loggerService";
 
 export async function updateTeacherAction(
     teacherId: string,
@@ -57,7 +58,11 @@ export async function updateTeacherAction(
             data: allTeachersResp || [],
         };
     } catch (error) {
-        console.error("Error updating teacher:", error);
+        dbLog({
+            description: `Error updating teacher: ${error instanceof Error ? error.message : String(error)}`,
+            schoolId: teacherData.schoolId,
+            metadata: { teacherId }
+        });
         return { success: false, message: messages.common.serverError };
     }
 }

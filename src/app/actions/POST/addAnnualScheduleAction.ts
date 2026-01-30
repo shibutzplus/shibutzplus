@@ -6,12 +6,13 @@ import { ActionResponse } from "@/models/types/actions";
 import { checkAuthAndParams, checkIsNotGuest } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { NewAnnualScheduleSchema } from "@/db/schema";
+import { dbLog } from "@/services/loggerService";
 
 export async function addAnnualScheduleAction(
     scheduleData: AnnualScheduleRequest,
 ): Promise<ActionResponse & { data?: AnnualScheduleType }> {
+    const { school, class: classData, teacher, subject } = scheduleData;
     try {
-        const { school, class: classData, teacher, subject } = scheduleData;
         const authError = await checkAuthAndParams({
             day: scheduleData.day,
             hour: scheduleData.hour,
@@ -66,7 +67,11 @@ export async function addAnnualScheduleAction(
             } as AnnualScheduleType,
         };
     } catch (error) {
-        console.error("Error creating annual schedule entry:", error);
+        dbLog({
+            description: `Error creating annual schedule entry: ${error instanceof Error ? error.message : String(error)}`,
+            schoolId: school.id,
+            metadata: { day: scheduleData.day, hour: scheduleData.hour, classId: classData.id, teacherId: teacher.id, subjectId: subject.id }
+        });
         return {
             success: false,
             message: messages.common.serverError,

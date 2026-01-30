@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { getAnnualScheduleAction as getAnnualScheduleFromDB } from "@/app/actions/GET/getAnnualScheduleAction";
 import { STATUS_AUTH } from "@/models/constant/session";
 import { AnnualScheduleType } from "@/models/types/annualSchedule";
+import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
 
 interface useInitAnnualDataProps {
@@ -41,7 +42,7 @@ const useInitAnnualData = ({
 
 
             } catch (error) {
-                console.error("Error fetching data:", error);
+                logErrorAction({ description: `Error fetching annual data: ${error instanceof Error ? error.message : String(error)}` });
             }
         };
 

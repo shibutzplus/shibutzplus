@@ -5,6 +5,7 @@ import { publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { and, eq, or, inArray } from "drizzle-orm";
 import { db, schema, executeQuery } from "../../../db";
+import { dbLog } from "@/services/loggerService";
 
 const getTeacherFullScheduleAction = async (
     teacherId: string,
@@ -155,7 +156,10 @@ const getTeacherFullScheduleAction = async (
             data: result,
         };
     } catch (error) {
-        console.error("Error fetching teacher full schedule:", error);
+        dbLog({
+            description: `Error fetching teacher full schedule: ${error instanceof Error ? error.message : String(error)}`,
+            metadata: { teacherId, date }
+        });
         return {
             success: false,
             message: messages.common.serverError,

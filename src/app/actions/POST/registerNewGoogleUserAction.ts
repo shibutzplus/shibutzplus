@@ -1,6 +1,7 @@
 import "server-only";
 
 import { db, executeQuery, schema } from "@/db";
+import { dbLog } from "@/services/loggerService";
 import { users } from "@/db/schema/users";
 import { eq } from "drizzle-orm";
 import type { ActionResponse } from "@/models/types/actions";
@@ -70,7 +71,7 @@ export async function registerNewGoogleUserAction({
             message: messages.auth.register.error,
         };
     } catch (error) {
-        console.error("Error registering Google user:", error);
+        dbLog({ description: `Error registering Google user: ${error instanceof Error ? error.message : String(error)}`, metadata: { email } });
         return {
             success: false,
             message: messages.auth.register.error,

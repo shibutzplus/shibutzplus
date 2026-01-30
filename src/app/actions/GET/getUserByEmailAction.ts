@@ -3,6 +3,7 @@ import "server-only";
 
 import { db, schema, executeQuery } from "@/db";
 import { eq } from "drizzle-orm";
+import { dbLog } from "@/services/loggerService";
 import type { UserSchema } from "@/db/schema/users";
 import type { SchoolStatus } from "@/models/types/school";
 import messages from "@/resources/messages";
@@ -55,7 +56,7 @@ export async function getUserByEmailAction(
 
         return { success: true, message: messages.auth.login.success, data: { ...user, status } };
     } catch (err) {
-        console.error("Error getUserByEmailAction:", err);
+        dbLog({ description: `Error getUserByEmailAction: ${err instanceof Error ? err.message : String(err)}` });
         return { success: false, message: messages.common.serverError };
     }
 }

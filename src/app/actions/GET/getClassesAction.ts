@@ -5,6 +5,7 @@ import { checkAuthAndParams, publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { eq, asc } from "drizzle-orm";
+import { dbLog } from "@/services/loggerService";
 
 export async function getClassesAction(
     schoolId: string,
@@ -44,7 +45,10 @@ export async function getClassesAction(
             data: classes,
         };
     } catch (error) {
-        console.error("Error fetching classes:", error);
+        dbLog({
+            description: `Error fetching classes: ${error instanceof Error ? error.message : String(error)}`,
+            schoolId
+        });
         return {
             success: false,
             message: messages.common.serverError,

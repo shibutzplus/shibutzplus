@@ -3,6 +3,7 @@
 import { db } from "@/db";
 import { history } from "@/db/schema";
 import { and, eq, or } from "drizzle-orm";
+import { dbLog } from "@/services/loggerService";
 import { DailyScheduleType, ColumnType, GetDailyScheduleResponse } from "@/models/types/dailySchedule";
 import { TeacherType } from "@/models/types/teachers";
 import { SubjectType } from "@/models/types/subjects";
@@ -97,7 +98,7 @@ export async function getTeacherHistoryScheduleAction(
         };
 
     } catch (error) {
-        console.error("Error fetching teacher history schedule:", error);
+        dbLog({ description: `Error fetching teacher history schedule: ${error instanceof Error ? error.message : String(error)}`, schoolId });
         return {
             success: false,
             message: "Failed to fetch history.",

@@ -16,6 +16,7 @@ import messages from "@/resources/messages";
 import { dayToNumber } from "@/utils/time";
 import { createAnnualByTeacherRequests, createClassSubjectPairs, setNewScheduleTemplate, } from "@/services/annual/initialize";
 import { getSelectedTeacher } from "@/services/annual/get";
+import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
 interface AnnualByTeacherContextType {
     selectedTeacherId?: string;
@@ -165,7 +166,10 @@ export const AnnualByTeacherProvider: React.FC<{ children: React.ReactNode }> = 
                 await addNewAnnualScheduleItem(row);
             }
         } catch (error) {
-            console.error("Error saving annual schedule entry:", error);
+            logErrorAction({
+                description: `Error saving annual schedule entry: ${error instanceof Error ? error.message : String(error)}`,
+                schoolId: school?.id
+            });
             errorToast(messages.annualSchedule.error);
         } finally {
             setQueueRows([]);

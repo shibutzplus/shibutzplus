@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import routes from "@/routes";
 import { DEFAULT_REDIRECT } from "@/routes/protectedAuth";
 import Loading from "@/components/loading/Loading/Loading";
+import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
 const SchoolSelectPage = () => {
     const { data: session } = useSession();
@@ -22,7 +23,7 @@ const SchoolSelectPage = () => {
                 const schoolsList = Array.isArray(list) ? list : [];
                 setSchools(schoolsList);
             } catch (error) {
-                console.error("Failed to load schools", error);
+                logErrorAction({ description: `Failed to load schools (school-select page): ${error instanceof Error ? error.message : String(error)}` });
             } finally {
                 setIsLoading(false);
             }

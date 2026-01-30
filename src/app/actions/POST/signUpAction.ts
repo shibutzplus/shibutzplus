@@ -2,6 +2,7 @@
 
 import { RegisterRequest, RegisterResponse } from "@/models/types/auth";
 import { db, schema, executeQuery } from "@/db";
+import { dbLog } from "@/services/loggerService";
 import { eq } from "drizzle-orm";
 import msg from "@/resources/messages";
 import bcrypt from "bcryptjs";
@@ -73,7 +74,7 @@ const signUp = async (params: RegisterRequest): Promise<RegisterResponse> => {
 
         return { success: true, message: msg.auth.register.success };
     } catch (error) {
-        console.error("Sign up error:", error);
+        dbLog({ description: `Sign up error: ${error instanceof Error ? error.message : String(error)}`, metadata: { email: params.email } });
         return { success: false, message: msg.auth.register.failed };
     }
 };

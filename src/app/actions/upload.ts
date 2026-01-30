@@ -7,6 +7,7 @@
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { MAX_FILE_SIZE } from "@/models/constant/upload";
+import { dbLog } from "@/services/loggerService";
 
 const client = new S3Client({
     region: "auto",
@@ -43,7 +44,7 @@ export const getPresignedUrl = async (fileName: string, contentType: string, fil
 
         return { success: true, url: signedUrl, publicUrl, fileName: uniqueFileName };
     } catch (error) {
-        console.error("Error generating presigned URL:", error);
+        dbLog({ description: `Error generating presigned URL: ${error instanceof Error ? error.message : String(error)}` });
         return { success: false, error: "Failed to generate upload URL" };
     }
 };

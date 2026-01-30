@@ -16,6 +16,7 @@ import { usePopup } from "@/context/PopupContext";
 import MsgPopup from "@/components/popups/MsgPopup/MsgPopup";
 import EditCellPopup from "./components/EditCellPopup";
 import Preloader from "@/components/ui/Preloader/Preloader";
+import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
 interface ScheduleItem {
     teacher: string;
@@ -99,8 +100,8 @@ const AnnualImportContent = () => {
             } else {
                 popupMsg(`שגיאה בטעינת נתונים:\n${res.message}`);
             }
-        } catch (_err) {
-            // console.error(err);
+        } catch (err) {
+            logErrorAction({ description: `Error loading entities from DB (annual-import): ${err instanceof Error ? err.message : String(err)}`, schoolId: schoolId || undefined });
             popupMsg("שגיאה כללית בטעינת נתונים");
         } finally {
             setIsLoading(false);
@@ -114,6 +115,7 @@ const AnnualImportContent = () => {
             const formData = new FormData();
             formData.append("teacherFile", teacherFile!);
             formData.append("classFile", classFile!);
+            if (schoolId) formData.append("schoolId", schoolId);
 
             // Prepare the approved lists (Map back to strings for the action)
             const entities = {
@@ -140,8 +142,8 @@ const AnnualImportContent = () => {
                 popupMsg(`שגיאה ביצירת המערכת:\n${res.message}`);
             }
 
-        } catch (_err) {
-            // console.error(err);
+        } catch (err) {
+            logErrorAction({ description: `Error displaying teachers final schedule (annual-import): ${err instanceof Error ? err.message : String(err)}`, schoolId: schoolId || undefined });
             popupMsg("שגיאה ביצירת המערכת");
         } finally {
             setIsLoading(false);
@@ -233,8 +235,8 @@ const AnnualImportContent = () => {
             } else {
                 popupMsg(`שגיאה ברענון: ${res.message}`);
             }
-        } catch (_err) {
-            // console.error(err);
+        } catch (err) {
+            logErrorAction({ description: `Error refreshing entities (annual-import): ${err instanceof Error ? err.message : String(err)}`, schoolId: schoolId || undefined });
             popupMsg("שגיאה ברענון הנתונים");
         } finally {
             setIsRefreshing(false);
@@ -264,9 +266,9 @@ const AnnualImportContent = () => {
                 popupMsg(`שגיאה בשמירה: ${res.message}`);
             }
 
-        } catch (err: any) {
-            // console.error(err);
-            popupMsg(`שגיאה בשמירה: ${err.message}`);
+        } catch (err) {
+            logErrorAction({ description: `Error saving entities to DB (annual-import): ${err instanceof Error ? err.message : String(err)}`, schoolId: schoolId || undefined });
+            popupMsg(`שגיאה בשמירה: ${err instanceof Error ? err.message : String(err)}`);
         } finally {
             setIsSaving(false);
         }

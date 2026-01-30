@@ -13,6 +13,7 @@ import { useMainContext } from "./MainContext";
 import { getHistoryScheduleAction } from "@/app/actions/GET/getHistoryScheduleAction";
 import { populateDailyScheduleTable } from "@/services/daily/populate";
 import { errorToast } from "@/lib/toast";
+import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
 interface HistoryTableContextType {
     selectedYearDate: string; // YYYY-MM-DD format (same as daily context)
@@ -92,7 +93,7 @@ export const HistoryTableProvider: React.FC<HistoryTableProviderProps> = ({ chil
                     errorToast("החיבור למשתמש נכשל. התנתקו ונסו שוב.");
                 }
             } catch (error) {
-                console.error("Error fetching daily schedule data:", error);
+                logErrorAction({ description: `Error fetching daily schedule data (history): ${error instanceof Error ? error.message : String(error)}`, schoolId: school?.id });
             } finally {
                 setIsLoading(false);
             }

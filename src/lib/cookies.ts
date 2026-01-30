@@ -1,5 +1,6 @@
 import Cookies from "js-cookie";
 import { COOKIES_EXPIRE_TIME } from "@/utils/time";
+import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
 // Cookies keys
 export const COOKIES_KEYS = {
@@ -17,7 +18,7 @@ export const getCookie = <T = string>(key: string): T | null => {
             return cookie as T;
         }
     } catch (error) {
-        console.error(`Error getting cookie ${key}:`, error);
+        logErrorAction({ description: `Error getting cookie ${key}: ${error instanceof Error ? error.message : String(error)}` });
         return null;
     }
 };
@@ -31,7 +32,7 @@ export const setCookie = <T>(key: string, value: T, options?: Cookies.CookieAttr
         });
         return true;
     } catch (error) {
-        console.error(`Error setting cookie ${key}:`, error);
+        logErrorAction({ description: `Error setting cookie ${key}: ${error instanceof Error ? error.message : String(error)}` });
         return false;
     }
 };
@@ -41,7 +42,7 @@ export const removeCookie = (key: string, options?: Cookies.CookieAttributes) =>
         Cookies.remove(key, options);
         return true;
     } catch (error) {
-        console.error(`Error removing cookie ${key}:`, error);
+        logErrorAction({ description: `Error removing cookie ${key}: ${error instanceof Error ? error.message : String(error)}` });
         return false;
     }
 };
@@ -53,7 +54,7 @@ export const clearAllCookies = () => {
         });
         return true;
     } catch (error) {
-        console.error("Error clearing all cookies:", error);
+        logErrorAction({ description: `Error clearing all cookies: ${error instanceof Error ? error.message : String(error)}` });
         return false;
     }
 };

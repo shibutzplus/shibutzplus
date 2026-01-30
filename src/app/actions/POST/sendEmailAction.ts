@@ -1,4 +1,5 @@
 "use server";
+import { dbLog } from "@/services/loggerService";
 
 const EMAILJS_SERVICE_ID = process.env.EMAILJS_SERVICE_ID || "";
 const EMAILJS_PUBLIC_KEY = process.env.EMAILJS_PUBLIC_KEY || "";
@@ -39,7 +40,7 @@ async function sendEmailAction(
             return { status: response.status, text: text || "Failed to send email" };
         }
     } catch (error: any) {
-        console.error("EmailJS Error:", error);
+        dbLog({ description: `EmailJS Error: ${error.message || String(error)}` });
         return { status: 500, text: error.message || "Internal Server Error" };
     }
 }

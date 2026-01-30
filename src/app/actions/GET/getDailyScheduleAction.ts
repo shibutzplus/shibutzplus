@@ -4,6 +4,7 @@ import { DailyScheduleType, GetDailyScheduleResponse } from "@/models/types/dail
 import { checkAuthAndParams, publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { and, eq } from "drizzle-orm";
+import { dbLog } from "@/services/loggerService";
 import { db, schema, executeQuery } from "../../../db";
 
 export async function getDailyScheduleAction(
@@ -76,7 +77,7 @@ export async function getDailyScheduleAction(
             data: dailySchedule,
         };
     } catch (error) {
-        console.error("Error fetching daily schedule:", error);
+        dbLog({ description: `Error fetching daily schedule: ${error instanceof Error ? error.message : String(error)}`, schoolId });
         return {
             success: false,
             message: messages.common.serverError,

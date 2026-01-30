@@ -1,4 +1,5 @@
 "use client";
+import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
 import React, { createContext, useContext, useState, ReactNode, useEffect, useRef } from "react";
 import { getSchoolAction } from "@/app/actions/GET/getSchoolAction";
@@ -86,7 +87,7 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
             }
             return false;
         } catch (error) {
-            console.error("Error fetching teacher by ID:", error);
+            logErrorAction({ description: `Error fetching teacher by ID: ${error instanceof Error ? error.message : String(error)}`, metadata: { teacherId } });
             return false;
         }
     };
@@ -128,7 +129,7 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
                         blockRef.current = false;
                     }
                 } catch (error) {
-                    console.error("Error fetching publish dates:", error);
+                    logErrorAction({ description: `Error fetching publish dates: ${error instanceof Error ? error.message : String(error)}`, schoolId: teacher.schoolId });
                     setDatesOptions([]);
                     setSelectedDate("");
                 } finally {
@@ -204,7 +205,7 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
                 return { success: false, error: response.message || "", selected: "", options: [] };
             }
         } catch (err) {
-            console.error("Error refreshing publish dates:", err);
+            logErrorAction({ description: `Error refreshing publish dates: ${err instanceof Error ? err.message : String(err)}`, schoolId: teacher.schoolId });
             setDatesOptions([]);
             setSelectedDate("");
             return { success: false, error: "", selected: "", options: [] };

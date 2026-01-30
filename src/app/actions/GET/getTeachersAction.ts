@@ -5,6 +5,7 @@ import { checkAuthAndParams, publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { eq, and, asc } from "drizzle-orm";
+import { dbLog } from "@/services/loggerService";
 
 export async function getTeachersAction(
     schoolId: string,
@@ -46,7 +47,10 @@ export async function getTeachersAction(
 
         return { success: true, message: messages.teachers.success, data: teachers };
     } catch (error) {
-        console.error("Error fetching all teachers:", error);
+        dbLog({
+            description: `Error fetching all teachers: ${error instanceof Error ? error.message : String(error)}`,
+            schoolId
+        });
         return { success: false, message: messages.common.serverError };
     }
 }

@@ -1,11 +1,12 @@
 import { successToast } from "@/lib/toast";
+import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
 export const useShareTextOrLink = () => {
     return (title: string, text: string, url?: string) => {
         if (navigator.share) {
             navigator.share({ title, text, url }).catch((error) => {
                 if (error.name !== "AbortError" && error.name !== "NotAllowedError") {
-                    console.error("Failed to copy URL:", error);
+                    logErrorAction({ description: `Failed to share: ${error instanceof Error ? error.message : String(error)}` });
                 }
             });
         } else {
@@ -16,7 +17,7 @@ export const useShareTextOrLink = () => {
                     successToast("הקישור הועתק בהצלחה");
                 })
                 .catch((error) => {
-                    console.error("Failed to copy URL:", error);
+                    logErrorAction({ description: `Failed to copy URL: ${error instanceof Error ? error.message : String(error)}` });
                 });
         }
     };

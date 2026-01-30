@@ -7,6 +7,7 @@ import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { and, eq, asc } from "drizzle-orm";
 import { SubjectType } from "@/models/types/subjects";
+import { dbLog } from "@/services/loggerService";
 
 export async function deleteSubjectAction(
     schoolId: string,
@@ -73,7 +74,11 @@ export async function deleteSubjectAction(
             subjects: remainingSubjects,
         };
     } catch (error) {
-        console.error("Error deleting subject:", error);
+        dbLog({
+            description: `Error deleting subject: ${error instanceof Error ? error.message : String(error)}`,
+            schoolId,
+            metadata: { subjectId }
+        });
         return {
             success: false,
             message: messages.subjects.deleteError,

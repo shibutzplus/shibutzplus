@@ -9,6 +9,7 @@ import {
 import { initDailyEventCellData, initDailyTeacherCellData } from "@/services/daily/initialize";
 import { HOURS_IN_DAY } from "@/utils/time";
 import { setColumn } from "./setColumn";
+import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
 export const initDailySchedule = (dailySchedule: DailySchedule, date: string, columnId: string) => {
     // Initialize date if it doesn't exist
@@ -222,6 +223,6 @@ export const populateDailyScheduleTable = (
 
         return newSchedule;
     } catch (error) {
-        console.error("Error processing daily schedule data:", error);
+        logErrorAction({ description: `Error processing daily schedule data: ${error instanceof Error ? error.message : String(error)}` });
     }
 };

@@ -4,6 +4,7 @@ import InputText from "@/components/ui/inputs/InputText/InputText";
 import Icons from "@/style/icons";
 import { errorToast } from "@/lib/toast";
 import styles from "./AddListRow.module.css";
+import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
 // T is the shape of the data to add (e.g., { name: string, schoolId: string })
 export type AddListRowProps<T> = {
@@ -79,7 +80,7 @@ function AddListRow<T extends Record<string, any>>({
                 }
             }
         } catch (error) {
-            console.error(error);
+            logErrorAction({ description: `AddListRow submission failed: ${error instanceof Error ? error.message : String(error)}` });
             if (!suppressErrorToast) {
                 errorToast(Object.values(errorMessages)[0] || "בעיה בהוספה");
             }

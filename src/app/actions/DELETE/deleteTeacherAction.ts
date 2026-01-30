@@ -7,6 +7,7 @@ import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { and, eq, asc } from "drizzle-orm";
 import { TeacherType } from "@/models/types/teachers";
+import { dbLog } from "@/services/loggerService";
 
 export async function deleteTeacherAction(
     schoolId: string,
@@ -73,7 +74,11 @@ export async function deleteTeacherAction(
             teachers: remainingTeachers,
         };
     } catch (error) {
-        console.error("Error deleting teacher:", error);
+        dbLog({
+            description: `Error deleting teacher: ${error instanceof Error ? error.message : String(error)}`,
+            schoolId,
+            metadata: { teacherId }
+        });
         return {
             success: false,
             message: messages.teachers.deleteError,
