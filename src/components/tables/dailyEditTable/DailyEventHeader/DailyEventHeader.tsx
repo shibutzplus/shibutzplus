@@ -21,7 +21,7 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete,
     const { populateEventColumn, deleteColumn, mainDailyTable, selectedDate, moveColumn, pasteEventColumn } =
         useDailyTableContext();
     const { hasClipboardData, pasteColumn, copyColumn } = useColumnClipboard();
-    const [isLoading, setIsLoading] = useState(false);
+
 
     const columnData = mainDailyTable[selectedDate]?.[columnId] || {};
     const selectedEventData = columnData["1"]?.headerCol?.headerEvent;
@@ -83,14 +83,12 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete,
         const clipboard = pasteColumn();
         if (!clipboard || clipboard.type !== ColumnTypeValues.event) return;
 
-        setIsLoading(true);
         const success = await pasteEventColumn(columnId, clipboard.columnData);
         if (success) {
             successToast("העמודה הודבקה בהצלחה", 1500);
         } else {
             errorToast("שגיאה בהדבקת העמודה");
         }
-        setIsLoading(false);
     };
 
     const showPaste = hasClipboardData(ColumnTypeValues.event);
