@@ -6,6 +6,7 @@ import { useStickyHeader } from "@/hooks/scroll/useStickyHeader";
 import { AppType } from "@/models/types";
 import { TeacherType } from "@/models/types/teachers";
 import { useTeacherTableContext } from "@/context/TeacherTableContext";
+import PreviewHeaderMenu from "../PreviewHeaderMenu/PreviewHeaderMenu";
 
 type PreviewTeacherHeaderProps = {
     type: ColumnType;
@@ -28,30 +29,35 @@ const PreviewTeacherHeader: React.FC<PreviewTeacherHeaderProps> = ({
     const selectedTeacherData = column?.["1"]?.headerCol?.headerTeacher;
     const isClickable = !!selectedTeacherData?.name;
     const headerRef = React.useRef<HTMLDivElement>(null);
-    const [isClicked, setIsClicked] = React.useState(false);
     useStickyHeader(headerRef);
 
-    const handleClick = async () => {
+    const handleViewMaterial = async () => {
         if (isClickable && selectedTeacherData?.name && onTeacherClick) {
-            setIsClicked(true);
             onTeacherClick(selectedTeacherData);
             await fetchTeacherScheduleDate(selectedTeacherData, selectedDate);
-            setIsClicked(false);
         }
     };
+
+    // Only show menu in private app mode (history screen)
+    const showMenu = appType === "private" && isClickable;
 
     return (
         <div
             ref={headerRef}
-            className={`${styles.columnHeaderWrapper} ${isClickable && appType === "private" ? styles.clickable : ""
-                }`}
+            className={styles.columnHeaderWrapper}
         >
             <div
-                className={`${styles.columnHeader} ${isClicked ? styles.clicked : ""}`}
+                className={styles.columnHeader}
                 style={{ backgroundColor: COLOR_BY_TYPE[type] }}
-                onClick={handleClick}
             >
-
+                {showMenu && (
+                    <div className={styles.menuContainer}>
+                        <PreviewHeaderMenu
+                            onViewMaterial={handleViewMaterial}
+                            showViewMaterial={true}
+                        />
+                    </div>
+                )}
                 <div className={styles.headerText}>{selectedTeacherData?.name || ""}</div>
             </div>
         </div>

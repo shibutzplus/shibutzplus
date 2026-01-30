@@ -7,8 +7,6 @@
     left: 0;
     z-index: 5;
     display: flex;
-    justify-content: center;
-    align-items: center;
     z-index: 16;
     box-shadow: -1px 0px 0px 0px var(--background-color),
         1px 0px 0px 0px var(--background-color);
@@ -19,7 +17,6 @@
     top: 0;
     left: 0;
     border-radius: var(--border-radius-table) var(--border-radius-table) 0 0;
-    gap: 10px;
     width: 100%;
     padding: 0 20px;
     text-align: right;
@@ -29,19 +26,20 @@
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-.clickable {
-    cursor: pointer;
+    cursor: default;
 }
 
 .headerText {
     font-size: 18px;
     word-break: break-word;
     width: 100%;
+    padding-right: 15px;
 }
 
-.clicked {
-    filter: brightness(1.15);
-    transition: filter 0.05s ease;
+.menuContainer {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    z-index: 10;
 }

@@ -4,7 +4,7 @@ import { TeacherType } from "@/models/types/teachers";
 import { HOURS_IN_DAY } from "@/utils/time";
 
 /**
- * Updates the local daily schedule state with a new or modified cell.
+ * Updates the daily schedule state with a new or modified cell.
  *
  * This function is typically called after a successful database update to reflect changes locally.
  * It locates the specific cell using `selectedDate`, `columnId`, and `cellData.hour`, then updates
@@ -21,29 +21,29 @@ export const updateAddCell = (
     data: { event?: string; subTeacher?: TeacherType },
     headerEvent?: string,
 ) => {
-    // Update mainDailyTable with the new cell data
-    const updatedSchedule = { ...mainDailyTable };
-    if (!updatedSchedule[selectedDate]) {
-        updatedSchedule[selectedDate] = {};
-    }
-    if (!updatedSchedule[selectedDate][columnId]) {
-        updatedSchedule[selectedDate][columnId] = {};
-    }
-
-    const hourStr = cellData.hour.toString();
-    const existingCell = updatedSchedule[selectedDate][columnId][hourStr] || {
-        ...cellData,
+    // Deep copy down to the column level
+    const updatedSchedule: DailySchedule = {
+        ...mainDailyTable,
+        [selectedDate]: {
+            ...(mainDailyTable[selectedDate] || {}),
+            [columnId]: {
+                ...(mainDailyTable[selectedDate]?.[columnId] || {}),
+            }
+        }
     };
 
-    if (data.event) {
+    const hourStr = cellData.hour.toString();
+    const existingCell = { ...(updatedSchedule[selectedDate][columnId][hourStr] || cellData) };
+
+    if (data.event !== undefined) {
         existingCell.DBid = responseId;
-        existingCell.event = data.event || eventPlaceholder;
+        existingCell.event = data.event !== null && data.event !== undefined ? data.event : eventPlaceholder;
         delete existingCell.subTeacher;
-    } else if (data.subTeacher) {
+    } else if (data.subTeacher !== undefined) {
         existingCell.DBid = responseId;
         existingCell.subTeacher = data.subTeacher;
         delete existingCell.event;
-    } else if (!data.subTeacher && !data.event) {
+    } else if (data.subTeacher === undefined && data.event === undefined) {
         existingCell.DBid = responseId;
         delete existingCell.subTeacher;
         delete existingCell.event;
@@ -53,7 +53,7 @@ export const updateAddCell = (
         existingCell.headerCol = {
             ...existingCell.headerCol,
             headerEvent: headerEvent,
-            type: ColumnTypeValues.event, // Ensure type is event
+            type: ColumnTypeValues.event,
         };
     }
 
@@ -61,15 +61,6 @@ export const updateAddCell = (
     return updatedSchedule;
 };
 
-/**
- * Updates the local daily schedule state by removing a deleted cell's content.
- *
- * This function is called after a successful deletion in the database. It checks if the
- * cell at the specified location matches the `deletedRowId`. If it does, it resets the cell
- * to its initial state (keeping only `headerCol` and `hour`), effectively removing any
- * event or teacher assignment data.
- * @returns A new copy of the `DailySchedule` with the cell content removed.
- */
 export const updateDeleteCell = (
     deletedRowId: string,
     mainDailyTable: DailySchedule,
@@ -77,24 +68,31 @@ export const updateDeleteCell = (
     cellData: DailyScheduleCell,
     columnId: string,
 ) => {
-    // Update mainDailyTable by removing the deleted cell data
-    const updatedSchedule = { ...mainDailyTable };
-    if (!updatedSchedule[selectedDate] || !updatedSchedule[selectedDate][columnId]) {
-        return updatedSchedule;
+    if (!mainDailyTable[selectedDate] || !mainDailyTable[selectedDate][columnId]) {
+        return mainDailyTable;
     }
 
     const hourStr = cellData.hour.toString();
-    const existingCell = updatedSchedule[selectedDate][columnId][hourStr];
+    const existingCell = mainDailyTable[selectedDate][columnId][hourStr];
 
     if (existingCell && existingCell.DBid === deletedRowId) {
-        // Clear the cell data but keep the header structure
-        updatedSchedule[selectedDate][columnId][hourStr] = {
-            headerCol: existingCell.headerCol,
-            hour: existingCell.hour,
+        const updatedSchedule: DailySchedule = {
+            ...mainDailyTable,
+            [selectedDate]: {
+                ...mainDailyTable[selectedDate],
+                [columnId]: {
+                    ...mainDailyTable[selectedDate][columnId],
+                    [hourStr]: {
+                        headerCol: existingCell.headerCol,
+                        hour: existingCell.hour,
+                    }
+                }
+            }
         };
+        return updatedSchedule;
     }
 
-    return updatedSchedule;
+    return mainDailyTable;
 };
 
 /**

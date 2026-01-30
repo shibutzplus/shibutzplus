@@ -4,7 +4,7 @@ import InputTextArea from "../../../ui/inputs/InputTextArea/InputTextArea";
 import messages from "@/resources/messages";
 import { errorToast } from "@/lib/toast";
 import { useDailyTableContext } from "@/context/DailyTableContext";
-import { DailyScheduleCell } from "@/models/types/dailySchedule";
+import { ColumnTypeValues, DailyScheduleCell } from "@/models/types/dailySchedule";
 import { formatTMDintoDMY } from "@/utils/time";
 
 type DailyEventCellProps = { columnId: string; cell: DailyScheduleCell };
@@ -51,9 +51,9 @@ const DailyEventCell: React.FC<DailyEventCellProps> = ({ columnId, cell }) => {
                 cellData = {
                     ...cellData,
                     headerCol: {
-                        ...(cellData.headerCol || { type: "event" }),
+                        ...(cellData.headerCol || { type: ColumnTypeValues.event }),
                         headerEvent: currentHeaderTitle,
-                        type: cellData.headerCol?.type || "event",
+                        type: cellData.headerCol?.type || ColumnTypeValues.event,
                     },
                 };
             }

@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import InputText from "../../../ui/inputs/InputText/InputText";
 import { useDailyTableContext } from "@/context/DailyTableContext";
-import { errorToast } from "@/lib/toast";
+import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import useConfirmPopup from "@/hooks/useConfirmPopup";
 import styles from "../DailyTable/DailyTable.module.css";
 import { formatTMDintoDMY } from "@/utils/time";
 import DailyColumnMenu from "../DailyColumnMenu/DailyColumnMenu";
+import { useColumnClipboard } from "@/context/ColumnClipboardContext";
+import { ColumnTypeValues } from "@/models/types/dailySchedule";
 
 type DailyEventHeaderProps = {
     columnId: string;
@@ -16,11 +18,18 @@ type DailyEventHeaderProps = {
 };
 
 const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete, isFirst, isLast }) => {
-    const { populateEventColumn, deleteColumn, mainDailyTable, selectedDate, moveColumn } =
+    const { populateEventColumn, deleteColumn, mainDailyTable, selectedDate, moveColumn, pasteEventColumn } =
         useDailyTableContext();
+    const { hasClipboardData, pasteColumn, copyColumn } = useColumnClipboard();
 
-    const selectedEventData =
-        mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.headerEvent;
+
+    const columnData = mainDailyTable[selectedDate]?.[columnId] || {};
+    const selectedEventData = columnData["1"]?.headerCol?.headerEvent;
+
+    const handleCopy = () => {
+        copyColumn(ColumnTypeValues.event, columnData);
+        successToast("תוכן העמודה הועתק", 1000);
+    };
 
     const [value, setValue] = useState(selectedEventData || "");
     const prevValueRef = React.useRef(selectedEventData || "");
@@ -70,6 +79,20 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete,
         }
     };
 
+    const handlePaste = async () => {
+        const clipboard = pasteColumn();
+        if (!clipboard || clipboard.type !== ColumnTypeValues.event) return;
+
+        const success = await pasteEventColumn(columnId, clipboard.columnData);
+        if (success) {
+            //successToast("העמודה הודבקה בהצלחה", 1800);
+        } else {
+            errorToast("שגיאה בהדבקת העמודה");
+        }
+    };
+
+    const showPaste = hasClipboardData(ColumnTypeValues.event);
+
 
     return (
         <div className={styles.headerContentWrapper}>
@@ -77,6 +100,10 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete,
                 onDelete={handleDeleteClick}
                 onMoveRight={() => moveColumn && moveColumn(columnId, "right")}
                 onMoveLeft={() => moveColumn && moveColumn(columnId, "left")}
+                onPaste={handlePaste}
+                onCopy={handleCopy}
+                showPaste={showPaste}
+                disableCopy={!value || value.trim() === ""}
                 isFirst={isFirst}
                 isLast={isLast}
             />

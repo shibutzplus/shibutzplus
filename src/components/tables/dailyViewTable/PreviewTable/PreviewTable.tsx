@@ -105,7 +105,11 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
                                         transition={{ duration: 0.3, delay: index * 0.02 }}
                                     >
                                         {type === ColumnTypeValues.event ? (
-                                            <PreviewEventHeader type={type} column={column} />
+                                            <PreviewEventHeader
+                                                type={type}
+                                                column={column}
+                                                appType={appType}
+                                            />
                                         ) : (
                                             <PreviewTeacherHeader
                                                 column={column}

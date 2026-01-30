@@ -7,9 +7,12 @@ type DailyColumnMenuProps = {
     onDelete: () => void;
     onMoveRight?: () => void;
     onMoveLeft?: () => void;
+    onPaste?: () => void;
+    onCopy?: () => void;
+    showPaste?: boolean;
+    disableCopy?: boolean;
     isFirst?: boolean;
     isLast?: boolean;
-    deleteLabel?: string;
     children?: React.ReactNode | ((props: { closeMenu: () => void }) => React.ReactNode); // For custom menu items
 };
 
@@ -17,6 +20,10 @@ const DailyColumnMenu: React.FC<DailyColumnMenuProps> = ({
     onDelete,
     onMoveRight,
     onMoveLeft,
+    onPaste,
+    onCopy,
+    showPaste,
+    disableCopy,
     isFirst,
     isLast,
     children,
@@ -72,7 +79,7 @@ const DailyColumnMenu: React.FC<DailyColumnMenuProps> = ({
 
                     <div className={styles.menuSeparator} />
 
-                    {/* Move Right Option */}
+                    {/* Move Options */}
                     <div
                         onClick={(e) => {
                             e.stopPropagation();
@@ -86,7 +93,6 @@ const DailyColumnMenu: React.FC<DailyColumnMenuProps> = ({
                         <span>הזז ימינה</span>
                     </div>
 
-                    {/* Move Left Option */}
                     <div
                         onClick={(e) => {
                             e.stopPropagation();
@@ -99,6 +105,41 @@ const DailyColumnMenu: React.FC<DailyColumnMenuProps> = ({
                         <Icons.arrowLeft size={14} />
                         <span>הזז שמאלה</span>
                     </div>
+
+                    {/* Copy/Paste Section */}
+                    {(onCopy || onPaste) && <div className={styles.menuSeparator} />}
+
+                    {/* Copy Option */}
+                    {onCopy && (
+                        <div
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                if (disableCopy) return;
+                                setIsMenuOpen(false);
+                                onCopy();
+                            }}
+                            className={`${styles.menuItem} ${disableCopy ? styles.menuItemDisabled : ""}`}
+                        >
+                            <Icons.copy size={14} />
+                            <span>העתק</span>
+                        </div>
+                    )}
+
+                    {/* Paste Option */}
+                    {onPaste && (
+                        <div
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                if (!showPaste) return;
+                                setIsMenuOpen(false);
+                                onPaste();
+                            }}
+                            className={`${styles.menuItem} ${!showPaste ? styles.menuItemDisabled : ""}`}
+                        >
+                            <Icons.paste size={14} />
+                            <span>הדבק</span>
+                        </div>
+                    )}
                 </div>
             )}
         </div>
