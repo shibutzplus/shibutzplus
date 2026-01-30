@@ -10,6 +10,7 @@ type DailyColumnMenuProps = {
     onPaste?: () => void;
     onCopy?: () => void;
     showPaste?: boolean;
+    disableCopy?: boolean;
     isFirst?: boolean;
     isLast?: boolean;
     children?: React.ReactNode | ((props: { closeMenu: () => void }) => React.ReactNode); // For custom menu items
@@ -22,6 +23,7 @@ const DailyColumnMenu: React.FC<DailyColumnMenuProps> = ({
     onPaste,
     onCopy,
     showPaste,
+    disableCopy,
     isFirst,
     isLast,
     children,
@@ -112,10 +114,11 @@ const DailyColumnMenu: React.FC<DailyColumnMenuProps> = ({
                         <div
                             onClick={(e) => {
                                 e.stopPropagation();
+                                if (disableCopy) return;
                                 setIsMenuOpen(false);
                                 onCopy();
                             }}
-                            className={styles.menuItem}
+                            className={`${styles.menuItem} ${disableCopy ? styles.menuItemDisabled : ""}`}
                         >
                             <Icons.copy size={14} />
                             <span>העתק</span>

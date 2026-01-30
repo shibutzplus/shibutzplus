@@ -12,7 +12,7 @@ import { addNewEventCell } from "@/services/daily/add";
 import { fillLeftRowsWithEmptyCells, initDailySchedule } from "@/services/daily/populate";
 import { updateAddCell, updateAllEventHeader, updateDeleteCell } from "@/services/daily/update";
 
-import { getDayNumberByDateString } from "@/utils/time";
+import { formatTMDintoDMY, getDayNumberByDateString } from "@/utils/time";
 
 const useDailyEventActions = (
     mainDailyTable: DailySchedule,
@@ -185,7 +185,7 @@ const useDailyEventActions = (
         if (!schoolId) return false;
 
         const currentPosition = mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.position || 0;
-        const eventTitle = pastedColumnData["1"]?.headerCol?.headerEvent || eventPlaceholder;
+        const eventTitle = pastedColumnData["1"]?.headerCol?.headerEvent || formatTMDintoDMY(selectedDate);
 
         try {
             // 1. Clear existing data in DB

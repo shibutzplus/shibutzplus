@@ -7,12 +7,14 @@ type PreviewHeaderMenuProps = {
     onCopy?: () => void;
     onViewMaterial?: () => void;
     showViewMaterial?: boolean;
+    disableCopy?: boolean;
 };
 
 const PreviewHeaderMenu: React.FC<PreviewHeaderMenuProps> = ({
     onCopy,
     onViewMaterial,
     showViewMaterial = false,
+    disableCopy = false,
 }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
@@ -46,10 +48,11 @@ const PreviewHeaderMenu: React.FC<PreviewHeaderMenuProps> = ({
                         <div
                             onClick={(e) => {
                                 e.stopPropagation();
+                                if (disableCopy) return;
                                 setIsMenuOpen(false);
                                 onCopy();
                             }}
-                            className={styles.menuItem}
+                            className={`${styles.menuItem} ${disableCopy ? styles.menuItemDisabled : ""}`}
                         >
                             <Icons.copy size={14} />
                             <span>העתקה</span>

@@ -85,7 +85,7 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete,
 
         const success = await pasteEventColumn(columnId, clipboard.columnData);
         if (success) {
-            successToast("העמודה הודבקה בהצלחה", 1500);
+            //successToast("העמודה הודבקה בהצלחה", 1800);
         } else {
             errorToast("שגיאה בהדבקת העמודה");
         }
@@ -103,6 +103,7 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete,
                 onPaste={handlePaste}
                 onCopy={handleCopy}
                 showPaste={showPaste}
+                disableCopy={!value || value.trim() === ""}
                 isFirst={isFirst}
                 isLast={isLast}
             />

@@ -21,10 +21,11 @@ const PreviewEventMenu: React.FC<{
     column: { [hour: string]: DailyScheduleCell };
 }> = ({ type, column }) => {
     const { copyColumn } = useColumnClipboard();
+    const selectedEventData = column?.["1"]?.headerCol?.headerEvent;
 
     const handleCopy = () => {
         copyColumn(type, column);
-        successToast("תוכן העמודה הועתק, אפשר להדביק בשיבוץ היומי", 2000);
+        successToast("תוכן העמודה הועתק, אפשר להדביק בשיבוץ היומי", 1800);
     };
 
     return (
@@ -32,6 +33,7 @@ const PreviewEventMenu: React.FC<{
             <PreviewHeaderMenu
                 onCopy={handleCopy}
                 showViewMaterial={false}
+                disableCopy={!selectedEventData || selectedEventData.trim() === ""}
             />
         </div>
     );
