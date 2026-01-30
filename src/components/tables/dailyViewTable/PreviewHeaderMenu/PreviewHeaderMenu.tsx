@@ -1,15 +1,15 @@
 import React, { useState, useRef } from "react";
 import Icons from "@/style/icons";
-import styles from "./PreviewTeacherMenu.module.css";
+import styles from "./PreviewHeaderMenu.module.css";
 import { useClickOutside } from "@/hooks/useClickOutside";
 
-type PreviewTeacherMenuProps = {
+type PreviewHeaderMenuProps = {
     onCopy?: () => void;
     onViewMaterial?: () => void;
     showViewMaterial?: boolean;
 };
 
-const PreviewTeacherMenu: React.FC<PreviewTeacherMenuProps> = ({
+const PreviewHeaderMenu: React.FC<PreviewHeaderMenuProps> = ({
     onCopy,
     onViewMaterial,
     showViewMaterial = false,
@@ -79,4 +79,4 @@ const PreviewTeacherMenu: React.FC<PreviewTeacherMenuProps> = ({
     );
 };
 
-export default PreviewTeacherMenu;
+export default PreviewHeaderMenu;

@@ -6,7 +6,7 @@ import { useStickyHeader } from "@/hooks/scroll/useStickyHeader";
 import { AppType } from "@/models/types";
 import { TeacherType } from "@/models/types/teachers";
 import { useTeacherTableContext } from "@/context/TeacherTableContext";
-import PreviewTeacherMenu from "../PreviewTeacherMenu/PreviewTeacherMenu";
+import PreviewHeaderMenu from "../PreviewHeaderMenu/PreviewHeaderMenu";
 
 type PreviewTeacherHeaderProps = {
     type: ColumnType;
@@ -52,7 +52,7 @@ const PreviewTeacherHeader: React.FC<PreviewTeacherHeaderProps> = ({
             >
                 {showMenu && (
                     <div className={styles.menuContainer}>
-                        <PreviewTeacherMenu
+                        <PreviewHeaderMenu
                             onViewMaterial={handleViewMaterial}
                             showViewMaterial={true}
                         />

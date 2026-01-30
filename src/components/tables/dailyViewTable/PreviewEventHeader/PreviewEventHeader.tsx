@@ -6,7 +6,7 @@ import { COLOR_BY_TYPE } from "@/models/constant/daily";
 import { useStickyHeader } from "@/hooks/scroll/useStickyHeader";
 import { useColumnClipboard } from "@/context/ColumnClipboardContext";
 import { successToast } from "@/lib/toast";
-import PreviewTeacherMenu from "../PreviewTeacherMenu/PreviewTeacherMenu";
+import PreviewHeaderMenu from "../PreviewHeaderMenu/PreviewHeaderMenu";
 
 type PreviewEventHeaderProps = {
     type: ColumnType;
@@ -29,7 +29,7 @@ const PreviewEventMenu: React.FC<{
 
     return (
         <div className={styles.menuContainer}>
-            <PreviewTeacherMenu
+            <PreviewHeaderMenu
                 onCopy={handleCopy}
                 showViewMaterial={false}
             />
