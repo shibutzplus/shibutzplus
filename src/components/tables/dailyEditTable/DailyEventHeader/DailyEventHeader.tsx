@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Loading from "@/components/loading/Loading/Loading";
 import InputText from "../../../ui/inputs/InputText/InputText";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import { errorToast, successToast } from "@/lib/toast";
@@ -21,6 +22,7 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete,
     const { populateEventColumn, deleteColumn, mainDailyTable, selectedDate, moveColumn, pasteEventColumn } =
         useDailyTableContext();
     const { hasClipboardData, pasteColumn, copyColumn } = useColumnClipboard();
+    const [isPasting, setIsPasting] = useState(false);
 
 
     const columnData = mainDailyTable[selectedDate]?.[columnId] || {};
@@ -83,11 +85,16 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete,
         const clipboard = pasteColumn();
         if (!clipboard || clipboard.type !== ColumnTypeValues.event) return;
 
-        const success = await pasteEventColumn(columnId, clipboard.columnData);
-        if (success) {
-            //successToast("העמודה הודבקה בהצלחה", 1800);
-        } else {
+        setIsPasting(true);
+        try {
+            const success = await pasteEventColumn(columnId, clipboard.columnData);
+            if (!success) {
+                errorToast("שגיאה בהדבקת העמודה");
+            }
+        } catch (error) {
             errorToast("שגיאה בהדבקת העמודה");
+        } finally {
+            setIsPasting(false);
         }
     };
 
@@ -96,17 +103,23 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete,
 
     return (
         <div className={styles.headerContentWrapper}>
-            <DailyColumnMenu
-                onDelete={handleDeleteClick}
-                onMoveRight={() => moveColumn && moveColumn(columnId, "right")}
-                onMoveLeft={() => moveColumn && moveColumn(columnId, "left")}
-                onPaste={handlePaste}
-                onCopy={handleCopy}
-                showPaste={showPaste}
-                disableCopy={!value || value.trim() === ""}
-                isFirst={isFirst}
-                isLast={isLast}
-            />
+            {isPasting ? (
+                <div style={{ padding: "0 10px", flexShrink: 0 }}>
+                    <Loading size="S" color="white" />
+                </div>
+            ) : (
+                <DailyColumnMenu
+                    onDelete={handleDeleteClick}
+                    onMoveRight={() => moveColumn && moveColumn(columnId, "right")}
+                    onMoveLeft={() => moveColumn && moveColumn(columnId, "left")}
+                    onPaste={handlePaste}
+                    onCopy={handleCopy}
+                    showPaste={showPaste}
+                    disableCopy={!value || value.trim() === ""}
+                    isFirst={isFirst}
+                    isLast={isLast}
+                />
+            )}
             <div className={styles.inputSelectWrapper}>
                 <div style={{ width: "100%" }}>
                     <InputText
