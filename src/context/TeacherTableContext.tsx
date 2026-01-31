@@ -141,7 +141,7 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
         }
     };
 
-    const hydrateSchedule = (scheduleMap: PortalSchedule, date: string) => {
+    const hydrateSchedule = (scheduleMap: PortalSchedule, _date: string) => {
         setMainPortalTable(prev => ({ ...prev, ...scheduleMap }));
         setHasFetched(true);
     };
