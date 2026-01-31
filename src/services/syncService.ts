@@ -46,11 +46,7 @@ const pollUpdates = async (params: PollUpdatesParams): Promise<SyncPollResponse 
     return data;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-
-    if (message === "Failed to fetch" || message === "Load failed") {  // Ignore "Failed to fetch" errors caused by navigation/cancellation
-      return null;
-    }
-
+    if (message === "Failed to fetch" || message === "Load failed") return null;
     logErrorAction({ description: `Error polling sync updates: ${message}` });
     return null;
   }
@@ -123,12 +119,18 @@ export const pushSyncUpdate = async (type: SyncChannel, payload?: SyncPayload): 
     }
 
     const res = await fetch(url, { method: "POST", keepalive: true });
-    if (res.ok) {
-      const data = await res.json();
-      return data.ts;
+
+    if (!res.ok) {
+      logErrorAction({ description: `Sync push failed with status: ${res.status}`, schoolId: payload?.schoolId });
+      return null;
     }
+
+    const data = await res.json();
+    return data.ts;
   } catch (error) {
-    logErrorAction({ description: `Error pushing sync update: ${error instanceof Error ? error.message : String(error)}`, schoolId: payload?.schoolId });
+    const message = error instanceof Error ? error.message : String(error);
+    if (message === "fetch failed" || message === "Failed to fetch") return null;
+    logErrorAction({ description: `Error pushing sync update: ${message}`, schoolId: payload?.schoolId });
+    return null;
   }
-  return null;
 };
