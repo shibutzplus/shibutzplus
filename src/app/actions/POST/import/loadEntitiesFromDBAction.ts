@@ -98,10 +98,7 @@ export const loadEntitiesFromDBAction = async (formData: FormData) => {
         };
 
     } catch (error: any) {
-        dbLog({
-            description: `Error in loadEntitiesFromDBAction: ${error instanceof Error ? error.message : String(error)}`,
-            schoolId
-        });
+        dbLog({ description: `Error in loadEntitiesFromDBAction: ${error instanceof Error ? error.message : String(error)}`, schoolId });
         return {
             success: false,
             message: `Error loading existing data: ${error.message}`

@@ -45,10 +45,7 @@ export async function getClassesAction(
             data: classes,
         };
     } catch (error) {
-        dbLog({
-            description: `Error fetching classes: ${error instanceof Error ? error.message : String(error)}`,
-            schoolId
-        });
+        dbLog({ description: `Error fetching classes: ${error instanceof Error ? error.message : String(error)}`, schoolId });
         return {
             success: false,
             message: messages.common.serverError,

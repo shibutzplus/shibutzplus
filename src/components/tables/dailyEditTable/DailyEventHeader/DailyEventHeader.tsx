@@ -91,7 +91,7 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete,
             if (!success) {
                 errorToast("שגיאה בהדבקת העמודה");
             }
-        } catch (error) {
+        } catch (_error) {
             errorToast("שגיאה בהדבקת העמודה");
         } finally {
             setIsPasting(false);

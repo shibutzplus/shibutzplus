@@ -12,24 +12,11 @@ interface HistoryUpdateResult {
     recordsCount: number;
 }
 
-export async function processHistoryUpdate(dateString?: string, force: boolean = false): Promise<HistoryUpdateResult> {
-    const logs: string[] = [];
-    const log = (msg: string) => {
-        // eslint-disable-next-line no-console
-        console.log(msg);
-        logs.push(msg);
-    };
+export async function processHistoryUpdate(dateString?: string): Promise<HistoryUpdateResult> {
+    const targetDate = dateString || new Date().toISOString().split('T')[0];
+    let targetSchoolIds: string[] = [];
 
     try {
-        // 1. Determine "Today" if date not provided
-        let targetDate = dateString;
-        if (!targetDate) {
-            const today = new Date();
-            targetDate = today.toISOString().split('T')[0];
-        }
-
-        log(`Processing history for date: ${targetDate}${force ? ' (Force Mode)' : ''}`);
-
         // 2. Find ALL schools (regardless of publish status)
         const schoolsQuery = db
             .select({ id: schools.id, name: schools.name })
@@ -38,11 +25,10 @@ export async function processHistoryUpdate(dateString?: string, force: boolean =
         const targetSchools = await schoolsQuery;
 
         if (targetSchools.length === 0) {
-            return { success: true, logs, schoolsUpdated: 0, recordsCount: 0 };
+            return { success: true, logs: [], schoolsUpdated: 0, recordsCount: 0 };
         }
 
-        const targetSchoolIds = targetSchools.map(s => s.id);
-
+        targetSchoolIds = targetSchools.map(s => s.id);
 
         // 3. Fetch daily schedules
         const schedules = await db
@@ -56,7 +42,7 @@ export async function processHistoryUpdate(dateString?: string, force: boolean =
             );
 
         if (schedules.length === 0) {
-            return { success: true, logs, schoolsUpdated: targetSchoolIds.length, recordsCount: 0 };
+            return { success: true, logs: [], schoolsUpdated: targetSchoolIds.length, recordsCount: 0 };
         }
 
         // 4. Fetch reference data
@@ -108,7 +94,6 @@ export async function processHistoryUpdate(dateString?: string, force: boolean =
                 );
 
             await db.insert(history).values(historyRecords);
-            log(`Successfully inserted ${historyRecords.length} records into history.`);
         }
 
         // 6. Cleanup old daily schedules (DAILY_KEEP_HISTORY_DAYS days ago or older)
@@ -119,18 +104,18 @@ export async function processHistoryUpdate(dateString?: string, force: boolean =
         await db.delete(dailySchedule)
             .where(lte(dailySchedule.date, cleanupDateStr));
 
-        log(`Cleanup: Removed dailySchedule records on or before ${cleanupDateStr}.`);
-
         return {
             success: true,
-            logs,
+            logs: [],
             schoolsUpdated: targetSchoolIds.length,
             recordsCount: historyRecords.length
         };
 
     } catch (error) {
-        dbLog({ description: `History update failed: ${error instanceof Error ? error.message : String(error)}` });
-        log(`Error: ${error instanceof Error ? error.message : String(error)}`);
-        return { success: false, logs, schoolsUpdated: 0, recordsCount: 0 };
+        dbLog({
+            description: `History update failed: ${error instanceof Error ? error.message : String(error)}`,
+            metadata: { date: targetDate, schoolsCount: targetSchoolIds.length }
+        });
+        return { success: false, logs: [], schoolsUpdated: 0, recordsCount: 0 };
     }
 }

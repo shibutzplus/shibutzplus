@@ -68,10 +68,7 @@ export const extractEntitiesFromFilesAction = async (
                 ]);
                 dynamicKeywords = Array.from(uniqueNames).sort();
             } catch (err) {
-                dbLog({
-                    description: `Failed to fetch dynamic workGroup keywords: ${err instanceof Error ? err.message : String(err)}`,
-                    schoolId
-                });
+                dbLog({ description: `Failed to fetch dynamic workGroup keywords: ${err instanceof Error ? err.message : String(err)}`, schoolId });
             }
         } else if (entityType === 'subjects') {
             try {
@@ -83,10 +80,7 @@ export const extractEntitiesFromFilesAction = async (
                 const uniqueNames = new Set(globalSubjects.map(s => s.name.trim()));
                 dynamicKeywords = Array.from(uniqueNames).sort();
             } catch (err) {
-                dbLog({
-                    description: `Failed to fetch dynamic subject keywords: ${err instanceof Error ? err.message : String(err)}`,
-                    schoolId
-                });
+                dbLog({ description: `Failed to fetch dynamic subject keywords: ${err instanceof Error ? err.message : String(err)}`, schoolId });
             }
         }
 

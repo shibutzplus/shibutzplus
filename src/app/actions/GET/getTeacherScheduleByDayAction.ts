@@ -85,7 +85,8 @@ export async function getTeacherScheduleByDayAction(
         dbLog({
             description: `Error fetching teacher schedule: ${error instanceof Error ? error.message : String(error)}`,
             schoolId,
-            metadata: { teacherId, day }
+            user: teacherId,
+            metadata: { day }
         });
         return {
             success: false,

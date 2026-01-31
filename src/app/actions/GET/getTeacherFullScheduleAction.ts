@@ -22,35 +22,38 @@ const getTeacherFullScheduleAction = async (
             const dateObj = new Date(date);
             const dayOfWeek = dateObj.getDay() + 1; // 1-7 (Sunday is 1)
 
-            const annualSchedules = await db.query.annualSchedule.findMany({
-                where: and(
-                    eq(schema.annualSchedule.teacherId, teacherId),
-                    eq(schema.annualSchedule.day, dayOfWeek),
-                ),
-                with: {
-                    subject: true,
-                    class: true,
-                    school: true,
-                },
-            });
-
-            // 2. Get daily schedule entries
-            const dailySchedules = await db.query.dailySchedule.findMany({
-                where: and(
-                    eq(schema.dailySchedule.date, date),
-                    or(
-                        eq(schema.dailySchedule.subTeacherId, teacherId),
-                        eq(schema.dailySchedule.originalTeacherId, teacherId),
+            const [annualSchedules, dailySchedules] = await Promise.all([
+                // 1. Get Annual Schedule (to show regular schedule graid)
+                db.query.annualSchedule.findMany({
+                    where: and(
+                        eq(schema.annualSchedule.teacherId, teacherId),
+                        eq(schema.annualSchedule.day, dayOfWeek),
                     ),
-                ),
-                with: {
-                    subject: true,
-                    originalTeacher: true,
-                    subTeacher: true,
-                    school: true,
-                },
-                orderBy: schema.dailySchedule.hour,
-            });
+                    with: {
+                        subject: true,
+                        class: true,
+                        school: true,
+                    },
+                }),
+
+                // 2. Get daily schedule entries
+                db.query.dailySchedule.findMany({
+                    where: and(
+                        eq(schema.dailySchedule.date, date),
+                        or(
+                            eq(schema.dailySchedule.subTeacherId, teacherId),
+                            eq(schema.dailySchedule.originalTeacherId, teacherId),
+                        ),
+                    ),
+                    with: {
+                        subject: true,
+                        originalTeacher: true,
+                        subTeacher: true,
+                        school: true,
+                    },
+                    orderBy: schema.dailySchedule.hour,
+                })
+            ]);
 
             // Fetch classes array manually since it's an array of IDs
             const allClassIds = new Set<string>();
@@ -158,7 +161,8 @@ const getTeacherFullScheduleAction = async (
     } catch (error) {
         dbLog({
             description: `Error fetching teacher full schedule: ${error instanceof Error ? error.message : String(error)}`,
-            metadata: { teacherId, date }
+            user: teacherId,
+            metadata: { date }
         });
         return {
             success: false,
