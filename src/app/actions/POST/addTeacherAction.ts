@@ -66,11 +66,7 @@ export async function addTeacherAction(
             };
         }
 
-        dbLog({
-            description: `Error adding teacher: ${error instanceof Error ? error.message : String(error)}`,
-            schoolId: teacherData.schoolId
-        });
-
+        dbLog({ description: `Error adding teacher: ${error instanceof Error ? error.message : String(error)}`, schoolId: teacherData.schoolId });
         return { success: false, message: messages.common.serverError };
     }
 }

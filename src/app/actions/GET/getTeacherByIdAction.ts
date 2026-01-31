@@ -39,10 +39,7 @@ export async function getTeacherByIdAction(teacherId: string): Promise<GetTeache
             data: teacher,
         };
     } catch (error) {
-        dbLog({
-            description: `Error fetching teacher by id: ${error instanceof Error ? error.message : String(error)}`,
-            metadata: { teacherId }
-        });
+        dbLog({ description: `Error fetching teacher by id: ${error instanceof Error ? error.message : String(error)}`, user: teacherId });
         return {
             success: false,
             message: messages.common.serverError,

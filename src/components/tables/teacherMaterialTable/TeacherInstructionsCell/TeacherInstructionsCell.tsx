@@ -19,7 +19,7 @@ const TeacherInstructionsCell: React.FC<TeacherInstructionsCellProps> = ({
     teacher,
     selectedDate,
 }) => {
-    const { saveInstractions, isHistoryMode } = useTeacherTableContext();
+    const { saveInstractions, isHistoryPage } = useTeacherTableContext();
     const [instructions, setInstructions] = useState<string>(row?.instructions || "");
     const [prevInstructions, setPrevInstructions] = useState<string>(row?.instructions || "");
 
@@ -47,7 +47,7 @@ const TeacherInstructionsCell: React.FC<TeacherInstructionsCellProps> = ({
                     onBlurHTML={handleChange}
                     placeholder={getInstructionPlaceholder(row, teacher)}
                     minHeight={60}
-                    readOnly={isHistoryMode}
+                    readOnly={isHistoryPage}
                     hideButtons={isSubstitute || row?.isRegular}
                 />
             ) : null}

@@ -61,7 +61,7 @@ export async function updateTeacherAction(
         dbLog({
             description: `Error updating teacher: ${error instanceof Error ? error.message : String(error)}`,
             schoolId: teacherData.schoolId,
-            metadata: { teacherId }
+            user: teacherId
         });
         return { success: false, message: messages.common.serverError };
     }

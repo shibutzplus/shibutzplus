@@ -59,10 +59,7 @@ export async function addSubjectAction(
                 message: `"${subjectData.name}" כבר ברשימה.`,
             };
         } else {
-            dbLog({
-                description: `Error adding subject: ${error instanceof Error ? error.message : String(error)}`,
-                schoolId: subjectData.schoolId
-            });
+            dbLog({ description: `Error adding subject: ${error instanceof Error ? error.message : String(error)}`, schoolId: subjectData.schoolId });
         }
         return { success: false, message: messages.common.serverError };
     }

@@ -70,7 +70,8 @@ export async function addAnnualScheduleAction(
         dbLog({
             description: `Error creating annual schedule entry: ${error instanceof Error ? error.message : String(error)}`,
             schoolId: school.id,
-            metadata: { day: scheduleData.day, hour: scheduleData.hour, classId: classData.id, teacherId: teacher.id, subjectId: subject.id }
+            user: teacher.id,
+            metadata: { day: scheduleData.day, hour: scheduleData.hour, classId: classData.id, subjectId: subject.id }
         });
         return {
             success: false,

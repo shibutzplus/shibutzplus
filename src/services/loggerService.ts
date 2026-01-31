@@ -10,33 +10,22 @@ export interface LogParams {
 }
 
 /**
- * Log an error to the database.
- * replaces console.error calls throughout the application.
+ * Log the errors to the database.
  */
 export async function dbLog(params: LogParams) {
     try {
-        // Log to console as well for development visibility
-        if (process.env.NODE_ENV === 'development') {
-            console.log(`[DBLOG] ${params.description}`, {
-                user: params.user,
-                schoolId: params.schoolId,
-                metadata: params.metadata
-            });
-        }
-
         const session = await getServerSession(authOptions).catch(() => null);
-        const resolvedUser = params.user || session?.user?.name || 'System';
+        const resolvedUser = params.user || session?.user?.name || 'Unknown User';
         const resolvedSchoolId = params.schoolId || session?.user?.schoolId;
-
-        // Formatted IL Time for the description or metadata if they want to see it clearly
-        const ilTime = new Date().toLocaleString("he-IL", { timeZone: "Asia/Jerusalem" });
+        const timeStamp = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Jerusalem" }));
 
         await executeQuery(async () => {
             return await db.insert(schema.logs).values({
                 description: params.description,
                 schoolId: resolvedSchoolId,
                 user: resolvedUser,
-                metadata: { ...params.metadata, ilTime },
+                metadata: params.metadata,
+                timeStamp: timeStamp
             });
         });
     } catch (err) {

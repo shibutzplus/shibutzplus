@@ -53,10 +53,7 @@ export async function addClassAction(
                 message: `"${classData.name}" כבר ברשימה.`,
             };
         } else {
-            dbLog({
-                description: `Error adding class: ${error instanceof Error ? error.message : String(error)}`,
-                schoolId: classData.schoolId
-            });
+            dbLog({ description: `Error adding class: ${error instanceof Error ? error.message : String(error)}`, schoolId: classData.schoolId });
         }
         return { success: false, message: messages.common.serverError };
     }

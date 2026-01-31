@@ -121,10 +121,7 @@ export async function previewAnnualScheduleImportAction(
         };
 
     } catch (error: any) {
-        dbLog({
-            description: `Preview error: ${error instanceof Error ? error.message : String(error)}`,
-            schoolId
-        });
+        dbLog({ description: `Preview error: ${error instanceof Error ? error.message : String(error)}`, schoolId });
         return { success: false, message: "שגיאה בניתוח הנתונים", error: error.message };
     }
 }

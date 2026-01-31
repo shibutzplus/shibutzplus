@@ -26,7 +26,7 @@ interface TeacherTableContextType {
         selectedDate?: string,
     ) => Promise<void>;
     hasFetched: boolean;
-    isHistoryMode: boolean;
+    isHistoryPage: boolean;
 }
 
 const TeacherTableContext = createContext<TeacherTableContextType | undefined>(undefined);
@@ -41,10 +41,10 @@ export const useTeacherTableContext = () => {
 
 type TeacherTableProviderProps = {
     children: ReactNode;
-    isHistoryMode?: boolean;
+    isHistoryPage?: boolean;
 };
 
-export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ children, isHistoryMode = false }) => {
+export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ children, isHistoryPage = false }) => {
     const [mainPortalTable, setMainPortalTable] = useState<PortalSchedule>({});
     const [isPortalLoading, setIsPortalLoading] = useState<boolean>(false);
     const [isSavingLoading, setIsSavingLoading] = useState<boolean>(false);
@@ -54,7 +54,7 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
         teacher?: TeacherType,
         selectedDate?: string,
     ) => {
-        if (!teacher || !selectedDate) {
+        if (!teacher?.id || !teacher?.schoolId || !selectedDate) {
             setHasFetched(true);
             return false;
         }
@@ -66,27 +66,29 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
             }
 
             let response;
-            if (isHistoryMode && teacher.name) {
-                const schoolId = teacher.schoolId;
-                if (!schoolId) throw new Error("School ID missing for history fetch");
-                response = await getTeacherHistoryScheduleAction(teacher.name, schoolId, selectedDate);
+            if (isHistoryPage && teacher.name) {
+                response = await getTeacherHistoryScheduleAction(teacher.name, teacher.schoolId, selectedDate);
             } else {
                 response = await getTeacherFullScheduleAction(teacher.id, selectedDate);
             }
 
             if (response.success && response.data) {
-                const newSchedule = populatePortalTable(
-                    response.data,
-                    mainPortalTable,
-                    selectedDate,
-                );
+                const newSchedule = populatePortalTable(response.data, mainPortalTable, selectedDate,);
                 if (newSchedule) setMainPortalTable(newSchedule);
             } else {
                 return false;
             }
             return true;
         } catch (error) {
-            logErrorAction({ description: `Error fetching daily schedule data (teacher table): ${error instanceof Error ? error.message : String(error)}` });
+            logErrorAction({
+                description: `Error fetching Teacher Material page data: ${error instanceof Error ? error.message : String(error)}`,
+                schoolId: teacher?.schoolId,
+                user: teacher?.id,
+                metadata: {
+                    selectedDate,
+                    error: error instanceof Error ? { name: error.name, stack: error.stack, } : error
+                }
+            });
             return false;
         } finally {
             setIsPortalLoading(false);
@@ -131,10 +133,7 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
                 errorToast(messages.dailySchedule.error);
             }
         } catch (error) {
-            logErrorAction({
-                description: `Error updating daily schedule entry: ${error instanceof Error ? error.message : String(error)}`,
-                schoolId
-            });
+            logErrorAction({ description: `Error updating daily schedule entry: ${error instanceof Error ? error.message : String(error)}`, schoolId });
             errorToast(messages.dailySchedule.error);
         } finally {
             setIsSavingLoading(false);
@@ -148,7 +147,7 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
         fetchTeacherScheduleDate,
         saveInstractions,
         hasFetched,
-        isHistoryMode,
+        isHistoryPage,
     };
 
     return <TeacherTableContext.Provider value={value}>{children}</TeacherTableContext.Provider>;

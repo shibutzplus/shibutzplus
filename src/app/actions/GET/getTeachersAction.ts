@@ -47,10 +47,7 @@ export async function getTeachersAction(
 
         return { success: true, message: messages.teachers.success, data: teachers };
     } catch (error) {
-        dbLog({
-            description: `Error fetching all teachers: ${error instanceof Error ? error.message : String(error)}`,
-            schoolId
-        });
+        dbLog({ description: `Error fetching all teachers: ${error instanceof Error ? error.message : String(error)}`, schoolId });
         return { success: false, message: messages.common.serverError };
     }
 }

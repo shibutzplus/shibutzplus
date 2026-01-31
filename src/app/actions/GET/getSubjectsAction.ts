@@ -45,10 +45,7 @@ export async function getSubjectsAction(
             data: subjects,
         };
     } catch (error) {
-        dbLog({
-            description: `Error fetching subjects: ${error instanceof Error ? error.message : String(error)}`,
-            schoolId
-        });
+        dbLog({ description: `Error fetching subjects: ${error instanceof Error ? error.message : String(error)}`, schoolId });
         return {
             success: false,
             message: messages.common.serverError,
