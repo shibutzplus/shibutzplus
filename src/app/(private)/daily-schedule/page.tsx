@@ -57,7 +57,6 @@ const DailyScheduleContent: React.FC = () => {
                         "msgPopup",
                         "S",
                         <MsgPopup
-                            displayIcon={false}
                             message={
                                 <div style={{ textAlign: "right" }}>
                                     <p style={{ fontWeight: "bold", marginBottom: "20px", fontSize: "24px" }}>ברוכים הבאים לשיבוץ+</p>

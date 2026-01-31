@@ -45,7 +45,13 @@ const pollUpdates = async (params: PollUpdatesParams): Promise<SyncPollResponse 
     const data: SyncPollResponse = await res.json();
     return data;
   } catch (error) {
-    logErrorAction({ description: `Error polling sync updates: ${error instanceof Error ? error.message : String(error)}` });
+    const message = error instanceof Error ? error.message : String(error);
+
+    if (message === "Failed to fetch") {  // Ignore "Failed to fetch" errors caused by navigation/cancellation
+      return null;
+    }
+
+    logErrorAction({ description: `Error polling sync updates: ${message}` });
     return null;
   }
 };
