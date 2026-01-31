@@ -3,6 +3,33 @@ import { SelectOption } from "@/models/types";
 export const DAYS_OF_WEEK = ["א", "ב", "ג", "ד", "ה", "ו", "ש"];
 export const DAYS_OF_WORK_WEEK = ["א", "ב", "ג", "ד", "ה", "ו"];
 export const DAYS_OF_WEEK_FORMAT = ["יום א", "יום ב", "יום ג", "יום ד", "יום ה", "יום ו", "יום שבת"];
+
+// Helper to get Israel Date components
+export const getIsraelDateComponents = (date: Date = new Date()) => {
+    const formatter = new Intl.DateTimeFormat("en-US", {
+        timeZone: "Asia/Jerusalem",
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+        hour12: false,
+    });
+
+    const parts = formatter.formatToParts(date);
+    const part = (type: string) => parts.find((p) => p.type === type)?.value || "";
+
+    return {
+        year: parseInt(part("year"), 10),
+        month: parseInt(part("month"), 10),
+        day: parseInt(part("day"), 10),
+        hour: parseInt(part("hour"), 10),
+        minute: parseInt(part("minute"), 10),
+        second: parseInt(part("second"), 10),
+    };
+};
+
 export const SUNDAY_NUMBER = 0;
 export const SATURDAY_NUMBER = 6;
 
@@ -19,7 +46,7 @@ export const getHebrewMonthName = (monthIndex: number): string => {
 
 export const ONE_DAY = 1;
 
-// Number of hours in a day
+// Default number of hours in a day
 export const HOURS_IN_DAY = 10;
 
 // Global auto-switch time configuration (HH:MM)
@@ -48,24 +75,27 @@ export const getStringReturnDate = (date: string) => {
 };
 
 export const getTodayDateString = () => {
-    return getDateReturnString(new Date());
+    const { year, month, day } = getIsraelDateComponents();
+    return buildDateString(`${year}`, `${month}`, `${day}`);
 };
 
 export const getTomorrowDateString = () => {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    return getDateReturnString(tomorrow);
+    const { year, month, day } = getIsraelDateComponents();
+    const today = new Date(year, month - 1, day);
+    today.setDate(today.getDate() + 1);
+    return getDateReturnString(today);
 };
 
 export const getTwoDaysFromNowDateString = () => {
-    const twoDaysFromNow = new Date();
-    twoDaysFromNow.setDate(twoDaysFromNow.getDate() + 2);
-    return getDateReturnString(twoDaysFromNow);
+    const { year, month, day } = getIsraelDateComponents();
+    const today = new Date(year, month - 1, day);
+    today.setDate(today.getDate() + 2);
+    return getDateReturnString(today);
 };
 
 // -- Day -- //
 export const getToday = () => {
-    return getDateReturnString(new Date());
+    return getTodayDateString();
 };
 
 export const getDayNumberByDate = (date: Date) => {
@@ -91,25 +121,22 @@ export const dayToNumber = (day: string) => {
 
 // -- Month -- //
 export const getCurrentMonth = (): number => {
-    return new Date().getMonth();
+    const { month } = getIsraelDateComponents();
+    return month - 1; // getMonth() returns 0-11, our month is 1-12
 };
 
 // -- Year -- //
 export const getCurrentYear = (): number => {
-    return new Date().getFullYear();
+    const { year } = getIsraelDateComponents();
+    return year;
 };
 
-// -- Date -- //
-export const getDateNumberByDate = (date: Date) => {
-    return date.getDate();
-};
+
 
 export const israelTimezoneDate = () => {
-    // Create date in Israel timezone (UTC+3)
-    const now = new Date();
-    const israelOffset = 3 * 60; // Israel is UTC+3 (3 hours * 60 minutes)
-    const israelTime = new Date(now.getTime() + israelOffset * 60 * 1000);
-    return israelTime;
+    const { year, month, day, hour, minute, second } = getIsraelDateComponents();
+    // Return a date object mimicking Israel time (shifted)
+    return new Date(year, month - 1, day, hour, minute, second);
 };
 
 export const generateDateRange = (startDate: Date, endDate: Date): string[] => {
@@ -123,10 +150,7 @@ export const generateDateRange = (startDate: Date, endDate: Date): string[] => {
     return dates;
 };
 
-// current date in Israel timezone
-export const israelToday = new Date(
-    new Date().toLocaleString("en-US", { timeZone: "Asia/Jerusalem" }),
-);
+
 
 // -- Cache -- //
 
@@ -138,13 +162,12 @@ export const isCacheFresh = (cacheTimestamp: string | null) =>
     cacheTimestamp && Date.now() - parseInt(cacheTimestamp) < CACHE_EXPIRATION;
 
 // -- Session -- //
-export const mathFloorNow = Math.floor(Date.now() / 1000);
 
 export const TWENTY_FOUR_HOURS = 24 * 60 * 60;
 
 export const getExpireTime = (remember: boolean) => {
     const maxAge = remember ? 30 * 24 * 60 * 60 : 60 * 60; // 30d vs 1h
-    return mathFloorNow + maxAge;
+    return Math.floor(Date.now() / 1000) + maxAge;
 };
 
 // Returns session duration in seconds
@@ -167,11 +190,12 @@ export const daysInMonth = (year: number, month1to12: number) => {
 
 // Get current date components as strings
 export const getTodayDateComponents = () => {
-    const today = new Date();
-    const year = `${today.getFullYear()}`;
-    const month = `${today.getMonth() + 1}`; // 1-12
-    const day = `${today.getDate()}`;
-    return { year, month, day };
+    const { year, month, day } = getIsraelDateComponents();
+    return {
+        year: `${year}`,
+        month: `${month}`,
+        day: `${day}`
+    };
 };
 
 // Build YYYY-MM-DD string from components
@@ -212,13 +236,13 @@ export const clampDayToMonth = (day: string, year: string, month: string) => {
 // - After switch time: prefer tomorrow if exists, else today.
 // - If options empty/undefined: return today/tomorrow based on time.
 export const chooseDefaultDate = (_options?: SelectOption[]): string => {
-    const now = new Date();
     const today = getTodayDateString();
     const tomorrow = getTomorrowDateString();
 
     const [switchHour, switchMinute] = AUTO_SWITCH_TIME.split(":").map(Number);
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
+
+    // Use the helper to get current Israel time
+    const { hour: currentHour, minute: currentMinute } = getIsraelDateComponents();
 
     const isAfterSwitch =
         currentHour > switchHour || (currentHour === switchHour && currentMinute >= switchMinute);
@@ -233,9 +257,8 @@ export const chooseDefaultDate = (_options?: SelectOption[]): string => {
 
 // -- School Year -- //
 export const getCurrentSchoolYearRange = (): { start: string; end: string } => {
-    const today = new Date();
-    const currentYear = today.getFullYear();
-    const currentMonth = today.getMonth(); // 0-11 (0=Jan, 8=Sept)
+    const { year: currentYear, month: currentMonthVal } = getIsraelDateComponents();
+    const currentMonth = currentMonthVal - 1; // 0-11 for logic below
 
     let startYear: number;
     let endYear: number;

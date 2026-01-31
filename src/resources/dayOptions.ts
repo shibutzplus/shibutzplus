@@ -2,20 +2,21 @@ import { SelectOption } from "@/models/types";
 import {
     DAYS_OF_WEEK, getDateReturnString, getDayNumberByDate, getTodayDateString,
     getTomorrowDateString, SATURDAY_NUMBER, israelTimezoneDate, generateDateRange,
-    getCurrentMonth, getCurrentYear, israelToday, DAYS_OF_WEEK_FORMAT, formatTMDintoDMY,
-    AUTO_SWITCH_TIME,
+    getCurrentMonth, getCurrentYear, DAYS_OF_WEEK_FORMAT, formatTMDintoDMY,
+    AUTO_SWITCH_TIME, getIsraelDateComponents,
 } from "@/utils/time";
 
 // Used in Daily Schedule
 export function getIsraeliDateOptions(short: boolean = false): SelectOption[] {
 
     // 1. Determine "Time State" (Before/After 16:00)
-    const nowIsrael = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Jerusalem" }));
+    const { hour: currentHour, minute: currentMinute } = getIsraelDateComponents();
     const [switchHour, switchMinute] = AUTO_SWITCH_TIME.split(":").map(Number);
-    const isAfterSwitch = nowIsrael.getHours() > switchHour ||
-        (nowIsrael.getHours() === switchHour && nowIsrael.getMinutes() >= switchMinute);
+    const isAfterSwitch = currentHour > switchHour ||
+        (currentHour === switchHour && currentMinute >= switchMinute);
 
     // 2. Define Date Range (Yesterday -> Today + 1 Month)
+    const israelToday = israelTimezoneDate();
     const start = new Date(israelToday);
     start.setDate(start.getDate() - 1);
 
