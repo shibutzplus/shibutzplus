@@ -12,6 +12,8 @@ import { chooseDefaultDate } from "@/utils/time";
 import { selectSelectedDate } from "@/services/portalTeacherService";
 import { getStorageTeacher } from "@/lib/localStorage";
 import { DailySchedule, GetDailyScheduleResponse } from "@/models/types/dailySchedule";
+import { SubjectType } from "@/models/types/subjects";
+import { ClassType } from "@/models/types/classes";
 import { usePublished } from "@/hooks/portal/usePublished";
 
 interface PortalContextType {
@@ -38,6 +40,16 @@ interface PortalContextType {
         overrideDate?: string,
         overrideTeacher?: TeacherType
     ) => Promise<void>;
+    hydratePortalData: (
+        teacher: TeacherType,
+        schoolId: string,
+        settings: SchoolSettingsType,
+        datesOptions: SelectOption[],
+        selectedDate: string,
+        newTeachers?: TeacherType[],
+        newSubjects?: SubjectType[],
+        newClasses?: ClassType[]
+    ) => void;
 }
 
 const PortalContext = createContext<PortalContextType | undefined>(undefined);
@@ -219,8 +231,32 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
 
 
 
-    const { fetchPublishScheduleData, refreshDailyScheduleTeacherPortal, mainPublishTable, isPublishLoading, hasFetched } =
+    const { fetchPublishScheduleData, refreshDailyScheduleTeacherPortal, mainPublishTable, isPublishLoading, hasFetched, hydrateLists } =
         usePublished(schoolId, dateToFetch, teacher);
+
+    const hydratePortalData = (
+        newTeacher: TeacherType,
+        newSchoolId: string,
+        newSettings: SchoolSettingsType,
+        newDatesOptions: SelectOption[],
+        newSelectedDate: string,
+        newTeachers: TeacherType[] = [],
+        newSubjects: SubjectType[] = [],
+        newClasses: ClassType[] = []
+    ) => {
+        // Update all states silently or explicitly
+        setTeacher(newTeacher);
+        setSchoolId(newSchoolId);
+        setSettings(newSettings);
+        setDatesOptions(newDatesOptions);
+        setSelectedDate(newSelectedDate);
+
+        // Hydrate lists in usePublished
+        hydrateLists(newTeachers, newSubjects, newClasses, newSchoolId);
+
+        // Prevent the effect from re-fetching dates
+        blockRef.current = false;
+    };
 
     const value: PortalContextType = {
         teacher,
@@ -237,6 +273,7 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
         mainPublishTable,
         refreshDailyScheduleTeacherPortal,
         fetchPublishScheduleData,
+        hydratePortalData
     };
 
     return <PortalContext.Provider value={value}>{children}</PortalContext.Provider>;

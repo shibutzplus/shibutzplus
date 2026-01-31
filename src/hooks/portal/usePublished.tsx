@@ -24,10 +24,12 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
     const [allSubjects, setAllSubjects] = useState<SubjectType[] | undefined>(undefined);
     const [allClasses, setAllClasses] = useState<ClassType[] | undefined>(undefined);
     const [schoolHours, setSchoolHours] = useState<number>(HOURS_IN_DAY);
+    const [listSchoolId, setListSchoolId] = useState<string | undefined>();
 
     // Fetch lists when schoolId changes
     useEffect(() => {
         if (!schoolId) return;
+        if (schoolId === listSchoolId) return; // Already have data for this school (hydrated or previously fetched)
 
         const fetchLists = async () => {
             try {
@@ -43,12 +45,14 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
                 if (classesRes.success && classesRes.data) setAllClasses(classesRes.data);
                 if (schoolRes.success && schoolRes.data) setSchoolHours(schoolRes.data.hoursNum || HOURS_IN_DAY);
 
+                setListSchoolId(schoolId);
+
             } catch (e) {
                 logErrorAction({ description: `Error fetching public lists: ${e instanceof Error ? e.message : String(e)}` });
             }
         };
         fetchLists();
-    }, [schoolId]);
+    }, [schoolId, listSchoolId]);
 
     const fetchPublishScheduleData = async (
         overrideSchoolId?: string,
@@ -113,11 +117,24 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
         }
     };
 
+    const hydrateLists = (
+        teachers: TeacherType[],
+        subjects: SubjectType[],
+        classes: ClassType[],
+        hydratedSchoolId: string
+    ) => {
+        setAllTeachers(teachers);
+        setAllSubjects(subjects);
+        setAllClasses(classes);
+        setListSchoolId(hydratedSchoolId);
+    };
+
     return {
         mainPublishTable,
         isPublishLoading,
         fetchPublishScheduleData,
         refreshDailyScheduleTeacherPortal,
         hasFetched,
+        hydrateLists
     };
 };
