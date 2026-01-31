@@ -287,7 +287,6 @@ const InputRichText: React.FC<InputRichTextProps> = ({
             >
                 <MsgPopup
                     message={alertConfig.message}
-                    displayIcon={false}
                     onOk={closeAlert}
                     preventGlobalClose={true}
                 />

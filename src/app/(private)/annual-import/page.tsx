@@ -60,7 +60,7 @@ const AnnualImportContent = () => {
     const { openPopup } = usePopup();
 
     const popupMsg = (message: string) => {
-        openPopup("msgPopup", "S", <MsgPopup message={message} displayIcon={false} />);
+        openPopup("msgPopup", "S", <MsgPopup message={message} />);
     };
 
     const handleFileChange = (

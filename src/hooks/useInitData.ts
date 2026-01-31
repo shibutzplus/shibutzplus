@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { STATUS_AUTH } from "@/models/constant/session";
 import { SchoolType } from "@/models/types/school";
@@ -10,6 +10,8 @@ import { ClassType } from "@/models/types/classes";
 import { compareHebrew, sortByName } from "@/utils/sort";
 import { useSearchParams } from "next/navigation";
 import { logErrorAction } from "@/app/actions/POST/logErrorAction";
+import { usePopup } from "@/context/PopupContext";
+import MsgPopup from "@/components/popups/MsgPopup/MsgPopup";
 
 interface useInitDataProps {
     school: SchoolType | undefined;
@@ -37,6 +39,7 @@ const useInitData = ({
 }: useInitDataProps) => {
     const { data: session, status } = useSession();
     const searchParams = useSearchParams();
+    const { openPopup } = usePopup();
 
     // Determine effective school ID
     const userRole = (session?.user as any)?.role;
@@ -84,8 +87,23 @@ const useInitData = ({
                 }
 
             } catch (error) {
+                const message = error instanceof Error ? error.message : String(error);
+
+                // Ignore "Load failed" (dynamic import) and "Failed to fetch" (network) errors
+                if (message === "Load failed" || message === "Failed to fetch") {
+                    openPopup(
+                        "msgPopup", "S",
+                        React.createElement(MsgPopup, {
+                            message: "גרסה חדשה זמינה או שהחיבור לרשת התנתק. אנא בצעו רענון קצר כדי להמשיך.",
+                            okText: "ריענון",
+                            onOk: () => window.location.reload()
+                        })
+                    );
+                    return;
+                }
+
                 logErrorAction({
-                    description: `Error fetching initial data: ${error instanceof Error ? error.message : String(error)}`,
+                    description: `Error fetching initial data: ${message}`,
                     schoolId: effectiveSchoolId || undefined
                 });
             }

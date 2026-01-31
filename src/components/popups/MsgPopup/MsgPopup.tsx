@@ -3,13 +3,12 @@
 import React from "react";
 import { usePopup } from "@/context/PopupContext";
 import styles from "./MsgPopup.module.css";
-import Icons from "@/style/icons";
+
 
 interface MsgPopupProps {
     message: string | React.ReactNode;
     onOk?: () => void;
     okText?: string;
-    displayIcon?: boolean;
     preventGlobalClose?: boolean;
 }
 
@@ -17,7 +16,6 @@ const MsgPopup: React.FC<MsgPopupProps> = ({
     message,
     onOk,
     okText = "אישור",
-    displayIcon = true,
     preventGlobalClose = false,
 }) => {
     const { closePopup } = usePopup();
@@ -29,18 +27,8 @@ const MsgPopup: React.FC<MsgPopupProps> = ({
         }
     };
 
-    const IconToRender = Icons.info;
-
     return (
         <div className={styles.popupContent}>
-            {displayIcon && IconToRender && (
-                <div className={styles.iconContainer}>
-                    <div>
-                        {typeof IconToRender === 'function' ? <IconToRender size={32} /> : IconToRender}
-                    </div>
-                </div>
-            )}
-
             <div className={styles.title}>{message}</div>
 
             <div className={styles.buttonContainer}>
