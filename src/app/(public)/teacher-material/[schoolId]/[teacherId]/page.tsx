@@ -1,42 +1,80 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { NextPage } from "next";
-import styles from "./teacherPortal.module.css";
-import { usePortalContext } from "@/context/PortalContext";
-import { useParams, useRouter } from "next/navigation";
 import router from "@/routes";
-import TeacherTable from "@/components/tables/teacherMaterialTable/TeacherTable/TeacherTable";
+import { NextPage } from "next";
+import { usePortalContext } from "@/context/PortalContext";
 import { useTeacherTableContext } from "@/context/TeacherTableContext";
+import { useParams, useRouter } from "next/navigation";
+import TeacherTable from "@/components/tables/teacherMaterialTable/TeacherTable/TeacherTable";
 import Preloader from "@/components/ui/Preloader/Preloader";
-
 import NotPublished from "@/components/empty/NotPublished/NotPublished";
-
 import { getDayNumberByDateString } from "@/utils/time";
+import { getTeacherPortalDataAction } from "@/app/actions/GET/getTeacherPortalDataAction";
+import { populatePortalTable } from "@/services/portalTeacherService";
+import styles from "./teacherPortal.module.css";
 
 const TeacherPortalPage: NextPage = () => {
-    const { selectedDate, teacher, setTeacherAndSchool, datesOptions, settings } = usePortalContext();
-    const { fetchTeacherScheduleDate } = useTeacherTableContext();
 
+    const { selectedDate, teacher, datesOptions, settings, hydratePortalData } = usePortalContext();
+    const { fetchTeacherScheduleDate, hydrateSchedule } = useTeacherTableContext();
     const params = useParams();
     const route = useRouter();
     const schoolId = params.schoolId as string | undefined;
     const teacherId = params.teacherId as string | undefined;
-
-    if (!schoolId) route.push(`${router.teacherSignIn.p}`);
-    if (!teacherId) route.push(`${router.teacherSignIn.p}/${schoolId}`);
+    const initialized = React.useRef(false);
 
     useEffect(() => {
-        const setTeacher = async () => {
-            const response = await setTeacherAndSchool(schoolId, teacherId);
-            if (!response) route.push(`${router.teacherSignIn.p}/${schoolId}`);
+        if (!schoolId || !teacherId) return;
+        if (initialized.current) return;
+
+        const initPortal = async () => {
+            initialized.current = true;
+
+            const data = await getTeacherPortalDataAction(schoolId, teacherId);
+
+            if (!data.success || !data.teacher || !data.settings || !data.datesOptions || !data.selectedDate) {
+                route.push(`${router.teacherSignIn.p}/${schoolId}`);
+                return;
+            }
+
+            const { teacher, settings, datesOptions, selectedDate, scheduleData, allTeachers, allSubjects, allClasses } = data;
+
+            // 1. Hydrate Portal Context (Teacher, School, Settings, Dates, Lists)
+            hydratePortalData(
+                teacher,
+                schoolId,
+                settings,
+                datesOptions,
+                selectedDate,
+                allTeachers,
+                allSubjects,
+                allClasses
+            );
+
+            // 2. Hydrate Schedule Context if available
+            if (scheduleData && scheduleData.success && scheduleData.data) {
+                const scheduleMap = populatePortalTable(scheduleData.data, {}, selectedDate);
+                if (scheduleMap) {
+                    hydrateSchedule(scheduleMap, selectedDate);
+                }
+            }
         };
-        if (!teacher) setTeacher();
-    }, [teacherId, schoolId]);
 
+        initPortal();
+
+    }, [schoolId, teacherId]);
+
+    const isFirstRun = React.useRef(true);
     useEffect(() => {
-        fetchTeacherScheduleDate(teacher, selectedDate);
-    }, [selectedDate, teacher?.id, schoolId, datesOptions]);
+        if (isFirstRun.current) {
+            isFirstRun.current = false;
+            return;
+        }
+        if (teacher && selectedDate) {
+            fetchTeacherScheduleDate(teacher, selectedDate);
+        }
+    }, [selectedDate]);
 
     if (!teacher || !settings)
         return (
