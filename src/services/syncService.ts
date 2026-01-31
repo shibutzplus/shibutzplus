@@ -47,7 +47,7 @@ const pollUpdates = async (params: PollUpdatesParams): Promise<SyncPollResponse 
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
 
-    if (message === "Failed to fetch") {  // Ignore "Failed to fetch" errors caused by navigation/cancellation
+    if (message === "Failed to fetch" || message === "Load failed") {  // Ignore "Failed to fetch" errors caused by navigation/cancellation
       return null;
     }
 
