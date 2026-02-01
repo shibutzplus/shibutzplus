@@ -26,38 +26,47 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
     const [schoolHours, setSchoolHours] = useState<number>(HOURS_IN_DAY);
     const [listSchoolId, setListSchoolId] = useState<string | undefined>();
 
+    const refreshEntities = async () => {
+        if (!schoolId) return;
+        try {
+            const [teachersRes, subjectsRes, classesRes, schoolRes] = await Promise.all([
+                getTeachersAction(schoolId, { isPrivate: false, hasSub: true }),
+                getSubjectsAction(schoolId, { isPrivate: false }),
+                getClassesAction(schoolId, { isPrivate: false }),
+                getSchoolAction(schoolId) // Public school info
+            ]);
+
+            if (teachersRes.success && teachersRes.data) setAllTeachers(teachersRes.data);
+            if (subjectsRes.success && subjectsRes.data) setAllSubjects(subjectsRes.data);
+            if (classesRes.success && classesRes.data) setAllClasses(classesRes.data);
+            if (schoolRes.success && schoolRes.data) setSchoolHours(schoolRes.data.hoursNum || HOURS_IN_DAY);
+
+            setListSchoolId(schoolId);
+
+            return {
+                teachers: teachersRes.data,
+                subjects: subjectsRes.data,
+                classes: classesRes.data
+            };
+
+        } catch (e) {
+            logErrorAction({ description: `Error fetching public lists: ${e instanceof Error ? e.message : String(e)}` });
+        }
+    };
+
     // Fetch lists when schoolId changes
     useEffect(() => {
         if (!schoolId) return;
         if (schoolId === listSchoolId) return; // Already have data for this school (hydrated or previously fetched)
-
-        const fetchLists = async () => {
-            try {
-                const [teachersRes, subjectsRes, classesRes, schoolRes] = await Promise.all([
-                    getTeachersAction(schoolId, { isPrivate: false, hasSub: true }),
-                    getSubjectsAction(schoolId, { isPrivate: false }),
-                    getClassesAction(schoolId, { isPrivate: false }),
-                    getSchoolAction(schoolId) // Public school info
-                ]);
-
-                if (teachersRes.success && teachersRes.data) setAllTeachers(teachersRes.data);
-                if (subjectsRes.success && subjectsRes.data) setAllSubjects(subjectsRes.data);
-                if (classesRes.success && classesRes.data) setAllClasses(classesRes.data);
-                if (schoolRes.success && schoolRes.data) setSchoolHours(schoolRes.data.hoursNum || HOURS_IN_DAY);
-
-                setListSchoolId(schoolId);
-
-            } catch (e) {
-                logErrorAction({ description: `Error fetching public lists: ${e instanceof Error ? e.message : String(e)}` });
-            }
-        };
-        fetchLists();
+        refreshEntities();
     }, [schoolId, listSchoolId]);
 
     const fetchPublishScheduleData = async (
         overrideSchoolId?: string,
         overrideDate?: string,
-        overrideTeacher?: TeacherType
+        overrideTeacher?: TeacherType,
+        isBackground: boolean = false,
+        overrideLists?: { teachers?: TeacherType[], subjects?: SubjectType[], classes?: ClassType[] }
     ): Promise<GetDailyScheduleResponse | null> => {
         const effectiveSchoolId = overrideSchoolId || schoolId;
         const effectiveTeacher = overrideTeacher || teacher;
@@ -70,7 +79,7 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
         }
 
         try {
-            setIsPublishLoading(true);
+            if (!isBackground) setIsPublishLoading(true);
             const response = await getDailyScheduleAction(effectiveSchoolId, effectiveDate, { isPrivate: false });
             if (response.success && response.data && effectiveTeacher) {
                 const newSchedule = await populateDailyScheduleTable(
@@ -78,9 +87,9 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
                     effectiveDate,
                     response.data,
                     schoolHours,
-                    allTeachers || [],
-                    allClasses || [],
-                    allSubjects || []
+                    overrideLists?.teachers || allTeachers || [],
+                    overrideLists?.classes || allClasses || [],
+                    overrideLists?.subjects || allSubjects || []
                 );
                 if (newSchedule) setMainPublishTable(newSchedule);
             } else {
@@ -92,7 +101,7 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
             logErrorAction({ description: `Error fetching daily schedule data (public): ${error instanceof Error ? error.message : String(error)}` });
             return null;
         } finally {
-            setIsPublishLoading(false);
+            if (!isBackground) setIsPublishLoading(false);
             setHasFetched(true);
         }
     };
@@ -100,9 +109,11 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
     const refreshDailyScheduleTeacherPortal = async (
         overrideSchoolId?: string,
         overrideDate?: string,
-        overrideTeacher?: TeacherType
+        overrideTeacher?: TeacherType,
+        isBackground: boolean = false,
+        overrideLists?: { teachers?: TeacherType[], subjects?: SubjectType[], classes?: ClassType[] }
     ) => {
-        const response = await fetchPublishScheduleData(overrideSchoolId, overrideDate, overrideTeacher);
+        const response = await fetchPublishScheduleData(overrideSchoolId, overrideDate, overrideTeacher, isBackground, overrideLists);
 
 
         if (!response) {
@@ -135,6 +146,7 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
         fetchPublishScheduleData,
         refreshDailyScheduleTeacherPortal,
         hasFetched,
-        hydrateLists
+        hydrateLists,
+        refreshEntities
     };
 };

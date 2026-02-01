@@ -7,11 +7,9 @@ import messages from "@/resources/messages";
 import { generateSchoolUrl } from "@/utils";
 import { useEffect, useState } from "react";
 
-import { DAILY_PUBLISH_DATA_CHANGED } from "@/models/constant/sync";
-
 const usePublish = () => {
     const { school, setSchool } = useMainContext()
-    const { selectedDate, handlePushUpdate } = useDailyTableContext();
+    const { selectedDate } = useDailyTableContext();
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [btnTitle, setBtnTitle] = useState<string>("פרסום המערכת");
     const [isDisabled, setIsDisabled] = useState<boolean>(false);
@@ -36,7 +34,6 @@ const usePublish = () => {
             if (response.success) {
                 // Update school context to include the newly published date (Local Storage not updated, currently unused)
                 setSchool(prev => prev ? { ...prev, publishDates: Array.from(new Set([...(prev.publishDates || []), selectedDate])) } : prev)
-                await handlePushUpdate(DAILY_PUBLISH_DATA_CHANGED);
                 successToast(messages.publish.success, 2500);
                 setBtnTitle("המערכת פורסמה");
                 setIsDisabled(true);
@@ -59,7 +56,6 @@ const usePublish = () => {
                 // Update school context
                 setSchool(prev => prev ? { ...prev, publishDates: (prev.publishDates || []).filter(d => d !== selectedDate) } : prev);
 
-                await handlePushUpdate(DAILY_PUBLISH_DATA_CHANGED);
                 successToast("הפרסום בוטל בהצלחה", 2500);
                 setBtnTitle("פרסום המערכת");
                 setIsDisabled(false);

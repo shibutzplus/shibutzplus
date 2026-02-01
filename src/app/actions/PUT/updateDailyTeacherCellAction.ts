@@ -9,6 +9,8 @@ import { dbLog } from "@/services/loggerService";
 import { ActionResponse } from "@/models/types/actions";
 import { NewDailyScheduleSchema } from "@/db/schema";
 import { getDateReturnString, getStringReturnDate } from "@/utils/time";
+import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
+import { DAILY_TEACHER_COL_DATA_CHANGED } from "@/models/constant/sync";
 
 export async function updateDailyTeacherCellAction(
     id: string,
@@ -85,6 +87,8 @@ export async function updateDailyTeacherCellAction(
         }
 
         const updateSchedule = updatedEntry[0];
+        void pushSyncUpdateServer(DAILY_TEACHER_COL_DATA_CHANGED, { schoolId: school.id, date: getDateReturnString(date) });
+
         return {
             success: true,
             message: messages.annualSchedule.updateSuccess,

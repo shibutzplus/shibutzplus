@@ -6,6 +6,9 @@ import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { and, eq } from "drizzle-orm";
 import { dbLog } from "@/services/loggerService";
+import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
+import { DAILY_EVENT_COL_DATA_CHANGED, DAILY_TEACHER_COL_DATA_CHANGED } from "@/models/constant/sync";
+import { ColumnTypeValues } from "@/models/types/dailySchedule";
 
 export async function deleteDailyCellAction(
     schoolId: string,
@@ -17,20 +20,37 @@ export async function deleteDailyCellAction(
             return authError as ActionResponse;
         }
 
+        let deletedType: number | undefined;
+        let date: string | undefined;
+
         const deleted = await executeQuery(async () => {
-            const result = await db
+            const deletedRows = await db
                 .delete(schema.dailySchedule)
                 .where(
                     and(
                         eq(schema.dailySchedule.schoolId, schoolId),
                         eq(schema.dailySchedule.id, dailyRowId),
                     ),
-                );
-            // result.rowCount or result.count depending on your DB client
-            return result.rowCount ?? 0;
+                )
+                .returning({ columnType: schema.dailySchedule.columnType, date: schema.dailySchedule.date });
+
+            if (deletedRows.length > 0) {
+                deletedType = deletedRows[0].columnType;
+                date = deletedRows[0].date;
+            }
+
+            return deletedRows.length;
         });
 
         if (deleted > 0) {
+            if (date && deletedType !== undefined) {
+                if (deletedType === ColumnTypeValues.event) {
+                    void pushSyncUpdateServer(DAILY_EVENT_COL_DATA_CHANGED, { schoolId, date });
+                } else if (deletedType === ColumnTypeValues.missingTeacher || deletedType === ColumnTypeValues.existingTeacher) {
+                    void pushSyncUpdateServer(DAILY_TEACHER_COL_DATA_CHANGED, { schoolId, date });
+                }
+            }
+
             return {
                 success: true,
                 message: messages.dailySchedule.deleteSuccess,

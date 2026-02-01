@@ -1,6 +1,7 @@
 /**
  * Sync Service
- * Handles push/poll for updates from the sync API
+ * Handles poll (client side) for updates from the sync API
+ * Push is handled only by the server (serverSyncService)
  */
 import { DAILY_TEACHER_COL_DATA_CHANGED, DAILY_EVENT_COL_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED, MATERIAL_CHANGED, ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
 import { SyncChannel, SyncPayload, SyncItem } from "@/models/types/sync";
@@ -92,45 +93,4 @@ export const getChannelsForPath = (
   return [DAILY_TEACHER_COL_DATA_CHANGED, DAILY_EVENT_COL_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED, ENTITIES_DATA_CHANGED];
 };
 
-/**
- * Pushes a sync notification to the server
- * @param type - The type of sync event to push
- * @param payload - Optional metadata (schoolId, date)
- * @returns Promise that resolves when the push is complete
- */
-export const pushSyncUpdate = async (type: SyncChannel, payload?: SyncPayload): Promise<number | null> => {
-  try {
-    // Skip push when running in development
-    //if (process.env.NODE_ENV === "development") {
-    //  return; // For debug comment out this block
-    //}
 
-    let url = `/api/sync/push?type=${type}`;
-    if (payload?.schoolId) url += `&schoolId=${payload.schoolId}`;
-    if (payload?.date) url += `&date=${payload.date}`;
-
-    // If running on dev server, prepend base URL
-    if (typeof window === "undefined") {
-      const baseUrl =
-        process.env.NEXT_PUBLIC_APP_URL ||
-        (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
-
-      url = `${baseUrl}${url}`;
-    }
-
-    const res = await fetch(url, { method: "POST", keepalive: true });
-
-    if (!res.ok) {
-      logErrorAction({ description: `Sync push failed with status: ${res.status}`, schoolId: payload?.schoolId });
-      return null;
-    }
-
-    const data = await res.json();
-    return data.ts;
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    if (message === "fetch failed" || message === "Failed to fetch") return null;
-    logErrorAction({ description: `Error pushing sync update: ${message}`, schoolId: payload?.schoolId });
-    return null;
-  }
-};

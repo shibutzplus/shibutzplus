@@ -19,7 +19,7 @@ import { deleteSubjectAction } from "@/app/actions/DELETE/deleteSubjectAction";
 import { deleteTeacherAction } from "@/app/actions/DELETE/deleteTeacherAction";
 import useInitData from "@/hooks/useInitData";
 import { errorToast } from "@/lib/toast";
-import { pushSyncUpdate, SyncItem, SyncChannel } from "@/services/sync/clientSyncService";
+import { SyncItem, SyncChannel } from "@/services/sync/clientSyncService";
 import { compareHebrew, sortByName } from "@/utils/sort";
 import { usePollingUpdates } from "@/hooks/usePollingUpdates";
 
@@ -134,7 +134,6 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
                 updatedSubjects.sort(sortByName);
                 return updatedSubjects;
             });
-            void pushSyncUpdate(ENTITIES_DATA_CHANGED, { schoolId: newSubject.schoolId });
             return response.data;
         }
         if (!response.success && (response as any).errorCode === "23505") {
@@ -148,7 +147,6 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         const response = await updateSubjectAction(subjectId, subjectData);
         if (response.success && response.data) {
             setSubjects(response.data as SubjectType[]);
-            void pushSyncUpdate(ENTITIES_DATA_CHANGED, { schoolId: subjectData.schoolId });
             return response.data;
         }
         return undefined;
@@ -159,7 +157,6 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         if (response.success && response.subjects && response.annualSchedules) {
             setSubjects(response.subjects);
             setAnnualAfterDelete(response.annualSchedules);
-            void pushSyncUpdate(ENTITIES_DATA_CHANGED, { schoolId });
             return true;
         }
         return false;
@@ -187,7 +184,6 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
                 });
             }
 
-            void pushSyncUpdate(ENTITIES_DATA_CHANGED, { schoolId: newClass.schoolId });
             return response.data;
         }
         if (!response.success && (response as any).errorCode === "23505") {
@@ -218,7 +214,6 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
                 }
             }
 
-            void pushSyncUpdate(ENTITIES_DATA_CHANGED, { schoolId: classData.schoolId });
             return response.data;
         }
         return undefined;
@@ -243,7 +238,6 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
                 }
             }
 
-            void pushSyncUpdate(ENTITIES_DATA_CHANGED, { schoolId });
             return true;
         }
         return false;
@@ -259,7 +253,6 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
 
                 return updatedTeachers;
             });
-            void pushSyncUpdate(ENTITIES_DATA_CHANGED, { schoolId: newTeacher.schoolId });
             return response.data;
         }
         if (!response.success && (response as any).errorCode === "23505") {
@@ -273,7 +266,6 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         if (response.success && response.data) {
             setTeachers(response.data as TeacherType[]);
 
-            void pushSyncUpdate(ENTITIES_DATA_CHANGED, { schoolId: teacherData.schoolId });
             return response.data;
         }
         return undefined;
@@ -285,7 +277,6 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
             setTeachers(response.teachers);
 
             setAnnualAfterDelete(response.annualSchedules);
-            void pushSyncUpdate(ENTITIES_DATA_CHANGED, { schoolId });
             return true;
         }
         return false;

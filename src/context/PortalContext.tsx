@@ -15,6 +15,8 @@ import { DailySchedule, GetDailyScheduleResponse } from "@/models/types/dailySch
 import { SubjectType } from "@/models/types/subjects";
 import { ClassType } from "@/models/types/classes";
 import { usePublished } from "@/hooks/portal/usePublished";
+import { ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
+import { SyncItem } from "@/services/sync/clientSyncService";
 
 interface PortalContextType {
     teacher: TeacherType | undefined;
@@ -33,12 +35,16 @@ interface PortalContextType {
     fetchPublishScheduleData: (
         overrideSchoolId?: string,
         overrideDate?: string,
-        overrideTeacher?: TeacherType
+        overrideTeacher?: TeacherType,
+        isBackground?: boolean,
+        overrideLists?: { teachers?: TeacherType[], subjects?: SubjectType[], classes?: ClassType[] }
     ) => Promise<GetDailyScheduleResponse | null>;
     refreshDailyScheduleTeacherPortal: (
         overrideSchoolId?: string,
         overrideDate?: string,
-        overrideTeacher?: TeacherType
+        overrideTeacher?: TeacherType,
+        isBackground?: boolean,
+        overrideLists?: { teachers?: TeacherType[], subjects?: SubjectType[], classes?: ClassType[] }
     ) => Promise<void>;
     hydratePortalData: (
         teacher: TeacherType,
@@ -50,6 +56,8 @@ interface PortalContextType {
         newSubjects?: SubjectType[],
         newClasses?: ClassType[]
     ) => void;
+    refreshEntities: () => Promise<{ teachers?: TeacherType[], subjects?: SubjectType[], classes?: ClassType[] } | undefined>;
+    handleIncomingSync: (items?: SyncItem[]) => Promise<{ hasRelevantUpdate: boolean; newLists?: { teachers?: TeacherType[], subjects?: SubjectType[], classes?: ClassType[] } }>;
 }
 
 const PortalContext = createContext<PortalContextType | undefined>(undefined);
@@ -231,7 +239,7 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
 
 
 
-    const { fetchPublishScheduleData, refreshDailyScheduleTeacherPortal, mainPublishTable, isPublishLoading, hasFetched, hydrateLists } =
+    const { fetchPublishScheduleData, refreshDailyScheduleTeacherPortal, mainPublishTable, isPublishLoading, hasFetched, hydrateLists, refreshEntities } =
         usePublished(schoolId, dateToFetch, teacher);
 
     const hydratePortalData = (
@@ -258,6 +266,41 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
         blockRef.current = false;
     };
 
+    const handleIncomingSync = async (items?: SyncItem[]) => {
+        const isManual = !items || items.length === 0;
+        let hasRelevantUpdate = isManual;
+        let hasEntitiesUpdate = false;
+
+        if (!isManual && items) {
+            items.forEach(item => {
+                if (!item.payload) return;
+                const schoolMatches = !item.payload.schoolId || !teacher?.schoolId || item.payload.schoolId === teacher.schoolId;
+
+                if (schoolMatches) {
+                    if (item.channel === ENTITIES_DATA_CHANGED) {
+                        hasEntitiesUpdate = true;
+                    } else {
+                        const dateMatches = !item.payload.date || !selectedDate || item.payload.date === selectedDate;
+                        if (dateMatches) {
+                            hasRelevantUpdate = true;
+                        }
+                    }
+                }
+            });
+        }
+
+        if (!hasRelevantUpdate && !hasEntitiesUpdate) {
+            return { hasRelevantUpdate: false };
+        }
+
+        let newLists;
+        if (hasEntitiesUpdate) {
+            newLists = await refreshEntities();
+        }
+
+        return { hasRelevantUpdate: hasRelevantUpdate || hasEntitiesUpdate, newLists };
+    };
+
     const value: PortalContextType = {
         teacher,
         schoolId,
@@ -273,7 +316,9 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
         mainPublishTable,
         refreshDailyScheduleTeacherPortal,
         fetchPublishScheduleData,
-        hydratePortalData
+        hydratePortalData,
+        refreshEntities,
+        handleIncomingSync
     };
 
     return <PortalContext.Provider value={value}>{children}</PortalContext.Provider>;

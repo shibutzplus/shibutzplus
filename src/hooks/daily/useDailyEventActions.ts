@@ -4,7 +4,6 @@ import { addDailyEventCellAction } from "@/app/actions/POST/addDailyEventCellAct
 import { updateDailyEventCellAction } from "@/app/actions/PUT/updateDailyEventCellAction";
 import { updateDailyEventHeaderAction } from "@/app/actions/PUT/updateDailyEventHeaderAction";
 import { useMainContext } from "@/context/MainContext";
-import { DAILY_EVENT_COL_DATA_CHANGED } from "@/models/constant/sync";
 import { eventPlaceholder } from "@/models/constant/table";
 import { ColumnTypeValues, DailySchedule, DailyScheduleCell } from "@/models/types/dailySchedule";
 import { TeacherType } from "@/models/types/teachers";
@@ -17,16 +16,9 @@ import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 const useDailyEventActions = (
     mainDailyTable: DailySchedule,
     setMainAndStorageTable: (newSchedule: DailySchedule) => void,
-    clearColumn: (day: string, columnId: string) => void,
     selectedDate: string,
-    handlePushUpdate: (channel: typeof DAILY_EVENT_COL_DATA_CHANGED) => void
 ) => {
     const { school, settings } = useMainContext();
-
-    const pushDailyUpdate = () => {
-        handlePushUpdate(DAILY_EVENT_COL_DATA_CHANGED);
-    };
-
     const populateEventColumn = async (columnId: string, eventTitle: string) => {
         const alreadyExists = mainDailyTable[selectedDate]?.[columnId];
         const currentPosition = alreadyExists?.["1"]?.headerCol?.position || 0;
@@ -132,7 +124,6 @@ const useDailyEventActions = (
                     cellData.headerCol?.headerEvent, // Pass the header event from the (potentially patched) cellData
                 );
                 setMainAndStorageTable(updatedSchedule);
-                pushDailyUpdate();
                 return response.data;
             } else {
                 logErrorAction({
@@ -165,7 +156,6 @@ const useDailyEventActions = (
                     { event },
                 );
                 setMainAndStorageTable(updatedSchedule);
-                pushDailyUpdate();
                 return response.data;
             } else {
                 logErrorAction({
@@ -194,7 +184,6 @@ const useDailyEventActions = (
                 columnId,
             );
             setMainAndStorageTable(updatedSchedule);
-            pushDailyUpdate();
             return true;
         } else {
             logErrorAction({
@@ -291,7 +280,7 @@ const useDailyEventActions = (
                 position: currentPosition,
             }, settings?.hoursNum);
             setMainAndStorageTable(updatedSchedule);
-            pushDailyUpdate();
+
             return true;
         } catch (error) {
             logErrorAction({
@@ -313,4 +302,3 @@ const useDailyEventActions = (
 };
 
 export default useDailyEventActions;
-
