@@ -13,7 +13,7 @@ import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
 const useDailyTeacherActions = (
     mainDailyTable: DailySchedule,
-    setMainAndStorageTable: (newSchedule: DailySchedule) => void,
+    setMainDailyTable: (newSchedule: DailySchedule) => void,
     clearColumn: (day: string, columnId: string) => void,
 
 ) => {
@@ -51,7 +51,7 @@ const useDailyTeacherActions = (
                         settings?.hoursNum,
                         optimisticTeacher,
                     );
-                    setMainAndStorageTable(finalOptimisticSchedule);
+                    setMainDailyTable(finalOptimisticSchedule);
                 } else {
                     clearColumn(selectedDate, columnId);
                 }
@@ -153,7 +153,7 @@ const useDailyTeacherActions = (
                         { headerTeacher, type, position: currentPosition },
                         settings?.hoursNum,
                     );
-                    setMainAndStorageTable(updatedSchedule);
+                    setMainDailyTable(updatedSchedule);
                 } else {
                     // If the teacher does not teach on this day, create an empty column
                     // We re-affirm the empty column with the teacher header
@@ -168,7 +168,7 @@ const useDailyTeacherActions = (
                         settings?.hoursNum,
                         headerTeacher,
                     );
-                    setMainAndStorageTable(updatedSchedule);
+                    setMainDailyTable(updatedSchedule);
                 }
                 return response.data;
             }
@@ -211,7 +211,7 @@ const useDailyTeacherActions = (
                     columnId,
                     data,
                 );
-                setMainAndStorageTable(updatedSchedule);
+                setMainDailyTable(updatedSchedule);
                 return response.data;
             }
         }
@@ -249,7 +249,7 @@ const useDailyTeacherActions = (
                     columnId,
                     { subTeacher: undefined, event: undefined },
                 );
-                setMainAndStorageTable(updatedSchedule);
+                setMainDailyTable(updatedSchedule);
                 return response.data;
             }
         }

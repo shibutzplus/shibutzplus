@@ -12,10 +12,11 @@ import { fillLeftRowsWithEmptyCells, initDailySchedule } from "@/services/daily/
 import { updateAddCell, updateAllEventHeader, updateDeleteCell } from "@/services/daily/update";
 import { formatTMDintoDMY, getDayNumberByDateString } from "@/utils/time";
 import { logErrorAction } from "@/app/actions/POST/logErrorAction";
+import { Dispatch, SetStateAction } from "react";
 
 const useDailyEventActions = (
     mainDailyTable: DailySchedule,
-    setMainAndStorageTable: (newSchedule: DailySchedule) => void,
+    setMainDailyTable: Dispatch<SetStateAction<DailySchedule>>,
     selectedDate: string,
 ) => {
     const { school, settings } = useMainContext();
@@ -23,7 +24,6 @@ const useDailyEventActions = (
         const alreadyExists = mainDailyTable[selectedDate]?.[columnId];
         const currentPosition = alreadyExists?.["1"]?.headerCol?.position || 0;
 
-        let updatedSchedule: DailySchedule = { ...mainDailyTable };
         let isUpdateSuccess = false;
 
         // Check if DB records exist for this column
@@ -33,15 +33,23 @@ const useDailyEventActions = (
         if (hasSavedData && alreadyExists && alreadyExists["1"]?.headerCol?.type === ColumnTypeValues.event) {
             const response = await updateDailyEventHeaderAction(selectedDate, columnId, eventTitle);
             if (response.success) {
-                updatedSchedule = updateAllEventHeader(
-                    updatedSchedule,
-                    selectedDate,
-                    columnId,
-                    eventTitle,
-                );
                 isUpdateSuccess = true;
+                setMainDailyTable(prev => {
+                    let updatedSchedule = { ...prev };
+                    updatedSchedule = updateAllEventHeader(
+                        updatedSchedule,
+                        selectedDate,
+                        columnId,
+                        eventTitle,
+                    );
+                    updatedSchedule = fillLeftRowsWithEmptyCells(updatedSchedule, selectedDate, columnId, {
+                        headerEvent: eventTitle,
+                        type: ColumnTypeValues.event,
+                        position: currentPosition,
+                    }, settings?.hoursNum);
+                    return updatedSchedule;
+                });
             } else {
-                // If update failed (e.g. not found in DB), we will fall through to create
                 logErrorAction({
                     description: `Update failed for daily event header: ${response.message}`,
                     schoolId: school?.id,
@@ -52,13 +60,6 @@ const useDailyEventActions = (
 
         // If update was skipped or failed, treat as new column creation
         if (!isUpdateSuccess) {
-            // Explicitly clear local copy so fillLeftRowsWithEmptyCells regenerates the cells with new header
-            if (updatedSchedule[selectedDate]) {
-                updatedSchedule[selectedDate] = { ...updatedSchedule[selectedDate] };
-                updatedSchedule[selectedDate][columnId] = {};
-            }
-
-            updatedSchedule = initDailySchedule(updatedSchedule, selectedDate, columnId);
             // Create a new entry in DB
             if (school?.id) {
                 const day = getDayNumberByDateString(selectedDate);
@@ -75,15 +76,35 @@ const useDailyEventActions = (
                 });
 
                 if (response.success && response.data?.id) {
-                    updatedSchedule[selectedDate][columnId]["0"] = {
-                        hour: 0,
-                        DBid: response.data.id,
-                        headerCol: {
+                    setMainDailyTable(prev => {
+                        let updatedSchedule = { ...prev };
+
+                        // Explicitly clear local copy so fillLeftRowsWithEmptyCells regenerates the cells with new header
+                        if (updatedSchedule[selectedDate]) {
+                            updatedSchedule[selectedDate] = { ...updatedSchedule[selectedDate] };
+                            updatedSchedule[selectedDate][columnId] = {};
+                        }
+
+                        updatedSchedule = initDailySchedule(updatedSchedule, selectedDate, columnId);
+
+                        updatedSchedule[selectedDate][columnId]["0"] = {
+                            hour: 0,
+                            DBid: response.data!.id,
+                            headerCol: {
+                                headerEvent: eventTitle,
+                                type: ColumnTypeValues.event,
+                                position: currentPosition,
+                            },
+                        };
+
+                        updatedSchedule = fillLeftRowsWithEmptyCells(updatedSchedule, selectedDate, columnId, {
                             headerEvent: eventTitle,
                             type: ColumnTypeValues.event,
                             position: currentPosition,
-                        },
-                    };
+                        }, settings?.hoursNum);
+
+                        return updatedSchedule;
+                    });
                 } else {
                     logErrorAction({
                         description: `Failed to create new daily event column: ${response.message}`,
@@ -93,13 +114,6 @@ const useDailyEventActions = (
                 }
             }
         }
-
-        updatedSchedule = fillLeftRowsWithEmptyCells(updatedSchedule, selectedDate, columnId, {
-            headerEvent: eventTitle,
-            type: ColumnTypeValues.event,
-            position: currentPosition,
-        }, settings?.hoursNum);
-        setMainAndStorageTable(updatedSchedule);
     };
 
     const addEventCell = async (
@@ -114,16 +128,15 @@ const useDailyEventActions = (
         if (dailyCellData) {
             const response = await addDailyEventCellAction(dailyCellData);
             if (response?.success && response.data) {
-                const updatedSchedule = updateAddCell(
-                    response.data.id,
-                    mainDailyTable,
+                setMainDailyTable(prev => updateAddCell(
+                    response.data!.id,
+                    prev,
                     selectedDate,
                     cellData,
                     columnId,
                     data,
-                    cellData.headerCol?.headerEvent, // Pass the header event from the (potentially patched) cellData
-                );
-                setMainAndStorageTable(updatedSchedule);
+                    cellData.headerCol?.headerEvent,
+                ));
                 return response.data;
             } else {
                 logErrorAction({
@@ -147,15 +160,14 @@ const useDailyEventActions = (
         if (dailyCellData) {
             const response = await updateDailyEventCellAction(dailyScheduleId, dailyCellData);
             if (response?.success && response.data) {
-                const updatedSchedule = updateAddCell(
-                    response.data.id,
-                    mainDailyTable,
+                setMainDailyTable(prev => updateAddCell(
+                    response.data!.id,
+                    prev,
                     selectedDate,
                     cellData,
                     columnId,
                     { event },
-                );
-                setMainAndStorageTable(updatedSchedule);
+                ));
                 return response.data;
             } else {
                 logErrorAction({
@@ -176,14 +188,13 @@ const useDailyEventActions = (
         if (!school) return;
         const response = await deleteDailyCellAction(school.id, dailyScheduleId);
         if (response?.success && response.deletedRowId) {
-            const updatedSchedule = updateDeleteCell(
-                response.deletedRowId,
-                mainDailyTable,
+            setMainDailyTable(prev => updateDeleteCell(
+                response.deletedRowId!,
+                prev,
                 selectedDate,
                 cellData,
                 columnId,
-            );
-            setMainAndStorageTable(updatedSchedule);
+            ));
             return true;
         } else {
             logErrorAction({
@@ -213,12 +224,6 @@ const useDailyEventActions = (
                 await deleteDailyColumnAction(schoolId, columnId, selectedDate);
             }
 
-            let updatedSchedule: DailySchedule = { ...mainDailyTable };
-            if (updatedSchedule[selectedDate]) {
-                updatedSchedule[selectedDate] = { ...updatedSchedule[selectedDate] };
-                updatedSchedule[selectedDate][columnId] = {};
-            }
-
             const day = getDayNumberByDateString(selectedDate);
 
             // Paste header row 0
@@ -235,18 +240,30 @@ const useDailyEventActions = (
             });
 
             if (headerResponse.success && headerResponse.data?.id) {
-                updatedSchedule[selectedDate][columnId]["0"] = {
-                    hour: 0,
-                    DBid: headerResponse.data.id,
-                    headerCol: {
-                        headerEvent: eventTitle,
-                        type: ColumnTypeValues.event,
-                        position: currentPosition,
-                    },
-                };
-                // Immediate feedback: show the cleared column with new header
-                updatedSchedule = { ...updatedSchedule };
-                setMainAndStorageTable(updatedSchedule);
+                // Immediate update for header
+                setMainDailyTable(prev => {
+                    let updatedSchedule = { ...prev };
+
+                    if (updatedSchedule[selectedDate]) {
+                        updatedSchedule[selectedDate] = { ...updatedSchedule[selectedDate] };
+                        updatedSchedule[selectedDate][columnId] = {};
+                    } else {
+                        updatedSchedule[selectedDate] = { [columnId]: {} };
+                    }
+
+                    if (!updatedSchedule[selectedDate][columnId]) updatedSchedule[selectedDate][columnId] = {};
+
+                    updatedSchedule[selectedDate][columnId]["0"] = {
+                        hour: 0,
+                        DBid: headerResponse.data!.id,
+                        headerCol: {
+                            headerEvent: eventTitle,
+                            type: ColumnTypeValues.event,
+                            position: currentPosition,
+                        },
+                    };
+                    return updatedSchedule;
+                });
             }
 
             // Paste other cells
@@ -261,25 +278,25 @@ const useDailyEventActions = (
                 if (dailyCellData) {
                     const response = await addDailyEventCellAction(dailyCellData);
                     if (response?.success && response.data) {
-                        updatedSchedule = updateAddCell(
-                            response.data.id,
-                            updatedSchedule,
+                        setMainDailyTable(prev => updateAddCell(
+                            response.data!.id,
+                            prev,
                             selectedDate,
                             sourceCell,
                             columnId,
                             { event: sourceCell.event },
                             eventTitle
-                        );
+                        ));
                     }
                 }
             }
 
-            updatedSchedule = fillLeftRowsWithEmptyCells(updatedSchedule, selectedDate, columnId, {
+            // Final fill
+            setMainDailyTable(prev => fillLeftRowsWithEmptyCells(prev, selectedDate, columnId, {
                 headerEvent: eventTitle,
                 type: ColumnTypeValues.event,
                 position: currentPosition,
-            }, settings?.hoursNum);
-            setMainAndStorageTable(updatedSchedule);
+            }, settings?.hoursNum));
 
             return true;
         } catch (error) {
