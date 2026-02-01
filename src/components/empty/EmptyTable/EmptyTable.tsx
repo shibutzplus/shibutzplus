@@ -17,7 +17,7 @@ const EmptyTable: React.FC<EmptyTableProps> = ({
         <section className={styles.emptyTable}>
             <p className={styles.text}>
                 <span className={styles.desktopText}>{message}</span>
-                <span className={styles.mobileText}>לחצו על הוספה ושיבוץ כדי לעדכן את המערכת היומית</span>
+                <span className={styles.mobileText}>לחצו על כפתור הוספה כדי לעדכן את המערכת היומית</span>
             </p>
             {showIcons && (
                 <section className={styles.actions}>
