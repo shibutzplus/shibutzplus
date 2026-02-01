@@ -42,12 +42,12 @@ const TeacherTable: React.FC<TeacherTableProps> = ({
             </div>
         );
 
-    if (Object.keys(dayTable).length === 0) return <NotPublished date={selectedDate} />;
+    if (Object.keys(dayTable).length === 0) return <NotPublished date={selectedDate} text="אין שינויים במערכת האישית" displayButton={true} />;
 
     // Check if there are any changes (rows that are NOT regular)
     const hasChanges = Object.values(dayTable).some((row) => !row.isRegular);
 
-    if (!hasChanges) return <NotPublished date={selectedDate} />;
+    if (!hasChanges) return <NotPublished date={selectedDate} text="אין שינויים במערכת האישית" displayButton={true} />;
 
     return (
         <div className={styles.tableContainer}>

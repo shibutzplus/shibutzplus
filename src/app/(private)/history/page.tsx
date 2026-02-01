@@ -49,7 +49,9 @@ const HistorySchedulePage: NextPage = () => {
                 <PreviewTable
                     mainDailyTable={mainDailyTable}
                     selectedDate={selectedYearDate}
-                    EmptyTable={NotPublished}
+                    EmptyTable={(props) => (
+                        <NotPublished {...props} text="אין נתוני היסטוריה ליום שנבחר" />
+                    )}
                     onTeacherClick={handleTeacherClick}
                     hoursNum={settings?.hoursNum}
                     screenType="history"

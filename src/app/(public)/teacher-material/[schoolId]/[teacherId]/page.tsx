@@ -94,7 +94,7 @@ const TeacherPortalPage: NextPage = () => {
     const isShabbat = selectedDate ? getDayNumberByDateString(selectedDate) === 7 : false;
 
     if (!isPublished) {
-        return <NotPublished date={selectedDate} text={isShabbat ? "סוף שבוע נעים" : "המערכת לא פורסמה"} screenType="teacherMaterial" />;
+        return <NotPublished date={selectedDate} text={isShabbat ? "סוף שבוע נעים" : "המערכת עדיין לא פורסמה"} screenType="teacherMaterial" />;
     }
 
     return (
