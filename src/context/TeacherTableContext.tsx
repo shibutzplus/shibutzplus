@@ -7,7 +7,7 @@ import getTeacherFullScheduleAction from "@/app/actions/GET/getTeacherFullSchedu
 import { getTeacherHistoryScheduleAction } from "@/app/actions/GET/getTeacherHistoryScheduleAction";
 import { populatePortalTable } from "@/services/portalTeacherService";
 import { errorToast } from "@/lib/toast";
-import { updateDailyInstructionAction } from "@/app/actions/PUT/updateDailyInstractionAction";
+import { updateDailyInstructionAction } from "@/app/actions/PUT/updateDailyInstructionAction";
 import messages from "@/resources/messages";
 import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
