@@ -13,7 +13,7 @@ type NotPublishedProps = {
     displayButton?: boolean;
 };
 
-const NotPublished: React.FC<NotPublishedProps> = ({ date, text, screenType, displayButton }) => {
+const NotPublished: React.FC<NotPublishedProps> = React.memo(({ date, text, screenType, displayButton }) => {
     const route = useRouter();
 
     const dateTitle = date
@@ -34,6 +34,8 @@ const NotPublished: React.FC<NotPublishedProps> = ({ date, text, screenType, dis
             )}
         </section>
     );
-};
+});
+
+NotPublished.displayName = "NotPublished";
 
 export default NotPublished;

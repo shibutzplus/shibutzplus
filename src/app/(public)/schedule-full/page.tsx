@@ -50,7 +50,7 @@ const FullScheduleViewPage: NextPage = () => {
     const isPublished = datesOptions.some((d) => d.value === selectedDate);
     const getEmptyText = () => {
         if (isShabbat) return "סוף שבוע נעים";
-        if (isPublished) return "אין עדכונים במערכת שפורסמה";
+        if (isPublished) return "המערכת פורסמה ללא עדכונים";
         return "המערכת הבית ספרית לא פורסמה";
     };
 
@@ -75,12 +75,8 @@ const FullScheduleViewPage: NextPage = () => {
             <DailyFullScreenTable
                 mainDailyTable={mainPublishTable}
                 selectedDate={selectedDate}
-                EmptyTable={(props) => (
-                    <NotPublished
-                        {...props}
-                        text={getEmptyText()}
-                    />
-                )}
+                EmptyTable={NotPublished}
+                emptyText={getEmptyText()}
                 hoursNum={settings?.hoursNum}
                 appType="public"
             />

@@ -20,10 +20,12 @@ type PreviewTableProps = {
     mainDailyTable: DailySchedule;
     selectedDate: string;
     onTeacherClick?: (teacher: TeacherType) => Promise<void>;
+    displayButton?: boolean;
     appType?: AppType;
-    EmptyTable?: React.FC<{ date?: string; screenType?: ScreenType }>;
+    EmptyTable?: React.FC<{ date?: string; screenType?: ScreenType; text?: string }>;
     hoursNum?: number;
     screenType?: ScreenType;
+    emptyText?: string;
 };
 
 const PreviewTable: React.FC<PreviewTableProps> = ({
@@ -34,6 +36,7 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
     appType = "private",
     hoursNum,
     screenType,
+    emptyText,
 }) => {
     const schedule = mainDailyTable[selectedDate];
     const tableColumns = schedule ? Object.keys(schedule) : [];
@@ -72,7 +75,7 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
     const isEmpty = !schedule || Object.keys(schedule).length === 0;
 
     if (isEmpty && EmptyTable) {
-        return <EmptyTable date={selectedDate} screenType={screenType} />;
+        return <EmptyTable date={selectedDate} screenType={screenType} text={emptyText} />;
     }
 
     if (isEmpty) {

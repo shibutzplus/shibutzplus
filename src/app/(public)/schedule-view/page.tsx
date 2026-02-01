@@ -67,7 +67,7 @@ const PublishedPortalPage: NextPage = () => {
     const isPublished = datesOptions.some((d) => d.value === selectedDate);
     const getEmptyText = () => {
         if (isShabbat) return "סוף שבוע נעים";
-        if (isPublished) return "אין עדכונים במערכת שפורסמה";
+        if (isPublished) return "המערכת פורסמה ללא עדכונים";
         return "המערכת הבית ספרית לא פורסמה";
     };
 
@@ -77,12 +77,8 @@ const PublishedPortalPage: NextPage = () => {
                 mainDailyTable={mainPublishTable}
                 selectedDate={selectedDate}
                 appType="public"
-                EmptyTable={(props) => (
-                    <NotPublished
-                        {...props}
-                        text={getEmptyText()}
-                    />
-                )}
+                EmptyTable={NotPublished}
+                emptyText={getEmptyText()}
                 hoursNum={settings?.hoursNum}
                 screenType="publicSchedule"
             />
