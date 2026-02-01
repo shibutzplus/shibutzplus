@@ -50,7 +50,10 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
             };
 
         } catch (e) {
-            logErrorAction({ description: `Error fetching public lists: ${e instanceof Error ? e.message : String(e)}` });
+            const message = e instanceof Error ? e.message : String(e);
+            if (message !== "Failed to fetch" && message !== "Load failed") {   // Unstable Network - ignore
+                logErrorAction({ description: `Error fetching public lists: ${message}` });
+            }
         }
     };
 
@@ -98,7 +101,10 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
             }
             return response;
         } catch (error) {
-            logErrorAction({ description: `Error fetching daily schedule data (public): ${error instanceof Error ? error.message : String(error)}` });
+            const message = error instanceof Error ? error.message : String(error);
+            if (message !== "Failed to fetch" && message !== "Load failed") {
+                logErrorAction({ description: `Error fetching daily schedule data (public): ${message}` });
+            }
             return null;
         } finally {
             if (!isBackground) setIsPublishLoading(false);

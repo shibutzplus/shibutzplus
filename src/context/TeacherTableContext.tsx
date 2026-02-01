@@ -73,10 +73,18 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
                 response = await getTeacherFullScheduleAction(teacher.id, selectedDate);
             }
 
-            if (response.success && response.data) {
-                const newSchedule = populatePortalTable(response.data, mainPortalTable, selectedDate,);
+            if (response?.success && response?.data) {
+                const newSchedule = populatePortalTable(response.data, mainPortalTable, selectedDate);
                 if (newSchedule) setMainPortalTable(newSchedule);
             } else {
+                if (!response) {
+                    logErrorAction({
+                        description: "Error fetching Teacher Material page data: Response is undefined",
+                        schoolId: teacher?.schoolId,
+                        user: teacher?.id,
+                        metadata: { selectedDate, isHistoryPage }
+                    });
+                }
                 return false;
             }
             return true;
@@ -126,7 +134,7 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
                 originalTeacherId,
                 subTeacherId,
             );
-            if (response.success) {
+            if (response?.success) {
                 const portalSchedule = { ...mainPortalTable };
                 portalSchedule[selectedDate][`${row.hour}`].instructions = instructions;
                 setMainPortalTable(portalSchedule);
