@@ -8,7 +8,7 @@ import { dbLog } from "@/services/loggerService";
 import { ActionResponse } from "@/models/types/actions";
 import { NewDailyScheduleSchema } from "@/db/schema";
 import { dailyInstructionSchema } from "@/models/validation/daily";
-import { pushSyncUpdate } from "@/services/syncService";
+import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
 import { MATERIAL_CHANGED } from "@/models/constant/sync";
 
 export async function updateDailyInstructionAction(
@@ -81,8 +81,7 @@ export async function updateDailyInstructionAction(
             };
         }
 
-        // Fire and forget sync update
-        void pushSyncUpdate(MATERIAL_CHANGED, { schoolId: updatedEntries[0].schoolId, date });
+        void pushSyncUpdateServer(MATERIAL_CHANGED, { schoolId: updatedEntries[0].schoolId, date });
 
         return {
             success: true,

@@ -7,6 +7,8 @@ import { db, schema, executeQuery } from "../../../db";
 import { dbLog } from "@/services/loggerService";
 import { ActionResponse } from "@/models/types/actions";
 import { NewDailyScheduleSchema } from "@/db/schema";
+import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
+import { DAILY_EVENT_COL_DATA_CHANGED } from "@/models/constant/sync";
 
 export async function updateDailyEventHeaderAction(
     date: string,
@@ -37,6 +39,10 @@ export async function updateDailyEventHeaderAction(
                 success: false,
                 message: messages.dailySchedule.updateError,
             };
+        }
+
+        if (updatedEntries[0]) {
+            void pushSyncUpdateServer(DAILY_EVENT_COL_DATA_CHANGED, { schoolId: updatedEntries[0].schoolId, date });
         }
 
         return {

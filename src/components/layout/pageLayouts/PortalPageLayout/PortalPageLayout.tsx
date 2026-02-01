@@ -12,7 +12,7 @@ import router from "@/routes";
 import { TeacherRoleValues } from "@/models/types/teachers";
 import { useTeacherTableContext } from "@/context/TeacherTableContext";
 import PageLayout from "../../PageLayout/PageLayout";
-import { SyncItem } from "@/services/syncService";
+import { SyncItem } from "@/services/sync/clientSyncService";
 
 type PortalPageLayoutProps = {
     children: React.ReactNode;

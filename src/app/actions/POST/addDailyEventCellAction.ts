@@ -9,6 +9,8 @@ import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "../../../db";
 import { NewDailyScheduleSchema } from "@/db/schema";
 import { dbLog } from "@/services/loggerService";
+import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
+import { DAILY_EVENT_COL_DATA_CHANGED } from "@/models/constant/sync";
 
 export async function addDailyEventCellAction(
     scheduleCellData: DailyScheduleRequest,
@@ -57,6 +59,8 @@ export async function addDailyEventCellAction(
                 message: messages.dailySchedule.createError,
             };
         }
+
+        void pushSyncUpdateServer(DAILY_EVENT_COL_DATA_CHANGED, { schoolId: school.id, date: getDateReturnString(date) });
 
         return {
             success: true,

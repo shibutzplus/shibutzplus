@@ -8,6 +8,8 @@ import { db, schema, executeQuery } from "@/db";
 import { eq } from "drizzle-orm";
 import { getSubjectsAction } from "@/app/actions/GET/getSubjectsAction";
 import { dbLog } from "@/services/loggerService";
+import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
+import { ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
 
 export async function updateSubjectAction(
     subjectId: string,
@@ -51,6 +53,9 @@ export async function updateSubjectAction(
 
         // Fetch all subjects for the updated subject's school
         const allSubjectsResp = await getSubjectsAction(subjectData.schoolId);
+
+        void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: subjectData.schoolId });
+
         return {
             success: true,
             message: messages.subjects.updateSuccess,

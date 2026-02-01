@@ -4,7 +4,7 @@ import { addDailyEventCellAction } from "@/app/actions/POST/addDailyEventCellAct
 import { updateDailyEventCellAction } from "@/app/actions/PUT/updateDailyEventCellAction";
 import { updateDailyEventHeaderAction } from "@/app/actions/PUT/updateDailyEventHeaderAction";
 import { useMainContext } from "@/context/MainContext";
-import { DAILY_SCHEDULE_DATA_CHANGED } from "@/models/constant/sync";
+import { DAILY_EVENT_COL_DATA_CHANGED } from "@/models/constant/sync";
 import { eventPlaceholder } from "@/models/constant/table";
 import { ColumnTypeValues, DailySchedule, DailyScheduleCell } from "@/models/types/dailySchedule";
 import { TeacherType } from "@/models/types/teachers";
@@ -19,12 +19,12 @@ const useDailyEventActions = (
     setMainAndStorageTable: (newSchedule: DailySchedule) => void,
     clearColumn: (day: string, columnId: string) => void,
     selectedDate: string,
-    handlePushUpdate: (channel: typeof DAILY_SCHEDULE_DATA_CHANGED) => void
+    handlePushUpdate: (channel: typeof DAILY_EVENT_COL_DATA_CHANGED) => void
 ) => {
     const { school, settings } = useMainContext();
 
     const pushDailyUpdate = () => {
-        handlePushUpdate(DAILY_SCHEDULE_DATA_CHANGED);
+        handlePushUpdate(DAILY_EVENT_COL_DATA_CHANGED);
     };
 
     const populateEventColumn = async (columnId: string, eventTitle: string) => {

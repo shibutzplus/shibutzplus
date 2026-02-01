@@ -19,9 +19,11 @@ import { deleteSubjectAction } from "@/app/actions/DELETE/deleteSubjectAction";
 import { deleteTeacherAction } from "@/app/actions/DELETE/deleteTeacherAction";
 import useInitData from "@/hooks/useInitData";
 import { errorToast } from "@/lib/toast";
-import { pushSyncUpdate, SyncItem } from "@/services/syncService";
+import { pushSyncUpdate, SyncItem, SyncChannel } from "@/services/sync/clientSyncService";
 import { compareHebrew, sortByName } from "@/utils/sort";
 import { usePollingUpdates } from "@/hooks/usePollingUpdates";
+
+const ENTITY_CHANNELS: SyncChannel[] = [ENTITIES_DATA_CHANGED];
 
 interface MainContextType {
     school: SchoolType | undefined;
@@ -87,7 +89,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
 
     // Setup polling for entity changes
     const refreshEntitiesRef = useRef<((items: SyncItem[]) => Promise<void> | void) | null>(null);
-    usePollingUpdates(refreshEntitiesRef);
+    usePollingUpdates(refreshEntitiesRef, ENTITY_CHANNELS);
 
     useEffect(() => {
         refreshEntitiesRef.current = async (items) => {

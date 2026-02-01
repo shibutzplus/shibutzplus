@@ -2,7 +2,7 @@
  * Sync Service
  * Handles push/poll for updates from the sync API
  */
-import { DAILY_TEACHER_COL_DATA_CHANGED, DAILY_SCHEDULE_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED, MATERIAL_CHANGED, ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
+import { DAILY_TEACHER_COL_DATA_CHANGED, DAILY_EVENT_COL_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED, MATERIAL_CHANGED, ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
 import { SyncChannel, SyncPayload, SyncItem } from "@/models/types/sync";
 import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
@@ -89,7 +89,7 @@ export const getChannelsForPath = (
   if (pathname.includes(teacherMaterialPortalPath)) {
     return [DAILY_TEACHER_COL_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED, MATERIAL_CHANGED, ENTITIES_DATA_CHANGED];
   }
-  return [DAILY_TEACHER_COL_DATA_CHANGED, DAILY_SCHEDULE_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED, ENTITIES_DATA_CHANGED];
+  return [DAILY_TEACHER_COL_DATA_CHANGED, DAILY_EVENT_COL_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED, ENTITIES_DATA_CHANGED];
 };
 
 /**

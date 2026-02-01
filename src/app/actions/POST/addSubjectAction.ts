@@ -8,6 +8,8 @@ import { db, schema, executeQuery } from "@/db";
 import { NewSubjectSchema } from "@/db/schema";
 import { subjectSchema } from "@/models/validation/subject";
 import { dbLog } from "@/services/loggerService";
+import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
+import { ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
 
 export async function addSubjectAction(
     subjectData: SubjectRequest,
@@ -44,6 +46,8 @@ export async function addSubjectAction(
         if (!newSubject) {
             return { success: false, message: messages.subjects.createError };
         }
+
+        void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: subjectData.schoolId });
 
         return {
             success: true,

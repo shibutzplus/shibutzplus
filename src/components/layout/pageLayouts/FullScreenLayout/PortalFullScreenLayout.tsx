@@ -10,7 +10,7 @@ import { usePollingUpdates } from "@/hooks/usePollingUpdates";
 import { usePathname, useRouter } from "next/navigation";
 import router from "@/routes";
 import FullScreenContainer from "./FullScreenContainer";
-import { SyncItem } from "@/services/syncService";
+import { SyncItem } from "@/services/sync/clientSyncService";
 
 type PortalFullScreenLayoutProps = {
     children: React.ReactNode;
