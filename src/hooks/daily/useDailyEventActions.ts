@@ -266,37 +266,54 @@ const useDailyEventActions = (
                 });
             }
 
-            // Paste other cells
-            for (const hourKey in pastedColumnData) {
+            // Paste other cells - Prepare promises
+            const cellPromises = Object.keys(pastedColumnData).map((hourKey) => {
                 const hour = parseInt(hourKey);
-                if (isNaN(hour) || hour === 0) continue;
+                if (isNaN(hour) || hour === 0) return null;
 
                 const sourceCell = pastedColumnData[hourKey];
-                if (sourceCell.event === undefined) continue; // Skip if no event structure
+                if (sourceCell.event === undefined) return null;
 
                 const dailyCellData = addNewEventCell(school, sourceCell, columnId, selectedDate, sourceCell.event || "", currentPosition);
-                if (dailyCellData) {
-                    const response = await addDailyEventCellAction(dailyCellData);
+                if (!dailyCellData) return null;
+
+                return {
+                    promise: addDailyEventCellAction(dailyCellData),
+                    sourceCell
+                };
+            }).filter((item): item is NonNullable<typeof item> => item !== null);
+
+            // Execute all requests in parallel
+            const results = await Promise.all(cellPromises.map(item => item.promise));
+
+            // Single batch update for all cells and final fill
+            setMainDailyTable(prev => {
+                let updatedSchedule = { ...prev };
+
+                results.forEach((response, index) => {
+                    const { sourceCell } = cellPromises[index];
                     if (response?.success && response.data) {
-                        setMainDailyTable(prev => updateAddCell(
+                        updatedSchedule = updateAddCell(
                             response.data!.id,
-                            prev,
+                            updatedSchedule,
                             selectedDate,
                             sourceCell,
                             columnId,
                             { event: sourceCell.event },
                             eventTitle
-                        ));
+                        );
                     }
-                }
-            }
+                });
 
-            // Final fill
-            setMainDailyTable(prev => fillLeftRowsWithEmptyCells(prev, selectedDate, columnId, {
-                headerEvent: eventTitle,
-                type: ColumnTypeValues.event,
-                position: currentPosition,
-            }, settings?.hoursNum));
+                // Final fill
+                updatedSchedule = fillLeftRowsWithEmptyCells(updatedSchedule, selectedDate, columnId, {
+                    headerEvent: eventTitle,
+                    type: ColumnTypeValues.event,
+                    position: currentPosition,
+                }, settings?.hoursNum);
+
+                return updatedSchedule;
+            });
 
             return true;
         } catch (error) {
