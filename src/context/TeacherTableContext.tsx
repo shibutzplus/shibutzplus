@@ -7,7 +7,7 @@ import getTeacherFullScheduleAction from "@/app/actions/GET/getTeacherFullSchedu
 import { getTeacherHistoryScheduleAction } from "@/app/actions/GET/getTeacherHistoryScheduleAction";
 import { populatePortalTable } from "@/services/portalTeacherService";
 import { errorToast } from "@/lib/toast";
-import { updateDailyInstructionAction } from "@/app/actions/PUT/updateDailyInstractionAction";
+import { updateDailyInstructionAction } from "@/app/actions/PUT/updateDailyInstructionAction";
 import messages from "@/resources/messages";
 import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
@@ -73,10 +73,18 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
                 response = await getTeacherFullScheduleAction(teacher.id, selectedDate);
             }
 
-            if (response.success && response.data) {
-                const newSchedule = populatePortalTable(response.data, mainPortalTable, selectedDate,);
+            if (response?.success && response?.data) {
+                const newSchedule = populatePortalTable(response.data, mainPortalTable, selectedDate);
                 if (newSchedule) setMainPortalTable(newSchedule);
             } else {
+                if (!response) {
+                    logErrorAction({
+                        description: "Error fetching Teacher Material page data: Response is undefined",
+                        schoolId: teacher?.schoolId,
+                        user: teacher?.id,
+                        metadata: { selectedDate, isHistoryPage }
+                    });
+                }
                 return false;
             }
             return true;
@@ -126,7 +134,7 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
                 originalTeacherId,
                 subTeacherId,
             );
-            if (response.success) {
+            if (response?.success) {
                 const portalSchedule = { ...mainPortalTable };
                 portalSchedule[selectedDate][`${row.hour}`].instructions = instructions;
                 setMainPortalTable(portalSchedule);

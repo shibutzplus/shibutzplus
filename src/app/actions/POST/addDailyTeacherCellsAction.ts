@@ -8,6 +8,8 @@ import { db, schema, executeQuery } from "../../../db";
 import { NewDailyScheduleSchema } from "@/db/schema";
 import { getDateReturnString } from "@/utils/time";
 import { dbLog } from "@/services/loggerService";
+import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
+import { DAILY_TEACHER_COL_DATA_CHANGED } from "@/models/constant/sync";
 
 //
 //  Batch Insert mechanism:
@@ -120,6 +122,11 @@ export async function addDailyTeacherCellsAction(
             } as DailyScheduleType;
         });
 
+
+        if (resultData.length > 0) {
+            const first = resultData[0];
+            void pushSyncUpdateServer(DAILY_TEACHER_COL_DATA_CHANGED, { schoolId: first.school?.id, date: getDateReturnString(first.date) });
+        }
 
         return {
             success: true,

@@ -8,6 +8,8 @@ import { db, schema, executeQuery } from "@/db";
 import { NewTeacherSchema } from "@/db/schema";
 import { teacherSchema } from "@/models/validation/teacher";
 import { dbLog } from "@/services/loggerService";
+import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
+import { ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
 
 export async function addTeacherAction(
     teacherData: TeacherRequest,
@@ -50,6 +52,8 @@ export async function addTeacherAction(
                 message: messages.teachers.createError,
             };
         }
+
+        void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: teacherData.schoolId });
 
         return {
             success: true,

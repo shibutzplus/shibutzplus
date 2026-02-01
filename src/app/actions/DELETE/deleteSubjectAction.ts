@@ -8,6 +8,8 @@ import { db, schema, executeQuery } from "@/db";
 import { and, eq, asc } from "drizzle-orm";
 import { SubjectType } from "@/models/types/subjects";
 import { dbLog } from "@/services/loggerService";
+import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
+import { ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
 
 export async function deleteSubjectAction(
     schoolId: string,
@@ -66,6 +68,8 @@ export async function deleteSubjectAction(
 
             return { annualSchedule, remainingSubjects };
         });
+
+        void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId });
 
         return {
             success: true,

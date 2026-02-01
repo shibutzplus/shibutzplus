@@ -12,7 +12,7 @@ import router from "@/routes";
 import { TeacherRoleValues } from "@/models/types/teachers";
 import { useTeacherTableContext } from "@/context/TeacherTableContext";
 import PageLayout from "../../PageLayout/PageLayout";
-import { SyncItem } from "@/services/syncService";
+import { SyncItem } from "@/services/sync/clientSyncService";
 
 type PortalPageLayoutProps = {
     children: React.ReactNode;
@@ -20,42 +20,30 @@ type PortalPageLayoutProps = {
 
 export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
     const pathname = usePathname();
-    const { teacher, selectedDate, handleRefreshDates, refreshDailyScheduleTeacherPortal, settings, } = usePortalContext();
+    const { teacher, selectedDate, handleRefreshDates, refreshDailyScheduleTeacherPortal, settings, handleIncomingSync } = usePortalContext();
     const { refreshMaterialTeacherPortal } = useTeacherTableContext();
     const refreshRef = React.useRef<((items: SyncItem[]) => Promise<void> | void) | null>(null);
     const { resetUpdate } = usePollingUpdates(refreshRef);
     const isRegularTeacher = teacher?.role === TeacherRoleValues.REGULAR;
 
     const handleRefresh = async (items?: SyncItem[]) => {
-        // Filter irrelevant updates if items provided
-        if (items && items.length > 0) {
-            const hasRelevantUpdate = items.some(item => {
-                if (!item.payload) return false;    // safty net
-                const schoolMatches = !item.payload.schoolId || !teacher?.schoolId || item.payload.schoolId === teacher.schoolId;
-                const dateMatches = !item.payload.date || !selectedDate || item.payload.date === selectedDate;
-                return schoolMatches && dateMatches;
-            });
+        const { hasRelevantUpdate, newLists } = await handleIncomingSync(items);
 
-            if (!hasRelevantUpdate) return;
+        if (hasRelevantUpdate) {
+            const res = await handleRefreshDates();
+            const effectiveDate = res.selected;
+            const freshOptions = res.options || [];
+            const isValidDate = freshOptions.some(d => d.value === effectiveDate);
+
+            if (pathname.includes(router.teacherMaterialPortal.p)) {
+                if (isValidDate) await refreshMaterialTeacherPortal(teacher, effectiveDate);
+            } else if (
+                pathname.includes(router.scheduleViewPortal.p) ||
+                pathname.includes(router.fullScheduleView.p)
+            ) {
+                await refreshDailyScheduleTeacherPortal(undefined, effectiveDate, undefined, true, newLists);
+            }
         }
-
-        const res = await handleRefreshDates();
-
-        // Use the FRESH options returned by handleRefreshDates
-        const effectiveDate = res.selected;
-        const freshOptions = res.options || [];
-        const isValidDate = freshOptions.some(d => d.value === effectiveDate);
-
-        if (pathname.includes(router.teacherMaterialPortal.p)) {
-            if (isValidDate) await refreshMaterialTeacherPortal(teacher, effectiveDate);
-        } else if (
-            pathname.includes(router.scheduleViewPortal.p) ||
-            pathname.includes(router.fullScheduleView.p)
-        ) {
-            // For published portal or full schedule view, always refresh with the effective date
-            await refreshDailyScheduleTeacherPortal(undefined, effectiveDate, undefined);
-        }
-        // reset update badge after successful refresh
         resetUpdate();
     };
 

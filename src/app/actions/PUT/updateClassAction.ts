@@ -8,6 +8,8 @@ import { db, schema, executeQuery } from "@/db";
 import { eq } from "drizzle-orm";
 import { getClassesAction } from "../GET/getClassesAction";
 import { dbLog } from "@/services/loggerService";
+import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
+import { ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
 
 export async function updateClassAction(
     classId: string,
@@ -51,6 +53,9 @@ export async function updateClassAction(
 
         // Fetch all classes for the updated class's school
         const allClassesResp = await getClassesAction(classData.schoolId);
+
+        void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: classData.schoolId });
+
         return {
             success: true,
             message: messages.classes.updateClassSuccess,

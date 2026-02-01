@@ -3,8 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import router from "@/routes";
-import { checkForUpdates, getChannelsForPath } from "@/services/syncService";
-
+import { checkForUpdates, getChannelsForPath, SyncItem, SyncChannel } from "@/services/sync/clientSyncService";
 import { POLL_INTERVAL_MS } from "@/models/constant/sync";
 
 type UsePollingUpdatesReturn = {
@@ -17,10 +16,10 @@ type UsePollingUpdatesReturn = {
  * Custom hook for polling server updates and managing update notifications
  * @returns Object containing hasUpdate state and resetUpdate function
  */
-import { SyncItem } from "@/services/syncService";
 
 export const usePollingUpdates = (
-    onRefreshRef?: { current: ((items: SyncItem[]) => Promise<void> | void) | null }
+    onRefreshRef?: { current: ((items: SyncItem[]) => Promise<void> | void) | null },
+    channels?: SyncChannel[]
 ): UsePollingUpdatesReturn => {
     const pathname = usePathname();
 
@@ -38,13 +37,25 @@ export const usePollingUpdates = (
         let mounted = true;
         let id: ReturnType<typeof setInterval> | null = null;
 
+        const NO_POLLING_ROUTES = [
+            router.history.p,
+            router.statistics.p,
+            router.faqManager.p,
+            router.faqTeachers.p
+        ];
+
+        if (NO_POLLING_ROUTES.some(route => pathname.startsWith(route))) {
+            return;
+        }
+
         // on teacher screen, listen to teacher columns events only
         // on schedule screen, listen to both teacher and events columns changes
-        const channels = getChannelsForPath(pathname, router.teacherMaterialPortal.p);
+        // Use provided channels or fallback to default logic
+        const channelsToPoll = channels || getChannelsForPath(pathname, router.teacherMaterialPortal.p);
 
         const checkUpdates = async () => {
             const since = lastTsRef.current;
-            const { hasUpdates, latestTs, items } = await checkForUpdates({ since, channels });
+            const { hasUpdates, latestTs, items } = await checkForUpdates({ since, channels: channelsToPoll });
 
             if (mounted && hasUpdates) {
                 setHasUpdate(true);
@@ -75,7 +86,7 @@ export const usePollingUpdates = (
             if (id) clearInterval(id);
             document.removeEventListener("visibilitychange", handleVisibility);
         };
-    }, [pathname, onRefreshRef]);
+    }, [pathname, onRefreshRef, channels]);
 
     // Reset polling state on path change as we already get new data from DB
     useEffect(() => {

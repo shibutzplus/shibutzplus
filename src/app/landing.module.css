@@ -416,7 +416,7 @@
   justify-content: center;
   cursor: pointer;
   box-shadow: var(--shadow-lg);
-  border: none;
+  border: 1px solid;
   z-index: 20;
   transition: all 0.3s ease;
   animation: bounce 2s infinite;
@@ -556,8 +556,6 @@
   .videoPlaceholder {
     margin-top: 20px;
   }
-
-
 
   .footer {
     height: auto;

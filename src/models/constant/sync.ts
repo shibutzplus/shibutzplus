@@ -9,7 +9,7 @@ export const DAILY_TEACHER_COL_DATA_CHANGED = "teacherCol";
 
 // TRIGGERED WHEN: An event column update OR any column reorder in the DAILY SCHEDULE
 // CONSUMER: Teacher Portal: School schedule page & also Daily Schedule page
-export const DAILY_SCHEDULE_DATA_CHANGED = "daily";
+export const DAILY_EVENT_COL_DATA_CHANGED = "eventCol";
 
 // TRIGGERED WHEN: A daily schedule is published or unpublished
 // CONSUMER: Teacher Portal & Publish Portal -> Triggers refresh of available dates (options)

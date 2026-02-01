@@ -7,6 +7,8 @@ import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { eq } from "drizzle-orm";
 import { dbLog } from "@/services/loggerService";
+import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
+import { ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
 
 export async function updateTeacherAction(
     teacherId: string,
@@ -51,6 +53,8 @@ export async function updateTeacherAction(
                 .where(eq(schema.teachers.schoolId, teacherData.schoolId))
                 .orderBy(schema.teachers.name);
         });
+
+        void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: teacherData.schoolId });
 
         return {
             success: true,

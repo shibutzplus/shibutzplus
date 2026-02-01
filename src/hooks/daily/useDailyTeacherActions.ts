@@ -3,14 +3,7 @@ import { getTeacherScheduleByDayAction } from "@/app/actions/GET/getTeacherSched
 import { addDailyTeacherCellsAction } from "@/app/actions/POST/addDailyTeacherCellsAction";
 import { updateDailyTeacherCellAction } from "@/app/actions/PUT/updateDailyTeacherCellAction";
 import { useMainContext } from "@/context/MainContext";
-import { DAILY_TEACHER_COL_DATA_CHANGED } from "@/models/constant/sync";
-import {
-    ColumnType,
-    DailySchedule,
-    DailyScheduleCell,
-    DailyScheduleType,
-    TeacherHourlyScheduleItem,
-} from "@/models/types/dailySchedule";
+import { ColumnType, DailySchedule, DailyScheduleCell, DailyScheduleType, TeacherHourlyScheduleItem } from "@/models/types/dailySchedule";
 import { TeacherType } from "@/models/types/teachers";
 import { addNewTeacherValueCell } from "@/services/daily/add";
 import { fillLeftRowsWithEmptyCells } from "@/services/daily/populate";
@@ -20,16 +13,11 @@ import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
 const useDailyTeacherActions = (
     mainDailyTable: DailySchedule,
-    setMainAndStorageTable: (newSchedule: DailySchedule) => void,
+    setMainDailyTable: (newSchedule: DailySchedule) => void,
     clearColumn: (day: string, columnId: string) => void,
-    handlePushUpdate: (channel: typeof DAILY_TEACHER_COL_DATA_CHANGED) => void
+
 ) => {
     const { school, teachers, settings } = useMainContext();
-
-    const pushDailyUpdate = () => {
-        handlePushUpdate(DAILY_TEACHER_COL_DATA_CHANGED);
-    };
-
     const populateTeacherColumn = async (
         selectedDate: string,
         columnId: string,
@@ -63,7 +51,7 @@ const useDailyTeacherActions = (
                         settings?.hoursNum,
                         optimisticTeacher,
                     );
-                    setMainAndStorageTable(finalOptimisticSchedule);
+                    setMainDailyTable(finalOptimisticSchedule);
                 } else {
                     clearColumn(selectedDate, columnId);
                 }
@@ -95,9 +83,6 @@ const useDailyTeacherActions = (
                     });
                 }
             }
-
-            // NOTE: We do NOT call clearColumn again here to avoid flicker.
-            // The DB is cleared (if delete succeeded), and the UI shows the optimistic teacher.
 
             const response = fetchResponse;
             if (response.success && response.data) {
@@ -168,8 +153,7 @@ const useDailyTeacherActions = (
                         { headerTeacher, type, position: currentPosition },
                         settings?.hoursNum,
                     );
-                    setMainAndStorageTable(updatedSchedule);
-                    pushDailyUpdate();
+                    setMainDailyTable(updatedSchedule);
                 } else {
                     // If the teacher does not teach on this day, create an empty column
                     // We re-affirm the empty column with the teacher header
@@ -184,7 +168,7 @@ const useDailyTeacherActions = (
                         settings?.hoursNum,
                         headerTeacher,
                     );
-                    setMainAndStorageTable(updatedSchedule);
+                    setMainDailyTable(updatedSchedule);
                 }
                 return response.data;
             }
@@ -227,8 +211,7 @@ const useDailyTeacherActions = (
                     columnId,
                     data,
                 );
-                setMainAndStorageTable(updatedSchedule);
-                pushDailyUpdate();
+                setMainDailyTable(updatedSchedule);
                 return response.data;
             }
         }
@@ -266,8 +249,7 @@ const useDailyTeacherActions = (
                     columnId,
                     { subTeacher: undefined, event: undefined },
                 );
-                setMainAndStorageTable(updatedSchedule);
-                pushDailyUpdate();
+                setMainDailyTable(updatedSchedule);
                 return response.data;
             }
         }

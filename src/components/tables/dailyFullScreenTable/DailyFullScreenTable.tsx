@@ -17,10 +17,11 @@ type DailyFullScreenTableProps = {
     mainDailyTable: DailySchedule;
     selectedDate: string;
     hoursNum?: number;
-    EmptyTable?: React.FC<{ date?: string; screenType?: ScreenType }>;
+    EmptyTable?: React.FC<{ date?: string; screenType?: ScreenType; text?: string }>;
     appType?: AppType;
     onTeacherClick?: (teacher: TeacherType) => void;
     screenType?: ScreenType;
+    emptyText?: string;
 };
 
 const DailyFullScreenTable: React.FC<DailyFullScreenTableProps> = ({
@@ -31,6 +32,7 @@ const DailyFullScreenTable: React.FC<DailyFullScreenTableProps> = ({
     appType = "public",
     onTeacherClick,
     screenType,
+    emptyText,
 }) => {
     const schedule = mainDailyTable[selectedDate];
     const tableColumns = React.useMemo(() => schedule ? Object.keys(schedule) : [], [schedule]);
@@ -110,7 +112,7 @@ const DailyFullScreenTable: React.FC<DailyFullScreenTableProps> = ({
 
     // Handle empty state
     if ((!schedule || Object.keys(schedule).length === 0) && EmptyTable) {
-        return <EmptyTable date={selectedDate} screenType={screenType} />;
+        return <EmptyTable date={selectedDate} screenType={screenType} text={emptyText} />;
     }
 
     // Determine Layout Classes based on column count

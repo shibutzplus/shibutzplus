@@ -7,6 +7,8 @@ import { dailySchedule } from "@/db/schema/daily-schedule";
 import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { dbLog } from "@/services/loggerService";
+import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
+import { DAILY_EVENT_COL_DATA_CHANGED } from "@/models/constant/sync";
 
 type ColumnPositionUpdate = {
     columnId: string;
@@ -36,6 +38,8 @@ export async function updateDailyColumnPositionsAction(
                     ),
             ),
         );
+
+        void pushSyncUpdateServer(DAILY_EVENT_COL_DATA_CHANGED, { schoolId, date });
 
         revalidatePath("/daily-schedule");
         return { success: true, message: "Positions updated successfully" };

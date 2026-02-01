@@ -6,6 +6,8 @@ import { ActionResponse } from "@/models/types/actions";
 import messages from "@/resources/messages";
 import { revalidatePath } from "next/cache";
 import { dbLog } from "@/services/loggerService";
+import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
+import { DAILY_PUBLISH_DATA_CHANGED } from "@/models/constant/sync";
 
 export async function unpublishDailyScheduleAction(
     schoolId: string,
@@ -42,6 +44,9 @@ export async function unpublishDailyScheduleAction(
         revalidatePath("/(public)/schedule-view", "page");
         revalidatePath("/(public)/schedule-full", "page");
         revalidatePath(`/(public)/teacher-material/${schoolId}`, "page");
+
+        void pushSyncUpdateServer(DAILY_PUBLISH_DATA_CHANGED, { schoolId, date });
+
         return { success: true, message: messages.publish.success };
     } catch (error) {
         dbLog({

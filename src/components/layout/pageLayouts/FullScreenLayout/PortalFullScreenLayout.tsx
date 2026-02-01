@@ -10,7 +10,7 @@ import { usePollingUpdates } from "@/hooks/usePollingUpdates";
 import { usePathname, useRouter } from "next/navigation";
 import router from "@/routes";
 import FullScreenContainer from "./FullScreenContainer";
-import { SyncItem } from "@/services/syncService";
+import { SyncItem } from "@/services/sync/clientSyncService";
 
 type PortalFullScreenLayoutProps = {
     children: React.ReactNode;
@@ -19,36 +19,27 @@ type PortalFullScreenLayoutProps = {
 export default function PortalFullScreenLayout({ children }: PortalFullScreenLayoutProps) {
     const pathname = usePathname();
     const nav = useRouter();
-    const { teacher, selectedDate, handleRefreshDates, refreshDailyScheduleTeacherPortal, } = usePortalContext();
+    const { teacher, handleRefreshDates, refreshDailyScheduleTeacherPortal, handleIncomingSync } = usePortalContext();
     const refreshRef = React.useRef<((items: SyncItem[]) => Promise<void> | void) | null>(null);
     const { resetUpdate } = usePollingUpdates(refreshRef);
 
     const handleRefresh = async (items?: SyncItem[]) => {
-        // Filter irrelevant updates if items provided
-        if (items && items.length > 0) {
-            const hasRelevantUpdate = items.some(item => {
-                if (!item.payload) return false;    // safty net
-                const schoolMatches = !item.payload.schoolId || !teacher?.schoolId || item.payload.schoolId === teacher.schoolId;
-                const dateMatches = !item.payload.date || !selectedDate || item.payload.date === selectedDate;
-                return schoolMatches && dateMatches;
-            });
+        const { hasRelevantUpdate, newLists } = await handleIncomingSync(items);
 
-            if (!hasRelevantUpdate) return;
+        if (hasRelevantUpdate) {
+            const res = await handleRefreshDates();
+            const effectiveDate = res.selected;
+
+            // Ensure we are in the correct route logic (similar to PortalPageLayout)
+            if (
+                pathname.includes(router.scheduleViewPortal.p) ||
+                pathname.includes(router.fullScheduleView.p)
+            ) {
+                // For published portal or full schedule view, always refresh with the effective date
+                await refreshDailyScheduleTeacherPortal(undefined, effectiveDate, undefined, true, newLists);
+            }
         }
 
-        const res = await handleRefreshDates();
-
-        // Use the FRESH options returned by handleRefreshDates
-        const effectiveDate = res.selected;
-
-        // Ensure we are in the correct route logic (similar to PortalPageLayout)
-        if (
-            pathname.includes(router.scheduleViewPortal.p) ||
-            pathname.includes(router.fullScheduleView.p)
-        ) {
-            // For published portal or full schedule view, always refresh with the effective date
-            await refreshDailyScheduleTeacherPortal(undefined, effectiveDate, undefined);
-        }
         // reset update badge after successful refresh
         resetUpdate();
     };

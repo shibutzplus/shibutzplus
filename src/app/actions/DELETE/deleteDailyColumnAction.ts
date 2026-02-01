@@ -8,6 +8,10 @@ import { db, schema, executeQuery } from "@/db";
 import { and, eq, isNull, inArray } from "drizzle-orm";
 import { dbLog } from "@/services/loggerService";
 
+import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
+import { DAILY_EVENT_COL_DATA_CHANGED, DAILY_TEACHER_COL_DATA_CHANGED } from "@/models/constant/sync";
+import { ColumnTypeValues } from "@/models/types/dailySchedule";
+
 export async function deleteDailyColumnAction(
     schoolId: string,
     columnId: string,
@@ -19,6 +23,8 @@ export async function deleteDailyColumnAction(
             return authError as ActionResponse;
         }
 
+        let deletedColumnTypes: number[] = [];
+
         const schedules = await executeQuery(async () => {
             // Handle legacy data where columnId might be NULL (mapped to "undefined" string in state)
             const columnCondition =
@@ -26,7 +32,7 @@ export async function deleteDailyColumnAction(
                     ? isNull(schema.dailySchedule.columnId)
                     : eq(schema.dailySchedule.columnId, columnId);
 
-            await db
+            const deletedRows = await db
                 .delete(schema.dailySchedule)
                 .where(
                     and(
@@ -34,7 +40,10 @@ export async function deleteDailyColumnAction(
                         eq(schema.dailySchedule.date, date),
                         columnCondition,
                     ),
-                );
+                )
+                .returning({ columnType: schema.dailySchedule.columnType });
+
+            deletedColumnTypes = [...new Set(deletedRows.map(r => r.columnType).filter((t): t is number => t !== null && t !== undefined))];
 
             const s = await db.query.dailySchedule.findMany({
                 where: and(
@@ -86,6 +95,14 @@ export async function deleteDailyColumnAction(
                 }) as DailyScheduleType,
         );
 
+        // Push updates based on deleted types
+        if (deletedColumnTypes.includes(ColumnTypeValues.missingTeacher) || deletedColumnTypes.includes(ColumnTypeValues.existingTeacher)) {
+            void pushSyncUpdateServer(DAILY_TEACHER_COL_DATA_CHANGED, { schoolId, date });
+        }
+        if (deletedColumnTypes.includes(ColumnTypeValues.event)) {
+            void pushSyncUpdateServer(DAILY_EVENT_COL_DATA_CHANGED, { schoolId, date });
+        }
+
         return {
             success: true,
             message: messages.dailySchedule.deleteSuccess,
@@ -93,7 +110,7 @@ export async function deleteDailyColumnAction(
         };
     } catch (error) {
         dbLog({
-            description: `Error deleting daily schedule column: ${error instanceof Error ? error.message : String(error)}`,
+            description: `Error deleting daily column: ${error instanceof Error ? error.message : String(error)}`,
             schoolId,
             metadata: { columnId, date }
         });

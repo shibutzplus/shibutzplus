@@ -7,6 +7,8 @@ import { checkAuthAndParams, checkIsNotGuest } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { classSchema } from "@/models/validation/class";
 import { dbLog } from "@/services/loggerService";
+import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
+import { ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
 
 export async function addClassAction(
     classData: ClassRequest,
@@ -38,6 +40,8 @@ export async function addClassAction(
         if (!newClass) {
             return { success: false, message: messages.classes.createError };
         }
+
+        void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: classData.schoolId });
 
         return {
             success: true,
