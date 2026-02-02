@@ -1,8 +1,6 @@
-"use client";
-import React from "react";
 import Preloader from "@/components/ui/Preloader/Preloader";
 
-const SkeletonAnnualSchedule: React.FC = () => {
+export default function Loading() {
     return (
         <div style={{
             position: 'absolute',
@@ -13,6 +11,4 @@ const SkeletonAnnualSchedule: React.FC = () => {
             <Preloader />
         </div>
     );
-};
-
-export default SkeletonAnnualSchedule;
+}

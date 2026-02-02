@@ -6,10 +6,11 @@ import { and, eq } from "drizzle-orm";
 import { dbLog } from "@/services/loggerService";
 import { DailyScheduleType, ColumnType } from "@/models/types/dailySchedule";
 import { ActionResponse } from "@/models/types/actions";
-import { TeacherType } from "@/models/types/teachers";
+import { TeacherType, TeacherRoleValues } from "@/models/types/teachers";
 import { SubjectType } from "@/models/types/subjects";
 import { ClassType } from "@/models/types/classes";
 import { SchoolType } from "@/models/types/school";
+import { SCHOOL_LEVEL, SCHOOL_STATUS } from "@/models/constant/school";
 
 interface GetHistoryScheduleResponse extends ActionResponse {
     data?: DailyScheduleType[];
@@ -38,7 +39,7 @@ export async function getHistoryScheduleAction(schoolId: string, date: string): 
         const dailyScheduleData: DailyScheduleType[] = historyRecords.map(record => {
             // Helper to create mock objects
             const makeTeacher = (name: string | null): TeacherType | undefined =>
-                name ? { id: "history-teacher", name, schoolId, role: "regular" } as TeacherType : undefined;
+                name ? { id: "history-teacher", name, schoolId, role: TeacherRoleValues.REGULAR } as TeacherType : undefined;
 
             const makeSubject = (name: string | null): SubjectType | undefined =>
                 name ? { id: "history-subject", name, schoolId } as SubjectType : undefined;
@@ -57,8 +58,8 @@ export async function getHistoryScheduleAction(schoolId: string, date: string): 
             const mockSchool: SchoolType = {
                 id: record.schoolId,
                 name: "",
-                type: "Elementary",
-                status: "daily",
+                type: SCHOOL_LEVEL.ELEMENTARY,
+                status: SCHOOL_STATUS.DAILY,
                 publishDates: [],
                 createdAt: new Date(),
                 updatedAt: new Date(),

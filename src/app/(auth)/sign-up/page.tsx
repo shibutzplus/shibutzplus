@@ -15,6 +15,8 @@ import { registerSchema } from "@/models/validation/register";
 import signUp from "@/app/actions/POST/signUpAction";
 import { getSchoolsMinAction } from "@/app/actions/GET/getSchoolsMinAction";
 import { logErrorAction } from "@/app/actions/POST/logErrorAction";
+import { USER_ROLES, USER_GENDER } from "@/models/constant/auth";
+import { SCHOOL_LEVEL } from "@/models/constant/school";
 
 const SignUpPage: NextPage = () => {
     const router = useRouter();
@@ -24,9 +26,9 @@ const SignUpPage: NextPage = () => {
         password: "12345678",
         schoolName: "",
         city: "",
-        role: "admin" as UserRole,
-        gender: "female" as UserGender,
-        level: "Elementary" as SchoolLevel,
+        role: USER_ROLES.ADMIN as UserRole,
+        gender: USER_GENDER.FEMALE as UserGender,
+        level: SCHOOL_LEVEL.ELEMENTARY as SchoolLevel,
     });
     const [error, setError] = useState<string>("");
     const [isLoading, setIsLoading] = useState(false);

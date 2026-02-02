@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import StatisticsPageLayout from "@/components/layout/pageLayouts/StatisticsPageLayout/StatisticsPageLayout";
+import Preloader from "@/components/ui/Preloader/Preloader";
 import { useOptionalMainContext } from "@/context/MainContext";
 import { getAbsencesByMonthAction, AbsenceByMonth } from "@/app/actions/GET/getAbsencesByMonthAction";
 import { getAbsencesByTeacherAction, AbsenceByTeacher } from "@/app/actions/GET/getAbsencesByTeacherAction";
@@ -11,7 +12,6 @@ import styles from "./page.module.css";
 import { errorToast } from "@/lib/toast";
 import { StatisticType, StatisticTypeValues } from "@/models/types/statistics";
 import { getHebrewMonthName, getCurrentMonth } from "@/utils/time";
-
 
 export default function StatisticsPage() {
     const context = useOptionalMainContext();
@@ -76,7 +76,9 @@ export default function StatisticsPage() {
         <StatisticsPageLayout statType={statType} setStatType={setStatType} month={month} setMonth={setMonth}>
             <div className={styles.chartContainer}>
                 {loading ? (
-                    <div className={styles.spinner}></div>
+                    <div style={{ position: 'absolute', top: '40%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+                        <Preloader />
+                    </div>
                 ) : (statType === StatisticTypeValues.months && monthData.length === 0) || (statType === StatisticTypeValues.teachers && teacherData.length === 0) || (statType === StatisticTypeValues.days && dayData.length === 0) ? (
                     <div className={styles.placeholder}>לא נמצאו היעדרויות עבור הסינון שנבחר</div>
                 ) : (

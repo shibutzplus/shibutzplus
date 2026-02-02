@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { USER_ROLES } from "@/models/constant/auth";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 import router from "@/routes";
@@ -31,7 +32,7 @@ export async function middleware(req: NextRequest) {
     if (isLoggedIn) {
         // If logged in and on home or auth route (sign-in), redirect to dashboard
         if (isAuthRoute || isHomePage) {
-            if (isLoggedIn.role === "admin" || (isLoggedIn as any).user?.role === "admin") {
+            if (isLoggedIn.role === USER_ROLES.ADMIN || (isLoggedIn as any).user?.role === USER_ROLES.ADMIN) {
                 url.pathname = router.schoolSelect.p;
             } else {
                 url.pathname = DEFAULT_REDIRECT;
@@ -42,7 +43,7 @@ export async function middleware(req: NextRequest) {
         // Guest logic
         if (
             GUEST_UNAUTHORIZED.some((route: string) => url.pathname.startsWith(route)) &&
-            (isLoggedIn.role === "guest" || (isLoggedIn as any).user?.role === "guest")
+            (isLoggedIn.role === USER_ROLES.GUEST || (isLoggedIn as any).user?.role === USER_ROLES.GUEST)
         ) {
             url.pathname = GUEST_REDIRECT;
             return NextResponse.redirect(url);

@@ -2,10 +2,11 @@
 
 import { signIn } from "next-auth/react";
 import msg from "@/resources/messages";
+import { AUTH_TYPE } from "@/models/constant/auth";
 
 export const signInWithGoogle = async () => {
     try {
-        const res = await signIn("google", {
+        const res = await signIn(AUTH_TYPE.GOOGLE, {
             redirect: false,
         });
 

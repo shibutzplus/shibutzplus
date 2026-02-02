@@ -1,6 +1,7 @@
 import React from "react";
 import Icons from "@/style/icons";
 import routePath from "../routes";
+import { USER_ROLES } from "@/models/constant/auth";
 
 export interface ILink {
     name: string | React.ReactNode;
@@ -116,7 +117,7 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
         ],
     },
     {
-        id: "admin",
+        id: USER_ROLES.ADMIN,
         title: "Admin",
         type: "private",
         isCollapse: true,

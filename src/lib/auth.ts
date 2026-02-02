@@ -1,4 +1,6 @@
 import { NextAuthOptions } from "next-auth";
+import { USER_ROLES, AUTH_TYPE } from "@/models/constant/auth";
+import { SCHOOL_STATUS } from "@/models/constant/school";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import { getSessionMaxAge, TWENTY_FOUR_HOURS } from "@/utils/time";
@@ -36,7 +38,7 @@ export const authOptions: NextAuthOptions = {
                     });
                 });
 
-                if (!user || user.role !== "admin") {
+                if (!user || user.role !== USER_ROLES.ADMIN) {
                     return null;
                 }
 
@@ -63,10 +65,10 @@ export const authOptions: NextAuthOptions = {
     },
     callbacks: {
         async signIn({ account, profile, user: _user }) {
-            if (account?.provider === "credentials") {
+            if (account?.provider === AUTH_TYPE.CREDENTIALS) {
                 return true;
             }
-            if (account?.provider === "google") {
+            if (account?.provider === AUTH_TYPE.GOOGLE) {
                 const email = typeof profile?.email === "string" ? profile.email : undefined;
                 const name = typeof profile?.name === "string" ? profile.name : undefined;
                 if (!email || !name) return false;
@@ -81,17 +83,17 @@ export const authOptions: NextAuthOptions = {
             return false;
         },
         async jwt({ token, user, account, profile }) {
-            if (account?.provider === "credentials" && user) {
+            if (account?.provider === AUTH_TYPE.CREDENTIALS && user) {
                 token.id = user.id;
                 token.email = user.email;
                 token.name = user.name;
                 token.role = (user as any).role;
                 token.gender = (user as any).gender;
                 token.schoolId = (user as any).schoolId;
-                token.status = "annual";
+                token.status = SCHOOL_STATUS.ANNUAL;
                 token.maxAge = getSessionMaxAge(true);
                 token.exp = nowInSec() + Number(token.maxAge);
-            } else if ((account?.provider === "google" && profile?.email) || (user && user.email)) {
+            } else if ((account?.provider === AUTH_TYPE.GOOGLE && profile?.email) || (user && user.email)) {
                 const email = (user?.email || profile?.email) as string;
                 const response = await getUserByEmailAction(email);
                 if (response.success && response.data) {

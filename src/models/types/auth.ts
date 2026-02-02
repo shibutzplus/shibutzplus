@@ -2,12 +2,11 @@
 import "next-auth";
 import { ActionResponse } from "./actions";
 import { SchoolLevel } from "./school";
+import { USER_ROLES, USER_GENDER, AUTH_TYPE } from "../constant/auth";
 
-export type UserRole = "admin" | "principal" | "deputy_principal" | "teacher" | "guest";
-
-export type UserGender = "male" | "female";
-
-export type AuthType = "google" | "credentials";
+export type UserRole = typeof USER_ROLES[keyof typeof USER_ROLES];
+export type UserGender = typeof USER_GENDER[keyof typeof USER_GENDER];
+export type AuthType = typeof AUTH_TYPE[keyof typeof AUTH_TYPE];
 
 export type UserType = {
     id: string;

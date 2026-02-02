@@ -9,6 +9,8 @@ import routes from "@/routes";
 import { DEFAULT_REDIRECT } from "@/routes/protectedAuth";
 import Loading from "@/components/loading/Loading/Loading";
 import { logErrorAction } from "@/app/actions/POST/logErrorAction";
+import { USER_ROLES } from "@/models/constant/auth";
+import { SCHOOL_STATUS } from "@/models/constant/school";
 
 const SchoolSelectPage = () => {
     const { data: session } = useSession();
@@ -33,10 +35,10 @@ const SchoolSelectPage = () => {
     const handleSelect = (schoolId: string) => {
         try {
             const user = session?.user as { role: string; status: string } | undefined;
-            if (user && user.role === "admin") {
+            if (user && user.role === USER_ROLES.ADMIN) {
                 setIsLoading(true);
                 const userStatus = user.status;
-                const target = userStatus === "annual" ? DEFAULT_REDIRECT : routes.dailySchedule.p;
+                const target = userStatus === SCHOOL_STATUS.ANNUAL ? DEFAULT_REDIRECT : routes.dailySchedule.p;
                 router.push(`${target}?schoolId=${encodeURIComponent(schoolId)}`);
             }
         } catch {

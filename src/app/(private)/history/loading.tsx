@@ -1,17 +1,14 @@
-import React from "react";
 import Preloader from "@/components/ui/Preloader/Preloader";
 
-const SkeletonHistory: React.FC = () => {
+export default function Loading() {
     return (
         <div style={{
             position: 'absolute',
-            top: '50%',
+            top: '40%',
             left: '50%',
             transform: 'translate(-50%, -50%)'
         }}>
             <Preloader />
         </div>
     );
-};
-
-export default SkeletonHistory;
+}

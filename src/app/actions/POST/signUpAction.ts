@@ -1,6 +1,8 @@
 "use server";
 
 import { RegisterRequest, RegisterResponse } from "@/models/types/auth";
+import { AUTH_TYPE } from "@/models/constant/auth";
+import { SCHOOL_STATUS } from "@/models/constant/school";
 import { db, schema, executeQuery } from "@/db";
 import { dbLog } from "@/services/loggerService";
 import { eq } from "drizzle-orm";
@@ -48,7 +50,7 @@ const signUp = async (params: RegisterRequest): Promise<RegisterResponse> => {
                         name: schoolName,
                         city,
                         type: level,
-                        status: "annual",
+                        status: SCHOOL_STATUS.ANNUAL,
                         publishDates: [],
                         hoursNum: 10,
                         displaySchedule2Susb: false,
@@ -67,7 +69,7 @@ const signUp = async (params: RegisterRequest): Promise<RegisterResponse> => {
                 password: hash,
                 role: role as any,
                 gender: gender as any,
-                authType: "google",
+                authType: AUTH_TYPE.GOOGLE,
                 schoolId,
             });
         });

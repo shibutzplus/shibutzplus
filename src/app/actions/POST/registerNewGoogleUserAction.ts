@@ -8,6 +8,7 @@ import type { ActionResponse } from "@/models/types/actions";
 import messages from "@/resources/messages";
 import type { UserSchema } from "@/db/schema/users";
 import bcrypt from "bcryptjs";
+import { AUTH_TYPE, USER_GENDER, USER_ROLES } from "@/models/constant/auth";
 
 export interface RegisterGoogleUserInput {
     email: string;
@@ -48,9 +49,9 @@ export async function registerNewGoogleUserAction({
                     name: name,
                     email: email,
                     password: hashedPassword,
-                    role: "guest",
-                    gender: "female",
-                    authType: "google",
+                    role: USER_ROLES.GUEST,
+                    gender: USER_GENDER.FEMALE,
+                    authType: AUTH_TYPE.GOOGLE,
                     schoolId: schoolId,
                 })
                 .returning();

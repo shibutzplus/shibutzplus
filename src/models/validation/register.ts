@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { UserRole, UserGender } from "../types/auth";
 import { SchoolLevel } from "../types/school";
+import { USER_ROLES, USER_GENDER } from "../constant/auth";
+import { SCHOOL_LEVEL } from "../constant/school";
 
 export const registerSchema = z.object({
     password: z
@@ -13,11 +15,11 @@ export const registerSchema = z.object({
         .string()
         .email("כתובת אימייל לא תקינה"),
     role: z
-        .custom<UserRole>((val) => ["admin", "principal", "deputy_principal", "teacher", "guest"].includes(val as string), {
+        .custom<UserRole>((val) => Object.values(USER_ROLES).includes(val as any), {
             message: "סוג משתמש לא תקין"
         }),
     gender: z
-        .custom<UserGender>((val) => ["male", "female"].includes(val as string), {
+        .custom<UserGender>((val) => Object.values(USER_GENDER).includes(val as any), {
             message: "מגדר לא תקין"
         }),
     schoolName: z
@@ -27,7 +29,7 @@ export const registerSchema = z.object({
         .string()
         .min(2, "עיר חייבת להכיל לפחות 2 תווים"),
     level: z
-        .custom<SchoolLevel>((val) => ["Elementary", "Middle", "High"].includes(val as string), {
+        .custom<SchoolLevel>((val) => Object.values(SCHOOL_LEVEL).includes(val as any), {
             message: "שלב בית ספר לא תקין"
         })
 });

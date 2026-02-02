@@ -54,7 +54,7 @@ export default function TeacherSignInClient({
         // Case 2: No teacher_id in URL - Check localStorage logic and show form
         if (!teacherId) {
             const storedTeacherData = getStorageTeacher?.();
-            if (storedTeacherData?.role === "substitute") {
+            if (storedTeacherData?.role === TeacherRoleValues.SUBSTITUTE) {
                 removeStorageTeacher(); // Clear local storage only if substitute
             }
             setIsLoading(false);

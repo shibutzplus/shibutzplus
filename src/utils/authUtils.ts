@@ -1,5 +1,6 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { USER_ROLES } from "@/models/constant/auth";
 import { ActionResponse } from "@/models/types/actions";
 import messages from "@/resources/messages";
 import { getExpireTime } from "./time";
@@ -64,7 +65,7 @@ export async function publicAuthAndParams(
  */
 export async function checkIsNotGuest(): Promise<ActionResponse | null> {
     const session = await getServerSession(authOptions);
-    if (session?.user?.role === "guest") {
+    if (session?.user?.role === USER_ROLES.GUEST) {
         return {
             success: false,
             message: messages.auth.unauthorized,

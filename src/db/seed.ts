@@ -4,7 +4,9 @@ import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
 import { sql } from 'drizzle-orm';
 import { UserRole, UserGender } from '@/models/types/auth';
+import { USER_ROLES, USER_GENDER } from '@/models/constant/auth';
 import { SchoolLevel, SchoolStatus } from '@/models/types/school';
+import { SCHOOL_LEVEL, SCHOOL_STATUS } from '@/models/constant/school';
 import { TeacherRole } from '@/models/types/teachers';
 
 /**
@@ -103,23 +105,23 @@ async function seedSchools(db: any) {
   const schools = [
     {
       name: 'Elementary School 1',
-      type: 'Elementary' as SchoolLevel,
-      status: 'active' as SchoolStatus,
+      type: SCHOOL_LEVEL.ELEMENTARY as SchoolLevel,
+      status: SCHOOL_STATUS.ANNUAL as SchoolStatus,
     },
     {
       name: 'Middle School 1',
-      type: 'Middle' as SchoolLevel,
+      type: SCHOOL_LEVEL.MIDDLE as SchoolLevel,
       status: 'active' as SchoolStatus,
     },
     {
       name: 'High School 1',
-      type: 'High' as SchoolLevel,
+      type: SCHOOL_LEVEL.HIGH as SchoolLevel,
       status: 'active' as SchoolStatus,
     },
     {
       name: 'New School',
-      type: 'Elementary' as SchoolLevel,
-      status: 'onboarding' as SchoolStatus,
+      type: SCHOOL_LEVEL.ELEMENTARY as SchoolLevel,
+      status: SCHOOL_STATUS.ONBOARDING as SchoolStatus,
     },
   ];
 
@@ -140,32 +142,32 @@ async function seedUsers(db: any, schoolIds: string[]) {
       name: 'Admin User',
       email: 'admin@example.com',
       password: '$2b$10$dQmNjz5SsxpX.Ts.Qz46t.DHvTfGDOxcZHLAY0mGmvLnOJyGd5Dja', // hashed 'password123'
-      role: 'admin' as UserRole,
-      gender: 'male' as UserGender,
+      role: USER_ROLES.ADMIN as UserRole,
+      gender: USER_GENDER.MALE as UserGender,
       schoolId: schoolIds[0],
     },
     {
       name: 'John Smith',
       email: 'john@example.com',
       password: '$2b$10$dQmNjz5SsxpX.Ts.Qz46t.DHvTfGDOxcZHLAY0mGmvLnOJyGd5Dja',
-      role: 'teacher' as UserRole,
-      gender: 'male' as UserGender,
+      role: USER_ROLES.TEACHER as UserRole,
+      gender: USER_GENDER.MALE as UserGender,
       schoolId: schoolIds[0],
     },
     {
       name: 'Sarah Johnson',
       email: 'sarah@example.com',
       password: '$2b$10$dQmNjz5SsxpX.Ts.Qz46t.DHvTfGDOxcZHLAY0mGmvLnOJyGd5Dja',
-      role: 'teacher' as UserRole,
-      gender: 'female' as UserGender,
+      role: USER_ROLES.TEACHER as UserRole,
+      gender: USER_GENDER.FEMALE as UserGender,
       schoolId: schoolIds[1],
     },
     {
       name: 'Michael Brown',
       email: 'michael@example.com',
       password: '$2b$10$dQmNjz5SsxpX.Ts.Qz46t.DHvTfGDOxcZHLAY0mGmvLnOJyGd5Dja',
-      role: 'teacher' as UserRole,
-      gender: 'male' as UserGender,
+      role: USER_ROLES.TEACHER as UserRole,
+      gender: USER_GENDER.MALE as UserGender,
       schoolId: schoolIds[2],
     },
   ];

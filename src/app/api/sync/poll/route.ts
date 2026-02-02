@@ -37,7 +37,7 @@ export async function GET(req: Request) {
       items: filtered.map((v: any) => ({ channel: v.channel, ts: v.ts, payload: v.payload })),
     })
   } catch (e) {
-    dbLog({ description: `sync/poll failed: ${e instanceof Error ? e.message : String(e)}` });
+    await dbLog({ description: `sync/poll failed: ${e instanceof Error ? e.message : String(e)}` });
     return new Response("error", { status: 500 })
   }
 }

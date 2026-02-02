@@ -8,6 +8,7 @@ import Loading from "@/components/loading/Loading/Loading";
 import SignInLoadingPage from "@/components/loading/SignInLoadingPage/SignInLoadingPage";
 import routes from "@/routes";
 import { STATUS_AUTH, STATUS_LOADING, STATUS_UNAUTH } from "@/models/constant/session";
+import { USER_ROLES, AUTH_TYPE } from "@/models/constant/auth";
 import messages from "@/resources/messages";
 import styles from "./signIn.module.css";
 
@@ -34,7 +35,7 @@ const AdminSignInPage: NextPage = () => {
         if (status === STATUS_AUTH && session?.user && !hasNavigatedRef.current) {
             const userRole = (session.user as any).role;
 
-            if (userRole === "admin") {
+            if (userRole === USER_ROLES.ADMIN) {
                 hasNavigatedRef.current = true;
                 router.push(routes.schoolSelect.p);
                 return;
@@ -51,7 +52,7 @@ const AdminSignInPage: NextPage = () => {
         setIsLoading(true);
 
         try {
-            const result = await signIn("credentials", {
+            const result = await signIn(AUTH_TYPE.CREDENTIALS, {
                 email,
                 password,
                 redirect: false,

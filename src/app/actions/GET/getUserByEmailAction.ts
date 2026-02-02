@@ -6,6 +6,7 @@ import { eq } from "drizzle-orm";
 import { dbLog } from "@/services/loggerService";
 import type { UserSchema } from "@/db/schema/users";
 import type { SchoolStatus } from "@/models/types/school";
+import { SCHOOL_STATUS } from "@/models/constant/school";
 import messages from "@/resources/messages";
 
 type GetUserWithSchoolStatusResponse = {
@@ -40,7 +41,7 @@ export async function getUserByEmailAction(
 
         if (!row) return { success: false, message: messages.auth.unauthorized };
 
-        const status = (row.status ?? "onboarding") as SchoolStatus;
+        const status = (row.status ?? SCHOOL_STATUS.ONBOARDING) as SchoolStatus;
 
         const user: Omit<UserSchema, "password"> = {
             id: row.id,

@@ -21,6 +21,7 @@ import { HOURS_IN_DAY } from "@/utils/time";
 import { SchoolSettingsType } from "@/models/types/settings";
 import useGuestModePopup from "@/hooks/useGuestModePopup";
 import { NAV_LINK_GROUPS, ILink } from "@/resources/navigation";
+import { USER_ROLES } from "@/models/constant/auth";
 
 type LinkComponentProps = {
     link: ILink;
@@ -32,14 +33,14 @@ const LinkComponent: React.FC<LinkComponentProps> = ({ link, onClose, currentPat
     const isActive = currentPath.startsWith(link.p);
     const { data: session } = useSession();
     const userRole = (session?.user as any)?.role;
-    const isGuest = userRole === "guest";
+    const isGuest = userRole === USER_ROLES.GUEST;
     const guest = isGuest && !link.isForGuest;
     const { handleOpenGuestPopup } = useGuestModePopup();
 
     // Preserve ?schoolId for ADMIN users
     // This is important for debugging and testing as we loose schoolId when we navigate to a different page
     let finalHref = link.p;
-    if (userRole === "admin" && typeof window !== "undefined") {
+    if (userRole === USER_ROLES.ADMIN && typeof window !== "undefined") {
         const urlParams = new URLSearchParams(window.location.search);
         const schoolIdParam = urlParams.get("schoolId");
         if (schoolIdParam) {
@@ -90,7 +91,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
     const { data: session } = useSession();
     const userRole = (session?.user as any)?.role;
     const [teacher, setTeacher] = React.useState<any>(null);
-    const isGuest = userRole === "guest";
+    const isGuest = userRole === USER_ROLES.GUEST;
     const { handleOpenGuestPopup } = useGuestModePopup();
 
     useAccessibility({ isOpen, navRef, onClose });
@@ -125,7 +126,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
 
     const displayedGroups = NAV_LINK_GROUPS
         .filter((group) => {
-            if (group.id === "admin" && userRole !== "admin") return false;
+            if (group.id === "admin" && userRole !== USER_ROLES.ADMIN) return false;
             if (hamburgerType === "private") return group.type === "private";
             if (hamburgerType === "public") {
                 if (isSubstituteTeacher) return group.type === "substitute";

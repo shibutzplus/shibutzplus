@@ -1,7 +1,6 @@
-import React from "react";
 import Preloader from "@/components/ui/Preloader/Preloader";
 
-const SkeletonDailySchedule: React.FC = () => {
+export default function Loading() {
     return (
         <div style={{
             position: 'absolute',
@@ -12,6 +11,4 @@ const SkeletonDailySchedule: React.FC = () => {
             <Preloader />
         </div>
     );
-};
-
-export default SkeletonDailySchedule;
+}

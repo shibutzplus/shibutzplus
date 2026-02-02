@@ -1,14 +1,10 @@
 import { ActionResponse } from "./actions";
 import { SchoolSettingsType } from "./settings";
+import { SCHOOL_LEVEL, SCHOOL_STATUS } from "../constant/school";
 
-export type SchoolStatus =
-    | "onboarding"
-    | "onboarding-annual"
-    | "annual"
-    | "onboarding-daily"
-    | "daily";
+export type SchoolStatus = typeof SCHOOL_STATUS[keyof typeof SCHOOL_STATUS];
 
-export type SchoolLevel = "Elementary" | "Middle" | "High";
+export type SchoolLevel = typeof SCHOOL_LEVEL[keyof typeof SCHOOL_LEVEL];
 
 export type SchoolType = {
     id: string;

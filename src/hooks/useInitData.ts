@@ -3,6 +3,7 @@
 import React, { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { STATUS_AUTH } from "@/models/constant/session";
+import { USER_ROLES } from "@/models/constant/auth";
 import { SchoolType } from "@/models/types/school";
 import { SubjectType } from "@/models/types/subjects";
 import { TeacherType } from "@/models/types/teachers";
@@ -46,7 +47,7 @@ const useInitData = ({
     const picked = searchParams.get("schoolId");
 
     const effectiveSchoolId = status === STATUS_AUTH && session?.user?.schoolId
-        ? (userRole === "admin" && picked?.trim() ? picked.trim() : session.user.schoolId)
+        ? (userRole === USER_ROLES.ADMIN && picked?.trim() ? picked.trim() : session.user.schoolId)
         : null;
 
     useEffect(() => {
