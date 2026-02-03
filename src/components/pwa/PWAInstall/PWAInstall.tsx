@@ -72,7 +72,14 @@ const PWAInstall: React.FC = () => {
 
     return (
         <div className={styles.container}>
-            <button className={styles.installButton} onClick={handleInstallClick}>
+            <button
+                className={styles.installButton}
+                onClick={(e) => {
+                    alert("CLICK EVENT FIRED!");
+                    e.preventDefault();
+                    handleInstallClick();
+                }}
+            >
                 שמירת האפליקציה במסך הבית
             </button>
 
