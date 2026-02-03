@@ -40,10 +40,10 @@ const PWAInstall: React.FC = () => {
             // Show iOS instructions in popup
             const instructions = (
                 <div>
-                    <p><strong>באייפון ההנחיות הן ידניות:</strong></p>
-                    <ol style={{ textAlign: 'right', paddingRight: '1.5rem', lineHeight: '1.8' }}>
+                    <p><strong>באייפון ההתקנה ידנית ☹️</strong></p>
+                    <ol style={{ textAlign: 'right', paddingRight: '1.5rem', lineHeight: '1.5' }}>
                         <li>לחצו על כפתור השיתוף (הריבוע עם החץ).</li>
-                        <li>בחרו ב-הוספה למסך הבית.</li>
+                        <li>לחצו עוד והוספה למסך הבית.</li>
                         <li>לחצו על הוספה בפינה העליונה.</li>
                     </ol>
                 </div>
@@ -55,20 +55,36 @@ const PWAInstall: React.FC = () => {
                 <MsgPopup message={instructions} okText="הבנתי" />
             );
         } else if (deferredPrompt) {
+            // Android with beforeinstallprompt support
             deferredPrompt.prompt();
             const { outcome } = await deferredPrompt.userChoice;
 
             if (outcome === "accepted") {
                 setDeferredPrompt(null);
             }
+        } else {
+            // Android without beforeinstallprompt (show instructions)
+            const instructions = (
+                <div>
+                    <p><strong>התקנת האפליקציה</strong></p>
+                    <p>לחצו על תפריט הדפדפן (שלוש נקודות) ובחרו "הוסף למסך הבית" או "התקן אפליקציה".</p>
+                </div>
+            );
+
+            openPopup(
+                "msgPopup",
+                "M",
+                <MsgPopup message={instructions} okText="הבנתי" />
+            );
         }
     };
 
     // Don't show if already installed
     if (isStandalone) return null;
 
-    // Show for iOS or when deferredPrompt is available
-    if (!isIOS && !deferredPrompt) return null;
+    // Show on mobile devices (iOS or Android)
+    const isMobile = isIOS || /android/i.test(navigator.userAgent.toLowerCase());
+    if (!isMobile) return null;
 
     return (
         <div className={styles.navLink} onClick={handleClick}>
