@@ -3,12 +3,14 @@
 import React, { useEffect, useState } from "react";
 import styles from "./PWAInstall.module.css";
 import Icons from "@/style/icons";
+import { usePopup } from "@/context/PopupContext";
+import MsgPopup from "@/components/popups/MsgPopup/MsgPopup";
 
 const PWAInstall: React.FC = () => {
     const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
     const [isIOS, setIsIOS] = useState(false);
     const [isStandalone, setIsStandalone] = useState(false);
-    const [showInstructions, setShowInstructions] = useState(false);
+    const { openPopup } = usePopup();
 
     useEffect(() => {
         // Check if app is already installed
@@ -35,7 +37,23 @@ const PWAInstall: React.FC = () => {
 
     const handleClick = async () => {
         if (isIOS) {
-            setShowInstructions(!showInstructions);
+            // Show iOS instructions in popup
+            const instructions = (
+                <div>
+                    <p><strong>באייפון ההנחיות הן ידניות:</strong></p>
+                    <ol style={{ textAlign: 'right', paddingRight: '1.5rem', lineHeight: '1.8' }}>
+                        <li>לחצו על כפתור השיתוף (הריבוע עם החץ).</li>
+                        <li>בחרו ב-הוספה למסך הבית.</li>
+                        <li>לחצו על הוספה בפינה העליונה.</li>
+                    </ol>
+                </div>
+            );
+
+            openPopup(
+                "msgPopup",
+                "M",
+                <MsgPopup message={instructions} okText="הבנתי" />
+            );
         } else if (deferredPrompt) {
             deferredPrompt.prompt();
             const { outcome } = await deferredPrompt.userChoice;
@@ -53,41 +71,10 @@ const PWAInstall: React.FC = () => {
     if (!isIOS && !deferredPrompt) return null;
 
     return (
-        <>
-            <div className={styles.navLink} onClick={handleClick}>
-                <Icons.install size={24} />
-                <span>שמירה למסך הבית</span>
-            </div>
-
-            {isIOS && showInstructions && (
-                <div className={styles.iosInstructions}>
-                    <div className={styles.instructionsHeader}>
-                        <span>הוספה למסך הבית</span>
-                        <button
-                            className={styles.closeBtn}
-                            onClick={() => setShowInstructions(false)}
-                            aria-label="סגור"
-                        >
-                            ✕
-                        </button>
-                    </div>
-                    <ol className={styles.stepsList}>
-                        <li>
-                            <span className={styles.stepNumber}>1</span>
-                            <span>לחצו על כפתור השיתוף <span className={styles.icon}>📤</span></span>
-                        </li>
-                        <li>
-                            <span className={styles.stepNumber}>2</span>
-                            <span>בחרו <strong>"הוסף למסך הבית"</strong></span>
-                        </li>
-                        <li>
-                            <span className={styles.stepNumber}>3</span>
-                            <span>לחצו על <strong>"הוסף"</strong> בפינה העליונה</span>
-                        </li>
-                    </ol>
-                </div>
-            )}
-        </>
+        <div className={styles.navLink} onClick={handleClick}>
+            <Icons.install size={24} />
+            <span>שמירה למסך הבית</span>
+        </div>
     );
 };
 

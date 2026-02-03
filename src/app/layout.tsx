@@ -27,7 +27,6 @@ export const metadata: Metadata = {
         template: "%s | שיבוץ+",
     },
     description: "ניהול מערכת שעות יומית ושיבוץ מורים בקלות וביעילות, מותאם לסגני מנהלים ולרכזי מערכת בבתי ספר.",
-    manifest: "/manifest.json",
     icons: {
         icon: "/favicon.png",
         apple: "/logo192.png",
@@ -90,6 +89,48 @@ export default function RootLayout({
                   t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
                   y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
               })(window, document, "clarity", "script", "t1d0tmgih6");
+            `,
+                    }}
+                />
+                <Script
+                    id="sw-registration"
+                    strategy="afterInteractive"
+                    dangerouslySetInnerHTML={{
+                        __html: `
+              if ("serviceWorker" in navigator) {
+                window.addEventListener("load", () => {
+                  navigator.serviceWorker.register("/sw.js").catch(() => {
+                    // Service worker registration failed - app will work without PWA features
+                  });
+                });
+              }
+            `,
+                    }}
+                />
+                <Script
+                    id="dynamic-manifest"
+                    strategy="beforeInteractive"
+                    dangerouslySetInnerHTML={{
+                        __html: `
+              // Inject dynamic manifest link with teacher's home URL
+              let startUrl = window.location.origin + '/';
+              
+              try {
+                const teacherData = localStorage.getItem('teacher_data');
+                if (teacherData) {
+                  const teacher = JSON.parse(teacherData);
+                  if (teacher.schoolId && teacher.id) {
+                    startUrl = window.location.origin + '/teacher-material/' + teacher.schoolId + '/' + teacher.id;
+                  }
+                }
+              } catch (e) {
+                // Fallback to default URL if localStorage read fails
+              }
+              
+              const link = document.createElement('link');
+              link.rel = 'manifest';
+              link.href = '/api/manifest?start_url=' + encodeURIComponent(startUrl);
+              document.head.appendChild(link);
             `,
                     }}
                 />
