@@ -8,6 +8,8 @@ export async function GET(request: NextRequest) {
         name: 'שיבוץ+',
         short_name: 'שיבוץ+',
         start_url: startUrl,
+        scope: '/',
+        id: '/',
         display: 'standalone',
         background_color: '#ffffff',
         theme_color: '#ffffff',
