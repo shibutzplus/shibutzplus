@@ -15,12 +15,16 @@ const PWAInstall: React.FC = () => {
             || (window.navigator as any).standalone
             || false;
         setIsStandalone(standalone);
+        alert(`PWA Install - isStandalone: ${standalone}`);
 
         // Check if iOS
         const userAgent = window.navigator.userAgent.toLowerCase();
-        setIsIOS(/iphone|ipad|ipod/.test(userAgent));
+        const iOS = /iphone|ipad|ipod/.test(userAgent);
+        setIsIOS(iOS);
+        alert(`PWA Install - isIOS: ${iOS}\nuserAgent: ${userAgent}`);
 
         const handler = (e: Event) => {
+            alert("PWA Install - beforeinstallprompt event fired");
             e.preventDefault();
             setDeferredPrompt(e);
         };
@@ -33,13 +37,18 @@ const PWAInstall: React.FC = () => {
     }, []);
 
     const handleInstallClick = async () => {
+        alert(`PWA Install - Button clicked\nisIOS: ${isIOS}\ndeferredPrompt: ${!!deferredPrompt}`);
+
         if (isIOS) {
             // For iOS, toggle instructions
+            alert("PWA Install - Toggling iOS instructions");
             setShowIOSInstructions(!showIOSInstructions);
         } else if (deferredPrompt) {
             // For Android/Chrome
+            alert("PWA Install - Showing install prompt");
             deferredPrompt.prompt();
             const { outcome } = await deferredPrompt.userChoice;
+            alert(`PWA Install - User choice: ${outcome}`);
 
             if (outcome === "accepted") {
                 setDeferredPrompt(null);
@@ -48,10 +57,18 @@ const PWAInstall: React.FC = () => {
     };
 
     // Don't show if already installed/running in standalone mode
-    if (isStandalone) return null;
+    if (isStandalone) {
+        alert("PWA Install - Not showing (standalone mode)");
+        return null;
+    }
 
     // Show button for iOS or when deferredPrompt is available
-    if (!isIOS && !deferredPrompt) return null;
+    if (!isIOS && !deferredPrompt) {
+        alert("PWA Install - Not showing (not iOS and no deferredPrompt)");
+        return null;
+    }
+
+    alert("PWA Install - Showing button");
 
     return (
         <div className={styles.container}>
