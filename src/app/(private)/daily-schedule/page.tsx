@@ -100,7 +100,7 @@ const DailyScheduleContent: React.FC = () => {
                         selectedDate={selectedDate}
                         hoursNum={settings?.hoursNum}
                         onTeacherClick={handleFullScreenTeacherClick}
-                        screenType="dailySchedule"
+
                     />
                 </FullScreenContainer>
             ) : (

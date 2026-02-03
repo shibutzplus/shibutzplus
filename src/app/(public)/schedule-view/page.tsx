@@ -80,7 +80,7 @@ const PublishedPortalPage: NextPage = () => {
                 EmptyTable={NotPublished}
                 emptyText={getEmptyText()}
                 hoursNum={settings?.hoursNum}
-                screenType="publicSchedule"
+
             />
         </section>
     );

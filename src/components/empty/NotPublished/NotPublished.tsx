@@ -4,16 +4,14 @@ import { useRouter } from "next/navigation";
 import router from "@/routes";
 import styles from "./NotPublished.module.css";
 import { formatTMDintoDMY, DAYS_OF_WEEK_FORMAT } from "@/utils/time";
-import { ScreenType } from "@/models/types";
 
 type NotPublishedProps = {
     date?: string;
     text?: string;
-    screenType?: ScreenType;
     displayButton?: boolean;
 };
 
-const NotPublished: React.FC<NotPublishedProps> = React.memo(({ date, text, screenType, displayButton }) => {
+const NotPublished: React.FC<NotPublishedProps> = React.memo(({ date, text, displayButton }) => {
     const route = useRouter();
 
     const dateTitle = date

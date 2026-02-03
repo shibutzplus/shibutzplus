@@ -53,7 +53,7 @@ const HistorySchedulePage: NextPage = () => {
                     emptyText="אין נתוני היסטוריה ליום שנבחר"
                     onTeacherClick={handleTeacherClick}
                     hoursNum={settings?.hoursNum}
-                    screenType="history"
+
                 />
             </section>
             <SlidingPanel

@@ -242,7 +242,7 @@ const useDailyEventActions = (
             if (headerResponse.success && headerResponse.data?.id) {
                 // Immediate update for header
                 setMainDailyTable(prev => {
-                    let updatedSchedule = { ...prev };
+                    const updatedSchedule = { ...prev };
 
                     if (updatedSchedule[selectedDate]) {
                         updatedSchedule[selectedDate] = { ...updatedSchedule[selectedDate] };
