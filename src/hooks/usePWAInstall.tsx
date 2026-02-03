@@ -43,10 +43,10 @@ const usePWAInstall = () => {
             // Show iOS instructions in popup
             const instructions = (
                 <div>
-                    <p><strong>באייפון ההתקנה ידנית ☹️</strong></p>
-                    <ol style={{ textAlign: 'right', paddingRight: '1.5rem', lineHeight: '1.5' }}>
+                    <p><strong>התקנה:</strong></p>
+                    <ol style={{ textAlign: 'right', paddingRight: '1rem', lineHeight: '1.5' }}>
                         <li>לחצו על כפתור השיתוף (הריבוע עם החץ).</li>
-                        <li>לחצו עוד והוספה למסך הבית.</li>
+                        <li>לחצו עוד/הוספה למסך הבית.</li>
                         <li>לחצו על הוספה בפינה העליונה.</li>
                     </ol>
                 </div>
@@ -69,10 +69,10 @@ const usePWAInstall = () => {
             // Fallback instructions
             const instructions = (
                 <div>
-                    <p><strong>התקנת האפליקציה</strong></p>
-                    <ol style={{ textAlign: 'right', paddingRight: '1.5rem', lineHeight: '1.5' }}>
+                    <p><strong>התקנה:</strong></p>
+                    <ol style={{ textAlign: 'right', paddingRight: '1rem', lineHeight: '1.5' }}>
                         <li>לחצו על תפריט הדפדפן.</li>
-                        <li>בחרו "הוסף אל..מסך הבית".</li>
+                        <li>בחרו &quot;הוסף אל..מסך הבית&quot;.</li>
                     </ol>
                 </div>
             );

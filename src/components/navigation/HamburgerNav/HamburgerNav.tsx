@@ -15,7 +15,6 @@ import SettingsPopup from "@/components/popups/SettingsPopup/SettingsPopup";
 import { useOptionalMainContext } from "@/context/MainContext";
 import { clearSessionStorage, getSessionStorage, SESSION_KEYS, setSessionStorage, } from "@/lib/sessionStorage";
 import { AppType } from "@/models/types";
-import Logo from "../../ui/Logo/Logo";
 import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import { HOURS_IN_DAY } from "@/utils/time";
 import { SchoolSettingsType } from "@/models/types/settings";
@@ -237,9 +236,6 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                 id="mobile-menu"
             >
                 <div className={styles.navHeader}>
-                    <div onClick={onClose} className={styles.logoContainer}>
-                        <Logo size="XS" />
-                    </div>
                     <div className={styles.headerActions}>
                         <button
                             className={styles.closeButton}
