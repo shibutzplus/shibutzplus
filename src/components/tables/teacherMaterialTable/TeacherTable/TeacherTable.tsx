@@ -6,7 +6,7 @@ import TeacherMaterialRow from "../TeacherMaterialRow/TeacherMaterialRow";
 import styles from "./TeacherTable.module.css";
 import { useTeacherTableContext } from "@/context/TeacherTableContext";
 import { calculateVisibleRowsForTeacher } from "@/utils/tableUtils";
-import { TeacherType } from "@/models/types/teachers";
+import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import NotPublished from "@/components/empty/NotPublished/NotPublished";
 import Preloader from "@/components/ui/Preloader/Preloader";
 
@@ -46,7 +46,7 @@ const TeacherTable: React.FC<TeacherTableProps> = ({
     const hasChanges = !isEmpty && Object.values(dayTable).some((row) => !row.isRegular);
 
     if (isEmpty || !hasChanges) {
-        return <NotPublished date={selectedDate} text="אין שינויים במערכת האישית" displayButton={true} />;
+        return <NotPublished date={selectedDate} text="אין שינויים במערכת האישית" displayButton={teacher?.role !== TeacherRoleValues.SUBSTITUTE} />;
     }
 
     return (

@@ -117,6 +117,7 @@ export default function TeacherSignInClient({
                         teachers={initialTeachers}
                         teachersFull={initialTeachersFull}
                         isLoadingTeachers={false}
+                        isLogout={searchParams.get("auth") === "logout"}
                     />
                 </div>
                 <footer className={styles.copyright}>&copy; שיבוץ+, כל הזכויות שמורות. 2025</footer>

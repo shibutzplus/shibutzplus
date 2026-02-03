@@ -14,6 +14,7 @@ import { getTeacherPortalDataAction } from "@/app/actions/GET/getTeacherPortalDa
 import { populatePortalTable } from "@/services/portalTeacherService";
 import { setStorageTeacher } from "@/lib/localStorage";
 import styles from "./teacherPortal.module.css";
+import { TeacherRoleValues } from "@/models/types/teachers";
 
 const TeacherPortalPage: NextPage = () => {
 
@@ -99,7 +100,7 @@ const TeacherPortalPage: NextPage = () => {
     const isShabbat = selectedDate ? getDayNumberByDateString(selectedDate) === 7 : false;
 
     if (!isPublished) {
-        return <NotPublished date={selectedDate} text={isShabbat ? "סוף שבוע נעים" : "המערכת עדיין לא פורסמה"} screenType="teacherMaterial" />;
+        return <NotPublished date={selectedDate} text={isShabbat ? "סוף שבוע נעים" : "המערכת עדיין לא פורסמה"} screenType="teacherMaterial" displayButton={teacher.role !== TeacherRoleValues.SUBSTITUTE} />;
     }
 
     return (

@@ -10,6 +10,7 @@ interface SubmitBtnProps {
     error?: string;
     disabled?: boolean;
     className?: string; // Optional className override
+    width?: string;
 }
 
 const SubmitBtn: React.FC<SubmitBtnProps> = ({
@@ -20,9 +21,10 @@ const SubmitBtn: React.FC<SubmitBtnProps> = ({
     error,
     disabled = false,
     className = "",
+    width,
 }) => {
     return (
-        <div className={styles.buttonContainer}>
+        <div className={styles.buttonContainer} style={width ? { width, margin: "0 auto" } : undefined}>
             <button
                 type={type}
                 className={`${styles.button} ${className}`}

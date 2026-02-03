@@ -16,6 +16,7 @@ type TeacherAuthFormProps = {
     teachers: SelectOption[];
     teachersFull: TeacherType[];
     isLoadingTeachers: boolean;
+    isLogout?: boolean;
 };
 
 const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({
@@ -23,12 +24,14 @@ const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({
     teachers,
     teachersFull,
     isLoadingTeachers,
+    isLogout = false,
 }) => {
     const route = useRouter();
     const [selectedTeacher, setSelectedTeacher] = useState<string>("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
-    const [useSubstituteQuickLogin, setUseSubstituteQuickLogin] = useState<boolean>(false);
+    const [isQuickLogin, setIsQuickLogin] = useState<boolean>(false);
+    const [storedTeacherName, setStoredTeacherName] = useState<string>("");
 
     // Preselect teacher from localStorage if present and matches current school
     useEffect(() => {
@@ -37,17 +40,14 @@ const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({
         if (!stored) return;
         if (schoolId && stored.schoolId !== schoolId) return;
 
-        // If substitute → hide regular teachers list
-        if (stored.role === TeacherRoleValues.SUBSTITUTE) {
-            setSelectedTeacher(stored.id);
-            setUseSubstituteQuickLogin(true);
-            return;
-        }
+        setSelectedTeacher(stored.id);
+        setStoredTeacherName(stored.name || "");
 
-        // Otherwise, just preselect in the list if exists
-        const existsInList = teachers.some(opt => opt.value === stored.id);
-        if (existsInList) setSelectedTeacher(stored.id);
-    }, [isLoadingTeachers, schoolId, teachers]);
+        // Only show Quick Login if this is a logout scenario
+        if (isLogout) {
+            setIsQuickLogin(true);
+        }
+    }, [isLoadingTeachers, schoolId, teachers, isLogout]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -85,7 +85,11 @@ const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({
     return (
         <div className={styles.formContainer}>
             <form className={styles.form} onSubmit={handleSubmit}>
-                {!useSubstituteQuickLogin && (
+                {isQuickLogin ? (
+                    <div className={styles.quickLoginInfo}>
+                        <p className={styles.welcomeText}>שלום <strong>{storedTeacherName}</strong></p>
+                    </div>
+                ) : (
                     <div className={styles.inputGroup}>
                         <DynamicInputSelect
                             id="teacher"
@@ -106,7 +110,8 @@ const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({
                     buttonText="כניסה"
                     error={error}
                     isLoading={isLoading}
-                    disabled={useSubstituteQuickLogin ? false : (isLoadingTeachers || !selectedTeacher)}
+                    disabled={isQuickLogin ? false : (isLoadingTeachers || !selectedTeacher)}
+                    width="80%"
                 />
             </form>
         </div>

@@ -16,7 +16,7 @@ import { useOptionalMainContext } from "@/context/MainContext";
 import { clearSessionStorage, getSessionStorage, SESSION_KEYS, setSessionStorage, } from "@/lib/sessionStorage";
 import { AppType } from "@/models/types";
 import Logo from "../../ui/Logo/Logo";
-import { TeacherRoleValues } from "@/models/types/teachers";
+import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import { HOURS_IN_DAY } from "@/utils/time";
 import { SchoolSettingsType } from "@/models/types/settings";
 import useGuestModePopup from "@/hooks/useGuestModePopup";
@@ -73,6 +73,7 @@ type HamburgerNavProps = {
     onClose: () => void;
     hamburgerType: AppType;
     schoolSettings?: SchoolSettingsType;
+    teacher?: TeacherType;
 };
 
 const HamburgerNav: React.FC<HamburgerNavProps> = ({
@@ -80,6 +81,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
     onClose,
     hamburgerType = "private",
     schoolSettings,
+    teacher: teacherProp,
 }) => {
     const pathname = usePathname();
     const navRef = useRef<HTMLDivElement>(null);
@@ -90,9 +92,10 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
     const school = context?.school;
     const { data: session } = useSession();
     const userRole = (session?.user as any)?.role;
-    const [teacher, setTeacher] = React.useState<any>(null);
+    const [teacherState, setTeacherState] = React.useState<any>(null);
     const isGuest = userRole === USER_ROLES.GUEST;
     const { handleOpenGuestPopup } = useGuestModePopup();
+    const teacher = teacherProp || teacherState;
 
     useAccessibility({ isOpen, navRef, onClose });
 
@@ -111,7 +114,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
             signOut({ callbackUrl: routePath.home.p });
         } else {
             // Read schoolId from teacher stored in localStorage
-            const schoolId = getStorageTeacher()?.schoolId;
+            const schoolId = teacher?.schoolId || getStorageTeacher()?.schoolId;
             if (schoolId) route.push(`${routePath.teacherSignIn.p}/${schoolId}?auth=logout`);
             else route.push(`${routePath.teacherSignIn.p}?auth=logout`);
         }
@@ -119,8 +122,10 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
     };
 
     useEffect(() => {
-        setTeacher(getStorageTeacher());
-    }, []);
+        if (!teacherProp) {
+            setTeacherState(getStorageTeacher());
+        }
+    }, [teacherProp]);
 
     const isSubstituteTeacher = teacher?.role === TeacherRoleValues.SUBSTITUTE;
 
@@ -158,7 +163,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                 ...group,
                 links: links.map((link) => {
                     if (link.p === routePath.teacherMaterialPortal.p) {
-                        // Staff members -> Hide "My Schedule"
+                        // Staff members & Substitutes -> Hide "My Schedule"
                         if (teacher?.role === TeacherRoleValues.STAFF) {
                             return null;
                         }
@@ -320,28 +325,32 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                     </section>
 
                     <div className={styles.bottomSection}>
-                        <section className={styles.menuSection}>
-                            <div className={styles.groupDivider} />
-                            <Link
-                                href={isPrivate ? routePath.faqManager.p : routePath.faqTeachers.p}
-                                className={styles.navLink}
-                                onClick={onClose}
-                                aria-label="שאלות נפוצות"
-                            >
-                                <Icons.faq size={24} />
-                                <span>שאלות נפוצות</span>
-                            </Link>
-                            {isPrivate && (
-                                <div
-                                    className={styles.navLink}
-                                    onClick={isGuest ? handleOpenGuestPopup : handleOpenSettings}
-                                    aria-label="הגדרות מערכת"
-                                >
-                                    <Icons.settings size={24} />
-                                    <span>הגדרות מערכת</span>
-                                </div>
-                            )}
-                        </section>
+                        {(Boolean(!isSubstituteTeacher) || Boolean(isPrivate)) && (
+                            <section className={styles.menuSection}>
+                                <div className={styles.groupDivider} />
+                                {!isSubstituteTeacher && (
+                                    <Link
+                                        href={isPrivate ? routePath.faqManager.p : routePath.faqTeachers.p}
+                                        className={styles.navLink}
+                                        onClick={onClose}
+                                        aria-label="שאלות נפוצות"
+                                    >
+                                        <Icons.faq size={24} />
+                                        <span>שאלות נפוצות</span>
+                                    </Link>
+                                )}
+                                {isPrivate && (
+                                    <div
+                                        className={styles.navLink}
+                                        onClick={isGuest ? handleOpenGuestPopup : handleOpenSettings}
+                                        aria-label="הגדרות מערכת"
+                                    >
+                                        <Icons.settings size={24} />
+                                        <span>הגדרות מערכת</span>
+                                    </div>
+                                )}
+                            </section>
+                        )}
                         <section className={styles.logoutSection}>
                             <div
                                 onClick={handleLogout}

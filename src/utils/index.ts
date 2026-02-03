@@ -5,8 +5,11 @@ export const generateId = () =>
     `${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 9)}`;
 
 export const generateSchoolUrl = (schoolId: string, teacherId?: string) => {
-    const baseUrl = `${window.location.origin}${router.teacherSignIn.p}/${schoolId}`;
-    return teacherId ? `${baseUrl}?teacher_id=${teacherId}` : baseUrl;
+    const origin = window.location.origin;
+    if (teacherId) {
+        return `${origin}${router.teacherMaterialPortal.p}/${schoolId}/${teacherId}`;
+    }
+    return `${origin}${router.teacherSignIn.p}/${schoolId}`;
 };
 
 export const greetingTeacher = (teacher: TeacherType | undefined) => {
