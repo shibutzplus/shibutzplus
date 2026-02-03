@@ -22,7 +22,7 @@ import { SchoolSettingsType } from "@/models/types/settings";
 import useGuestModePopup from "@/hooks/useGuestModePopup";
 import { NAV_LINK_GROUPS, ILink } from "@/resources/navigation";
 import { USER_ROLES } from "@/models/constant/auth";
-import PWAInstall from "@/components/pwa/PWAInstall/PWAInstall";
+import usePWAInstall from "@/hooks/usePWAInstall";
 
 type LinkComponentProps = {
     link: ILink;
@@ -97,6 +97,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
     const isGuest = userRole === USER_ROLES.GUEST;
     const { handleOpenGuestPopup } = useGuestModePopup();
     const teacher = teacherProp || teacherState;
+    const { installPWA, isInstalled } = usePWAInstall();
 
     useAccessibility({ isOpen, navRef, onClose });
 
@@ -328,9 +329,17 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                     <div className={styles.bottomSection}>
                         {(Boolean(!isSubstituteTeacher) || Boolean(isPrivate)) && (
                             <section className={styles.menuSection}>
-                                <PWAInstall />
-
-                                <div className={styles.groupDivider} />
+                                {!isInstalled && (
+                                    <div className={styles.navLink} onClick={installPWA}>
+                                        <div className={styles.mobileIcon}>
+                                            <Icons.installMobile size={24} />
+                                        </div>
+                                        <div className={styles.desktopIcon}>
+                                            <Icons.installDesktop size={24} />
+                                        </div>
+                                        <span>התקנת האפליקציה</span>
+                                    </div>
+                                )}
 
                                 {!isSubstituteTeacher && (
                                     <Link

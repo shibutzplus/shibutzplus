@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Heebo } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
 import Script from "next/script";
+import DynamicManifest from "@/components/pwa/DynamicManifest";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -112,28 +113,14 @@ export default function RootLayout({
                     strategy="beforeInteractive"
                     dangerouslySetInnerHTML={{
                         __html: `
-              // Inject dynamic manifest link with teacher's home URL
-              let startUrl = window.location.origin + '/';
-              
-              try {
-                const teacherData = localStorage.getItem('teacher_data');
-                if (teacherData) {
-                  const teacher = JSON.parse(teacherData);
-                  if (teacher.schoolId && teacher.id) {
-                    startUrl = window.location.origin + '/teacher-material/' + teacher.schoolId + '/' + teacher.id;
-                  }
-                }
-              } catch (e) {
-                // Fallback to default URL if localStorage read fails
-              }
-              
-              const link = document.createElement('link');
-              link.rel = 'manifest';
-              link.href = '/api/manifest?start_url=' + encodeURIComponent(startUrl);
-              document.head.appendChild(link);
+              window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                window.deferredPrompt = e;
+              });
             `,
                     }}
                 />
+                <DynamicManifest />
             </body>
         </html>
     );

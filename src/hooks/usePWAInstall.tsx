@@ -1,12 +1,9 @@
-"use client";
+import { useState, useEffect } from 'react';
+import { usePopup } from '@/context/PopupContext';
+import MsgPopup from '@/components/popups/MsgPopup/MsgPopup';
+import React from 'react';
 
-import React, { useEffect, useState } from "react";
-import styles from "./PWAInstall.module.css";
-import Icons from "@/style/icons";
-import { usePopup } from "@/context/PopupContext";
-import MsgPopup from "@/components/popups/MsgPopup/MsgPopup";
-
-const PWAInstall: React.FC = () => {
+const usePWAInstall = () => {
     const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
     const [isIOS, setIsIOS] = useState(false);
     const [isStandalone, setIsStandalone] = useState(false);
@@ -23,9 +20,15 @@ const PWAInstall: React.FC = () => {
         const userAgent = window.navigator.userAgent.toLowerCase();
         setIsIOS(/iphone|ipad|ipod/.test(userAgent));
 
+        // Check for globally captured prompt
+        if ((window as any).deferredPrompt) {
+            setDeferredPrompt((window as any).deferredPrompt);
+        }
+
         const handler = (e: Event) => {
             e.preventDefault();
             setDeferredPrompt(e);
+            (window as any).deferredPrompt = e;
         };
 
         window.addEventListener("beforeinstallprompt", handler);
@@ -35,7 +38,7 @@ const PWAInstall: React.FC = () => {
         };
     }, []);
 
-    const handleClick = async () => {
+    const installPWA = async () => {
         if (isIOS) {
             // Show iOS instructions in popup
             const instructions = (
@@ -55,7 +58,7 @@ const PWAInstall: React.FC = () => {
                 <MsgPopup message={instructions} okText="הבנתי" />
             );
         } else if (deferredPrompt) {
-            // Android with beforeinstallprompt support
+            // Android/Desktop with native prompt
             deferredPrompt.prompt();
             const { outcome } = await deferredPrompt.userChoice;
 
@@ -63,7 +66,7 @@ const PWAInstall: React.FC = () => {
                 setDeferredPrompt(null);
             }
         } else {
-            // Android without beforeinstallprompt (show instructions)
+            // Fallback instructions
             const instructions = (
                 <div>
                     <p><strong>התקנת האפליקציה</strong></p>
@@ -79,19 +82,10 @@ const PWAInstall: React.FC = () => {
         }
     };
 
-    // Don't show if already installed
-    if (isStandalone) return null;
-
-    // Show on mobile devices (iOS or Android)
-    const isMobile = isIOS || /android/i.test(navigator.userAgent.toLowerCase());
-    if (!isMobile) return null;
-
-    return (
-        <div className={styles.navLink} onClick={handleClick}>
-            <Icons.install size={24} />
-            <span>שמירה למסך הבית</span>
-        </div>
-    );
+    return {
+        installPWA,
+        isInstalled: isStandalone
+    };
 };
 
-export default PWAInstall;
+export default usePWAInstall;

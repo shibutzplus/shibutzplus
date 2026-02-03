@@ -217,3 +217,21 @@
         display: block;
     }
 }
+
+.mobileIcon {
+    display: block;
+}
+
+.desktopIcon {
+    display: none;
+}
+
+@media (min-width: 600px) {
+    .mobileIcon {
+        display: none;
+    }
+
+    .desktopIcon {
+        display: block;
+    }
+}
