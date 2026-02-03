@@ -70,7 +70,10 @@ const usePWAInstall = () => {
             const instructions = (
                 <div>
                     <p><strong>התקנת האפליקציה</strong></p>
-                    <p>לחצו על תפריט הדפדפן (שלוש נקודות) ובחרו "הוסף למסך הבית" או "התקן אפליקציה".</p>
+                    <ol style={{ textAlign: 'right', paddingRight: '1.5rem', lineHeight: '1.5' }}>
+                        <li>לחצו על תפריט הדפדפן.</li>
+                        <li>בחרו "הוסף אל..מסך הבית".</li>
+                    </ol>
                 </div>
             );
 
