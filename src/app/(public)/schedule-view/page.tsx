@@ -8,8 +8,8 @@ import { usePortalContext } from "@/context/PortalContext";
 import Preloader from "@/components/ui/Preloader/Preloader";
 import NotPublished from "@/components/empty/NotPublished/NotPublished";
 import ContactAdminError from "@/components/auth/ContactAdminError/ContactAdminError";
-
 import { getDayNumberByDateString } from "@/utils/time";
+import { getStorageTeacher } from "@/lib/localStorage";
 
 const PublishedPortalPage: NextPage = () => {
     const {
@@ -32,7 +32,7 @@ const PublishedPortalPage: NextPage = () => {
         if (teacher) return;
 
         // Check local storage directly
-        const stored = localStorage.getItem("teacher_data"); // Helper function might be better but direct access is sync
+        const stored = getStorageTeacher();
         if (!stored) {
             setShowError(true);
         }

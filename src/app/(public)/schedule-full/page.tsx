@@ -9,6 +9,7 @@ import Preloader from "@/components/ui/Preloader/Preloader";
 import NotPublished from "@/components/empty/NotPublished/NotPublished";
 import ContactAdminError from "@/components/auth/ContactAdminError/ContactAdminError";
 import { getDayNumberByDateString } from "@/utils/time";
+import { getStorageTeacher } from "@/lib/localStorage";
 
 const FullScheduleViewPage: NextPage = () => {
     const {
@@ -31,7 +32,7 @@ const FullScheduleViewPage: NextPage = () => {
         if (teacher) return;
 
         // Check local storage directly
-        const stored = localStorage.getItem("teacher_data");
+        const stored = getStorageTeacher();
         if (!stored) {
             setShowError(true);
         }

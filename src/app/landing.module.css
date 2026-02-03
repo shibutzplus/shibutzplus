@@ -113,7 +113,7 @@
   position: absolute;
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(88, 28, 135, 0.1) 0%, transparent 70%);
   filter: blur(60px);
   border-radius: 50%;
 }
@@ -121,13 +121,13 @@
 .blob1 {
   top: -100px;
   right: -100px;
-  background: radial-gradient(circle, rgba(37, 99, 235, 0.12) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(107, 33, 168, 0.1) 0%, transparent 70%);
 }
 
 .blob2 {
   bottom: -150px;
   left: -100px;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(126, 34, 206, 0.1) 0%, transparent 70%);
 }
 
 .heroWrapper {
@@ -351,8 +351,6 @@
   display: none;
 }
 
-
-
 .footer {
   height: 60px;
   width: 100%;
@@ -399,7 +397,6 @@
   margin: 0;
 }
 
-
 /* Scroll Down FAB */
 .scrollDownFab {
   position: absolute;
@@ -407,7 +404,7 @@
   left: 50%;
   transform: translateX(-50%);
   background-color: var(--white);
-  color: var(--primary);
+  color: #581C87;
   width: 44px;
   height: 44px;
   border-radius: 50%;
@@ -423,7 +420,7 @@
 }
 
 .scrollDownFab:hover {
-  background-color: var(--primary);
+  background-color: #581C87;
   color: var(--white);
   box-shadow: var(--shadow-xl);
 }

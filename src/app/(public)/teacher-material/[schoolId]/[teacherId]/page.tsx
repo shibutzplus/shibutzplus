@@ -12,6 +12,7 @@ import NotPublished from "@/components/empty/NotPublished/NotPublished";
 import { getDayNumberByDateString } from "@/utils/time";
 import { getTeacherPortalDataAction } from "@/app/actions/GET/getTeacherPortalDataAction";
 import { populatePortalTable } from "@/services/portalTeacherService";
+import { setStorageTeacher } from "@/lib/localStorage";
 import styles from "./teacherPortal.module.css";
 
 const TeacherPortalPage: NextPage = () => {
@@ -51,6 +52,10 @@ const TeacherPortalPage: NextPage = () => {
                 allSubjects,
                 allClasses
             );
+
+            // Persist teacher data to local storage for other pages (e.g. FAQ)
+            setStorageTeacher(teacher);
+
 
             // 2. Hydrate Schedule Context if available
             if (scheduleData && scheduleData.success && scheduleData.data) {

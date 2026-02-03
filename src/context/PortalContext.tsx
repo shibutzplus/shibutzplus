@@ -149,8 +149,8 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
                         blockRef.current = false;
                     }
                 } catch (error) {
-                    // keep monitor. if error persist we might need to reconsider a fix. if not just remove the error for "Failed to fetch"
-                    logErrorAction({ description: `Error fetching publish dates (to keep monitor): ${error instanceof Error ? error.message : String(error)}`, schoolId: teacher.schoolId, user: teacher.name });
+                    // if error persist we might need to reconsider a fix. if not just remove the error for "Failed to fetch"
+                    logErrorAction({ description: `Error fetching publish dates (Keep Monitor): ${error instanceof Error ? error.message : String(error)}`, schoolId: teacher.schoolId, user: teacher.name });
                     setDatesOptions([]);
                     setSelectedDate("");
                 } finally {
@@ -227,7 +227,7 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
             }
         } catch (err) {
             // if error persist we might need to reconsider a fix. if not just remove the error for "Failed to fetch"
-            logErrorAction({ description: `Error refreshing publish dates (to keep monitor): ${err instanceof Error ? err.message : String(err)}`, schoolId: teacher.schoolId, user: teacher.name });
+            logErrorAction({ description: `Error refreshing publish dates (Keep Monitor): ${err instanceof Error ? err.message : String(err)}`, schoolId: teacher.schoolId, user: teacher.name });
             setDatesOptions([]);
             setSelectedDate("");
             return { success: false, error: "", selected: "", options: [] };

@@ -102,9 +102,13 @@ export default function TeacherSignInClient({
 
     return (
         <main className={styles.container}>
+            <div className={styles.heroBackground}>
+                <div className={`${styles.blob} ${styles.blob1}`} />
+                <div className={`${styles.blob} ${styles.blob2}`} />
+            </div>
             <div className={styles.mainSection}>
                 <HeroSection
-                    title="מערכת השעות האישית שלכם"
+                    title="מערכת השעות היומית שלכם"
                     description={`בית ספר ${schoolName}`}
                 />
                 <div className={styles.formContainer}>
