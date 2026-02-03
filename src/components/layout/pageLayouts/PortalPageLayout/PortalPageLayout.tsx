@@ -110,6 +110,7 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
             appType="public"
             hideLogo
             schoolSettings={settings}
+            teacher={teacher}
             HeaderRightActions={
                 <>
                     <h3 className={styles.greetingAndName}>{getTitle()}</h3>

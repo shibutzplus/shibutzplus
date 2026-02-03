@@ -45,10 +45,6 @@
     margin-bottom: 0.3rem;
 }
 
-.logoContainer {
-    display: none;
-}
-
 .closeButton {
     background: none;
     border: none;
@@ -151,7 +147,7 @@
     font-weight: 500;
     font-size: 16px;
     border-radius: 8px;
-    padding: 0.75rem 1rem 0.75rem 0;
+    padding: 0.6rem 1rem 0.6rem 0;
     transition: background-color 0.2s ease;
 }
 
@@ -212,8 +208,20 @@
 }
 
 /* < 400px */
-@media (max-width: 400px) {
-    .logoContainer {
+.mobileIcon {
+    display: block;
+}
+
+.desktopIcon {
+    display: none;
+}
+
+@media (min-width: 600px) {
+    .mobileIcon {
+        display: none;
+    }
+
+    .desktopIcon {
         display: block;
     }
 }

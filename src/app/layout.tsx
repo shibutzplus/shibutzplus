@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Heebo } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
 import Script from "next/script";
+import DynamicManifest from "@/components/pwa/DynamicManifest";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -27,7 +28,6 @@ export const metadata: Metadata = {
         template: "%s | שיבוץ+",
     },
     description: "ניהול מערכת שעות יומית ושיבוץ מורים בקלות וביעילות, מותאם לסגני מנהלים ולרכזי מערכת בבתי ספר.",
-    manifest: "/manifest.json",
     icons: {
         icon: "/favicon.png",
         apple: "/logo192.png",
@@ -93,6 +93,34 @@ export default function RootLayout({
             `,
                     }}
                 />
+                <Script
+                    id="sw-registration"
+                    strategy="afterInteractive"
+                    dangerouslySetInnerHTML={{
+                        __html: `
+              if ("serviceWorker" in navigator) {
+                window.addEventListener("load", () => {
+                  navigator.serviceWorker.register("/sw.js").catch(() => {
+                    // Service worker registration failed - app will work without PWA features
+                  });
+                });
+              }
+            `,
+                    }}
+                />
+                <Script
+                    id="dynamic-manifest"
+                    strategy="beforeInteractive"
+                    dangerouslySetInnerHTML={{
+                        __html: `
+              window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                window.deferredPrompt = e;
+              });
+            `,
+                    }}
+                />
+                <DynamicManifest />
             </body>
         </html>
     );

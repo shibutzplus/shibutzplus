@@ -12,7 +12,9 @@ import NotPublished from "@/components/empty/NotPublished/NotPublished";
 import { getDayNumberByDateString } from "@/utils/time";
 import { getTeacherPortalDataAction } from "@/app/actions/GET/getTeacherPortalDataAction";
 import { populatePortalTable } from "@/services/portalTeacherService";
+import { setStorageTeacher } from "@/lib/localStorage";
 import styles from "./teacherPortal.module.css";
+import { TeacherRoleValues } from "@/models/types/teachers";
 
 const TeacherPortalPage: NextPage = () => {
 
@@ -51,6 +53,10 @@ const TeacherPortalPage: NextPage = () => {
                 allSubjects,
                 allClasses
             );
+
+            // Persist teacher data to local storage for other pages (e.g. FAQ)
+            setStorageTeacher(teacher);
+
 
             // 2. Hydrate Schedule Context if available
             if (scheduleData && scheduleData.success && scheduleData.data) {
@@ -94,7 +100,7 @@ const TeacherPortalPage: NextPage = () => {
     const isShabbat = selectedDate ? getDayNumberByDateString(selectedDate) === 7 : false;
 
     if (!isPublished) {
-        return <NotPublished date={selectedDate} text={isShabbat ? "סוף שבוע נעים" : "המערכת עדיין לא פורסמה"} screenType="teacherMaterial" />;
+        return <NotPublished date={selectedDate} text={isShabbat ? "סוף שבוע נעים" : "המערכת עדיין לא פורסמה"} displayButton={teacher.role !== TeacherRoleValues.SUBSTITUTE} />;
     }
 
     return (

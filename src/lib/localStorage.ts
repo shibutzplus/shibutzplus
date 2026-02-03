@@ -40,7 +40,10 @@ export const getStorageTeacher = () => {
 };
 
 export const setStorageTeacher = (teacher: TeacherType) => {
-    return setStorage(STORAGE_KEYS.TEACHER_DATA, teacher);
+    // Only store essential fields
+    const { id, name, role, schoolId } = teacher;
+    const minimalTeacher = { id, name, role, schoolId };
+    return setStorage(STORAGE_KEYS.TEACHER_DATA, minimalTeacher);
 };
 
 export const removeStorageTeacher = () => {

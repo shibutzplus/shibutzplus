@@ -19,6 +19,7 @@ type PageLayoutProps = {
     contentClassName?: string;
     schoolSettings?: SchoolSettingsType;
     onBeforeMenuOpen?: () => Promise<boolean> | boolean;
+    teacher?: any;
 };
 
 export default function PageLayout({
@@ -33,6 +34,7 @@ export default function PageLayout({
     contentClassName = "",
     schoolSettings,
     onBeforeMenuOpen,
+    teacher,
 }: PageLayoutProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -54,16 +56,12 @@ export default function PageLayout({
 
     return (
         <>
-            <div
-                className={`${styles.pageLayout} ${hideLogo ? styles.hideLogo : ""}`}
-            >
+            <div className={`${styles.pageLayout} ${hideLogo ? styles.hideLogo : ""}`}>
+                {/* ... existing header logic ... */}
                 <header className={styles.topBarLayout}>
                     <section className={styles.topBarSection}>
                         <div className={styles.topNavRight}>
-                            <HamburgerButton
-                                onClick={handleHamburgerClick}
-                                isOpen={isMenuOpen}
-                            />
+                            <HamburgerButton onClick={handleHamburgerClick} isOpen={isMenuOpen} />
                             {HeaderRightActions}
                         </div>
                         <div className={styles.topNavLeft} style={{ width: leftSideWidth }}>
@@ -75,9 +73,7 @@ export default function PageLayout({
                     </section>
                     {BottomActions}
                 </header>
-                <main
-                    className={`${styles.mainContent} ${contentClassName}`}
-                >
+                <main className={`${styles.mainContent} ${contentClassName}`}>
                     {children}
                 </main>
             </div>
@@ -87,6 +83,7 @@ export default function PageLayout({
                 isOpen={isMenuOpen}
                 onClose={() => setIsMenuOpen(false)}
                 schoolSettings={schoolSettings}
+                teacher={teacher}
             />
         </>
     );

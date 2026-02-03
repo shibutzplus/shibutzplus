@@ -8,7 +8,7 @@ import {
 import { IoMdRefresh } from "react-icons/io";
 import { RiEdit2Fill, RiDeleteBin6Line } from "react-icons/ri";
 import { BsMegaphoneFill, BsCalendar4Event, BsThreeDotsVertical, BsFiletypePdf, BsTable, BsMagic } from "react-icons/bs";
-import { MdPersonAdd, MdPerson, MdSwapHoriz, MdOpenInNew } from "react-icons/md";
+import { MdPersonAdd, MdPerson, MdSwapHoriz, MdOpenInNew, MdOutlineInstallMobile, MdOutlineInstallDesktop } from "react-icons/md";
 import { FaPlus, FaRegCopy, FaRegPaste } from "react-icons/fa6";
 import { FaSave, FaShareAlt, FaQuestion, FaLink } from "react-icons/fa";
 import { PiChairLight, PiMonitor, PiMonitorFill } from "react-icons/pi";
@@ -67,6 +67,8 @@ const Icons = {
     magic: BsMagic,
     copy: FaRegCopy,
     paste: FaRegPaste,
+    installMobile: MdOutlineInstallMobile,
+    installDesktop: MdOutlineInstallDesktop,
 };
 
 export default Icons;

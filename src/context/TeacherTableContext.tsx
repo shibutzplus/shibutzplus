@@ -79,9 +79,10 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
             } else {
                 if (!response) {
                     logErrorAction({
-                        description: "Error fetching Teacher Material page data: Response is undefined",
+                        // if error persist we might need to reconsider a fix. if not just remove the error for "Failed to fetch"
+                        description: "Error fetching Teacher Material page data: Response undefined (Keep Monitor)",
                         schoolId: teacher?.schoolId,
-                        user: teacher?.id,
+                        user: teacher?.name,
                         metadata: { selectedDate, isHistoryPage }
                     });
                 }
@@ -92,7 +93,7 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
             logErrorAction({
                 description: `Error fetching Teacher Material page data: ${error instanceof Error ? error.message : String(error)}`,
                 schoolId: teacher?.schoolId,
-                user: teacher?.id,
+                user: teacher?.name,
                 metadata: {
                     selectedDate,
                     error: error instanceof Error ? { name: error.name, stack: error.stack, } : error

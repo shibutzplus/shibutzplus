@@ -6,6 +6,8 @@ import { getStorageTeacher } from "@/lib/localStorage";
 import routePath from "@/routes";
 import ContactAdminError from "@/components/auth/ContactAdminError/ContactAdminError";
 
+import styles from "./teacherSignIn.module.css";
+
 export default function TeacherSignIn() {
   const router = useRouter();
 
@@ -19,5 +21,13 @@ export default function TeacherSignIn() {
     }
   }, [router]);
 
-  return <ContactAdminError />;
+  return (
+    <div className={styles.container}>
+      <div className={styles.heroBackground}>
+        <div className={`${styles.blob} ${styles.blob1}`} />
+        <div className={`${styles.blob} ${styles.blob2}`} />
+      </div>
+      <ContactAdminError />
+    </div>
+  );
 }
