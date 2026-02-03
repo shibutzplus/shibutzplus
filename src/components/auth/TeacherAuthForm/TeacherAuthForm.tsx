@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import SubmitBtn from "@/components/ui/buttons/SubmitBtn/SubmitBtn";
+import PWAInstall from "@/components/pwa/PWAInstall/PWAInstall";
 import { SelectOption } from "@/models/types";
 import { getStorageTeacher, setStorageTeacher } from "@/lib/localStorage";
 import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
@@ -113,6 +114,10 @@ const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({
                     disabled={isQuickLogin ? false : (isLoadingTeachers || !selectedTeacher)}
                     width="80%"
                 />
+
+                <div className={styles.pwaInstallWrapper}>
+                    <PWAInstall />
+                </div>
             </form>
         </div>
     );
