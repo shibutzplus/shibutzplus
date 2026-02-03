@@ -2,29 +2,26 @@
 
 import React, { useEffect, useState } from "react";
 import styles from "./PWAInstall.module.css";
+import Icons from "@/style/icons";
 
 const PWAInstall: React.FC = () => {
     const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
     const [isIOS, setIsIOS] = useState(false);
-    const [showIOSInstructions, setShowIOSInstructions] = useState(false);
     const [isStandalone, setIsStandalone] = useState(false);
+    const [showInstructions, setShowInstructions] = useState(false);
 
     useEffect(() => {
-        // Check if app is already installed (running in standalone mode)
+        // Check if app is already installed
         const standalone = window.matchMedia("(display-mode: standalone)").matches
             || (window.navigator as any).standalone
             || false;
         setIsStandalone(standalone);
-        alert(`PWA Install - isStandalone: ${standalone}`);
 
         // Check if iOS
         const userAgent = window.navigator.userAgent.toLowerCase();
-        const iOS = /iphone|ipad|ipod/.test(userAgent);
-        setIsIOS(iOS);
-        alert(`PWA Install - isIOS: ${iOS}\nuserAgent: ${userAgent}`);
+        setIsIOS(/iphone|ipad|ipod/.test(userAgent));
 
         const handler = (e: Event) => {
-            alert("PWA Install - beforeinstallprompt event fired");
             e.preventDefault();
             setDeferredPrompt(e);
         };
@@ -36,19 +33,12 @@ const PWAInstall: React.FC = () => {
         };
     }, []);
 
-    const handleInstallClick = async () => {
-        alert(`PWA Install - Button clicked\nisIOS: ${isIOS}\ndeferredPrompt: ${!!deferredPrompt}`);
-
+    const handleClick = async () => {
         if (isIOS) {
-            // For iOS, toggle instructions
-            alert("PWA Install - Toggling iOS instructions");
-            setShowIOSInstructions(!showIOSInstructions);
+            setShowInstructions(!showInstructions);
         } else if (deferredPrompt) {
-            // For Android/Chrome
-            alert("PWA Install - Showing install prompt");
             deferredPrompt.prompt();
             const { outcome } = await deferredPrompt.userChoice;
-            alert(`PWA Install - User choice: ${outcome}`);
 
             if (outcome === "accepted") {
                 setDeferredPrompt(null);
@@ -56,40 +46,26 @@ const PWAInstall: React.FC = () => {
         }
     };
 
-    // Don't show if already installed/running in standalone mode
-    if (isStandalone) {
-        alert("PWA Install - Not showing (standalone mode)");
-        return null;
-    }
+    // Don't show if already installed
+    if (isStandalone) return null;
 
-    // Show button for iOS or when deferredPrompt is available
-    if (!isIOS && !deferredPrompt) {
-        alert("PWA Install - Not showing (not iOS and no deferredPrompt)");
-        return null;
-    }
-
-    alert("PWA Install - Showing button");
+    // Show for iOS or when deferredPrompt is available
+    if (!isIOS && !deferredPrompt) return null;
 
     return (
-        <div className={styles.container}>
-            <button
-                className={styles.installButton}
-                onClick={(e) => {
-                    alert("CLICK EVENT FIRED!");
-                    e.preventDefault();
-                    handleInstallClick();
-                }}
-            >
-                שמירת האפליקציה במסך הבית
-            </button>
+        <>
+            <div className={styles.navLink} onClick={handleClick}>
+                <Icons.install size={24} />
+                <span>שמירה למסך הבית</span>
+            </div>
 
-            {isIOS && showIOSInstructions && (
+            {isIOS && showInstructions && (
                 <div className={styles.iosInstructions}>
                     <div className={styles.instructionsHeader}>
                         <span>הוספה למסך הבית</span>
                         <button
                             className={styles.closeBtn}
-                            onClick={() => setShowIOSInstructions(false)}
+                            onClick={() => setShowInstructions(false)}
                             aria-label="סגור"
                         >
                             ✕
@@ -111,7 +87,7 @@ const PWAInstall: React.FC = () => {
                     </ol>
                 </div>
             )}
-        </div>
+        </>
     );
 };
 

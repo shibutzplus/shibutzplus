@@ -1,35 +1,24 @@
-.container {
-    width: 100%;
+.navLink {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    margin-top: 1rem;
-}
-
-.installButton {
-    background: linear-gradient(135deg, var(--button-bg) 0%, var(--button-hover-bg) 100%);
-    color: rgb(0, 0, 0);
-    border: none;
-    border-radius: 20px;
-    padding: 0.75rem 1.5rem;
-    font-size: 0.95rem;
-    font-weight: 500;
-    transition: transform 0.2s, box-shadow 0.2s;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    color: var(--text-main);
+    text-decoration: none;
+    transition: background-color 0.2s;
     cursor: pointer;
+    border-radius: var(--border-radius-input);
 }
 
-.installButton:active {
-    transform: translateY(0);
+.navLink:hover {
+    background-color: var(--background-secondary);
 }
 
 .iosInstructions {
-    margin-top: 1rem;
+    margin: 1rem;
     padding: 1rem;
     background: var(--background-secondary, #f8f9fa);
     border-radius: 12px;
-    max-width: 320px;
-    width: 100%;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     animation: slideDown 0.3s ease-out;
 }

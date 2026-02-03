@@ -22,6 +22,7 @@ import { SchoolSettingsType } from "@/models/types/settings";
 import useGuestModePopup from "@/hooks/useGuestModePopup";
 import { NAV_LINK_GROUPS, ILink } from "@/resources/navigation";
 import { USER_ROLES } from "@/models/constant/auth";
+import PWAInstall from "@/components/pwa/PWAInstall/PWAInstall";
 
 type LinkComponentProps = {
     link: ILink;
@@ -327,7 +328,10 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                     <div className={styles.bottomSection}>
                         {(Boolean(!isSubstituteTeacher) || Boolean(isPrivate)) && (
                             <section className={styles.menuSection}>
+                                <PWAInstall />
+
                                 <div className={styles.groupDivider} />
+
                                 {!isSubstituteTeacher && (
                                     <Link
                                         href={isPrivate ? routePath.faqManager.p : routePath.faqTeachers.p}
