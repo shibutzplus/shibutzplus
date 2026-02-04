@@ -20,7 +20,7 @@ interface TeacherTableContextType {
         selectedDate?: string,
     ) => Promise<boolean>;
     refreshMaterialTeacherPortal: (teacher?: TeacherType, selectedDate?: string) => Promise<void>;
-    saveInstractions: (
+    saveInstructions: (
         instructions: string,
         row?: TeacherScheduleType,
         selectedDate?: string,
@@ -79,7 +79,6 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
             } else {
                 if (!response) {
                     logErrorAction({
-                        // if error persist we might need to reconsider a fix. if not just remove the error for "Failed to fetch"
                         description: "Error fetching Teacher Material page data: Response undefined (Keep Monitor)",
                         schoolId: teacher?.schoolId,
                         user: teacher?.name,
@@ -114,7 +113,7 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
         }
     };
 
-    const saveInstractions = async (
+    const saveInstructions = async (
         instructions: string,
         row?: TeacherScheduleType,
         selectedDate?: string,
@@ -161,7 +160,7 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
         mainPortalTable,
         refreshMaterialTeacherPortal,
         fetchTeacherScheduleDate,
-        saveInstractions,
+        saveInstructions,
         hasFetched,
         isHistoryPage,
         hydrateSchedule,
