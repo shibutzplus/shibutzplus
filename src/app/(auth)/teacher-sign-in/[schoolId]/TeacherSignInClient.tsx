@@ -68,7 +68,10 @@ export default function TeacherSignInClient({
                 // The original code fetched by ID, which is safer as it verifies existence in DB.
                 // We will keep using the server action for this specific flow to ensure up-to-date role/data.
                 setIsLoading(true);
-                const resp = await getTeacherByIdAction(teacherId);
+                // Decode and sanitize teacherId
+                const decodedTeacherId = decodeURIComponent(teacherId);
+                const sanitizedTeacherId = decodedTeacherId.replace(/[^a-zA-Z0-9-_]/g, "");
+                const resp = await getTeacherByIdAction(sanitizedTeacherId);
 
                 if (resp.success && resp.data) {
                     const t = resp.data as TeacherType;
