@@ -26,7 +26,7 @@ const GroupsPage: NextPage = () => {
 
     return (
         <DetailsListLayout<ClassType>
-            titles={["קבוצת העבודה", "פעולות"]}
+            titles={["קבוצות עבודה", "פעולות"]}
             emptyText={
                 searchTerm ? (
                     <div style={{ textAlign: "center" }}>

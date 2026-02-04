@@ -91,7 +91,7 @@ const EditableList: React.FC<EditableListProps> = ({ title, items, onSave, onAdd
                                 {/* Icon Logic */}
                                 <span className={styles.iconContainer}>
                                     {item.source === 'both' && <FaCheck className={styles.iconBoth} title="קיים ב-DB וזוהה גם על ידי AI" />}
-                                    {item.source === 'ai' && <FaMagic className={styles.iconAi} title="זוהה על ידי AI" />}
+                                    {item.source === 'ai' && <FaMagic className={styles.iconAi} title="זוהה על ידי AI ולא קיים עוד ב-DB" />}
                                     {item.source === 'manual' && <FaSearch className={styles.iconManual} title="נמצא בחיפוש בקוד שלנו" />}
                                     {item.source === 'db' && <FaDatabase className={styles.iconDb} title="קיים ב-DB" />}
 

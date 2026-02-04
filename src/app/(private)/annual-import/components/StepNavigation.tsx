@@ -40,7 +40,7 @@ const StepNavigation: React.FC<StepNavigationProps> = ({
                         onClick={onRefresh}
                         disabled={isRefreshing}
                         className={styles.btnRefresh}
-                        title="שלוף מחדש בעזרת AI"
+                        title="שלוף בעזרת AI"
                     >
                         {isRefreshing ? "⏳" : (
                             <Icons.magic size={24} />
@@ -52,7 +52,7 @@ const StepNavigation: React.FC<StepNavigationProps> = ({
                             onClick={onSaveToDB}
                             disabled={isSaving}
                             className={styles.btnRefresh} // Reusing same style for icon button
-                            title="שמור שינויים למסד הנתונים"
+                            title="שמור את הנתונים למסד הנתונים"
                         >
                             {isSaving ? "⏳" : (
                                 <Icons.save size={24} />
