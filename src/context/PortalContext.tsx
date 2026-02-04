@@ -269,7 +269,9 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
     };
 
     const handleIncomingSync = async (items?: SyncItem[]) => {
-        const isManual = !items || items.length === 0;
+        // Fix: Explicitly check for undefined/null to detect manual refresh. 
+        // An empty array [] means "checked for updates but found none", so it is NOT manual.
+        const isManual = items === undefined || items === null;
         let hasRelevantUpdate = isManual;
         let hasEntitiesUpdate = false;
 

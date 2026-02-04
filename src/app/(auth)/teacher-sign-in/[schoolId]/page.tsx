@@ -10,7 +10,10 @@ interface PageProps {
 }
 
 export default async function TeacherSignInPage({ params }: PageProps) {
-    const { schoolId } = await params;
+    const { schoolId: rawSchoolId } = await params;
+    // Decode and then sanitize to handle URL encoded characters (like %D7%9B -> כ -> removed)
+    const decodedSchoolId = decodeURIComponent(rawSchoolId);
+    const schoolId = decodedSchoolId.replace(/[^a-zA-Z0-9-_]/g, "");
 
     if (!schoolId) {
         return <ContactAdminError />;
