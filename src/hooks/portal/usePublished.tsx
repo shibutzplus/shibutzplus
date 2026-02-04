@@ -50,10 +50,7 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
             };
 
         } catch (e) {
-            const message = e instanceof Error ? e.message : String(e);
-            if (message !== "Failed to fetch" && message !== "Load failed") {   // Unstable Network - ignore
-                logErrorAction({ description: `Error fetching public lists: ${message}` });
-            }
+            logErrorAction({ description: `Error fetching public lists: ${e instanceof Error ? e.message : String(e)}` });
         }
     };
 
@@ -101,10 +98,7 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
             }
             return response;
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            if (message !== "Failed to fetch" && message !== "Load failed") {
-                logErrorAction({ description: `Error fetching daily schedule data (public): ${message}` });
-            }
+            logErrorAction({ description: `Error fetching daily schedule data (public): ${error instanceof Error ? error.message : String(error)}` });
             return null;
         } finally {
             if (!isBackground) setIsPublishLoading(false);

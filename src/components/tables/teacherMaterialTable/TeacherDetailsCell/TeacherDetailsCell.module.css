@@ -45,7 +45,6 @@
 }
 
 .subTeacher {
-  font-weight: 600;
   display: inline;
 }
 
@@ -99,8 +98,8 @@
   }
 
   .doubleRow {
-    font-weight: 600;
     white-space: normal;
+    line-height: 1.3;
   }
 }
 

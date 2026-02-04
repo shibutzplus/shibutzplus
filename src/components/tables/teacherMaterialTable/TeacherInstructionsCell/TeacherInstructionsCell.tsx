@@ -19,7 +19,7 @@ const TeacherInstructionsCell: React.FC<TeacherInstructionsCellProps> = ({
     teacher,
     selectedDate,
 }) => {
-    const { saveInstractions, isHistoryPage } = useTeacherTableContext();
+    const { saveInstructions, isHistoryPage } = useTeacherTableContext();
     const [instructions, setInstructions] = useState<string>(row?.instructions || "");
     const [prevInstructions, setPrevInstructions] = useState<string>(row?.instructions || "");
 
@@ -33,7 +33,7 @@ const TeacherInstructionsCell: React.FC<TeacherInstructionsCellProps> = ({
         const value = html.trim();
         if (value === prevInstructions) return;
         setPrevInstructions(value);
-        saveInstractions(value, row, selectedDate);
+        saveInstructions(value, row, selectedDate);
     };
 
     const isSubstitute = !!(row?.originalTeacher && teacher?.id !== row.originalTeacher?.id);

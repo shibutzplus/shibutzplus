@@ -95,7 +95,7 @@ const useInitData = ({
                     openPopup(
                         "msgPopup", "S",
                         React.createElement(MsgPopup, {
-                            message: "גרסה חדשה זמינה או שהחיבור לרשת התנתק. אנא בצעו רענון קצר כדי להמשיך.",
+                            message: "בעיה רגעית בהתחברות. אנא בצעו רענון קצר כדי להמשיך.",
                             okText: "ריענון",
                             onOk: () => window.location.reload()
                         })
