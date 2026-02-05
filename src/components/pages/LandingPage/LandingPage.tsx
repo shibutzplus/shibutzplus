@@ -35,7 +35,7 @@ const HeroSignInButton = (props: { title: string; className?: string }) => {
     }, [status]);
 
     useEffect(() => {
-        if (status === STATUS_UNAUTH) {
+        if (status === STATUS_UNAUTH || status === "authenticated") {
             setIsLoading(false);
         }
     }, [status]);

@@ -20,9 +20,41 @@
 }
 
 .title {
-    margin-bottom: 20px;
+    margin-bottom: 0;
     font-size: 1.5rem;
     color: #333;
+    flex: 1;
+    text-align: center;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.logoutBtn {
+    position: absolute;
+    right: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.logoutBtn:hover {
+    background-color: #f0f0f0;
+    color: #000;
 }
 
 .schoolList {

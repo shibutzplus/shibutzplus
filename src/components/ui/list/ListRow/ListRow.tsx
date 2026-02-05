@@ -72,7 +72,7 @@ function ListRow<T extends Record<string, any>>({
                 errorToast("שם זה כבר קיים ברשימה");
                 setValue(getInitialValue(item));
             }
-        } catch (error) {
+        } catch (_error) {
             errorToast("שגיאה בעדכון");
             setValue(getInitialValue(item));
         } finally {

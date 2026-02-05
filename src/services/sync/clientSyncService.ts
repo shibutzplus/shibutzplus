@@ -39,6 +39,11 @@ const pollUpdates = async (params: PollUpdatesParams): Promise<SyncPollResponse 
     const res = await fetch(url, { cache: "no-store" });
 
     if (!res.ok) {
+      if (res.status === 401) {
+        // Stop sync on unauthorized/logged out user
+        return null;
+      }
+      // followup on: 520 error to make sure it is rare so we can ignore it
       logErrorAction({ description: `Sync poll failed with status: ${res.status}` });
       return null;
     }

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "./schoolSelect.module.css";
 import { getSchoolsMinAction } from "@/app/actions/GET/getSchoolsMinAction";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import routes from "@/routes";
 import { DEFAULT_REDIRECT } from "@/routes/protectedAuth";
@@ -11,6 +11,7 @@ import Loading from "@/components/loading/Loading/Loading";
 import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 import { USER_ROLES } from "@/models/constant/auth";
 import { SCHOOL_STATUS } from "@/models/constant/school";
+import Icons from "@/style/icons";
 
 const SchoolSelectPage = () => {
     const { data: session } = useSession();
@@ -46,10 +47,24 @@ const SchoolSelectPage = () => {
         }
     };
 
+    const handleLogout = () => {
+        void signOut({ callbackUrl: "/" });
+    };
+
     return (
         <main className={styles.container}>
             <div className={styles.card}>
-                <h1 className={styles.title}>בחירת בית ספר</h1>
+                <header className={styles.header}>
+                    <button
+                        type="button"
+                        onClick={handleLogout}
+                        className={styles.logoutBtn}
+                        title="התנתקות"
+                    >
+                        <Icons.logOut size={22} />
+                    </button>
+                    <h1 className={styles.title}>בחירת בית ספר</h1>
+                </header>
                 {isLoading ? (
                     <Loading />
                 ) : schools.length === 0 ? (
