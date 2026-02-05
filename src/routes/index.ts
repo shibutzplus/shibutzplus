@@ -9,7 +9,7 @@ const router: Record<string, IRoute> = {
     home: { id: "home", p: "/", private: false, title: "" },
     signIn: { id: "signIn", p: "/", private: false, title: "כניסה" },
     signUp: { id: "signUp", p: "/sign-up", private: true, title: "בית ספר/מנהל חדש" },
-    schoolSelect: { id: "schoolSelect", p: "/school-select", private: false, title: "בחירת בית ספר", },
+    schoolSelect: { id: "schoolSelect", p: "/school-select", private: true, title: "בחירת בית ספר", },
     classes: { id: "classes", p: "/classes", private: true, title: "כיתות" },
     groups: { id: "groups", p: "/groups", private: true, title: "קבוצות עבודה" },
     teachers: { id: "teachers", p: "/teachers", private: true, title: "מורים" },
@@ -26,11 +26,10 @@ const router: Record<string, IRoute> = {
     teacherSignIn: { id: "teacherSignIn", p: "/teacher-sign-in", private: false, title: "כניסה למורים", },
     teacherMaterialPortal: { id: "teacherMaterialPortal", p: "/teacher-material", private: false, title: "המערכת שלי", },
     scheduleViewPortal: { id: "scheduleViewPortal", p: "/schedule-view", private: false, title: "מערכת יומית", },
+    fullScheduleView: { id: "fullScheduleView", p: "/schedule-full", private: false, title: "מערכת במסך מלא", },
     faqManager: { id: "faqManager", p: "/faq-manager", private: true, title: "שאלות נפוצות" },
     faqTeachers: { id: "faqTeachers", p: "/faq-teachers", private: false, title: "שאלות נפוצות" },
     adminSignIn: { id: "adminSignIn", p: "/admin/sign-in", private: false, title: "כניסת מנהל" },
-    fullScheduleView: { id: "fullScheduleView", p: "/schedule-full", private: false, title: "מערכת במסך מלא", },
-
 };
 
 export default router;
