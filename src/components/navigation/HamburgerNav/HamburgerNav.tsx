@@ -323,44 +323,44 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                     </section>
 
                     <div className={styles.bottomSection}>
-                        {(Boolean(!isSubstituteTeacher) || Boolean(isPrivate)) && (
-                            <section className={styles.menuSection}>
-                                {!isInstalled && (
-                                    <div className={styles.navLink} onClick={installPWA}>
-                                        <div className={styles.mobileIcon}>
-                                            <Icons.installMobile size={24} />
-                                        </div>
-                                        <div className={styles.desktopIcon}>
-                                            <Icons.installDesktop size={24} />
-                                        </div>
-                                        <span>התקנת האפליקציה</span>
-                                    </div>
-                                )}
-
-                                {!isSubstituteTeacher && (
-                                    <Link
-                                        href={isPrivate ? routePath.faqManager.p : routePath.faqTeachers.p}
-                                        className={styles.navLink}
-                                        onClick={onClose}
-                                        aria-label="שאלות נפוצות"
-                                    >
-                                        <Icons.faq size={24} />
-                                        <span>שאלות נפוצות</span>
-                                    </Link>
-                                )}
-                                {isPrivate && (
-                                    <div
-                                        className={styles.navLink}
-                                        onClick={isGuest ? handleOpenGuestPopup : handleOpenSettings}
-                                        aria-label="הגדרות מערכת"
-                                    >
-                                        <Icons.settings size={24} />
-                                        <span>הגדרות מערכת</span>
-                                    </div>
-                                )}
-                            </section>
-                        )}
                         <section className={styles.logoutSection}>
+                            {(Boolean(!isSubstituteTeacher) || Boolean(isPrivate)) && (
+                                <>
+                                    {!isInstalled && (
+                                        <div className={styles.navLink} onClick={installPWA}>
+                                            <div className={styles.mobileIcon}>
+                                                <Icons.installMobile size={24} />
+                                            </div>
+                                            <div className={styles.desktopIcon}>
+                                                <Icons.installDesktop size={24} />
+                                            </div>
+                                            <span>התקנה כאפליקציה</span>
+                                        </div>
+                                    )}
+
+                                    {!isSubstituteTeacher && (
+                                        <Link
+                                            href={isPrivate ? routePath.faqManager.p : routePath.faqTeachers.p}
+                                            className={styles.navLink}
+                                            onClick={onClose}
+                                            aria-label="שאלות נפוצות"
+                                        >
+                                            <Icons.faq size={24} />
+                                            <span>שאלות נפוצות</span>
+                                        </Link>
+                                    )}
+                                    {isPrivate && (
+                                        <div
+                                            className={styles.navLink}
+                                            onClick={isGuest ? handleOpenGuestPopup : handleOpenSettings}
+                                            aria-label="הגדרות מערכת"
+                                        >
+                                            <Icons.settings size={24} />
+                                            <span>הגדרות מערכת</span>
+                                        </div>
+                                    )}
+                                </>
+                            )}
                             <div
                                 onClick={handleLogout}
                                 className={styles.navLink}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import AnnualImportPageLayout from "@/components/layout/pageLayouts/AnnualImportPageLayout/AnnualImportPageLayout";
 import SubmitBtn from "@/components/ui/buttons/SubmitBtn/SubmitBtn";
@@ -10,13 +10,16 @@ import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputS
 import { extractEntitiesFromFilesAction } from "@/app/actions/POST/import/extractEntitiesFromFilesAction";
 import { fullSchedulePreviewAction } from "@/app/actions/POST/import/fullSchedulePreviewAction";
 import { loadEntitiesFromDBAction } from "@/app/actions/POST/import/loadEntitiesFromDBAction";
-import { syncAllEntityValuesAction, saveTeacherScheduleAction, addSingleEntityAction } from "../../actions/POST/import/syncDBimportAction";
+import { syncAllEntityValuesAction } from "@/app/actions/POST/import/syncDBimportAction";
+import { saveTeacherScheduleAction } from "@/app/actions/POST/import/syncDBimportAction";
+import { addSingleEntityAction } from "@/app/actions/POST/import/syncDBimportAction";
 import styles from "./page.module.css";
 import { usePopup } from "@/context/PopupContext";
 import MsgPopup from "@/components/popups/MsgPopup/MsgPopup";
 import EditCellPopup from "./components/EditCellPopup";
 import Preloader from "@/components/ui/Preloader/Preloader";
 import { logErrorAction } from "@/app/actions/POST/logErrorAction";
+import { checkTeacherHasScheduleAction } from "@/app/actions/GET/checkTeacherHasScheduleAction";
 
 interface ScheduleItem {
     teacher: string;
@@ -54,6 +57,7 @@ const AnnualImportContent = () => {
     const [teacherFile, setTeacherFile] = useState<File | null>(null);
     const [classFile, setClassFile] = useState<File | null>(null);
     const [selectedTeacherId, setSelectedTeacherId] = useState<string | null>(null);
+    const [teacherHasExistingSchedule, setTeacherHasExistingSchedule] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
@@ -62,6 +66,21 @@ const AnnualImportContent = () => {
     const popupMsg = (message: string) => {
         openPopup("msgPopup", "S", <MsgPopup message={message} />);
     };
+
+    // Check if selected teacher already has a schedule in DB
+    useEffect(() => {
+        if (!selectedTeacherId || !schoolId) {
+            setTeacherHasExistingSchedule(false);
+            return;
+        }
+
+        const checkSchedule = async () => {
+            const hasSchedule = await checkTeacherHasScheduleAction(selectedTeacherId, schoolId);
+            setTeacherHasExistingSchedule(hasSchedule);
+        };
+
+        checkSchedule();
+    }, [selectedTeacherId, schoolId]);
 
     const handleFileChange = (
         e: React.ChangeEvent<HTMLInputElement>,
@@ -215,7 +234,7 @@ const AnnualImportContent = () => {
                     }
 
                     mergedList.push({
-                        name: name,
+                        name: matchedDbName || name, // Use DB name if matched, otherwise AI name
                         source: finalSource,
                         exists: finalSource !== 'ai' // Legacy support
                     });
@@ -288,7 +307,7 @@ const AnnualImportContent = () => {
                                 <h3 className={styles.subTitle}>קובץ מערכת לפי מורים</h3>
                                 <input
                                     type="file"
-                                    accept=".pdf, .docx, .xlsx, .csv"
+                                    accept=".xlsx, .xls, .csv"
                                     onChange={(e) => handleFileChange(e, setTeacherFile)}
                                     disabled={isLoading}
                                     className={styles.fileInput}
@@ -299,7 +318,7 @@ const AnnualImportContent = () => {
                                 <h3 className={styles.subTitle}>קובץ מערכת לפי כיתות</h3>
                                 <input
                                     type="file"
-                                    accept=".pdf, .docx, .xlsx, .csv"
+                                    accept=".xlsx, .xls, .csv"
                                     onChange={(e) => handleFileChange(e, setClassFile)}
                                     disabled={isLoading}
                                     className={styles.fileInput}
@@ -600,11 +619,12 @@ const AnnualImportContent = () => {
                                                                                     <span className={styles.classText}>
                                                                                         {cell.class?.replace("Unknown", "?") || "?"}
                                                                                     </span>
-                                                                                    {cell.subject === "ללא מקצוע" && cell.originalText && (
+                                                                                    {/* Display original Excel text in parentheses when no subject is identified */}
+                                                                                    {/* {cell.subject === "ללא מקצוע" && cell.originalText && (
                                                                                         <span className={styles.originalTextHint}>
                                                                                             ({cell.originalText})
                                                                                         </span>
-                                                                                    )}
+                                                                                    )} */}
                                                                                 </div>
                                                                             ) : null}
                                                                         </td>
@@ -645,7 +665,7 @@ const AnnualImportContent = () => {
                                                 );
                                                 popupMsg(res.message);
                                             }}
-                                            buttonText={`הוספת המערכת`}
+                                            buttonText={teacherHasExistingSchedule ? 'עדכון המערכת' : 'הוספת המערכת'}
                                             className={styles.btnSingleUpdate}
                                             isLoading={isLoading}
                                             type="button"

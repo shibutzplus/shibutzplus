@@ -7,6 +7,8 @@ import { teachers, classes, subjects, annualSchedule, type NewAnnualScheduleSche
 import { eq, and, notInArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { dbLog } from "@/services/loggerService";
+import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
+import { ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
 
 /**
  * Step 2-5: Per-entity list - Add a single entity item to DB
@@ -96,6 +98,7 @@ export const addSingleEntityAction = async (
         }
 
         revalidatePath('/annual-import');
+        void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: targetSchoolId });
         return { success: true, message: "Item added successfully" };
     } catch (error: any) {
         dbLog({
@@ -196,6 +199,7 @@ export const syncAllEntityValuesAction = async (
             await syncTable(subjects, { activity: true }, [eq(subjects.activity, true)]);
         }
 
+        void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: targetSchoolId });
         return { success: true, message: "Database updated successfully" };
     } catch (error: any) {
         dbLog({
@@ -255,6 +259,11 @@ export async function saveTeacherScheduleAction(
         const missingSubjects: string[] = [];
 
         for (const item of scheduleItems) {
+            // Skip empty cells (no subject and no class)
+            if (item.className === "ללא כיתה" && item.subjectName === "ללא מקצוע") {
+                continue; // This is an empty cell, skip it
+            }
+
             // For work groups, className is "קבוצה" (placeholder)
             // The actual work group name is in subjectName
             // Work groups have BOTH class and subject entries with the same name and activity=true
@@ -266,14 +275,14 @@ export async function saveTeacherScheduleAction(
             const classId = classMap.get(classLookupName);
             const subjectId = subjectMap.get(item.subjectName);
 
-            // Validate class
-            if (!classId) {
+            // Validate class (only if not "ללא כיתה")
+            if (!classId && item.className !== "ללא כיתה") {
                 const missingName = isWorkGroup ? item.subjectName : item.className;
                 if (!missingClasses.includes(missingName)) missingClasses.push(missingName);
             }
 
-            // Validate subject/work group
-            if (!subjectId) {
+            // Validate subject/work group (only if not "ללא מקצוע")
+            if (!subjectId && item.subjectName !== "ללא מקצוע") {
                 if (!missingSubjects.includes(item.subjectName)) missingSubjects.push(item.subjectName);
             }
 

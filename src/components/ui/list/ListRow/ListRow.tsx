@@ -65,9 +65,16 @@ function ListRow<T extends Record<string, any>>({
                 [field.key]: value,
                 ...(updateExtraFields ? updateExtraFields(item) : {}),
             } as Partial<T>;
-            await onUpdate(getId(item), updateData);
-        } catch {
-            // Optionally handle error toast here
+            const result = await onUpdate(getId(item), updateData);
+
+            // If update failed (returned undefined or falsy), show error and revert
+            if (!result) {
+                errorToast("שם זה כבר קיים ברשימה");
+                setValue(getInitialValue(item));
+            }
+        } catch (error) {
+            errorToast("שגיאה בעדכון");
+            setValue(getInitialValue(item));
         } finally {
             setIsEditLoading(false);
             setIsEdit(false);

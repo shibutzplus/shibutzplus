@@ -31,6 +31,25 @@ export async function updateClassAction(
             return guestError as ActionResponse;
         }
 
+        // Check if a class/group with the same name already exists (excluding the current one)
+        const existingClass = await executeQuery(async () => {
+            return await db.query.classes.findFirst({
+                where: (classes, { and, eq, ne }) =>
+                    and(
+                        eq(classes.schoolId, classData.schoolId),
+                        eq(classes.name, classData.name),
+                        ne(classes.id, classId)
+                    ),
+            });
+        });
+
+        if (existingClass) {
+            return {
+                success: false,
+                message: "שם זה כבר קיים במערכת",
+            };
+        }
+
         const updatedClass = await executeQuery(async () => {
             return (
                 await db
@@ -62,14 +81,18 @@ export async function updateClassAction(
             data: allClassesResp.data || [],
         };
     } catch (error) {
+        // Check if it's a unique constraint violation
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        const isDuplicateError = errorMessage.includes('unique') || errorMessage.includes('duplicate');
+
         dbLog({
-            description: `Error updating class: ${error instanceof Error ? error.message : String(error)}`,
+            description: `Error updating class: ${errorMessage}`,
             schoolId: classData.schoolId,
             metadata: { classId }
         });
         return {
             success: false,
-            message: messages.common.serverError,
+            message: isDuplicateError ? "שם זה כבר קיים במערכת" : messages.common.serverError,
         };
     }
 }
