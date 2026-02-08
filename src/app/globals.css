@@ -62,8 +62,17 @@
     --table-gray-color: #E1E1EC;
     --table-hours-col-width: 35px;
 
-    --table-daily-col-width-edit: 230px;
+    --table-daily-teacher-col-width-edit: 200px;
+    --table-daily-event-col-width-edit: 240px;
+    /* fallback */
+    --table-daily-col-width-edit: 220px;
+
+    --table-daily-teacher-col-width-preview: 190px;
+    --table-daily-event-col-width-preview: 240px;
+    /* fallback */
     --table-daily-col-width-preview: 215px;
+
+
     --table-daily-header-height: 50px;
     --table-daily-cell-height: 100px;
 

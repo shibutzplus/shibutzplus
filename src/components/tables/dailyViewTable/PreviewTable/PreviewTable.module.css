@@ -110,8 +110,32 @@
     overflow: visible;
 }
 
+.regularHeaderCell.teacherHeaderCell {
+    width: var(--table-daily-teacher-col-width-preview);
+    min-width: var(--table-daily-teacher-col-width-preview);
+    max-width: var(--table-daily-teacher-col-width-preview);
+}
+
+.regularHeaderCell.eventHeaderCell {
+    width: var(--table-daily-event-col-width-preview);
+    min-width: var(--table-daily-event-col-width-preview);
+    max-width: var(--table-daily-event-col-width-preview);
+}
+
 .regularDataCell {
     width: var(--table-daily-col-width-preview);
     min-width: var(--table-daily-col-width-preview);
     max-width: var(--table-daily-col-width-preview);
+}
+
+.regularDataCell.teacherDataCell {
+    width: var(--table-daily-teacher-col-width-preview);
+    min-width: var(--table-daily-teacher-col-width-preview);
+    max-width: var(--table-daily-teacher-col-width-preview);
+}
+
+.regularDataCell.eventDataCell {
+    width: var(--table-daily-event-col-width-preview);
+    min-width: var(--table-daily-event-col-width-preview);
+    max-width: var(--table-daily-event-col-width-preview);
 }

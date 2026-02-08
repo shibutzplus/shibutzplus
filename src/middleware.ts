@@ -8,8 +8,10 @@ import { apiAuthPrefix, authRoutes, DEFAULT_REDIRECT, GUEST_REDIRECT, GUEST_UNAU
 export async function middleware(req: NextRequest) {
     const { nextUrl: url } = req;
 
-    // Skip ONLY NextAuth and public API routes (manifest for PWA)
-    const publicApiRoutes = [apiAuthPrefix, "/api/manifest"];
+    // Skip NextAuth and public API routes (manifest for PWA, sync polling, cron jobs)
+    // Note: /api/sync/poll handles its own authentication to reduce middleware overhead
+    // Note: /api/cron/* routes handle their own authentication via CRON_SECRET
+    const publicApiRoutes = [apiAuthPrefix, "/api/manifest", "/api/sync/poll", "/api/cron"];
     const isPublicApiRoute = publicApiRoutes.some((route) => url.pathname.startsWith(route));
     if (isPublicApiRoute) {
         return NextResponse.next();
@@ -101,6 +103,6 @@ export const config = {
     // - Next.js internals (_next/static, _next/image)
     // - Static files (images, CSS, JS, etc.)
     matcher: [
-        "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js)).*)",
+        "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|woff|woff2|ttf|eot|webmanifest|json)).*)",
     ],
 };

@@ -33,7 +33,7 @@ const DailyCol: React.FC<DailyColProps> = ({ columnId, column }) => {
     const animClass = isFadingOut ? styles.fadeOut : styles.fadeIn;
 
     return columnType === "event" ? (
-        <div className={styles.dailyColumn} data-column-id={columnId}>
+        <div className={`${styles.dailyColumn} ${styles.eventColumn}`} data-column-id={columnId}>
             <DailyEventHeader columnId={columnId} />
             <div className={`${styles.rows} ${animClass}`}>
                 {colFirstObj
@@ -44,7 +44,7 @@ const DailyCol: React.FC<DailyColProps> = ({ columnId, column }) => {
             </div>
         </div>
     ) : (
-        <div className={styles.dailyColumn} data-column-id={columnId}>
+        <div className={`${styles.dailyColumn} ${styles.teacherColumn}`} data-column-id={columnId}>
             <DailyTeacherHeader
                 columnId={columnId}
                 type={columnType}

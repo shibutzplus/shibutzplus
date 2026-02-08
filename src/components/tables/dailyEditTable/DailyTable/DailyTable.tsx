@@ -19,14 +19,16 @@ type AnimatedHeaderWrapperProps = {
     headerColorClass: string;
     children: React.ReactNode;
     id?: string;
+    columnType: ColumnType;
 };
 
-const AnimatedHeaderWrapper: React.FC<AnimatedHeaderWrapperProps> = React.memo(({ width, headerColorClass, children, id }) => {
+const AnimatedHeaderWrapper: React.FC<AnimatedHeaderWrapperProps> = React.memo(({ width, headerColorClass, children, id, columnType }) => {
     const isAnimating = width !== undefined;
+    const typeClass = columnType === ColumnTypeValues.event ? styles.eventHeaderCell : styles.teacherHeaderCell;
     return (
         <th
             id={id}
-            className={`${styles.headerCell} ${styles.regularHeaderCell}`}
+            className={`${styles.headerCell} ${styles.regularHeaderCell} ${typeClass}`}
             style={isAnimating ? {
                 width: `${width}px`,
                 minWidth: `${width}px`,
@@ -49,13 +51,15 @@ AnimatedHeaderWrapper.displayName = "AnimatedHeaderWrapper";
 type CellWrapperProps = {
     width: number | undefined;
     children: React.ReactNode;
+    columnType: ColumnType;
 };
 
-const CellWrapper: React.FC<CellWrapperProps> = React.memo(({ width, children }) => {
+const CellWrapper: React.FC<CellWrapperProps> = React.memo(({ width, children, columnType }) => {
     const isAnimating = width !== undefined;
+    const typeClass = columnType === ColumnTypeValues.event ? styles.eventDataCell : styles.teacherDataCell;
     return (
         <td
-            className={`${styles.dataCell} ${styles.regularDataCell}`}
+            className={`${styles.dataCell} ${styles.regularDataCell} ${typeClass}`}
             style={isAnimating ? {
                 width: `${width}px`,
                 minWidth: `${width}px`,
@@ -201,6 +205,7 @@ const DailyTable: React.FC<DailyTableProps> = ({
                                     colIndex={colIndex}
                                     width={width}
                                     headerColorClass={headerColorClass}
+                                    columnType={type}
                                 >
                                     {type === ColumnTypeValues.event ? (
                                         <DailyEventHeader
@@ -246,6 +251,7 @@ const DailyTable: React.FC<DailyTableProps> = ({
                                     <CellWrapper
                                         key={`${colId}-${row}`}
                                         width={width}
+                                        columnType={type}
                                     >
                                         {type === ColumnTypeValues.event ? (
                                             <DailyEventCell
