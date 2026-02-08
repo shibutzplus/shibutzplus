@@ -14,6 +14,18 @@
     position: relative;
 }
 
+.dailyColumn.teacherColumn {
+    width: var(--table-daily-teacher-col-width-edit);
+    min-width: var(--table-daily-teacher-col-width-edit);
+    max-width: var(--table-daily-teacher-col-width-edit);
+}
+
+.dailyColumn.eventColumn {
+    width: var(--table-daily-event-col-width-edit);
+    min-width: var(--table-daily-event-col-width-edit);
+    max-width: var(--table-daily-event-col-width-edit);
+}
+
 .rows {
     display: flex;
     flex-direction: column;

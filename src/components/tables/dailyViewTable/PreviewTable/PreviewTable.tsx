@@ -93,11 +93,12 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
                         {sortedTableColumns.map((colId, index) => {
                             const type = columnTypes[colId] ?? ColumnTypeValues.event;
                             const column = schedule[colId];
+                            const typeClass = type === ColumnTypeValues.event ? styles.eventHeaderCell : styles.teacherHeaderCell;
 
                             return (
                                 <th
                                     key={colId}
-                                    className={`${styles.headerCell} ${styles.regularHeaderCell}`}
+                                    className={`${styles.headerCell} ${styles.regularHeaderCell} ${typeClass}`}
                                 >
                                     <motion.div
                                         style={{ width: "100%", height: "100%" }}
@@ -137,11 +138,12 @@ const PreviewTable: React.FC<PreviewTableProps> = ({
                                 const type = columnTypes[colId] ?? ColumnTypeValues.event;
                                 const columnData = schedule[colId];
                                 const cellData = columnData?.[row];
+                                const typeClass = type === ColumnTypeValues.event ? styles.eventDataCell : styles.teacherDataCell;
 
                                 return (
                                     <td
                                         key={`${colId}-${row}`}
-                                        className={`${styles.dataCell} ${styles.regularDataCell}`}
+                                        className={`${styles.dataCell} ${styles.regularDataCell} ${typeClass}`}
                                     >
                                         <motion.div
                                             style={{ width: "100%", height: "100%" }}
