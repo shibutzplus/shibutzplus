@@ -85,6 +85,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
                 headerData?.headerTeacher?.id,
                 classActivityById,
                 recommendedTeacherIds,
+                columnId,
             ),
         [
             teachers,
@@ -101,6 +102,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
             teacherText,
             classActivityById,
             recommendedTeacherIds,
+            columnId,
         ],
     );
 
