@@ -51,7 +51,7 @@ const FullScheduleViewPage: NextPage = () => {
     const isPublished = datesOptions.some((d) => d.value === selectedDate);
     const getEmptyText = () => {
         if (isShabbat) return "סוף שבוע נעים";
-        if (isPublished) return "המערכת פורסמה ללא עדכונים";
+        if (isPublished) return "אין שינויים במערכת";
         return "המערכת הבית ספרית לא פורסמה";
     };
 
