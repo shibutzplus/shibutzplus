@@ -57,7 +57,6 @@ const InputRichText: React.FC<InputRichTextProps> = ({
             orderedList: false,
             code: false,
             codeBlock: false,
-            bold: false,
             italic: false,
             strike: false,
             heading: false,

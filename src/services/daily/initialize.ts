@@ -28,7 +28,7 @@ export const initDailyEventCellData = (entry: DailyScheduleType) => {
         DBid: entry.id,
         hour: entry.hour,
         event: entry.event,
-        headerCol: { headerEvent: entry.eventTitle, type: ColumnTypeValues.event, position: entry.position },
+        headerCol: { headerEvent: entry.eventTitle, type: entry.columnType, position: entry.position },
     };
 
     return cellData;

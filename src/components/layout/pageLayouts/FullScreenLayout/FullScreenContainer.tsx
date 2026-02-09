@@ -25,8 +25,7 @@ export default function FullScreenContainer({ children, onExit }: FullScreenCont
             overflow: "hidden",
             zIndex: 9999,
             backgroundColor: "var(--background-color)",
-            paddingTop: "0.5vh",
-            paddingBottom: "0.5vh",
+            paddingTop: "0.2vh",
         }}>
             <button
                 className={styles.fab}

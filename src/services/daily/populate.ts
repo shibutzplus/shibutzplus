@@ -1,23 +1,14 @@
 import { AnnualScheduleType, AvailableTeachers } from "@/models/types/annualSchedule";
-import {
-    ColumnType,
-    DailySchedule,
-    DailyScheduleCell,
-    DailyScheduleType,
-    HeaderCol,
-} from "@/models/types/dailySchedule";
+import { ColumnType, ColumnTypeValues, DailySchedule, DailyScheduleCell, DailyScheduleType, HeaderCol } from "@/models/types/dailySchedule";
 import { initDailyEventCellData, initDailyTeacherCellData } from "@/services/daily/initialize";
 import { HOURS_IN_DAY } from "@/utils/time";
 import { setColumn } from "./setColumn";
 import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
+// Initialize date & header if it doesn't exist
 export const initDailySchedule = (dailySchedule: DailySchedule, date: string, columnId: string) => {
-    // Initialize date if it doesn't exist
     if (!dailySchedule[date]) dailySchedule[date] = {};
-
-    // Initialize header if it doesn't exist
     if (!dailySchedule[date][columnId]) dailySchedule[date][columnId] = {};
-
     return dailySchedule;
 };
 
@@ -36,15 +27,17 @@ export const populateTable = (dataColumns: DailyScheduleType[], selectedDate: st
     const seenColumnIds = new Set<string>();
 
     for (const columnCell of dataColumns) {
-        const columnId = columnCell.columnId;
 
-        const { originalTeacher, columnType } = columnCell;
+        const columnId = columnCell.columnId;
+        const { columnType } = columnCell;
 
         let cellData: DailyScheduleCell;
-        if (originalTeacher) {
-            cellData = initDailyTeacherCellData(columnCell);
-        } else {
+        // Use columnType from server to determine cell type
+        if (columnType === ColumnTypeValues.event) {
             cellData = initDailyEventCellData(columnCell);
+        } else {
+            // Teacher columns (missing or existing)
+            cellData = initDailyTeacherCellData(columnCell);
         }
         // If the column is not already in the columnsToCreate array, add it
         if (!seenColumnIds.has(columnId)) {
