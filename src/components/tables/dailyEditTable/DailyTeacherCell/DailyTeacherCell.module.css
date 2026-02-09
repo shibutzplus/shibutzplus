@@ -5,10 +5,10 @@
 .innerCellContent {
     width: 100%;
     gap: 10px;
-    height: var(--table-daily-cell-height);
+    min-height: var(--table-daily-cell-height);
     background-color: var(--tab-color);
     border-radius: var(--border-radius-cell);
-    padding: 15px 4px;
+    padding: 10px 4px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
