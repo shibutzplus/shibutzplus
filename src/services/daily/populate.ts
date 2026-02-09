@@ -208,6 +208,24 @@ export const populateDailyScheduleTable = (
         // (We rebuild the *entire* day from the server response)
         newSchedule[selectedDate] = {};
 
+        // Before populating with server data, check if there are any columns created but not saved
+        // that should be preserved.
+        if (mainDailyTable[selectedDate]) {
+            const serverColumnIds = new Set(dataColumns.map(col => col.columnId));
+
+            Object.entries(mainDailyTable[selectedDate]).forEach(([colId, colData]) => {
+                if (!serverColumnIds.has(colId)) {
+                    // If header is EMPTY, it is a new local-only column -> preserve it.
+                    const firstCell = colData["1"];
+                    const header = firstCell?.headerCol;
+                    const hasHeaderContent = !!header?.headerTeacher || !!header?.headerEvent;
+                    if (!hasHeaderContent) {
+                        newSchedule[selectedDate][colId] = colData;
+                    }
+                }
+            });
+        }
+
         Object.entries(entriesByDayAndHeader).forEach(([date, headerEntries]) => {
             Object.entries(headerEntries).forEach(([columnId, cells]) => {
                 setColumn(cells, newSchedule, columnId, date, hoursNum);
