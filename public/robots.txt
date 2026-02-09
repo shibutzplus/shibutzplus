@@ -1,6 +1,4 @@
 User-agent: *
-Allow: /
-
 Disallow: /api/
 Disallow: /sign-up
 Disallow: /classes
@@ -23,5 +21,6 @@ Disallow: /schedule-view
 Disallow: /teacher-material
 Disallow: /faq-teachers
 Disallow: /school-select
+Allow: /
 
 Sitemap: https://shibutzplus.com/sitemap.xml
