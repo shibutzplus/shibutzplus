@@ -21,7 +21,7 @@ type PortalPageLayoutProps = {
 export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
     const pathname = usePathname();
     const { teacher, selectedDate, handleRefreshDates, refreshDailyScheduleTeacherPortal, settings, handleIncomingSync } = usePortalContext();
-    const { refreshMaterialTeacherPortal } = useTeacherTableContext();
+    const { refreshMaterialTeacherPortal, mainPortalTable } = useTeacherTableContext();
     const refreshRef = React.useRef<((items: SyncItem[]) => Promise<void> | void) | null>(null);
     const { resetUpdate } = usePollingUpdates(refreshRef);
     const isRegularTeacher = teacher?.role === TeacherRoleValues.REGULAR;
@@ -120,9 +120,13 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
                 !teacher ||
                     isRegularTeacher ||
                     (teacher?.role === TeacherRoleValues.SUBSTITUTE && settings?.displaySchedule2Susb) ? (
-                    <div className={styles.navContainer}>
-                        <PortalNav />
-                    </div>
+                    pathname.includes(router.teacherMaterialPortal.p) &&
+                        mainPortalTable[selectedDate] &&
+                        Object.values(mainPortalTable[selectedDate]).some((row) => !row.isRegular) ? (
+                        <div className={styles.navContainer}>
+                            <PortalNav />
+                        </div>
+                    ) : null
                 ) : null
             }
             contentClassName=""
