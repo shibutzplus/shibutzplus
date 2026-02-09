@@ -79,10 +79,31 @@ export const sortDailyTeachers = (
     currentHeaderTeacherId?: string,
     classActivityById: Record<string, boolean> = {},
     recommendedTeacherIds: string[] = [],
+    currentColumnId?: string,
 ) => {
     const dayNum = dayToNumber(day);
     const dayKey = String(dayNum);
     const hourStr = hour.toString();
+
+    // Frequent replacements logic
+    const frequentReplacementIds = new Set<string>();
+    if (currentColumnId && dailyDay && dailyDay[currentColumnId]) {
+        const columnCells = Object.values(dailyDay[currentColumnId]);
+        const replacementCounts = new Map<string, number>();
+
+        columnCells.forEach(cell => {
+            if (cell.subTeacher?.id) {
+                const id = cell.subTeacher.id;
+                replacementCounts.set(id, (replacementCounts.get(id) || 0) + 1);
+            }
+        });
+
+        replacementCounts.forEach((count, id) => {
+            if (count > 1) {
+                frequentReplacementIds.add(id);
+            }
+        });
+    }
 
     // Annual availability lookups
     const scheduledTeacherIds = new Set(mapAvailableTeachers[dayNum]?.[hourStr] || []);
@@ -164,8 +185,9 @@ export const sortDailyTeachers = (
         }
 
         // Check if recommended
-        if (recommendationOrder.has(teacher.id)) {
+        if (recommendationOrder.has(teacher.id) || frequentReplacementIds.has(teacher.id)) {
             let suffix = "";
+
             if (teacher.role === TeacherRoleValues.SUBSTITUTE) {
                 suffix = "מילוי מקום";
             } else if (scheduledTeacherIds.has(teacher.id)) {
@@ -188,6 +210,7 @@ export const sortDailyTeachers = (
                     else suffix = "ללא מערכת";
                 }
             }
+
             recommendedTeachers.push({ teacher, suffix });
         }
 
