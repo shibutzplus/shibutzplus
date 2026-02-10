@@ -8,7 +8,7 @@ import DailyEventHeader from "../DailyEventHeader/DailyEventHeader";
 import DailyEventCell from "../DailyEventCell/DailyEventCell";
 import { useColumnAnimation } from "./useColumnAnimation";
 import { sortDailyColumnIdsByPosition } from "@/utils/sort";
-import { HOURS_IN_DAY } from "@/utils/time";
+import { DEFAULT_FROM_HOUR, DEFAULT_TO_HOUR } from "@/utils/time";
 import { TeacherType } from "@/models/types/teachers";
 import { DailySchedule, ColumnType, ColumnTypeValues } from "@/models/types/dailySchedule";
 import styles from "./DailyTable.module.css";
@@ -94,7 +94,8 @@ const DailyTable: React.FC<DailyTableProps> = ({
 }) => {
     const { settings } = useMainContext();
 
-    const hoursNum = settings?.hoursNum || HOURS_IN_DAY;
+    const fromHour = settings?.fromHour ?? DEFAULT_FROM_HOUR;
+    const toHour = settings?.toHour ?? DEFAULT_TO_HOUR;
 
     const schedule = mainDailyTable[selectedDate];
     const sortedTableColumns = useMemo(() => {
@@ -156,8 +157,8 @@ const DailyTable: React.FC<DailyTableProps> = ({
     }, [schedule, sortedTableColumns]);
 
     const rows = useMemo(() => {
-        return Array.from({ length: hoursNum }, (_, i) => i + 1);
-    }, [hoursNum]);
+        return Array.from({ length: toHour - fromHour + 1 }, (_, i) => fromHour + i);
+    }, [fromHour, toHour]);
 
     const getColorClass = (type: ColumnType) => {
         switch (type) {

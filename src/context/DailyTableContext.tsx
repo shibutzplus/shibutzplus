@@ -17,7 +17,7 @@ import { getSystemRecommendationsAction } from "@/app/actions/GET/getSystemRecom
 import { deleteDailyColumnAction } from "@/app/actions/DELETE/deleteDailyColumnAction";
 import { SyncItem, SyncChannel } from "@/services/sync/clientSyncService";
 import { mapAnnualTeachers, populateDailyScheduleTable, mapAnnualTeacherClasses, } from "@/services/daily/populate";
-import { createNewEmptyColumn } from "@/services/daily/setEmpty";
+import { initializeEmptyColumn } from "@/services/daily/setEmpty";
 import { generateId } from "@/utils";
 import { sortDailyColumnIdsByPosition } from "@/utils/sort";
 import { validateMaxColumns } from "@/utils/security";
@@ -219,7 +219,8 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                             prevTable,
                             selectedDate,
                             response.data,
-                            settings?.hoursNum,
+                            settings?.fromHour ?? 1,
+                            settings?.toHour ?? 10,
                             teachers || [],
                             classes || [],
                             subjects || []
@@ -321,7 +322,8 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                             prevTable,
                             selectedDate,
                             response.data,
-                            settings?.hoursNum,
+                            settings?.fromHour ?? 1,
+                            settings?.toHour ?? 10,
                             teachers || [],
                             classes || [],
                             subjects || []
@@ -429,17 +431,17 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
             }
 
             // Create empty column first with placeholder pos
-            createNewEmptyColumn(
+            const scheduleWithNewCol = initializeEmptyColumn(
                 tempSchedule,
                 selectedDate,
                 newColumnId,
-                type,
-                0, // Placeholder position, will be updated by rebalance
-                settings?.hoursNum
+                { type, position: 0 }, // Placeholder position, will be updated by rebalance
+                settings?.fromHour ?? 1,
+                settings?.toHour ?? 10
             );
 
-            // Pass this temp schedule to rebalance so it knows about the new column
-            rebalanceColumns(newColsList, tempSchedule);
+            // Pass this schedule to rebalance so it knows about the new column
+            rebalanceColumns(newColsList, scheduleWithNewCol);
             return;
         }
 
@@ -452,16 +454,16 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
             finalSchedule[selectedDate] = {};
         }
 
-        createNewEmptyColumn(
+        const newSchedule = initializeEmptyColumn(
             finalSchedule,
             selectedDate,
             newColumnId,
-            type,
-            calculatedNewPos,
-            settings?.hoursNum
+            { type, position: calculatedNewPos },
+            settings?.fromHour ?? 1,
+            settings?.toHour ?? 10
         );
 
-        setMainDailyTable(prev => ({ ...prev, ...finalSchedule }));
+        setMainDailyTable(prev => ({ ...prev, ...newSchedule }));
     };
 
     const moveColumn = async (columnId: string, direction: "left" | "right") => {

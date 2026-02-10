@@ -7,7 +7,7 @@ import { ColumnType, DailySchedule, DailyScheduleCell, DailyScheduleType, Teache
 import { TeacherType } from "@/models/types/teachers";
 import { addNewTeacherValueCell } from "@/services/daily/add";
 import { fillLeftRowsWithEmptyCells } from "@/services/daily/populate";
-import { setEmptyTeacherColumn } from "@/services/daily/setEmpty";
+import { initializeEmptyColumn } from "@/services/daily/setEmpty";
 import { updateAddCell } from "@/services/daily/update";
 import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
@@ -18,6 +18,7 @@ const useDailyTeacherActions = (
 
 ) => {
     const { school, teachers, settings } = useMainContext();
+
     const populateTeacherColumn = async (
         selectedDate: string,
         columnId: string,
@@ -42,14 +43,13 @@ const useDailyTeacherActions = (
                         optimisticSchedule[selectedDate][columnId] = {}; // Clear existing column data first
                     }
 
-                    const finalOptimisticSchedule = setEmptyTeacherColumn(
+                    const finalOptimisticSchedule = initializeEmptyColumn(
                         optimisticSchedule,
                         selectedDate,
                         columnId,
-                        type,
-                        currentPosition,
-                        settings?.hoursNum,
-                        optimisticTeacher,
+                        { type, position: currentPosition, headerTeacher: optimisticTeacher },
+                        settings?.fromHour ?? 1,
+                        settings?.toHour ?? 10,
                     );
                     setMainDailyTable(finalOptimisticSchedule);
                 } else {
@@ -151,7 +151,8 @@ const useDailyTeacherActions = (
                         selectedDate,
                         columnId,
                         { headerTeacher, type, position: currentPosition },
-                        settings?.hoursNum,
+                        settings?.fromHour ?? 1,
+                        settings?.toHour ?? 10,
                     );
                     setMainDailyTable(updatedSchedule);
                 } else {
@@ -159,14 +160,13 @@ const useDailyTeacherActions = (
                     // We re-affirm the empty column with the teacher header
                     const headerTeacher = teachers?.find((t) => t.id === teacherId);
                     if (!headerTeacher) return;
-                    const updatedSchedule = setEmptyTeacherColumn(
+                    const updatedSchedule = initializeEmptyColumn(
                         { ...mainDailyTable },
                         selectedDate,
                         columnId,
-                        type,
-                        currentPosition,
-                        settings?.hoursNum,
-                        headerTeacher,
+                        { type, position: currentPosition, headerTeacher },
+                        settings?.fromHour ?? 1,
+                        settings?.toHour ?? 10,
                     );
                     setMainDailyTable(updatedSchedule);
                 }

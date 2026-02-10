@@ -2,7 +2,8 @@ import { ActionResponse } from "./actions";
 
 export type SchoolSettingsType = {
     id: number;
-    hoursNum: number;
+    fromHour: number;
+    toHour: number;
     displaySchedule2Susb: boolean;
     schoolId: string;
 };

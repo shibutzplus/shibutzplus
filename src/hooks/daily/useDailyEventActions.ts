@@ -46,7 +46,7 @@ const useDailyEventActions = (
                         headerEvent: eventTitle,
                         type: ColumnTypeValues.event,
                         position: currentPosition,
-                    }, settings?.hoursNum);
+                    }, settings?.fromHour ?? 1, settings?.toHour ?? 10);
                     return updatedSchedule;
                 });
             } else {
@@ -66,7 +66,7 @@ const useDailyEventActions = (
                 const response = await addDailyEventCellAction({
                     date: new Date(selectedDate),
                     day: day,
-                    hour: 0,
+                    hour: -1,
                     columnId,
                     school: school,
                     columnType: ColumnTypeValues.event,
@@ -87,8 +87,8 @@ const useDailyEventActions = (
 
                         updatedSchedule = initDailySchedule(updatedSchedule, selectedDate, columnId);
 
-                        updatedSchedule[selectedDate][columnId]["0"] = {
-                            hour: 0,
+                        updatedSchedule[selectedDate][columnId]["-1"] = {
+                            hour: -1,
                             DBid: response.data!.id,
                             headerCol: {
                                 headerEvent: eventTitle,
@@ -101,7 +101,7 @@ const useDailyEventActions = (
                             headerEvent: eventTitle,
                             type: ColumnTypeValues.event,
                             position: currentPosition,
-                        }, settings?.hoursNum);
+                        }, settings?.fromHour ?? 1, settings?.toHour ?? 10);
 
                         return updatedSchedule;
                     });
@@ -230,7 +230,7 @@ const useDailyEventActions = (
             const headerResponse = await addDailyEventCellAction({
                 date: new Date(selectedDate),
                 day: day,
-                hour: 0,
+                hour: -1,
                 columnId,
                 school: school,
                 columnType: ColumnTypeValues.event,
@@ -253,8 +253,8 @@ const useDailyEventActions = (
 
                     if (!updatedSchedule[selectedDate][columnId]) updatedSchedule[selectedDate][columnId] = {};
 
-                    updatedSchedule[selectedDate][columnId]["0"] = {
-                        hour: 0,
+                    updatedSchedule[selectedDate][columnId]["-1"] = {
+                        hour: -1,
                         DBid: headerResponse.data!.id,
                         headerCol: {
                             headerEvent: eventTitle,
@@ -269,7 +269,7 @@ const useDailyEventActions = (
             // Paste other cells - Prepare promises
             const cellPromises = Object.keys(pastedColumnData).map((hourKey) => {
                 const hour = parseInt(hourKey);
-                if (isNaN(hour) || hour === 0) return null;
+                if (isNaN(hour) || hour === -1) return null;
 
                 const sourceCell = pastedColumnData[hourKey];
                 if (sourceCell.event === undefined) return null;
@@ -310,7 +310,7 @@ const useDailyEventActions = (
                     headerEvent: eventTitle,
                     type: ColumnTypeValues.event,
                     position: currentPosition,
-                }, settings?.hoursNum);
+                }, settings?.fromHour ?? 1, settings?.toHour ?? 10);
 
                 return updatedSchedule;
             });

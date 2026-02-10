@@ -98,7 +98,8 @@ const DailyScheduleContent: React.FC = () => {
                     <DailyFullScreenTable
                         mainDailyTable={mainDailyTable}
                         selectedDate={selectedDate}
-                        hoursNum={settings?.hoursNum}
+                        fromHour={settings?.fromHour}
+                        toHour={settings?.toHour}
                         onTeacherClick={handleFullScreenTeacherClick}
 
                     />
@@ -121,7 +122,8 @@ const DailyScheduleContent: React.FC = () => {
                         teacher={teacher}
                         selectedDate={selectedDate}
                         isInsidePanel
-                        hoursNum={settings?.hoursNum}
+                        fromHour={settings?.fromHour}
+                        toHour={settings?.toHour}
                     />
                 ) : null}
             </SlidingPanel>

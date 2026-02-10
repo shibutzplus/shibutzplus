@@ -16,7 +16,7 @@ import { useOptionalMainContext } from "@/context/MainContext";
 import { clearSessionStorage, getSessionStorage, SESSION_KEYS, setSessionStorage, } from "@/lib/sessionStorage";
 import { AppType } from "@/models/types";
 import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
-import { HOURS_IN_DAY } from "@/utils/time";
+import { DEFAULT_FROM_HOUR, DEFAULT_TO_HOUR } from "@/utils/time";
 import { SchoolSettingsType } from "@/models/types/settings";
 import useGuestModePopup from "@/hooks/useGuestModePopup";
 import { NAV_LINK_GROUPS, ILink } from "@/resources/navigation";
@@ -208,14 +208,16 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
             "S",
             <SettingsPopup
                 schoolId={school.id}
-                initialHours={context?.settings?.hoursNum || HOURS_IN_DAY}
+                initialFromHour={context?.settings?.fromHour ?? DEFAULT_FROM_HOUR}
+                initialToHour={context?.settings?.toHour ?? DEFAULT_TO_HOUR}
                 initialShowExternal={context?.settings?.displaySchedule2Susb || false}
                 onSave={(newSettings) => {
                     context?.setSchool((prev) =>
                         prev
                             ? {
                                 ...prev,
-                                hoursNum: newSettings.hoursNum,
+                                fromHour: newSettings.fromHour,
+                                toHour: newSettings.toHour,
                                 displaySchedule2Susb: newSettings.displaySchedule2Susb,
                             }
                             : prev,

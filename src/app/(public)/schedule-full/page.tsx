@@ -78,7 +78,8 @@ const FullScheduleViewPage: NextPage = () => {
                 selectedDate={selectedDate}
                 EmptyTable={NotPublished}
                 emptyText={getEmptyText()}
-                hoursNum={settings?.hoursNum}
+                fromHour={settings?.fromHour}
+                toHour={settings?.toHour}
                 appType="public"
             />
         </section>

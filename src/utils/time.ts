@@ -46,8 +46,8 @@ export const getHebrewMonthName = (monthIndex: number): string => {
 
 export const ONE_DAY = 1;
 
-// Default number of hours in a day
-export const HOURS_IN_DAY = 10;
+export const DEFAULT_FROM_HOUR = 1;
+export const DEFAULT_TO_HOUR = 10;
 
 // Global auto-switch time configuration (HH:MM)
 export const AUTO_SWITCH_TIME = "16:00";

@@ -7,7 +7,7 @@ export const history = pgTable('history', {
     schoolId: text('school_id').notNull().references(() => schools.id),
     date: date('date').notNull(),
     day: integer('day').notNull(),                          // day of week 1-7
-    hour: integer('hour').notNull(),                        // hour of day 1-12
+    hour: integer('hour').notNull(),                        // hour of day 0-12 (-1 is for event header)
     columnId: text('column_id').notNull(),
     columnPosition: integer('column_position').notNull(),   // e.g. 1000, 2000, 3000
     columnType: integer('column_type').notNull(),           // See ColumnTypeValues

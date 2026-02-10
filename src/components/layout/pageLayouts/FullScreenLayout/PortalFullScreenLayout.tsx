@@ -1,7 +1,7 @@
 "use client";
 
 //
-//  Used for Teachers Portal Pages only - full screen views
+//  Used for Teachers Portal Pages only - full screen views with auto-refresh
 //
 import React from "react";
 import { usePortalContext } from "@/context/PortalContext";
@@ -17,13 +17,14 @@ type PortalFullScreenLayoutProps = {
 };
 
 export default function PortalFullScreenLayout({ children }: PortalFullScreenLayoutProps) {
+
     const pathname = usePathname();
     const nav = useRouter();
     const { teacher, handleRefreshDates, refreshDailyScheduleTeacherPortal, handleIncomingSync } = usePortalContext();
     const refreshRef = React.useRef<((items: SyncItem[]) => Promise<void> | void) | null>(null);
     const { resetUpdate } = usePollingUpdates(refreshRef);
 
-    const handleRefresh = async (items?: SyncItem[]) => {
+    const handleRefresh = React.useCallback(async (items?: SyncItem[]) => {
         const { hasRelevantUpdate, newLists } = await handleIncomingSync(items);
 
         if (hasRelevantUpdate) {
@@ -42,7 +43,7 @@ export default function PortalFullScreenLayout({ children }: PortalFullScreenLay
 
         // reset update badge after successful refresh
         resetUpdate();
-    };
+    }, [handleIncomingSync, handleRefreshDates, pathname, refreshDailyScheduleTeacherPortal, resetUpdate]);
 
     refreshRef.current = handleRefresh; // Keep the ref updated with the latest handleRefresh
 
@@ -74,7 +75,7 @@ export default function PortalFullScreenLayout({ children }: PortalFullScreenLay
 
         const cleanup = checkAutoSwitch();
         return cleanup;
-    }, [teacher]);
+    }, [teacher, handleRefresh]);
 
     // Render children wrapped in FullScreenContainer
     return (

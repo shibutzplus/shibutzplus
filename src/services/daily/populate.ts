@@ -1,7 +1,7 @@
 import { AnnualScheduleType, AvailableTeachers } from "@/models/types/annualSchedule";
 import { ColumnType, ColumnTypeValues, DailySchedule, DailyScheduleCell, DailyScheduleType, HeaderCol } from "@/models/types/dailySchedule";
 import { initDailyEventCellData, initDailyTeacherCellData } from "@/services/daily/initialize";
-import { HOURS_IN_DAY } from "@/utils/time";
+import { DEFAULT_FROM_HOUR, DEFAULT_TO_HOUR } from "@/utils/time";
 import { setColumn } from "./setColumn";
 import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
@@ -64,8 +64,8 @@ export const populateTable = (dataColumns: DailyScheduleType[], selectedDate: st
 /**
  * Ensures that all hourly slots in a specific daily schedule column are populated.
  *
- * This function iterates through all hours of the day (1 to HOURS_IN_DAY). If a cell
- * for a specific hour does not exist in the given `columnId` for the `selectedDate`,
+ * This function iterates through all hours of the day. 
+ * If a cell for a specific hour does not exist in the given `columnId` for the `selectedDate`,
  * it creates a new empty cell with the provided `headerCol` information. This ensures
  * the column has a complete set of rows for rendering or processing.
  * @returns The updated daily schedule with all hours filled for the specified column.
@@ -75,9 +75,10 @@ export const fillLeftRowsWithEmptyCells = (
     selectedDate: string,
     columnId: string,
     headerCol?: HeaderCol | undefined,
-    hoursNum: number = HOURS_IN_DAY,
+    fromHour: number = DEFAULT_FROM_HOUR,
+    toHour: number = DEFAULT_TO_HOUR,
 ) => {
-    for (let hour = 1; hour <= hoursNum; hour++) {
+    for (let hour = fromHour; hour <= toHour; hour++) {
         if (!updatedSchedule[selectedDate][columnId][`${hour}`]) {
             updatedSchedule[selectedDate][columnId][`${hour}`] = { headerCol, hour };
         }
@@ -162,7 +163,8 @@ export const populateDailyScheduleTable = (
     mainDailyTable: DailySchedule,
     selectedDate: string,
     dataColumns: DailyScheduleType[],
-    hoursNum: number = HOURS_IN_DAY,
+    fromHour: number = DEFAULT_FROM_HOUR,
+    toHour: number = DEFAULT_TO_HOUR,
     teachers: any[] = [],
     classes: any[] = [],
     subjects: any[] = []
@@ -228,7 +230,7 @@ export const populateDailyScheduleTable = (
 
         Object.entries(entriesByDayAndHeader).forEach(([date, headerEntries]) => {
             Object.entries(headerEntries).forEach(([columnId, cells]) => {
-                setColumn(cells, newSchedule, columnId, date, hoursNum);
+                setColumn(cells, newSchedule, columnId, date, fromHour, toHour);
             });
         });
 

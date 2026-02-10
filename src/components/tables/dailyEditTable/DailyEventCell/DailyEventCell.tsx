@@ -22,7 +22,7 @@ const DailyEventCell: React.FC<DailyEventCellProps> = ({ columnId, cell }) => {
     const [prevInfo, setPrevInfo] = useState<string>(eventData || "");
 
     const handleChange = async (value: string) => {
-        if (!hour || !columnId || !selectedDate) return;
+        if (hour === undefined || !columnId || !selectedDate) return;
 
         const event = value.trim();
         if (event === prevInfo) return;

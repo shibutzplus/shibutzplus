@@ -60,7 +60,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
 
     // Calculate recommended IDs
     const recommendedTeacherIds = useMemo(() => {
-        if (!hour || !headerData?.headerTeacher?.name || !systemRecommendations) return [];
+        if (hour === undefined || !headerData?.headerTeacher?.name || !systemRecommendations) return [];
         const hourStr = hour.toString();
         const teacherName = headerData.headerTeacher.name;
 
@@ -120,7 +120,7 @@ const DailyTeacherCell: React.FC<DailyTeacherCellProps> = ({ columnId, cell, typ
     const getDisplayText = () => displayText;
 
     const handleTeacherChange = async (methodType: "update" | "create", value: string) => {
-        if (!hour || !columnId || !selectedDate || !headerData) return;
+        if (hour === undefined || !columnId || !selectedDate || !headerData) return;
 
         try {
             setIsLoading(true);

@@ -9,14 +9,15 @@ import { DAYS_OF_WEEK, dayToNumber } from "@/utils/time";
 export const initializeEmptyAnnualSchedule = (
     newSchedule: WeeklySchedule,
     selectedClassId: string,
-    totalHours: number,
+    fromHour: number = 1,
+    toHour: number = 10,
 ) => {
     // Initialize empty schedule structure
     newSchedule[selectedClassId] = {};
     DAYS_OF_WEEK.forEach((day) => {
         newSchedule[selectedClassId][day] = {};
 
-        for (let hour = 1; hour <= totalHours; hour++) {
+        for (let hour = fromHour; hour <= toHour; hour++) {
             newSchedule[selectedClassId][day][hour] = {
                 teachers: [],
                 subjects: [],

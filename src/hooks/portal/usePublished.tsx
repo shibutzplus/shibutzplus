@@ -10,7 +10,6 @@ import { SubjectType } from "@/models/types/subjects";
 import { TeacherType } from "@/models/types/teachers";
 import messages from "@/resources/messages";
 import { populateDailyScheduleTable } from "@/services/daily/populate";
-import { HOURS_IN_DAY } from "@/utils/time";
 import { errorToast } from "@/lib/toast";
 import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
@@ -23,7 +22,8 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
     const [allTeachers, setAllTeachers] = useState<TeacherType[] | undefined>(undefined);
     const [allSubjects, setAllSubjects] = useState<SubjectType[] | undefined>(undefined);
     const [allClasses, setAllClasses] = useState<ClassType[] | undefined>(undefined);
-    const [schoolHours, setSchoolHours] = useState<number>(HOURS_IN_DAY);
+    const [fromHour, setFromHour] = useState<number>(1);
+    const [toHour, setToHour] = useState<number>(10);
     const [listSchoolId, setListSchoolId] = useState<string | undefined>();
 
     const refreshEntities = async () => {
@@ -39,7 +39,10 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
             if (teachersRes.success && teachersRes.data) setAllTeachers(teachersRes.data);
             if (subjectsRes.success && subjectsRes.data) setAllSubjects(subjectsRes.data);
             if (classesRes.success && classesRes.data) setAllClasses(classesRes.data);
-            if (schoolRes.success && schoolRes.data) setSchoolHours(schoolRes.data.hoursNum || HOURS_IN_DAY);
+            if (schoolRes.success && schoolRes.data) {
+                setFromHour(schoolRes.data.fromHour ?? 1);
+                setToHour(schoolRes.data.toHour ?? 10);
+            }
 
             setListSchoolId(schoolId);
 
@@ -86,7 +89,8 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
                     mainPublishTable,
                     effectiveDate,
                     response.data,
-                    schoolHours,
+                    fromHour,
+                    toHour,
                     overrideLists?.teachers || allTeachers || [],
                     overrideLists?.classes || allClasses || [],
                     overrideLists?.subjects || allSubjects || []

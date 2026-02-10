@@ -94,7 +94,7 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
             const storedTeacher = getStorageTeacher();
             if (storedTeacher) setTeacher(storedTeacher);
         }
-    }, []);
+    }, [schoolId, teacher]);
 
     const setTeacherAndSchool = async (schoolId?: string, teacherId?: string) => {
         try {
@@ -117,7 +117,6 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
     };
 
     // -- Dates -- //
-
     const blockRef = useRef<boolean>(true);
     useEffect(() => {
         const fetchPublishedDates = async () => {
@@ -127,12 +126,13 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
                 try {
                     const response = await getSchoolAction(teacher.schoolId);
                     if (response.success && response.data) {
-                        const { hoursNum, displaySchedule2Susb } = response.data;
+                        const { displaySchedule2Susb, fromHour, toHour } = response.data;
                         setSettings({
                             id: 0,
                             schoolId: response.data.id,
-                            hoursNum,
                             displaySchedule2Susb,
+                            fromHour,
+                            toHour,
                         });
                         const res = getPublishedDatesOptions(response.data.publishDates);
                         if (res.length === 0) {
@@ -173,7 +173,7 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
                 datesOptions[0].value;
             setSelectedDate(initialDate);
         }
-    }, [datesOptions]);
+    }, [datesOptions, selectedDate]);
 
     const handleRefreshDates = async (): Promise<{
         success: boolean;
@@ -194,12 +194,13 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
         try {
             const response = await getSchoolAction(teacher.schoolId);
             if (response.success && response.data) {
-                const { hoursNum, displaySchedule2Susb } = response.data;
+                const { displaySchedule2Susb, fromHour, toHour } = response.data;
                 setSettings({
                     id: 0,
                     schoolId: response.data.id,
-                    hoursNum,
                     displaySchedule2Susb,
+                    fromHour,
+                    toHour,
                 });
                 const options = getPublishedDatesOptions(response.data.publishDates);
                 setDatesOptions(options);

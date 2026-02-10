@@ -52,7 +52,8 @@ const HistorySchedulePage: NextPage = () => {
                     EmptyTable={NotPublished}
                     emptyText="אין נתוני היסטוריה ליום שנבחר"
                     onTeacherClick={handleTeacherClick}
-                    hoursNum={settings?.hoursNum}
+                    fromHour={settings?.fromHour}
+                    toHour={settings?.toHour}
 
                 />
             </section>
@@ -66,7 +67,8 @@ const HistorySchedulePage: NextPage = () => {
                         teacher={teacher}
                         selectedDate={selectedYearDate}
                         isInsidePanel
-                        hoursNum={settings?.hoursNum}
+                        fromHour={settings?.fromHour}
+                        toHour={settings?.toHour}
                     />
                 ) : null}
             </SlidingPanel>

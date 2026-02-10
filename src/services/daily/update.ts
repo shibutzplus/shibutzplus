@@ -1,7 +1,6 @@
 import { eventPlaceholder } from "@/models/constant/table";
 import { ColumnTypeValues, DailySchedule, DailyScheduleCell } from "@/models/types/dailySchedule";
 import { TeacherType } from "@/models/types/teachers";
-import { HOURS_IN_DAY } from "@/utils/time";
 
 /**
  * Updates the daily schedule state with a new or modified cell.
@@ -109,8 +108,10 @@ export const updateAllEventHeader = (
     selectedDate: string,
     columnId: string,
     eventTitle: string,
+    fromHour: number = 1,
+    toHour: number = 10,
 ) => {
-    for (let i = 1; i <= HOURS_IN_DAY; i++) {
+    for (let i = fromHour; i <= toHour; i++) {
         const cell = updatedSchedule[selectedDate][columnId][`${i}`];
         if (cell) {
             cell.headerCol = {

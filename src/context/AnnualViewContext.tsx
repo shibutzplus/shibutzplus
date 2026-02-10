@@ -65,17 +65,17 @@ export const AnnualViewProvider: React.FC<{ children: ReactNode }> = ({ children
 
         if (selectedClassId && !selectedTeacherId) {
             // Only Class selected: Populate like AnnualClass
-            newSchedule = initializeEmptyAnnualSchedule({}, selectedClassId, school?.hoursNum ?? 10);
+            newSchedule = initializeEmptyAnnualSchedule({}, selectedClassId, school?.fromHour ?? 1, school?.toHour ?? 10);
             newSchedule = populateAllClassesSchedule(annualScheduleTable, newSchedule);
         } else if (!selectedClassId && selectedTeacherId) {
             // Only Teacher selected: Populate like AnnualTeacher
-            newSchedule = initializeEmptyAnnualSchedule({}, selectedTeacherId, school?.hoursNum ?? 10);
+            newSchedule = initializeEmptyAnnualSchedule({}, selectedTeacherId, school?.fromHour ?? 1, school?.toHour ?? 10);
             newSchedule = populateAllTeachersSchedule(annualScheduleTable, newSchedule);
         } else if (selectedClassId && selectedTeacherId) {
             // Both selected: We can use Class structure but filter by teacher in the cell,
             // OR use Teacher structure and filter by class.
             // Let's use Class structure as the base.
-            newSchedule = initializeEmptyAnnualSchedule({}, selectedClassId, school?.hoursNum ?? 10);
+            newSchedule = initializeEmptyAnnualSchedule({}, selectedClassId, school?.fromHour ?? 1, school?.toHour ?? 10);
             newSchedule = populateAllClassesSchedule(annualScheduleTable, newSchedule);
         }
 

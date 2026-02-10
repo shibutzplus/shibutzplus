@@ -102,10 +102,10 @@ interface AnnualSchedulePdfProps {
     classes: ClassType[];
     teachers: TeacherType[];
     subjects: SubjectType[];
-    schoolHours?: number;
+    fromHour?: number;
+    toHour?: number;
 }
 
-const HOURS_IN_DAY = 10;
 const DAYS_OF_WORK_WEEK = ['א', 'ב', 'ג', 'ד', 'ה', 'ו'];
 
 const AnnualSchedulePdf: React.FC<AnnualSchedulePdfProps> = ({
@@ -115,7 +115,8 @@ const AnnualSchedulePdf: React.FC<AnnualSchedulePdfProps> = ({
     classes,
     teachers,
     subjects,
-    schoolHours = HOURS_IN_DAY,
+    fromHour = 1,
+    toHour = 10,
 }) => {
     // Determine title
     let title = "מערכת שנתית";
@@ -168,7 +169,8 @@ const AnnualSchedulePdf: React.FC<AnnualSchedulePdfProps> = ({
         currentSchedule ? { [scheduleKey]: currentSchedule } : undefined,
         selectedClassId,
         selectedTeacherId,
-        schoolHours
+        toHour,
+        fromHour
     );
 
     return (
@@ -192,7 +194,7 @@ const AnnualSchedulePdf: React.FC<AnnualSchedulePdfProps> = ({
                     </View>
 
                     {/* Hours Rows */}
-                    {Array.from({ length: rowsCount }, (_, i) => i + 1).map(hour => (
+                    {Array.from({ length: rowsCount }, (_, i) => i + fromHour).map(hour => (
                         <View key={hour} style={styles.row}>
                             <View style={[styles.cell, styles.hourCell]}>
                                 <Text>{hour}</Text>

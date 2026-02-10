@@ -14,7 +14,6 @@ import { getTeacherPortalDataAction } from "@/app/actions/GET/getTeacherPortalDa
 import { populatePortalTable } from "@/services/portalTeacherService";
 import { setStorageTeacher } from "@/lib/localStorage";
 import styles from "./teacherPortal.module.css";
-import { TeacherRoleValues } from "@/models/types/teachers";
 
 const TeacherPortalPage: NextPage = () => {
 
@@ -108,7 +107,8 @@ const TeacherPortalPage: NextPage = () => {
             <TeacherTable
                 teacher={teacher}
                 selectedDate={selectedDate}
-                hoursNum={settings?.hoursNum}
+                fromHour={settings?.fromHour}
+                toHour={settings?.toHour}
             />
         </div>
     );

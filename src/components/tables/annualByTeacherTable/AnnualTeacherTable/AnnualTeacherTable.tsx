@@ -5,7 +5,6 @@ import { WeeklySchedule } from "@/models/types/annualSchedule";
 import { SubjectType } from "@/models/types/subjects";
 import { TeacherType } from "@/models/types/teachers";
 import { ClassType } from "@/models/types/classes";
-import { TableRows } from "@/models/constant/table";
 import { DAYS_OF_WORK_WEEK } from "@/utils/time";
 import AnnualRow from "../AnnualRow/AnnualRow";
 import styles from "./AnnualTeacherTable.module.css";
@@ -65,7 +64,7 @@ const AnnualTeacherTable: React.FC<AnnualTeacherTableProps> = ({
                     </tr>
                 </thead>
                 <tbody className={styles.scheduleTableBody}>
-                    {Array.from({ length: school?.hoursNum || TableRows }, (_, i) => i + 1).map(
+                    {Array.from({ length: (school?.toHour ?? 10) - (school?.fromHour ?? 1) + 1 }, (_, i) => (school?.fromHour ?? 1) + i).map(
                         (hour) => (
                             <AnnualRow
                                 key={hour}
