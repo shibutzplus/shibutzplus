@@ -87,6 +87,14 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
     };
 
     const confirmRemove = (what: string | null, proceed: () => void) => {
+        const cellData = schedule[selectedTeacherId]?.[day]?.[hour];
+        const isFull = (cellData?.subjects?.length ?? 0) > 0 && (cellData?.classes?.length ?? 0) > 0;
+
+        if (!isFull) {
+            proceed();
+            return;
+        }
+
         handleOpenPopup(
             PopupAction.deleteTeacher,
             what ? `האם למחוק את ${what}?` : "האם למחוק את הפריט?",
