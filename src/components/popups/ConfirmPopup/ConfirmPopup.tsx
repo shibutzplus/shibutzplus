@@ -13,6 +13,7 @@ interface ConfirmPopupProps {
     yesText?: string;
     noText?: string;
     defaultAnswer?: "yes" | "no";
+    showIcon?: boolean;
 }
 
 const ConfirmPopup: React.FC<ConfirmPopupProps> = ({
@@ -21,7 +22,8 @@ const ConfirmPopup: React.FC<ConfirmPopupProps> = ({
     onNo,
     yesText = "כן",
     noText = "לא",
-    defaultAnswer = "yes"
+    defaultAnswer = "yes",
+    showIcon = true
 }) => {
     const { closePopup } = usePopup();
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -42,7 +44,7 @@ const ConfirmPopup: React.FC<ConfirmPopupProps> = ({
 
     return (
         <div className={styles.popupContent}>
-            {IconToRender && (
+            {showIcon && IconToRender && (
                 <div className={styles.iconContainer}>
                     <div className={styles.iconBackground}>
                         {typeof IconToRender === 'function' ? <IconToRender size={28} /> : IconToRender}
