@@ -14,7 +14,7 @@ export const getIsraelDateComponents = (date: Date = new Date()) => {
         hour: "numeric",
         minute: "numeric",
         second: "numeric",
-        hour12: false,
+        hourCycle: "h23",
     });
 
     const parts = formatter.formatToParts(date);
