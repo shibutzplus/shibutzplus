@@ -27,7 +27,7 @@ export default function AnnualViewPageLayout({ children }: AnnualViewPageLayoutP
         schedule,
     } = useAnnualView();
 
-    const { classes, teachers, subjects, school } = useMainContext();
+    const { classes, teachers, subjects, settings } = useMainContext();
 
     const hasSelection = selectedClassId || selectedTeacherId;
 
@@ -41,7 +41,8 @@ export default function AnnualViewPageLayout({ children }: AnnualViewPageLayoutP
                     classes={classes || []}
                     teachers={teachers || []}
                     subjects={subjects || []}
-                    schoolHours={school?.hoursNum}
+                    fromHour={settings?.fromHour}
+                    toHour={settings?.toHour}
                 />
             }
             fileName={`shibutzPlus${selectedClassId ? "_" + classes?.find((c) => c.id === selectedClassId)?.name : ""}${selectedTeacherId ? "_" + teachers?.find((t) => t.id === selectedTeacherId)?.name : ""}.pdf`}

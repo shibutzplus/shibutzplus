@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { TableRows } from "@/models/constant/table";
 import TeacherMaterialRow from "../TeacherMaterialRow/TeacherMaterialRow";
 import styles from "./TeacherTable.module.css";
 import { useTeacherTableContext } from "@/context/TeacherTableContext";
@@ -14,26 +13,24 @@ type TeacherTableProps = {
     teacher?: TeacherType;
     selectedDate: string;
     isInsidePanel?: boolean;
-    hoursNum?: number;
+    fromHour?: number;
+    toHour?: number;
 };
 
 const TeacherTable: React.FC<TeacherTableProps> = ({
     teacher,
     selectedDate,
     isInsidePanel,
-    hoursNum,
+    fromHour = 1,
+    toHour = 10,
 }) => {
     const { mainPortalTable, hasFetched, isPortalLoading } = useTeacherTableContext();
     const dayTable = selectedDate ? mainPortalTable[selectedDate] : undefined;
 
-    let rowsCount = hoursNum || TableRows;
-
-    // Calculate dynamic rows based on content
-
-    if (dayTable) {
-        const rows = calculateVisibleRowsForTeacher(dayTable, hoursNum);
-        rowsCount = rows.length;
-    }
+    // Generate rows range
+    const rows = React.useMemo(() => {
+        return calculateVisibleRowsForTeacher(dayTable, fromHour, toHour);
+    }, [dayTable, fromHour, toHour]);
 
     if (!hasFetched || isPortalLoading || !dayTable)
         return (
@@ -68,7 +65,7 @@ const TeacherTable: React.FC<TeacherTableProps> = ({
                     </tr>
                 </thead>
                 <tbody className={styles.scheduleTableBody}>
-                    {Array.from({ length: rowsCount }, (_, i) => i + 1).map((hour) => {
+                    {rows.map((hour) => {
                         const row = dayTable?.[String(hour)];
                         return (
                             <TeacherMaterialRow

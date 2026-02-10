@@ -96,7 +96,8 @@ export const getAnnualScheduleDimensions = (
     schedule: import("@/models/types/annualSchedule").WeeklySchedule | undefined,
     selectedClassId: string,
     selectedTeacherId: string,
-    maxHoursInDay: number = 10
+    toHour: number = 10,
+    fromHour: number = 1
 ) => {
     const lookupId = selectedClassId || selectedTeacherId;
     let maxHourWithData = 0;
@@ -124,7 +125,9 @@ export const getAnnualScheduleDimensions = (
         });
     }
 
-    const rowsCount = Math.min(maxHoursInDay, Math.max(6, maxHourWithData));
+    const minLastRow = Math.max(6, fromHour);
+    const lastRow = Math.min(toHour, Math.max(minLastRow, maxHourWithData));
+    const rowsCount = Math.max(0, lastRow - fromHour + 1);
 
     return { rowsCount };
 };

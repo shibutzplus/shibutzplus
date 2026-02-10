@@ -35,10 +35,11 @@ export default function AnnualTeacherPageLayout({ children }: AnnualTeacherPageL
                 resolve(true);
             } else {
                 openPopup(
-                    PopupAction.warning,
+                    PopupAction.msgPopup,
                     "S",
                     <ConfirmPopup
                         text="שימו ❤️: שעות ללא שיוך מלא (מקצוע + כיתה) לא יישמרו."
+                        showIcon={false}
                         yesText="להישאר במסך ולתקן"
                         noText="להמשיך ללא שמירה"
                         onYes={async () => {

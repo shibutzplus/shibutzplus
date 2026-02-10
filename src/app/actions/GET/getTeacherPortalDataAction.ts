@@ -69,11 +69,12 @@ export const getTeacherPortalDataAction = async (
         const allClasses = classesListRes.success ? classesListRes.data : [];
 
         // 2. Prepare Settings & Dates
-        const { hoursNum, displaySchedule2Susb } = schoolData;
+        const { fromHour, toHour, displaySchedule2Susb } = schoolData;
         const settings: SchoolSettingsType = {
             id: 0,
             schoolId: schoolData.id,
-            hoursNum,
+            fromHour,
+            toHour,
             displaySchedule2Susb,
         };
 

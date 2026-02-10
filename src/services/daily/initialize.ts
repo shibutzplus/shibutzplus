@@ -1,5 +1,4 @@
 import {
-    ColumnTypeValues,
     DailyScheduleCell,
     DailyScheduleType,
 } from "@/models/types/dailySchedule";

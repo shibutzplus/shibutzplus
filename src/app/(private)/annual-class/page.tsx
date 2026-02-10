@@ -43,7 +43,8 @@ const AnnualSchedulePage: NextPage = () => {
                 newSchedule = initializeEmptyAnnualSchedule(
                     newSchedule,
                     cls.id,
-                    school?.hoursNum || 10,
+                    school?.fromHour ?? 1,
+                    school?.toHour ?? 10,
                 );
             });
             // Populate schedule for all classes in one pass

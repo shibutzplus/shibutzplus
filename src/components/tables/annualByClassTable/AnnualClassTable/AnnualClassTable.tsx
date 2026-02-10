@@ -5,7 +5,6 @@ import { WeeklySchedule } from "@/models/types/annualSchedule";
 import { SubjectRequest, SubjectType } from "@/models/types/subjects";
 import { TeacherRequest, TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import { ClassType } from "@/models/types/classes";
-import { TableRows } from "@/models/constant/table";
 import { useMainContext } from "@/context/MainContext";
 import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
@@ -117,7 +116,7 @@ const AnnualClassTable: React.FC<AnnualClassTableProps> = ({
                     </tr>
                 </thead>
                 <tbody className={styles.scheduleTableBody}>
-                    {Array.from({ length: school?.hoursNum || TableRows }, (_, i) => i + 1).map((hour) => (
+                    {Array.from({ length: (school?.toHour ?? 10) - (school?.fromHour ?? 1) + 1 }, (_, i) => (school?.fromHour ?? 1) + i).map((hour) => (
                         <AnnualRow
                             key={hour}
                             hour={hour}

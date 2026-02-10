@@ -79,7 +79,8 @@ const PublishedPortalPage: NextPage = () => {
                 appType="public"
                 EmptyTable={NotPublished}
                 emptyText={getEmptyText()}
-                hoursNum={settings?.hoursNum}
+                fromHour={settings?.fromHour}
+                toHour={settings?.toHour}
 
             />
         </section>

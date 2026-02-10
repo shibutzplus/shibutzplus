@@ -5,7 +5,7 @@ import { WeeklySchedule } from "@/models/types/annualSchedule";
 import { SubjectType } from "@/models/types/subjects";
 import { TeacherType } from "@/models/types/teachers";
 import { ClassType } from "@/models/types/classes";
-import { DAYS_OF_WORK_WEEK, HOURS_IN_DAY } from "@/utils/time";
+import { DAYS_OF_WORK_WEEK } from "@/utils/time";
 import AnnualViewRow from "@/components/tables/annualViewTable/AnnualViewRow/AnnualViewRow";
 import styles from "./AnnualViewTable.module.css";
 import { useMainContext } from "@/context/MainContext";
@@ -29,15 +29,17 @@ const AnnualViewTable: React.FC<AnnualViewTableProps> = ({
     classes,
 }) => {
     const { settings } = useMainContext();
-    const hoursNum = settings?.hoursNum || HOURS_IN_DAY;
-
+    const fromHour = settings?.fromHour ?? 1;
+    const toHour = settings?.toHour ?? 10;
     const isDisabled = !schedule || !subjects || !classes;
 
+    // Calculate rows to display dynamically based on content
     const { rowsCount } = getAnnualScheduleDimensions(
         schedule,
         selectedClassId,
         selectedTeacherId,
-        hoursNum
+        toHour,
+        fromHour
     );
 
     return (
@@ -59,7 +61,7 @@ const AnnualViewTable: React.FC<AnnualViewTableProps> = ({
                     </tr>
                 </thead>
                 <tbody className={styles.scheduleTableBody}>
-                    {Array.from({ length: rowsCount }, (_, i) => i + 1).map((hour) => (
+                    {Array.from({ length: rowsCount }, (_, i) => i + fromHour).map((hour) => (
                         <AnnualViewRow
                             key={hour}
                             hour={hour}

@@ -73,6 +73,16 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
                 response = await getTeacherFullScheduleAction(teacher.id, selectedDate);
             }
 
+            // Due to recurrent error we added a retry once if response is undefined (network glitch / timeout)
+            if (!response) {
+                await new Promise(resolve => setTimeout(resolve, 500));
+                if (isHistoryPage && teacher.name) {
+                    response = await getTeacherHistoryScheduleAction(teacher.name, teacher.schoolId, selectedDate);
+                } else {
+                    response = await getTeacherFullScheduleAction(teacher.id, selectedDate);
+                }
+            }
+
             if (response?.success && response?.data) {
                 const newSchedule = populatePortalTable(response.data, mainPortalTable, selectedDate);
                 if (newSchedule) setMainPortalTable(newSchedule);

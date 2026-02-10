@@ -70,7 +70,7 @@ interface MainContextProviderProps {
 
 export const MainContextProvider: React.FC<MainContextProviderProps> = ({ children }) => {
     const [school, setSchool] = useState<SchoolType | undefined>(undefined);
-    const settings: SchoolSettingsType | undefined = school ? { id: 0, schoolId: school.id, hoursNum: school.hoursNum ?? 10, displaySchedule2Susb: school.displaySchedule2Susb ?? false, } : undefined;
+    const settings: SchoolSettingsType | undefined = school ? { id: 0, schoolId: school.id, fromHour: school.fromHour ?? 1, toHour: school.toHour ?? 10, displaySchedule2Susb: school.displaySchedule2Susb ?? false, } : undefined;
     const [teachers, setTeachers] = useState<TeacherType[] | undefined>(undefined);
     const [subjects, setSubjects] = useState<SubjectType[] | undefined>(undefined);
     const [classes, setClasses] = useState<ClassType[] | undefined>(undefined);

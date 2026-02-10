@@ -5,14 +5,8 @@ import { NextRequest } from "next/server";
 import { redis } from "@/lib/redis"
 import { DAILY_TEACHER_COL_DATA_CHANGED, DAILY_EVENT_COL_DATA_CHANGED, ENTITIES_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED, MATERIAL_CHANGED } from "@/models/constant/sync";
 import { dbLog } from "@/services/loggerService";
-import { getToken } from "next-auth/jwt";
 
 export async function GET(req: NextRequest) {
-  // Authentication check - this endpoint is excluded from middleware for performance
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-  if (!token) {
-    return new Response("Unauthorized", { status: 401 });
-  }
 
   try {
 

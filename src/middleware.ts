@@ -3,7 +3,7 @@ import { USER_ROLES } from "@/models/constant/auth";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 import router from "@/routes";
-import { apiAuthPrefix, authRoutes, DEFAULT_REDIRECT, GUEST_REDIRECT, GUEST_UNAUTHORIZED, protectedPaths, publicPaths } from "@/routes/protectedAuth";
+import { apiAuthPrefix, authRoutes, DEFAULT_REDIRECT, GUEST_REDIRECT, GUEST_UNAUTHORIZED, protectedPaths } from "@/routes/protectedAuth";
 
 export async function middleware(req: NextRequest) {
     const { nextUrl: url } = req;
@@ -20,11 +20,6 @@ export async function middleware(req: NextRequest) {
     // Check if the path is in the list of protected paths
     const isProtected = protectedPaths.some(
         (path: string) => url.pathname === path || url.pathname.startsWith(`${path}/`),
-    );
-
-    // Check if this is a public route from the router configuration
-    const isPublicRoute = publicPaths.some(
-        (path: string) => url.pathname === path || url.pathname.startsWith(`${path}/`)
     );
 
     // Check if this is a protected API route (any /api/* route not in publicApiRoutes)

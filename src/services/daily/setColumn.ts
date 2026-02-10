@@ -1,6 +1,6 @@
-import { DailySchedule, DailyScheduleCell } from "@/models/types/dailySchedule";
+import { DailySchedule, DailyScheduleCell, ColumnTypeValues } from "@/models/types/dailySchedule";
 import { initDailySchedule } from "./populate";
-import { HOURS_IN_DAY } from "@/utils/time";
+import { DEFAULT_FROM_HOUR, DEFAULT_TO_HOUR } from "@/utils/time";
 
 /**
  * Updates a specific column in the daily schedule with new cell data.
@@ -16,16 +16,14 @@ export const setColumn = (
     newSchedule: DailySchedule,
     columnId: string,
     date: string,
-    hoursNum: number = HOURS_IN_DAY,
+    fromHour: number = DEFAULT_FROM_HOUR,
+    toHour: number = DEFAULT_TO_HOUR,
 ) => {
-    // Check if this is an teacher column by looking at the first cell
-    const isTeacherColumn = cells.length > 0 && cells[0].headerCol?.headerTeacher !== undefined;
-    // (cells[0].subTeacher !== undefined || cells[0].event !== undefined);
-
-    if (isTeacherColumn) {
-        setTeacherColumn(newSchedule, date, cells, columnId, hoursNum);
+    const isEventColumn = cells.length > 0 && cells[0].headerCol?.type === ColumnTypeValues.event;
+    if (isEventColumn) {
+        setEventColumn(newSchedule, date, cells, columnId, fromHour, toHour);
     } else {
-        setEventColumn(newSchedule, date, cells, columnId, hoursNum);
+        setTeacherColumn(newSchedule, date, cells, columnId, fromHour, toHour);
     }
     return newSchedule;
 };
@@ -35,7 +33,8 @@ export const setTeacherColumn = (
     selectedDate: string,
     columnData: DailyScheduleCell[],
     columnId: string,
-    hoursNum: number = HOURS_IN_DAY,
+    fromHour: number = DEFAULT_FROM_HOUR,
+    toHour: number = DEFAULT_TO_HOUR,
 ) => {
     dailySchedule = initDailySchedule(dailySchedule, selectedDate, columnId);
 
@@ -45,7 +44,7 @@ export const setTeacherColumn = (
         hourDataMap.set(row.hour, row);
     });
 
-    for (let hour = 1; hour <= hoursNum; hour++) {
+    for (let hour = fromHour; hour <= toHour; hour++) {
         const existingData = hourDataMap.get(hour);
 
         if (existingData) {
@@ -67,20 +66,6 @@ export const setTeacherColumn = (
         }
     }
 
-    // Include the 0-th hour cell if it exists (contains the column DBid)
-    const zeroCell = hourDataMap.get(0);
-    if (zeroCell) {
-        dailySchedule[selectedDate][columnId]["0"] = {
-            classes: zeroCell.classes,
-            subject: zeroCell.subject,
-            hour: 0,
-            subTeacher: zeroCell.subTeacher,
-            event: zeroCell.event,
-            headerCol: zeroCell.headerCol,
-            DBid: zeroCell.DBid,
-        };
-    }
-
     return dailySchedule;
 };
 
@@ -89,7 +74,8 @@ export const setEventColumn = (
     selectedDate: string,
     columnData: DailyScheduleCell[],
     columnId: string,
-    hoursNum: number = HOURS_IN_DAY,
+    fromHour: number = DEFAULT_FROM_HOUR,
+    toHour: number = DEFAULT_TO_HOUR,
 ): DailySchedule => {
     dailySchedule = initDailySchedule(dailySchedule, selectedDate, columnId);
 
@@ -99,7 +85,7 @@ export const setEventColumn = (
         hourDataMap.set(row.hour, row);
     });
 
-    for (let hour = 1; hour <= hoursNum; hour++) {
+    for (let hour = fromHour; hour <= toHour; hour++) {
         const existingData = hourDataMap.get(hour);
         if (existingData) {
             dailySchedule[selectedDate][columnId][`${hour}`] = {
@@ -117,14 +103,14 @@ export const setEventColumn = (
         }
     }
 
-    // Include the 0-th hour cell if it exists (contains the column DBid)
-    const zeroCell = hourDataMap.get(0);
-    if (zeroCell) {
-        dailySchedule[selectedDate][columnId]["0"] = {
-            event: zeroCell.event,
-            hour: 0,
-            headerCol: zeroCell.headerCol,
-            DBid: zeroCell.DBid,
+    // Include the -1 hour cell: contains the column header/event title
+    const eventTitleCell = hourDataMap.get(-1);
+    if (eventTitleCell) {
+        dailySchedule[selectedDate][columnId]["-1"] = {
+            event: eventTitleCell.event,
+            hour: -1,
+            headerCol: eventTitleCell.headerCol,
+            DBid: eventTitleCell.DBid,
         };
     }
 

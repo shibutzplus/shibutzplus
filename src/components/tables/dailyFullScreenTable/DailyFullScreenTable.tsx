@@ -16,7 +16,8 @@ import { getCookie, setCookie, COOKIES_KEYS } from "@/lib/cookies";
 type DailyFullScreenTableProps = {
     mainDailyTable: DailySchedule;
     selectedDate: string;
-    hoursNum?: number;
+    fromHour?: number;
+    toHour?: number;
     EmptyTable?: React.FC<{ date?: string; text?: string }>;
     appType?: AppType;
     onTeacherClick?: (teacher: TeacherType) => void;
@@ -26,7 +27,8 @@ type DailyFullScreenTableProps = {
 const DailyFullScreenTable: React.FC<DailyFullScreenTableProps> = ({
     mainDailyTable,
     selectedDate,
-    hoursNum = 8,
+    fromHour = 1,
+    toHour = 10,
     EmptyTable,
     appType = "public",
     onTeacherClick,
@@ -66,9 +68,10 @@ const DailyFullScreenTable: React.FC<DailyFullScreenTableProps> = ({
             sortedTableColumns,
             columnTypes,
             appType,
-            hoursNum
+            fromHour,
+            toHour
         );
-    }, [schedule, sortedTableColumns, columnTypes, hoursNum, appType]);
+    }, [schedule, sortedTableColumns, columnTypes, fromHour, toHour, appType]);
 
     const bodyRef = React.useRef<HTMLDivElement>(null);
     const [scrollbarWidth, setScrollbarWidth] = React.useState(0);
