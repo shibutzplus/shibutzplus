@@ -1,14 +1,14 @@
 "use server";
 
 import { db, schema, executeQuery } from "@/db";
-import { asc } from "drizzle-orm";
+import { asc, eq, and } from "drizzle-orm";
 
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { USER_ROLES } from "@/models/constant/auth";
 
-// Returns [{ id, name, city }]
-export async function getSchoolsMinAction(): Promise<Array<{ id: string; name: string; city: string }>> {
+// Returns [{ id, name, city, deputyName }]
+export async function getSchoolsMinAction(): Promise<Array<{ id: string; name: string; city: string; deputyName: string | null }>> {
   const session = await getServerSession(authOptions);
 
   if (!session || (session.user as any)?.role !== USER_ROLES.ADMIN) {
@@ -16,13 +16,36 @@ export async function getSchoolsMinAction(): Promise<Array<{ id: string; name: s
   }
 
   const rows = await executeQuery(async () => {
-    return await db.select().from(schema.schools).orderBy(asc(schema.schools.name));
+    return await db
+      .select({
+        id: schema.schools.id,
+        name: schema.schools.name,
+        city: schema.schools.city,
+        deputyName: schema.users.name,
+      })
+      .from(schema.schools)
+      .leftJoin(
+        schema.users,
+        and(
+          eq(schema.users.schoolId, schema.schools.id),
+          eq(schema.users.role, USER_ROLES.DEPUTY_PRINCIPAL)
+        )
+      )
+      .orderBy(asc(schema.schools.name));
   });
 
-  // Normalize to {id, name, city}
-  return (rows as any[]).map((s) => ({
-    id: s.id,
-    name: s.data?.name ?? s.name ?? "Unnamed",
-    city: s.data?.city ?? s.city ?? "",
-  }));
+  const schoolMap = new Map<string, { id: string; name: string; city: string; deputyName: string | null }>();
+
+  rows.forEach((s) => {
+    if (!schoolMap.has(s.id)) {
+      schoolMap.set(s.id, {
+        id: s.id,
+        name: s.name ?? "Unnamed",
+        city: s.city ?? "",
+        deputyName: s.deputyName,
+      });
+    }
+  });
+
+  return Array.from(schoolMap.values());
 }
