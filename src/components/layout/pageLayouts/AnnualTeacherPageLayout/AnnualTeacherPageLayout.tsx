@@ -10,6 +10,7 @@ import { useValidation } from "@/context/ValidationContext";
 import { usePopup, PopupAction } from "@/context/PopupContext";
 import ConfirmPopup from "@/components/popups/ConfirmPopup/ConfirmPopup";
 import { removeIncompleteCells } from "@/utils/scheduleValidation";
+import Icons from "@/style/icons";
 
 type AnnualTeacherPageLayoutProps = {
     children: React.ReactNode;
@@ -27,6 +28,28 @@ export default function AnnualTeacherPageLayout({ children }: AnnualTeacherPageL
                 originalHandleTeacherChange(val);
             }
         });
+    };
+
+    const handleNextTeacher = () => {
+        const options = teachersSelectOptions();
+        if (options.length === 0) return;
+
+        const currentIndex = options.findIndex((opt) => opt.value === selectedTeacherId);
+        const nextIndex = (currentIndex + 1) % options.length;
+        const nextTeacherId = options[nextIndex].value;
+
+        handleTeacherChange(nextTeacherId);
+    };
+
+    const handlePrevTeacher = () => {
+        const options = teachersSelectOptions();
+        if (options.length === 0) return;
+
+        const currentIndex = options.findIndex((opt) => opt.value === selectedTeacherId);
+        const prevIndex = (currentIndex - 1 + options.length) % options.length;
+        const prevTeacherId = options[prevIndex].value;
+
+        handleTeacherChange(prevTeacherId);
     };
 
     const handleBeforeMenuOpen = (): Promise<boolean> => {
@@ -67,15 +90,33 @@ export default function AnnualTeacherPageLayout({ children }: AnnualTeacherPageL
                     <h3 className={styles.pageTitleLong}>{router.annualByTeacher.title}</h3>
                     <h3 className={styles.pageTitleShort}>מערכת לפי מורה</h3>
                     <div className={styles.selectContainer}>
-                        <DynamicInputSelect
-                            options={teachersSelectOptions()}
-                            value={selectedTeacherId}
-                            onChange={handleTeacherChange}
-                            isSearchable={true}
-                            isDisabled={isSaving || isLoading}
-                            placeholder="מורה..."
-                            hasBorder
-                        />
+                        <div className={styles.selectWrapper}>
+                            <DynamicInputSelect
+                                options={teachersSelectOptions()}
+                                value={selectedTeacherId}
+                                onChange={handleTeacherChange}
+                                isSearchable={true}
+                                isDisabled={isSaving || isLoading}
+                                placeholder="מורה..."
+                                hasBorder
+                            />
+                        </div>
+                        <button
+                            className={styles.nextButton}
+                            onClick={handlePrevTeacher}
+                            title="הקודם"
+                            type="button"
+                        >
+                            <Icons.caretRight size={24} />
+                        </button>
+                        <button
+                            className={styles.nextButton}
+                            onClick={handleNextTeacher}
+                            title="הבא"
+                            type="button"
+                        >
+                            <Icons.caretLeft size={24} />
+                        </button>
                     </div>
                 </>
             }
