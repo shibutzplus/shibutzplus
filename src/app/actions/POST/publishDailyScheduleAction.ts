@@ -4,11 +4,12 @@ import { db, executeQuery, schema } from "@/db";
 import { eq } from "drizzle-orm";
 import { ActionResponse } from "@/models/types/actions";
 import messages from "@/resources/messages";
-import { PublishLimitNumber } from "@/models/constant/daily";
 import { revalidatePath } from "next/cache";
 import { dbLog } from "@/services/loggerService";
+import { sendNotificationToSchool } from "@/services/pushNotifications";
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
 import { DAILY_PUBLISH_DATA_CHANGED } from "@/models/constant/sync";
+import { PublishLimitNumber } from "@/models/constant/daily";
 
 export async function publishDailyScheduleAction(
     schoolId: string,
@@ -49,7 +50,15 @@ export async function publishDailyScheduleAction(
         revalidatePath("/(public)/schedule-full", "page");
         revalidatePath(`/(public)/teacher-material/${schoolId}`, "page");
 
+        // Update all users clients with new schedule (Upstash)
         void pushSyncUpdateServer(DAILY_PUBLISH_DATA_CHANGED, { schoolId, date });
+
+        // Trigger Web Push Notification
+        void sendNotificationToSchool(schoolId, {
+            title: "שיבוץ פלוס",
+            body: `מערכת השעות פורסמה`,
+            url: `/teacher-material/${schoolId}`
+        });
 
         return { success: true, message: messages.publish.success };
     } catch (error) {

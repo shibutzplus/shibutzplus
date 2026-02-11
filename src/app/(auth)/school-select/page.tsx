@@ -16,7 +16,7 @@ import Icons from "@/style/icons";
 const SchoolSelectPage = () => {
     const { data: session } = useSession();
     const router = useRouter();
-    const [schools, setSchools] = useState<Array<{ id: string; name: string }>>([]);
+    const [schools, setSchools] = useState<Array<{ id: string; name: string; city: string; deputyName: string | null }>>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -78,7 +78,12 @@ const SchoolSelectPage = () => {
                                     onClick={() => handleSelect(s.id)}
                                     className={styles.schoolButton}
                                 >
-                                    {s.name}
+                                    <div className={styles.schoolInfo}>
+                                        <span className={styles.schoolName}>{s.name}</span>
+                                        <span className={styles.schoolDetails}>
+                                            {s.city}{s.deputyName ? ` - ${s.deputyName}` : ""}
+                                        </span>
+                                    </div>
                                 </button>
                             </li>
                         ))}

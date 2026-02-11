@@ -71,10 +71,9 @@
 
 .schoolButton {
     width: 100%;
-    padding: 12px 15px;
+    padding: 5px 15px;
     background-color: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
+    border: none;
     font-size: 1rem;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -90,4 +89,25 @@
 .loading {
     color: #666;
     font-size: 1.1rem;
+}
+
+.schoolInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.schoolName {
+    font-weight: 600;
+    display: block;
+}
+
+.schoolDetails {
+    font-size: 0.85rem;
+    color: #666;
+    display: block;
+}
+
+.schoolButton:hover .schoolDetails {
+    color: #007bff;
 }

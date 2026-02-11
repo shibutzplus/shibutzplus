@@ -63,7 +63,8 @@ export async function getHistoryScheduleAction(schoolId: string, date: string): 
                 publishDates: [],
                 createdAt: new Date(),
                 updatedAt: new Date(),
-                hoursNum: 8,
+                fromHour: 1,
+                toHour: 8,
                 displaySchedule2Susb: false
             };
 

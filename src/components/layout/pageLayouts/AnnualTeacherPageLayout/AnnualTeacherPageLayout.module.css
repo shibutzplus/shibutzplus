@@ -1,9 +1,32 @@
 /* Desktop */
 .selectContainer {
-    width: 230px;
-    min-width: 230px;
-    max-width: 230px;
-    display: block;
+    width: 270px;
+    min-width: 270px;
+    max-width: 270px;
+    display: flex;
+    align-items: center;
+}
+
+.selectWrapper {
+    flex: 1;
+}
+
+.nextButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    color: #888;
+    transition: all 0.2s ease;
+    height: 38px;
+    width: 38px;
+}
+
+.nextButton:hover {
+    color: #666;
 }
 
 .pageTitleLong {
@@ -16,8 +39,8 @@
     display: none;
 }
 
-/* <= 550px */
-@media (max-width: 550px) {
+/* <= 580px */
+@media (max-width: 580px) {
     .pageTitleLong {
         display: none;
     }
@@ -29,7 +52,7 @@
     .selectContainer {
         width: 100%;
         min-width: 150px;
-        max-width: 230px;
+        max-width: 100%;
         flex: 1;
     }
 }

@@ -10,6 +10,7 @@ import { useValidation } from "@/context/ValidationContext";
 import { usePopup, PopupAction } from "@/context/PopupContext";
 import ConfirmPopup from "@/components/popups/ConfirmPopup/ConfirmPopup";
 import { removeIncompleteCells } from "@/utils/scheduleValidation";
+import Icons from "@/style/icons";
 
 type AnnualClassPageLayoutProps = {
     children: React.ReactNode;
@@ -29,13 +30,35 @@ export default function AnnualClassPageLayout({ children }: AnnualClassPageLayou
         });
     };
 
+    const handleNextClass = () => {
+        const options = classesSelectOptions();
+        if (options.length === 0) return;
+
+        const currentIndex = options.findIndex((opt) => opt.value === selectedClassId);
+        const nextIndex = (currentIndex + 1) % options.length;
+        const nextClassId = options[nextIndex].value;
+
+        handleClassChange(nextClassId);
+    };
+
+    const handlePrevClass = () => {
+        const options = classesSelectOptions();
+        if (options.length === 0) return;
+
+        const currentIndex = options.findIndex((opt) => opt.value === selectedClassId);
+        const prevIndex = (currentIndex - 1 + options.length) % options.length;
+        const prevClassId = options[prevIndex].value;
+
+        handleClassChange(prevClassId);
+    };
+
     const handleBeforeMenuOpen = (): Promise<boolean> => {
         return new Promise((resolve) => {
             if (validate()) {
                 resolve(true);
             } else {
                 openPopup(
-                    PopupAction.warning,
+                    PopupAction.msgPopup,
                     "S",
                     <ConfirmPopup
                         text="שימו ❤️: שעות ללא שיוך מלא (מורה + מקצוע) לא יישמרו."
@@ -66,15 +89,33 @@ export default function AnnualClassPageLayout({ children }: AnnualClassPageLayou
                     <h3 className={styles.pageTitleLong}>{router.annualByClass.title}</h3>
                     <h3 className={styles.pageTitleShort}>מערכת לפי כיתה</h3>
                     <div className={styles.selectContainer}>
-                        <DynamicInputSelect
-                            options={classesSelectOptions()}
-                            value={selectedClassId}
-                            onChange={handleClassChange}
-                            isSearchable={true}
-                            isDisabled={isSaving || isLoading}
-                            placeholder="כיתה/קבוצה..."
-                            hasBorder
-                        />
+                        <div className={styles.selectWrapper}>
+                            <DynamicInputSelect
+                                options={classesSelectOptions()}
+                                value={selectedClassId}
+                                onChange={handleClassChange}
+                                isSearchable={true}
+                                isDisabled={isSaving || isLoading}
+                                placeholder="כיתה/קבוצה..."
+                                hasBorder
+                            />
+                        </div>
+                        <button
+                            className={styles.nextButton}
+                            onClick={handlePrevClass}
+                            title="הקודם"
+                            type="button"
+                        >
+                            <Icons.caretRight size={24} />
+                        </button>
+                        <button
+                            className={styles.nextButton}
+                            onClick={handleNextClass}
+                            title="הבא"
+                            type="button"
+                        >
+                            <Icons.caretLeft size={24} />
+                        </button>
                     </div>
                 </>
             }

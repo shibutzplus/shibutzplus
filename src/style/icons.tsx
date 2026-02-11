@@ -10,7 +10,7 @@ import { RiEdit2Fill, RiDeleteBin6Line } from "react-icons/ri";
 import { BsMegaphoneFill, BsCalendar4Event, BsThreeDotsVertical, BsFiletypePdf, BsTable, BsMagic } from "react-icons/bs";
 import { MdPersonAdd, MdPerson, MdSwapHoriz, MdOpenInNew, MdOutlineInstallMobile, MdOutlineInstallDesktop } from "react-icons/md";
 import { FaPlus, FaRegCopy, FaRegPaste } from "react-icons/fa6";
-import { FaSave, FaShareAlt, FaQuestion, FaLink } from "react-icons/fa";
+import { FaSave, FaShareAlt, FaQuestion, FaLink, FaCaretLeft, FaCaretRight } from "react-icons/fa";
 import { PiChairLight, PiMonitor, PiMonitorFill } from "react-icons/pi";
 import { GoHistory } from "react-icons/go";
 import { LuEye } from "react-icons/lu";
@@ -24,6 +24,8 @@ const Icons = {
     arrowDown: IoChevronDown,
     arrowRight: IoArrowForward,
     arrowLeft: IoArrowBack,
+    caretLeft: FaCaretLeft,
+    caretRight: FaCaretRight,
     book: IoBookOutline,
     calendar: IoCalendarOutline,
     dailyCalendar: GrSchedule,
