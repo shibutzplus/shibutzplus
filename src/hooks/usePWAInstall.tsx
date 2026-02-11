@@ -45,9 +45,9 @@ const usePWAInstall = () => {
                 <div>
                     <p><strong>התקנה:</strong></p>
                     <ol style={{ textAlign: 'right', paddingRight: '1rem', lineHeight: '1.5' }}>
-                        <li>לחצו על כפתור השיתוף (הריבוע עם החץ).</li>
-                        <li>לחצו עוד/הוספה למסך הבית.</li>
-                        <li>לחצו על הוספה בפינה העליונה.</li>
+                        <li>בספארי, לחצו על כפתור השיתוף.</li>
+                        <li>לחצו הוספה למסך הבית.</li>
+                        <li>לחצו על הוספה.</li>
                     </ol>
                 </div>
             );

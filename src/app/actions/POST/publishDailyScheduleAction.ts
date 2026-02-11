@@ -56,7 +56,7 @@ export async function publishDailyScheduleAction(
         // Trigger Web Push Notification
         void sendNotificationToSchool(schoolId, {
             title: "שיבוץ פלוס",
-            body: `מערכת השעות פורסמה`,
+            body: `המערכת פורסמה`,
             url: `/teacher-material/${schoolId}`
         });
 
