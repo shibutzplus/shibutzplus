@@ -32,7 +32,8 @@ const DynamicManifest = () => {
                 }
             }
 
-            const manifestUrl = '/api/manifest?start_url=' + encodeURIComponent(startUrl);
+            const timestamp = new Date().getTime();
+            const manifestUrl = '/api/manifest?start_url=' + encodeURIComponent(startUrl) + '&ts=' + timestamp;
 
             // Find existing link or create new one
             let link = document.querySelector('link[rel="manifest"]') as HTMLLinkElement;
@@ -49,6 +50,12 @@ const DynamicManifest = () => {
         };
 
         updateManifest();
+
+        window.addEventListener("teacher_data_updated", updateManifest);
+
+        return () => {
+            window.removeEventListener("teacher_data_updated", updateManifest);
+        };
     }, [pathname]);
 
     return null;
