@@ -10,16 +10,8 @@ export async function middleware(req: NextRequest) {
 
     // Skip NextAuth and public API routes (manifest for PWA, sync polling, cron jobs)
     const publicApiRoutes = [apiAuthPrefix, "/api/manifest", "/api/sync/poll", "/api/cron"];
-
-    if (url.pathname.startsWith("/api/manifest")) {
-        console.log("Middleware: TRACE - /api/manifest request detected", url.pathname);
-    }
-
     const isPublicApiRoute = publicApiRoutes.some((route) => url.pathname.startsWith(route));
     if (isPublicApiRoute) {
-        if (url.pathname.startsWith("/api/manifest")) {
-            console.log("Middleware: TRACE - Allowing /api/manifest as public API route");
-        }
         return NextResponse.next();
     }
 
