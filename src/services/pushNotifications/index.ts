@@ -53,6 +53,7 @@ export async function sendNotificationToSchool(schoolId: string, payload: { titl
     const subscriptions = await db.query.pushSubscriptions.findMany({
         where: eq(pushSubscriptions.schoolId, schoolId),
     });
+
     if (subscriptions.length === 0) {
         return { success: true, count: 0 };
     }
@@ -60,7 +61,7 @@ export async function sendNotificationToSchool(schoolId: string, payload: { titl
     let successCount = 0;
     let failCount = 0;
 
-    // `/(public)/teacher-material/${schoolId}/${sub.teacherId}` if teacherId exists
+    // "/teacher-material/${schoolId}/${sub.teacherId}" if teacherId exists
     const promises = subscriptions.map(async (sub) => {
 
         let targetUrl = payload.url;
