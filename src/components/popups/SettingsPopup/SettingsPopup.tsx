@@ -131,7 +131,6 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({
                         className={styles.selectInput}
                         disabled={isSaving}
                     >
-                        <option value="" disabled>בחרו...</option>
                         {externalTeacherOptions.map((opt) => (
                             <option key={opt.value} value={opt.value}>
                                 {opt.label}

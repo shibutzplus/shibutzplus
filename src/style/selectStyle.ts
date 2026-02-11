@@ -76,8 +76,8 @@ export const customStyles = (
             backgroundColor: state.isSelected
                 ? SelectBackgroundColor
                 : state.isFocused
-                  ? SelectBackgroundColorHover
-                  : InputBackgroundColor,
+                    ? SelectBackgroundColorHover
+                    : InputBackgroundColor,
             color: state.isSelected ? InputBackgroundColor : InputColor,
             padding: "10px 12px",
             fontSize: FontSize,
@@ -105,7 +105,7 @@ export const customStyles = (
         }),
         valueContainer: (provided: any) => ({
             ...provided,
-            padding: "2px 8px", /// "0px 0px"
+            padding: "2px 8px 2px 0px",
         }),
         indicatorSeparator: (provided: any) => ({
             ...provided,
