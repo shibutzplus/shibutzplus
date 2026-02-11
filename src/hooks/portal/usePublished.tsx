@@ -84,6 +84,21 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
         try {
             if (!isBackground) setIsPublishLoading(true);
             const response = await getDailyScheduleAction(effectiveSchoolId, effectiveDate, { isPrivate: false });
+
+            // Ensure entities are loaded before populating
+            let currentTeachers = overrideLists?.teachers || allTeachers || [];
+            let currentClasses = overrideLists?.classes || allClasses || [];
+            let currentSubjects = overrideLists?.subjects || allSubjects || [];
+
+            if ((currentTeachers.length === 0 || currentClasses.length === 0) && effectiveSchoolId) {
+                const newLists = await refreshEntities();
+                if (newLists) {
+                    if (newLists.teachers) currentTeachers = newLists.teachers;
+                    if (newLists.classes) currentClasses = newLists.classes;
+                    if (newLists.subjects) currentSubjects = newLists.subjects;
+                }
+            }
+
             if (response.success && response.data && effectiveTeacher) {
                 const newSchedule = await populateDailyScheduleTable(
                     mainPublishTable,
@@ -91,9 +106,9 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
                     response.data,
                     fromHour,
                     toHour,
-                    overrideLists?.teachers || allTeachers || [],
-                    overrideLists?.classes || allClasses || [],
-                    overrideLists?.subjects || allSubjects || []
+                    currentTeachers,
+                    currentClasses,
+                    currentSubjects
                 );
                 if (newSchedule) setMainPublishTable(newSchedule);
             } else {
