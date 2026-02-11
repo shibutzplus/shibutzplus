@@ -9,8 +9,6 @@ export async function middleware(req: NextRequest) {
     const { nextUrl: url } = req;
 
     // Skip NextAuth and public API routes (manifest for PWA, sync polling, cron jobs)
-    // Note: /api/sync/poll handles its own authentication to reduce middleware overhead
-    // Note: /api/cron/* routes handle their own authentication via CRON_SECRET
     const publicApiRoutes = [apiAuthPrefix, "/api/manifest", "/api/sync/poll", "/api/cron"];
     const isPublicApiRoute = publicApiRoutes.some((route) => url.pathname.startsWith(route));
     if (isPublicApiRoute) {
