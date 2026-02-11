@@ -10,7 +10,8 @@ import { schools } from "./schools";
 
 export const pushSubscriptions = pgTable("push_subscriptions", {
     id: text("id").primaryKey().$defaultFn(() => createId()),
-    userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    principalId: text("principal_id").references(() => users.id, { onDelete: "cascade" }), // (principals/admins - Private Portal Users)
+    teacherId: text("teacher_id"), // (public portal users - Teachers)
     schoolId: text("school_id").references(() => schools.id, { onDelete: "cascade" }),
     endpoint: text("endpoint").notNull(),
     p256dh: text("p256dh").notNull(),
@@ -20,7 +21,7 @@ export const pushSubscriptions = pgTable("push_subscriptions", {
     lastUsed: timestamp("last_used"),
 }, (table) => {
     return {
-        userIdIdx: index("idx_push_subscriptions_user_id").on(table.userId),
+        teacherIdIdx: index("idx_push_subscriptions_teacher_id").on(table.teacherId),
         schoolIdIdx: index("idx_push_subscriptions_school_id").on(table.schoolId),
         endpointIdx: index("idx_push_subscriptions_endpoint").on(table.endpoint),
     };

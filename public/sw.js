@@ -1,4 +1,6 @@
-// Service Worker for PWA
+//
+// Service Worker for PWA (install as application)
+//
 const CACHE_NAME = 'shibutz-plus-v1';
 const urlsToCache = [
     '/',
@@ -9,6 +11,7 @@ const urlsToCache = [
 
 // Install event - cache core assets
 self.addEventListener('install', (event) => {
+    self.skipWaiting(); // Force the waiting service worker to become the active service worker
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then((cache) => {
@@ -40,4 +43,46 @@ self.addEventListener('fetch', (event) => {
                 return caches.match(event.request);
             })
     );
+});
+
+//
+// Web Push Notification event
+//
+self.addEventListener('push', function (event) {
+    if (event.data) {
+        let payload = {};
+        try {
+            payload = event.data.json();
+        } catch (e) {
+            // Fallback for plain text payloads (like DevTools test messages)
+            payload = { body: event.data.text() };
+        }
+
+        const title = payload.title || 'שיבוץ פלוס';
+        const options = {
+            body: payload.body || 'התקבל עדכון חדש במערכת השעות',
+            icon: '/logo192.png',
+            badge: '/logo32.png',
+            data: {
+                url: payload.url || '/' // URL to open on click (sent from publishDailyScheduleAction.ts)
+            }
+        };
+
+        event.waitUntil(self.registration.showNotification(title, options));
+    }
+});
+
+// Notification click event
+self.addEventListener('notificationclick', function (event) {
+    event.notification.close();
+
+    if (event.notification.data && event.notification.data.url) {
+        event.waitUntil(
+            clients.openWindow(event.notification.data.url)
+        );
+    } else {
+        event.waitUntil(
+            clients.openWindow('/')
+        );
+    }
 });

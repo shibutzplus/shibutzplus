@@ -13,6 +13,7 @@ import { TeacherRoleValues } from "@/models/types/teachers";
 import { useTeacherTableContext } from "@/context/TeacherTableContext";
 import PageLayout from "../../PageLayout/PageLayout";
 import { SyncItem } from "@/services/sync/clientSyncService";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 
 type PortalPageLayoutProps = {
     children: React.ReactNode;
@@ -25,6 +26,14 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
     const refreshRef = React.useRef<((items: SyncItem[]) => Promise<void> | void) | null>(null);
     const { resetUpdate } = usePollingUpdates(refreshRef);
     const isRegularTeacher = teacher?.role === TeacherRoleValues.REGULAR;
+    const { registerAndSubscribe } = usePushNotifications();
+
+    // Register for push notifications
+    React.useEffect(() => {
+        if (teacher?.schoolId) {
+            registerAndSubscribe(teacher.schoolId, teacher.id);
+        }
+    }, [teacher?.schoolId, teacher?.id]);
 
     const handleRefresh = async (items?: SyncItem[]) => {
         const { hasRelevantUpdate, newLists } = await handleIncomingSync(items);
