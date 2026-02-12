@@ -16,9 +16,9 @@ export const pushSubscriptions = pgTable("push_subscriptions", {
     endpoint: text("endpoint").notNull(),
     p256dh: text("p256dh").notNull(),
     auth: text("auth").notNull(),
-    userAgent: text("user_agent"),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    lastUsed: timestamp("last_used"),
+    userAgent: text("user_agent"),                              // FFU Unused for now (Device data)
+    createdAt: timestamp("created_at").defaultNow().notNull(),  // UTC, need to fix to local time
+    lastUsed: timestamp("last_used"),                           // FFU Unused for now
 }, (table) => {
     return {
         teacherIdIdx: index("idx_push_subscriptions_teacher_id").on(table.teacherId),
