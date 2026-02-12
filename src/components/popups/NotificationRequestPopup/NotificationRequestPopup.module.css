@@ -1,0 +1,72 @@
+.popupContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    direction: rtl;
+}
+
+.iconContainer {
+    margin-bottom: 1.3rem;
+}
+
+.iconBackground {
+    width: 60px;
+    height: 60px;
+    background-color: #fce4e4;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #e53935;
+}
+
+.title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--dark-text-color);
+}
+
+.text {
+    font-size: 1.1rem;
+    line-height: 1.5;
+    color: var(--dark-text-color2);
+    margin-bottom: 2rem;
+}
+
+.buttonContainer {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+}
+
+.confirmButton,
+.cancelButton {
+    flex: 1;
+    padding: 0.8rem;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.confirmButton {
+    background-color: #4a90e2;
+    color: white;
+}
+
+.confirmButton:hover {
+    background-color: #357abd;
+}
+
+.cancelButton {
+    background-color: #f5f5f5;
+    color: var(--dark-text-color);
+}
+
+.cancelButton:hover {
+    background-color: #eeeeee;
+}

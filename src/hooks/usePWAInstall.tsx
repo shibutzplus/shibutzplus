@@ -43,11 +43,9 @@ const usePWAInstall = () => {
             // Show iOS instructions in popup
             const instructions = (
                 <div>
-                    <p><strong>התקנה:</strong></p>
-                    <ol style={{ textAlign: 'right', paddingRight: '1rem', lineHeight: '1.5' }}>
-                        <li>בספארי, לחצו על כפתור השיתוף.</li>
-                        <li>לחצו הוספה למסך הבית.</li>
-                        <li>לחצו על הוספה.</li>
+                    <ol style={{ textAlign: 'right', paddingRight: '1rem', lineHeight: '1.6' }}>
+                        <li>ההתקנה באייפון היא רק דרך דפדפן ספארי 🤷.</li>
+                        <li>לחצו על כפתור השיתוף ואז הוספה למסך הבית.</li>
                     </ol>
                 </div>
             );
@@ -69,7 +67,6 @@ const usePWAInstall = () => {
             // Fallback instructions
             const instructions = (
                 <div>
-                    <p><strong>התקנה:</strong></p>
                     <ol style={{ textAlign: 'right', paddingRight: '1rem', lineHeight: '1.5' }}>
                         <li>לחצו על תפריט הדפדפן.</li>
                         <li>בחרו &quot;הוסף אל..מסך הבית&quot;.</li>

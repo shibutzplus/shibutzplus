@@ -14,6 +14,9 @@ import { useTeacherTableContext } from "@/context/TeacherTableContext";
 import PageLayout from "../../PageLayout/PageLayout";
 import { SyncItem } from "@/services/sync/clientSyncService";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
+import NotificationPermissionRequest from "@/components/common/NotificationPermissionRequest/NotificationPermissionRequest";
+import { usePopup } from "@/context/PopupContext";
+import NotificationRequestPopup from "@/components/popups/NotificationRequestPopup/NotificationRequestPopup";
 
 type PortalPageLayoutProps = {
     children: React.ReactNode;
@@ -26,12 +29,13 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
     const refreshRef = React.useRef<((items: SyncItem[]) => Promise<void> | void) | null>(null);
     const { resetUpdate } = usePollingUpdates(refreshRef);
     const isRegularTeacher = teacher?.role === TeacherRoleValues.REGULAR;
-    const { registerAndSubscribe } = usePushNotifications();
+    const { registerAndSubscribe, permission, showIcon } = usePushNotifications();
+    const { openPopup } = usePopup();
 
     // Register for push notifications
     React.useEffect(() => {
         if (teacher?.schoolId) {
-            registerAndSubscribe(teacher.schoolId, teacher.id);
+            registerAndSubscribe(teacher.schoolId, teacher.id, false);  // don't display question popup, register automatically
         }
     }, [teacher?.schoolId, teacher?.id]);
 
@@ -121,9 +125,25 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
             schoolSettings={settings}
             teacher={teacher}
             HeaderRightActions={
-                <>
-                    <h3 className={styles.greetingAndName}>{getTitle()}</h3>
-                </>
+                <div className={styles.headerRightContent}>
+                    <h3 className={`${styles.greetingAndName} ${showIcon && permission === "default" && teacher?.schoolId ? styles.greetingWithNotification : ""}`}>
+                        {getTitle()}
+                    </h3>
+                    {showIcon && permission === "default" && teacher?.schoolId && (
+                        <NotificationPermissionRequest
+                            onRequestPermission={() => {
+                                openPopup(
+                                    "notificationsRequest",
+                                    "M",
+                                    <NotificationRequestPopup
+                                        onConfirm={() => registerAndSubscribe(teacher.schoolId!, teacher.id, true)}
+                                        onCancel={() => { }}
+                                    />
+                                );
+                            }}
+                        />
+                    )}
+                </div>
             }
             HeaderLeftActions={
                 !teacher ||

@@ -38,8 +38,8 @@
     border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-/* < 355px */
-@media (max-width: 355px) {
+/* < 410px */
+@media (max-width: 410px) {
     .topBtn {
         width: 60px;
         border: var(--border-primary);

@@ -1,0 +1,37 @@
+.permissionBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fce4e4;
+    border-radius: 50%;
+    color: #e53935;
+    border: none;
+    width: 35px;
+    height: 35px;
+    padding: 0;
+    cursor: pointer;
+    margin-inline-start: 10px;
+    transition: transform 0.2s ease;
+    animation: pulse 2s infinite;
+}
+
+.permissionBtn:hover {
+    transform: scale(1.1);
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.5;
+        transform: scale(1.2);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
