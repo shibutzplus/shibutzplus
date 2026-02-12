@@ -29,7 +29,7 @@ export async function sendNotification(
     payload: string,
     schoolId?: string
 ) {
-    const MAX_RETRIES = 2;
+    const MAX_RETRIES = 1;
     for (let i = 0; i < MAX_RETRIES; i++) {
         try {
             await webpush.sendNotification(
@@ -93,7 +93,7 @@ export async function sendNotificationToSchool(schoolId: string, payload: { titl
     let failCount = 0;
 
     // Process in batches to avoid "socket hang up" and other concurrency issues
-    const BATCH_SIZE = 5;
+    const BATCH_SIZE = 50;
     for (let i = 0; i < subscriptions.length; i += BATCH_SIZE) {
         const batch = subscriptions.slice(i, i + BATCH_SIZE);
 
@@ -134,9 +134,7 @@ export async function sendNotificationToSchool(schoolId: string, payload: { titl
         await Promise.all(promises);
 
         // Optional: short delay between batches to be extra safe
-        if (i + BATCH_SIZE < subscriptions.length) {
-            await new Promise((resolve) => setTimeout(resolve, 200));
-        }
+
     }
 
     return { success: true, sent: successCount, failed: failCount };
