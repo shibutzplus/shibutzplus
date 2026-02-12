@@ -3,7 +3,7 @@ import {
     IoMenuOutline, IoCloseOutline, IoBookOutline,
     IoChevronDown, IoSettingsOutline, IoPersonOutline,
     IoPersonRemoveOutline, IoPeopleSharp, IoArrowBack,
-    IoArrowForward, IoStatsChart, IoInformationCircleOutline,
+    IoArrowForward, IoStatsChart, IoInformationCircleOutline, IoNotifications,
 } from "react-icons/io5";
 import { IoMdRefresh } from "react-icons/io";
 import { RiEdit2Fill, RiDeleteBin6Line } from "react-icons/ri";
@@ -21,6 +21,7 @@ import { AiOutlineHourglass } from "react-icons/ai";
 
 const Icons = {
     addTeacher: MdPersonAdd,
+    bell: IoNotifications,
     arrowDown: IoChevronDown,
     arrowRight: IoArrowForward,
     arrowLeft: IoArrowBack,
