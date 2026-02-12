@@ -41,25 +41,40 @@ export async function sendNotification(
             );
             return { success: true };
         } catch (error: any) {
-            // Check for transient network errors
+            const statusCode = error?.statusCode;
+            // Check for transient network errors or rate limits
             const isTransientError =
                 error?.code === 'ECONNRESET' ||
-                error?.message?.includes('socket hang up');
+                error?.message?.includes('socket hang up') ||
+                statusCode === 429 ||
+                (statusCode >= 500 && statusCode < 600);
 
             if (isTransientError && i < MAX_RETRIES - 1) {
-                // Wait a bit before retrying (exponential backoff: 500ms, 1000ms, 2000ms)
+                // Wait a bit before retrying (exponential backoff: 500ms, 1000ms)
                 await new Promise(resolve => setTimeout(resolve, 500 * Math.pow(2, i)));
                 continue;
             }
 
-            dbLog({ description: `Error sending push notification (attempt ${i + 1}/${MAX_RETRIES}): ${error instanceof Error ? error.message : String(error)}`, schoolId });
+            // Log detailed error info
+            const errorDetails = {
+                message: error instanceof Error ? error.message : String(error),
+                statusCode: statusCode,
+                body: error?.body,
+                headers: error?.headers
+            };
 
-            if (error.statusCode === 410) {
+            dbLog({
+                description: `Error sending push notification (attempt ${i + 1}/${MAX_RETRIES}): ${errorDetails.message}`,
+                schoolId,
+                metadata: errorDetails
+            });
+
+            if (statusCode === 410 || statusCode === 404) {
                 // Subscription expired or gone
                 return { success: false, expired: true };
             }
 
-            return { success: false, error };
+            return { success: false, error: errorDetails };
         }
     }
     return { success: false, error: "Max retries reached" };
