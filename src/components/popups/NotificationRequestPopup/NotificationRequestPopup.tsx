@@ -37,7 +37,7 @@ const NotificationRequestPopup: React.FC<NotificationRequestPopupProps> = ({
             <h2 className={styles.title}>עדכוני מערכת בזמן אמת</h2>
 
             <p className={styles.text}>
-                (יש לאשר את ההודעה בדפדפן לאחר הלחיצה על 'אישור')
+                (יש לאשר את ההודעה בדפדפן לאחר הלחיצה על &apos;אישור&apos;)
             </p>
 
             <div className={styles.buttonContainer}>

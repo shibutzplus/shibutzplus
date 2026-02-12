@@ -14,7 +14,7 @@ if (!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY)
     const msg = "VAPID keys are missing. Push notifications will not work.";
     console.warn(msg);
     if (process.env.NODE_ENV === "production") {
-        void dbLog({ description: msg, schoolId: "Push Notifications Service" });
+        void dbLog({ description: msg, schoolId: undefined });
     }
 } else {
     webpush.setVapidDetails(
@@ -26,7 +26,8 @@ if (!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY)
 
 export async function sendNotification(
     subscription: { endpoint: string; keys: { p256dh: string; auth: string } },
-    payload: string
+    payload: string,
+    schoolId?: string
 ) {
     try {
         await webpush.sendNotification(
@@ -38,7 +39,7 @@ export async function sendNotification(
         );
         return { success: true };
     } catch (error: any) {
-        dbLog({ description: `Error sending push notification: ${error instanceof Error ? error.message : String(error)}`, schoolId: "system" });
+        dbLog({ description: `Error sending push notification: ${error instanceof Error ? error.message : String(error)}`, schoolId });
 
         if (error.statusCode === 410) {
             // Subscription expired or gone
@@ -82,7 +83,8 @@ export async function sendNotificationToSchool(schoolId: string, payload: { titl
                     auth: sub.auth,
                 },
             },
-            notificationPayload
+            notificationPayload,
+            schoolId
         );
 
         if (result.success) {
