@@ -29,25 +29,55 @@ export async function sendNotification(
     payload: string,
     schoolId?: string
 ) {
-    try {
-        await webpush.sendNotification(
-            {
-                endpoint: subscription.endpoint,
-                keys: subscription.keys,
-            },
-            payload
-        );
-        return { success: true };
-    } catch (error: any) {
-        dbLog({ description: `Error sending push notification: ${error instanceof Error ? error.message : String(error)}`, schoolId });
+    const MAX_RETRIES = 2;
+    for (let i = 0; i < MAX_RETRIES; i++) {
+        try {
+            await webpush.sendNotification(
+                {
+                    endpoint: subscription.endpoint,
+                    keys: subscription.keys,
+                },
+                payload
+            );
+            return { success: true };
+        } catch (error: any) {
+            const statusCode = error?.statusCode;
+            // Check for transient network errors or rate limits
+            const isTransientError =
+                error?.code === 'ECONNRESET' ||
+                error?.message?.includes('socket hang up') ||
+                statusCode === 429 ||
+                (statusCode >= 500 && statusCode < 600);
 
-        if (error.statusCode === 410) {
-            // Subscription expired or gone
-            return { success: false, expired: true };
+            if (isTransientError && i < MAX_RETRIES - 1) {
+                // Wait a bit before retrying (exponential backoff: 500ms, 1000ms)
+                await new Promise(resolve => setTimeout(resolve, 500 * Math.pow(2, i)));
+                continue;
+            }
+
+            // Log detailed error info
+            const errorDetails = {
+                message: error instanceof Error ? error.message : String(error),
+                statusCode: statusCode,
+                body: error?.body,
+                headers: error?.headers
+            };
+
+            dbLog({
+                description: `Error sending push notification (attempt ${i + 1}/${MAX_RETRIES}): ${errorDetails.message}`,
+                schoolId,
+                metadata: errorDetails
+            });
+
+            if (statusCode === 410 || statusCode === 404) {
+                // Subscription expired or gone
+                return { success: false, expired: true };
+            }
+
+            return { success: false, error: errorDetails };
         }
-
-        return { success: false, error };
     }
+    return { success: false, error: "Max retries reached" };
 }
 
 export async function sendNotificationToSchool(schoolId: string, payload: { title: string; body: string; url: string }) {
@@ -63,7 +93,7 @@ export async function sendNotificationToSchool(schoolId: string, payload: { titl
     let failCount = 0;
 
     // Process in batches to avoid "socket hang up" and other concurrency issues
-    const BATCH_SIZE = 10;
+    const BATCH_SIZE = 5;
     for (let i = 0; i < subscriptions.length; i += BATCH_SIZE) {
         const batch = subscriptions.slice(i, i + BATCH_SIZE);
 
@@ -105,7 +135,7 @@ export async function sendNotificationToSchool(schoolId: string, payload: { titl
 
         // Optional: short delay between batches to be extra safe
         if (i + BATCH_SIZE < subscriptions.length) {
-            await new Promise((resolve) => setTimeout(resolve, 100));
+            await new Promise((resolve) => setTimeout(resolve, 200));
         }
     }
 

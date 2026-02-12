@@ -15,7 +15,7 @@
  */
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
 // Base64 to Uint8Array helper
@@ -39,6 +39,7 @@ export function usePushNotifications() {
     const [permission, setPermission] = useState<NotificationPermission>("default");
     const [isSupported, setIsSupported] = useState(false);
     const [showIcon, setShowIcon] = useState(false);
+    const isRegistering = useRef(false);
 
     useEffect(() => {
         if ("Notification" in window) {
@@ -72,7 +73,12 @@ export function usePushNotifications() {
             return;
         }
 
+        if (isRegistering.current) {
+            return;
+        }
+
         try {
+            isRegistering.current = true;
             // 1. Register Service Worker
             const registration = await navigator.serviceWorker.register("/sw.js");
 
@@ -95,7 +101,11 @@ export function usePushNotifications() {
             // 3. Subscribe
             const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
             if (!vapidKey) {
-                void logErrorAction({ description: "[Push Hook] VAPID public key not found", schoolId: schoolId });
+                void logErrorAction({
+                    description: "[Push Hook] VAPID public key not found",
+                    schoolId: schoolId,
+                    user: teacherId
+                });
                 return;
             }
 
@@ -117,8 +127,11 @@ export function usePushNotifications() {
         } catch (error) {
             void logErrorAction({
                 description: `[Push Hook] Error subscribing to push notifications: ${error instanceof Error ? error.message : String(error)}`,
-                schoolId: schoolId
+                schoolId: schoolId,
+                user: teacherId
             });
+        } finally {
+            isRegistering.current = false;
         }
     };
 
@@ -138,7 +151,8 @@ export function usePushNotifications() {
         } catch (err) {
             void logErrorAction({
                 description: `[Push Hook] Failed to save subscription to server: ${err instanceof Error ? err.message : String(err)}`,
-                schoolId: schoolId
+                schoolId: schoolId,
+                user: teacherId
             });
         }
     };
