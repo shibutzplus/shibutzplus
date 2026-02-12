@@ -62,43 +62,52 @@ export async function sendNotificationToSchool(schoolId: string, payload: { titl
     let successCount = 0;
     let failCount = 0;
 
-    // "/teacher-material/${schoolId}/${sub.teacherId}" if teacherId exists
-    const promises = subscriptions.map(async (sub) => {
+    // Process in batches to avoid "socket hang up" and other concurrency issues
+    const BATCH_SIZE = 10;
+    for (let i = 0; i < subscriptions.length; i += BATCH_SIZE) {
+        const batch = subscriptions.slice(i, i + BATCH_SIZE);
 
-        let targetUrl = payload.url;
-        if (sub.teacherId) {
-            targetUrl = `${payload.url}/${sub.teacherId}`;
-        }
+        const promises = batch.map(async (sub) => {
+            let targetUrl = payload.url;
+            if (sub.teacherId) {
+                targetUrl = `${payload.url}/${sub.teacherId}`;
+            }
 
-        const notificationPayload = JSON.stringify({
-            ...payload,
-            url: targetUrl
+            const notificationPayload = JSON.stringify({
+                ...payload,
+                url: targetUrl
+            });
+
+            const result = await sendNotification(
+                {
+                    endpoint: sub.endpoint,
+                    keys: {
+                        p256dh: sub.p256dh,
+                        auth: sub.auth,
+                    },
+                },
+                notificationPayload,
+                schoolId
+            );
+
+            if (result.success) {
+                successCount++;
+            } else {
+                failCount++;
+                if (result.expired) {
+                    // Remove expired subscription
+                    await db.delete(pushSubscriptions).where(eq(pushSubscriptions.id, sub.id));
+                }
+            }
         });
 
-        const result = await sendNotification(
-            {
-                endpoint: sub.endpoint,
-                keys: {
-                    p256dh: sub.p256dh,
-                    auth: sub.auth,
-                },
-            },
-            notificationPayload,
-            schoolId
-        );
+        await Promise.all(promises);
 
-        if (result.success) {
-            successCount++;
-        } else {
-            failCount++;
-            if (result.expired) {
-                // Remove expired subscription
-                await db.delete(pushSubscriptions).where(eq(pushSubscriptions.id, sub.id));
-            }
+        // Optional: short delay between batches to be extra safe
+        if (i + BATCH_SIZE < subscriptions.length) {
+            await new Promise((resolve) => setTimeout(resolve, 100));
         }
-    });
-
-    await Promise.all(promises);
+    }
 
     return { success: true, sent: successCount, failed: failCount };
 }
