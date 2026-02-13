@@ -44,8 +44,9 @@ const usePWAInstall = () => {
             const instructions = (
                 <div>
                     <ol style={{ textAlign: 'right', paddingRight: '1rem', lineHeight: '1.6' }}>
-                        <li>ההתקנה באייפון היא רק דרך דפדפן ספארי 🤷.</li>
-                        <li>לחצו על כפתור השיתוף ואז הוספה למסך הבית.</li>
+                        <li>חשוב !!! ההתקנה באייפון היא רק דרך דפדפן ספארי 🤷.</li>
+                        <li>ודאו שאתם בדפדפן ספארי וכנסו למשתמש שלכם בשיבוץ+ כרגיל.</li>
+                        <li>לחצו על כפתור השיתוף (למטה) ואז הוספה למסך הבית.</li>
                     </ol>
                 </div>
             );

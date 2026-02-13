@@ -71,6 +71,12 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
                 isForGuest: false,
             },
             {
+                name: routePath.staff.title,
+                p: routePath.staff.p,
+                Icon: <Icons.staff size={24} />,
+                isForGuest: false,
+            },
+            {
                 name: routePath.subjects.title,
                 p: routePath.subjects.p,
                 Icon: <Icons.book size={24} />,
@@ -86,12 +92,6 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
                 name: routePath.groups.title,
                 p: routePath.groups.p,
                 Icon: <Icons.users size={24} />,
-                isForGuest: false,
-            },
-            {
-                name: routePath.staff.title,
-                p: routePath.staff.p,
-                Icon: <Icons.teacherSolid size={24} />,
                 isForGuest: false,
             },
         ],

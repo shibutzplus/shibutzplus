@@ -10,6 +10,8 @@ import { getDateReturnString } from "@/utils/time";
 import { dbLog } from "@/services/loggerService";
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
 import { DAILY_TEACHER_COL_DATA_CHANGED } from "@/models/constant/sync";
+import { revalidateTag } from "next/cache";
+import { cacheTags } from "@/lib/cacheTags";
 
 //
 //  Batch Insert mechanism:
@@ -125,7 +127,15 @@ export async function addDailyTeacherCellsAction(
 
         if (resultData.length > 0) {
             const first = resultData[0];
-            void pushSyncUpdateServer(DAILY_TEACHER_COL_DATA_CHANGED, { schoolId: first.school?.id, date: getDateReturnString(first.date) });
+            const schoolId = first.school?.id;
+            const dateString = getDateReturnString(first.date);
+
+            if (!schoolId) return { success: true, message: messages.dailySchedule.createSuccess, data: resultData };
+
+            // invalidate cache
+            revalidateTag(cacheTags.schoolSchedule(schoolId));
+
+            void pushSyncUpdateServer(DAILY_TEACHER_COL_DATA_CHANGED, { schoolId, date: dateString });
         }
 
         return {

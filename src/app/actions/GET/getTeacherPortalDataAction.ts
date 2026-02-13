@@ -4,7 +4,7 @@ import { dbLog } from "@/services/loggerService";
 import { publicAuthAndParams } from "@/utils/authUtils";
 import { getTeacherByIdAction } from "@/app/actions/GET/getTeacherByIdAction";
 import { getSchoolAction } from "@/app/actions/GET/getSchoolAction";
-import { getTeacherScheduleService } from "@/services/schedule/getTeacherSchedule";
+import { getCachedTeacherSchedule } from "@/services/schedule/getTeacherSchedule";
 import { getPublishedDatesOptions } from "@/resources/dayOptions";
 import { chooseDefaultDate } from "@/utils/time";
 import { selectSelectedDate } from "@/services/portalTeacherService";
@@ -95,7 +95,7 @@ export const getTeacherPortalDataAction = async (
 
         if (selectedDate && datesOptions.some(d => d.value === selectedDate)) {
             try {
-                const schedule = await getTeacherScheduleService(teacherId, selectedDate);
+                const schedule = await getCachedTeacherSchedule(teacherId, selectedDate, schoolId);
                 scheduleData = {
                     success: true,
                     data: schedule

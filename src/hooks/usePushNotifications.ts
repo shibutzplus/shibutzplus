@@ -128,7 +128,13 @@ export function usePushNotifications() {
             void logErrorAction({
                 description: `[Push Hook] Error subscribing to push notifications: ${error instanceof Error ? error.message : String(error)}`,
                 schoolId: schoolId,
-                user: teacherId
+                user: teacherId,
+                metadata: {
+                    userAgent: window.navigator.userAgent,
+                    platform: (window.navigator as any).platform,
+                    vendor: (window.navigator as any).vendor,
+                    error: error instanceof Error ? { name: error.name, message: error.message } : error
+                }
             });
         } finally {
             isRegistering.current = false;

@@ -5,10 +5,11 @@
 import { db } from "@/db";
 import { dailySchedule } from "@/db/schema/daily-schedule";
 import { eq, and } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
 import { dbLog } from "@/services/loggerService";
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
 import { DAILY_EVENT_COL_DATA_CHANGED } from "@/models/constant/sync";
+import { revalidateTag, revalidatePath } from "next/cache";
+import { cacheTags } from "@/lib/cacheTags";
 
 type ColumnPositionUpdate = {
     columnId: string;
@@ -39,9 +40,12 @@ export async function updateDailyColumnPositionsAction(
             ),
         );
 
+        // Invalidate all schedule caches for this school
+        revalidateTag(cacheTags.schoolSchedule(schoolId));
+        revalidatePath("/daily-schedule");
+
         void pushSyncUpdateServer(DAILY_EVENT_COL_DATA_CHANGED, { schoolId, date });
 
-        revalidatePath("/daily-schedule");
         return { success: true, message: "Positions updated successfully" };
     } catch (error) {
         dbLog({

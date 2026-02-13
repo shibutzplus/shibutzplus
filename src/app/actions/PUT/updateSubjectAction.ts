@@ -10,6 +10,8 @@ import { getSubjectsAction } from "@/app/actions/GET/getSubjectsAction";
 import { dbLog } from "@/services/loggerService";
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
 import { ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
+import { revalidateTag } from "next/cache";
+import { cacheTags } from "@/lib/cacheTags";
 
 export async function updateSubjectAction(
     subjectId: string,
@@ -53,6 +55,9 @@ export async function updateSubjectAction(
 
         // Fetch all subjects for the updated subject's school
         const allSubjectsResp = await getSubjectsAction(subjectData.schoolId);
+
+        // Invalidate subjects list cache
+        revalidateTag(cacheTags.subjectsList(subjectData.schoolId));
 
         void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: subjectData.schoolId });
 

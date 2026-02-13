@@ -10,6 +10,8 @@ import { SubjectType } from "@/models/types/subjects";
 import { dbLog } from "@/services/loggerService";
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
 import { ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
+import { revalidateTag } from "next/cache";
+import { cacheTags } from "@/lib/cacheTags";
 
 export async function deleteSubjectAction(
     schoolId: string,
@@ -68,6 +70,10 @@ export async function deleteSubjectAction(
 
             return { annualSchedule, remainingSubjects };
         });
+
+        // Invalidate cache - subject deletion affects schedules AND lists
+        revalidateTag(cacheTags.schoolSchedule(schoolId));
+        revalidateTag(cacheTags.subjectsList(schoolId));
 
         void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId });
 

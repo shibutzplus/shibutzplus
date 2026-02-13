@@ -11,6 +11,8 @@ import { NewDailyScheduleSchema } from "@/db/schema";
 import { dbLog } from "@/services/loggerService";
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
 import { DAILY_EVENT_COL_DATA_CHANGED } from "@/models/constant/sync";
+import { revalidateTag } from "next/cache";
+import { cacheTags } from "@/lib/cacheTags";
 
 export async function addDailyEventCellAction(
     scheduleCellData: DailyScheduleRequest,
@@ -60,6 +62,7 @@ export async function addDailyEventCellAction(
             };
         }
 
+        revalidateTag(cacheTags.schoolSchedule(school.id));
         void pushSyncUpdateServer(DAILY_EVENT_COL_DATA_CHANGED, { schoolId: school.id, date: getDateReturnString(date) });
 
         return {

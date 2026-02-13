@@ -10,6 +10,8 @@ import { subjectSchema } from "@/models/validation/subject";
 import { dbLog } from "@/services/loggerService";
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
 import { ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
+import { revalidateTag } from "next/cache";
+import { cacheTags } from "@/lib/cacheTags";
 
 export async function addSubjectAction(
     subjectData: SubjectRequest,
@@ -46,6 +48,9 @@ export async function addSubjectAction(
         if (!newSubject) {
             return { success: false, message: messages.subjects.createError };
         }
+
+        // Invalidate subjects list cache
+        revalidateTag(cacheTags.subjectsList(subjectData.schoolId));
 
         void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: subjectData.schoolId });
 

@@ -1,8 +1,13 @@
 import { DailyScheduleType } from "@/models/types/dailySchedule";
 import { and, eq, or, inArray } from "drizzle-orm";
 import { db, schema } from "@/db";
+import { unstable_cache } from "next/cache";
+import { cacheTags } from "@/lib/cacheTags";
 
-export async function getTeacherScheduleService(
+//
+// called from getCachedTeacherSchedule
+//
+async function getTeacherScheduleService(
     teacherId: string,
     date: string,
 ): Promise<DailyScheduleType[]> {
@@ -140,3 +145,50 @@ export async function getTeacherScheduleService(
 
     return results.sort((a: any, b: any) => a.hour - b.hour);
 }
+
+/**
+ * Cached version of getTeacherScheduleService.
+ * 
+ * Uses unstable_cache with proper cache keys and school-level revalidation tag.
+ * When a schedule is published for a school, calling revalidateTag(cacheTags.schoolSchedule(schoolId))
+ * will invalidate ALL teacher caches for that school at once.
+ * 
+ * @param teacherId - The teacher ID
+ * @param date - The date string (YYYY-MM-DD)
+ * @param schoolId - The school ID (required for revalidation tag)
+ * @returns Teacher's schedule for the specified date
+ */
+export async function getCachedTeacherSchedule(
+    teacherId: string,
+    date: string,
+    schoolId: string,
+): Promise<DailyScheduleType[]> {
+    const cachedFn = unstable_cache(
+        async () => getTeacherScheduleService(teacherId, date),
+        // Cache keys - MUST include ALL parameters that affect the result
+        // This prevents Vercel from serving Teacher A's cache to Teacher B
+        ['getTeacherSchedule', teacherId, date],
+        {
+            // Tags for revalidation:
+            // 1. teacher-specific tag - for targeted invalidation of a single teacher
+            // 2. school-level tag - for invalidating ALL teachers when publishing
+            tags: [
+                cacheTags.teacherSchedule(teacherId),
+                cacheTags.schoolSchedule(schoolId)
+            ],
+            revalidate: 7200, // 2 hours - since we have precise tag invalidation, we can use longer TTL
+        }
+    );
+
+    const cachedResults = await cachedFn();
+
+    // IMPORTANT: unstable_cache serializes Date objects to strings
+    // We need to convert them back to Date objects
+    return cachedResults.map(schedule => ({
+        ...schedule,
+        date: typeof schedule.date === 'string' ? new Date(schedule.date) : schedule.date,
+        createdAt: typeof schedule.createdAt === 'string' ? new Date(schedule.createdAt) : schedule.createdAt,
+        updatedAt: typeof schedule.updatedAt === 'string' ? new Date(schedule.updatedAt) : schedule.updatedAt,
+    }));
+}
+

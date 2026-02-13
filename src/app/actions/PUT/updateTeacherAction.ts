@@ -9,6 +9,8 @@ import { eq } from "drizzle-orm";
 import { dbLog } from "@/services/loggerService";
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
 import { ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
+import { revalidateTag } from "next/cache";
+import { cacheTags } from "@/lib/cacheTags";
 
 export async function updateTeacherAction(
     teacherId: string,
@@ -53,6 +55,9 @@ export async function updateTeacherAction(
                 .where(eq(schema.teachers.schoolId, teacherData.schoolId))
                 .orderBy(schema.teachers.name);
         });
+
+        // Invalidate teachers list cache
+        revalidateTag(cacheTags.teachersList(teacherData.schoolId));
 
         void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: teacherData.schoolId });
 

@@ -10,6 +10,8 @@ import { getClassesAction } from "../GET/getClassesAction";
 import { dbLog } from "@/services/loggerService";
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
 import { ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
+import { revalidateTag } from "next/cache";
+import { cacheTags } from "@/lib/cacheTags";
 
 export async function updateClassAction(
     classId: string,
@@ -72,6 +74,9 @@ export async function updateClassAction(
 
         // Fetch all classes for the updated class's school
         const allClassesResp = await getClassesAction(classData.schoolId);
+
+        // Invalidate classes list cache
+        revalidateTag(cacheTags.classesList(classData.schoolId));
 
         void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: classData.schoolId });
 
