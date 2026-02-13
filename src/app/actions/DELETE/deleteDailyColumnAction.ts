@@ -11,6 +11,8 @@ import { dbLog } from "@/services/loggerService";
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
 import { DAILY_EVENT_COL_DATA_CHANGED, DAILY_TEACHER_COL_DATA_CHANGED } from "@/models/constant/sync";
 import { ColumnTypeValues } from "@/models/types/dailySchedule";
+import { revalidateTag } from "next/cache";
+import { cacheTags } from "@/lib/cacheTags";
 
 export async function deleteDailyColumnAction(
     schoolId: string,
@@ -94,6 +96,9 @@ export async function deleteDailyColumnAction(
                     position: schedule.position,
                 }) as DailyScheduleType,
         );
+
+        // invalidate cache
+        revalidateTag(cacheTags.schoolSchedule(schoolId));
 
         // Push updates based on deleted types
         if (deletedColumnTypes.includes(ColumnTypeValues.missingTeacher) || deletedColumnTypes.includes(ColumnTypeValues.existingTeacher)) {

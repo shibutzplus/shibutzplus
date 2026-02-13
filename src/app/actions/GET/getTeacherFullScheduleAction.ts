@@ -1,15 +1,19 @@
 "use server";
 
+//
+//  Get teacher full schedule for a specific date
+//
 import { GetDailyScheduleResponse } from "@/models/types/dailySchedule";
 import { publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { executeQuery } from "../../../db";
 import { dbLog } from "@/services/loggerService";
-import { getTeacherScheduleService } from "@/services/schedule/getTeacherSchedule";
+import { getCachedTeacherSchedule } from "@/services/schedule/getTeacherSchedule";
 
 const getTeacherFullScheduleAction = async (
     teacherId: string,
     date: string,
+    schoolId: string,
 ): Promise<GetDailyScheduleResponse> => {
     try {
         const authError = await publicAuthAndParams({ teacherId, date });
@@ -18,7 +22,7 @@ const getTeacherFullScheduleAction = async (
         }
 
         const result = await executeQuery(async () => {
-            return await getTeacherScheduleService(teacherId, date);
+            return await getCachedTeacherSchedule(teacherId, date, schoolId);
         });
 
         return {

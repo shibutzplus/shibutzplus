@@ -34,7 +34,7 @@ async function loadAuthModules() {
         };
 
         return authModulesCache;
-    } catch (e) {
+    } catch (_e) {
         // Fallback or silence error if running in a script without auth context
         return null;
     }
@@ -48,7 +48,7 @@ export async function dbLog(params: LogParams) {
         if (modules) {
             try {
                 session = await modules.getServerSession(modules.authOptions).catch(() => null);
-            } catch (e) {
+            } catch (_e) {
                 // Ignore session fetch errors
             }
         }
@@ -61,7 +61,7 @@ export async function dbLog(params: LogParams) {
         let safeMetadata = params.metadata || {};
         try {
             safeMetadata = JSON.parse(JSON.stringify(safeMetadata));
-        } catch (e) {
+        } catch (_e) {
             safeMetadata = { error: 'Non-serializable metadata' };
         }
 

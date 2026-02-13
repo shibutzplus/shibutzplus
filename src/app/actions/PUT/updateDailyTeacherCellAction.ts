@@ -11,6 +11,8 @@ import { NewDailyScheduleSchema } from "@/db/schema";
 import { getDateReturnString, getStringReturnDate } from "@/utils/time";
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
 import { DAILY_TEACHER_COL_DATA_CHANGED } from "@/models/constant/sync";
+import { revalidateTag } from "next/cache";
+import { cacheTags } from "@/lib/cacheTags";
 
 export async function updateDailyTeacherCellAction(
     id: string,
@@ -87,7 +89,12 @@ export async function updateDailyTeacherCellAction(
         }
 
         const updateSchedule = updatedEntry[0];
-        void pushSyncUpdateServer(DAILY_TEACHER_COL_DATA_CHANGED, { schoolId: school.id, date: getDateReturnString(date) });
+
+        // invalidate cache
+        revalidateTag(cacheTags.schoolSchedule(school.id));
+
+        const dateString = getDateReturnString(date);
+        void pushSyncUpdateServer(DAILY_TEACHER_COL_DATA_CHANGED, { schoolId: school.id, date: dateString });
 
         return {
             success: true,

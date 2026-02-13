@@ -4,6 +4,8 @@ import { publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { eq, and, or } from "drizzle-orm";
 import { db, schema, executeQuery } from "../../../db";
+import { revalidateTag } from "next/cache";
+import { cacheTags } from "@/lib/cacheTags";
 import { dbLog } from "@/services/loggerService";
 import { ActionResponse } from "@/models/types/actions";
 import { NewDailyScheduleSchema } from "@/db/schema";
@@ -81,7 +83,13 @@ export async function updateDailyInstructionAction(
             };
         }
 
-        void pushSyncUpdateServer(MATERIAL_CHANGED, { schoolId: updatedEntries[0].schoolId, date });
+        const entrySchoolId = updatedEntries[0].schoolId;
+
+        // invalidate cache
+        revalidateTag(cacheTags.schoolSchedule(entrySchoolId));
+
+        // Sync update to all connected clients
+        void pushSyncUpdateServer(MATERIAL_CHANGED, { schoolId: entrySchoolId, date });
 
         return {
             success: true,

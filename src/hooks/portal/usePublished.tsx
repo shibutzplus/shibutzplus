@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
-import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
-import { getClassesAction } from "@/app/actions/GET/getClassesAction";
-import { getSubjectsAction } from "@/app/actions/GET/getSubjectsAction";
-import { getTeachersAction } from "@/app/actions/GET/getTeachersAction";
+import { getCachedClassesAction } from "@/app/actions/GET/getCachedClassesAction";
+import { getCachedSubjectsAction } from "@/app/actions/GET/getCachedSubjectsAction";
+import { getCachedTeachersAction } from "@/app/actions/GET/getCachedTeachersAction";
 import { getSchoolAction } from "@/app/actions/GET/getSchoolAction";
+import { getCachedDailyScheduleAction } from "@/app/actions/GET/getCachedDailyScheduleAction";
 import { DailySchedule, GetDailyScheduleResponse } from "@/models/types/dailySchedule";
 import { ClassType } from "@/models/types/classes";
 import { SubjectType } from "@/models/types/subjects";
 import { TeacherType } from "@/models/types/teachers";
-import messages from "@/resources/messages";
 import { populateDailyScheduleTable } from "@/services/daily/populate";
 import { errorToast } from "@/lib/toast";
 import { logErrorAction } from "@/app/actions/POST/logErrorAction";
+import messages from "@/resources/messages";
 
 export const usePublished = (schoolId?: string, selectedDate?: string, teacher?: TeacherType) => {
     const [isPublishLoading, setIsPublishLoading] = useState<boolean>(false);
@@ -29,10 +29,11 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
     const refreshEntities = async () => {
         if (!schoolId) return;
         try {
+            // Use cached versions instead of direct DB queries
             const [teachersRes, subjectsRes, classesRes, schoolRes] = await Promise.all([
-                getTeachersAction(schoolId, { isPrivate: false, hasSub: true }),
-                getSubjectsAction(schoolId, { isPrivate: false }),
-                getClassesAction(schoolId, { isPrivate: false }),
+                getCachedTeachersAction(schoolId, { isPrivate: false, hasSub: true }),
+                getCachedSubjectsAction(schoolId, { isPrivate: false }),
+                getCachedClassesAction(schoolId, { isPrivate: false }),
                 getSchoolAction(schoolId) // Public school info
             ]);
 
@@ -53,7 +54,7 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
             };
 
         } catch (e) {
-            logErrorAction({ description: `Error fetching public lists: ${e instanceof Error ? e.message : String(e)}` });
+            logErrorAction({ description: `Error fetching public lists: ${e instanceof Error ? e.message : String(e)} ` });
         }
     };
 
@@ -83,7 +84,9 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
 
         try {
             if (!isBackground) setIsPublishLoading(true);
-            const response = await getDailyScheduleAction(effectiveSchoolId, effectiveDate, { isPrivate: false });
+
+            // Use cached server action instead of direct DB query
+            const response = await getCachedDailyScheduleAction(effectiveSchoolId, effectiveDate);
 
             // Ensure entities are loaded before populating
             let currentTeachers = overrideLists?.teachers || allTeachers || [];
@@ -117,7 +120,7 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
             }
             return response;
         } catch (error) {
-            logErrorAction({ description: `Error fetching daily schedule data (public): ${error instanceof Error ? error.message : String(error)}` });
+            logErrorAction({ description: `Error fetching daily schedule data(public): ${error instanceof Error ? error.message : String(error)} ` });
             return null;
         } finally {
             if (!isBackground) setIsPublishLoading(false);

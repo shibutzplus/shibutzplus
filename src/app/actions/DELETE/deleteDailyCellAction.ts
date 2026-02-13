@@ -9,6 +9,8 @@ import { dbLog } from "@/services/loggerService";
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
 import { DAILY_EVENT_COL_DATA_CHANGED, DAILY_TEACHER_COL_DATA_CHANGED } from "@/models/constant/sync";
 import { ColumnTypeValues } from "@/models/types/dailySchedule";
+import { revalidateTag } from "next/cache";
+import { cacheTags } from "@/lib/cacheTags";
 
 export async function deleteDailyCellAction(
     schoolId: string,
@@ -44,6 +46,9 @@ export async function deleteDailyCellAction(
 
         if (deleted > 0) {
             if (date && deletedType !== undefined) {
+                // Always invalidate cache - admins need to see updates even on unpublished dates
+                revalidateTag(cacheTags.schoolSchedule(schoolId));
+
                 if (deletedType === ColumnTypeValues.event) {
                     void pushSyncUpdateServer(DAILY_EVENT_COL_DATA_CHANGED, { schoolId, date });
                 } else if (deletedType === ColumnTypeValues.missingTeacher || deletedType === ColumnTypeValues.existingTeacher) {

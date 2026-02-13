@@ -11,7 +11,7 @@ import { BsMegaphoneFill, BsCalendar4Event, BsThreeDotsVertical, BsFiletypePdf, 
 import { MdPersonAdd, MdPerson, MdSwapHoriz, MdOpenInNew, MdOutlineInstallMobile, MdOutlineInstallDesktop } from "react-icons/md";
 import { FaPlus, FaRegCopy, FaRegPaste } from "react-icons/fa6";
 import { FaSave, FaShareAlt, FaQuestion, FaLink, FaCaretLeft, FaCaretRight } from "react-icons/fa";
-import { PiChairLight, PiMonitor, PiMonitorFill } from "react-icons/pi";
+import { PiChairLight, PiMonitor, PiMonitorFill, PiBriefcase } from "react-icons/pi";
 import { GoHistory } from "react-icons/go";
 import { LuEye } from "react-icons/lu";
 import { FiCheckCircle } from "react-icons/fi";
@@ -72,6 +72,7 @@ const Icons = {
     paste: FaRegPaste,
     installMobile: MdOutlineInstallMobile,
     installDesktop: MdOutlineInstallDesktop,
+    staff: PiBriefcase,
 };
 
 export default Icons;

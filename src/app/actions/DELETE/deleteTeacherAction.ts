@@ -10,6 +10,8 @@ import { TeacherType } from "@/models/types/teachers";
 import { dbLog } from "@/services/loggerService";
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
 import { ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
+import { revalidateTag } from "next/cache";
+import { cacheTags } from "@/lib/cacheTags";
 
 export async function deleteTeacherAction(
     schoolId: string,
@@ -68,6 +70,10 @@ export async function deleteTeacherAction(
 
             return { annualSchedule, remainingTeachers };
         });
+
+        // Invalidate cache - teacher deletion affects schedules AND lists
+        revalidateTag(cacheTags.schoolSchedule(schoolId));
+        revalidateTag(cacheTags.teachersList(schoolId));
 
         void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId });
 
