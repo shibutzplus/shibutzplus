@@ -130,7 +130,6 @@ export function usePushNotifications() {
                 schoolId: schoolId,
                 user: teacherId,
                 metadata: {
-                    userAgent: window.navigator.userAgent,
                     platform: (window.navigator as any).platform,
                     vendor: (window.navigator as any).vendor,
                     error: error instanceof Error ? { name: error.name, message: error.message } : error

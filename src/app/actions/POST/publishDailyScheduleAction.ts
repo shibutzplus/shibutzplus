@@ -6,7 +6,7 @@ import { ActionResponse } from "@/models/types/actions";
 import messages from "@/resources/messages";
 import { revalidatePath } from "next/cache";
 import { dbLog } from "@/services/loggerService";
-import { sendNotificationToSchool } from "@/services/pushNotifications";
+import { sendPublishNotification } from "@/services/pushNotifications";
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
 import { DAILY_PUBLISH_DATA_CHANGED } from "@/models/constant/sync";
 import { PublishLimitNumber } from "@/models/constant/daily";
@@ -54,11 +54,11 @@ export async function publishDailyScheduleAction(
         void pushSyncUpdateServer(DAILY_PUBLISH_DATA_CHANGED, { schoolId, date });
 
         // Trigger Web Push Notification
-        void sendNotificationToSchool(schoolId, {
+        await sendPublishNotification(schoolId, {
             title: "שיבוץ פלוס",
             body: `המערכת פורסמה`,
             url: `/teacher-material/${schoolId}`
-        });
+        }, date);
 
         return { success: true, message: messages.publish.success };
     } catch (error) {

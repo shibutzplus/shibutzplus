@@ -134,10 +134,6 @@ export const historyRelations = relations(history, ({ one }) => ({
 
 // Push Subscriptions relations
 export const pushSubscriptionsRelations = relations(pushSubscriptions, ({ one }) => ({
-  user: one(users, {
-    fields: [pushSubscriptions.principalId],
-    references: [users.id],
-  }),
   teacher: one(teachers, {
     fields: [pushSubscriptions.teacherId],
     references: [teachers.id],
