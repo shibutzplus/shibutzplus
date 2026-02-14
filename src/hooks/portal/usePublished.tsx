@@ -102,7 +102,7 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
                 }
             }
 
-            if (response.success && response.data && effectiveTeacher) {
+            if (response?.success && response.data && effectiveTeacher) {
                 const newSchedule = await populateDailyScheduleTable(
                     mainPublishTable,
                     effectiveDate,
