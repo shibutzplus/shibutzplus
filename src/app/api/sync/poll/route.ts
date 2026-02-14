@@ -5,7 +5,6 @@ import { NextRequest } from "next/server";
 import { redis } from "@/lib/redis"
 import { DAILY_TEACHER_COL_DATA_CHANGED, DAILY_EVENT_COL_DATA_CHANGED, ENTITIES_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED, MATERIAL_CHANGED } from "@/models/constant/sync";
 import { dbLog } from "@/services/loggerService";
-
 export async function GET(req: NextRequest) {
 
   try {

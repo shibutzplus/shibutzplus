@@ -96,6 +96,6 @@ export const config = {
     // - Next.js internals (_next/static, _next/image)
     // - Static files (images, CSS, JS, etc.)
     matcher: [
-        "/((?!_next/static|_next/image|favicon.ico|api/manifest|api/push/subscribe|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|woff|woff2|ttf|eot|webmanifest|json)).*)",
+        "/((?!_next/static|_next/image|favicon.ico|api/auth|api/manifest|api/push/subscribe|api/sync/poll|api/cron|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|woff|woff2|ttf|eot|webmanifest|json)).*)",
     ],
 };
