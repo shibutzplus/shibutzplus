@@ -94,7 +94,12 @@ export function usePushNotifications() {
             }
 
             if (currentPermission !== "granted") {
-                console.log("Notification permission not granted");
+                void logErrorAction({
+                    description: "[Push Hook] Permission not granted",
+                    schoolId: schoolId,
+                    user: teacherId,
+                    metadata: { permission: currentPermission }
+                });
                 return;
             }
 
@@ -116,13 +121,42 @@ export function usePushNotifications() {
                 return;
             }
 
-            const newSub = await registration.pushManager.subscribe({
-                userVisibleOnly: true,
-                applicationServerKey: urlBase64ToUint8Array(vapidKey),
-            });
+            let applicationServerKey: Uint8Array;
+            try {
+                applicationServerKey = urlBase64ToUint8Array(vapidKey);
+            } catch (e: any) {
+                void logErrorAction({
+                    description: `[Push Hook] invalid VAPID key format: ${e.message}`,
+                    schoolId: schoolId,
+                    user: teacherId,
+                    metadata: { vapidKeyLength: vapidKey.length }
+                });
+                return;
+            }
 
-            setSubscription(newSub);
-            await saveSubscription(newSub, schoolId, teacherId);
+            try {
+                const newSub = await registration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: applicationServerKey as any
+                });
+                setSubscription(newSub);
+                await saveSubscription(newSub, schoolId, teacherId);
+            } catch (subError: any) {
+                // Enhanced logging for the specific subscription failure
+                void logErrorAction({
+                    description: `[Push Hook] Subscription failed: ${subError.message}`,
+                    schoolId: schoolId,
+                    user: teacherId,
+                    metadata: {
+                        name: subError.name,
+                        message: subError.message,
+                        code: subError.code,
+                        permission: Notification.permission,
+                        vapidLength: vapidKey.length
+                    }
+                });
+                throw subError; // Re-throw to be caught by outer block if needed, though outer block logs again.
+            }
 
         } catch (error) {
             void logErrorAction({
