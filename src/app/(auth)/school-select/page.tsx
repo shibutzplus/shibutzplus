@@ -66,7 +66,9 @@ const SchoolSelectPage = () => {
                     <h1 className={styles.title}>בחירת בית ספר</h1>
                 </header>
                 {isLoading ? (
-                    <Loading />
+                    <div className={styles.loaderWrapper}>
+                        <Loading />
+                    </div>
                 ) : schools.length === 0 ? (
                     <p>לא נמצאו בתי ספר</p>
                 ) : (
@@ -81,7 +83,7 @@ const SchoolSelectPage = () => {
                                     <div className={styles.schoolInfo}>
                                         <span className={styles.schoolName}>{s.name}</span>
                                         <span className={styles.schoolDetails}>
-                                            {s.city}{s.deputyName ? ` - ${s.deputyName}` : ""}
+                                            ({s.city}{s.deputyName ? ` - ${s.deputyName}` : ""})
                                         </span>
                                     </div>
                                 </button>

@@ -8,7 +8,9 @@ Shibutz Plus uses a multi-layered caching strategy to ensure high performance fo
 ### 1. Data Caching (`unstable_cache`)
 We use Next.js `unstable_cache` to cache the results of expensive database queries.
 - **Location:** Wrapper functions in `src/services/` (e.g., `getCachedDailySchedule`, `getCachedTeachersList`).
-- **TTL (Time To Live):** Default is set to **2 hours (7200 seconds)**. This acts as a fallback if manual invalidation fails.
+- **TTL (Time To Live):** Default is set to **24 hours (86400 seconds)**. 
+- **TTL for classes and subjects:** Default is set to **7 days (604800 seconds)**. 
+This acts as a fallback if manual invalidation fails.
 - **Serialization Handling:** Note that `unstable_cache` serializes data to JSON. Our service wrappers automatically reconstruct `Date` objects from strings after fetching from cache.
 
 ### 2. Cache Tags (`src/lib/cacheTags.ts`)
@@ -34,6 +36,20 @@ For critical public pages (like the published daily schedule), we use `revalidat
 | Teacher List | `unstable_cache` | `add/update/deleteTeacherAction` |
 | Personalized Schedule | `unstable_cache` | Any schedule modification |
 | School Settings | `unstable_cache` | `updateSettingsAction` |
+
+## FAQ (שאלות ותשובות)
+
+### מתי ניקוי הקאש מתבצע?
+בכל פעם שמבוצע שינוי במידע במערכת (דרך Server Action), המערכת מנקה באופן אוטומטי את הקאש הרלוונטי. 
+
+לדוגמה:
+- **עדכון לו"ז:** שינוי של תא בודד בלו"ז היומי מנקה את הקאש של כל המערכת הבית-ספרית לאותו יום, כולל הפורטל האישי של כל המורים.
+- **עדכון מורה/כיתה/מקצוע:** הוספה או עריכה של ישות מנקה גם את רשימת הישויות וגם את קאש הלו"ז הבית-ספרי, כדי להבטיח ששמות מעודכנים יופיעו מיד בלו"ז.
+
+### למה הקאש של הלו"ז היומי והלו"ז של המורה מתנקים יחד?
+שניהם משתמשים באותו "תג" (`schoolSchedule`). זה מבטיח סנכרון מלא – ברגע שהנהלת בית הספר פרסמה שינוי, המורה יראה אותו מיד בפורטל האישי שלו ללא שום עיכוב.
+
+---
 
 ## Best Practices
 - **Always use `cacheTags`:** Never hardcode tag strings; use the helper in `src/lib/cacheTags.ts`.

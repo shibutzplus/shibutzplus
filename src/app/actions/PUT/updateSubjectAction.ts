@@ -56,8 +56,9 @@ export async function updateSubjectAction(
         // Fetch all subjects for the updated subject's school
         const allSubjectsResp = await getSubjectsAction(subjectData.schoolId);
 
-        // Invalidate subjects list cache
+        // Invalidate cache - subject changes affect schedules AND lists
         revalidateTag(cacheTags.subjectsList(subjectData.schoolId));
+        revalidateTag(cacheTags.schoolSchedule(subjectData.schoolId));
 
         void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: subjectData.schoolId });
 

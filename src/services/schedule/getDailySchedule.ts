@@ -1,3 +1,6 @@
+/**
+ * Used in Teacher Portal to display full school schedule
+ */
 import { DailyScheduleType } from "@/models/types/dailySchedule";
 import { and, eq } from "drizzle-orm";
 import { db, schema, executeQuery } from "@/db";
@@ -68,7 +71,7 @@ export async function getCachedDailySchedule(
         {
             // School-level tag for bulk invalidation
             tags: [cacheTags.schoolSchedule(schoolId)],
-            revalidate: 7200, // 2 hours - since we have precise tag invalidation
+            revalidate: 86400, // 24 hours - since we have precise tag invalidation
         }
     );
 

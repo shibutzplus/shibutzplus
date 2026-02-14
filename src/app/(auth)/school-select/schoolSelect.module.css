@@ -91,21 +91,30 @@
     font-size: 1.1rem;
 }
 
+.loaderWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0;
+    width: 100%;
+}
+
 .schoolInfo {
     display: flex;
-    flex-direction: column;
-    gap: 4px;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 8px;
+    justify-content: flex-start;
+    /* Right align for RTL */
 }
 
 .schoolName {
     font-weight: 600;
-    display: block;
 }
 
 .schoolDetails {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: #666;
-    display: block;
 }
 
 .schoolButton:hover .schoolDetails {

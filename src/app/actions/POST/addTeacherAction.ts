@@ -55,8 +55,9 @@ export async function addTeacherAction(
             };
         }
 
-        // Invalidate teachers list cache
+        // Invalidate cache - teacher changes affect schedules AND lists
         revalidateTag(cacheTags.teachersList(teacherData.schoolId));
+        revalidateTag(cacheTags.schoolSchedule(teacherData.schoolId));
 
         void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: teacherData.schoolId });
 

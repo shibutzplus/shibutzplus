@@ -75,8 +75,9 @@ export async function updateClassAction(
         // Fetch all classes for the updated class's school
         const allClassesResp = await getClassesAction(classData.schoolId);
 
-        // Invalidate classes list cache
+        // Invalidate cache - class changes affect schedules AND lists
         revalidateTag(cacheTags.classesList(classData.schoolId));
+        revalidateTag(cacheTags.schoolSchedule(classData.schoolId));
 
         void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: classData.schoolId });
 

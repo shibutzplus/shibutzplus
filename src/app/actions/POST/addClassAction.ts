@@ -43,8 +43,9 @@ export async function addClassAction(
             return { success: false, message: messages.classes.createError };
         }
 
-        // Invalidate classes list cache
+        // Invalidate cache - class changes affect schedules AND lists
         revalidateTag(cacheTags.classesList(classData.schoolId));
+        revalidateTag(cacheTags.schoolSchedule(classData.schoolId));
 
         void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: classData.schoolId });
 
