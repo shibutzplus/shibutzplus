@@ -2,7 +2,8 @@
 
 import { db, schema } from "@/db";
 import { eq } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { cacheTags } from "@/lib/cacheTags";
 import { ActionResponse } from "@/models/types/actions";
 import { SchoolSettingsType } from "@/models/types/settings";
 import { checkIsNotGuest } from "@/utils/authUtils";
@@ -40,6 +41,7 @@ export async function updateSettingsAction(
             .where(eq(schema.schools.id, schoolId));
 
         revalidatePath("/");
+        revalidateTag(cacheTags.schoolSchedule(schoolId));
 
         // Since we are updating schools, we return the params as the updated state
         const updatedSettings: SchoolSettingsType = {

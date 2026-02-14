@@ -1,3 +1,6 @@
+/**
+ * Used in Teacher Portal to display teacher schedule (material page)
+ */
 import { DailyScheduleType } from "@/models/types/dailySchedule";
 import { and, eq, or, inArray } from "drizzle-orm";
 import { db, schema } from "@/db";
@@ -176,7 +179,7 @@ export async function getCachedTeacherSchedule(
                 cacheTags.teacherSchedule(teacherId),
                 cacheTags.schoolSchedule(schoolId)
             ],
-            revalidate: 7200, // 2 hours - since we have precise tag invalidation, we can use longer TTL
+            revalidate: 86400, // 24 hours - since we have precise tag invalidation, we can use longer TTL
         }
     );
 

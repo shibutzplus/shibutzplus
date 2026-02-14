@@ -39,7 +39,7 @@ export async function getCachedTeachersList(
         ['getTeachersList', schoolId, JSON.stringify(options || {})],
         {
             tags: [cacheTags.teachersList(schoolId)],
-            revalidate: 7200,
+            revalidate: 86400,  // 24 hours
         }
     );
 
@@ -72,7 +72,7 @@ export async function getCachedSubjectsList(
         ['getSubjectsList', schoolId, JSON.stringify(options || {})],
         {
             tags: [cacheTags.subjectsList(schoolId)],
-            revalidate: 7200,
+            revalidate: 604800, // 7 days
         }
     );
 
@@ -105,7 +105,7 @@ export async function getCachedClassesList(
         ['getClassesList', schoolId, JSON.stringify(options || {})],
         {
             tags: [cacheTags.classesList(schoolId)],
-            revalidate: 7200,
+            revalidate: 604800, // 7 days
         }
     );
 
