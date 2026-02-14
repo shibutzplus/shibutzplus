@@ -5,20 +5,16 @@
  */
 import { pgTable, text, timestamp, index } from "drizzle-orm/pg-core";
 import { createId } from "@paralleldrive/cuid2";
-import { users } from "./users";
 import { schools } from "./schools";
 
 export const pushSubscriptions = pgTable("push_subscriptions", {
     id: text("id").primaryKey().$defaultFn(() => createId()),
-    principalId: text("principal_id").references(() => users.id, { onDelete: "cascade" }), // (principals/admins - Private Portal Users)
     teacherId: text("teacher_id"), // (public portal users - Teachers)
     schoolId: text("school_id").references(() => schools.id, { onDelete: "cascade" }),
     endpoint: text("endpoint").notNull(),
     p256dh: text("p256dh").notNull(),
     auth: text("auth").notNull(),
-    userAgent: text("user_agent"),                              // FFU Unused for now (Device data)
-    createdAt: timestamp("created_at").defaultNow().notNull(),  // UTC, need to fix to local time
-    lastUsed: timestamp("last_used"),                           // FFU Unused for now
+    createdAt: timestamp("created_at").defaultNow().notNull(),  // UTC
 }, (table) => {
     return {
         teacherIdIdx: index("idx_push_subscriptions_teacher_id").on(table.teacherId),

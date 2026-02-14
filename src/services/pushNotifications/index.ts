@@ -1,21 +1,23 @@
 /**
  * Push Notification Service
  *
- * What: Handles the server-side logic for sending web push notifications using the VAPID protocol.
- * Why: Notify users (teachers in public portal) about important updates, even when not actively using the app.
+ * Handles the server-side logic for sending web push notifications using the VAPID protocol.
+ * Notify users (teachers in public portal) about important updates, even when not actively using the app.
  */
 import webpush from "web-push";
 import { db } from "@/db";
 import { dbLog } from "@/services/loggerService";
 import { pushSubscriptions } from "@/db/schema/push-subscriptions";
-import { eq } from "drizzle-orm";
+import { teachers } from "@/db/schema/teachers";
+import { dailySchedule } from "@/db/schema/daily-schedule";
+import { eq, and, inArray, isNotNull } from "drizzle-orm";
 import https from "https";
 
 // Create a custom agent to reuse connections and avoid "socket hang up"
 const agent = new https.Agent({
     keepAlive: true,
     keepAliveMsecs: 1000,
-    maxSockets: 50, // Limit concurrent sockets
+    maxSockets: 50,
 });
 
 if (!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) {
@@ -97,10 +99,74 @@ export async function sendNotification(
     return { success: false, error: "Max retries reached" };
 }
 
-export async function sendNotificationToSchool(schoolId: string, payload: { title: string; body: string; url: string }) {
-    const subscriptions = await db.query.pushSubscriptions.findMany({
-        where: eq(pushSubscriptions.schoolId, schoolId),
+export async function sendPublishNotification(schoolId: string, payload: { title: string; body: string; url: string }, date: string) {
+    // 1. Get all Regular / Staff teachers
+    const regularTeachersSubscriptions = await db
+        .select({
+            id: pushSubscriptions.id,
+            endpoint: pushSubscriptions.endpoint,
+            p256dh: pushSubscriptions.p256dh,
+            auth: pushSubscriptions.auth,
+            teacherId: pushSubscriptions.teacherId,
+        })
+        .from(pushSubscriptions)
+        .innerJoin(teachers, eq(pushSubscriptions.teacherId, teachers.id))
+        .where(
+            and(
+                eq(pushSubscriptions.schoolId, schoolId),
+                inArray(teachers.role, ["regular", "staff"])
+            )
+        );
+
+    // 2. Get Substitute teachers who are working on this specific date
+    // First find the relevant substitute teacher IDs from the daily schedule
+    const activeSubstitutes = await db
+        .selectDistinct({ subTeacherId: dailySchedule.subTeacherId })
+        .from(dailySchedule)
+        .where(
+            and(
+                eq(dailySchedule.schoolId, schoolId),
+                eq(dailySchedule.date, date),
+                isNotNull(dailySchedule.subTeacherId)
+            )
+        );
+
+    const activeSubTeacherIds = activeSubstitutes
+        .map(s => s.subTeacherId)
+        .filter((id): id is string => id !== null);
+
+    let substituteSubscriptions: typeof regularTeachersSubscriptions = [];
+
+    if (activeSubTeacherIds.length > 0) {
+        substituteSubscriptions = await db
+            .select({
+                id: pushSubscriptions.id,
+                endpoint: pushSubscriptions.endpoint,
+                p256dh: pushSubscriptions.p256dh,
+                auth: pushSubscriptions.auth,
+                teacherId: pushSubscriptions.teacherId,
+            })
+            .from(pushSubscriptions)
+            .innerJoin(teachers, eq(pushSubscriptions.teacherId, teachers.id))
+            .where(
+                and(
+                    eq(pushSubscriptions.schoolId, schoolId),
+                    eq(teachers.role, "substitute"),
+                    inArray(pushSubscriptions.teacherId, activeSubTeacherIds)
+                )
+            );
+    }
+
+    // 3. Combine and Deduplicate (by subscription ID)
+    const allSubscriptions = [...regularTeachersSubscriptions, ...substituteSubscriptions];
+    const unique = new Map<string, typeof regularTeachersSubscriptions[0]>();
+    allSubscriptions.forEach(sub => {
+        if (!unique.has(sub.id)) {
+            unique.set(sub.id, sub);
+        }
     });
+
+    const subscriptions = Array.from(unique.values());
 
     if (subscriptions.length === 0) {
         return { success: true, count: 0 };
@@ -110,7 +176,7 @@ export async function sendNotificationToSchool(schoolId: string, payload: { titl
     let failCount = 0;
 
     // Process in smaller batches to avoid "socket hang up" and other concurrency issues
-    const BATCH_SIZE = 30;
+    const BATCH_SIZE = 50;
 
     for (let i = 0; i < subscriptions.length; i += BATCH_SIZE) {
         const batch = subscriptions.slice(i, i + BATCH_SIZE);
