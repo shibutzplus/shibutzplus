@@ -34,7 +34,7 @@ const NotificationRequestPopup: React.FC<NotificationRequestPopupProps> = ({
                 </div>
             </div>
 
-            <h2 className={styles.title}>עדכוני מערכת בזמן אמת</h2>
+            <h2 className={styles.title}>עדכוני מערכת שעות בזמן אמת</h2>
 
             <p className={styles.text}>
             </p>
