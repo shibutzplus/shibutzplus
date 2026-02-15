@@ -99,7 +99,7 @@ export function usePushNotifications() {
 
             if (currentPermission !== "granted") {
                 void logErrorAction({
-                    description: `[Push Hook] Permission not granted (Step: ${step})`,
+                    description: `[Push Hook] User did not grant permission to notifications (Step: ${step})`,
                     schoolId: schoolId,
                     user: teacherId,
                     metadata: { permission: currentPermission, isManual }
