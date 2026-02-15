@@ -117,7 +117,6 @@ async function getTeacherScheduleService(
     dailySchedules.forEach((ds: any) => {
         const isSub = ds.subTeacherId === teacherId;
         const isOriginal = ds.originalTeacherId === teacherId;
-        const isReplaced = ds.subTeacherId && ds.subTeacherId !== teacherId;
 
         // Show daily item if:
         // 1. I am the substitute teacher
