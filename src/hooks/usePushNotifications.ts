@@ -77,56 +77,63 @@ export function usePushNotifications() {
             return;
         }
 
+        let step = "0: init"; // Track progress
+
         try {
             isRegistering.current = true;
-            // 1. Register Service Worker
+
+            step = "1: register-sw";
             const registration = await navigator.serviceWorker.register("/sw.js");
 
-            // 2. Check permission - if not granted, request it ONLY if this is a manual trigger (user gesture)
+            // 2. Check permission
+            step = "2: check-permission";
             let currentPermission = Notification.permission;
             if (currentPermission !== "granted") {
                 if (!isManual) {
-                    // Silently stop if we don't have permission and weren't asked by user
                     return;
                 }
+                step = "2a: request-permission";
                 currentPermission = await Notification.requestPermission();
                 setPermission(currentPermission);
             }
 
             if (currentPermission !== "granted") {
                 void logErrorAction({
-                    description: "[Push Hook] Permission not granted",
+                    description: `[Push Hook] Permission not granted (Step: ${step})`,
                     schoolId: schoolId,
                     user: teacherId,
-                    metadata: { permission: currentPermission }
+                    metadata: { permission: currentPermission, isManual }
                 });
                 return;
             }
 
-            // 3. Subscribe
+            step = "3: get-vapid-key";
             const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
             if (!vapidKey) {
                 void logErrorAction({
-                    description: "[Push Hook] VAPID public key not found",
+                    description: `[Push Hook] VAPID public key not found (Step: ${step})`,
                     schoolId: schoolId,
                     user: teacherId
                 });
                 return;
             }
 
+            step = "4: check-existing-sub";
             const existingSub = await registration.pushManager.getSubscription();
             if (existingSub) {
                 setSubscription(existingSub);
+                step = "4a: save-existing";
                 await saveSubscription(existingSub, schoolId, teacherId);
                 return;
             }
 
+            step = "5: convert-key";
             let applicationServerKey: Uint8Array;
             try {
                 applicationServerKey = urlBase64ToUint8Array(vapidKey);
             } catch (e: any) {
                 void logErrorAction({
-                    description: `[Push Hook] invalid VAPID key format: ${e.message}`,
+                    description: `[Push Hook] invalid VAPID key (Step: ${step}): ${e.message}`,
                     schoolId: schoolId,
                     user: teacherId,
                     metadata: { vapidKeyLength: vapidKey.length }
@@ -134,39 +141,39 @@ export function usePushNotifications() {
                 return;
             }
 
+            step = "6: subscribe-attempt";
             try {
                 const newSub = await registration.pushManager.subscribe({
                     userVisibleOnly: true,
                     applicationServerKey: applicationServerKey as any
                 });
                 setSubscription(newSub);
+                step = "7: save-new-sub";
                 await saveSubscription(newSub, schoolId, teacherId);
+
             } catch (subError: any) {
-                // Enhanced logging for the specific subscription failure
                 void logErrorAction({
-                    description: `[Push Hook] Subscription failed: ${subError.message}`,
+                    description: `[Push Hook] Subscription failed (Step: ${step}): ${subError.message}`,
                     schoolId: schoolId,
                     user: teacherId,
                     metadata: {
                         name: subError.name,
                         message: subError.message,
                         code: subError.code,
-                        permission: Notification.permission,
-                        vapidLength: vapidKey.length
+                        permission: Notification.permission
                     }
                 });
-                throw subError; // Re-throw to be caught by outer block if needed, though outer block logs again.
+                throw subError;
             }
 
         } catch (error) {
             void logErrorAction({
-                description: `[Push Hook] Error subscribing to push notifications: ${error instanceof Error ? error.message : String(error)}`,
+                description: `[Push Hook] Error subscribing (Step: ${step}): ${error instanceof Error ? error.message : String(error)}`,
                 schoolId: schoolId,
                 user: teacherId,
                 metadata: {
-                    platform: (window.navigator as any).platform,
-                    vendor: (window.navigator as any).vendor,
-                    error: error instanceof Error ? { name: error.name, message: error.message } : error
+                    error: error instanceof Error ? { name: error.name, message: error.message } : error,
+                    isManual
                 }
             });
         } finally {
