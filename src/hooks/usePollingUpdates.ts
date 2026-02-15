@@ -70,6 +70,9 @@ export const usePollingUpdates = (
             }
         };
 
+        // Initial check immediately on mount/path change
+        checkUpdates();
+
         id = setInterval(checkUpdates, POLL_INTERVAL_MS);
 
         // Pause polling when tab/browser is not visible
@@ -93,7 +96,6 @@ export const usePollingUpdates = (
     // Reset polling state on path change as we already get new data from DB
     useEffect(() => {
         setHasUpdate(false);
-        setLastTs(Date.now());
     }, [pathname]);
 
     const resetUpdate = () => {
