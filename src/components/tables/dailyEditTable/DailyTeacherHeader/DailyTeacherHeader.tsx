@@ -162,6 +162,8 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
                         fontSize="18px"
                         caretColor="#cccccc"
                         menuPortalTarget={null}
+                        menuWidth="180px"
+                        menuAlign="left"
                     />
                 </div>
             </div>
