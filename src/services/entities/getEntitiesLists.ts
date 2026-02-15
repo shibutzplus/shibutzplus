@@ -5,6 +5,7 @@ import { cacheTags } from "@/lib/cacheTags";
 import { TeacherType, TeacherRoleValues } from "@/models/types/teachers";
 import { SubjectType } from "@/models/types/subjects";
 import { ClassType } from "@/models/types/classes";
+import { PortalType, PortalTypeVal } from "@/models/types";
 
 /**
  * Cached service to fetch teachers list.
@@ -16,18 +17,14 @@ import { ClassType } from "@/models/types/classes";
  */
 export async function getCachedTeachersList(
     schoolId: string,
-    options?: { isPrivate?: boolean; hasSub?: boolean }
+    options?: { portalType?: PortalTypeVal; includeSubstitutes?: boolean }
 ): Promise<TeacherType[]> {
     const cachedFn = unstable_cache(
         async () => {
             return await executeQuery(async () => {
                 const conditions = [eq(schema.teachers.schoolId, schoolId)];
 
-                // Filter to "regular" teachers only if:
-                // 1. Explicitly requested public view (isPrivate === false) - used by Portal
-                // 2. Explicitly requested no substitutes (hasSub === false) - used by Schedule
-                // Filter by role if public or specifically requested
-                if (options?.isPrivate === false && options?.hasSub === false) {
+                if (options?.portalType === PortalType.Teacher && options?.includeSubstitutes === false) {
                     conditions.push(eq(schema.teachers.role, TeacherRoleValues.REGULAR));
                 }
 
@@ -59,7 +56,7 @@ export async function getCachedTeachersList(
  */
 export async function getCachedSubjectsList(
     schoolId: string,
-    options?: { isPrivate?: boolean }
+    options?: { portalType?: PortalTypeVal }
 ): Promise<SubjectType[]> {
     const cachedFn = unstable_cache(
         async () => {
@@ -92,7 +89,7 @@ export async function getCachedSubjectsList(
  */
 export async function getCachedClassesList(
     schoolId: string,
-    options?: { isPrivate?: boolean }
+    options?: { portalType?: PortalTypeVal }
 ): Promise<ClassType[]> {
     const cachedFn = unstable_cache(
         async () => {

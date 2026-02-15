@@ -5,13 +5,14 @@ import { publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { dbLog } from "@/services/loggerService";
 import { getCachedTeachersList } from "@/services/entities/getEntitiesLists";
+import { PortalTypeVal } from "@/models/types";
 
 /**
  * Server action to fetch cached teachers list for public pages.
  */
 export async function getCachedTeachersAction(
     schoolId: string,
-    options?: { isPrivate?: boolean; hasSub?: boolean }
+    options?: { portalType?: PortalTypeVal; includeSubstitutes?: boolean }
 ): Promise<GetTeachersResponse> {
     try {
         const authError = await publicAuthAndParams({ schoolId });

@@ -2,7 +2,7 @@ import TeacherSignInClient from "./TeacherSignInClient";
 import { getTeachersAction } from "@/app/actions/GET/getTeachersAction";
 import { getSchoolAction } from "@/app/actions/GET/getSchoolAction";
 import ContactAdminError from "@/components/auth/ContactAdminError/ContactAdminError";
-import { SelectOption } from "@/models/types";
+import { SelectOption, PortalType } from "@/models/types";
 import { TeacherType } from "@/models/types/teachers";
 
 interface PageProps {
@@ -22,7 +22,7 @@ export default async function TeacherSignInPage({ params }: PageProps) {
     // Parallel data fetching for performance
     const [schoolResp, teachersResp] = await Promise.all([
         getSchoolAction(schoolId),
-        getTeachersAction(schoolId, { isPrivate: false, hasSub: false }),
+        getTeachersAction(schoolId, { portalType: PortalType.Teacher, includeSubstitutes: false }),
     ]);
 
     if (!schoolResp.success || !schoolResp.data) {

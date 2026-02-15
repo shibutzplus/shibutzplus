@@ -13,3 +13,9 @@ export type GroupOption = {
 export type Pair = [string, string];
 
 export type AppType = "public" | "private";
+
+export const PortalType = {
+    Manager: 'manager', // Internal/Private view (all data)
+    Teacher: 'teacher', // Public/Teacher view (filtered data)
+} as const;
+export type PortalTypeVal = (typeof PortalType)[keyof typeof PortalType];

@@ -5,14 +5,15 @@ import { checkAuthAndParams, publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { dbLog } from "@/services/loggerService";
 import { getCachedClassesList } from "@/services/entities/getEntitiesLists";
+import { PortalType, PortalTypeVal } from "@/models/types";
 
 export async function getClassesAction(
     schoolId: string,
-    options: { isPrivate: boolean } = { isPrivate: true },
+    options: { portalType: PortalTypeVal } = { portalType: PortalType.Manager },
 ): Promise<GetClassesResponse> {
     try {
         let authError;
-        if (options.isPrivate) {
+        if (options.portalType === PortalType.Manager) {
             authError = await checkAuthAndParams({ schoolId });
         } else {
             authError = await publicAuthAndParams({ schoolId });
