@@ -42,6 +42,7 @@ type InputSelectProps = {
     caretColor?: string;
     isCreatable?: boolean;
     formatCreateLabel?: (inputValue: string) => string;
+    menuPortalTarget?: HTMLElement | null;
 };
 const InputSelect: React.FC<InputSelectProps> = ({
     label,
@@ -66,6 +67,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
     caretColor,
     isCreatable = false,
     formatCreateLabel,
+    menuPortalTarget = (typeof document !== "undefined" ? document.body : null),
 }) => {
     const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
     const [isMounted, setIsMounted] = useState(false);
@@ -190,6 +192,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
                 return {
                     ...base,
                     fontSize: fontSize || base.fontSize,
+                    textAlign: isCentered ? "center" : "right",
                 };
             },
             clearIndicator: (provided: any) => {
@@ -299,7 +302,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
                 closeMenuOnSelect={true}
                 hideSelectedOptions={false}
                 backspaceRemovesValue
-                menuPortalTarget={isMounted ? document.body : null}
+                menuPortalTarget={isMounted ? menuPortalTarget : null}
                 menuPlacement="auto"
                 menuPosition="fixed"
                 noOptionsMessage={() => <div>לא נמצאו אפשרויות</div>}

@@ -161,6 +161,7 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
                         placeholderColor={BrightTextColor}
                         fontSize="18px"
                         caretColor="#cccccc"
+                        menuPortalTarget={null}
                     />
                 </div>
             </div>
