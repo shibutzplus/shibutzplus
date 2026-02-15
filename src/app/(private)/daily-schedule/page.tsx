@@ -17,6 +17,7 @@ import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { usePopup } from "@/context/PopupContext";
 import MsgPopup from "@/components/popups/MsgPopup/MsgPopup";
+import { PortalType } from "@/models/types";
 
 const DailyScheduleContent: React.FC = () => {
     const { isLoading, selectedDate, mainDailyTable, isPreviewMode, togglePreviewMode } =
@@ -124,6 +125,7 @@ const DailyScheduleContent: React.FC = () => {
                         isInsidePanel
                         fromHour={settings?.fromHour}
                         toHour={settings?.toHour}
+                        portalType={PortalType.Manager}
                     />
                 ) : null}
             </SlidingPanel>

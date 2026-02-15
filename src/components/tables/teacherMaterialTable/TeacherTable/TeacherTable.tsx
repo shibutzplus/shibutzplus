@@ -8,6 +8,7 @@ import { calculateVisibleRowsForTeacher } from "@/utils/tableUtils";
 import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import NotPublished from "@/components/empty/NotPublished/NotPublished";
 import Preloader from "@/components/ui/Preloader/Preloader";
+import { PortalType, PortalTypeVal } from "@/models/types";
 
 type TeacherTableProps = {
     teacher?: TeacherType;
@@ -15,6 +16,7 @@ type TeacherTableProps = {
     isInsidePanel?: boolean;
     fromHour?: number;
     toHour?: number;
+    portalType?: PortalTypeVal;
 };
 
 const TeacherTable: React.FC<TeacherTableProps> = ({
@@ -23,6 +25,7 @@ const TeacherTable: React.FC<TeacherTableProps> = ({
     isInsidePanel,
     fromHour = 1,
     toHour = 10,
+    portalType,
 }) => {
     const { mainPortalTable, hasFetched, isPortalLoading } = useTeacherTableContext();
     const dayTable = selectedDate ? mainPortalTable[selectedDate] : undefined;
@@ -43,7 +46,13 @@ const TeacherTable: React.FC<TeacherTableProps> = ({
     const hasChanges = !isEmpty && Object.values(dayTable).some((row) => !row.isRegular);
 
     if (isEmpty || !hasChanges) {
-        return <NotPublished date={selectedDate} text="אין שינויים במערכת האישית" displayButton={teacher?.role !== TeacherRoleValues.SUBSTITUTE} />;
+        return (
+            <NotPublished
+                date={selectedDate}
+                text="אין שינויים במערכת האישית"
+                displayButton={teacher?.role !== TeacherRoleValues.SUBSTITUTE && portalType !== PortalType.Manager}
+            />
+        );
     }
 
     return (
