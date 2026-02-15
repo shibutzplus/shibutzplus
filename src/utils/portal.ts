@@ -14,7 +14,7 @@ export const getInstructionPlaceholder = (row?: TeacherScheduleType, teacher?: T
         return "";
     }
 
-    // If it's a regular lesson (for existing teacher who was not replaced by substitute)
+    // isRegular is a very missleading name. It means that there is no change in the lesson.
     if (row.isRegular) {
         return "";
     }

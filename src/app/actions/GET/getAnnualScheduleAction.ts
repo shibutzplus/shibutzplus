@@ -1,11 +1,10 @@
 "use server";
 import "server-only";
-import { AnnualScheduleType, GetAnnualScheduleResponse } from "@/models/types/annualSchedule";
+import { GetAnnualScheduleResponse } from "@/models/types/annualSchedule";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
-import { eq } from "drizzle-orm";
 import { dbLog } from "@/services/loggerService";
-import { db, schema, executeQuery } from "../../../db";
+import { getCachedAnnualSchedule } from "@/services/schedule/getAnnualSchedule";
 
 export async function getAnnualScheduleAction(
     schoolId: string,
@@ -16,26 +15,7 @@ export async function getAnnualScheduleAction(
             return authError as GetAnnualScheduleResponse;
         }
 
-        const annualSchedule = await executeQuery(async () => {
-            const schedules = await db.query.annualSchedule.findMany({
-                where: eq(schema.annualSchedule.schoolId, schoolId),
-            });
-
-            return schedules.map(
-                (schedule: any) =>
-                    ({
-                        id: schedule.id,
-                        day: schedule.day,
-                        hour: schedule.hour,
-                        schoolId: schedule.schoolId,
-                        classId: schedule.classId,
-                        teacherId: schedule.teacherId,
-                        subjectId: schedule.subjectId,
-                        createdAt: schedule.createdAt,
-                        updatedAt: schedule.updatedAt,
-                    }) as unknown as AnnualScheduleType,
-            );
-        });
+        const annualSchedule = await getCachedAnnualSchedule(schoolId);
 
         return {
             success: true,

@@ -46,6 +46,7 @@ export async function updateDailyEventHeaderAction(
         if (updatedEntries[0]) {
             // Invalidate all schedule caches for this school
             revalidateTag(cacheTags.schoolSchedule(updatedEntries[0].schoolId));
+            revalidateTag(cacheTags.dailySchedule(updatedEntries[0].schoolId, date));
             void pushSyncUpdateServer(DAILY_EVENT_COL_DATA_CHANGED, { schoolId: updatedEntries[0].schoolId, date });
         }
 

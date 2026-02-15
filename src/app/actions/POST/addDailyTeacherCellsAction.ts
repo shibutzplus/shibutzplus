@@ -134,6 +134,7 @@ export async function addDailyTeacherCellsAction(
 
             // invalidate cache
             revalidateTag(cacheTags.schoolSchedule(schoolId));
+            revalidateTag(cacheTags.dailySchedule(schoolId, dateString));
 
             void pushSyncUpdateServer(DAILY_TEACHER_COL_DATA_CHANGED, { schoolId, date: dateString });
         }

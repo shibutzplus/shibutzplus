@@ -12,6 +12,7 @@ import { populateDailyScheduleTable } from "@/services/daily/populate";
 import { errorToast } from "@/lib/toast";
 import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 import messages from "@/resources/messages";
+import { PortalType } from "@/models/types";
 
 export const usePublished = (schoolId?: string, selectedDate?: string, teacher?: TeacherType) => {
     const [isPublishLoading, setIsPublishLoading] = useState<boolean>(false);
@@ -31,9 +32,9 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
         try {
             // Use cached versions instead of direct DB queries
             const [teachersRes, subjectsRes, classesRes, schoolRes] = await Promise.all([
-                getCachedTeachersAction(schoolId, { isPrivate: false, hasSub: true }),
-                getCachedSubjectsAction(schoolId, { isPrivate: false }),
-                getCachedClassesAction(schoolId, { isPrivate: false }),
+                getCachedTeachersAction(schoolId, { portalType: PortalType.Teacher, includeSubstitutes: true }),
+                getCachedSubjectsAction(schoolId, { portalType: PortalType.Teacher }),
+                getCachedClassesAction(schoolId, { portalType: PortalType.Teacher }),
                 getSchoolAction(schoolId) // Public school info
             ]);
 

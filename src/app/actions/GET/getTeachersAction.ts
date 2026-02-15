@@ -1,45 +1,26 @@
 "use server";
 
-import { GetTeachersResponse, TeacherRoleValues } from "@/models/types/teachers";
+import { GetTeachersResponse } from "@/models/types/teachers";
 import { checkAuthAndParams, publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
-import { db, schema, executeQuery } from "@/db";
-import { eq, and, asc } from "drizzle-orm";
 import { dbLog } from "@/services/loggerService";
+import { getCachedTeachersList } from "@/services/entities/getEntitiesLists";
+import { PortalType, PortalTypeVal } from "@/models/types";
 
 export async function getTeachersAction(
     schoolId: string,
-    options: { isPrivate: boolean; hasSub: boolean } = { isPrivate: true, hasSub: true },
+    options: { portalType: PortalTypeVal; includeSubstitutes: boolean } = { portalType: PortalType.Manager, includeSubstitutes: true },
 ): Promise<GetTeachersResponse> {
     try {
         let authError;
-        if (options.isPrivate) {
+        if (options.portalType === PortalType.Manager) {
             authError = await checkAuthAndParams({ schoolId });
         } else {
             authError = await publicAuthAndParams({ schoolId });
         }
         if (authError) return authError as GetTeachersResponse;
 
-        const teachers = await executeQuery(async () => {
-            if (options.hasSub) {
-                return await db
-                    .select()
-                    .from(schema.teachers)
-                    .where(eq(schema.teachers.schoolId, schoolId))
-                    .orderBy(asc(schema.teachers.name));
-            } else {
-                return await db
-                    .select()
-                    .from(schema.teachers)
-                    .where(
-                        and(
-                            eq(schema.teachers.schoolId, schoolId),
-                            eq(schema.teachers.role, TeacherRoleValues.REGULAR),
-                        ),
-                    )
-                    .orderBy(asc(schema.teachers.name));
-            }
-        });
+        const teachers = await getCachedTeachersList(schoolId, options);
 
         if (!teachers || teachers.length === 0) {
             return { success: true, message: messages.teachers.success, data: [] };

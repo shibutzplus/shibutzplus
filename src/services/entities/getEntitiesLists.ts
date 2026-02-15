@@ -1,10 +1,11 @@
 import { db, schema, executeQuery } from "@/db";
-import { eq, and } from "drizzle-orm";
+import { eq, and, asc } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 import { cacheTags } from "@/lib/cacheTags";
-import { TeacherType } from "@/models/types/teachers";
+import { TeacherType, TeacherRoleValues } from "@/models/types/teachers";
 import { SubjectType } from "@/models/types/subjects";
 import { ClassType } from "@/models/types/classes";
+import { PortalType, PortalTypeVal } from "@/models/types";
 
 /**
  * Cached service to fetch teachers list.
@@ -16,22 +17,22 @@ import { ClassType } from "@/models/types/classes";
  */
 export async function getCachedTeachersList(
     schoolId: string,
-    options?: { isPrivate?: boolean; hasSub?: boolean }
+    options?: { portalType?: PortalTypeVal; includeSubstitutes?: boolean }
 ): Promise<TeacherType[]> {
     const cachedFn = unstable_cache(
         async () => {
             return await executeQuery(async () => {
                 const conditions = [eq(schema.teachers.schoolId, schoolId)];
 
-                if (options?.isPrivate === false) {
-                    conditions.push(eq(schema.teachers.role, "regular"));
+                if (options?.portalType === PortalType.Teacher && options?.includeSubstitutes === false) {
+                    conditions.push(eq(schema.teachers.role, TeacherRoleValues.REGULAR));
                 }
 
                 const teachers = await db
                     .select()
                     .from(schema.teachers)
                     .where(and(...conditions))
-                    .orderBy(schema.teachers.name);
+                    .orderBy(asc(schema.teachers.name));
 
                 return teachers as TeacherType[];
             });
@@ -39,7 +40,7 @@ export async function getCachedTeachersList(
         ['getTeachersList', schoolId, JSON.stringify(options || {})],
         {
             tags: [cacheTags.teachersList(schoolId)],
-            revalidate: 86400,  // 24 hours
+            revalidate: 604800, // 7 days
         }
     );
 
@@ -55,7 +56,7 @@ export async function getCachedTeachersList(
  */
 export async function getCachedSubjectsList(
     schoolId: string,
-    options?: { isPrivate?: boolean }
+    options?: { portalType?: PortalTypeVal }
 ): Promise<SubjectType[]> {
     const cachedFn = unstable_cache(
         async () => {
@@ -64,7 +65,7 @@ export async function getCachedSubjectsList(
                     .select()
                     .from(schema.subjects)
                     .where(eq(schema.subjects.schoolId, schoolId))
-                    .orderBy(schema.subjects.name);
+                    .orderBy(asc(schema.subjects.name));
 
                 return subjects as SubjectType[];
             });
@@ -88,7 +89,7 @@ export async function getCachedSubjectsList(
  */
 export async function getCachedClassesList(
     schoolId: string,
-    options?: { isPrivate?: boolean }
+    options?: { portalType?: PortalTypeVal }
 ): Promise<ClassType[]> {
     const cachedFn = unstable_cache(
         async () => {
@@ -97,7 +98,7 @@ export async function getCachedClassesList(
                     .select()
                     .from(schema.classes)
                     .where(eq(schema.classes.schoolId, schoolId))
-                    .orderBy(schema.classes.activity, schema.classes.name);
+                    .orderBy(asc(schema.classes.activity), asc(schema.classes.name));
 
                 return classes as ClassType[];
             });

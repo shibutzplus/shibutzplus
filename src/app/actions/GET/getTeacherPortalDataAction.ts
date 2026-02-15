@@ -18,6 +18,7 @@ import messages from "@/resources/messages";
 import { getTeachersAction } from "@/app/actions/GET/getTeachersAction";
 import { getSubjectsAction } from "@/app/actions/GET/getSubjectsAction";
 import { getClassesAction } from "@/app/actions/GET/getClassesAction";
+import { PortalType } from "@/models/types";
 
 export interface TeacherPortalDataResponse {
     success: boolean;
@@ -49,9 +50,9 @@ export const getTeacherPortalDataAction = async (
         const [teacherRes, schoolRes, teachersListRes, subjectsListRes, classesListRes] = await Promise.all([
             getTeacherByIdAction(teacherId),
             getSchoolAction(schoolId),
-            getTeachersAction(schoolId, { isPrivate: false, hasSub: true }),
-            getSubjectsAction(schoolId, { isPrivate: false }),
-            getClassesAction(schoolId, { isPrivate: false }),
+            getTeachersAction(schoolId, { portalType: PortalType.Teacher, includeSubstitutes: true }),
+            getSubjectsAction(schoolId, { portalType: PortalType.Teacher }),
+            getClassesAction(schoolId, { portalType: PortalType.Teacher }),
         ]);
 
         if (!teacherRes.success || !teacherRes.data) {

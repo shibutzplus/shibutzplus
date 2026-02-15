@@ -12,6 +12,7 @@ import SlidingPanel from "@/components/ui/SlidingPanel/SlidingPanel";
 import TeacherTable from "@/components/tables/teacherMaterialTable/TeacherTable/TeacherTable";
 import { TeacherType } from "@/models/types/teachers";
 import { useMainContext } from "@/context/MainContext";
+import { PortalType } from "@/models/types";
 
 const HistorySchedulePage: NextPage = () => {
     const { mainDailyTable, selectedYearDate, isLoading } = useHistoryTable();
@@ -69,6 +70,7 @@ const HistorySchedulePage: NextPage = () => {
                         isInsidePanel
                         fromHour={settings?.fromHour}
                         toHour={settings?.toHour}
+                        portalType={PortalType.Manager}
                     />
                 ) : null}
             </SlidingPanel>

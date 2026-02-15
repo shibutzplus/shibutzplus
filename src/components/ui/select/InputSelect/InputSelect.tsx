@@ -42,6 +42,9 @@ type InputSelectProps = {
     caretColor?: string;
     isCreatable?: boolean;
     formatCreateLabel?: (inputValue: string) => string;
+    menuPortalTarget?: HTMLElement | null;
+    menuWidth?: string;
+    menuAlign?: "left" | "right";
 };
 const InputSelect: React.FC<InputSelectProps> = ({
     label,
@@ -66,6 +69,9 @@ const InputSelect: React.FC<InputSelectProps> = ({
     caretColor,
     isCreatable = false,
     formatCreateLabel,
+    menuPortalTarget = (typeof document !== "undefined" ? document.body : null),
+    menuWidth,
+    menuAlign = "right",
 }) => {
     const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
     const [isMounted, setIsMounted] = useState(false);
@@ -180,6 +186,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
                 return {
                     ...base,
                     fontSize: fontSize || base.fontSize,
+                    textAlign: isCentered ? "center" : "right",
                 };
             },
             option: (provided: any, state: any) => {
@@ -190,6 +197,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
                 return {
                     ...base,
                     fontSize: fontSize || base.fontSize,
+                    textAlign: isCentered ? "center" : "right",
                 };
             },
             clearIndicator: (provided: any) => {
@@ -213,6 +221,12 @@ const InputSelect: React.FC<InputSelectProps> = ({
                     },
                 };
             },
+            menu: (provided: any) => ({
+                ...provided,
+                width: menuWidth || provided.width,
+                left: menuAlign === "left" ? 0 : "auto",
+                right: menuAlign === "right" ? 0 : "auto",
+            }),
         };
     }, [
         error,
@@ -226,6 +240,8 @@ const InputSelect: React.FC<InputSelectProps> = ({
         isBold,
         isCentered,
         caretColor,
+        menuWidth,
+        menuAlign,
     ]);
     const CustomSingleValue = (props: SingleValueProps<SelectOption>) => {
         const [isHovered, setIsHovered] = useState(false);
@@ -299,13 +315,14 @@ const InputSelect: React.FC<InputSelectProps> = ({
                 closeMenuOnSelect={true}
                 hideSelectedOptions={false}
                 backspaceRemovesValue
-                menuPortalTarget={isMounted ? document.body : null}
+                menuPortalTarget={isMounted ? menuPortalTarget : null}
                 menuPlacement="auto"
                 menuPosition="fixed"
                 noOptionsMessage={() => <div>לא נמצאו אפשרויות</div>}
                 formatCreateLabel={formatCreateLabel}
                 styles={stylesOverride}
                 classNamePrefix="react-select"
+                isRtl={true}
                 components={{
                     SingleValue: CustomSingleValue,
                     ClearIndicator: () => null,

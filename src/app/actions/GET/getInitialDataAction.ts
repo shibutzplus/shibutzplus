@@ -8,6 +8,7 @@ import { getSchoolAction } from "./getSchoolAction";
 import { getTeachersAction } from "./getTeachersAction";
 import { getSubjectsAction } from "./getSubjectsAction";
 import { getClassesAction } from "./getClassesAction";
+import { PortalType } from "@/models/types";
 
 export interface InitialDataResponse {
     school: GetSchoolResponse;
@@ -19,7 +20,7 @@ export interface InitialDataResponse {
 export async function getInitialDataAction(schoolId: string): Promise<InitialDataResponse> {
     const [school, teachers, subjects, classes] = await Promise.all([
         getSchoolAction(schoolId),
-        getTeachersAction(schoolId),
+        getTeachersAction(schoolId, { portalType: PortalType.Manager, includeSubstitutes: true }),
         getSubjectsAction(schoolId),
         getClassesAction(schoolId),
     ]);

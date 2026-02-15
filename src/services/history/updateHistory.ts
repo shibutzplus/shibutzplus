@@ -84,25 +84,50 @@ export async function processHistoryUpdate(dateString?: string): Promise<History
         });
 
         if (historyRecords.length > 0) {
-            // 5. Delete existing records to prevent duplicates
-            await db.delete(history)
-                .where(
-                    and(
-                        eq(history.date, targetDate),
-                        inArray(history.schoolId, targetSchoolIds)
-                    )
-                );
+            // 5. Run DB operations in a transaction for atomicity
+            await db.transaction(async (tx) => {
+                // Delete existing records to prevent duplicates for this day/schools
+                await tx.delete(history)
+                    .where(
+                        and(
+                            eq(history.date, targetDate),
+                            inArray(history.schoolId, targetSchoolIds)
+                        )
+                    );
 
-            await db.insert(history).values(historyRecords);
+                await tx.insert(history).values(historyRecords);
+
+                // 6. Cleanup old daily schedules
+                const cleanupDate = new Date();
+                cleanupDate.setDate(cleanupDate.getDate() - DAILY_KEEP_HISTORY_DAYS);
+                const cleanupDateStr = cleanupDate.toISOString().split('T')[0];
+
+                await tx.delete(dailySchedule)
+                    .where(lte(dailySchedule.date, cleanupDateStr));
+            });
+
+            // Log success
+            dbLog({
+                description: `History updated successfully for ${targetSchoolIds.length} schools. ${historyRecords.length} records added.`,
+                metadata: { date: targetDate, schoolsCount: targetSchoolIds.length, records: historyRecords.length }
+            });
         }
 
-        // 6. Cleanup old daily schedules (DAILY_KEEP_HISTORY_DAYS days ago or older)
-        const cleanupDate = new Date();
-        cleanupDate.setDate(cleanupDate.getDate() - DAILY_KEEP_HISTORY_DAYS);
-        const cleanupDateStr = cleanupDate.toISOString().split('T')[0];
+        // 7. Invalidate history cache - ONLY after successful transaction
+        try {
+            // Important: Importing revalidateTag dynamically as this might run in a non-server context
+            const { revalidateTag } = await import('next/cache');
+            const { cacheTags } = await import('@/lib/cacheTags');
 
-        await db.delete(dailySchedule)
-            .where(lte(dailySchedule.date, cleanupDateStr));
+            for (const schoolId of targetSchoolIds) {
+                // We clear both the specific date and the school-wide history cache
+                revalidateTag(cacheTags.history(schoolId));
+                revalidateTag(cacheTags.historyByDate(schoolId, targetDate));
+            }
+        } catch (_e) {
+            // next/cache might not be available in all environments (e.g. standalone scripts or certain worker runtimes)
+            // This is non-critical as the cache has a 7-day TTL fallback.
+        }
 
         return {
             success: true,
@@ -112,10 +137,11 @@ export async function processHistoryUpdate(dateString?: string): Promise<History
         };
 
     } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : String(error);
         dbLog({
-            description: `History update failed: ${error instanceof Error ? error.message : String(error)}`,
-            metadata: { date: targetDate, schoolsCount: targetSchoolIds.length }
+            description: `History update CRITICAL FAILURE: ${errorMsg}`,
+            metadata: { date: targetDate, schoolsCount: targetSchoolIds.length, error: errorMsg }
         });
-        return { success: false, logs: [], schoolsUpdated: 0, recordsCount: 0 };
+        return { success: false, logs: [errorMsg], schoolsUpdated: 0, recordsCount: 0 };
     }
 }

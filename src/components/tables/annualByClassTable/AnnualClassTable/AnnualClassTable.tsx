@@ -51,6 +51,7 @@ const AnnualClassTable: React.FC<AnnualClassTableProps> = ({
 
     useEffect(() => {
         setIsLoading(!schedule || !subjects || !classes);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [!!schedule, !!subjects, !!classes]);
 
     const handleCreateTeacher = async (day: string, hour: number, value: string) => {

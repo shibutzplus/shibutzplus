@@ -3,17 +3,17 @@
 import { GetSubjectsResponse } from "@/models/types/subjects";
 import { checkAuthAndParams, publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
-import { db, schema, executeQuery } from "@/db";
-import { eq, asc } from "drizzle-orm";
 import { dbLog } from "@/services/loggerService";
+import { getCachedSubjectsList } from "@/services/entities/getEntitiesLists";
+import { PortalType, PortalTypeVal } from "@/models/types";
 
 export async function getSubjectsAction(
     schoolId: string,
-    options: { isPrivate: boolean } = { isPrivate: true },
+    options: { portalType: PortalTypeVal } = { portalType: PortalType.Manager },
 ): Promise<GetSubjectsResponse> {
     try {
         let authError;
-        if (options.isPrivate) {
+        if (options.portalType === PortalType.Manager) {
             authError = await checkAuthAndParams({ schoolId });
         } else {
             authError = await publicAuthAndParams({ schoolId });
@@ -23,13 +23,7 @@ export async function getSubjectsAction(
             return authError as GetSubjectsResponse;
         }
 
-        const subjects = await executeQuery(async () => {
-            return await db
-                .select()
-                .from(schema.subjects)
-                .where(eq(schema.subjects.schoolId, schoolId))
-                .orderBy(asc(schema.subjects.name));
-        });
+        const subjects = await getCachedSubjectsList(schoolId);
 
         if (!subjects || subjects.length === 0) {
             return {

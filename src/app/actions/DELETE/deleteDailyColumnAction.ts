@@ -99,6 +99,7 @@ export async function deleteDailyColumnAction(
 
         // invalidate cache
         revalidateTag(cacheTags.schoolSchedule(schoolId));
+        revalidateTag(cacheTags.dailySchedule(schoolId, date));
 
         // Push updates based on deleted types
         if (deletedColumnTypes.includes(ColumnTypeValues.missingTeacher) || deletedColumnTypes.includes(ColumnTypeValues.existingTeacher)) {
