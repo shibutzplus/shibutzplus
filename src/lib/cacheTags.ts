@@ -49,4 +49,21 @@ export const cacheTags = {
      * Invalidate when updating teacher information.
      */
     teacher: (teacherId: string) => `teacher-${teacherId}`,
+    /**
+     * Tag for history records.
+     * Invalidate when history is updated (e.g. daily cron).
+     */
+    history: (schoolId: string) => `history-${schoolId}`,
+
+    /**
+     * Tag for history records by date.
+     * Invalidate when history for a specific date is updated.
+     */
+    historyByDate: (schoolId: string, date: string) => `history-${schoolId}-${date}`,
+
+    /**
+     * Tag for daily schedule records by date.
+     * Invalidate when daily schedule for a specific date is updated.
+     */
+    dailySchedule: (schoolId: string, date: string) => `daily-${schoolId}-${date}`,
 };

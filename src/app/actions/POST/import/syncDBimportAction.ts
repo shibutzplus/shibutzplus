@@ -327,6 +327,11 @@ export async function saveTeacherScheduleAction(
         revalidatePath('/annual-class');
         revalidatePath('/annual-view');
 
+        // Invalidate annual schedule cache
+        const { revalidateTag } = await import('next/cache');
+        const { cacheTags } = await import('@/lib/cacheTags');
+        revalidateTag(cacheTags.schoolSchedule(targetSchoolId));
+
         return { success: true, message: `המערכת נשמרה בהצלחה!` };
 
     } catch (error: any) {

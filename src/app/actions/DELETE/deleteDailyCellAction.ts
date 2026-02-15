@@ -48,6 +48,7 @@ export async function deleteDailyCellAction(
             if (date && deletedType !== undefined) {
                 // Always invalidate cache - admins need to see updates even on unpublished dates
                 revalidateTag(cacheTags.schoolSchedule(schoolId));
+                revalidateTag(cacheTags.dailySchedule(schoolId, date));
 
                 if (deletedType === ColumnTypeValues.event) {
                     void pushSyncUpdateServer(DAILY_EVENT_COL_DATA_CHANGED, { schoolId, date });

@@ -1,9 +1,9 @@
 "use server";
 
-import { DailyScheduleType, GetDailyScheduleResponse } from "@/models/types/dailySchedule";
+import { GetDailyScheduleResponse } from "@/models/types/dailySchedule";
 import { checkAuthAndParams, publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
-import { and, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { dbLog } from "@/services/loggerService";
 import { db, schema, executeQuery } from "../../../db";
 
@@ -40,36 +40,8 @@ export async function getDailyScheduleAction(
             }
         }
 
-        const dailySchedule = await executeQuery(async () => {
-            const schedules = await db.query.dailySchedule.findMany({
-                where: and(
-                    eq(schema.dailySchedule.schoolId, schoolId),
-                    eq(schema.dailySchedule.date, date),
-                ),
-            });
-
-            return schedules.map(
-                (schedule: any) =>
-                    ({
-                        id: schedule.id,
-                        date: schedule.date,
-                        day: schedule.day,
-                        hour: schedule.hour,
-                        columnId: schedule.columnId,
-                        eventTitle: schedule.eventTitle,
-                        event: schedule.event,
-                        schoolId: schedule.schoolId,
-                        classIds: schedule.classIds,
-                        subjectId: schedule.subjectId,
-                        originalTeacherId: schedule.originalTeacherId,
-                        columnType: schedule.columnType,
-                        subTeacherId: schedule.subTeacherId,
-                        position: schedule.position,
-                        createdAt: schedule.createdAt,
-                        updatedAt: schedule.updatedAt,
-                    }) as unknown as DailyScheduleType, // Cast to maintain type compat for now, will fix frontend next
-            );
-        });
+        const { getCachedDailySchedule } = await import("@/services/schedule/getCachedDailySchedule");
+        const dailySchedule = await getCachedDailySchedule(schoolId, date);
 
         return {
             success: true,

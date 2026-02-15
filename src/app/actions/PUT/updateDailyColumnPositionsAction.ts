@@ -42,6 +42,7 @@ export async function updateDailyColumnPositionsAction(
 
         // Invalidate all schedule caches for this school
         revalidateTag(cacheTags.schoolSchedule(schoolId));
+        revalidateTag(cacheTags.dailySchedule(schoolId, date));
         revalidatePath("/daily-schedule");
 
         void pushSyncUpdateServer(DAILY_EVENT_COL_DATA_CHANGED, { schoolId, date });

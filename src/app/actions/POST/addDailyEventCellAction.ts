@@ -63,6 +63,7 @@ export async function addDailyEventCellAction(
         }
 
         revalidateTag(cacheTags.schoolSchedule(school.id));
+        revalidateTag(cacheTags.dailySchedule(school.id, getDateReturnString(date)));
         void pushSyncUpdateServer(DAILY_EVENT_COL_DATA_CHANGED, { schoolId: school.id, date: getDateReturnString(date) });
 
         return {

@@ -3,9 +3,8 @@
 import { GetClassesResponse } from "@/models/types/classes";
 import { checkAuthAndParams, publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
-import { db, schema, executeQuery } from "@/db";
-import { eq, asc } from "drizzle-orm";
 import { dbLog } from "@/services/loggerService";
+import { getCachedClassesList } from "@/services/entities/getEntitiesLists";
 
 export async function getClassesAction(
     schoolId: string,
@@ -23,13 +22,7 @@ export async function getClassesAction(
             return authError as GetClassesResponse;
         }
 
-        const classes = await executeQuery(async () => {
-            return await db
-                .select()
-                .from(schema.classes)
-                .where(eq(schema.classes.schoolId, schoolId))
-                .orderBy(asc(schema.classes.activity), asc(schema.classes.name));
-        });
+        const classes = await getCachedClassesList(schoolId);
 
         if (!classes || classes.length === 0) {
             return {

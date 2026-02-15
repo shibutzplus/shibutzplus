@@ -87,6 +87,7 @@ export async function updateDailyInstructionAction(
 
         // invalidate cache
         revalidateTag(cacheTags.schoolSchedule(entrySchoolId));
+        revalidateTag(cacheTags.dailySchedule(entrySchoolId, date));
 
         // Sync update to all connected clients
         void pushSyncUpdateServer(MATERIAL_CHANGED, { schoolId: entrySchoolId, date });

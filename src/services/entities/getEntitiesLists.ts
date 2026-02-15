@@ -1,8 +1,8 @@
 import { db, schema, executeQuery } from "@/db";
-import { eq, and } from "drizzle-orm";
+import { eq, and, asc } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 import { cacheTags } from "@/lib/cacheTags";
-import { TeacherType } from "@/models/types/teachers";
+import { TeacherType, TeacherRoleValues } from "@/models/types/teachers";
 import { SubjectType } from "@/models/types/subjects";
 import { ClassType } from "@/models/types/classes";
 
@@ -23,15 +23,18 @@ export async function getCachedTeachersList(
             return await executeQuery(async () => {
                 const conditions = [eq(schema.teachers.schoolId, schoolId)];
 
-                if (options?.isPrivate === false) {
-                    conditions.push(eq(schema.teachers.role, "regular"));
+                // Filter to "regular" teachers only if:
+                // 1. Explicitly requested public view (isPrivate === false) - used by Portal
+                // 2. Explicitly requested no substitutes (hasSub === false) - used by Schedule
+                if (options?.isPrivate === false || options?.hasSub === false) {
+                    conditions.push(eq(schema.teachers.role, TeacherRoleValues.REGULAR));
                 }
 
                 const teachers = await db
                     .select()
                     .from(schema.teachers)
                     .where(and(...conditions))
-                    .orderBy(schema.teachers.name);
+                    .orderBy(asc(schema.teachers.name));
 
                 return teachers as TeacherType[];
             });
@@ -39,7 +42,7 @@ export async function getCachedTeachersList(
         ['getTeachersList', schoolId, JSON.stringify(options || {})],
         {
             tags: [cacheTags.teachersList(schoolId)],
-            revalidate: 86400,  // 24 hours
+            revalidate: 604800, // 7 days
         }
     );
 
@@ -64,7 +67,7 @@ export async function getCachedSubjectsList(
                     .select()
                     .from(schema.subjects)
                     .where(eq(schema.subjects.schoolId, schoolId))
-                    .orderBy(schema.subjects.name);
+                    .orderBy(asc(schema.subjects.name));
 
                 return subjects as SubjectType[];
             });
@@ -97,7 +100,7 @@ export async function getCachedClassesList(
                     .select()
                     .from(schema.classes)
                     .where(eq(schema.classes.schoolId, schoolId))
-                    .orderBy(schema.classes.activity, schema.classes.name);
+                    .orderBy(asc(schema.classes.activity), asc(schema.classes.name));
 
                 return classes as ClassType[];
             });

@@ -90,10 +90,12 @@ export async function updateDailyTeacherCellAction(
 
         const updateSchedule = updatedEntry[0];
 
+        const dateString = getDateReturnString(date);
+
         // invalidate cache
         revalidateTag(cacheTags.schoolSchedule(school.id));
+        revalidateTag(cacheTags.dailySchedule(school.id, dateString));
 
-        const dateString = getDateReturnString(date);
         void pushSyncUpdateServer(DAILY_TEACHER_COL_DATA_CHANGED, { schoolId: school.id, date: dateString });
 
         return {
