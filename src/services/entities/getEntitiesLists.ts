@@ -26,7 +26,8 @@ export async function getCachedTeachersList(
                 // Filter to "regular" teachers only if:
                 // 1. Explicitly requested public view (isPrivate === false) - used by Portal
                 // 2. Explicitly requested no substitutes (hasSub === false) - used by Schedule
-                if (options?.isPrivate === false || options?.hasSub === false) {
+                // Filter by role if public or specifically requested
+                if (options?.isPrivate === false && options?.hasSub === false) {
                     conditions.push(eq(schema.teachers.role, TeacherRoleValues.REGULAR));
                 }
 

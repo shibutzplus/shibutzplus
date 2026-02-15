@@ -139,7 +139,7 @@ async function getTeacherScheduleService(
                 subTeacher: ds.subTeacher || undefined,
                 position: ds.position || 0,
                 instructions: ds.instructions || undefined,
-                isRegular: (isOriginal && !isReplaced && ds.columnType === 1 && !ds.event),
+                isRegular: false, // Any manual entry in daily schedule is considered a "change"=Not Regular
                 createdAt: ds.createdAt,
                 updatedAt: ds.updatedAt,
             });

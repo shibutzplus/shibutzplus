@@ -182,6 +182,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
                 return {
                     ...base,
                     fontSize: fontSize || base.fontSize,
+                    textAlign: isCentered ? "center" : "right",
                 };
             },
             option: (provided: any, state: any) => {
