@@ -42,8 +42,6 @@ export const usePollingUpdates = (
             router.statistics.p,
             router.faqManager.p,
             router.faqTeachers.p,
-            router.scheduleViewPortal.p,    // Product Decision to reduce polling when not really needed
-            router.fullScheduleView.p       // Product Decision to reduce polling when not really needed
         ];
 
         if (NO_POLLING_ROUTES.some(route => pathname.startsWith(route))) {
