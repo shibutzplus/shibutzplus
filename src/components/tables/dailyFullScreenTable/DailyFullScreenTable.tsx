@@ -10,6 +10,7 @@ import { calculateVisibleRowsForDaily } from "@/utils/tableUtils";
 import { AppType } from "@/models/types";
 import type { TeacherType } from "@/models/types/teachers";
 import { successToast } from "@/lib/toast";
+import DailyFullScreenEventCell from "./DailyFullScreenEventCell";
 
 import { getCookie, setCookie, COOKIES_KEYS } from "@/lib/cookies";
 
@@ -227,13 +228,19 @@ const DailyFullScreenTable: React.FC<DailyFullScreenTableProps> = ({
                             return (
                                 <div key={`${colId}-${row}`} className={styles.cell}>
                                     {!cellDisplay.isEmpty && (
-                                        <div className={`${styles.cellContent} ${cellDisplay.isActivity ? styles.activity : ""}`}>
-                                            <span className={cellDisplay.isEvent ? styles.eventText : styles.mainText}>
-                                                {cellDisplay.main}
-                                            </span>
-                                            {cellDisplay.sub && !cellDisplay.isEvent && <span className={styles.subText}>{cellDisplay.sub}</span>}
-                                            {cellDisplay.isMissing && !cellDisplay.sub && <span className={styles.missingText}>אין ממלא מקום</span>}
-                                        </div>
+                                        <>
+                                            {cellDisplay.isEvent ? (
+                                                <DailyFullScreenEventCell eventText={cellDisplay.main} />
+                                            ) : (
+                                                <div className={`${styles.cellContent} ${cellDisplay.isActivity ? styles.activity : ""}`}>
+                                                    <span className={styles.mainText}>
+                                                        {cellDisplay.main}
+                                                    </span>
+                                                    {cellDisplay.sub && <span className={styles.subText}>{cellDisplay.sub}</span>}
+                                                    {cellDisplay.isMissing && !cellDisplay.sub && <span className={styles.missingText}>אין ממלא מקום</span>}
+                                                </div>
+                                            )}
+                                        </>
                                     )}
                                 </div>
                             );

@@ -68,7 +68,6 @@
     flex-direction: column;
     width: 100%;
     overflow-y: auto;
-    /* Allow scrolling */
     overflow-x: hidden;
     overscroll-behavior: none;
 }
@@ -76,7 +75,6 @@
 .row {
     flex: 1;
     min-height: 12vh;
-    /* Ensure rows don't shrink too much */
     display: grid;
     width: 100%;
     grid-template-columns: minmax(20px, 3vw) 2px repeat(var(--num-cols), var(--col-width));
@@ -129,8 +127,6 @@
     line-height: 1.1;
 }
 
-
-
 .subText {
     font-size: var(--font-size);
     font-weight: bold;
@@ -153,29 +149,48 @@
     white-space: pre-wrap;
     word-break: break-word;
     overflow-wrap: break-word;
-    overflow-y: auto;
-    max-height: 100%;
     width: 100%;
-    /* overflow-y: scroll; REMOVED */
-    /* Force scrollbar track to exist */
-    scrollbar-width: thin;
-    scrollbar-color: rgba(0, 0, 0, 0.5) rgba(0, 0, 0, 0.05);
-    -webkit-overflow-scrolling: touch;
 }
 
-.eventText::-webkit-scrollbar {
-    -webkit-appearance: none;
-    width: 7px;
-    background-color: rgba(0, 0, 0, 0.05);
+.eventCellContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 0.3vh 0.3vw;
+    position: relative;
+    overflow: hidden;
 }
 
-.eventText::-webkit-scrollbar-track {
-    background-color: rgba(0, 0, 0, 0.05);
+.eventCellContent.hasScroll {
+    cursor: pointer;
+    padding-bottom: 20px;
+    justify-content: flex-start;
 }
 
-.eventText::-webkit-scrollbar-thumb {
-    border-radius: 4px;
-    background-color: rgba(0, 0, 0, 0.5);
+.moreIndicator {
+    position: absolute;
+    bottom: 1px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #666;
+    font-size: 20px;
+    line-height: 1;
+    opacity: 0.7;
+    z-index: 2;
+}
+
+.eventCellContent.hasScroll::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: linear-gradient(to bottom, transparent, var(--inner-background-color-empty));
+    pointer-events: none;
 }
 
 /* > 1000px */
