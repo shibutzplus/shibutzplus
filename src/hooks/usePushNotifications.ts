@@ -83,7 +83,29 @@ export function usePushNotifications() {
             isRegistering.current = true;
 
             step = "1: register-sw";
-            const registration = await navigator.serviceWorker.register("/sw.js");
+            let registration;
+            try {
+                registration = await navigator.serviceWorker.register("/sw.js");
+            } catch (swError) {
+                step = "1: register-sw-failed";
+                const errorInfo = swError instanceof Error ? {
+                    name: swError.name,
+                    message: swError.message,
+                    stack: swError.stack
+                } : swError;
+
+                void logErrorAction({
+                    description: `[Push Hook] Service Worker Registration Failed: ${swError instanceof Error ? swError.message : String(swError)}`,
+                    schoolId: schoolId,
+                    user: teacherId,
+                    metadata: {
+                        isManual,
+                        protocol: window.location.protocol, // Must be https or localhost
+                        errorInfo
+                    }
+                });
+                throw swError; // Rethrow to go to outer catch
+            }
 
             // 2. Check permission
             step = "2: check-permission";
