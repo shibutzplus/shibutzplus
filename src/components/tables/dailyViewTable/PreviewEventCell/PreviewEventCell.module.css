@@ -30,6 +30,10 @@
     /* Track color */
 }
 
+.innerCellContent::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
 .innerCellContent::-webkit-scrollbar-thumb {
     border-radius: 4px;
     background-color: rgba(0, 0, 0, 0.5);
