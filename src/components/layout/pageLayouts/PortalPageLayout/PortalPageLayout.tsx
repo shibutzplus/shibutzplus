@@ -129,9 +129,13 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
                     </h3>
                     {showIcon && permission === "default" && teacher?.schoolId && (
                         <NotificationPermissionRequest
-                            onRequestPermission={() => {
+                            onRequestPermission={async () => {
                                 successToast("כדי לקבל עדכוני מערכת בזמן אמת, לחצו על כפתור אישור/Allow בחלונית שנפתחה למעלה.", Infinity);
-                                registerAndSubscribe(teacher.schoolId!, teacher.id, true);
+                                try {
+                                    await registerAndSubscribe(teacher.schoolId!, teacher.id, true);
+                                } catch (_e: any) {
+                                    // User requested to suppress UI feedback for Antivirus blocking, but we log it on server (handled in hook)
+                                }
                             }}
                         />
                     )}

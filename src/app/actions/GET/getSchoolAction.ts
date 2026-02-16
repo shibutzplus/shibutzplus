@@ -7,14 +7,24 @@ import { dbLog } from "@/services/loggerService";
 import { getCachedSchool } from "@/services/entities/getEntitiesLists";
 
 // TODO: public action, risk, no session check
-export async function getSchoolAction(schoolId: string): Promise<GetSchoolResponse> {
+export async function getSchoolAction(
+    schoolId: string,
+    options?: { forceFresh?: boolean }
+): Promise<GetSchoolResponse> {
     try {
         const authError = await publicAuthAndParams({ schoolId });
         if (authError) {
             return authError as GetSchoolResponse;
         }
 
-        const school = await getCachedSchool(schoolId);
+        let school;
+
+        if (options?.forceFresh) {
+            const { getFreshSchool } = await import("@/services/entities/getEntitiesLists");
+            school = await getFreshSchool(schoolId);
+        } else {
+            school = await getCachedSchool(schoolId);
+        }
 
         if (!school) {
             return {

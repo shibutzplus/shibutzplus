@@ -134,3 +134,16 @@ export const getCachedSchool = async (schoolId: string) => {
 
     return getSchool();
 };
+
+/**
+ * Fetches a school by ID directly from the DB, bypassing cache.
+ * Use this when you need absolutely fresh data (e.g. for Admin/Manager actions).
+ */
+export const getFreshSchool = async (schoolId: string) => {
+    return db
+        .select()
+        .from(schema.schools)
+        .where(eq(schema.schools.id, schoolId))
+        .then((res) => res[0]);
+};
+

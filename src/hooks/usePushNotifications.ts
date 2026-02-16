@@ -39,6 +39,7 @@ export function usePushNotifications() {
     const [permission, setPermission] = useState<NotificationPermission>("default");
     const [isSupported, setIsSupported] = useState(false);
     const [showIcon, setShowIcon] = useState(false);
+    const [isBlockedByAntivirus, setIsBlockedByAntivirus] = useState(false);
     const isRegistering = useRef(false);
 
     useEffect(() => {
@@ -81,6 +82,7 @@ export function usePushNotifications() {
 
         try {
             isRegistering.current = true;
+            setIsBlockedByAntivirus(false); // Reset blocked state on new attempt
 
             step = "1: register-sw";
             let registration;
@@ -94,8 +96,47 @@ export function usePushNotifications() {
                     stack: swError.stack
                 } : swError;
 
+                // Check for generic "Rejected" or Webroot specifics
+                const errorMessage = swError instanceof Error ? swError.message : String(swError);
+                const stackTrace = swError instanceof Error ? swError.stack : "";
+                const isRejectedOrWebroot = errorMessage.includes("Rejected") || (stackTrace && stackTrace.includes("wrsParams"));
+
+                if (isRejectedOrWebroot) {
+                    // Mark as blocked so UI can show the bell/alert
+                    setIsBlockedByAntivirus(true);
+
+                    if (isManual) {
+                        void logErrorAction({
+                            description: `[Push Hook] Service Worker Registration Blocked by Antivirus (Manual): ${errorMessage}`,
+                            schoolId: schoolId,
+                            user: teacherId,
+                            metadata: {
+                                isManual,
+                                protocol: window.location.protocol,
+                                errorInfo
+                            }
+                        });
+                        // Throwing ensures the caller knows it failed (if they await it)
+                        throw new Error("AntivirusBlocking");
+                    } else {
+                        // Auto registration -> Log to server for visibility (as requested by user)
+                        void logErrorAction({
+                            description: `[Push Hook] Service Worker Registration Blocked by Antivirus (Auto)`,
+                            schoolId: schoolId,
+                            user: teacherId,
+                            metadata: {
+                                isManual,
+                                protocol: window.location.protocol,
+                                errorInfo,
+                                suppressedAlert: true // UI won't show alert, but log exists
+                            }
+                        });
+                        return;
+                    }
+                }
+
                 void logErrorAction({
-                    description: `[Push Hook] Service Worker Registration Failed: ${swError instanceof Error ? swError.message : String(swError)}`,
+                    description: `[Push Hook] Service Worker Registration Failed: ${errorMessage}`,
                     schoolId: schoolId,
                     user: teacherId,
                     metadata: {
@@ -189,6 +230,11 @@ export function usePushNotifications() {
             }
 
         } catch (error) {
+            // If it's the antivirus error we already handled logging (or suppression) above.
+            if ((error instanceof Error && error.message === "AntivirusBlocking")) {
+                throw error;
+            }
+
             void logErrorAction({
                 description: `[Push Hook] Error subscribing (Step: ${step}): ${error instanceof Error ? error.message : String(error)}`,
                 schoolId: schoolId,
@@ -198,6 +244,7 @@ export function usePushNotifications() {
                     isManual
                 }
             });
+            throw error;
         } finally {
             isRegistering.current = false;
         }
@@ -225,5 +272,5 @@ export function usePushNotifications() {
         }
     };
 
-    return { registerAndSubscribe, subscription, permission, isSupported, showIcon };
+    return { registerAndSubscribe, subscription, permission, isSupported, showIcon, isBlockedByAntivirus };
 }
