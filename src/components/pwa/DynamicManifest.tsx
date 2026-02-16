@@ -7,6 +7,9 @@ import { usePathname } from "next/navigation";
 // This component handles the dynamic start_url based on the user's context 
 // Teacher Portal vs Manager Portal
 
+// Change the version only when you change the design of the manifest (icon, color, name)
+const APP_VERSION = "2.0.0";
+
 const DynamicManifest = () => {
     const pathname = usePathname();
 
@@ -32,8 +35,7 @@ const DynamicManifest = () => {
                 }
             }
 
-            const timestamp = new Date().getTime();
-            const manifestUrl = '/api/manifest?start_url=' + encodeURIComponent(startUrl) + '&ts=' + timestamp;
+            const manifestUrl = `/api/manifest?start_url=${encodeURIComponent(startUrl)}&v=${APP_VERSION}`;
 
             // Find existing link or create new one
             let link = document.querySelector('link[rel="manifest"]') as HTMLLinkElement;
@@ -43,19 +45,15 @@ const DynamicManifest = () => {
                 document.head.appendChild(link);
             }
 
-            // Only update if changed to avoid unnecessary re-fetches (though browser might handle it)
-            if (link.href !== window.location.origin + manifestUrl) {
+            const fullManifestUrl = window.location.origin + manifestUrl;
+            if (link.href !== fullManifestUrl) {
                 link.href = manifestUrl;
             }
         };
 
         updateManifest();
-
         window.addEventListener("teacher_data_updated", updateManifest);
-
-        return () => {
-            window.removeEventListener("teacher_data_updated", updateManifest);
-        };
+        return () => window.removeEventListener("teacher_data_updated", updateManifest);
     }, [pathname]);
 
     return null;
