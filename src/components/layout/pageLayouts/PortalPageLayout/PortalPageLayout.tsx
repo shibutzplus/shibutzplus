@@ -15,8 +15,7 @@ import PageLayout from "../../PageLayout/PageLayout";
 import { SyncItem } from "@/services/sync/clientSyncService";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import NotificationPermissionRequest from "@/components/common/NotificationPermissionRequest/NotificationPermissionRequest";
-import { usePopup } from "@/context/PopupContext";
-import NotificationRequestPopup from "@/components/popups/NotificationRequestPopup/NotificationRequestPopup";
+import { successToast } from "@/lib/toast";
 
 type PortalPageLayoutProps = {
     children: React.ReactNode;
@@ -30,7 +29,6 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
     const { resetUpdate } = usePollingUpdates(refreshRef);
     const isRegularTeacher = teacher?.role === TeacherRoleValues.REGULAR;
     const { registerAndSubscribe, permission, showIcon } = usePushNotifications();
-    const { openPopup } = usePopup();
 
     // Register for push notifications
     React.useEffect(() => {
@@ -132,14 +130,8 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
                     {showIcon && permission === "default" && teacher?.schoolId && (
                         <NotificationPermissionRequest
                             onRequestPermission={() => {
-                                openPopup(
-                                    "notificationsRequest",
-                                    "M",
-                                    <NotificationRequestPopup
-                                        onConfirm={() => registerAndSubscribe(teacher.schoolId!, teacher.id, true)}
-                                        onCancel={() => { }}
-                                    />
-                                );
+                                successToast("כדי לקבל עדכוני מערכת בזמן אמת, לחצו על כפתור אישור/Allow בחלונית שנפתחה למעלה.", Infinity);
+                                registerAndSubscribe(teacher.schoolId!, teacher.id, true);
                             }}
                         />
                     )}

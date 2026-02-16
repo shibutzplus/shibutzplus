@@ -2,11 +2,8 @@
 
 // **Teacher Sign-In Logic**
 //
-// URL without parameters             → Go to ContactAdminError and display a message.
-// URL with a wrong school parameter  → Go to ContactAdminError and display a message.
-// URL with `school_id` only          → Show regular teacher list for that school. (Clear only if substitute teacher in localStorage)
-// URL with `school_id` + `teacher_id`→ Auto-login to the teacher’s portal
-// URL with `auth=logout`             → Display Login but show teacher list only for regular teachers
+// For detailed logic documentation, please refer to:
+// docs/login-teacher.md
 //
 import styles from "../teacherSignIn.module.css";
 import HeroSection from "@/components/auth/HeroSection/HeroSection";
@@ -19,28 +16,44 @@ import SignInLoadingPage from "@/components/loading/SignInLoadingPage/SignInLoad
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { TeacherType, TeacherRoleValues } from "@/models/types/teachers";
-import { setStorageTeacher, getStorageTeacher, removeStorageTeacher } from "@/lib/localStorage";
+import { setStorageTeacher, getStorageTeacher } from "@/lib/localStorage";
 import { getTeacherByIdAction } from "@/app/actions/GET/getTeacherByIdAction";
+import { getTeachersAction } from "@/app/actions/GET/getTeachersAction";
+import { PortalType } from "@/models/types";
 import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
 interface TeacherSignInClientProps {
     schoolId: string;
     schoolName: string;
-    initialTeachers: SelectOption[];
-    initialTeachersFull: TeacherType[];
 }
 
 export default function TeacherSignInClient({
     schoolId,
     schoolName,
-    initialTeachers,
-    initialTeachersFull,
 }: TeacherSignInClientProps) {
     const route = useRouter();
     const searchParams = useSearchParams();
     const teacherId = searchParams.get("teacher_id");
 
     const [isLoading, setIsLoading] = useState(true);
+    const [teachers, setTeachers] = useState<SelectOption[]>([]);
+    const [teachersFull, setTeachersFull] = useState<TeacherType[]>([]);
+    const [isLoadingTeachers, setIsLoadingTeachers] = useState(true);
+
+    const fetchTeachers = async () => {
+        try {
+            const resp = await getTeachersAction(schoolId, { portalType: PortalType.Teacher, includeSubstitutes: false });
+            if (resp.success && resp.data) {
+                setTeachersFull(resp.data);
+                setTeachers(resp.data.map((t: TeacherType) => ({ value: t.id, label: t.name })));
+            }
+        } catch (error) {
+            logErrorAction({ description: `Failed to fetch teachers: ${error instanceof Error ? error.message : String(error)}`, schoolId });
+            errorToast(messages.common.serverError);
+        } finally {
+            setIsLoadingTeachers(false);
+        }
+    };
 
     useEffect(() => {
         const isLogout = searchParams.get("auth") === "logout";
@@ -48,27 +61,32 @@ export default function TeacherSignInClient({
         // Case 1: Logout - Just show the form
         if (isLogout) {
             setIsLoading(false);
+            fetchTeachers();
             return;
         }
 
-        // Case 2: No teacher_id in URL - Check localStorage logic and show form
+        // Case 2: Only schoolId in URL - Check localStorage logic and show form
         if (!teacherId) {
             const storedTeacherData = getStorageTeacher?.();
-            if (storedTeacherData?.role === TeacherRoleValues.SUBSTITUTE) {
-                removeStorageTeacher(); // Clear local storage only if substitute
+
+            if (storedTeacherData && storedTeacherData.schoolId === schoolId) {
+                if (storedTeacherData.role === TeacherRoleValues.STAFF) {
+                    route.push(router.scheduleViewPortal.p);
+                } else {
+                    route.push(`${router.teacherMaterialPortal.p}/${schoolId}/${storedTeacherData.id}`);
+                }
+                return;
             }
+
             setIsLoading(false);
+            fetchTeachers();
             return;
         }
 
         // Case 3: Teacher exist in URL - Auto login teacher
         (async () => {
             try {
-                // Determine if we need to fetch teacher details or if we can find them in the passed props?
-                // The original code fetched by ID, which is safer as it verifies existence in DB.
-                // We will keep using the server action for this specific flow to ensure up-to-date role/data.
                 setIsLoading(true);
-                // Decode and sanitize teacherId
                 const decodedTeacherId = decodeURIComponent(teacherId);
                 const sanitizedTeacherId = decodedTeacherId.replace(/[^a-zA-Z0-9-_]/g, "");
                 const resp = await getTeacherByIdAction(sanitizedTeacherId);
@@ -117,9 +135,9 @@ export default function TeacherSignInClient({
                 <div className={styles.formContainer}>
                     <TeacherAuthForm
                         schoolId={schoolId}
-                        teachers={initialTeachers}
-                        teachersFull={initialTeachersFull}
-                        isLoadingTeachers={false}
+                        teachers={teachers}
+                        teachersFull={teachersFull}
+                        isLoadingTeachers={isLoadingTeachers}
                         isLogout={searchParams.get("auth") === "logout"}
                     />
                 </div>

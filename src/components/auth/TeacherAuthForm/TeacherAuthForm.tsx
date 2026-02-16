@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import SubmitBtn from "@/components/ui/buttons/SubmitBtn/SubmitBtn";
 import { SelectOption } from "@/models/types";
-import { getStorageTeacher, setStorageTeacher } from "@/lib/localStorage";
+import { getStorageTeacher, setStorageTeacher, removeStorageTeacher } from "@/lib/localStorage";
 import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import router from "@/routes";
 import messages from "@/resources/messages";
@@ -43,9 +43,14 @@ const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({
         setSelectedTeacher(stored.id);
         setStoredTeacherName(stored.name || "");
 
-        // Only show Quick Login if this is a logout scenario
-        if (isLogout) {
+        // Show Quick Login (without dropdown) if substitute teacher logged out
+        if (isLogout && stored.role === TeacherRoleValues.SUBSTITUTE) {
             setIsQuickLogin(true);
+            // On explicit logout, we clear the substitute's storage to prevent dead lock if a mistake was made
+            removeStorageTeacher();
+        } else if (isLogout) {
+            // For regular teachers on logout, show the list so they will be able to change if they made a mistake and entered a wrong teacher
+            setIsQuickLogin(false);
         }
     }, [isLoadingTeachers, schoolId, teachers, isLogout]);
 

@@ -1,7 +1,7 @@
 const messages = {
     common: {
         invalid: "חסרים פרמטרים",
-        serverError: "שגיאת מערכת פנימית. אנא נסו שוב"
+        serverError: "שגיאת בשליפת הנתונים. אנא נסו שוב"
     },
     auth: {
         accessDenied: "נראה שהגעתם לאזור המיועד למנהלי המערכת. אם ברצונכם להצטרף או להתנסות בשיבוץ+, כיתבו לנו ל-shibutzplus@gmail.com",

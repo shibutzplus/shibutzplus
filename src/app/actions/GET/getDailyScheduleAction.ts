@@ -3,9 +3,8 @@
 import { GetDailyScheduleResponse } from "@/models/types/dailySchedule";
 import { checkAuthAndParams, publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
-import { eq } from "drizzle-orm";
 import { dbLog } from "@/services/loggerService";
-import { db, schema, executeQuery } from "../../../db";
+import { getCachedSchool } from "@/services/entities/getEntitiesLists";
 
 export async function getDailyScheduleAction(
     schoolId: string,
@@ -23,14 +22,7 @@ export async function getDailyScheduleAction(
 
         // For public access, verify the date is actually published!
         if (!options.isPrivate) {
-            const school = await executeQuery(async () => {
-                return await db.query.schools.findFirst({
-                    where: eq(schema.schools.id, schoolId),
-                    columns: {
-                        publishDates: true,
-                    },
-                });
-            });
+            const school = await getCachedSchool(schoolId);
 
             if (!school?.publishDates?.includes(date)) {
                 return {

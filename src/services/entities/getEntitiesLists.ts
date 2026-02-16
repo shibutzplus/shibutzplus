@@ -112,3 +112,25 @@ export async function getCachedClassesList(
 
     return cachedFn();
 }
+
+/**
+ * Fetches a school by ID, using the Next.js cache.
+ */
+export const getCachedSchool = async (schoolId: string) => {
+    const getSchool = unstable_cache(
+        async () => {
+            return db
+                .select()
+                .from(schema.schools)
+                .where(eq(schema.schools.id, schoolId))
+                .then((res) => res[0]);
+        },
+        [cacheTags.school(schoolId)], // Key parts
+        {
+            tags: [cacheTags.school(schoolId)],
+            revalidate: 86400, // 24 hours
+        }
+    );
+
+    return getSchool();
+};

@@ -3,9 +3,8 @@
 import { GetSchoolResponse } from "@/models/types/school";
 import { publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
-import { db, schema, executeQuery } from "@/db";
-import { eq } from "drizzle-orm";
 import { dbLog } from "@/services/loggerService";
+import { getCachedSchool } from "@/services/entities/getEntitiesLists";
 
 // TODO: public action, risk, no session check
 export async function getSchoolAction(schoolId: string): Promise<GetSchoolResponse> {
@@ -15,13 +14,7 @@ export async function getSchoolAction(schoolId: string): Promise<GetSchoolRespon
             return authError as GetSchoolResponse;
         }
 
-        const school = await executeQuery(async () => {
-            return db
-                .select()
-                .from(schema.schools)
-                .where(eq(schema.schools.id, schoolId))
-                .then((res) => res[0]);
-        });
+        const school = await getCachedSchool(schoolId);
 
         if (!school) {
             return {
