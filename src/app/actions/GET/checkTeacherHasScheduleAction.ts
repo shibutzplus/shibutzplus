@@ -3,6 +3,7 @@
 import { db } from "@/db";
 import { annualSchedule, teachers } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
+import { dbLog } from "@/services/loggerService";
 
 /**
  * Check if a teacher already has a schedule in the annual_schedule table
@@ -43,7 +44,7 @@ export async function checkTeacherHasScheduleAction(
 
         return scheduleCount.length > 0;
     } catch (error) {
-        console.error("Error checking teacher schedule:", error);
+        dbLog({ description: `Error checking teacher schedule: ${error instanceof Error ? error.message : String(error)}`, schoolId, user: "Unknown" });
         return false;
     }
 }

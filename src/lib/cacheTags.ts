@@ -2,6 +2,13 @@
  * Tags that helps the system to know what to refresh whenever something changes.
  */
 export const cacheTags = {
+
+    /**
+     * Tag for daily schedule records by date.
+     * Invalidate when daily schedule for a specific date is updated.
+     */
+    dailySchedule: (schoolId: string, date: string) => `daily-${schoolId}-${date}`,
+
     /**
      * Tag for all teacher schedules in a school.
      * Use this to invalidate all teachers when publishing or making school-wide changes.
@@ -19,6 +26,18 @@ export const cacheTags = {
      * Use this for granular invalidation of a single day.
      */
     teacherScheduleByDate: (teacherId: string, date: string) => `schedule-${teacherId}-${date}`,
+
+    /**
+     * Tag for history records.
+     * Invalidate when history is updated (e.g. daily cron).
+     */
+    history: (schoolId: string) => `history-${schoolId}`,
+
+    /**
+     * Tag for history records by date.
+     * Invalidate when history for a specific date is updated.
+     */
+    historyByDate: (schoolId: string, date: string) => `history-${schoolId}-${date}`,
 
     /**
      * Tag for the list of teachers in a school.
@@ -49,21 +68,5 @@ export const cacheTags = {
      * Invalidate when updating teacher information.
      */
     teacher: (teacherId: string) => `teacher-${teacherId}`,
-    /**
-     * Tag for history records.
-     * Invalidate when history is updated (e.g. daily cron).
-     */
-    history: (schoolId: string) => `history-${schoolId}`,
 
-    /**
-     * Tag for history records by date.
-     * Invalidate when history for a specific date is updated.
-     */
-    historyByDate: (schoolId: string, date: string) => `history-${schoolId}-${date}`,
-
-    /**
-     * Tag for daily schedule records by date.
-     * Invalidate when daily schedule for a specific date is updated.
-     */
-    dailySchedule: (schoolId: string, date: string) => `daily-${schoolId}-${date}`,
 };

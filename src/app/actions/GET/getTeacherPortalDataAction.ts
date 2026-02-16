@@ -2,7 +2,6 @@
 
 import { dbLog } from "@/services/loggerService";
 import { publicAuthAndParams } from "@/utils/authUtils";
-import { getTeacherByIdAction } from "@/app/actions/GET/getTeacherByIdAction";
 import { getSchoolAction } from "@/app/actions/GET/getSchoolAction";
 import { getCachedTeacherSchedule } from "@/services/schedule/getTeacherSchedule";
 import { getPublishedDatesOptions } from "@/resources/dayOptions";
@@ -46,28 +45,30 @@ export const getTeacherPortalDataAction = async (
             };
         }
 
-        // 1. Fetch Teacher, School, and Lists in parallel
-        const [teacherRes, schoolRes, teachersListRes, subjectsListRes, classesListRes] = await Promise.all([
-            getTeacherByIdAction(teacherId),
+        // 1. Fetch School and Lists in parallel
+        const [schoolRes, teachersListRes, subjectsListRes, classesListRes] = await Promise.all([
             getSchoolAction(schoolId),
             getTeachersAction(schoolId, { portalType: PortalType.Teacher, includeSubstitutes: true }),
             getSubjectsAction(schoolId, { portalType: PortalType.Teacher }),
             getClassesAction(schoolId, { portalType: PortalType.Teacher }),
         ]);
 
-        if (!teacherRes.success || !teacherRes.data) {
-            return { success: false, message: "Teacher not found" };
-        }
         if (!schoolRes.success || !schoolRes.data) {
             return { success: false, message: "School not found" };
         }
 
-        const teacher = teacherRes.data;
         const schoolData = schoolRes.data;
 
         const allTeachers = teachersListRes.success ? teachersListRes.data : [];
         const allSubjects = subjectsListRes.success ? subjectsListRes.data : [];
         const allClasses = classesListRes.success ? classesListRes.data : [];
+
+        // Find teacher in the cached list
+        const teacher = allTeachers?.find((t: TeacherType) => t.id === teacherId);
+
+        if (!teacher) {
+            return { success: false, message: "Teacher not found" };
+        }
 
         // 2. Prepare Settings & Dates
         const { fromHour, toHour, displaySchedule2Susb } = schoolData;

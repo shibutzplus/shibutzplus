@@ -5,8 +5,7 @@ import { publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { dbLog } from "@/services/loggerService";
 import { getCachedDailySchedule } from "@/services/schedule/getDailySchedule";
-import { db, schema, executeQuery } from "@/db";
-import { eq } from "drizzle-orm";
+import { getCachedSchool } from "@/services/entities/getEntitiesLists";
 
 /**
  * Server action to fetch cached daily schedule for public schedule-full page.
@@ -21,14 +20,7 @@ export async function getCachedDailyScheduleAction(
         if (authError) return authError as GetDailyScheduleResponse;
 
         // Verify the date is actually published
-        const school = await executeQuery(async () => {
-            return await db.query.schools.findFirst({
-                where: eq(schema.schools.id, schoolId),
-                columns: {
-                    publishDates: true,
-                },
-            });
-        });
+        const school = await getCachedSchool(schoolId);
 
         if (!school?.publishDates?.includes(date)) {
             return {

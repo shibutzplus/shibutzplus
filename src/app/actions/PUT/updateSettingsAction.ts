@@ -42,6 +42,7 @@ export async function updateSettingsAction(
 
         revalidatePath("/");
         revalidateTag(cacheTags.schoolSchedule(schoolId));
+        revalidateTag(cacheTags.school(schoolId));
 
         // Since we are updating schools, we return the params as the updated state
         const updatedSettings: SchoolSettingsType = {
