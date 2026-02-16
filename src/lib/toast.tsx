@@ -22,3 +22,16 @@ export const errorToast = (message: string, duration = 5000) =>
             },
         }
     )
+
+export const cellToast = (message: string, duration = 5000) =>
+    toast((t) => <ClosableToast t={t} message={message} variant="default" />, {
+        id: "cell-preview-toast",
+        duration,
+        style: {
+            background: "#FFFFFF",
+            border: "8px solid #eee",
+            color: "#333",
+            borderRadius: "12px",
+            boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.5)",
+        },
+    })
