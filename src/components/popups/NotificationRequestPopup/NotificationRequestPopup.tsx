@@ -10,6 +10,10 @@ interface NotificationRequestPopupProps {
     onCancel: () => void;
 }
 
+/**
+ * Popup component for requesting notification permission.
+ * @deprecated Currently bypassed in PortalPageLayout in favor of native browser prompt.
+ */
 const NotificationRequestPopup: React.FC<NotificationRequestPopupProps> = ({
     onConfirm,
     onCancel,
