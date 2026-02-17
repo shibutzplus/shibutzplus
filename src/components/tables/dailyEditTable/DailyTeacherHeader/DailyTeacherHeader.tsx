@@ -3,7 +3,7 @@ import { filterDailyHeaderTeachers } from "@/utils/sort";
 import Loading from "@/components/loading/Loading/Loading";
 import DynamicInputSelect from "../../../ui/select/InputSelect/DynamicInputSelect";
 import { useDailyTableContext } from "@/context/DailyTableContext";
-import { ColumnType } from "@/models/types/dailySchedule";
+import { ColumnType, ColumnTypeValues } from "@/models/types/dailySchedule";
 import { getDayNumberByDateString } from "@/utils/time";
 import { useMainContext } from "@/context/MainContext";
 import { errorToast, successToast } from "@/lib/toast";
@@ -34,7 +34,7 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
     isLast,
 }) => {
     const { teachers } = useMainContext();
-    const { deleteColumn, mainDailyTable, selectedDate, moveColumn, populateTeacherColumn, mapAvailableTeachers } =
+    const { mainDailyTable, selectedDate, moveColumn, populateTeacherColumn, mapAvailableTeachers } =
         useDailyTableContext();
     const { fetchTeacherScheduleDate } = useTeacherTableContext();
     const [isLoading, setIsLoading] = useState(false);
@@ -90,21 +90,30 @@ const DailyTeacherHeader: React.FC<DailyTeacherHeaderProps> = ({
         );
     }, [teachers, mainDailyTable, selectedTeacherData, teachersTeachingTodayIds, selectedDate]);
 
-    const handleDeleteColumn = async () => {
-        const response = await deleteColumn(columnId);
-        if (!response) {
-            errorToast(messages.dailySchedule.deleteError);
-        }
-    };
-
     const handleDeleteClick = () => {
         const label = selectedTeacherData?.name || "המורה";
         const msg = `האם למחוק את ${label}?`;
 
-        if (onDelete) {
-            handleOpenPopup("deleteDailyCol", msg, async () => onDelete(columnId));
+        const isMissingOrExisting =
+            type === ColumnTypeValues.missingTeacher ||
+            type === ColumnTypeValues.existingTeacher;
+
+        let hasReplacements = false;
+        if (isMissingOrExisting) {
+            const dayData = mainDailyTable[selectedDate]?.[columnId];
+            if (dayData) {
+                // Check if any hour has a subTeacher
+                hasReplacements = Object.values(dayData).some(
+                    (cell) => cell.subTeacher
+                );
+            }
+        }
+
+        // If explicitly requested to skip confirmation (future use) or based on logic
+        if (isMissingOrExisting && !hasReplacements) {
+            onDelete?.(columnId);
         } else {
-            handleOpenPopup("deleteDailyCol", msg, handleDeleteColumn);
+            handleOpenPopup("deleteDailyCol", msg, async () => onDelete?.(columnId));
         }
     };
 

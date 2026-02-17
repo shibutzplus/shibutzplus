@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import { useColumnAnimation } from "@/hooks/useColumnAnimation";
+import { useDailyTableContext } from "@/context/DailyTableContext";
 import styles from "./DailyCol.module.css";
 import DailyTeacherHeader from "../DailyTeacherHeader/DailyTeacherHeader";
 import { DailyScheduleCell, ColumnType } from "@/models/types/dailySchedule";
@@ -32,9 +33,15 @@ const DailyCol: React.FC<DailyColProps> = ({ columnId, column }) => {
     const columnType = foundType || lastTypeRef.current || "event";
     const animClass = isFadingOut ? styles.fadeOut : styles.fadeIn;
 
+    const { deleteColumn } = useDailyTableContext();
+
+    const handleDelete = () => {
+        deleteColumn(columnId);
+    };
+
     return columnType === "event" ? (
         <div className={`${styles.dailyColumn} ${styles.eventColumn}`} data-column-id={columnId}>
-            <DailyEventHeader columnId={columnId} />
+            <DailyEventHeader columnId={columnId} onDelete={handleDelete} />
             <div className={`${styles.rows} ${animClass}`}>
                 {colFirstObj
                     ? Object.entries(displayColumn).map(([hour, cell]) => (
@@ -48,6 +55,7 @@ const DailyCol: React.FC<DailyColProps> = ({ columnId, column }) => {
             <DailyTeacherHeader
                 columnId={columnId}
                 type={columnType}
+                onDelete={handleDelete}
             />
             <div className={`${styles.rows} ${animClass}`}>
                 {colFirstObj

@@ -1,8 +1,9 @@
 import { useState, useRef, useLayoutEffect, useCallback } from "react";
 import { useDailyTableContext } from "@/context/DailyTableContext";
+import { ColumnTypeValues } from "@/models/types/dailySchedule";
 
 export const useColumnAnimation = (sortedTableColumns: string[], selectedDate: string) => {
-    const { deleteColumn } = useDailyTableContext();
+    const { deleteColumn, mainDailyTable } = useDailyTableContext();
 
     // Manual animation state: map of colId -> current width (px)
     const [animatingWidths, setAnimatingWidths] = useState<Record<string, number>>({});
@@ -16,12 +17,26 @@ export const useColumnAnimation = (sortedTableColumns: string[], selectedDate: s
     };
 
     const handleColumnAnimation = useCallback((colId: string, direction: "add" | "remove") => {
-        // Get duration from CSS variable or default to 300ms
-        const cssDuration = typeof window !== 'undefined' ? getComputedStyle(document.documentElement).getPropertyValue('--daily-delete-duration-ms') : "300";
-        const duration = parseInt(cssDuration) || 300;
-        const targetWidth = 250;
 
-        // Initial setup
+        const getCssNum = (varName: string, fallback: number) => {
+            if (typeof window === 'undefined') return fallback;
+            const val = getComputedStyle(document.documentElement).getPropertyValue(varName);
+            return parseInt(val) || fallback;
+        };
+
+        const duration = getCssNum('--daily-delete-duration-ms', 300);
+
+        let targetWidth = 200; // Default teacher width
+        const columnData = mainDailyTable[selectedDate]?.[colId];
+        const colFirstObj = columnData?.["1"] || Object.values(columnData || {}).find(c => c?.headerCol?.type !== undefined);
+        const colType = colFirstObj?.headerCol?.type;
+
+        if (colType === ColumnTypeValues.event) {
+            targetWidth = getCssNum('--table-daily-event-col-width-edit', 230);
+        } else {
+            targetWidth = getCssNum('--table-daily-teacher-col-width-edit', 200);
+        }
+
         const startTime = performance.now();
         const startWidth = direction === "add" ? 0 : targetWidth;
         const endWidth = direction === "add" ? targetWidth : 0;
@@ -36,7 +51,6 @@ export const useColumnAnimation = (sortedTableColumns: string[], selectedDate: s
             const currentWidth = startWidth + (endWidth - startWidth) * easedProgress;
 
             if (progress >= 1) {
-                // Animation complete
                 if (direction === "add") {
                     setAnimatingWidths((prev) => {
                         const { [colId]: _, ...rest } = prev;
@@ -48,7 +62,6 @@ export const useColumnAnimation = (sortedTableColumns: string[], selectedDate: s
                 return;
             }
 
-            // Update state for render
             setAnimatingWidths((prev) => ({ ...prev, [colId]: Math.max(0, Math.min(targetWidth, currentWidth)) }));
             requestAnimationFrame(animate);
         };
@@ -69,9 +82,9 @@ export const useColumnAnimation = (sortedTableColumns: string[], selectedDate: s
         const newCols = sortedTableColumns.filter(id => !prevCols.includes(id));
 
         if (newCols.length > 0) {
-            // Only animate width if we already had columns (i.e. not initial load)
-            // AND only if exactly one column is added (prevent bulk load animation)
-            if (prevCols.length > 0 && newCols.length === 1) {
+            // Only animate width if exactly one column is added (prevent bulk load animation)
+            // Removed prevCols.length > 0 check to allow animating the first column added
+            if (newCols.length === 1) {
                 newCols.forEach(colId => {
                     handleColumnAnimation(colId, "add");
                 });

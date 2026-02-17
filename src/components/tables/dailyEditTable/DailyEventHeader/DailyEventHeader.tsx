@@ -63,21 +63,18 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete,
 
     const { handleOpenPopup } = useConfirmPopup();
 
-    const deleteCol = async () => {
-        const response = await deleteColumn(columnId);
-        if (!response) {
-            errorToast(messages.dailySchedule.deleteError);
-        }
-    };
-
     const handleDeleteClick = () => {
         const deleteLabel = selectedEventData || "האירוע";
         const msg = `האם למחוק את ${deleteLabel}?`;
 
-        if (onDelete) {
-            handleOpenPopup("deleteDailyCol", msg, async () => onDelete(columnId));
+        // Check if column is empty (no title and no content)
+        const hasTitle = selectedEventData && selectedEventData.trim() !== "";
+        const hasContent = Object.values(columnData).some(cell => cell.event && cell.event.trim() !== "");
+
+        if (!hasTitle && !hasContent) {
+            onDelete?.(columnId);
         } else {
-            handleOpenPopup("deleteDailyCol", msg, deleteCol);
+            handleOpenPopup("deleteDailyCol", msg, async () => onDelete?.(columnId));
         }
     };
 
