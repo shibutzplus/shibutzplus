@@ -14,8 +14,6 @@ import { useTeacherTableContext } from "@/context/TeacherTableContext";
 import PageLayout from "../../PageLayout/PageLayout";
 import { SyncItem } from "@/services/sync/clientSyncService";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
-import NotificationPermissionRequest from "@/components/common/NotificationPermissionRequest/NotificationPermissionRequest";
-import { successToast } from "@/lib/toast";
 
 type PortalPageLayoutProps = {
     children: React.ReactNode;
@@ -28,15 +26,16 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
     const refreshRef = React.useRef<((items: SyncItem[]) => Promise<void> | void) | null>(null);
     const { resetUpdate } = usePollingUpdates(refreshRef);
     const isRegularTeacher = teacher?.role === TeacherRoleValues.REGULAR;
-    const { registerAndSubscribe, permission, showIcon } = usePushNotifications();
+    const { registerAndSubscribe } = usePushNotifications();
 
-    // Register for push notifications
+    // If already registered to Push Notifications, ensure we continue receiving notifications
     React.useEffect(() => {
         if (teacher?.schoolId) {
-            registerAndSubscribe(teacher.schoolId, teacher.id, false);  // don't display question popup, register automatically
+            registerAndSubscribe(teacher.schoolId, teacher.id, false);
         }
     }, [teacher?.schoolId, teacher?.id]);
 
+    // Refresh logic
     const handleRefresh = async (items?: SyncItem[]) => {
         const { hasRelevantUpdate, newLists } = await handleIncomingSync(items);
 
@@ -60,7 +59,7 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
 
     refreshRef.current = handleRefresh; // Keep the ref updated with the latest handleRefresh
 
-    // -- Auto Refresh at AUTO_SWITCH_TIME -- //
+    // Auto Refresh at AUTO_SWITCH_TIME
     React.useEffect(() => {
         if (!teacher) return;
 
@@ -124,21 +123,9 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
             teacher={teacher}
             HeaderRightActions={
                 <div className={styles.headerRightContent}>
-                    <h3 className={`${styles.greetingAndName} ${showIcon && permission === "default" && teacher?.schoolId ? styles.greetingWithNotification : ""}`}>
+                    <h3 className={styles.greetingAndName}>
                         {getTitle()}
                     </h3>
-                    {showIcon && permission === "default" && teacher?.schoolId && (
-                        <NotificationPermissionRequest
-                            onRequestPermission={async () => {
-                                successToast("כדי לקבל עדכוני מערכת בזמן אמת, לחצו על כפתור אישור/Allow בחלונית שנפתחה למעלה.", Infinity);
-                                try {
-                                    await registerAndSubscribe(teacher.schoolId!, teacher.id, true);
-                                } catch (_e: any) {
-                                    // User requested to suppress UI feedback for Antivirus blocking, but we log it on server (handled in hook)
-                                }
-                            }}
-                        />
-                    )}
                 </div>
             }
             HeaderLeftActions={

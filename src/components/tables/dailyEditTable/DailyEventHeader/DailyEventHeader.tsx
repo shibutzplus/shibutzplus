@@ -3,7 +3,6 @@ import Loading from "@/components/loading/Loading/Loading";
 import InputText from "../../../ui/inputs/InputText/InputText";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import { errorToast, successToast } from "@/lib/toast";
-import messages from "@/resources/messages";
 import useConfirmPopup from "@/hooks/useConfirmPopup";
 import styles from "../DailyTable/DailyTable.module.css";
 import { formatTMDintoDMY } from "@/utils/time";
@@ -19,7 +18,7 @@ type DailyEventHeaderProps = {
 };
 
 const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete, isFirst, isLast }) => {
-    const { populateEventColumn, deleteColumn, mainDailyTable, selectedDate, moveColumn, pasteEventColumn } =
+    const { populateEventColumn, mainDailyTable, selectedDate, moveColumn, pasteEventColumn } =
         useDailyTableContext();
     const { hasClipboardData, pasteColumn, copyColumn } = useColumnClipboard();
     const [isPasting, setIsPasting] = useState(false);
@@ -63,21 +62,18 @@ const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete,
 
     const { handleOpenPopup } = useConfirmPopup();
 
-    const deleteCol = async () => {
-        const response = await deleteColumn(columnId);
-        if (!response) {
-            errorToast(messages.dailySchedule.deleteError);
-        }
-    };
-
     const handleDeleteClick = () => {
         const deleteLabel = selectedEventData || "האירוע";
         const msg = `האם למחוק את ${deleteLabel}?`;
 
-        if (onDelete) {
-            handleOpenPopup("deleteDailyCol", msg, async () => onDelete(columnId));
+        // Check if column is empty (no title and no content)
+        const hasTitle = selectedEventData && selectedEventData.trim() !== "";
+        const hasContent = Object.values(columnData).some(cell => cell.event && cell.event.trim() !== "");
+
+        if (!hasTitle && !hasContent) {
+            onDelete?.(columnId);
         } else {
-            handleOpenPopup("deleteDailyCol", msg, deleteCol);
+            handleOpenPopup("deleteDailyCol", msg, async () => onDelete?.(columnId));
         }
     };
 

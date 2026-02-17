@@ -254,7 +254,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                     const { getSchoolAction } = await import("@/app/actions/GET/getSchoolAction");
                     if (school?.id) {
                         const schoolRes = await getSchoolAction(school.id);
-                        if (schoolRes.success && schoolRes.data) {
+                        if (schoolRes?.success && schoolRes?.data) {
                             setSchool(schoolRes.data);
                         }
                     }
