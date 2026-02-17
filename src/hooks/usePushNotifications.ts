@@ -119,16 +119,15 @@ export function usePushNotifications() {
                         // Throwing ensures the caller knows it failed (if they await it)
                         throw new Error("AntivirusBlocking");
                     } else {
-                        // Auto registration -> Log to server for visibility (as requested by user)
                         void logErrorAction({
-                            description: `[Push Hook] Service Worker Registration Blocked by Antivirus (Auto)`,
+                            description: `[Push-Keep] SW Registration Auto Blocked by Antivirus (Followup, if happens again&again for same user we'll need to automatically hide the bell and suppress the LogError)`,
                             schoolId: schoolId,
                             user: teacherId,
                             metadata: {
                                 isManual,
                                 protocol: window.location.protocol,
                                 errorInfo,
-                                suppressedAlert: true // UI won't show alert, but log exists
+                                suppressedAlert: true
                             }
                         });
                         return;
@@ -162,7 +161,7 @@ export function usePushNotifications() {
 
             if (currentPermission !== "granted") {
                 void logErrorAction({
-                    description: `[Push Hook] User did not grant permission to notifications (Step: ${step})`,
+                    description: `[Push-Keep] User clicked Bell but did not grant permission and did not click Allow`,
                     schoolId: schoolId,
                     user: teacherId,
                     metadata: { permission: currentPermission, isManual }
@@ -206,6 +205,9 @@ export function usePushNotifications() {
 
             step = "6: subscribe-attempt";
             try {
+                // Ensure service worker is active before subscribing
+                await navigator.serviceWorker.ready;
+
                 const newSub = await registration.pushManager.subscribe({
                     userVisibleOnly: true,
                     applicationServerKey: applicationServerKey as any

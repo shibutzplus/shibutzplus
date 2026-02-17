@@ -22,6 +22,8 @@ import useGuestModePopup from "@/hooks/useGuestModePopup";
 import { NAV_LINK_GROUPS, ILink } from "@/resources/navigation";
 import { USER_ROLES } from "@/models/constant/auth";
 import usePWAInstall from "@/hooks/usePWAInstall";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
+import { successToast, errorToast } from "@/lib/toast";
 
 type LinkComponentProps = {
     link: ILink;
@@ -97,6 +99,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
     const { handleOpenGuestPopup } = useGuestModePopup();
     const teacher = teacherProp || teacherState;
     const { installPWA, isInstalled } = usePWAInstall();
+    const { registerAndSubscribe, permission, showIcon } = usePushNotifications();
 
     useAccessibility({ isOpen, navRef, onClose });
 
@@ -340,6 +343,36 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                                         </div>
                                     )}
 
+                                    {!isPrivate && showIcon && permission === "default" && teacher?.schoolId && (
+                                        <div
+                                            className={styles.navLink}
+                                            onClick={async () => {
+                                                onClose();
+                                                successToast("כדי לקבל עדכוני מערכת בזמן אמת, לחצו על כפתור אישור/Allow במידה ונפתחה חלונית לאישור.", Infinity);
+                                                try {
+                                                    await registerAndSubscribe(teacher.schoolId!, teacher.id, true);
+                                                } catch (e: any) {
+                                                    if (e.message === "AntivirusBlocking") {
+                                                        errorToast("נראה שתוכנת הגנה חוסמת את האפשרות להתראות מערכת 🤷.");
+                                                    }
+                                                }
+                                            }}
+                                        >
+                                            <Icons.bell size={24} className={styles.bellIcon} />
+                                            <span>עדכוני מערכת בזמן אמת</span>
+                                        </div>
+                                    )}
+
+                                    {isPrivate && (
+                                        <div
+                                            className={styles.navLink}
+                                            onClick={isGuest ? handleOpenGuestPopup : handleOpenSettings}
+                                            aria-label="הגדרות מערכת"
+                                        >
+                                            <Icons.settings size={24} />
+                                            <span>הגדרות מערכת</span>
+                                        </div>
+                                    )}
                                     {!isSubstituteTeacher && (
                                         <Link
                                             href={isPrivate ? routePath.faqManager.p : routePath.faqTeachers.p}
@@ -350,16 +383,6 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                                             <Icons.faq size={24} />
                                             <span>שאלות נפוצות</span>
                                         </Link>
-                                    )}
-                                    {isPrivate && (
-                                        <div
-                                            className={styles.navLink}
-                                            onClick={isGuest ? handleOpenGuestPopup : handleOpenSettings}
-                                            aria-label="הגדרות מערכת"
-                                        >
-                                            <Icons.settings size={24} />
-                                            <span>הגדרות מערכת</span>
-                                        </div>
                                     )}
                                 </>
                             )}
