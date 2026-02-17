@@ -3,7 +3,6 @@ import Loading from "@/components/loading/Loading/Loading";
 import InputText from "../../../ui/inputs/InputText/InputText";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import { errorToast, successToast } from "@/lib/toast";
-import messages from "@/resources/messages";
 import useConfirmPopup from "@/hooks/useConfirmPopup";
 import styles from "../DailyTable/DailyTable.module.css";
 import { formatTMDintoDMY } from "@/utils/time";
@@ -19,7 +18,7 @@ type DailyEventHeaderProps = {
 };
 
 const DailyEventHeader: React.FC<DailyEventHeaderProps> = ({ columnId, onDelete, isFirst, isLast }) => {
-    const { populateEventColumn, deleteColumn, mainDailyTable, selectedDate, moveColumn, pasteEventColumn } =
+    const { populateEventColumn, mainDailyTable, selectedDate, moveColumn, pasteEventColumn } =
         useDailyTableContext();
     const { hasClipboardData, pasteColumn, copyColumn } = useColumnClipboard();
     const [isPasting, setIsPasting] = useState(false);
