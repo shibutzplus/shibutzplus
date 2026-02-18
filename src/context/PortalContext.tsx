@@ -100,7 +100,7 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
         try {
             if (!teacherId || !schoolId) return false;
             const response = await getTeacherByIdAction(teacherId);
-            if (response.success && response.data) {
+            if (response?.success && response?.data) {
                 setTeacher(response.data);
                 setSchoolId(schoolId);
                 return true;
@@ -224,7 +224,7 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
             } else {
                 setDatesOptions([]);
                 setSelectedDate(chooseDefaultDate());
-                return { success: false, error: response.message || "", selected: "", options: [] };
+                return { success: false, error: response?.message || "", selected: "", options: [] };
             }
         } catch (err) {
             // if error persist we might need to reconsider a fix. if not just remove the error for "Failed to fetch"
