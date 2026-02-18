@@ -348,7 +348,6 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                                             className={styles.navLink}
                                             onClick={async () => {
                                                 onClose();
-                                                successToast("כדי לקבל עדכוני מערכת בזמן אמת, לחצו על כפתור אישור/Allow במידה ונפתחה חלונית לאישור.", Infinity);
                                                 try {
                                                     await registerAndSubscribe(teacher.schoolId!, teacher.id, true);
                                                 } catch (e: any) {
