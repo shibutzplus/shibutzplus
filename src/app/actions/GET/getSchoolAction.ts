@@ -4,7 +4,7 @@ import { GetSchoolResponse } from "@/models/types/school";
 import { publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { dbLog } from "@/services/loggerService";
-import { getCachedSchool } from "@/services/entities/getEntitiesLists";
+import { getCachedSchool, getFreshSchool } from "@/services/entities/getEntitiesLists";
 
 // TODO: public action, risk, no session check
 export async function getSchoolAction(
@@ -18,9 +18,7 @@ export async function getSchoolAction(
         }
 
         let school;
-
         if (options?.forceFresh) {
-            const { getFreshSchool } = await import("@/services/entities/getEntitiesLists");
             school = await getFreshSchool(schoolId);
         } else {
             school = await getCachedSchool(schoolId);

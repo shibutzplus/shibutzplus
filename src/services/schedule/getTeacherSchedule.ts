@@ -166,12 +166,6 @@ export async function getCachedTeacherSchedule(
     date: string,
     schoolId: string,
 ): Promise<DailyScheduleType[]> {
-    // Note: Caching is disabled due to persistent issues with stale data ("not published", "no changes").
-    // Fetch directly from DB service.
-    const results = await getTeacherScheduleService(teacherId, date);
-    return results;
-
-    /* 
     const cachedFn = unstable_cache(
         async () => getTeacherScheduleService(teacherId, date),
         // Cache keys - MUST include ALL parameters that affect the result
@@ -185,7 +179,7 @@ export async function getCachedTeacherSchedule(
                 cacheTags.teacherSchedule(teacherId),
                 cacheTags.schoolSchedule(schoolId)
             ],
-            revalidate: 86400, // 24 hours - since we have precise tag invalidation, we can use longer TTL
+            revalidate: 86400, // 24 hours
         }
     );
 
@@ -199,6 +193,5 @@ export async function getCachedTeacherSchedule(
         createdAt: typeof schedule.createdAt === 'string' ? new Date(schedule.createdAt) : schedule.createdAt,
         updatedAt: typeof schedule.updatedAt === 'string' ? new Date(schedule.updatedAt) : schedule.updatedAt,
     }));
-    */
 }
 

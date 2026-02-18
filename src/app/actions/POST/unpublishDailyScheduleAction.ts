@@ -46,8 +46,9 @@ export async function unpublishDailyScheduleAction(
         revalidatePath("/(public)/schedule-full", "page");
         revalidatePath(`/(public)/teacher-material/${schoolId}`, "page");
 
-        // Clear school cache (for publishDates update)
+        // Clear school cache and all teacher schedules for this school
         revalidateTag(cacheTags.school(schoolId));
+        revalidateTag(cacheTags.schoolSchedule(schoolId));
 
         void pushSyncUpdateServer(DAILY_PUBLISH_DATA_CHANGED, { schoolId, date });
 

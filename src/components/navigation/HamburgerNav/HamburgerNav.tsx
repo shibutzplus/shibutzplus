@@ -24,14 +24,16 @@ import { USER_ROLES } from "@/models/constant/auth";
 import usePWAInstall from "@/hooks/usePWAInstall";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { successToast, errorToast } from "@/lib/toast";
+import { clearSchoolCacheAction } from "@/app/actions/POST/clearSchoolCacheAction";
 
 type LinkComponentProps = {
     link: ILink;
     onClose: () => void;
     currentPath: string;
+    onAction?: (action: string) => void;
 };
 
-const LinkComponent: React.FC<LinkComponentProps> = ({ link, onClose, currentPath }) => {
+const LinkComponent: React.FC<LinkComponentProps> = ({ link, onClose, currentPath, onAction }) => {
     const isActive = currentPath.startsWith(link.p);
     const { data: session } = useSession();
     const userRole = (session?.user as any)?.role;
@@ -55,10 +57,16 @@ const LinkComponent: React.FC<LinkComponentProps> = ({ link, onClose, currentPat
             <Link
                 href={guest ? "#" : finalHref}
                 className={`${styles.navLink} ${isActive ? styles.active : ""}`}
-                onClick={(e) => {
+                onClick={async (e) => {
                     if (guest) {
                         e.preventDefault();
                         handleOpenGuestPopup();
+                        return;
+                    }
+                    if (link.action && onAction) {
+                        e.preventDefault();
+                        onClose();
+                        onAction(link.action);
                         return;
                     }
                     onClose();
@@ -202,6 +210,21 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
         });
     };
 
+    const handleAction = async (action: string) => {
+        if (action === "clear_cache") {
+            if (!school?.id) return;
+            const res = await clearSchoolCacheAction(school.id);
+            if (res.success) {
+                successToast(res.message || "המטמון נוקה בהצלחה");
+            } else {
+                errorToast(res.message || "שגיאה בניקוי המטמון");
+            }
+        }
+        if (action === "logout") {
+            handleLogout();
+        }
+    };
+
     const handleOpenSettings = () => {
         if (!school?.id) return;
 
@@ -230,6 +253,10 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
         );
     };
 
+    const allGroups = displayedGroups;
+    const mainGroups = allGroups.filter((g) => !g.isFooter);
+    const footerGroups = allGroups.filter((g) => g.isFooter);
+
     return (
         <div ref={overlayRef} className={`${styles.overlay} ${isOpen ? styles.open : ""}`}>
             <div
@@ -254,7 +281,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
 
                 <div className={styles.menuContent}>
                     <section className={styles.menuSection}>
-                        {displayedGroups.map((group, groupIndex) => {
+                        {mainGroups.map((group, groupIndex) => {
                             const isCollapsible = group.isCollapse;
                             const isExpanded =
                                 isCollapsible && group.title
@@ -299,6 +326,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                                                                 link={link}
                                                                 onClose={onClose}
                                                                 currentPath={pathname}
+                                                                onAction={handleAction}
                                                             />
                                                         </li>
                                                     ))}
@@ -313,13 +341,14 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                                                         link={link}
                                                         onClose={onClose}
                                                         currentPath={pathname}
+                                                        onAction={handleAction}
                                                     />
                                                 </li>
                                             ))}
                                         </ul>
                                     )}
 
-                                    {groupIndex < displayedGroups.length - 1 && (
+                                    {groupIndex < mainGroups.length - 1 && (
                                         <div className={styles.groupDivider} />
                                     )}
                                 </div>
@@ -385,14 +414,21 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                                     )}
                                 </>
                             )}
-                            <div
-                                onClick={handleLogout}
-                                className={styles.navLink}
-                                aria-label="Logout"
-                            >
-                                <Icons.logOut size={24} />
-                                <span>יציאה מהמערכת</span>
-                            </div>
+
+                            {/* Render footer groups (e.g. Logout) */}
+                            {footerGroups.map((group, groupIndex) => (
+                                <React.Fragment key={`footer-${groupIndex}`}>
+                                    {group.links.map((link, linkIndex) => (
+                                        <LinkComponent
+                                            key={`footer-link-${linkIndex}`}
+                                            link={link}
+                                            onClose={onClose}
+                                            currentPath={pathname}
+                                            onAction={handleAction}
+                                        />
+                                    ))}
+                                </React.Fragment>
+                            ))}
                         </section>
                     </div>
                 </div>
