@@ -8,6 +8,7 @@ export interface ILink {
     p: string;
     Icon: React.ReactNode;
     isForGuest?: boolean;
+    action?: string;
 }
 
 export interface ILinkGroup {
@@ -16,6 +17,7 @@ export interface ILinkGroup {
     links: ILink[];
     type: "private" | "public" | "substitute";
     isCollapse?: boolean;
+    isFooter?: boolean;
 }
 
 export const NAV_LINK_GROUPS: ILinkGroup[] = [
@@ -134,6 +136,13 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
                 Icon: <Icons.upload size={24} />,
                 isForGuest: false,
             },
+            {
+                name: "ניקוי קאש",
+                p: "#",
+                action: "clear_cache",
+                Icon: <Icons.refresh size={24} />,
+                isForGuest: false,
+            },
 
         ],
     },
@@ -178,6 +187,51 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
                 p: routePath.teacherMaterialPortal.p,
                 Icon: <Icons.teacher size={24} />,
                 isForGuest: false,
+            },
+        ],
+    },
+    {
+        id: "account",
+        title: "חשבון",
+        type: "private",
+        isCollapse: false,
+        isFooter: true,
+        links: [
+            {
+                name: "יציאה מהמערכת",
+                p: "#",
+                action: "logout",
+                Icon: <Icons.logOut size={24} />,
+            },
+        ],
+    },
+    {
+        id: "account_sub",
+        title: "חשבון",
+        type: "substitute",
+        isCollapse: false,
+        isFooter: true,
+        links: [
+            {
+                name: "יציאה מהמערכת",
+                p: "#",
+                action: "logout",
+                Icon: <Icons.logOut size={24} />,
+            },
+        ],
+    },
+    {
+        id: "account_pub",
+        title: "חשבון",
+        type: "public",
+        isCollapse: false,
+        isFooter: true,
+        links: [
+            {
+                name: "יציאה מהמערכת",
+                p: "#",
+                action: "logout",
+                Icon: <Icons.logOut size={24} />,
             },
         ],
     },

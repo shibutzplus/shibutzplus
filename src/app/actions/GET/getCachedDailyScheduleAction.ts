@@ -5,7 +5,7 @@ import { publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { dbLog } from "@/services/loggerService";
 import { getCachedDailySchedule } from "@/services/schedule/getDailySchedule";
-import { getCachedSchool } from "@/services/entities/getEntitiesLists";
+import { getSchoolAction } from "@/app/actions/GET/getSchoolAction";
 
 /**
  * Server action to fetch cached daily schedule for public schedule-full page.
@@ -20,9 +20,10 @@ export async function getCachedDailyScheduleAction(
         if (authError) return authError as GetDailyScheduleResponse;
 
         // Verify the date is actually published
-        const school = await getCachedSchool(schoolId);
+        const schoolRes = await getSchoolAction(schoolId, { forceFresh: true });
+        const school = schoolRes.data;
 
-        if (!school?.publishDates?.includes(date)) {
+        if (!schoolRes.success || !school || !school.publishDates?.includes(date)) {
             return {
                 success: false,
                 message: messages.dailySchedule.notPublished,
