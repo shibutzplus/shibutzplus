@@ -79,6 +79,18 @@ export function usePushNotifications() {
         }
 
         let step = "0: init"; // Track progress
+        const currentPermission = "Notification" in window ? Notification.permission : "default";
+
+        // If user blocked it explicitly, log it and return
+        if (currentPermission === "denied") {
+            void logErrorAction({
+                description: `[Push-Keep] User has blocked notifications in browser settings (denied)`,
+                schoolId: schoolId,
+                user: teacherId,
+                metadata: { isManual }
+            });
+            return;
+        }
 
         try {
             isRegistering.current = true;
@@ -147,19 +159,19 @@ export function usePushNotifications() {
                 throw swError; // Rethrow to go to outer catch
             }
 
-            // 2. Check permission
+            // 2. Already checked permission at start, but need it here for logic
             step = "2: check-permission";
-            let currentPermission = Notification.permission;
-            if (currentPermission !== "granted") {
+            let permissionStatus = Notification.permission;
+            if (permissionStatus !== "granted") {
                 if (!isManual) {
                     return;
                 }
                 step = "2a: request-permission";
-                currentPermission = await Notification.requestPermission();
-                setPermission(currentPermission);
+                permissionStatus = await Notification.requestPermission();
+                setPermission(permissionStatus);
             }
 
-            if (currentPermission !== "granted") {
+            if (permissionStatus !== "granted") {
                 void logErrorAction({
                     description: `[Push-Keep] User clicked Bell but did not grant permission and did not click Allow`,
                     schoolId: schoolId,

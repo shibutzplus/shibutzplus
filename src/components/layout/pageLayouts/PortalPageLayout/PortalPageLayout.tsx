@@ -5,7 +5,7 @@ import styles from "./PortalPageLayout.module.css";
 import { usePortalContext } from "@/context/PortalContext";
 import PortalNav from "@/components/navigation/PortalNav/PortalNav";
 import { greetingTeacher } from "@/utils";
-import { AUTO_SWITCH_TIME, getTodayDateString, getTomorrowDateString } from "@/utils/time";
+import { AUTO_SWITCH_TIME, getTodayDateString, getTomorrowDateString, getIsraelDateComponents } from "@/utils/time";
 import { usePollingUpdates } from "@/hooks/usePollingUpdates";
 import { usePathname } from "next/navigation";
 import router from "@/routes";
@@ -29,9 +29,15 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
     const { registerAndSubscribe } = usePushNotifications();
 
     // If already registered to Push Notifications, ensure we continue receiving notifications
+    // Only run if CURRENT_TIME >= AUTO_SWITCH_TIME (to avoid school network blocks like Antivirus/Firewall)
     React.useEffect(() => {
         if (teacher?.schoolId) {
-            registerAndSubscribe(teacher.schoolId, teacher.id, false);
+            const { hour, minute } = getIsraelDateComponents();
+            const [switchHour, switchMinute] = AUTO_SWITCH_TIME.split(":").map(Number);
+            const isAfterSwitch = hour > switchHour || (hour === switchHour && minute >= switchMinute);
+            if (isAfterSwitch) {
+                registerAndSubscribe(teacher.schoolId, teacher.id, false);
+            }
         }
     }, [teacher?.schoolId, teacher?.id]);
 
