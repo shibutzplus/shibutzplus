@@ -29,11 +29,26 @@ const TeacherTable: React.FC<TeacherTableProps> = ({
 }) => {
     const { mainPortalTable, hasFetched, isPortalLoading } = useTeacherTableContext();
     const dayTable = selectedDate ? mainPortalTable[selectedDate] : undefined;
+    const tableRef = React.useRef<HTMLDivElement>(null);
+    const [hasScrollBelow, setHasScrollBelow] = React.useState(false);
 
     // Generate rows range
     const rows = React.useMemo(() => {
         return calculateVisibleRowsForTeacher(dayTable, fromHour, toHour);
     }, [dayTable, fromHour, toHour]);
+
+    React.useEffect(() => {
+        const el = tableRef.current;
+        if (!el) return;
+        const check = () => setHasScrollBelow(
+            el.scrollHeight > el.clientHeight && el.scrollTop + el.clientHeight < el.scrollHeight - 10
+        );
+        check();
+        el.addEventListener("scroll", check);
+        const ro = new ResizeObserver(check);
+        ro.observe(el);
+        return () => { el.removeEventListener("scroll", check); ro.disconnect(); };
+    }, [rows]);
 
     if (!hasFetched || isPortalLoading || !dayTable)
         return (
@@ -56,38 +71,40 @@ const TeacherTable: React.FC<TeacherTableProps> = ({
     }
 
     return (
-        <div className={styles.tableContainer}>
-            <table className={styles.scheduleTable}>
-                <thead className={isInsidePanel ? styles.theadInsidePanel : ""}>
-                    <tr>
-                        <th className={styles.emptyColSeparator}></th>
-                        <th className={`${styles.headerCell} ${styles.hoursColumn}`}>
-                            <div className={`${styles.headerInner} ${styles.hoursHeader}`}></div>
-                        </th>
-                        <th className={styles.emptyColSeparator}></th>
-                        <th className={`${styles.headerCell} ${styles.detailsColumn}`}>
-                            <div className={styles.headerInner}>שיעור</div>
-                        </th>
-                        <th className={`${styles.headerCell} ${styles.instructionsColumn}`}>
-                            <div className={styles.headerInner}>חומר לימוד</div>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody className={styles.scheduleTableBody}>
-                    {rows.map((hour) => {
-                        const row = dayTable?.[String(hour)];
-                        return (
-                            <TeacherMaterialRow
-                                key={hour}
-                                hour={hour}
-                                row={row}
-                                teacher={teacher}
-                                selectedDate={selectedDate}
-                            />
-                        );
-                    })}
-                </tbody>
-            </table>
+        <div className={`${styles.tableWrapper} ${hasScrollBelow ? styles.hasScrollBelow : ""}`}>
+            <div className={styles.tableContainer} ref={tableRef}>
+                <table className={styles.scheduleTable}>
+                    <thead className={isInsidePanel ? styles.theadInsidePanel : ""}>
+                        <tr>
+                            <th className={styles.emptyColSeparator}></th>
+                            <th className={`${styles.headerCell} ${styles.hoursColumn}`}>
+                                <div className={`${styles.headerInner} ${styles.hoursHeader}`}></div>
+                            </th>
+                            <th className={styles.emptyColSeparator}></th>
+                            <th className={`${styles.headerCell} ${styles.detailsColumn}`}>
+                                <div className={styles.headerInner}>שיעור</div>
+                            </th>
+                            <th className={`${styles.headerCell} ${styles.instructionsColumn}`}>
+                                <div className={styles.headerInner}>חומר לימוד</div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody className={styles.scheduleTableBody}>
+                        {rows.map((hour) => {
+                            const row = dayTable?.[String(hour)];
+                            return (
+                                <TeacherMaterialRow
+                                    key={hour}
+                                    hour={hour}
+                                    row={row}
+                                    teacher={teacher}
+                                    selectedDate={selectedDate}
+                                />
+                            );
+                        })}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 };
