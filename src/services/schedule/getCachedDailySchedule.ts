@@ -42,7 +42,7 @@ export async function getCachedDailySchedule(
         },
         ['getDailySchedule', schoolId, date],
         {
-            tags: [cacheTags.dailySchedule(schoolId, date)],
+            tags: [cacheTags.dailySchedule(schoolId, date), cacheTags.dailyScheduleSchool(schoolId)],
             revalidate: 86400, // 24 hours
         }
     );
