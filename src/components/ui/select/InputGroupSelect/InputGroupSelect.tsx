@@ -28,6 +28,7 @@ export interface InputGroupSelectProps {
     hasBorder?: boolean;
     backgroundColor?: string;
     isClearable?: boolean;
+    showClear?: boolean;
     onCreate?: (value: string) => Promise<void>;
     menuWidth?: string;
     color?: string;
@@ -48,6 +49,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     hasBorder = false,
     backgroundColor = InputBackgroundColor,
     isClearable = false,
+    showClear,
     onCreate,
     menuWidth,
     color,
@@ -56,6 +58,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     const [inputValue, setInputValue] = useState("");
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
+    const isMobile = typeof window !== "undefined" && window.innerWidth < 1024;
 
     const allOptions = useMemo(() => options.flatMap((group) => group.options), [options]);
 
@@ -214,7 +217,9 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
                             cursor: "pointer",
                             display: "flex",
                             alignItems: "center",
-                            color: isHovered ? "red" : InputColor,
+                            color: isHovered ? "red" : "var(--text-color)",
+                            opacity: isMobile ? 1 : ((showClear !== undefined ? showClear : true) ? 1 : 0),
+                            transition: "opacity 0.15s ease, color 0.15s ease",
                             padding: "0 6px",
                             zIndex: 5,
                             position: "relative",
