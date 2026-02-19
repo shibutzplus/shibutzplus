@@ -17,6 +17,7 @@ export async function clearSchoolCacheAction(schoolId: string): Promise<ActionRe
         // Clear all relevant caches for the school
         revalidateTag(cacheTags.school(schoolId));
         revalidateTag(cacheTags.schoolSchedule(schoolId));
+        revalidateTag(cacheTags.dailyScheduleSchool(schoolId));
         revalidateTag(cacheTags.teachersList(schoolId));
         revalidateTag(cacheTags.subjectsList(schoolId));
         revalidateTag(cacheTags.classesList(schoolId));

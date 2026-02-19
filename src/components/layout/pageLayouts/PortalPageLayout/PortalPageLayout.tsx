@@ -26,7 +26,7 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
     const refreshRef = React.useRef<((items: SyncItem[]) => Promise<void> | void) | null>(null);
     const { resetUpdate } = usePollingUpdates(refreshRef);
     const isRegularTeacher = teacher?.role === TeacherRoleValues.REGULAR;
-    const { registerAndSubscribe } = usePushNotifications();
+    const { subscribeToPushNotification } = usePushNotifications();
 
     // If already registered to Push Notifications, ensure we continue receiving notifications
     // Only run if CURRENT_TIME >= AUTO_SWITCH_TIME (to avoid school network blocks like Antivirus/Firewall)
@@ -36,7 +36,7 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
             const [switchHour, switchMinute] = AUTO_SWITCH_TIME.split(":").map(Number);
             const isAfterSwitch = hour > switchHour || (hour === switchHour && minute >= switchMinute);
             if (isAfterSwitch) {
-                registerAndSubscribe(teacher.schoolId, teacher.id, false);
+                subscribeToPushNotification(teacher.schoolId, teacher.id, false);
             }
         }
     }, [teacher?.schoolId, teacher?.id]);

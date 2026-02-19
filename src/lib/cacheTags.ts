@@ -10,6 +10,12 @@ export const cacheTags = {
     dailySchedule: (schoolId: string, date: string) => `daily-${schoolId}-${date}`,
 
     /**
+     * Tag for ALL daily schedule records in a school (across all dates).
+     * Use this for school-wide cache clearing of daily schedule data.
+     */
+    dailyScheduleSchool: (schoolId: string) => `daily-${schoolId}`,
+
+    /**
      * Tag for all teacher schedules in a school.
      * Use this to invalidate all teachers when publishing or making school-wide changes.
      */

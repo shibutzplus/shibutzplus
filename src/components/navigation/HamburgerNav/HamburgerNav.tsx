@@ -107,7 +107,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
     const { handleOpenGuestPopup } = useGuestModePopup();
     const teacher = teacherProp || teacherState;
     const { installPWA, isInstalled } = usePWAInstall();
-    const { registerAndSubscribe, permission, showIcon } = usePushNotifications();
+    const { subscribeToPushNotification, permission, showIcon } = usePushNotifications();
 
     useAccessibility({ isOpen, navRef, onClose });
 
@@ -378,7 +378,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                                             onClick={async () => {
                                                 onClose();
                                                 try {
-                                                    await registerAndSubscribe(teacher.schoolId!, teacher.id, true);
+                                                    await subscribeToPushNotification(teacher.schoolId!, teacher.id, true);
                                                 } catch (e: any) {
                                                     if (e.message === "AntivirusBlocking") {
                                                         errorToast("נראה שתוכנת הגנה חוסמת את האפשרות להתראות מערכת 🤷.");
