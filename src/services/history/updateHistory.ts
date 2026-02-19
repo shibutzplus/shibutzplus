@@ -115,12 +115,6 @@ export async function processHistoryUpdate(dateString?: string): Promise<History
         // Cast to any to avoid complex tuple typing issues with dynamic array
         await db.batch(batchQueries as [any, ...any[]]);
 
-        // Log success
-        dbLog({
-            description: `History updated successfully for ${targetSchoolIds.length} schools. ${historyRecords.length} records added.`,
-            metadata: { date: targetDate, schoolsCount: targetSchoolIds.length, records: historyRecords.length }
-        });
-
         // 7. Invalidate history cache - ONLY after successful transaction
         try {
             // Important: Importing revalidateTag dynamically as this might run in a non-server context

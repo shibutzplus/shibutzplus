@@ -86,15 +86,12 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
             if (response?.success && response?.data) {
                 const newSchedule = populatePortalTable(response.data, mainPortalTable, selectedDate);
                 if (newSchedule) setMainPortalTable(newSchedule);
-            } else {
-                if (!response) {
-                    logErrorAction({
-                        description: "Error fetching Teacher Material page data: Response undefined (Keep Monitor)",
-                        schoolId: teacher?.schoolId,
-                        user: teacher?.name,
-                        metadata: { selectedDate, isHistoryPage }
-                    });
-                }
+            } else { // Error is suppressed as it was investigated and no need to Log it anymore
+                // if (!response) {
+                //     logErrorAction({
+                //         description: "Error fetching Teacher Material page data: Response undefined",
+                //         schoolId: teacher?.schoolId, user: teacher?.name, metadata: { selectedDate, isHistoryPage }});
+                // }
                 return false;
             }
             return true;

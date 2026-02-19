@@ -11,7 +11,6 @@
  * 5. Send the subscription details (endpoint, keys) to the backend API.
  * 
  * - Automatic background registration only works if permission is ALREADY granted.
- * - For new users, registerAndSubscribe must be called with isManual=true via user gesture.
  */
 "use client";
 
@@ -69,8 +68,9 @@ export function usePushNotifications() {
     }, []);
 
     const registerAndSubscribe = async (schoolId: string, teacherId?: string, isManual: boolean = false) => {
+
+        // Push notifications is not supported on this browser (probably old)
         if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
-            console.log("Push notifications not supported");
             return;
         }
 
@@ -78,18 +78,29 @@ export function usePushNotifications() {
             return;
         }
 
-        let step = "0: init"; // Track progress
+        let step = "0: init";
         const currentPermission = "Notification" in window ? Notification.permission : "default";
 
-        // If user blocked it explicitly, log it and return
         if (currentPermission === "denied") {
-            void logErrorAction({
-                description: `[Push-Keep] User has blocked notifications in browser settings (denied)`,
-                schoolId: schoolId,
-                user: teacherId,
-                metadata: { isManual }
-            });
+            void logErrorAction({ description: `[Push] User has blocked notifications`, schoolId: schoolId, user: teacherId, metadata: { isManual } });
             return;
+        }
+
+        if (currentPermission !== "granted") {
+            if (!isManual) return;
+
+            const result = await Notification.requestPermission();
+            setPermission(result);
+
+            if (result !== "granted") {
+                void logErrorAction({
+                    description: `[Push] User clicked Bell but did not click Allow`,
+                    schoolId: schoolId,
+                    user: teacherId,
+                    metadata: { permission: Notification.permission, isManual }
+                });
+                return;
+            }
         }
 
         try {
@@ -101,7 +112,6 @@ export function usePushNotifications() {
             try {
                 registration = await navigator.serviceWorker.register("/sw.js");
             } catch (swError) {
-                step = "1: register-sw-failed";
                 const errorInfo = swError instanceof Error ? {
                     name: swError.name,
                     message: swError.message,
@@ -114,149 +124,57 @@ export function usePushNotifications() {
                 const isRejectedOrWebroot = errorMessage.includes("Rejected") || (stackTrace && stackTrace.includes("wrsParams"));
 
                 if (isRejectedOrWebroot) {
-                    // Mark as blocked so UI can show the bell/alert
                     setIsBlockedByAntivirus(true);
 
-                    if (isManual) {
-                        void logErrorAction({
-                            description: `[Push Hook] Service Worker Registration Blocked by Antivirus (Manual): ${errorMessage}`,
-                            schoolId: schoolId,
-                            user: teacherId,
-                            metadata: {
-                                isManual,
-                                protocol: window.location.protocol,
-                                errorInfo
-                            }
-                        });
-                        // Throwing ensures the caller knows it failed (if they await it)
-                        throw new Error("AntivirusBlocking");
-                    } else {
-                        void logErrorAction({
-                            description: `[Push-Keep] SW Registration Auto Blocked by Antivirus (Followup, if happens again&again for same user we'll need to automatically hide the bell and suppress the LogError)`,
-                            schoolId: schoolId,
-                            user: teacherId,
-                            metadata: {
-                                isManual,
-                                protocol: window.location.protocol,
-                                errorInfo,
-                                suppressedAlert: true
-                            }
-                        });
-                        return;
-                    }
-                }
+                    void logErrorAction({
+                        description: `[Push] SW Registration Blocked by Antivirus`,
+                        schoolId: schoolId,
+                        user: teacherId,
+                        metadata: { isManual, errorInfo, errorMessage }
+                    });
 
-                void logErrorAction({
-                    description: `[Push Hook] Service Worker Registration Failed: ${errorMessage}`,
-                    schoolId: schoolId,
-                    user: teacherId,
-                    metadata: {
-                        isManual,
-                        protocol: window.location.protocol, // Must be https or localhost
-                        errorInfo
-                    }
-                });
-                throw swError; // Rethrow to go to outer catch
-            }
-
-            // 2. Already checked permission at start, but need it here for logic
-            step = "2: check-permission";
-            let permissionStatus = Notification.permission;
-            if (permissionStatus !== "granted") {
-                if (!isManual) {
+                    if (isManual) throw new Error("AntivirusBlocking"); // Throwing displayes a notification to the user
                     return;
                 }
-                step = "2a: request-permission";
-                permissionStatus = await Notification.requestPermission();
-                setPermission(permissionStatus);
+
+                throw swError;
             }
 
-            if (permissionStatus !== "granted") {
-                void logErrorAction({
-                    description: `[Push-Keep] User clicked Bell but did not grant permission and did not click Allow`,
-                    schoolId: schoolId,
-                    user: teacherId,
-                    metadata: { permission: currentPermission, isManual }
-                });
-                return;
-            }
-
-            step = "3: get-vapid-key";
             const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
-            if (!vapidKey) {
-                void logErrorAction({
-                    description: `[Push Hook] VAPID public key not found (Step: ${step})`,
-                    schoolId: schoolId,
-                    user: teacherId
-                });
-                return;
-            }
+            if (!vapidKey) throw new Error("VAPID public key not found");
 
             step = "4: check-existing-sub";
-            const existingSub = await registration.pushManager.getSubscription();
-            if (existingSub) {
-                setSubscription(existingSub);
-                step = "4a: save-existing";
-                await saveSubscription(existingSub, schoolId, teacherId);
-                return;
-            }
+            let sub = await registration.pushManager.getSubscription();
 
-            step = "5: convert-key";
-            let applicationServerKey: Uint8Array;
-            try {
-                applicationServerKey = urlBase64ToUint8Array(vapidKey);
-            } catch (e: any) {
-                void logErrorAction({
-                    description: `[Push Hook] invalid VAPID key (Step: ${step}): ${e.message}`,
-                    schoolId: schoolId,
-                    user: teacherId,
-                    metadata: { vapidKeyLength: vapidKey.length }
-                });
-                return;
-            }
-
-            step = "6: subscribe-attempt";
-            try {
+            if (!sub) {
+                step = "5: subscribe-new";
+                const applicationServerKey = urlBase64ToUint8Array(vapidKey);
                 // Ensure service worker is active before subscribing
                 await navigator.serviceWorker.ready;
 
-                const newSub = await registration.pushManager.subscribe({
-                    userVisibleOnly: true,
-                    applicationServerKey: applicationServerKey as any
-                });
-                setSubscription(newSub);
-                step = "7: save-new-sub";
-                await saveSubscription(newSub, schoolId, teacherId);
-
-            } catch (subError: any) {
-                void logErrorAction({
-                    description: `[Push Hook] Subscription failed (Step: ${step}): ${subError.message}`,
-                    schoolId: schoolId,
-                    user: teacherId,
-                    metadata: {
-                        name: subError.name,
-                        message: subError.message,
-                        code: subError.code,
-                        permission: Notification.permission
-                    }
-                });
-                throw subError;
+                try {
+                    sub = await registration.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: applicationServerKey as any
+                    });
+                } catch (subError: any) {
+                    throw subError;
+                }
             }
 
+            setSubscription(sub);
+            await saveSubscription(sub, schoolId, teacherId);
+
         } catch (error) {
-            // If it's the antivirus error we already handled logging (or suppression) above.
             if ((error instanceof Error && error.message === "AntivirusBlocking")) {
                 throw error;
             }
 
             void logErrorAction({
-                description: `[Push Hook] Error subscribing (Step: ${step}): ${error instanceof Error ? error.message : String(error)}`,
+                description: `[Push] Error subscribing (Step: ${step})`,
                 schoolId: schoolId,
                 user: teacherId,
-                metadata: {
-                    error: error instanceof Error ? { name: error.name, message: error.message } : error,
-                    isManual
-                }
+                metadata: { error: error instanceof Error ? { name: error.name, message: error.message } : error, isManual }
             });
             throw error;
         } finally {
@@ -268,23 +186,17 @@ export function usePushNotifications() {
         try {
             await fetch("/api/push/subscribe", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    subscription: sub,
-                    schoolId: schoolId,
-                    teacherId: teacherId
-                }),
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ subscription: sub, schoolId: schoolId, teacherId: teacherId }),
             });
         } catch (err) {
             void logErrorAction({
-                description: `[Push Hook] Failed to save subscription to server: ${err instanceof Error ? err.message : String(err)}`,
+                description: `[Push] Failed to save subscription to server: ${err instanceof Error ? err.message : String(err)}`,
                 schoolId: schoolId,
                 user: teacherId
             });
         }
     };
 
-    return { registerAndSubscribe, subscription, permission, isSupported, showIcon, isBlockedByAntivirus };
+    return { subscribeToPushNotification: registerAndSubscribe, subscription, permission, isSupported, showIcon, isBlockedByAntivirus };
 }
