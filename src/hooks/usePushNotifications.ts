@@ -78,15 +78,15 @@ export function usePushNotifications() {
             return;
         }
 
-        let step = "0: init";
+        // currentPermission can be: granted, default, denied
         const currentPermission = "Notification" in window ? Notification.permission : "default";
 
         if (currentPermission === "denied") {
-            void logErrorAction({ description: `[Push] User has blocked notifications`, schoolId: schoolId, user: teacherId, metadata: { isManual } });
+            void logErrorAction({ description: `[Push] Teacher blocked notifications`, schoolId: schoolId, user: teacherId, metadata: { isManual } });
             return;
         }
 
-        if (currentPermission !== "granted") {
+        if (currentPermission === "default") {
             if (!isManual) return;
 
             const result = await Notification.requestPermission();
@@ -94,7 +94,7 @@ export function usePushNotifications() {
 
             if (result !== "granted") {
                 void logErrorAction({
-                    description: `[Push] User clicked Bell but did not click Allow`,
+                    description: `[Push] Teacher Denied notifications`,    // clicked Bell but did not click Allow
                     schoolId: schoolId,
                     user: teacherId,
                     metadata: { permission: Notification.permission, isManual }
@@ -105,27 +105,17 @@ export function usePushNotifications() {
 
         try {
             isRegistering.current = true;
-            setIsBlockedByAntivirus(false); // Reset blocked state on new attempt
+            setIsBlockedByAntivirus(false);
 
-            step = "1: register-sw";
             let registration;
             try {
                 registration = await navigator.serviceWorker.register("/sw.js");
             } catch (swError) {
-                const errorInfo = swError instanceof Error ? {
-                    name: swError.name,
-                    message: swError.message,
-                    stack: swError.stack
-                } : swError;
-
-                // Check for generic "Rejected" or Webroot specifics
+                const errorInfo = swError instanceof Error ? { name: swError.name, message: swError.message } : swError;
                 const errorMessage = swError instanceof Error ? swError.message : String(swError);
-                const stackTrace = swError instanceof Error ? swError.stack : "";
-                const isRejectedOrWebroot = errorMessage.includes("Rejected") || (stackTrace && stackTrace.includes("wrsParams"));
 
-                if (isRejectedOrWebroot) {
+                if (errorMessage.includes("Rejected")) {
                     setIsBlockedByAntivirus(true);
-
                     void logErrorAction({
                         description: `[Push] SW Registration Blocked by Antivirus`,
                         schoolId: schoolId,
@@ -133,7 +123,7 @@ export function usePushNotifications() {
                         metadata: { isManual, errorInfo, errorMessage }
                     });
 
-                    if (isManual) throw new Error("AntivirusBlocking"); // Throwing displayes a notification to the user
+                    if (isManual) throw new Error("AntivirusBlocking"); // displays a notification to the user
                     return;
                 }
 
@@ -143,20 +133,13 @@ export function usePushNotifications() {
             const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
             if (!vapidKey) throw new Error("VAPID public key not found");
 
-            step = "4: check-existing-sub";
             let sub = await registration.pushManager.getSubscription();
-
             if (!sub) {
-                step = "5: subscribe-new";
                 const applicationServerKey = urlBase64ToUint8Array(vapidKey);
-                // Ensure service worker is active before subscribing
                 await navigator.serviceWorker.ready;
 
                 try {
-                    sub = await registration.pushManager.subscribe({
-                        userVisibleOnly: true,
-                        applicationServerKey: applicationServerKey as any
-                    });
+                    sub = await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: applicationServerKey as any });
                 } catch (subError: any) {
                     throw subError;
                 }
@@ -166,16 +149,14 @@ export function usePushNotifications() {
             await saveSubscription(sub, schoolId, teacherId);
 
         } catch (error) {
-            if ((error instanceof Error && error.message === "AntivirusBlocking")) {
-                throw error;
+            if (!(error instanceof Error && error.message === "AntivirusBlocking")) {
+                void logErrorAction({
+                    description: `[Push] Error subscribing`,
+                    schoolId: schoolId,
+                    user: teacherId,
+                    metadata: { error: error instanceof Error ? { name: error.name, message: error.message } : error, isManual }
+                });
             }
-
-            void logErrorAction({
-                description: `[Push] Error subscribing (Step: ${step})`,
-                schoolId: schoolId,
-                user: teacherId,
-                metadata: { error: error instanceof Error ? { name: error.name, message: error.message } : error, isManual }
-            });
             throw error;
         } finally {
             isRegistering.current = false;
