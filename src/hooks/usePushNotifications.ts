@@ -1,14 +1,13 @@
 /**
  * Handles the client-side logic for Web Push Notifications.
- * Used in PortalPageLayout.
+ * Used in PortalPageLayout and HamburgerNav.
  * 
  * 1. Check if the browser supports Service Workers and Push API.
- * 2. Register the Service Worker (`sw.js`).
- * 3. Check current status permission.
- *    if there is permission require user gesture for requestPermission
- *    if there is no permission then do nothing. 
- * 4. Subscribe the device to the Push Manager using the VAPID public key.
- * 5. Send the subscription details (endpoint, keys) to the backend API.
+ * 2. Check current notification permission (Denied/Default/Granted).
+ * 3. Request permission if needed (requires user gesture).
+ * 4. Register the Service Worker (`sw.js`).
+ * 5. Subscribe the device to the Push Manager using the VAPID public key.
+ * 6. Send the subscription details to the backend API.
  * 
  * - Automatic background registration only works if permission is ALREADY granted.
  */
@@ -68,37 +67,22 @@ export function usePushNotifications() {
     }, []);
 
     const registerAndSubscribe = async (schoolId: string, teacherId?: string, isManual: boolean = false) => {
+        if (!isSupported) return;
+        if (isRegistering.current) return;
 
-        // Push notifications is not supported on this browser (probably old)
-        if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
-            return;
-        }
-
-        if (isRegistering.current) {
-            return;
-        }
-
-        // currentPermission can be: granted, default, denied
-        const currentPermission = "Notification" in window ? Notification.permission : "default";
+        const currentPermission = Notification.permission;
 
         if (currentPermission === "denied") {
-            void logErrorAction({ description: `[Push] Teacher blocked notifications`, schoolId: schoolId, user: teacherId, metadata: { isManual } });
+            void logErrorAction({ description: `[Push] Teacher blocked notifications`, schoolId, user: teacherId, metadata: { isManual } });
             return;
         }
 
         if (currentPermission === "default") {
             if (!isManual) return;
-
             const result = await Notification.requestPermission();
             setPermission(result);
-
             if (result !== "granted") {
-                void logErrorAction({
-                    description: `[Push] Teacher Denied notifications`,    // clicked Bell but did not click Allow
-                    schoolId: schoolId,
-                    user: teacherId,
-                    metadata: { permission: Notification.permission, isManual }
-                });
+                void logErrorAction({ description: `[Push] Teacher Denied ShibutzPlus notification`, schoolId, user: teacherId, metadata: { permission: result, isManual } });
                 return;
             }
         }
@@ -110,23 +94,18 @@ export function usePushNotifications() {
             let registration;
             try {
                 registration = await navigator.serviceWorker.register("/sw.js");
-            } catch (swError) {
-                const errorInfo = swError instanceof Error ? { name: swError.name, message: swError.message } : swError;
-                const errorMessage = swError instanceof Error ? swError.message : String(swError);
-
-                if (errorMessage.includes("Rejected")) {
+            } catch (swError: any) {
+                if (swError?.message?.includes("Rejected")) {
                     setIsBlockedByAntivirus(true);
                     void logErrorAction({
                         description: `[Push] SW Registration Blocked by Antivirus`,
-                        schoolId: schoolId,
+                        schoolId,
                         user: teacherId,
-                        metadata: { isManual, errorInfo, errorMessage }
+                        metadata: { isManual, error: { name: swError.name, message: swError.message } }
                     });
-
-                    if (isManual) throw new Error("AntivirusBlocking"); // displays a notification to the user
+                    if (isManual) throw new Error("AntivirusBlocking");
                     return;
                 }
-
                 throw swError;
             }
 
@@ -135,26 +114,23 @@ export function usePushNotifications() {
 
             let sub = await registration.pushManager.getSubscription();
             if (!sub) {
-                const applicationServerKey = urlBase64ToUint8Array(vapidKey);
                 await navigator.serviceWorker.ready;
-
-                try {
-                    sub = await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: applicationServerKey as any });
-                } catch (subError: any) {
-                    throw subError;
-                }
+                sub = await registration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUint8Array(vapidKey)
+                });
             }
 
             setSubscription(sub);
             await saveSubscription(sub, schoolId, teacherId);
 
-        } catch (error) {
-            if (!(error instanceof Error && error.message === "AntivirusBlocking")) {
+        } catch (error: any) {
+            if (error.message !== "AntivirusBlocking") {
                 void logErrorAction({
                     description: `[Push] Error subscribing`,
-                    schoolId: schoolId,
+                    schoolId,
                     user: teacherId,
-                    metadata: { error: error instanceof Error ? { name: error.name, message: error.message } : error, isManual }
+                    metadata: { error: { name: error.name, message: error.message }, isManual }
                 });
             }
             throw error;
