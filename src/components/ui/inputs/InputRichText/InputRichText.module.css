@@ -19,7 +19,7 @@
 .toolbar {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 3px;
     width: 34px;
     align-items: center;
     flex-shrink: 0;
