@@ -22,13 +22,15 @@ export const getInstructionPlaceholder = (row?: TeacherScheduleType, teacher?: T
     // If I am the main teacher
     const isOriginalTeacher = teacher.id === row.originalTeacher?.id;
     if (isOriginalTeacher) {
-        return "הזינו כאן הנחיות למורה המחליף";
+        const subName = row.subTeacher?.name;
+        return subName ? `הזינו חומר לימוד ל${subName}` : "הזינו כאן הנחיות למורה המחליף";
     }
 
     // If I am the substitute teacher
     const isSubTeacher = teacher.id === row.subTeacher?.id;
     if (isSubTeacher) {
-        return "לא הוזנו הנחיות לשיעור זה";
+        const originalName = row.originalTeacher?.name;
+        return originalName ? `לא התקבלו הנחיות/חומר לימוד מ${originalName}` : "לא הוזנו הנחיות לשיעור זה";
     }
 
     // Default for all others
