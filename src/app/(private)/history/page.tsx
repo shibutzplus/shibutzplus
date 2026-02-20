@@ -7,7 +7,7 @@ import PreviewTable from "@/components/tables/dailyViewTable/PreviewTable/Previe
 import { useHistoryTable } from "@/context/HistoryTableContext";
 import NotPublished from "@/components/empty/NotPublished/NotPublished";
 import Preloader from "@/components/ui/Preloader/Preloader";
-import { TeacherTableProvider } from "@/context/TeacherTableContext";
+import { TeacherTableProvider, useTeacherTableContext } from "@/context/TeacherTableContext";
 import SlidingPanel from "@/components/ui/SlidingPanel/SlidingPanel";
 import TeacherTable from "@/components/tables/teacherMaterialTable/TeacherTable/TeacherTable";
 import { TeacherType } from "@/models/types/teachers";
@@ -17,11 +17,12 @@ import { PortalType } from "@/models/types";
 const HistorySchedulePage: NextPage = () => {
     const { mainDailyTable, selectedYearDate, isLoading } = useHistoryTable();
     const { settings } = useMainContext();
-
     const [isPanelOpen, setIsPanelOpen] = useState<boolean>(false);
     const [teacher, setTeacher] = useState<TeacherType>();
+    const { resetSchedule } = useTeacherTableContext();
 
     const handleTeacherClick = async (teacher: TeacherType) => {
+        resetSchedule();
         setTeacher(teacher);
         setIsPanelOpen(true);
     };

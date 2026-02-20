@@ -28,6 +28,7 @@ interface TeacherTableContextType {
     hasFetched: boolean;
     isHistoryPage: boolean;
     hydrateSchedule: (scheduleMap: PortalSchedule, date: string) => void;
+    resetSchedule: () => void;
 }
 
 const TeacherTableContext = createContext<TeacherTableContextType | undefined>(undefined);
@@ -161,6 +162,11 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
         setHasFetched(true);
     };
 
+    const resetSchedule = () => {
+        setMainPortalTable({});
+        setHasFetched(false);
+    };
+
     const value: TeacherTableContextType = {
         isPortalLoading,
         isSavingLoading,
@@ -171,6 +177,7 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
         hasFetched,
         isHistoryPage,
         hydrateSchedule,
+        resetSchedule,
     };
 
     return <TeacherTableContext.Provider value={value}>{children}</TeacherTableContext.Provider>;
