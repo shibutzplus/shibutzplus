@@ -193,33 +193,71 @@
     pointer-events: none;
 }
 
-/* > 1000px */
-@media (min-width: 1000px) {
+/* > 1200px */
+@media (min-width: 1200px) {
+
+    /* 4 to 8 Columns */
     .container {
         --font-size: 1.25vw;
         --col-width: 1fr;
     }
 
+    /* < 4 Columns */
     .container.fewCols {
-        --font-size: 1.3vw;
+        --font-size: 1.4vw;
         --col-width: 20vw;
     }
 
+    /* >= 9 Columns */
     .container.manyCols {
-        --font-size: 1.1vw;
+        --font-size: 1.15vw;
     }
 }
 
-/* > 600px and < 1000px */
-@media (min-width: 600px) and (max-width: 1000px) {
+/* > 1000px and < 1200px */
+@media (min-width: 1000px) and (max-width: 1200px) {
     .container {
-        --font-size: 1.5vw;
+        --font-size: 1.6vw;
         --col-width: 1fr;
     }
 
     .container.fewCols {
-        --font-size: 1.6vw;
+        --font-size: 1.7vw;
         --col-width: 20vw;
+    }
+
+    .container.manyCols {
+        --font-size: 1.4vw;
+    }
+}
+
+/* > 800px and < 1000px */
+@media (min-width: 800px) and (max-width: 1000px) {
+    .container {
+        --font-size: 1.6vw;
+        --col-width: 1fr;
+    }
+
+    .container.fewCols {
+        --font-size: 1.8vw;
+        --col-width: 20vw;
+    }
+
+    .container.manyCols {
+        --font-size: 1.5vw;
+    }
+}
+
+/* > 600px and < 800px */
+@media (min-width: 600px) and (max-width: 800px) {
+    .container {
+        --font-size: 2vw;
+        --col-width: 1fr;
+    }
+
+    .container.fewCols {
+        --font-size: 2.2vw;
+        --col-width: 23vw;
     }
 
     .container.manyCols {
@@ -228,10 +266,10 @@
 
 }
 
-/* < 600px */
-@media (max-width: 600px) {
+/* > 400px and < 600px */
+@media (min-width: 400px) and (max-width: 600px) {
     .container {
-        --font-size: 2.8vw;
+        --font-size: 2.5vw;
         --col-width: 1fr;
     }
 
@@ -241,6 +279,30 @@
 
     .container.manyCols {
         --font-size: 2vw;
+    }
+
+    .headerRow {
+        grid-template-columns: minmax(20px, 3vw) 2px repeat(var(--num-cols), 1fr);
+    }
+
+    .row {
+        grid-template-columns: minmax(20px, 3vw) 2px repeat(var(--num-cols), 1fr);
+    }
+}
+
+/* < 400px */
+@media (max-width: 400px) {
+    .container {
+        --font-size: 2.8vw;
+        --col-width: 1fr;
+    }
+
+    .container.fewCols {
+        --font-size: 3.6vw;
+    }
+
+    .container.manyCols {
+        --font-size: 2.4vw;
     }
 
     .headerRow {
