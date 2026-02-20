@@ -29,7 +29,7 @@ const TeacherInstructionsCell: React.FC<TeacherInstructionsCellProps> = ({
     }, [row?.DBid, row?.instructions]);
 
     const handleChange = async (html: string) => {
-        if (!row || !selectedDate) return;
+        if (!row || !selectedDate || isHistoryPage) return;
         const value = html.trim();
         if (value === prevInstructions) return;
         setPrevInstructions(value);
