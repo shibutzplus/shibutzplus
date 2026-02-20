@@ -14,7 +14,7 @@ import { TeacherType } from "@/models/types/teachers";
 import { useMainContext } from "@/context/MainContext";
 import { PortalType } from "@/models/types";
 
-const HistorySchedulePage: NextPage = () => {
+const HistoryScheduleContent: React.FC = () => {
     const { mainDailyTable, selectedYearDate, isLoading } = useHistoryTable();
     const { settings } = useMainContext();
     const [isPanelOpen, setIsPanelOpen] = useState<boolean>(false);
@@ -46,7 +46,7 @@ const HistorySchedulePage: NextPage = () => {
         );
 
     return (
-        <TeacherTableProvider isHistoryPage={true}>
+        <>
             <section className={styles.container}>
                 <PreviewTable
                     mainDailyTable={mainDailyTable}
@@ -75,6 +75,14 @@ const HistorySchedulePage: NextPage = () => {
                     />
                 ) : null}
             </SlidingPanel>
+        </>
+    );
+};
+
+const HistorySchedulePage: NextPage = () => {
+    return (
+        <TeacherTableProvider isHistoryPage={true}>
+            <HistoryScheduleContent />
         </TeacherTableProvider>
     );
 };
