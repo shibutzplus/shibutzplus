@@ -73,7 +73,8 @@ export function usePushNotifications() {
         const currentPermission = Notification.permission;
 
         if (currentPermission === "denied") {
-            void logErrorAction({ description: `[Push] Teacher blocked notifications`, schoolId, user: teacherId, metadata: { isManual } });
+            // Currently not logging this error as there is nothing we can do about teachers which blocked the notifications.
+            // void logErrorAction({ description: `[Push] Teacher blocked notifications`, schoolId, user: teacherId, metadata: { isManual } });
             return;
         }
 
