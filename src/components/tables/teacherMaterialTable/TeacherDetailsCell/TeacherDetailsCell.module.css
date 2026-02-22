@@ -73,7 +73,7 @@
     height: 100%;
     max-height: unset;
     min-height: var(--table-teacher-cell-height);
-    padding: 10px 15px;
+    padding: 7px 10px;
   }
 
   .emptyCell {
@@ -83,7 +83,7 @@
   .combinedContent {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 7px;
     width: 100%;
   }
 

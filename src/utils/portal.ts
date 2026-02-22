@@ -19,20 +19,35 @@ export const getInstructionPlaceholder = (row?: TeacherScheduleType, teacher?: T
         return "";
     }
 
+    // Cross replacement: Teacher A replaces Teacher B AND Teacher B replaces Teacher A
+    const isCrossReplacement =
+        row.originalTeacher && row.subTeacher &&
+        row.secondary &&
+        row.originalTeacher.id === row.secondary.subTeacher?.id &&
+        row.subTeacher.id === row.secondary.originalTeacher?.id;
+
+    if (isCrossReplacement) {
+        return `הזינו כאן חומרי לימוד הדדיים (הצרכה)`;
+    }
+
+    // Chain replacement (e.g. A→B→C→A) - can't be traced automatically, coordinate manually
+    if (row.secondary) {
+        return "שימו לב! במצב כזה השדה אינו רלוונטי והחילוף מחייב תיאום ישיר בין המורים";
+    };
+
     // If I am the main teacher
     const isOriginalTeacher = teacher.id === row.originalTeacher?.id;
+    const subName = row.subTeacher?.name;
     if (isOriginalTeacher) {
-        const subName = row.subTeacher?.name;
-        return subName ? `הזינו חומר לימוד ל${subName}` : "הזינו כאן הנחיות למורה המחליף";
+        return subName ? `הזינו חומר לימוד ל${subName}` : "הזינו כאן חומר לימוד למורה המחליף";
     }
 
     // If I am the substitute teacher
     const isSubTeacher = teacher.id === row.subTeacher?.id;
+    const originalName = row.originalTeacher?.name;
     if (isSubTeacher) {
-        const originalName = row.originalTeacher?.name;
-        return originalName ? `לא התקבלו הנחיות/חומר לימוד מ${originalName}` : "לא הוזנו הנחיות לשיעור זה";
+        return originalName ? `לא התקבל חומר לימוד מ${originalName}` : "לא התקבל חומרי לימוד לשיעור זה";
     }
 
-    // Default for all others
     return "חומר הלימוד";
 };
