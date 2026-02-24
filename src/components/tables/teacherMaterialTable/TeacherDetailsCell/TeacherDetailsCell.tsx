@@ -47,8 +47,10 @@ const TeacherDetailsCell: React.FC<TeacherDetailsCellProps> = ({ row, teacher })
             const firstLine = texts[0].type === "replaced"
                 ? <>{texts[0].text} <span>במקומי</span></>
                 : texts[0].text;
+            const replacingRow = primary?.type === "replacing" ? row : row?.secondary;
+            const replacingClasses = replacingRow?.classes?.map((cls) => cls.name).join(", ");
             const secondLine = texts[1].type === "replacing"
-                ? <>אני במקום <span>{texts[1].text}</span></>
+                ? <>אני במקום <span>{texts[1].text}</span>{replacingClasses ? ` (${replacingClasses})` : ""}</>
                 : texts[1].text;
 
             return (

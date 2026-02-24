@@ -151,7 +151,7 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
             }
         } catch (error) {
             logErrorAction({ description: `Error updating daily schedule entry: ${error instanceof Error ? error.message : String(error)}`, schoolId });
-            errorToast(messages.dailySchedule.error);
+            errorToast("בעיה בתקשורת - ההנחיות לא נשמרו. בדקו את החיבור לאינטרנט ונסו שוב");
         } finally {
             setIsSavingLoading(false);
         }
