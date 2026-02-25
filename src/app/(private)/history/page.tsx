@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import type { NextPage } from "next";
 import styles from "./history.module.css";
 import PreviewTable from "@/components/tables/dailyViewTable/PreviewTable/PreviewTable";
+import DailyFullScreenTable from "@/components/tables/dailyFullScreenTable/DailyFullScreenTable";
 import { useHistoryTable } from "@/context/HistoryTableContext";
 import NotPublished from "@/components/empty/NotPublished/NotPublished";
 import Preloader from "@/components/ui/Preloader/Preloader";
@@ -13,6 +14,7 @@ import TeacherTable from "@/components/tables/teacherMaterialTable/TeacherTable/
 import { TeacherType } from "@/models/types/teachers";
 import { useMainContext } from "@/context/MainContext";
 import { PortalType } from "@/models/types";
+
 
 const HistoryScheduleContent: React.FC = () => {
     const { mainDailyTable, selectedYearDate, isLoading } = useHistoryTable();
@@ -48,16 +50,28 @@ const HistoryScheduleContent: React.FC = () => {
     return (
         <>
             <section className={styles.container}>
-                <PreviewTable
-                    mainDailyTable={mainDailyTable}
-                    selectedDate={selectedYearDate}
-                    EmptyTable={NotPublished}
-                    emptyText="אין נתוני היסטוריה ליום שנבחר"
-                    onTeacherClick={handleTeacherClick}
-                    fromHour={settings?.fromHour}
-                    toHour={settings?.toHour}
+                {/* History table — hidden on print as we display the full screen table on print*/}
+                <div className={styles.noPrint}>
+                    <PreviewTable
+                        mainDailyTable={mainDailyTable}
+                        selectedDate={selectedYearDate}
+                        EmptyTable={NotPublished}
+                        emptyText="אין נתוני היסטוריה ליום שנבחר"
+                        onTeacherClick={handleTeacherClick}
+                        fromHour={settings?.fromHour}
+                        toHour={settings?.toHour}
+                    />
+                </div>
 
-                />
+                {/* Full-screen table — shown only on print */}
+                <div className={styles.printOnly}>
+                    <DailyFullScreenTable
+                        mainDailyTable={mainDailyTable}
+                        selectedDate={selectedYearDate}
+                        fromHour={settings?.fromHour}
+                        toHour={settings?.toHour}
+                    />
+                </div>
             </section>
             <SlidingPanel
                 isOpen={isPanelOpen}
