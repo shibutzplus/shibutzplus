@@ -115,15 +115,17 @@ const DailyScheduleContent: React.FC = () => {
                         />
                     </div>
 
-                    {/* Full-screen table — shown only on print */}
-                    <div className={styles.printOnly}>
-                        <DailyFullScreenTable
-                            mainDailyTable={mainDailyTable}
-                            selectedDate={selectedDate}
-                            fromHour={settings?.fromHour}
-                            toHour={settings?.toHour}
-                        />
-                    </div>
+                    {/* Full-screen table — shown only on print, only when there is data */}
+                    {mainDailyTable?.[selectedDate] && Object.keys(mainDailyTable[selectedDate]).length > 0 && (
+                        <div className={styles.printOnly}>
+                            <DailyFullScreenTable
+                                mainDailyTable={mainDailyTable}
+                                selectedDate={selectedDate}
+                                fromHour={settings?.fromHour}
+                                toHour={settings?.toHour}
+                            />
+                        </div>
+                    )}
                 </>
             )}
 

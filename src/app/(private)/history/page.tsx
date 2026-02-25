@@ -63,15 +63,17 @@ const HistoryScheduleContent: React.FC = () => {
                     />
                 </div>
 
-                {/* Full-screen table — shown only on print */}
-                <div className={styles.printOnly}>
-                    <DailyFullScreenTable
-                        mainDailyTable={mainDailyTable}
-                        selectedDate={selectedYearDate}
-                        fromHour={settings?.fromHour}
-                        toHour={settings?.toHour}
-                    />
-                </div>
+                {/* Full-screen table — shown only on print, only when there is data */}
+                {mainDailyTable?.[selectedYearDate] && Object.keys(mainDailyTable[selectedYearDate]).length > 0 && (
+                    <div className={styles.printOnly}>
+                        <DailyFullScreenTable
+                            mainDailyTable={mainDailyTable}
+                            selectedDate={selectedYearDate}
+                            fromHour={settings?.fromHour}
+                            toHour={settings?.toHour}
+                        />
+                    </div>
+                )}
             </section>
             <SlidingPanel
                 isOpen={isPanelOpen}
