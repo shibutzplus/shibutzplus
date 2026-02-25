@@ -164,3 +164,38 @@
         background: transparent;
     }
 }
+
+@media print {
+    .tableWrapper {
+        height: auto;
+        overflow: visible;
+    }
+
+    .tableWrapper.hasScrollBelow::after {
+        display: none;
+    }
+
+    .tableContainer {
+        overflow: visible;
+        height: auto;
+    }
+
+    .scheduleTable {
+        page-break-inside: auto;
+    }
+
+    /* Force the table background to print — it creates the visual
+       row-separator "borders" by showing between the padded cells */
+    .scheduleTable {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    /* Force header background colors to print */
+    .headerCell,
+    .headerInner,
+    .hoursHeader {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}

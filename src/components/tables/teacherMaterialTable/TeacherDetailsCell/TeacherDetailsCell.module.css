@@ -106,3 +106,10 @@
 .activityText {
   color: var(--disabled-text-color);
 }
+
+@media print {
+  .cellContent {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

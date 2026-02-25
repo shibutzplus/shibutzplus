@@ -103,3 +103,17 @@
         display: none !important;
     }
 }
+
+@media print {
+
+    .hoursColumn,
+    .hourCell,
+    .emptyCell {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .teacherRow {
+        page-break-inside: avoid;
+    }
+}
