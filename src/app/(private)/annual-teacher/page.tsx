@@ -21,7 +21,7 @@ const AnnualSchedulePage: NextPage = () => {
     useEffect(() => {
         const checkSchedule = () => {
             // Return false if incomplete (validation fails)
-            return !hasIncompleteCells(schedule);
+            return !hasIncompleteCells(schedule, "teacher");
         };
         const unregister = registerValidator(checkSchedule);
         return unregister;

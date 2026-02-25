@@ -57,3 +57,10 @@
         min-width: var(--table-annual-col-width-mobile);
     }
 }
+
+@media print {
+    .cellContent {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}

@@ -313,3 +313,28 @@
         grid-template-columns: minmax(20px, 3vw) 2px repeat(var(--num-cols), 1fr);
     }
 }
+
+@media print {
+    .container {
+        width: 100%;
+        height: auto;
+        overflow: visible;
+    }
+
+    .bodyContainer {
+        overflow: visible;
+        height: auto;
+        flex: none;
+    }
+
+    .row {
+        min-height: auto;
+        page-break-inside: avoid;
+    }
+
+    /* Force background colors to print for header cells */
+    .headerCell {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}

@@ -95,3 +95,23 @@
     border: none !important;
     outline: none !important;
 }
+
+@media print {
+    .tableContainer {
+        overflow: visible;
+        height: auto;
+    }
+
+    .scheduleTable {
+        page-break-inside: auto;
+    }
+
+    /* Force the gray table background (creates the border gaps) to print */
+    .scheduleTable,
+    .headerInner,
+    .hoursHeader,
+    .hoursColumn {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}

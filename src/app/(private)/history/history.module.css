@@ -5,3 +5,32 @@
   box-sizing: border-box;
   padding-top: var(--padding-top-desktop);
 }
+
+/* Shown only in print, hidden on screen */
+.printOnly {
+  display: none;
+}
+
+/* Must pass through full height so PreviewTable can scroll */
+.noPrint {
+  height: 100%;
+}
+
+@media print {
+  .container {
+    padding-top: 0;
+    height: auto;
+  }
+
+  /* Hide the history table on print */
+  .noPrint {
+    display: none !important;
+  }
+
+  /* Show the full-screen table on print */
+  .printOnly {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}

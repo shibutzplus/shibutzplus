@@ -99,3 +99,9 @@
         height: 11vw;
     }
 }
+
+@media print {
+    .fab {
+        display: none !important;
+    }
+}

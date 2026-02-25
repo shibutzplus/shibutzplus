@@ -68,7 +68,7 @@ export default function AnnualClassPageLayout({ children }: AnnualClassPageLayou
                             resolve(false);
                         }}
                         onNo={() => {
-                            const cleanedSchedule = removeIncompleteCells(schedule);
+                            const cleanedSchedule = removeIncompleteCells(schedule, "class");
                             setSchedule(cleanedSchedule);
                             resolve(true);
                         }}

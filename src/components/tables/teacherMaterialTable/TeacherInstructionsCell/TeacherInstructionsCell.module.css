@@ -28,3 +28,12 @@
     min-height: var(--table-teacher-cell-height);
   }
 }
+
+@media print {
+  .cellContent {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    overflow-y: visible;
+    max-height: none;
+  }
+}
