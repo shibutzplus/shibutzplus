@@ -30,3 +30,16 @@
     border-radius: 50%;
     margin: auto;
 }
+
+@media print {
+
+    .hoursColumn,
+    .hourCell {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .annualRow {
+        page-break-inside: avoid;
+    }
+}
