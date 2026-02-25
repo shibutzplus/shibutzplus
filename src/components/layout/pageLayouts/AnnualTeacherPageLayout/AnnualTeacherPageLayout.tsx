@@ -69,7 +69,7 @@ export default function AnnualTeacherPageLayout({ children }: AnnualTeacherPageL
                             resolve(false);
                         }}
                         onNo={() => {
-                            const cleanedSchedule = removeIncompleteCells(schedule);
+                            const cleanedSchedule = removeIncompleteCells(schedule, "teacher");
                             setSchedule(cleanedSchedule);
                             resolve(true);
                         }}

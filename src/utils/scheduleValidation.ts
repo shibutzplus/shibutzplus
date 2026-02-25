@@ -1,20 +1,19 @@
 import { WeeklySchedule } from "@/models/types/annualSchedule";
 
+export type AnnualScheduleViewType = "teacher" | "class";
+
 /**
  * Checks if the schedule contains any incomplete cells.
- * A cell is considered incomplete if it has data but not fully matched content.
+ * A cell is considered incomplete if its visible fields are imbalanced.
  * 
- * Logic:
- * In Annual Teacher view: Valid if (Subjects > 0 AND Classes > 0) OR (Subjects == 0 AND Classes == 0).
- * In Annual Class view: Valid if (Subjects > 0 AND Teachers > 0) OR (Subjects == 0 AND Teachers == 0).
- * 
- * So in general for any cell structure that has { subjects, classes/teachers }:
- * It is incomplete if: (has subjects !== has other entity).
+ * In Teacher view: we check that 'subjects' and 'classes' are either both empty or both populated.
+ * In Class view: we check that 'subjects' and 'teachers' are either both empty or both populated.
  * 
  * @param schedule The full weekly schedule object
+ * @param viewType "teacher" or "class" indicating the current context
  * @returns true if any incomplete cell is found
  */
-export const hasIncompleteCells = (schedule: WeeklySchedule): boolean => {
+export const hasIncompleteCells = (schedule: WeeklySchedule, viewType: AnnualScheduleViewType): boolean => {
     for (const mainKey in schedule) {
         const days = schedule[mainKey];
         if (!days) continue;
@@ -27,16 +26,14 @@ export const hasIncompleteCells = (schedule: WeeklySchedule): boolean => {
                 const cell = hours[hourKey];
                 if (!cell) continue;
 
-                // Generalized check for both Teacher (classes) and Class (teachers) views
-                // Note: The cell type has `subjects` and either `classes` or `teachers`.
                 const hasSubjects = (cell.subjects?.length || 0) > 0;
-                const hasOthers =
-                    ((cell.classes?.length || 0) > 0) ||
-                    ((cell.teachers?.length || 0) > 0);
+                const hasClasses = (cell.classes?.length || 0) > 0;
+                const hasTeachers = (cell.teachers?.length || 0) > 0;
 
-                // XOR check: if one exists but not the other, it's incomplete
-                if (hasSubjects !== hasOthers) {
-                    return true;
+                if (viewType === "teacher") {
+                    if (hasSubjects !== hasClasses) return true;
+                } else if (viewType === "class") {
+                    if (hasSubjects !== hasTeachers) return true;
                 }
             }
         }
@@ -48,7 +45,7 @@ export const hasIncompleteCells = (schedule: WeeklySchedule): boolean => {
  * Removes incomplete cells from the schedule.
  * Returns a new schedule object with incomplete cells cleared.
  */
-export const removeIncompleteCells = (schedule: WeeklySchedule): WeeklySchedule => {
+export const removeIncompleteCells = (schedule: WeeklySchedule, viewType: AnnualScheduleViewType): WeeklySchedule => {
     const newSchedule = { ...schedule };
 
     for (const mainKey in newSchedule) {
@@ -64,11 +61,17 @@ export const removeIncompleteCells = (schedule: WeeklySchedule): WeeklySchedule 
                 if (!cell) continue;
 
                 const hasSubjects = (cell.subjects?.length || 0) > 0;
-                const hasOthers =
-                    ((cell.classes?.length || 0) > 0) ||
-                    ((cell.teachers?.length || 0) > 0);
+                const hasClasses = (cell.classes?.length || 0) > 0;
+                const hasTeachers = (cell.teachers?.length || 0) > 0;
 
-                if (hasSubjects !== hasOthers) {
+                let isIncomplete = false;
+                if (viewType === "teacher") {
+                    isIncomplete = hasSubjects !== hasClasses;
+                } else if (viewType === "class") {
+                    isIncomplete = hasSubjects !== hasTeachers;
+                }
+
+                if (isIncomplete) {
                     // Clear the cell
                     delete newSchedule[mainKey][dayKey][hourKey];
                 }
