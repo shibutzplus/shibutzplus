@@ -9,7 +9,7 @@ import { useMobileSelectScroll } from "@/hooks/scroll/useMobileSelectScroll";
 import AddToSelectBtn from "../../buttons/AddToSelectBtn/AddToSelectBtn";
 import styles from "./InputGroupSelect.module.css";
 import SelectLayout from "../SelectLayout/SelectLayout";
-import { InputBackgroundColor, TabColor, InputColor } from "@/style/root";
+import { InputBackgroundColor, TabColor } from "@/style/root";
 
 /**
  * DailyTeacherCell - Sub Teacher
