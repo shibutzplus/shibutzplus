@@ -89,3 +89,18 @@
         width: auto !important;
     }
 }
+
+@media print {
+    .topBarLayout {
+        display: none !important;
+    }
+
+    .pageLayout {
+        height: auto;
+    }
+
+    .mainContent {
+        overflow: visible;
+        height: auto;
+    }
+}

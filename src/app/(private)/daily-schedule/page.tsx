@@ -102,15 +102,29 @@ const DailyScheduleContent: React.FC = () => {
                         fromHour={settings?.fromHour}
                         toHour={settings?.toHour}
                         onTeacherClick={handleFullScreenTeacherClick}
-
                     />
                 </FullScreenContainer>
             ) : (
-                <DailyTable
-                    mainDailyTable={mainDailyTable}
-                    selectedDate={selectedDate}
-                    onTeacherClick={handleTeacherClick}
-                />
+                <>
+                    {/* Edit table — hidden on print cause we want to display automatically the full screen table on print */}
+                    <div className={styles.noPrint}>
+                        <DailyTable
+                            mainDailyTable={mainDailyTable}
+                            selectedDate={selectedDate}
+                            onTeacherClick={handleTeacherClick}
+                        />
+                    </div>
+
+                    {/* Full-screen table — shown only on print */}
+                    <div className={styles.printOnly}>
+                        <DailyFullScreenTable
+                            mainDailyTable={mainDailyTable}
+                            selectedDate={selectedDate}
+                            fromHour={settings?.fromHour}
+                            toHour={settings?.toHour}
+                        />
+                    </div>
+                </>
             )}
 
             <SlidingPanel
