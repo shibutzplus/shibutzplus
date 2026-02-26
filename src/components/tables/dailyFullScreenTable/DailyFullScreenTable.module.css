@@ -33,6 +33,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    min-width: 0;
 }
 
 .headerContent {
@@ -104,6 +105,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    min-width: 0;
 }
 
 .spacerCell {
@@ -199,7 +201,7 @@
     /* 4 to 8 Columns */
     .container {
         --font-size: 1.25vw;
-        --col-width: 1fr;
+        --col-width: minmax(0, 1fr);
     }
 
     /* < 4 Columns */
@@ -218,7 +220,7 @@
 @media (min-width: 1000px) and (max-width: 1200px) {
     .container {
         --font-size: 1.6vw;
-        --col-width: 1fr;
+        --col-width: minmax(0, 1fr);
     }
 
     .container.fewCols {
@@ -235,7 +237,7 @@
 @media (min-width: 800px) and (max-width: 1000px) {
     .container {
         --font-size: 1.6vw;
-        --col-width: 1fr;
+        --col-width: minmax(0, 1fr);
     }
 
     .container.fewCols {
@@ -252,7 +254,7 @@
 @media (min-width: 600px) and (max-width: 800px) {
     .container {
         --font-size: 2vw;
-        --col-width: 1fr;
+        --col-width: minmax(0, 1fr);
     }
 
     .container.fewCols {
@@ -270,7 +272,7 @@
 @media (min-width: 400px) and (max-width: 600px) {
     .container {
         --font-size: 2.5vw;
-        --col-width: 1fr;
+        --col-width: minmax(0, 1fr);
     }
 
     .container.fewCols {
@@ -282,11 +284,11 @@
     }
 
     .headerRow {
-        grid-template-columns: minmax(20px, 3vw) 2px repeat(var(--num-cols), 1fr);
+        grid-template-columns: minmax(20px, 3vw) 2px repeat(var(--num-cols), minmax(0, 1fr));
     }
 
     .row {
-        grid-template-columns: minmax(20px, 3vw) 2px repeat(var(--num-cols), 1fr);
+        grid-template-columns: minmax(20px, 3vw) 2px repeat(var(--num-cols), minmax(0, 1fr));
     }
 }
 
@@ -294,7 +296,7 @@
 @media (max-width: 400px) {
     .container {
         --font-size: 2.8vw;
-        --col-width: 1fr;
+        --col-width: minmax(0, 1fr);
     }
 
     .container.fewCols {
@@ -306,11 +308,11 @@
     }
 
     .headerRow {
-        grid-template-columns: minmax(20px, 3vw) 2px repeat(var(--num-cols), 1fr);
+        grid-template-columns: minmax(20px, 3vw) 2px repeat(var(--num-cols), minmax(0, 1fr));
     }
 
     .row {
-        grid-template-columns: minmax(20px, 3vw) 2px repeat(var(--num-cols), 1fr);
+        grid-template-columns: minmax(20px, 3vw) 2px repeat(var(--num-cols), minmax(0, 1fr));
     }
 }
 
