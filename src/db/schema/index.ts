@@ -10,6 +10,7 @@ import { type TeacherRole } from '@/models/types/teachers';
 import { classes, type ClassSchema, type NewClassSchema } from './classes';
 import { subjects, type SubjectSchema, type NewSubjectSchema } from './subjects';
 import { annualSchedule, type AnnualScheduleSchema, type NewAnnualScheduleSchema } from './annual-schedule';
+import { annualScheduleAlt, type AnnualScheduleAltSchema, type NewAnnualScheduleAltSchema } from './annual-alt-schedule';
 import { dailySchedule, type DailyScheduleSchema, type NewDailyScheduleSchema } from './daily-schedule';
 import { history, type HistorySchema, type NewHistorySchema } from './history';
 import { logs, type LogSchema, type NewLogSchema } from './logs';
@@ -41,6 +42,7 @@ export const schoolsRelations = relations(schools, ({ many }) => ({
   classes: many(classes),
   subjects: many(subjects),
   annualSchedules: many(annualSchedule),
+  altSchedules: many(annualScheduleAlt),
   dailySchedules: many(dailySchedule),
   history: many(history),
   logs: many(logs),
@@ -57,6 +59,7 @@ export const teachersRelations = relations(teachers, ({ one, many }) => ({
     references: [schools.id],
   }),
   taughtAnnualSchedules: many(annualSchedule),
+  taughtAltSchedules: many(annualScheduleAlt),
   issueSchedules: many(dailySchedule, { relationName: 'originalTeacher' }),
   subSchedules: many(dailySchedule, { relationName: 'subTeacher' }),
 }));
@@ -68,6 +71,7 @@ export const classesRelations = relations(classes, ({ one, many }) => ({
     references: [schools.id],
   }),
   annualSchedules: many(annualSchedule),
+  altSchedules: many(annualScheduleAlt),
 }));
 
 // Subject relations
@@ -77,6 +81,7 @@ export const subjectsRelations = relations(subjects, ({ one, many }) => ({
     references: [schools.id],
   }),
   annualSchedules: many(annualSchedule),
+  altSchedules: many(annualScheduleAlt),
   dailySchedules: many(dailySchedule),
 }));
 
@@ -96,6 +101,26 @@ export const annualScheduleRelations = relations(annualSchedule, ({ one }) => ({
   }),
   subject: one(subjects, {
     fields: [annualSchedule.subjectId],
+    references: [subjects.id],
+  }),
+}));
+
+// Alt Annual Schedule relations
+export const annualScheduleAltRelations = relations(annualScheduleAlt, ({ one }) => ({
+  school: one(schools, {
+    fields: [annualScheduleAlt.schoolId],
+    references: [schools.id],
+  }),
+  class: one(classes, {
+    fields: [annualScheduleAlt.classId],
+    references: [classes.id],
+  }),
+  teacher: one(teachers, {
+    fields: [annualScheduleAlt.teacherId],
+    references: [teachers.id],
+  }),
+  subject: one(subjects, {
+    fields: [annualScheduleAlt.subjectId],
     references: [subjects.id],
   }),
 }));
@@ -152,6 +177,7 @@ export {
   classes, type ClassSchema, type NewClassSchema,
   subjects, type SubjectSchema, type NewSubjectSchema,
   annualSchedule, type AnnualScheduleSchema, type NewAnnualScheduleSchema,
+  annualScheduleAlt, type AnnualScheduleAltSchema, type NewAnnualScheduleAltSchema,
   dailySchedule, type DailyScheduleSchema, type NewDailyScheduleSchema,
   history, type HistorySchema, type NewHistorySchema,
   logs, type LogSchema, type NewLogSchema,
@@ -166,6 +192,7 @@ export const tables = {
   classes,
   subjects,
   annualSchedule,
+  annualScheduleAlt,
   dailySchedule,
   history,
   logs,
