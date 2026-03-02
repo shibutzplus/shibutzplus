@@ -131,11 +131,6 @@ tbody .hoursColumn {
 }
 
 @media print {
-    body {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-    }
-
     .tableContainer {
         height: auto;
         overflow: visible;
