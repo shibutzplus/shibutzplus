@@ -3,7 +3,7 @@ import { AnnualAltByDayProvider } from "@/context/AnnualAltByDayContext";
 import AnnualAltBuildPageLayout from "@/components/layout/pageLayouts/AnnualAltBuildPageLayout/AnnualAltBuildPageLayout";
 
 export const metadata: Metadata = {
-    title: "מערכת אלטרנטיבית",
+    title: "מערכת שעות זמן חירום",
     robots: "noindex, nofollow",
 };
 

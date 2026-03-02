@@ -17,8 +17,6 @@ const AltSchedulePage: NextPage = () => {
         schedule,
         setSchedule,
         isLoading,
-        setIsLoading,
-        setIsSaving,
         isSaving,
         handleScheduleUpdate,
     } = useAnnualAltByDay();
