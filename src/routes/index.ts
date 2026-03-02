@@ -19,6 +19,8 @@ const router: Record<string, IRoute> = {
     annualByClass: { id: "annualByClass", p: "/annual-class", private: true, title: "מערכת שנתית לפי כיתה", },
     annualByTeacher: { id: "annualByTeacher", p: "/annual-teacher", private: true, title: "מערכת שנתית לפי מורה", },
     annualView: { id: "annualView", p: "/annual-view", private: true, title: "מערכת שנתית" },
+    annualAltBuild: { id: "annualAltBuild", p: "/annual-alt-build", private: true, title: "מערכת אלטרנטיבית - בניית מערכת" },
+    annualAltView: { id: "annualAltView", p: "/annual-alt-view", private: true, title: "מערכת אלטרנטיבית - צפייה" },
     dailySchedule: { id: "dailySchedule", p: "/daily-schedule", private: true, title: "שיבוץ יומי", },
     profile: { id: "profile", p: "/profile", private: true, title: "המשתמש שלי" },
     history: { id: "history", p: "/history", private: true, title: " היסטוריה מערכות" },

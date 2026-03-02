@@ -21,6 +21,7 @@ type AnnualCellProps = {
     teachers: TeacherType[];
     classes: ClassType[];
     isDisabled: boolean;
+    skipRemoveConfirm?: boolean;
     onCreateSubject: (day: string, hour: number, value: string) => Promise<string | undefined>;
     onCreateTeacher: (day: string, hour: number, value: string) => Promise<string | undefined>;
     handleScheduleUpdate: (
@@ -42,6 +43,7 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
     teachers,
     classes,
     isDisabled,
+    skipRemoveConfirm = false,
     onCreateSubject,
     onCreateTeacher,
     handleScheduleUpdate,
@@ -74,6 +76,11 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
     };
 
     const confirmRemove = (what: string | null, proceed: () => void) => {
+        if (skipRemoveConfirm) {
+            proceed();
+            return;
+        }
+
         const cellData = schedule[selectedClassId]?.[day]?.[hour];
         const isFull = (cellData?.subjects?.length ?? 0) > 0 && (cellData?.teachers?.length ?? 0) > 0;
 
