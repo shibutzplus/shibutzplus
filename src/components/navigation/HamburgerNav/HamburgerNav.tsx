@@ -186,6 +186,16 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                             };
                         }
                     }
+                    if (link.p === routePath.teacherMaterialAltPortal.p) {
+                        // Only regular teachers see the emergency alternative schedule
+                        if (!teacher || teacher.role !== TeacherRoleValues.REGULAR) {
+                            return null;
+                        }
+                        return {
+                            ...link,
+                            p: `${routePath.teacherMaterialAltPortal.p}/${teacher.schoolId}/${teacher.id}`,
+                        };
+                    }
                     return link;
                 }).filter(Boolean) as ILink[],
             };

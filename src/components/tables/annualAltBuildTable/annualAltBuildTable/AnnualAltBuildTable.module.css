@@ -74,10 +74,21 @@
     box-shadow: 0 4px 0 var(--table-gray-color), 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.hoursColumn {
+thead .hoursColumn {
     position: sticky;
     right: 0;
     z-index: 60;
+    background-color: var(--background-color) !important;
+    width: var(--table-hours-col-width);
+    min-width: var(--table-hours-col-width);
+    max-width: var(--table-hours-col-width);
+    padding: 0;
+}
+
+tbody .hoursColumn {
+    position: sticky;
+    right: 0;
+    z-index: 4;
     background-color: var(--table-gray-color) !important;
     width: var(--table-hours-col-width);
     min-width: var(--table-hours-col-width);
@@ -117,4 +128,40 @@
     min-width: 200px;
     width: 200px;
     max-width: 200px;
+}
+
+@media print {
+    .tableContainer {
+        height: auto;
+        overflow: visible;
+        max-width: 100%;
+        display: block;
+    }
+
+    .scheduleTable {
+        width: 100%;
+        page-break-inside: auto;
+    }
+
+    .scheduleTable tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+    }
+
+    .headerCell,
+    .hoursColumn,
+    .hourCell,
+    .hoursHeader,
+    .emptyColSeparator,
+    .headerInner,
+    .scheduleTable {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    /* Print styling overrides (no sticky header needs on print basically) */
+    .scheduleTable thead {
+        position: static;
+        display: table-header-group;
+    }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { WeeklySchedule } from "@/models/types/annualSchedule";
 import { SubjectRequest, SubjectType } from "@/models/types/subjects";
 import { TeacherRequest, TeacherRoleValues, TeacherType } from "@/models/types/teachers";

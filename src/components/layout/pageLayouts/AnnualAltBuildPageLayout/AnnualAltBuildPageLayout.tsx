@@ -38,7 +38,7 @@ export default function AnnualAltBuildPageLayout({ children }: AnnualAltBuildPag
             HeaderRightActions={
                 <>
                     <h3 className={styles.pageTitleLong}>{router.annualAltBuild.title}</h3>
-                    <h3 className={styles.pageTitleShort}>מערכת אלטרנטיבית</h3>
+                    <h3 className={styles.pageTitleShort}>מערכת זמן חירום</h3>
                     <div className={styles.selectContainer}>
                         <div className={styles.selectWrapper}>
                             <DynamicInputSelect

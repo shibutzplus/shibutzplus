@@ -120,7 +120,7 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
     },
     {
         id: "alt_schedule",
-        title: "מערכת בזמן חירום",
+        title: "מערכת זמן חירום",
         type: "private",
         isCollapse: true,
         links: [
@@ -193,6 +193,12 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
                 ),
                 p: routePath.fullScheduleView.p,
                 Icon: <Icons.tv size={24} />,
+            },
+            {
+                name: "מערכת זמן חירום",
+                p: routePath.teacherMaterialAltPortal.p,
+                Icon: <Icons.calendar size={24} />,
+                isForGuest: false,
             },
         ],
     },
