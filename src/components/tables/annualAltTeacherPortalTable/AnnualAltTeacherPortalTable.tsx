@@ -90,9 +90,11 @@ const AnnualAltTeacherPortalTable: React.FC<AnnualAltTeacherPortalTableProps> = 
                     <tbody>
                         {rows.map((hour) => {
                             const row = dayTable?.[String(hour)];
-                            const classText = row?.classes?.map(c => c.name).join(", ") ?? "";
-                            const subjectText = row?.subject?.name ?? "";
-                            const isEmpty = !row;
+                            const visibleClasses = row?.classes?.filter((c) => !c.activity) || [];
+                            const isActivityOnly = (row?.classes?.length || 0) > 0 && visibleClasses.length === 0;
+                            const classText = visibleClasses.map((c) => c.name).join(", ");
+                            const subjectText = isActivityOnly ? "" : (row?.subject?.name ?? "");
+                            const isEmpty = !row || isActivityOnly;
                             return (
                                 <tr key={hour} className={isEmpty ? styles.emptyRow : styles.row}>
                                     {/* Sticky hours column — circle badge */}

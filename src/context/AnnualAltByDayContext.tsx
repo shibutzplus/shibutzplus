@@ -189,7 +189,7 @@ export const AnnualAltByDayProvider: React.FC<{ children: ReactNode }> = ({ chil
                         const conflictClass = classes?.find((c) => c.id === otherClassId);
                         const teacherName = teacher?.name ?? "המורה";
                         const className = conflictClass?.name ?? "כיתה אחרת";
-                        errorToast(`שימו ❤️: ${teacherName} כבר משובץ/ת ב${className}`, Infinity);
+                        errorToast(`שימו ❤️: ${teacherName} כבר משובץ/ת ב${className}`, 7000);
                     }
                 }
             }
