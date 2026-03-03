@@ -6,8 +6,7 @@ import { usePortalContext } from "@/context/PortalContext";
 import { useParams, useRouter } from "next/navigation";
 import Preloader from "@/components/ui/Preloader/Preloader";
 import AnnualAltTeacherPortalTable from "@/components/tables/annualAltTeacherPortalTable/AnnualAltTeacherPortalTable";
-import { getTeacherPortalDataAction } from "@/app/actions/GET/getTeacherPortalDataAction";
-import { getTeacherAltScheduleAction } from "@/app/actions/GET/getTeacherAltScheduleAction";
+import { getTeacherAltPortalDataAction } from "@/app/actions/GET/getTeacherAltPortalDataAction";
 import { setStorageTeacher } from "@/lib/localStorage";
 import { TeacherRoleValues } from "@/models/types/teachers";
 import router from "@/routes";
@@ -22,6 +21,7 @@ const TeacherAltPortalPage: NextPage = () => {
     const schoolId = params.schoolId as string | undefined;
     const teacherId = params.teacherId as string | undefined;
     const initialized = React.useRef(false);
+    const hasInitialHydrated = React.useRef(false);
 
     // Redirect substitute teachers
     React.useEffect(() => {
@@ -37,14 +37,14 @@ const TeacherAltPortalPage: NextPage = () => {
         const initPortal = async () => {
             initialized.current = true;
 
-            const data = await getTeacherPortalDataAction(schoolId, teacherId);
+            const data = await getTeacherAltPortalDataAction(schoolId, teacherId);
 
             if (!data.success || !data.teacher || !data.settings || !data.datesOptions || !data.selectedDate) {
                 route.push(`${router.teacherSignIn.p}/${schoolId}`);
                 return;
             }
 
-            const { teacher, settings, datesOptions, selectedDate, allTeachers, allSubjects, allClasses } = data;
+            const { teacher, settings, datesOptions, selectedDate, scheduleData } = data;
 
             // Redirect substitute teachers immediately
             if (teacher.role === TeacherRoleValues.SUBSTITUTE) {
@@ -52,15 +52,14 @@ const TeacherAltPortalPage: NextPage = () => {
                 return;
             }
 
-            hydratePortalData(teacher, schoolId, settings, datesOptions, selectedDate, allTeachers, allSubjects, allClasses);
+            hydratePortalData(teacher, schoolId, settings, datesOptions, selectedDate);
             setStorageTeacher(teacher);
 
-            // Fetch the alt annual schedule for the initially selected date
-            const altRes = await getTeacherAltScheduleAction(teacherId, selectedDate, schoolId);
-            if (altRes.success && altRes.data) {
+            // Hydrate the alt annual schedule from the initial payload
+            if (scheduleData && scheduleData.success && scheduleData.data) {
                 const next: Record<string, any> = {};
                 next[selectedDate] = {};
-                for (const entry of altRes.data) {
+                for (const entry of scheduleData.data) {
                     next[selectedDate][String(entry.hour)] = {
                         DBid: entry.id,
                         columnId: entry.columnId,
@@ -74,18 +73,20 @@ const TeacherAltPortalPage: NextPage = () => {
                 }
                 hydrateSchedule(next, selectedDate);
             }
+
+            hasInitialHydrated.current = true;
         };
 
         initPortal();
     }, [schoolId, teacherId]);
 
-    const isFirstRun = React.useRef(true);
     React.useEffect(() => {
-        if (isFirstRun.current) {
-            isFirstRun.current = false;
-            return;
-        }
         if (teacher && selectedDate && schoolId) {
+            // Skip fetching if we just hydrated this exact date from the initial load
+            if (hasInitialHydrated.current) {
+                hasInitialHydrated.current = false;
+                return;
+            }
             fetchTeacherAltSchedule(teacher, selectedDate, schoolId);
         }
     }, [selectedDate]);
