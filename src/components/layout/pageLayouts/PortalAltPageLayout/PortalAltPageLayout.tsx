@@ -42,7 +42,7 @@ function PortalAltPageLayoutInner({ children }: PortalAltPageLayoutProps) {
         return (
             <div className={styles.titleContainer}>
                 <div>{greetingTeacher(teacher)}</div>
-                <div className={styles.subTitle}>{`מערכת בזמן חירום ${when}`}</div>
+                <div className={styles.subTitle}>{`מערכת זמן חירום ${when}`}</div>
             </div>
         );
     };

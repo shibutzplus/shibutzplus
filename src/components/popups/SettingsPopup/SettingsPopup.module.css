@@ -116,3 +116,23 @@
     background-color: var(--button-disabled-background-color);
     color: white;
 }
+
+.shareLinkBtn {
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    gap: 8px;
+    background-color: transparent;
+    color: #000072;
+    border: none;
+    padding: 0.5rem 0rem;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    width: 100%;
+}
+
+.shareLinkBtn:hover {
+    font-weight: 600;
+    color: var(--link-color);
+}

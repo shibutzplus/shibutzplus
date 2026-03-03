@@ -5,9 +5,11 @@ import { usePopup } from "@/context/PopupContext";
 import styles from "./SettingsPopup.module.css";
 import { SelectOption } from "@/models/types";
 import { updateSettingsAction } from "@/app/actions/PUT/updateSettingsAction";
-import { errorToast } from "@/lib/toast";
+import { errorToast, successToast } from "@/lib/toast";
 import { SchoolSettingsType } from "@/models/types/settings";
 import { DEFAULT_FROM_HOUR, DEFAULT_TO_HOUR } from "@/utils/time";
+import { generateSchoolUrl } from "@/utils";
+import Icons from "@/style/icons";
 import Loading from "@/components/loading/Loading/Loading";
 
 const fromHourOptions: SelectOption[] = [
@@ -92,11 +94,30 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({
         closePopup();
     };
 
+    const handleShareLink = async () => {
+        if (!schoolId) return;
+        const text = `קישור התחברות למורי בית הספר:\n${generateSchoolUrl(schoolId)}`;
+        try {
+            await navigator.clipboard.writeText(text);
+            successToast("הקישור הועתק בהצלחה וניתן לשלוח למורים.", 2000);
+        } catch {
+            errorToast("לא ניתן להעתיק את הקישור, אנא פנו לתמיכה", Infinity);
+        }
+    };
+
     return (
         <div className={styles.popupContent}>
             <h2 className={styles.title}>הגדרות מערכת</h2>
 
             <div className={styles.inputsContainer}>
+                <button
+                    className={styles.shareLinkBtn}
+                    onClick={handleShareLink}
+                    type="button"
+                >
+                    <Icons.share size={16} /> קישור למורים בצוות הקבוע
+                </button>
+
                 <div style={{ display: "flex", gap: "10px" }}>
                     <div className={styles.inputGroup}>
                         <label className={styles.label}>שעת התחלה:</label>
@@ -150,7 +171,7 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({
 
                 <div className={styles.inputGroup}>
                     <label className={styles.label}>
-                        הצגת מערכת בזמן חירום:
+                        הצגת מערכת לזמן חירום:
                     </label>
                     <select
                         value={displayAltSchedule}
