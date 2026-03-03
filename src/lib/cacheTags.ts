@@ -75,4 +75,10 @@ export const cacheTags = {
      */
     teacher: (teacherId: string) => `teacher-${teacherId}`,
 
+    /**
+     * Tag for the annual alternative schedule of a school.
+     * Invalidate when adding/removing/updating records in the alternative schedule.
+     */
+    annualAltSchedule: (schoolId: string) => `annual-alt-${schoolId}`,
+
 };

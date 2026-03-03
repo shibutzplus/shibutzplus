@@ -28,8 +28,8 @@ const externalTeacherOptions: SelectOption[] = [
 ];
 
 const altScheduleOptions: SelectOption[] = [
-    { value: "yes", label: "כן" },
-    { value: "no", label: "לא" },
+    { value: "yes", label: "פעילה" },
+    { value: "no", label: "לא פעילה" },
 ];
 
 
@@ -99,7 +99,7 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({
         const text = `קישור התחברות למורי בית הספר:\n${generateSchoolUrl(schoolId)}`;
         try {
             await navigator.clipboard.writeText(text);
-            successToast("הקישור הועתק בהצלחה וניתן לשלוח למורים.", 2000);
+            successToast("הקישור הועתק וניתן לשלוח למורים.", 2500);
         } catch {
             errorToast("לא ניתן להעתיק את הקישור, אנא פנו לתמיכה", Infinity);
         }
@@ -107,7 +107,7 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({
 
     return (
         <div className={styles.popupContent}>
-            <h2 className={styles.title}>הגדרות מערכת</h2>
+            <h2 className={styles.title}>שיבוץ+</h2>
 
             <div className={styles.inputsContainer}>
                 <button
@@ -115,7 +115,10 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({
                     onClick={handleShareLink}
                     type="button"
                 >
-                    <Icons.share size={16} /> קישור למורים בצוות הקבוע
+                    <div className={styles.iconWrapper}>
+                        <Icons.share size={14} />
+                    </div>
+                    שיתוף קישור למורים בצוות הקבוע
                 </button>
 
                 <div style={{ display: "flex", gap: "10px" }}>
@@ -171,7 +174,7 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({
 
                 <div className={styles.inputGroup}>
                     <label className={styles.label}>
-                        הצגת מערכת לזמן חירום:
+                        מערכת לזמן חירום:
                     </label>
                     <select
                         value={displayAltSchedule}

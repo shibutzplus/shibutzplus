@@ -7,6 +7,8 @@ import { checkAuthAndParams, checkIsNotGuest } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { NewAnnualScheduleAltSchema } from "@/db/schema";
 import { dbLog } from "@/services/loggerService";
+import { revalidateTag } from "next/cache";
+import { cacheTags } from "@/lib/cacheTags";
 
 export const addAnnualAltAction = async (
     newScheduleItem: AnnualScheduleRequest,
@@ -50,6 +52,8 @@ export const addAnnualAltAction = async (
                 message: messages.annualSchedule.createError,
             };
         }
+
+        revalidateTag(cacheTags.annualAltSchedule(school.id));
 
         return {
             success: true,

@@ -47,7 +47,7 @@ const AnnualAltTeacherPortalTable: React.FC<AnnualAltTeacherPortalTableProps> = 
         const ro = new ResizeObserver(calculate);
         ro.observe(wrapper);
         return () => ro.disconnect();
-    }, [rows.length]);
+    }, [rows.length, hasFetched, isPortalLoading, dayTable]);
 
     if (!hasFetched || isPortalLoading || !dayTable) {
         return (

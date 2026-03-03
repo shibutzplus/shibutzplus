@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, ReactNode, useEffect, useRe
 import { useMainContext } from "./MainContext";
 import { Pair } from "@/models/types";
 import { AnnualInputCellType, AnnualScheduleRequest, AnnualScheduleType, WeeklySchedule } from "@/models/types/annualSchedule";
-import { errorToast } from "@/lib/toast";
+import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { addAnnualAltAction } from "@/app/actions/POST/addAnnualAltAction";
 import { deleteAnnualAltByDayClassAction } from "@/app/actions/DELETE/deleteAnnualAltByDayClassAction";
@@ -41,6 +41,7 @@ interface AnnualAltByDayContextType {
         classId: string,
         newElementObj?: TeacherType | SubjectType,
     ) => Promise<void>;
+    autoFillMissingSubjects: () => Promise<void>;
 }
 
 const AnnualAltByDayContext = createContext<AnnualAltByDayContextType | undefined>(undefined);
@@ -54,7 +55,7 @@ export const useAnnualAltByDay = () => {
 };
 
 export const AnnualAltByDayProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const { classes, school, teachers, subjects } = useMainContext();
+    const { classes, school, teachers, subjects, addNewSubject } = useMainContext();
     const { data: session, status } = useSession();
 
     const [selectedDay, setSelectedDay] = useState<string>(() => {
@@ -67,6 +68,20 @@ export const AnnualAltByDayProvider: React.FC<{ children: ReactNode }> = ({ chil
     const [altScheduleTable, setAltScheduleTable] = useState<AnnualScheduleType[] | undefined>(undefined);
     const [queueRows, setQueueRows] = useState<AnnualScheduleRequest[]>([]);
     const [schedule, setSchedule] = useState<WeeklySchedule>({});
+
+    // Safely track state for async callbacks
+    const scheduleRef = useRef<WeeklySchedule>({});
+    const queueRowsRef = useRef<AnnualScheduleRequest[]>([]);
+
+    // Update refs whenever state changes
+    useEffect(() => {
+        scheduleRef.current = schedule;
+    }, [schedule]);
+
+    useEffect(() => {
+        queueRowsRef.current = queueRows;
+    }, [queueRows]);
+
     const fetchedRef = useRef<boolean>(false);
 
     // Load data once
@@ -137,17 +152,116 @@ export const AnnualAltByDayProvider: React.FC<{ children: ReactNode }> = ({ chil
     const addToQueue = (rows: AnnualScheduleRequest[]) => {
         setQueueRows((prev) => (Array.isArray(prev) ? [...prev, ...rows] : [...rows]));
     };
+    const autoFillMissingSubjects = async (): Promise<void> => {
+        if (!school?.id) return;
 
-    const handleSave = async () => {
+        let defaultSubject = subjects?.find(s => s.name === "שיעור סנכרוני");
+        let hasIncomplete = false;
+
+        const currentSchedule = scheduleRef.current;
+        const currentQueueRows = queueRowsRef.current;
+
+        // Check if there's any incomplete cell
+        for (const classId in currentSchedule) {
+            const days = currentSchedule[classId];
+            if (!days) continue;
+            for (const d in days) {
+                const hours = days[d];
+                if (!hours) continue;
+                for (const h in hours) {
+                    const cell = hours[h];
+                    if (cell && (cell.teachers?.length || 0) > 0 && (cell.subjects?.length || 0) === 0) {
+                        hasIncomplete = true;
+                        break;
+                    }
+                }
+                if (hasIncomplete) break;
+            }
+            if (hasIncomplete) break;
+        }
+
+        if (!hasIncomplete) {
+            if (currentQueueRows.length > 0) {
+                const pending = [...currentQueueRows];
+                setQueueRows([]);
+                await handleSave(pending);
+            }
+            return;
+        }
+
+        // Create the default subject if it doesn't exist yet
+        if (!defaultSubject) {
+            defaultSubject = await addNewSubject({
+                schoolId: school.id,
+                name: "שיעור סנכרוני",
+            });
+        }
+
+        if (!defaultSubject) {
+            errorToast("שגיאה ביצירת מקצוע ברירת מחדל");
+            return;
+        }
+
+        // Apply to schedule and queue
+        const newSchedule = { ...currentSchedule };
+        const requestsToAdd: AnnualScheduleRequest[] = [];
+        let existingQueue = [...currentQueueRows];
+        const allSubjects = [...(subjects || []), defaultSubject];
+        const availableTeachers = teachers || [];
+
+        for (const classId in newSchedule) {
+            const days = newSchedule[classId];
+            if (!days) continue;
+            for (const d in days) {
+                const hours = days[d];
+                if (!hours) continue;
+                for (const h in hours) {
+                    const cell = hours[h];
+                    if (cell && (cell.teachers?.length || 0) > 0 && (cell.subjects?.length || 0) === 0) {
+                        newSchedule[classId][d][h].subjects = [defaultSubject.id];
+
+                        const selectedClassObj = getSelectedClass(classes, classId);
+                        const pairs = createTeacherSubjectPairs(cell.teachers, [defaultSubject.id]);
+                        const updatedRequests = createAnnualByClassRequests(
+                            selectedClassObj,
+                            school,
+                            availableTeachers,
+                            allSubjects,
+                            pairs,
+                            d,
+                            parseInt(h),
+                        );
+
+                        // Overwrite previous incomplete requests in queue if any exist
+                        existingQueue = existingQueue.filter(req =>
+                            !(req.class?.id === classId && req.day === dayToNumber(d) && req.hour === parseInt(h))
+                        );
+
+                        requestsToAdd.push(...updatedRequests);
+                    }
+                }
+            }
+        }
+
+        setSchedule(newSchedule);
+        const finalQueue = [...existingQueue, ...requestsToAdd];
+        if (finalQueue.length > 0) {
+            setQueueRows([]);
+            await handleSave(finalQueue);
+        }
+    };
+
+    const handleSave = async (forceRows?: AnnualScheduleRequest[]) => {
         setIsSaving(true);
-        if (queueRows.length === 0 || !school?.id) {
+        const rowsToSave = forceRows || queueRowsRef.current;
+        if (rowsToSave.length === 0 || !school?.id) {
             setIsSaving(false);
             return;
         }
 
         try {
             const uniqueCellsMap = new Map<string, { day: number; hour: number; classId: string }>();
-            for (const row of queueRows) {
+            for (const row of rowsToSave) {
                 const key = `${row.class?.id}_${row.day}_${row.hour}`;
                 if (!uniqueCellsMap.has(key) && row.class?.id) {
                     uniqueCellsMap.set(key, { day: row.day, hour: row.hour, classId: row.class.id });
@@ -156,7 +270,7 @@ export const AnnualAltByDayProvider: React.FC<{ children: ReactNode }> = ({ chil
             for (const { day, hour, classId } of uniqueCellsMap.values()) {
                 await deleteAltScheduleItem(day, hour, classId, school.id);
             }
-            for (const row of queueRows) {
+            for (const row of rowsToSave) {
                 await addNewAltScheduleItem(row);
             }
         } catch (error) {
@@ -166,7 +280,9 @@ export const AnnualAltByDayProvider: React.FC<{ children: ReactNode }> = ({ chil
             });
             errorToast(messages.annualSchedule.error);
         } finally {
-            setQueueRows([]);
+            if (!forceRows) {
+                setQueueRows([]);
+            }
             setIsSaving(false);
         }
     };
@@ -193,7 +309,11 @@ export const AnnualAltByDayProvider: React.FC<{ children: ReactNode }> = ({ chil
                         const conflictClass = classes?.find((c) => c.id === otherClassId);
                         const teacherName = teacher?.name ?? "המורה";
                         const className = conflictClass?.name ?? "כיתה אחרת";
-                        errorToast(`שימו ❤️: ${teacherName} כבר משובץ/ת ב${className}`, 7000);
+                        if (conflictClass?.activity) {
+                            successToast(`שימו ❤️: ${teacherName} משובץ/ת גם ל${className}`, 3000);
+                        } else {
+                            errorToast(`שימו ❤️: ${teacherName} כבר משובץ/ת ב${className}`, 10000);
+                        }
                     }
                 }
             }
@@ -204,10 +324,14 @@ export const AnnualAltByDayProvider: React.FC<{ children: ReactNode }> = ({ chil
 
         let newSchedule = { ...schedule };
         newSchedule = setNewScheduleTemplate(newSchedule, classId, day, hour);
-        newSchedule[classId][day][hour][type] = elementIds;
 
-        const teacherIds = newSchedule[classId][day][hour].teachers;
-        const subjectIds = newSchedule[classId][day][hour].subjects;
+        // Update the cell reference
+        const cell = newSchedule[classId][day][hour];
+        cell[type] = elementIds;
+
+        const teacherIds = cell.teachers;
+        const subjectIds = cell.subjects;
+
         setSchedule(newSchedule);
 
         if (subjectIds.length === 0 || teacherIds.length === 0) {
@@ -255,6 +379,7 @@ export const AnnualAltByDayProvider: React.FC<{ children: ReactNode }> = ({ chil
                 handleDayChange,
                 daysSelectOptions,
                 handleScheduleUpdate,
+                autoFillMissingSubjects,
             }}
         >
             {children}

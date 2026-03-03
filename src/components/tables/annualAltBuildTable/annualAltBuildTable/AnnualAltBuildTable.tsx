@@ -122,7 +122,7 @@ const AnnualAltBuildTable: React.FC<AnnualAltBuildTableProps> = ({
                             <td className={styles.hoursColumn}>
                                 <div className={styles.hourCell}>{hour}</div>
                             </td>
-                            <td className={styles.emptyColSeparator}></td>
+                            <td className={styles.emptyCell}></td>
                             {displayedClasses.map((cls) => (
                                 <AnnualCellAlt
                                     key={`${cls.id}-${hour}`}

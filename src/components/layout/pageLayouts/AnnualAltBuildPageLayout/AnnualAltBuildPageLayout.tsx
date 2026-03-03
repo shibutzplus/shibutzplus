@@ -14,8 +14,21 @@ type AnnualAltBuildPageLayoutProps = {
 };
 
 export default function AnnualAltBuildPageLayout({ children }: AnnualAltBuildPageLayoutProps) {
-    const { daysSelectOptions, selectedDay, handleDayChange, isSaving, isLoading } =
+    const { daysSelectOptions, selectedDay, handleDayChange: originalHandleDayChange, isSaving, isLoading, autoFillMissingSubjects } =
         useAnnualAltByDay();
+
+    const handleBeforeMenuOpen = async (): Promise<boolean> => {
+        await autoFillMissingSubjects();
+        return true;
+    };
+
+    const handleDayChange = (val: string) => {
+        handleBeforeMenuOpen().then((shouldProceed) => {
+            if (shouldProceed) {
+                originalHandleDayChange(val);
+            }
+        });
+    };
 
     const handleNextDay = () => {
         const options = DAYS_OF_WORK_WEEK;
@@ -34,11 +47,11 @@ export default function AnnualAltBuildPageLayout({ children }: AnnualAltBuildPag
     return (
         <PageLayout
             appType="private"
+            onBeforeMenuOpen={handleBeforeMenuOpen}
             leftSideWidth={50}
             HeaderRightActions={
                 <>
-                    <h3 className={styles.pageTitleLong}>{router.annualAltBuild.title}</h3>
-                    <h3 className={styles.pageTitleShort}>מערכת לזמן חירום</h3>
+                    <h3 className={styles.pageTitle}>{router.annualAltBuild.title}</h3>
                     <div className={styles.selectContainer}>
                         <div className={styles.selectWrapper}>
                             <DynamicInputSelect
@@ -71,7 +84,12 @@ export default function AnnualAltBuildPageLayout({ children }: AnnualAltBuildPag
                 </>
             }
         >
-            {children}
+            <div className={styles.printMessage}>
+                מסך זה גדול מידי כדי שניתן יהיה להדפיס אותו
+            </div>
+            <div className={styles.hideOnPrint}>
+                {children}
+            </div>
         </PageLayout>
     );
 }

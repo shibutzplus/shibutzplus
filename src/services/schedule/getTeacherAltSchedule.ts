@@ -6,6 +6,8 @@
 import { DailyScheduleType } from "@/models/types/dailySchedule";
 import { and, eq } from "drizzle-orm";
 import { db, schema } from "@/db";
+import { unstable_cache } from "next/cache";
+import { cacheTags } from "@/lib/cacheTags";
 
 export async function getTeacherAltSchedule(
     teacherId: string,
@@ -50,4 +52,39 @@ export async function getTeacherAltSchedule(
     });
 
     return results.sort((a, b) => a.hour - b.hour);
+}
+
+/**
+ * Cached version of getTeacherAltSchedule.
+ * Uses unstable_cache with proper cache keys and school-level revalidation tag.
+ */
+export async function getCachedTeacherAltSchedule(
+    schoolId: string,
+    teacherId: string,
+    date: string,
+): Promise<DailyScheduleType[]> {
+    const cachedFn = unstable_cache(
+        async () => {
+            return await getTeacherAltSchedule(teacherId, date);
+        },
+        [`alt-schedule-${schoolId}-${teacherId}-${date}`], // Unique key array
+        {
+            tags: [
+                cacheTags.annualAltSchedule(schoolId),
+                cacheTags.teacherScheduleByDate(teacherId, date),
+            ],
+            revalidate: 86400, // 24 hours
+        }
+    );
+
+    const data = await cachedFn();
+
+    // IMPORTANT: unstable_cache serializes Date objects to strings
+    // We must parse them back to Date objects before returning to UI
+    return data.map((item: any) => ({
+        ...item,
+        date: item.date ? new Date(item.date) : new Date(),
+        createdAt: item.createdAt ? new Date(item.createdAt) : undefined,
+        updatedAt: item.updatedAt ? new Date(item.updatedAt) : undefined,
+    }));
 }
