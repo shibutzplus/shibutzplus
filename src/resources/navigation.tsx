@@ -125,7 +125,7 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
         isCollapse: true,
         links: [
             {
-                name: "בניית מערכת",
+                name: "עדכון מערכת",
                 p: routePath.annualAltBuild.p,
                 Icon: <Icons.calendar size={24} />,
                 isForGuest: false,
