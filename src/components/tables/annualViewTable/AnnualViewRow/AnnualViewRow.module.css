@@ -39,6 +39,17 @@
         print-color-adjust: exact;
     }
 
+    .hoursColumn {
+        padding-top: 4px;
+        padding-bottom: 4px;
+    }
+
+    .hourCell {
+        width: 22px;
+        height: 22px;
+        font-size: 13px;
+    }
+
     .annualRow {
         page-break-inside: avoid;
     }

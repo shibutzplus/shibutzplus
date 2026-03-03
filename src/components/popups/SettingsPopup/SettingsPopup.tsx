@@ -132,7 +132,7 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({
 
                 <div className={styles.inputGroup}>
                     <label className={styles.label}>
-                        הצגת מערכת בית הספר המלאה גם למורים שאינם בצוות הקבוע:
+                        הצגת מערכת בית הספר גם למורים שאינם בצוות הקבוע:
                     </label>
                     <select
                         value={showExternal}

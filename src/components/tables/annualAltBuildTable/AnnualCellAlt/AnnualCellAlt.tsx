@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import styles from "./AnnualCell.module.css";
+import styles from "./AnnualCellAlt.module.css";
 import { createSelectOptions } from "@/utils/format";
 import { SubjectType } from "@/models/types/subjects";
 import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
@@ -9,10 +9,7 @@ import { ClassType } from "@/models/types/classes";
 import DynamicInputMultiSelect from "@/components/ui/select/InputMultiSelect/DynamicInputSelect";
 import { SelectMethod } from "@/models/types/actions";
 
-import useConfirmPopup from "@/hooks/useConfirmPopup";
-import { PopupAction } from "@/context/PopupContext";
-
-type AnnualCellProps = {
+type AnnualCellAltProps = {
     day: string;
     hour: number;
     schedule: WeeklySchedule;
@@ -33,7 +30,7 @@ type AnnualCellProps = {
     ) => Promise<void>;
 };
 
-const AnnualCell: React.FC<AnnualCellProps> = ({
+const AnnualCellAlt: React.FC<AnnualCellAltProps> = ({
     day,
     hour,
     schedule,
@@ -46,8 +43,6 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
     onCreateTeacher,
     handleScheduleUpdate,
 }) => {
-    const { handleOpenPopup } = useConfirmPopup();
-
     const sortedTeacherOptions = useMemo(() => {
         const regularTeachers = (teachers || []).filter((t) => t.role === TeacherRoleValues.REGULAR);
         return createSelectOptions(regularTeachers);
@@ -70,27 +65,17 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
                     handleScheduleUpdate("subjects", [matchingSubject.id], day, hour, method);
                 }
             }
+        } else {
+            // Specific logic for Alt Build: if no teachers remain, remove subjects
+            const currentSubjects = schedule[selectedClassId]?.[day]?.[hour]?.subjects || [];
+            if (currentSubjects.length > 0) {
+                handleScheduleUpdate("subjects", [], day, hour, method);
+            }
         }
     };
 
-    const confirmRemove = (what: string | null, proceed: () => void) => {
-        const cellData = schedule[selectedClassId]?.[day]?.[hour];
-        const isFull = (cellData?.subjects?.length ?? 0) > 0 && (cellData?.teachers?.length ?? 0) > 0;
-
-        if (!isFull) {
-            proceed();
-            return;
-        }
-
-        handleOpenPopup(
-            PopupAction.deleteTeacher,
-            what ? `האם למחוק את ${what}?` : "האם למחוק את הפריט?",
-            async () => {
-                proceed();
-            },
-            "מחיקה",
-            "ביטול"
-        );
+    const confirmRemove = (_what: string | null, proceed: () => void) => {
+        proceed();
     };
 
     const filteredSubjects = useMemo(() => {
@@ -140,4 +125,4 @@ const AnnualCell: React.FC<AnnualCellProps> = ({
         </td>
     );
 };
-export default AnnualCell;
+export default AnnualCellAlt;

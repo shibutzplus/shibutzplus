@@ -8,7 +8,7 @@ import { ClassType } from "@/models/types/classes";
 import { useMainContext } from "@/context/MainContext";
 import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
-import AnnualCell from "@/components/tables/annualByClassTable/AnnualCell/AnnualCell";
+import AnnualCellAlt from "../AnnualCellAlt/AnnualCellAlt";
 import styles from "./AnnualAltBuildTable.module.css";
 import { AnnualInputCellType } from "@/models/types/annualSchedule";
 import { SelectMethod } from "@/models/types/actions";
@@ -124,7 +124,7 @@ const AnnualAltBuildTable: React.FC<AnnualAltBuildTableProps> = ({
                             </td>
                             <td className={styles.emptyColSeparator}></td>
                             {displayedClasses.map((cls) => (
-                                <AnnualCell
+                                <AnnualCellAlt
                                     key={`${cls.id}-${hour}`}
                                     day={selectedDay}
                                     hour={hour}
@@ -134,7 +134,6 @@ const AnnualAltBuildTable: React.FC<AnnualAltBuildTableProps> = ({
                                     teachers={teachers || []}
                                     classes={classes || []}
                                     isDisabled={isDisabled}
-                                    skipRemoveConfirm
                                     onCreateSubject={makeHandleCreateSubject(cls.id)}
                                     onCreateTeacher={makeHandleCreateTeacher(cls.id)}
                                     handleScheduleUpdate={makeHandleUpdate(cls.id)}

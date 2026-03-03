@@ -62,5 +62,21 @@
     .cellContent {
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
+        min-height: 45px !important;
+    }
+
+    .cellContent.viewOnly {
+        padding-top: 4px;
+        padding-bottom: 4px;
+        gap: 3px;
+    }
+
+    .subject {
+        font-size: 15px;
+    }
+
+    .teacher,
+    .class {
+        font-size: 13px;
     }
 }
