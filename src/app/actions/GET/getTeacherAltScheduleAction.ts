@@ -5,7 +5,7 @@ import { publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { executeQuery } from "@/db";
 import { dbLog } from "@/services/loggerService";
-import { getTeacherAltSchedule } from "@/services/schedule/getTeacherAltSchedule";
+import { getCachedTeacherAltSchedule } from "@/services/schedule/getTeacherAltSchedule";
 
 export const getTeacherAltScheduleAction = async (
     teacherId: string,
@@ -19,7 +19,7 @@ export const getTeacherAltScheduleAction = async (
         }
 
         const result = await executeQuery(async () => {
-            return await getTeacherAltSchedule(teacherId, date);
+            return await getCachedTeacherAltSchedule(schoolId, teacherId, date);
         });
 
         return {

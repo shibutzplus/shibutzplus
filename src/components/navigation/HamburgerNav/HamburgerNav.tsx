@@ -417,10 +417,10 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                                         <div
                                             className={styles.navLink}
                                             onClick={isGuest ? handleOpenGuestPopup : handleOpenSettings}
-                                            aria-label="הגדרות מערכת"
+                                            aria-label="הגדרות שיבוץ+"
                                         >
                                             <Icons.settings size={24} />
-                                            <span>הגדרות מערכת</span>
+                                            <span>הגדרות שיבוץ+</span>
                                         </div>
                                     )}
                                     {!isSubstituteTeacher && (

@@ -229,6 +229,10 @@ export default function LandingPage() {
                                     מיוחדות במערכת היומית, לקבלת תמונת מצב מלאה.
                                 </motion.li>
                                 <motion.li variants={fadeInUp}>
+                                    <strong>מערכות בזמן חירום:</strong> אפשרות להפעלת מערכת חלופית
+                                    בזמן חירום.
+                                </motion.li>
+                                <motion.li variants={fadeInUp}>
                                     <strong>פשטות ונגישות:</strong> מערכת ידידותית וקלה לתפעול,
                                     זמינה מכל מחשב או סמארטפון ללא צורך בהתקנה.
                                 </motion.li>

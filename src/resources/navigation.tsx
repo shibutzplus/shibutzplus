@@ -100,18 +100,18 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
     },
     {
         id: "built_schedule",
-        title: "מערכת שנתית",
+        title: "שינויים במערכת השנתית",
         type: "private",
         isCollapse: true,
         links: [
             {
-                name: "בניה - לפי כיתה",
+                name: "מערכת לפי כיתה",
                 p: routePath.annualByClass.p,
                 Icon: <Icons.calendar size={24} />,
                 isForGuest: false,
             },
             {
-                name: "בניה - לפי מורה",
+                name: "מערכת לפי מורה",
                 p: routePath.annualByTeacher.p,
                 Icon: <Icons.calendar size={24} />,
                 isForGuest: false,

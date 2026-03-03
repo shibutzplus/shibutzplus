@@ -5,8 +5,10 @@ import { AnnualScheduleType } from "@/models/types/annualSchedule";
 import { checkAuthAndParams, checkIsNotGuest } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
-import { and, eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { dbLog } from "@/services/loggerService";
+import { revalidateTag } from "next/cache";
+import { cacheTags } from "@/lib/cacheTags";
 
 export const deleteAnnualAltByDayClassAction = async (
     day: number,
@@ -80,6 +82,8 @@ export const deleteAnnualAltByDayClassAction = async (
             createdAt: row.createdAt,
             updatedAt: row.updatedAt,
         }));
+
+        revalidateTag(cacheTags.annualAltSchedule(schoolId));
 
         return {
             success: true,
