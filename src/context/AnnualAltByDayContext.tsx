@@ -10,7 +10,7 @@ import { addAnnualAltAction } from "@/app/actions/POST/addAnnualAltAction";
 import { deleteAnnualAltByDayClassAction } from "@/app/actions/DELETE/deleteAnnualAltByDayClassAction";
 import { getAnnualAltAction } from "@/app/actions/GET/getAnnualAltAction";
 import { SelectMethod } from "@/models/types/actions";
-import { dayToNumber, DAYS_OF_WORK_WEEK } from "@/utils/time";
+import { dayToNumber, DAYS_OF_WORK_WEEK, chooseDefaultDate, getDayNameByDateString } from "@/utils/time";
 import { TeacherType } from "@/models/types/teachers";
 import { SubjectType } from "@/models/types/subjects";
 import { createAnnualByClassRequests, createTeacherSubjectPairs, setNewScheduleTemplate, } from "@/services/annual/initialize";
@@ -57,7 +57,11 @@ export const AnnualAltByDayProvider: React.FC<{ children: ReactNode }> = ({ chil
     const { classes, school, teachers, subjects } = useMainContext();
     const { data: session, status } = useSession();
 
-    const [selectedDay, setSelectedDay] = useState<string>(DAYS_OF_WORK_WEEK[0]);
+    const [selectedDay, setSelectedDay] = useState<string>(() => {
+        const defaultDateStr = chooseDefaultDate();
+        const hebrewDay = getDayNameByDateString(defaultDateStr);
+        return DAYS_OF_WORK_WEEK.includes(hebrewDay) ? hebrewDay : DAYS_OF_WORK_WEEK[0];
+    });
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [altScheduleTable, setAltScheduleTable] = useState<AnnualScheduleType[] | undefined>(undefined);

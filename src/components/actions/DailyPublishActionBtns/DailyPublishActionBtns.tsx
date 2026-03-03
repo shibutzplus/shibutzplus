@@ -78,7 +78,7 @@ const DailyPublishActionBtns: React.FC = () => {
                 </button>
             )}
 
-            <span title="שיתוף קישור למורים מן המניין">
+            <span title="שיתוף קישור למורים בצוות הקבוע">
                 <IconBtn
                     Icon={<Icons.share size={16} />}
                     onClick={onShareLink}
