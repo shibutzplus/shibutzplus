@@ -22,6 +22,7 @@ export async function clearSchoolCacheAction(schoolId: string): Promise<ActionRe
         revalidateTag(cacheTags.subjectsList(schoolId));
         revalidateTag(cacheTags.classesList(schoolId));
         revalidateTag(cacheTags.history(schoolId));
+        revalidateTag(cacheTags.annualAltSchedule(schoolId));
 
         return { success: true, message: "המטמון נוקה בהצלחה" };
     } catch (error) {

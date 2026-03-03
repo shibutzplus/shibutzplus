@@ -19,6 +19,7 @@ To avoid inconsistent cache states, we use a centralized tagging system. Tags ar
 - `teachersList(schoolId)`: The list of teachers.
 - `teacher(teacherId)`: Specific teacher profile.
 - `classesList(schoolId)` / `subjectsList(schoolId)`: Entity lists.
+- `annualAltSchedule(schoolId)`: The annual alternative (emergency) schedule.
 
 ### 3. On-Demand Invalidation (`revalidateTag`)
 When data is modified via a **Server Action**, the system immediately invalidates the relevant tags.
@@ -46,6 +47,7 @@ To guarantee data consistency, especially for the **Manager Public Portal** and 
 | Daily Schedule | `unstable_cache` | `publishDailyScheduleAction` | Polling (Teacher/Event cols) |
 | Teacher List | `unstable_cache` | `add/update/deleteTeacherAction` | Polling (Entities) + Server Relations |
 | Personalized Schedule | `unstable_cache` | Any schedule modification | Polling (Teacher col) |
+| Alternative Schedule | `unstable_cache` | `addAnnualAltAction`, `deleteAnnualAltByDayClassAction` | Polling (Teacher col) |
 | School Settings | `unstable_cache` | `updateSettingsAction` | Re-fetch |
 
 ## FAQ (שאלות ותשובות)
