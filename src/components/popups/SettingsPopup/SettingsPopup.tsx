@@ -25,12 +25,18 @@ const externalTeacherOptions: SelectOption[] = [
     { value: "no", label: "לא" },
 ];
 
+const altScheduleOptions: SelectOption[] = [
+    { value: "yes", label: "כן" },
+    { value: "no", label: "לא" },
+];
+
 
 interface SettingsPopupProps {
     schoolId: string;
     initialFromHour?: number;
     initialToHour?: number;
     initialShowExternal: boolean;
+    initialDisplayAltSchedule: boolean;
     onSave: (settings: SchoolSettingsType) => void;
 }
 
@@ -39,12 +45,14 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({
     initialFromHour = DEFAULT_FROM_HOUR,
     initialToHour = DEFAULT_TO_HOUR,
     initialShowExternal,
+    initialDisplayAltSchedule,
     onSave,
 }) => {
     const { closePopup } = usePopup();
     const [fromHour, setFromHour] = useState<string>(initialFromHour.toString());
     const [toHour, setToHour] = useState<string>(initialToHour.toString());
     const [showExternal, setShowExternal] = useState<string>(initialShowExternal ? "yes" : "no");
+    const [displayAltSchedule, setDisplayAltSchedule] = useState<string>(initialDisplayAltSchedule ? "yes" : "no");
     const [isSaving, setIsSaving] = useState(false);
 
     const handleSave = async () => {
@@ -62,6 +70,7 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({
                 fromHour: from,
                 toHour: to,
                 displaySchedule2Susb: showExternal === "yes",
+                displayAltSchedule: displayAltSchedule === "yes",
                 schoolId: schoolId,
             });
 
@@ -132,6 +141,24 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({
                         disabled={isSaving}
                     >
                         {externalTeacherOptions.map((opt) => (
+                            <option key={opt.value} value={opt.value}>
+                                {opt.label}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className={styles.inputGroup}>
+                    <label className={styles.label}>
+                        הצגת מערכת בזמן חירום:
+                    </label>
+                    <select
+                        value={displayAltSchedule}
+                        onChange={(e) => setDisplayAltSchedule(e.target.value)}
+                        className={styles.selectInput}
+                        disabled={isSaving}
+                    >
+                        {altScheduleOptions.map((opt) => (
                             <option key={opt.value} value={opt.value}>
                                 {opt.label}
                             </option>

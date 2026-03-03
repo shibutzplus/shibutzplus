@@ -17,6 +17,7 @@ export type UpdateSettingsParams = {
     fromHour: number;
     toHour: number;
     displaySchedule2Susb: boolean;
+    displayAltSchedule: boolean;
     schoolId: string;
 };
 
@@ -29,7 +30,7 @@ export async function updateSettingsAction(
             return guestError as ActionResponse;
         }
 
-        const { fromHour, toHour, displaySchedule2Susb, schoolId } = params;
+        const { fromHour, toHour, displaySchedule2Susb, displayAltSchedule, schoolId } = params;
 
         await db
             .update(schema.schools)
@@ -37,6 +38,7 @@ export async function updateSettingsAction(
                 fromHour,
                 toHour,
                 displaySchedule2Susb,
+                displayAltSchedule,
             })
             .where(eq(schema.schools.id, schoolId));
 
@@ -51,6 +53,7 @@ export async function updateSettingsAction(
             fromHour,
             toHour,
             displaySchedule2Susb,
+            displayAltSchedule,
         };
 
         return {

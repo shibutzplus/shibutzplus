@@ -126,11 +126,12 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
                 try {
                     const response = await getSchoolAction(teacher.schoolId, { forceFresh: true });
                     if (response?.success && response?.data) {
-                        const { displaySchedule2Susb, fromHour, toHour } = response.data;
+                        const { displaySchedule2Susb, fromHour, toHour, displayAltSchedule } = response.data;
                         setSettings({
                             id: 0,
                             schoolId: response.data.id,
                             displaySchedule2Susb,
+                            displayAltSchedule,
                             fromHour,
                             toHour,
                         });
@@ -194,11 +195,12 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
         try {
             const response = await getSchoolAction(teacher.schoolId, { forceFresh: true });
             if (response?.success && response?.data) {
-                const { displaySchedule2Susb, fromHour, toHour } = response.data;
+                const { displaySchedule2Susb, fromHour, toHour, displayAltSchedule } = response.data;
                 setSettings({
                     id: 0,
                     schoolId: response.data.id,
                     displaySchedule2Susb,
+                    displayAltSchedule,
                     fromHour,
                     toHour,
                 });
