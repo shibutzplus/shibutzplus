@@ -144,6 +144,12 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
     const displayedGroups = NAV_LINK_GROUPS
         .filter((group) => {
             if (group.id === "admin" && userRole !== USER_ROLES.ADMIN) return false;
+
+            if (group.id === "alt_schedule") {
+                const isAltScheduleEnabled = schoolSettings?.displayAltSchedule || context?.settings?.displayAltSchedule;
+                if (!isAltScheduleEnabled) return false;
+            }
+
             if (hamburgerType === "private") return group.type === "private";
             if (hamburgerType === "public") {
                 if (isSubstituteTeacher) return group.type === "substitute";
@@ -188,13 +194,17 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                     }
                     if (link.p === routePath.teacherMaterialAltPortal.p) {
                         // Only regular teachers see the emergency alternative schedule
-                        if (!teacher || teacher.role !== TeacherRoleValues.REGULAR) {
-                            return null;
+                        // And only if the 'displayAltSchedule' setting is enabled for the school
+                        const isAltScheduleEnabled = schoolSettings?.displayAltSchedule || context?.settings?.displayAltSchedule;
+
+                        if (isAltScheduleEnabled && teacher && teacher.role === TeacherRoleValues.REGULAR) {
+                            return {
+                                ...link,
+                                p: `${routePath.teacherMaterialAltPortal.p}/${teacher.schoolId}/${teacher.id}`,
+                            };
                         }
-                        return {
-                            ...link,
-                            p: `${routePath.teacherMaterialAltPortal.p}/${teacher.schoolId}/${teacher.id}`,
-                        };
+
+                        return null;
                     }
                     return link;
                 }).filter(Boolean) as ILink[],
@@ -247,6 +257,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                 initialFromHour={context?.settings?.fromHour ?? DEFAULT_FROM_HOUR}
                 initialToHour={context?.settings?.toHour ?? DEFAULT_TO_HOUR}
                 initialShowExternal={context?.settings?.displaySchedule2Susb || false}
+                initialDisplayAltSchedule={context?.settings?.displayAltSchedule || false}
                 onSave={(newSettings) => {
                     context?.setSchool((prev) =>
                         prev
@@ -255,6 +266,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                                 fromHour: newSettings.fromHour,
                                 toHour: newSettings.toHour,
                                 displaySchedule2Susb: newSettings.displaySchedule2Susb,
+                                displayAltSchedule: newSettings.displayAltSchedule,
                             }
                             : prev,
                     );

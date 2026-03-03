@@ -17,6 +17,7 @@ export type SchoolType = {
     fromHour: number;
     toHour: number;
     displaySchedule2Susb: boolean;
+    displayAltSchedule: boolean;
     settings?: SchoolSettingsType;
 };
 

@@ -12,6 +12,7 @@ export const schools = pgTable('schools', {
   fromHour: integer('from_hour').default(1).notNull(),
   toHour: integer('to_hour').default(10).notNull(),
   displaySchedule2Susb: boolean('display_schedule2susb').default(false).notNull(),
+  displayAltSchedule: boolean('display_alt_schedule').default(false).notNull(),
   publishDates: text('publish_dates').array().default([]).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),

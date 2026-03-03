@@ -3,7 +3,7 @@ import { AnnualAltViewProvider } from "@/context/AnnualAltViewContext";
 import AnnualAltViewPageLayout from "@/components/layout/pageLayouts/AnnualAltViewPageLayout/AnnualAltViewPageLayout";
 
 export const metadata: Metadata = {
-    title: "מערכת זמן חירום",
+    title: "מערכת בזמן חירום",
     robots: "noindex, nofollow",
 };
 

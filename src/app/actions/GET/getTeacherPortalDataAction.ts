@@ -71,13 +71,14 @@ export const getTeacherPortalDataAction = async (
         }
 
         // 2. Prepare Settings & Dates
-        const { fromHour, toHour, displaySchedule2Susb } = schoolData;
+        const { fromHour, toHour, displaySchedule2Susb, displayAltSchedule } = schoolData;
         const settings: SchoolSettingsType = {
             id: 0,
             schoolId: schoolData.id,
             fromHour,
             toHour,
             displaySchedule2Susb,
+            displayAltSchedule,
         };
 
         const datesOptions = getPublishedDatesOptions(schoolData.publishDates);
