@@ -14,21 +14,8 @@ type AnnualAltBuildPageLayoutProps = {
 };
 
 export default function AnnualAltBuildPageLayout({ children }: AnnualAltBuildPageLayoutProps) {
-    const { daysSelectOptions, selectedDay, handleDayChange: originalHandleDayChange, isSaving, isLoading, autoFillMissingSubjects } =
+    const { daysSelectOptions, selectedDay, handleDayChange, isSaving, isLoading } =
         useAnnualAltByDay();
-
-    const handleBeforeMenuOpen = async (): Promise<boolean> => {
-        await autoFillMissingSubjects();
-        return true;
-    };
-
-    const handleDayChange = (val: string) => {
-        handleBeforeMenuOpen().then((shouldProceed) => {
-            if (shouldProceed) {
-                originalHandleDayChange(val);
-            }
-        });
-    };
 
     const handleNextDay = () => {
         const options = DAYS_OF_WORK_WEEK;
@@ -47,7 +34,6 @@ export default function AnnualAltBuildPageLayout({ children }: AnnualAltBuildPag
     return (
         <PageLayout
             appType="private"
-            onBeforeMenuOpen={handleBeforeMenuOpen}
             leftSideWidth={50}
             HeaderRightActions={
                 <>

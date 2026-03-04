@@ -155,7 +155,7 @@ export const AnnualAltByDayProvider: React.FC<{ children: ReactNode }> = ({ chil
     const autoFillMissingSubjects = async (): Promise<void> => {
         if (!school?.id) return;
 
-        let defaultSubject = subjects?.find(s => s.name === "שיעור סנכרוני");
+        let defaultSubject = subjects?.find(s => s.name === "א-סינכרוני");
         let hasIncomplete = false;
 
         const currentSchedule = scheduleRef.current;
