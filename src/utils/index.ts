@@ -7,7 +7,7 @@ export const generateId = () =>
 export const generateSchoolUrl = (schoolId: string, teacherId?: string) => {
     const origin = window.location.origin;
     if (teacherId) {
-        return `${origin}${router.teacherMaterialPortal.p}/${schoolId}/${teacherId}`;
+        return `${origin}${router.teacherSignIn.p}/${schoolId}?teacher_id=${teacherId}`;
     }
     return `${origin}${router.teacherSignIn.p}/${schoolId}`;
 };

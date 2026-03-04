@@ -25,6 +25,8 @@ export default async function TeacherSignInPage({ params }: PageProps) {
         <TeacherSignInClient
             schoolId={schoolId}
             schoolName={schoolResp.data.name}
+            publishDates={schoolResp.data.publishDates}
+            displayAltSchedule={schoolResp.data.displayAltSchedule}
         />
     );
 }

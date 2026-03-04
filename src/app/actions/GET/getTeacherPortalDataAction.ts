@@ -47,7 +47,7 @@ export const getTeacherPortalDataAction = async (
 
         // 1. Fetch School and Lists in parallel
         const [schoolRes, teachersListRes, subjectsListRes, classesListRes] = await Promise.all([
-            getSchoolAction(schoolId, { forceFresh: true }),
+            getSchoolAction(schoolId),
             getTeachersAction(schoolId, { portalType: PortalType.Teacher, includeSubstitutes: true }),
             getSubjectsAction(schoolId, { portalType: PortalType.Teacher }),
             getClassesAction(schoolId, { portalType: PortalType.Teacher }),

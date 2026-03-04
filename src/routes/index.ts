@@ -26,7 +26,7 @@ const router: Record<string, IRoute> = {
     history: { id: "history", p: "/history", private: true, title: " היסטוריה מערכות" },
     statistics: { id: "statistics", p: "/statistics", private: true, title: "סטטיסטיקה" },
     teacherSignIn: { id: "teacherSignIn", p: "/teacher-sign-in", private: false, title: "כניסה למורים", },
-    teacherMaterialPortal: { id: "teacherMaterialPortal", p: "/teacher-material", private: false, title: "המערכת שלי", },
+    teacherMaterialPortal: { id: "teacherMaterialPortal", p: "/teacher-material", private: false, title: "שינויים במערכת שלי", },
     teacherMaterialAltPortal: { id: "teacherMaterialAltPortal", p: "/teacher-material-alt", private: false, title: "מערכת בזמן חירום", },
     scheduleViewPortal: { id: "scheduleViewPortal", p: "/schedule-view", private: false, title: "מערכת יומית", },
     fullScheduleView: { id: "fullScheduleView", p: "/schedule-full", private: false, title: "מערכת במסך מלא", },

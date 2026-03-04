@@ -1,35 +1,39 @@
 "use client";
 
-// **Teacher Sign-In Logic**
 //
-// For detailed logic documentation, please refer to:
-// docs/login-teacher.md
+// **Teacher Sign-In Logic**
+// For detailed logic documentation, please refer to docs/login-teacher.md
 //
 import styles from "../teacherSignIn.module.css";
 import HeroSection from "@/components/auth/HeroSection/HeroSection";
 import TeacherAuthForm from "@/components/auth/TeacherAuthForm/TeacherAuthForm";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import router from "@/routes";
 import { SelectOption } from "@/models/types";
 import SignInLoadingPage from "@/components/loading/SignInLoadingPage/SignInLoadingPage";
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
-import { TeacherType, TeacherRoleValues } from "@/models/types/teachers";
+import { TeacherType } from "@/models/types/teachers";
 import { setStorageTeacher, getStorageTeacher } from "@/lib/localStorage";
 import { getTeacherByIdAction } from "@/app/actions/GET/getTeacherByIdAction";
 import { getTeachersAction } from "@/app/actions/GET/getTeachersAction";
 import { PortalType } from "@/models/types";
 import { logErrorAction } from "@/app/actions/POST/logErrorAction";
+import { getPortalEntryPath } from "@/utils/portalRouting";
+import { getSchoolAction } from "@/app/actions/GET/getSchoolAction";
 
 interface TeacherSignInClientProps {
     schoolId: string;
     schoolName: string;
+    publishDates: string[];
+    displayAltSchedule: boolean;
 }
 
 export default function TeacherSignInClient({
     schoolId,
     schoolName,
+    publishDates,
+    displayAltSchedule,
 }: TeacherSignInClientProps) {
     const route = useRouter();
     const searchParams = useSearchParams();
@@ -70,11 +74,14 @@ export default function TeacherSignInClient({
             const storedTeacherData = getStorageTeacher?.();
 
             if (storedTeacherData && storedTeacherData.schoolId === schoolId) {
-                if (storedTeacherData.role === TeacherRoleValues.STAFF) {
-                    route.push(router.scheduleViewPortal.p);
-                } else {
-                    route.push(`${router.teacherMaterialPortal.p}/${schoolId}/${storedTeacherData.id}`);
-                }
+                getSchoolAction(schoolId).then((resp) => {
+                    if (resp.success && resp.data) {
+                        route.push(getPortalEntryPath(storedTeacherData.role, schoolId, storedTeacherData.id, resp.data.publishDates || [], resp.data.displayAltSchedule));
+                    } else {
+                        // fallback to cached props if fetch fails
+                        route.push(getPortalEntryPath(storedTeacherData.role, schoolId, storedTeacherData.id, publishDates, displayAltSchedule));
+                    }
+                });
                 return;
             }
 
@@ -100,11 +107,7 @@ export default function TeacherSignInClient({
                         schoolId: t.schoolId,
                     };
                     setStorageTeacher(safeTeacher);
-                    if (t.role === TeacherRoleValues.STAFF) {
-                        route.push(router.scheduleViewPortal.p);
-                        return;
-                    }
-                    route.push(`${router.teacherMaterialPortal.p}/${schoolId}/${t.id}`);
+                    route.push(getPortalEntryPath(t.role, schoolId, t.id, publishDates, displayAltSchedule));
                     return;
                 }
                 errorToast(messages.auth.login.failed);
@@ -139,6 +142,8 @@ export default function TeacherSignInClient({
                         teachersFull={teachersFull}
                         isLoadingTeachers={isLoadingTeachers}
                         isLogout={searchParams.get("auth") === "logout"}
+                        publishDates={publishDates}
+                        displayAltSchedule={displayAltSchedule}
                     />
                 </div>
                 <footer className={styles.copyright}>&copy; שיבוץ+, כל הזכויות שמורות. 2025</footer>

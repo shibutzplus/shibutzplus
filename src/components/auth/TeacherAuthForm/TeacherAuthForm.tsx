@@ -7,8 +7,9 @@ import SubmitBtn from "@/components/ui/buttons/SubmitBtn/SubmitBtn";
 import { SelectOption } from "@/models/types";
 import { getStorageTeacher, setStorageTeacher, removeStorageTeacher } from "@/lib/localStorage";
 import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
-import router from "@/routes";
 import messages from "@/resources/messages";
+import { getPortalEntryPath } from "@/utils/portalRouting";
+import { getSchoolAction } from "@/app/actions/GET/getSchoolAction";
 import styles from "./TeacherAuthForm.module.css";
 
 type TeacherAuthFormProps = {
@@ -17,6 +18,8 @@ type TeacherAuthFormProps = {
     teachersFull: TeacherType[];
     isLoadingTeachers: boolean;
     isLogout?: boolean;
+    publishDates: string[];
+    displayAltSchedule: boolean;
 };
 
 const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({
@@ -25,6 +28,8 @@ const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({
     teachersFull,
     isLoadingTeachers,
     isLogout = false,
+    publishDates,
+    displayAltSchedule,
 }) => {
     const route = useRouter();
     const [selectedTeacher, setSelectedTeacher] = useState<string>("");
@@ -79,12 +84,13 @@ const TeacherAuthForm: React.FC<TeacherAuthFormProps> = ({
             setStorageTeacher(safeTeacher);
         }
 
-        if (fullTeacher?.role === TeacherRoleValues.STAFF) {
-            route.push(router.scheduleViewPortal.p);
-            return;
-        }
-
-        route.push(`${router.teacherMaterialPortal.p}/${schoolId}/${selectedTeacher}`);
+        getSchoolAction(schoolId!).then((resp) => {
+            if (resp.success && resp.data) {
+                route.push(getPortalEntryPath(fullTeacher?.role, schoolId!, selectedTeacher, resp.data.publishDates || [], resp.data.displayAltSchedule));
+            } else {
+                route.push(getPortalEntryPath(fullTeacher?.role, schoolId!, selectedTeacher, publishDates, displayAltSchedule));
+            }
+        });
     };
 
     return (

@@ -20,7 +20,7 @@ export async function getCachedDailyScheduleAction(
         if (authError) return authError as GetDailyScheduleResponse;
 
         // Verify the date is actually published
-        const schoolRes = await getSchoolAction(schoolId, { forceFresh: true });
+        const schoolRes = await getSchoolAction(schoolId);
         const school = schoolRes.data;
 
         if (!schoolRes.success || !school || !school.publishDates?.includes(date)) {

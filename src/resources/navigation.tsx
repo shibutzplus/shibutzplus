@@ -173,7 +173,7 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
         isCollapse: false,
         links: [
             {
-                name: "המערכת שלי",
+                name: "שינויים במערכת שלי",
                 p: routePath.teacherMaterialPortal.p,
                 Icon: <Icons.teacher size={22} />,
                 isForGuest: false,

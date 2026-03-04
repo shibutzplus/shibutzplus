@@ -124,7 +124,7 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
             if (teacher) {
                 setIsDatesLoading(true);
                 try {
-                    const response = await getSchoolAction(teacher.schoolId, { forceFresh: true });
+                    const response = await getSchoolAction(teacher.schoolId);
                     if (response?.success && response?.data) {
                         const { displaySchedule2Susb, fromHour, toHour, displayAltSchedule } = response.data;
                         setSettings({
@@ -193,7 +193,7 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
             setIsDatesLoading(true);
         }
         try {
-            const response = await getSchoolAction(teacher.schoolId, { forceFresh: true });
+            const response = await getSchoolAction(teacher.schoolId);
             if (response?.success && response?.data) {
                 const { displaySchedule2Susb, fromHour, toHour, displayAltSchedule } = response.data;
                 setSettings({
