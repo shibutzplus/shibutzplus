@@ -8,6 +8,7 @@ import { SubjectType } from "@/models/types/subjects";
 import DailyAltViewClassesTable from "@/components/tables/dailyAltViewClassesTable/DailyAltViewClassesTable";
 import { WeeklySchedule } from "@/models/types/annualSchedule";
 import { getAnnualAltAction } from "@/app/actions/GET/getAnnualAltAction";
+import Preloader from "@/components/ui/Preloader/Preloader";
 import styles from "./schoolAltSchedule.module.css";
 import { populateAllClassesSchedule } from "@/services/annual/populate";
 import { initializeEmptyAnnualSchedule } from "@/services/annual/initialize";
@@ -67,16 +68,16 @@ export default function SchoolAltScheduleClient() {
         fetchData();
     }, [schoolId, selectedDate, settings]);
 
-    if (!settings) {
-        return <div className={styles.loading}>טוען הגדרות...</div>;
+    if (!settings || isLoading) {
+        return (
+            <div className={styles.loadingContainer}>
+                <Preloader />
+            </div>
+        );
     }
 
     if (!selectedDate) {
         return <div className={styles.loading}>לא נבחר תאריך למערכת.</div>;
-    }
-
-    if (isLoading) {
-        return <div className={styles.loading}>טוען מערכת...</div>;
     }
 
     return (
