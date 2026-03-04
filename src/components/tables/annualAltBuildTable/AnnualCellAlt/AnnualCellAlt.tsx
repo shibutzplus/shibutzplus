@@ -5,6 +5,7 @@ import { SubjectType } from "@/models/types/subjects";
 import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import { WeeklySchedule, AnnualInputCellType } from "@/models/types/annualSchedule";
 import { ClassType } from "@/models/types/classes";
+import { useAnnualAltByDay } from "@/context/AnnualAltByDayContext";
 
 import DynamicInputMultiSelect from "@/components/ui/select/InputMultiSelect/DynamicInputSelect";
 import { SelectMethod } from "@/models/types/actions";
@@ -43,6 +44,8 @@ const AnnualCellAlt: React.FC<AnnualCellAltProps> = ({
     onCreateTeacher,
     handleScheduleUpdate,
 }) => {
+    const { autoFillMissingSubjects } = useAnnualAltByDay();
+
     const sortedTeacherOptions = useMemo(() => {
         const regularTeachers = (teachers || []).filter((t) => t.role === TeacherRoleValues.REGULAR);
         return createSelectOptions(regularTeachers);
@@ -74,6 +77,13 @@ const AnnualCellAlt: React.FC<AnnualCellAltProps> = ({
         }
     };
 
+    const handleBlur = (e: React.FocusEvent) => {
+        // If the new focus target is outside this cell, trigger auto-fill
+        if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+            autoFillMissingSubjects();
+        }
+    };
+
     const confirmRemove = (_what: string | null, proceed: () => void) => {
         proceed();
     };
@@ -95,7 +105,7 @@ const AnnualCellAlt: React.FC<AnnualCellAltProps> = ({
 
     return (
         <td className={styles.scheduleCell}>
-            <div className={styles.cellContent}>
+            <div className={styles.cellContent} onBlur={handleBlur}>
                 <DynamicInputMultiSelect
                     options={sortedTeacherOptions}
                     value={schedule[selectedClassId]?.[day]?.[hour]?.teachers ?? []}
