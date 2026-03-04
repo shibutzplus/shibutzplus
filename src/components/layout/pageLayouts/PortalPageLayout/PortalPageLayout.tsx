@@ -111,7 +111,7 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
             when = isRegularPortal ? `ל${d}/${m}` : `${d}/${m}`;
         }
 
-        const title = `מערכת ${when}`;
+        const title = `שינויים במערכת ${when}`;
 
         return (
             <div className={styles.titleContainer}>

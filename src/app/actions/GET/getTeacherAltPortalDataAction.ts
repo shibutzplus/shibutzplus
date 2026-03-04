@@ -39,7 +39,7 @@ export const getTeacherAltPortalDataAction = async (
 
         // 1. Fetch School and Teacher in parallel
         const [schoolRes, teacherRes] = await Promise.all([
-            getSchoolAction(schoolId, { forceFresh: true }),
+            getSchoolAction(schoolId),
             getTeacherByIdAction(teacherId),
         ]);
 

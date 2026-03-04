@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { getStorageTeacher } from "@/lib/localStorage";
 import { errorToast, successToast } from "@/lib/toast";
 import { sendTeacherContactEmail } from "@/app/actions/POST/sendEmailAction";
-import router from "@/routes";
+import { generateSchoolUrl } from "@/utils";
 import FaqContent from "@/components/faq/FaqContent/FaqContent";
 import { FAQ_TEACHERS_ITEMS } from "@/resources/faq";
 
@@ -16,9 +16,7 @@ export default function FAQPage() {
         // Get teacher info from localStorage
         const teacher = getStorageTeacher();
         if (teacher?.id && teacher?.schoolId) {
-            setTeacherLink(
-                `${window.location.origin}${router.teacherMaterialPortal.p}/${teacher.schoolId}/${teacher.id}`,
-            );
+            setTeacherLink(generateSchoolUrl(teacher.schoolId, teacher.id));
         }
     }, []);
 
@@ -49,16 +47,26 @@ export default function FAQPage() {
         }
     };
 
-    const faqItems = FAQ_TEACHERS_ITEMS(teacherLink).map(item => ({
+    const handleCopyLink = async () => {
+        if (!teacherLink) return;
+        try {
+            await navigator.clipboard.writeText(teacherLink);
+            successToast("הקישור הועתק לזיכרון. כדאי לשמור אותו לשימוש חוזר.");
+        } catch {
+            errorToast("לא ניתן להעתיק את הקישור, אנא נסו להעתיק ידנית");
+        }
+    };
+
+    const faqItems = FAQ_TEACHERS_ITEMS(teacherLink, handleCopyLink).map(item => ({
         question: item.question,
         answer: item.answer()
     }));
 
     return (
-        <FaqContent 
+        <FaqContent
             subtitle="ריכזנו עבורכם את התשובות לכל השאלות החשובות"
-            faqItems={faqItems} 
-            onSendContact={handleSendContactEmail} 
+            faqItems={faqItems}
+            onSendContact={handleSendContactEmail}
         />
     );
 }

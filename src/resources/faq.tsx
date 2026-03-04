@@ -6,18 +6,19 @@ export interface FaqItemResource {
     answer: (context?: any) => React.ReactNode;
 }
 
-export const FAQ_TEACHERS_ITEMS = (teacherLink: string): FaqItemResource[] => [
+export const FAQ_TEACHERS_ITEMS = (teacherLink: string, onCopyLink: () => void): FaqItemResource[] => [
     {
         question: "מה הקישור האישי שלי?",
         answer: () => (
             <>
                 {teacherLink ? (
                     <div className="teacher-link" style={{ marginTop: '10px' }}>
-                        <a href={teacherLink} target="_blank" rel="noopener noreferrer">
-                            <strong>הקישור האישי שלכם</strong>
-                        </a>
-                        &nbsp;&nbsp;
-                        <span>(שימרו אותו)</span>
+                        <span
+                            onClick={onCopyLink}
+                            style={{ cursor: 'pointer', color: 'var(--primary-color)', textDecoration: 'underline' }}
+                        >
+                            <strong>לחצו כאן כדי להעתיק את הקישור</strong>
+                        </span>
                     </div>
                 ) : (
                     <p style={{ marginTop: '10px' }}>כדי לראות את הקישור הייחודי שלך, יש להתחבר קודם למערכת</p>

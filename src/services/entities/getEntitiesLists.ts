@@ -128,7 +128,7 @@ export const getCachedSchool = async (schoolId: string) => {
         [cacheTags.school(schoolId)], // Key parts
         {
             tags: [cacheTags.school(schoolId)],
-            revalidate: 86400, // 24 hours
+            revalidate: 3600, // 1 hour
         }
     );
 
