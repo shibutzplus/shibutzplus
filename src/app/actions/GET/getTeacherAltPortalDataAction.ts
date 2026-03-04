@@ -87,7 +87,7 @@ export const getTeacherAltPortalDataAction = async (
                     success: true,
                     data: schedule
                 };
-            } catch (_err) {
+            } catch (err) {
                 // If schedule fetch fails, we still return the rest of the data
                 scheduleData = {
                     success: false,

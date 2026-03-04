@@ -13,7 +13,8 @@ export async function getTeacherAltSchedule(
     teacherId: string,
     date: string,
 ): Promise<DailyScheduleType[]> {
-    const dateObj = new Date(date);
+    const [year, month, day] = date.split("-").map(Number);
+    const dateObj = new Date(year, month - 1, day, 12, 0, 0); // Noon local time to avoid shifts
     const dayOfWeek = dateObj.getDay() + 1; // 1=Sunday ... 7=Saturday
 
     const altSchedules = await db.query.annualScheduleAlt.findMany({
