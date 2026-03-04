@@ -193,7 +193,7 @@ export const AnnualAltByDayProvider: React.FC<{ children: ReactNode }> = ({ chil
         if (!defaultSubject) {
             defaultSubject = await addNewSubject({
                 schoolId: school.id,
-                name: "שיעור סנכרוני",
+                name: "א-סינכרוני",
             });
         }
 

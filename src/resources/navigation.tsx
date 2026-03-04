@@ -200,6 +200,12 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
                 Icon: <Icons.calendar size={24} />,
                 isForGuest: false,
             },
+            {
+                name: "מערכת בית ספרית לזמן חירום",
+                p: routePath.scheduleAltViewPortal.p,
+                Icon: <Icons.calendar size={24} />,
+                isForGuest: false,
+            },
         ],
     },
     {

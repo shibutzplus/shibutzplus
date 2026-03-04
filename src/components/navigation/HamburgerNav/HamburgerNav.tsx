@@ -206,6 +206,18 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
 
                         return null;
                     }
+                    if (link.p === routePath.scheduleAltViewPortal.p) {
+                        const isAltScheduleEnabled = schoolSettings?.displayAltSchedule || context?.settings?.displayAltSchedule;
+
+                        if (isAltScheduleEnabled && teacher && teacher.role === TeacherRoleValues.REGULAR) {
+                            return {
+                                ...link,
+                                p: `${routePath.scheduleAltViewPortal.p}`,
+                            };
+                        }
+
+                        return null;
+                    }
                     return link;
                 }).filter(Boolean) as ILink[],
             };
