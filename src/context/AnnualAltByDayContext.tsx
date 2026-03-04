@@ -41,7 +41,7 @@ interface AnnualAltByDayContextType {
         classId: string,
         newElementObj?: TeacherType | SubjectType,
     ) => Promise<void>;
-    autoFillMissingSubjects: () => Promise<void>;
+    autoFillMissingSubjects: (targetClassId?: string, targetDay?: string, targetHour?: number) => Promise<void>;
 }
 
 const AnnualAltByDayContext = createContext<AnnualAltByDayContextType | undefined>(undefined);
@@ -152,8 +152,8 @@ export const AnnualAltByDayProvider: React.FC<{ children: ReactNode }> = ({ chil
     const addToQueue = (rows: AnnualScheduleRequest[]) => {
         setQueueRows((prev) => (Array.isArray(prev) ? [...prev, ...rows] : [...rows]));
     };
-    const autoFillMissingSubjects = async (): Promise<void> => {
-        if (!school?.id) return;
+    const autoFillMissingSubjects = async (targetClassId?: string, targetDay?: string, targetHour?: number): Promise<void> => {
+        if (!school?.id || !subjects) return;
 
         let defaultSubject = subjects?.find(s => s.name === "א-סינכרוני");
         let hasIncomplete = false;
@@ -161,27 +161,34 @@ export const AnnualAltByDayProvider: React.FC<{ children: ReactNode }> = ({ chil
         const currentSchedule = scheduleRef.current;
         const currentQueueRows = queueRowsRef.current;
 
-        // Check if there's any incomplete cell
-        for (const classId in currentSchedule) {
-            const days = currentSchedule[classId];
-            if (!days) continue;
-            for (const d in days) {
-                const hours = days[d];
-                if (!hours) continue;
-                for (const h in hours) {
-                    const cell = hours[h];
-                    if (cell && (cell.teachers?.length || 0) > 0 && (cell.subjects?.length || 0) === 0) {
-                        hasIncomplete = true;
-                        break;
+        // Check if there's any incomplete cell (either global or targeted)
+        if (targetClassId && targetDay && targetHour) {
+            const cell = currentSchedule[targetClassId]?.[targetDay]?.[targetHour];
+            if (cell && (cell.teachers?.length || 0) > 0 && (cell.subjects?.length || 0) === 0) {
+                hasIncomplete = true;
+            }
+        } else {
+            for (const classId in currentSchedule) {
+                const days = currentSchedule[classId];
+                if (!days) continue;
+                for (const d in days) {
+                    const hours = days[d];
+                    if (!hours) continue;
+                    for (const h in hours) {
+                        const cell = hours[h];
+                        if (cell && (cell.teachers?.length || 0) > 0 && (cell.subjects?.length || 0) === 0) {
+                            hasIncomplete = true;
+                            break;
+                        }
                     }
+                    if (hasIncomplete) break;
                 }
                 if (hasIncomplete) break;
             }
-            if (hasIncomplete) break;
         }
 
         if (!hasIncomplete) {
-            if (currentQueueRows.length > 0) {
+            if (!targetClassId && currentQueueRows.length > 0) {
                 const pending = [...currentQueueRows];
                 setQueueRows([]);
                 await handleSave(pending);
@@ -209,35 +216,43 @@ export const AnnualAltByDayProvider: React.FC<{ children: ReactNode }> = ({ chil
         const allSubjects = [...(subjects || []), defaultSubject];
         const availableTeachers = teachers || [];
 
-        for (const classId in newSchedule) {
-            const days = newSchedule[classId];
-            if (!days) continue;
-            for (const d in days) {
-                const hours = days[d];
-                if (!hours) continue;
-                for (const h in hours) {
-                    const cell = hours[h];
-                    if (cell && (cell.teachers?.length || 0) > 0 && (cell.subjects?.length || 0) === 0) {
-                        newSchedule[classId][d][h].subjects = [defaultSubject.id];
+        const applyToCell = (cId: string, d: string, h: string) => {
+            const cell = newSchedule[cId][d][h];
+            if (cell && (cell.teachers?.length || 0) > 0 && (cell.subjects?.length || 0) === 0) {
+                newSchedule[cId][d][h].subjects = [defaultSubject!.id];
 
-                        const selectedClassObj = getSelectedClass(classes, classId);
-                        const pairs = createTeacherSubjectPairs(cell.teachers, [defaultSubject.id]);
-                        const updatedRequests = createAnnualByClassRequests(
-                            selectedClassObj,
-                            school,
-                            availableTeachers,
-                            allSubjects,
-                            pairs,
-                            d,
-                            parseInt(h),
-                        );
+                const selectedClassObj = getSelectedClass(classes, cId);
+                const pairs = createTeacherSubjectPairs(cell.teachers, [defaultSubject!.id]);
+                const updatedRequests = createAnnualByClassRequests(
+                    selectedClassObj,
+                    school,
+                    availableTeachers,
+                    allSubjects,
+                    pairs,
+                    d,
+                    parseInt(h),
+                );
 
-                        // Overwrite previous incomplete requests in queue if any exist
-                        existingQueue = existingQueue.filter(req =>
-                            !(req.class?.id === classId && req.day === dayToNumber(d) && req.hour === parseInt(h))
-                        );
+                // Overwrite previous incomplete requests in queue if any exist
+                existingQueue = existingQueue.filter(req =>
+                    !(req.class?.id === cId && req.day === dayToNumber(d) && req.hour === parseInt(h))
+                );
 
-                        requestsToAdd.push(...updatedRequests);
+                requestsToAdd.push(...updatedRequests);
+            }
+        };
+
+        if (targetClassId && targetDay && targetHour) {
+            applyToCell(targetClassId, targetDay, targetHour.toString());
+        } else {
+            for (const classId in newSchedule) {
+                const days = newSchedule[classId];
+                if (!days) continue;
+                for (const d in days) {
+                    const hours = days[d];
+                    if (!hours) continue;
+                    for (const h in hours) {
+                        applyToCell(classId, d, h);
                     }
                 }
             }

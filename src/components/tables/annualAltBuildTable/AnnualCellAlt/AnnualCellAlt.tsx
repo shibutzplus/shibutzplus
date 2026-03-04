@@ -80,7 +80,7 @@ const AnnualCellAlt: React.FC<AnnualCellAltProps> = ({
     const handleBlur = (e: React.FocusEvent) => {
         // If the new focus target is outside this cell, trigger auto-fill
         if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-            autoFillMissingSubjects();
+            autoFillMissingSubjects(selectedClassId, day, hour);
         }
     };
 
