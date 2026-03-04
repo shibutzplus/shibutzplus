@@ -1,7 +1,7 @@
 "use server";
 import "server-only";
 import { GetAnnualScheduleResponse } from "@/models/types/annualSchedule";
-import { checkAuthAndParams } from "@/utils/authUtils";
+import { publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { dbLog } from "@/services/loggerService";
 import { db, schema, executeQuery } from "@/db";
@@ -12,7 +12,7 @@ export const getAnnualAltAction = async (
     schoolId: string,
 ): Promise<GetAnnualScheduleResponse> => {
     try {
-        const authError = await checkAuthAndParams({ schoolId });
+        const authError = await publicAuthAndParams({ schoolId });
         if (authError) {
             return authError as GetAnnualScheduleResponse;
         }
