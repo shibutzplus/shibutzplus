@@ -39,7 +39,6 @@ const MngrDailyBldTeacherCell: React.FC<MngrDailyBldTeacherCellProps> = ({ colum
     const headerData = cell?.headerCol;
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [isCellHovered, setIsCellHovered] = useState<boolean>(false);
     const [selectedSubTeacher, setSelectedSubTeacher] = useState<string>(
         subTeacherData?.name || teacherText || "",
     );
@@ -194,11 +193,7 @@ const MngrDailyBldTeacherCell: React.FC<MngrDailyBldTeacherCellProps> = ({ colum
                     </div>
                 ) : (
                     <div className={styles.cellContent}>
-                        <div
-                            className={styles.innerCellContent}
-                            onMouseEnter={() => setIsCellHovered(true)}
-                            onMouseLeave={() => setIsCellHovered(false)}
-                        >
+                        <div className={styles.innerCellContent}>
                             <div
                                 className={`${styles.classAndSubject} ${isActivity ? styles.activityText : ""
                                     }`}
@@ -214,7 +209,6 @@ const MngrDailyBldTeacherCell: React.FC<MngrDailyBldTeacherCellProps> = ({ colum
                                     isSearchable
                                     isAllowAddNew
                                     isClearable
-                                    showClear={isCellHovered}
                                     isDisabled={isLoading}
                                     hasBorder
                                     backgroundColor="transparent"
