@@ -170,6 +170,9 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
         refreshDailyScheduleTeacherPortal,
         hasFetched,
         hydrateLists,
-        refreshEntities
+        refreshEntities,
+        teachers: allTeachers,
+        subjects: allSubjects,
+        classes: allClasses,
     };
 };

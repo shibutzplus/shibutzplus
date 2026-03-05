@@ -58,6 +58,9 @@ interface PortalContextType {
     ) => void;
     refreshEntities: () => Promise<{ teachers?: TeacherType[], subjects?: SubjectType[], classes?: ClassType[] } | undefined>;
     handleIncomingSync: (items?: SyncItem[]) => Promise<{ hasRelevantUpdate: boolean; newLists?: { teachers?: TeacherType[], subjects?: SubjectType[], classes?: ClassType[] } }>;
+    teachers?: TeacherType[];
+    subjects?: SubjectType[];
+    classes?: ClassType[];
 }
 
 const PortalContext = createContext<PortalContextType | undefined>(undefined);
@@ -244,7 +247,7 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
 
 
 
-    const { fetchPublishScheduleData, refreshDailyScheduleTeacherPortal, mainPublishTable, isPublishLoading, hasFetched, hydrateLists, refreshEntities } =
+    const { fetchPublishScheduleData, refreshDailyScheduleTeacherPortal, mainPublishTable, isPublishLoading, hasFetched, hydrateLists, refreshEntities, teachers: portalTeachers, subjects: portalSubjects, classes: portalClasses } =
         usePublished(schoolId, dateToFetch, teacher);
 
     const hydratePortalData = (
@@ -325,7 +328,10 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
         fetchPublishScheduleData,
         hydratePortalData,
         refreshEntities,
-        handleIncomingSync
+        handleIncomingSync,
+        teachers: portalTeachers,
+        subjects: portalSubjects,
+        classes: portalClasses,
     };
 
     return <PortalContext.Provider value={value}>{children}</PortalContext.Provider>;
