@@ -17,8 +17,8 @@ const DynamicManifest = () => {
         const updateManifest = () => {
             let startUrl = window.location.origin + '/';
             // Only use specific teacher URL if we are currently in the Teacher Portal (public views)
-            const isTeacherPortal = pathname.includes('/teacher-material/') ||
-                pathname.includes('/schedule-view/') ||
+            const isTeacherPortal = pathname.includes('/teacher-changes/') ||
+                pathname.includes('/school-changes/') ||
                 pathname.includes('/faq-teachers');
 
             if (isTeacherPortal) {
@@ -27,7 +27,7 @@ const DynamicManifest = () => {
                     if (teacherData) {
                         const teacher = JSON.parse(teacherData);
                         if (teacher.schoolId && teacher.id) {
-                            startUrl = window.location.origin + '/teacher-material/' + teacher.schoolId + '/' + teacher.id;
+                            startUrl = window.location.origin + '/teacher-changes/' + teacher.schoolId + '/' + teacher.id;
                         }
                     }
                 } catch (e) {

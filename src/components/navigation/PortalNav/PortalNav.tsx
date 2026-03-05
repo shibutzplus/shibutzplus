@@ -15,8 +15,8 @@ const PortalNav: React.FC = () => {
                 type="button"
                 aria-label="מערכת בית ספרית"
                 title="מערכת בית ספרית"
-                onClick={() => route.push(router.fullScheduleView.p)}
-                className={`${styles.topBtn} ${pathname.includes(router.fullScheduleView.p) ? styles.active : ""}`}
+                onClick={() => route.push(router.schoolChangesFull.p)}
+                className={`${styles.topBtn} ${pathname.includes(router.schoolChangesFull.p) ? styles.active : ""}`}
             >
                 <Icons.table size={18} style={{ marginInlineEnd: "4px" }} />
                 <span className={styles.btnText}>מערכת בית ספרית</span>

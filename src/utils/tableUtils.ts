@@ -18,7 +18,7 @@ const generateVisibleRows = (maxHourWithData: number, fromHour: number, toHour: 
 };
 
 /**
- * Calculates the visible rows for Daily View tables (FullScreenScheduleTable, PreviewTable).
+ * Calculates the visible rows for Daily View tables.
  * Scans all columns and rows to find the maximum row with content.
  */
 export const calculateVisibleRowsForDaily = (
@@ -86,6 +86,42 @@ export const calculateVisibleRowsForTeacher = (
             if (hasContent) {
                 maxHourWithData = Math.max(maxHourWithData, row);
             }
+        });
+    }
+
+    return generateVisibleRows(maxHourWithData, fromHour, toHour);
+};
+
+/**
+ * Calculates the visible rows for the Alt School Table (WeeklySchedule).
+ * Scans all classes for a given day to find the maximum row with content.
+ */
+export const calculateVisibleRowsForAltSchool = (
+    schedule: { [className: string]: { [day: string]: { [hour: string]: { teachers: string[]; subjects: string[] } } } } | undefined,
+    selectedDay: string,
+    classIds: string[],
+    fromHour: number = 1,
+    toHour: number = 10
+): number[] => {
+    let maxHourWithData = MIN_ROWS;
+
+    if (schedule && classIds.length > 0) {
+        classIds.forEach((classId) => {
+            const dayData = schedule[classId]?.[selectedDay];
+            if (!dayData) return;
+
+            Object.entries(dayData).forEach(([hourStr, cell]) => {
+                const row = parseInt(hourStr, 10);
+                if (isNaN(row)) return;
+
+                const hasContent =
+                    (cell.teachers && cell.teachers.length > 0) ||
+                    (cell.subjects && cell.subjects.length > 0);
+
+                if (hasContent) {
+                    maxHourWithData = Math.max(maxHourWithData, row);
+                }
+            });
         });
     }
 

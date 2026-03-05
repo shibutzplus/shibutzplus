@@ -28,8 +28,8 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
         isCollapse: false,
         links: [
             {
-                name: routePath.dailySchedule.title,
-                p: routePath.dailySchedule.p,
+                name: routePath.dailyBuild.title,
+                p: routePath.dailyBuild.p,
                 Icon: <Icons.dailyCalendar size={24} />,
                 isForGuest: true,
             },
@@ -106,13 +106,13 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
         links: [
             {
                 name: "מערכת לפי כיתה",
-                p: routePath.annualByClass.p,
+                p: routePath.annualBuildByClass.p,
                 Icon: <Icons.calendar size={24} />,
                 isForGuest: false,
             },
             {
                 name: "מערכת לפי מורה",
-                p: routePath.annualByTeacher.p,
+                p: routePath.annualBuildByTeacher.p,
                 Icon: <Icons.calendar size={24} />,
                 isForGuest: false,
             },
@@ -125,7 +125,7 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
         isCollapse: true,
         links: [
             {
-                name: "עדכון מערכת",
+                name: "שינוי מערכת",
                 p: routePath.annualAltBuild.p,
                 Icon: <Icons.calendar size={24} />,
                 isForGuest: false,
@@ -174,13 +174,13 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
         links: [
             {
                 name: "שינויים במערכת שלי",
-                p: routePath.teacherMaterialPortal.p,
+                p: routePath.teacherChanges.p,
                 Icon: <Icons.teacher size={22} />,
                 isForGuest: false,
             },
             {
                 name: "מערכת בית ספרית",
-                p: routePath.scheduleViewPortal.p,
+                p: routePath.schoolChanges.p,
                 Icon: <Icons.group size={24} />,
                 isForGuest: false,
             },
@@ -191,18 +191,18 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
                         <span style={{ fontSize: "0.85em", paddingTop: "5px" }}>(מסך מלא)</span>
                     </div>
                 ),
-                p: routePath.fullScheduleView.p,
+                p: routePath.schoolChangesFull.p,
                 Icon: <Icons.tv size={24} />,
             },
             {
                 name: "מערכת לזמן חירום",
-                p: routePath.teacherMaterialAltPortal.p,
+                p: routePath.teacherChangesAlt.p,
                 Icon: <Icons.calendar size={24} />,
                 isForGuest: false,
             },
             {
                 name: "מערכת בית ספרית לזמן חירום",
-                p: routePath.scheduleAltViewPortal.p,
+                p: routePath.schoolChangesAlt.p,
                 Icon: <Icons.calendar size={24} />,
                 isForGuest: false,
             },
@@ -216,7 +216,7 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
         links: [
             {
                 name: "המערכת שלי",
-                p: routePath.teacherMaterialPortal.p,
+                p: routePath.teacherChanges.p,
                 Icon: <Icons.teacher size={24} />,
                 isForGuest: false,
             },

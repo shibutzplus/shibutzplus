@@ -323,8 +323,8 @@ export async function saveTeacherScheduleAction(
         }
 
         revalidatePath('/annual-import');
-        revalidatePath('/annual-teacher');
-        revalidatePath('/annual-class');
+        revalidatePath('/annual-build-teacher');
+        revalidatePath('/annual-build-class');
         revalidatePath('/annual-view');
 
         // Invalidate annual schedule cache

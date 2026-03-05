@@ -39,7 +39,7 @@ const SchoolSelectPage = () => {
             if (user && user.role === USER_ROLES.ADMIN) {
                 setIsLoading(true);
                 const userStatus = user.status;
-                const target = userStatus === SCHOOL_STATUS.ANNUAL ? DEFAULT_REDIRECT : routes.dailySchedule.p;
+                const target = userStatus === SCHOOL_STATUS.ANNUAL ? DEFAULT_REDIRECT : routes.dailyBuild.p;
                 router.push(`${target}?schoolId=${encodeURIComponent(schoolId)}`);
             }
         } catch {

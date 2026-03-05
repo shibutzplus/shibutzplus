@@ -42,9 +42,9 @@ export async function unpublishDailyScheduleAction(
             )[0];
         });
 
-        revalidatePath("/(public)/schedule-view", "page");
-        revalidatePath("/(public)/schedule-full", "page");
-        revalidatePath(`/(public)/teacher-material/${schoolId}`, "page");
+        revalidatePath("/(public)/school-changes", "page");
+        revalidatePath("/(public)/school-changes-full", "page");
+        revalidatePath(`/(public)/teacher-changes/${schoolId}`, "page");
 
         // Clear school cache and all teacher schedules for this school
         revalidateTag(cacheTags.school(schoolId));

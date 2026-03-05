@@ -71,7 +71,6 @@ const messages = {
         deleteSuccess: "שעה נמחקה מהמערכת",
         deleteError: "בעיה במחיקת שעה, אנא נסו שוב",
         updateSuccess: "השעה עודכנה בהצלחה",
-        updateError: "בעיה בעדכון שעה, אנא נסו שוב",
     },
     dailySchedule: {
         success: "המערכת היומית נטענה בהצלחה",

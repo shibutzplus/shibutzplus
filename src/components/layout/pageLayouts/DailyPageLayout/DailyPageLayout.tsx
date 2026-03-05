@@ -25,7 +25,7 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
                 <>
                     <div className={styles.titleContainer}>
                         <h3>
-                            {router.dailySchedule.title}
+                            {router.dailyBuild.title}
                         </h3>
                     </div>
                     <div className={styles.bar1DateContainer}>

@@ -19,12 +19,12 @@ export function getPortalEntryPath(
 
     // STAFF Teacher
     if (role === TeacherRoleValues.STAFF) {
-        return router.scheduleViewPortal.p;
+        return router.schoolChanges.p;
     }
 
     // SUBSTITUTE Teacher
     if (role === TeacherRoleValues.SUBSTITUTE) {
-        return `${router.teacherMaterialPortal.p}/${schoolId}/${teacherId}`;
+        return `${router.teacherChanges.p}/${schoolId}/${teacherId}`;
     }
 
     // REGULAR Teacher
@@ -34,11 +34,11 @@ export function getPortalEntryPath(
         const isPublished = publishedOptions.some((d) => d.value === defaultDate);
 
         if (!isPublished) { // Display alt schedule
-            return `${router.teacherMaterialAltPortal.p}/${schoolId}/${teacherId}`;
+            return `${router.teacherChangesAlt.p}/${schoolId}/${teacherId}`;
         }
     }
 
     // Display regular schedule
-    return `${router.teacherMaterialPortal.p}/${schoolId}/${teacherId}`;
+    return `${router.teacherChanges.p}/${schoolId}/${teacherId}`;
 }
 

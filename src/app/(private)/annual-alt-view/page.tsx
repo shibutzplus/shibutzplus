@@ -3,7 +3,7 @@
 import React from "react";
 import { NextPage } from "next";
 import styles from "./annualAltView.module.css";
-import AnnualViewTable from "../../../components/tables/annualViewTable/AnnualViewTable/AnnualViewTable";
+import MngrAnnualViewTable from "@/components/tables/mngrAnnualView/MngrAnnualViewTable/MngrAnnualViewTable";
 import { useMainContext } from "@/context/MainContext";
 import { useAnnualAltView } from "@/context/AnnualAltViewContext";
 
@@ -20,7 +20,7 @@ const AnnualAltViewPage: NextPage = () => {
     return (
         <div className={styles.container}>
             {hasSelection ? (
-                <AnnualViewTable
+                <MngrAnnualViewTable
                     schedule={schedule}
                     selectedClassId={selectedClassId}
                     selectedTeacherId={selectedTeacherId}
