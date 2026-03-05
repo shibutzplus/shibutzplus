@@ -34,7 +34,7 @@ type LinkComponentProps = {
 };
 
 const LinkComponent: React.FC<LinkComponentProps> = ({ link, onClose, currentPath, onAction }) => {
-    const isActive = currentPath.startsWith(link.p);
+    const isActive = currentPath === link.p || currentPath.startsWith(link.p + "/") || currentPath.startsWith(link.p + "?");
     const { data: session } = useSession();
     const userRole = (session?.user as any)?.role;
     const isGuest = userRole === USER_ROLES.GUEST;

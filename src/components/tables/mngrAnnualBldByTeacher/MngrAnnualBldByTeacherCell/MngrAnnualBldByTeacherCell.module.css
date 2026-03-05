@@ -26,3 +26,25 @@
   text-align: center;
   gap: 12px;
 }
+
+.cellContent :global(.react-select__clear-indicator),
+.cellContent :global(.react-select__multi-value__remove),
+.cellContent :global(.custom-select-clear-btn) {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.cellContent:hover :global(.react-select__clear-indicator),
+.cellContent:hover :global(.react-select__multi-value__remove),
+.cellContent:hover :global(.custom-select-clear-btn) {
+  opacity: 1;
+}
+
+@media (max-width: 800px) {
+
+  .cellContent :global(.react-select__clear-indicator),
+  .cellContent :global(.react-select__multi-value__remove),
+  .cellContent :global(.custom-select-clear-btn) {
+    opacity: 1 !important;
+  }
+}

@@ -7,6 +7,8 @@ import { dbLog } from "@/services/loggerService";
 import { db, schema, executeQuery } from "@/db";
 import { eq } from "drizzle-orm";
 import { AnnualScheduleType } from "@/models/types/annualSchedule";
+import { unstable_cache } from "next/cache";
+import { cacheTags } from "@/lib/cacheTags";
 
 export const getAnnualAltAction = async (
     schoolId: string,
@@ -17,11 +19,20 @@ export const getAnnualAltAction = async (
             return authError as GetAnnualScheduleResponse;
         }
 
-        const schedules = await executeQuery(async () => {
-            return await db.query.annualScheduleAlt.findMany({
-                where: eq(schema.annualScheduleAlt.schoolId, schoolId),
-            });
-        });
+        const schedules = await unstable_cache(
+            async () => {
+                return await executeQuery(async () => {
+                    return await db.query.annualScheduleAlt.findMany({
+                        where: eq(schema.annualScheduleAlt.schoolId, schoolId),
+                    });
+                });
+            },
+            ['getAnnualAlt', schoolId],
+            {
+                tags: [cacheTags.annualAltSchedule(schoolId)],
+                revalidate: 604800, // 7 days
+            }
+        )();
 
         const data: AnnualScheduleType[] = (schedules || []).map((s: any) => ({
             id: s.id,

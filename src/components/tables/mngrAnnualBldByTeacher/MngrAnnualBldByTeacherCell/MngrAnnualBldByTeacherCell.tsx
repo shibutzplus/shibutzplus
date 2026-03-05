@@ -109,16 +109,6 @@ const MngrAnnualBldByTeacherCell: React.FC<MngrAnnualBldByTeacherCellProps> = ({
     return (
         <td className={styles.scheduleCell}>
             <div className={styles.cellContent}>
-                <DynamicInputSelect
-                    options={createSelectOptions<SubjectType>(subjects || [])}
-                    value={schedule[selectedTeacherId]?.[day]?.[hour]?.subjects[0] ?? ""}
-                    onChange={handleSubjectChange}
-                    placeholder="מקצוע"
-                    isSearchable
-                    isDisabled={isDisabled}
-                    onBeforeRemove={confirmRemove}
-                    isClearable
-                />
                 <DynamicInputMultiSelect
                     options={createSelectOptions<ClassType>(classes)}
                     value={schedule[selectedTeacherId]?.[day]?.[hour]?.classes ?? []}
@@ -128,6 +118,16 @@ const MngrAnnualBldByTeacherCell: React.FC<MngrAnnualBldByTeacherCellProps> = ({
                     isDisabled={isDisabled}
                     onBeforeRemove={confirmRemove}
                     isBold
+                />
+                <DynamicInputSelect
+                    options={createSelectOptions<SubjectType>(subjects || [])}
+                    value={schedule[selectedTeacherId]?.[day]?.[hour]?.subjects[0] ?? ""}
+                    onChange={handleSubjectChange}
+                    placeholder="מקצוע"
+                    isSearchable
+                    isDisabled={isDisabled}
+                    onBeforeRemove={confirmRemove}
+                    isClearable
                 />
             </div>
         </td>

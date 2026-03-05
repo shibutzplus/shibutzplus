@@ -3,8 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { usePortalContext } from "@/context/PortalContext";
 import { ClassType } from "@/models/types/classes";
-import { TeacherType } from "@/models/types/teachers";
-import { SubjectType } from "@/models/types/subjects";
 import TeacherDailyAltSchoolTable from "@/components/tables/teacherDailyAltSchool/TeacherDailyAltSchoolTable";
 import { WeeklySchedule } from "@/models/types/annualSchedule";
 import { getAnnualAltAction } from "@/app/actions/GET/getAnnualAltAction";
@@ -12,41 +10,25 @@ import Preloader from "@/components/ui/Preloader/Preloader";
 import styles from "./schoolAltSchedule.module.css";
 import { populateAllClassesSchedule } from "@/services/annual/populate";
 import { initializeEmptyAnnualSchedule } from "@/services/annual/initialize";
-import { getClassesAction } from "@/app/actions/GET/getClassesAction";
-import { getTeachersAction } from "@/app/actions/GET/getTeachersAction";
-import { getSubjectsAction } from "@/app/actions/GET/getSubjectsAction";
-import { PortalType } from "@/models/types";
 import { getDayNameByDateString } from "@/utils/time";
 
 export default function SchoolAltScheduleClient() {
-    const { settings, selectedDate, schoolId } = usePortalContext();
+    const { settings, selectedDate, schoolId, teachers = [], classes = [], subjects = [] } = usePortalContext();
     const [schedule, setSchedule] = useState<WeeklySchedule>({});
-    const [classes, setClasses] = useState<ClassType[]>([]);
-    const [teachers, setTeachers] = useState<TeacherType[]>([]);
-    const [subjects, setSubjects] = useState<SubjectType[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
-            if (!schoolId || !selectedDate || !settings) return;
+            if (!schoolId || !settings || classes.length === 0 || teachers.length === 0 || subjects.length === 0) return;
 
             setIsLoading(true);
             try {
-                // Fetch basic entities
-                const [classesRes, teachersRes, subjectsRes, scheduleRes] = await Promise.all([
-                    getClassesAction(schoolId, { portalType: PortalType.Teacher }),
-                    getTeachersAction(schoolId, { portalType: PortalType.Teacher, includeSubstitutes: true }),
-                    getSubjectsAction(schoolId, { portalType: PortalType.Teacher }),
-                    getAnnualAltAction(schoolId)
-                ]);
+                // Fetch ONLY the annual alternative schedule (entities are from context)
+                const scheduleRes = await getAnnualAltAction(schoolId);
 
-                if (classesRes.success && classesRes.data) setClasses(classesRes.data);
-                if (teachersRes.success && teachersRes.data) setTeachers(teachersRes.data);
-                if (subjectsRes.success && subjectsRes.data) setSubjects(subjectsRes.data);
-
-                if (scheduleRes.success && scheduleRes.data && classesRes.data) {
+                if (scheduleRes.success && scheduleRes.data) {
                     let newSchedule = {};
-                    classesRes.data.forEach((c: ClassType) => {
+                    classes.forEach((c: ClassType) => {
                         newSchedule = initializeEmptyAnnualSchedule(
                             newSchedule,
                             c.id,
@@ -66,7 +48,7 @@ export default function SchoolAltScheduleClient() {
         };
 
         fetchData();
-    }, [schoolId, selectedDate, settings]);
+    }, [schoolId, settings, classes, teachers, subjects]);
 
     if (!settings || isLoading) {
         return (

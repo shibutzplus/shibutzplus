@@ -249,7 +249,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
             <components.SingleValue {...props}>
                 <div
                     style={{
-                        flex: "1",
+                        flex: "0 1 auto",
                         overflow: "hidden",
                         textOverflow: "clip",
                         whiteSpace: "nowrap",
@@ -260,6 +260,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
                 </div>
                 {isClearable && selectedOption && (
                     <div
+                        className="custom-select-clear-btn"
                         onMouseDown={(e) => {
                             e.stopPropagation();
                             e.preventDefault();
