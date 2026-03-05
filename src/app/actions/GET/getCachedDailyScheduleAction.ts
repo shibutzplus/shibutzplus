@@ -8,7 +8,7 @@ import { getCachedDailySchedule } from "@/services/schedule/getDailySchedule";
 import { getSchoolAction } from "@/app/actions/GET/getSchoolAction";
 
 /**
- * Server action to fetch cached daily schedule for public schedule-full page.
+ * Server action to fetch cached daily schedule for school-changes and school-changes-full pages.
  * Verifies the date is published before returning data.
  */
 export async function getCachedDailyScheduleAction(

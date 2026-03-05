@@ -3,14 +3,14 @@
 import React, { useState } from "react";
 import type { NextPage } from "next";
 import styles from "./history.module.css";
-import PreviewTable from "@/components/tables/dailyViewTable/PreviewTable/PreviewTable";
-import DailyFullScreenTable from "@/components/tables/dailyFullScreenTable/DailyFullScreenTable";
+import CommonDailySchoolTable from "@/components/tables/commonDailySchool/CommonDailySchoolTable/CommonDailySchoolTable";
+import CommonDailySchoolFullTable from "@/components/tables/commonDailySchoolFull/CommonDailySchoolFullTable";
 import { useHistoryTable } from "@/context/HistoryTableContext";
 import NotPublished from "@/components/empty/NotPublished/NotPublished";
 import Preloader from "@/components/ui/Preloader/Preloader";
 import { TeacherTableProvider, useTeacherTableContext } from "@/context/TeacherTableContext";
 import SlidingPanel from "@/components/ui/SlidingPanel/SlidingPanel";
-import TeacherTable from "@/components/tables/teacherMaterialTable/TeacherTable/TeacherTable";
+import TeacherDailyChangesTable from "@/components/tables/teacherDailyChanges/TeacherDailyChangesTable/TeacherDailyChangesTable";
 import { TeacherType } from "@/models/types/teachers";
 import { useMainContext } from "@/context/MainContext";
 import { PortalType } from "@/models/types";
@@ -52,7 +52,7 @@ const HistoryScheduleContent: React.FC = () => {
             <section className={styles.container}>
                 {/* History table — hidden on print as we display the full screen table on print*/}
                 <div className={styles.noPrint}>
-                    <PreviewTable
+                    <CommonDailySchoolTable
                         mainDailyTable={mainDailyTable}
                         selectedDate={selectedYearDate}
                         EmptyTable={NotPublished}
@@ -66,7 +66,7 @@ const HistoryScheduleContent: React.FC = () => {
                 {/* Full-screen table — shown only on print, only when there is data */}
                 {mainDailyTable?.[selectedYearDate] && Object.keys(mainDailyTable[selectedYearDate]).length > 0 && (
                     <div className={styles.printOnly}>
-                        <DailyFullScreenTable
+                        <CommonDailySchoolFullTable
                             mainDailyTable={mainDailyTable}
                             selectedDate={selectedYearDate}
                             fromHour={settings?.fromHour}
@@ -81,7 +81,7 @@ const HistoryScheduleContent: React.FC = () => {
                 title={teacher?.name || ""}
             >
                 {teacher ? (
-                    <TeacherTable
+                    <TeacherDailyChangesTable
                         teacher={teacher}
                         selectedDate={selectedYearDate}
                         isInsidePanel

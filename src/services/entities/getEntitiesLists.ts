@@ -9,7 +9,7 @@ import { PortalType, PortalTypeVal } from "@/models/types";
 
 /**
  * Cached service to fetch teachers list.
- * Used by public pages (schedule-full, schedule-view, teacher-material).
+ * Used by public pages (school-changes-full, school-changes, teacher-changes).
  * 
  * @param schoolId - The school ID
  * @param options - Filter options

@@ -86,7 +86,7 @@ export default function AnnualClassPageLayout({ children }: AnnualClassPageLayou
             onBeforeMenuOpen={handleBeforeMenuOpen}
             HeaderRightActions={
                 <>
-                    <h3 className={styles.pageTitleLong}>{router.annualByClass.title}</h3>
+                    <h3 className={styles.pageTitleLong}>{router.annualBuildByClass.title}</h3>
                     <h3 className={styles.pageTitleShort}>מערכת לפי כיתה</h3>
                     <div className={styles.selectContainer}>
                         <div className={styles.selectWrapper}>

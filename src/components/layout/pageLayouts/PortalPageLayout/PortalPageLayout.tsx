@@ -51,11 +51,11 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
             const freshOptions = res.options || [];
             const isValidDate = freshOptions.some(d => d.value === effectiveDate);
 
-            if (pathname.includes(router.teacherMaterialPortal.p)) {
+            if (pathname.includes(router.teacherChanges.p)) {
                 if (isValidDate) await refreshMaterialTeacherPortal(teacher, effectiveDate);
             } else if (
-                pathname.includes(router.scheduleViewPortal.p) ||
-                pathname.includes(router.fullScheduleView.p)
+                pathname.includes(router.schoolChanges.p) ||
+                pathname.includes(router.schoolChangesFull.p)
             ) {
                 await refreshDailyScheduleTeacherPortal(undefined, effectiveDate, undefined, true, newLists);
             }
@@ -107,7 +107,7 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
         if (isToday) when = "להיום";
         else if (isTomorrow) when = "למחר";
         else if (hasDate) {
-            const isRegularPortal = pathname.includes(router.teacherMaterialPortal.p) && teacher?.role === TeacherRoleValues.REGULAR;
+            const isRegularPortal = pathname.includes(router.teacherChanges.p) && teacher?.role === TeacherRoleValues.REGULAR;
             when = isRegularPortal ? `ל${d}/${m}` : `${d}/${m}`;
         }
 
@@ -138,7 +138,7 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
                 !teacher ||
                     isRegularTeacher ||
                     (teacher?.role === TeacherRoleValues.SUBSTITUTE && settings?.displaySchedule2Susb) ? (
-                    pathname.includes(router.teacherMaterialPortal.p) &&
+                    pathname.includes(router.teacherChanges.p) &&
                         mainPortalTable[selectedDate] &&
                         Object.values(mainPortalTable[selectedDate]).some((row) => !row.isRegular) ? (
                         <div className={styles.navContainer}>

@@ -3,7 +3,7 @@
 import React, { useEffect, useRef } from "react";
 import { NextPage } from "next";
 import styles from "./annualAltBuild.module.css";
-import AnnualAltBuildTable from "@/components/tables/annualAltBuildTable/annualAltBuildTable/AnnualAltBuildTable";
+import MngrAnnualeBldAltByDayTable from "@/components/tables/mngrAnnualeBldAltByDay/MngrAnnualeBldAltByDayTable/MngrAnnualeBldAltByDayTable";
 import { useMainContext } from "@/context/MainContext";
 import { useAnnualAltByDay } from "@/context/AnnualAltByDayContext";
 import { populateAllClassesSchedule } from "@/services/annual/populate";
@@ -49,7 +49,7 @@ const AltSchedulePage: NextPage = () => {
     return (
         <div className={styles.container}>
             {classes && classes.length > 0 ? (
-                <AnnualAltBuildTable
+                <MngrAnnualeBldAltByDayTable
                     schedule={schedule}
                     selectedDay={selectedDay}
                     subjects={subjects}

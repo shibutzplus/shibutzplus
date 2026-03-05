@@ -164,13 +164,13 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                 group.type === "substitute" &&
                 (schoolSettings?.displaySchedule2Susb || context?.settings?.displaySchedule2Susb)
             ) {
-                const hasLink = links.some((l) => l.p === routePath.scheduleViewPortal.p);
+                const hasLink = links.some((l) => l.p === routePath.schoolChanges.p);
                 if (!hasLink) {
                     links = [
                         ...links,
                         {
                             name: "מערכת בית ספרית",
-                            p: routePath.scheduleViewPortal.p,
+                            p: routePath.schoolChanges.p,
                             Icon: <Icons.group size={24} />,
                         },
                     ];
@@ -180,7 +180,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
             return {
                 ...group,
                 links: links.map((link) => {
-                    if (link.p === routePath.teacherMaterialPortal.p) {
+                    if (link.p === routePath.teacherChanges.p) {
                         // Staff members & Substitutes -> Hide "My Schedule"
                         if (teacher?.role === TeacherRoleValues.STAFF) {
                             return null;
@@ -188,11 +188,11 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                         if (teacher) {
                             return {
                                 ...link,
-                                p: `${routePath.teacherMaterialPortal.p}/${teacher.schoolId}/${teacher.id}`,
+                                p: `${routePath.teacherChanges.p}/${teacher.schoolId}/${teacher.id}`,
                             };
                         }
                     }
-                    if (link.p === routePath.teacherMaterialAltPortal.p) {
+                    if (link.p === routePath.teacherChangesAlt.p) {
                         // Only regular teachers see the emergency alternative schedule
                         // And only if the 'displayAltSchedule' setting is enabled for the school
                         const isAltScheduleEnabled = schoolSettings?.displayAltSchedule || context?.settings?.displayAltSchedule;
@@ -200,19 +200,19 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                         if (isAltScheduleEnabled && teacher && teacher.role === TeacherRoleValues.REGULAR) {
                             return {
                                 ...link,
-                                p: `${routePath.teacherMaterialAltPortal.p}/${teacher.schoolId}/${teacher.id}`,
+                                p: `${routePath.teacherChangesAlt.p}/${teacher.schoolId}/${teacher.id}`,
                             };
                         }
 
                         return null;
                     }
-                    if (link.p === routePath.scheduleAltViewPortal.p) {
+                    if (link.p === routePath.schoolChangesAlt.p) {
                         const isAltScheduleEnabled = schoolSettings?.displayAltSchedule || context?.settings?.displayAltSchedule;
 
                         if (isAltScheduleEnabled && teacher && teacher.role === TeacherRoleValues.REGULAR) {
                             return {
                                 ...link,
-                                p: `${routePath.scheduleAltViewPortal.p}`,
+                                p: `${routePath.schoolChangesAlt.p}`,
                             };
                         }
 
@@ -355,14 +355,17 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                                                     className={styles.nestedList}
                                                 >
                                                     {group.links.map((link, linkIndex) => (
-                                                        <li key={linkIndex}>
-                                                            <LinkComponent
-                                                                link={link}
-                                                                onClose={onClose}
-                                                                currentPath={pathname}
-                                                                onAction={handleAction}
-                                                            />
-                                                        </li>
+                                                        <React.Fragment key={linkIndex}>
+                                                            {link.name === "מערכת לזמן חירום" && <div className={styles.groupDivider} />}
+                                                            <li>
+                                                                <LinkComponent
+                                                                    link={link}
+                                                                    onClose={onClose}
+                                                                    currentPath={pathname}
+                                                                    onAction={handleAction}
+                                                                />
+                                                            </li>
+                                                        </React.Fragment>
                                                     ))}
                                                 </motion.ul>
                                             )}
@@ -370,14 +373,17 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                                     ) : (
                                         <ul>
                                             {group.links.map((link, linkIndex) => (
-                                                <li key={linkIndex}>
-                                                    <LinkComponent
-                                                        link={link}
-                                                        onClose={onClose}
-                                                        currentPath={pathname}
-                                                        onAction={handleAction}
-                                                    />
-                                                </li>
+                                                <React.Fragment key={linkIndex}>
+                                                    {link.name === "מערכת לזמן חירום" && <div className={styles.groupDivider} />}
+                                                    <li>
+                                                        <LinkComponent
+                                                            link={link}
+                                                            onClose={onClose}
+                                                            currentPath={pathname}
+                                                            onAction={handleAction}
+                                                        />
+                                                    </li>
+                                                </React.Fragment>
                                             ))}
                                         </ul>
                                     )}

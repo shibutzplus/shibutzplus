@@ -1,0 +1,83 @@
+"use client";
+
+import React from "react";
+import { WeeklySchedule } from "@/models/types/annualSchedule";
+import { SubjectType } from "@/models/types/subjects";
+import { TeacherType } from "@/models/types/teachers";
+import { ClassType } from "@/models/types/classes";
+import { DAYS_OF_WORK_WEEK } from "@/utils/time";
+import MngrAnnualViewRow from "../MngrAnnualViewRow/MngrAnnualViewRow";
+import styles from "./MngrAnnualViewTable.module.css";
+import { useMainContext } from "@/context/MainContext";
+import { getAnnualScheduleDimensions } from "@/utils/annualCellDisplay";
+
+type MngrAnnualViewTableProps = {
+    schedule: WeeklySchedule;
+    selectedClassId: string;
+    selectedTeacherId: string;
+    subjects: SubjectType[] | undefined;
+    teachers: TeacherType[] | undefined;
+    classes: ClassType[] | undefined;
+};
+
+const MngrAnnualViewTable: React.FC<MngrAnnualViewTableProps> = ({
+    schedule,
+    selectedClassId,
+    selectedTeacherId,
+    subjects,
+    teachers,
+    classes,
+}) => {
+    const { settings } = useMainContext();
+    const fromHour = settings?.fromHour ?? 1;
+    const toHour = settings?.toHour ?? 10;
+    const isDisabled = !schedule || !subjects || !classes;
+
+    // Calculate rows to display dynamically based on content
+    const { rowsCount } = getAnnualScheduleDimensions(
+        schedule,
+        selectedClassId,
+        selectedTeacherId,
+        toHour,
+        fromHour
+    );
+
+    return (
+        <div className={styles.tableContainer}>
+            <table className={styles.scheduleTable}>
+                <thead>
+                    <tr>
+                        <th className={`${styles.headerCell} ${styles.hoursColumn}`}>
+                            <div className={`${styles.headerInner} ${styles.hoursHeader}`}></div>
+                        </th>
+                        <th className={styles.emptyColSeparator}></th>
+                        {DAYS_OF_WORK_WEEK.map((day) => (
+                            <th key={day} className={styles.headerCell}>
+                                <div className={styles.headerInner}>
+                                    {`יום ${day}'`}
+                                </div>
+                            </th>
+                        ))}
+                    </tr>
+                </thead>
+                <tbody className={styles.scheduleTableBody}>
+                    {Array.from({ length: rowsCount }, (_, i) => i + fromHour).map((hour) => (
+                        <MngrAnnualViewRow
+                            key={hour}
+                            hour={hour}
+                            isDisabled={isDisabled}
+                            schedule={schedule}
+                            selectedClassId={selectedClassId}
+                            selectedTeacherId={selectedTeacherId}
+                            subjects={subjects || []}
+                            teachers={teachers || []}
+                            classes={classes || []}
+                        />
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    );
+};
+
+export default MngrAnnualViewTable;

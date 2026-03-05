@@ -33,7 +33,7 @@ For critical public pages (like the published daily schedule), we use `revalidat
 The application uses a polling mechanism (`usePollingUpdates`) to keep client data in sync with the server.
 - **Interval:** Check for updates every 40 seconds.
 - **Immediate Check:** Polling is triggered **immediately** on component mount and when the tab becomes visible. This ensures that users returning to the tab or navigating between screens always get the latest data without waiting for the next interval tick.
-- **History preservation:** The client tracks the last sync timestamp across navigation. This ensures that updates missed while the user was on a different screen (e.g., History) are fetched immediately upon returning to a live screen (e.g., Daily Schedule).
+- **History preservation:** The client tracks the last sync timestamp across navigation. This ensures that updates missed while the user was on a different screen (e.g., History) are fetched immediately upon returning to a live screen (e.g., Daily Build).
 
 ### 6. Server-Side Relation Fetching
 To guarantee data consistency, especially for the **Manager Public Portal** and **Teacher Portal**:
@@ -56,7 +56,7 @@ To guarantee data consistency, especially for the **Manager Public Portal** and 
 בכל פעם שמבוצע שינוי במידע במערכת (דרך Server Action), המערכת מנקה באופן אוטומטי את הקאש הרלוונטי. 
 
 לדוגמה:
-- **עדכון לו"ז:** שינוי של תא בודד בלו"ז היומי מנקה את הקאש של כל המערכת הבית-ספרית לאותו יום, כולל הפורטל האישי של כל המורים.
+- **עדכון לו"ז:** שינוי של תא בודד בלו"ז הבנייה (Daily Build) מנקה את הקאש של כל המערכת הבית-ספרית לאותו יום, כולל הפורטל האישי של כל המורים.
 - **עדכון מורה/כיתה/מקצוע:** הוספה או עריכה של ישות מנקה גם את רשימת הישויות וגם את קאש הלו"ז הבית-ספרי. בנוסף, הלו"ז היומי נשלף מהשרת עם פרטי המורה המעודכנים (ולא מסתמך רק על המזהה), כך שהשם החדש מופיע מיד.
 
 ### למה הקאש של הלו"ז היומי והלו"ז של המורה מתנקים יחד?

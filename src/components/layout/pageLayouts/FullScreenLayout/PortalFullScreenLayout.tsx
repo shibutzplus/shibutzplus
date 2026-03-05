@@ -33,8 +33,8 @@ export default function PortalFullScreenLayout({ children }: PortalFullScreenLay
 
             // Ensure we are in the correct route logic (similar to PortalPageLayout)
             if (
-                pathname.includes(router.scheduleViewPortal.p) ||
-                pathname.includes(router.fullScheduleView.p)
+                pathname.includes(router.schoolChanges.p) ||
+                pathname.includes(router.schoolChangesFull.p)
             ) {
                 // For published portal or full schedule view, always refresh with the effective date
                 await refreshDailyScheduleTeacherPortal(undefined, effectiveDate, undefined, true, newLists);
@@ -81,9 +81,9 @@ export default function PortalFullScreenLayout({ children }: PortalFullScreenLay
     return (
         <FullScreenContainer onExit={() => {
             if (teacher) {
-                nav.push(`${router.teacherMaterialPortal.p}/${teacher.schoolId}/${teacher.id}`);
+                nav.push(`${router.teacherChanges.p}/${teacher.schoolId}/${teacher.id}`);
             } else {
-                nav.push(router.scheduleViewPortal.p);
+                nav.push(router.schoolChanges.p);
             }
         }}>
             {children}

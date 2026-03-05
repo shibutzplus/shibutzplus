@@ -25,7 +25,7 @@ const NotPublished: React.FC<NotPublishedProps> = React.memo(({ date, text, disp
             {displayButton && (
                 <button
                     className={styles.linkBtn}
-                    onClick={() => route.push(router.fullScheduleView.p)}
+                    onClick={() => route.push(router.schoolChangesFull.p)}
                 >
                     צפייה במערכת בית ספרית
                 </button>

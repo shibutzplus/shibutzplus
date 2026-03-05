@@ -50,7 +50,7 @@ async function getDailyScheduleService(
 }
 
 /**
- * Cached version of daily schedule retrieval for public schedule-full page.
+ * Cached version of daily schedule retrieval for * Used by /school-changes-full page.
  * 
  * Uses unstable_cache with school-level revalidation tag.
  * When schedule data changes for a school, calling revalidateTag(cacheTags.schoolSchedule(schoolId))
