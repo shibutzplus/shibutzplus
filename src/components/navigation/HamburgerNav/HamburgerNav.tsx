@@ -31,13 +31,14 @@ type LinkComponentProps = {
     onClose: () => void;
     currentPath: string;
     onAction?: (action: string) => void;
+    isGuestEnabled?: boolean;
 };
 
-const LinkComponent: React.FC<LinkComponentProps> = ({ link, onClose, currentPath, onAction }) => {
+const LinkComponent: React.FC<LinkComponentProps> = ({ link, onClose, currentPath, onAction, isGuestEnabled }) => {
     const isActive = currentPath === link.p || currentPath.startsWith(link.p + "/") || currentPath.startsWith(link.p + "?");
     const { data: session } = useSession();
     const userRole = (session?.user as any)?.role;
-    const isGuest = userRole === USER_ROLES.GUEST;
+    const isGuest = isGuestEnabled && userRole === USER_ROLES.GUEST;
     const guest = isGuest && !link.isForGuest;
     const { handleOpenGuestPopup } = useGuestModePopup();
 
@@ -363,6 +364,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                                                                     onClose={onClose}
                                                                     currentPath={pathname}
                                                                     onAction={handleAction}
+                                                                    isGuestEnabled={isPrivate}
                                                                 />
                                                             </li>
                                                         </React.Fragment>
@@ -381,6 +383,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                                                             onClose={onClose}
                                                             currentPath={pathname}
                                                             onAction={handleAction}
+                                                            isGuestEnabled={isPrivate}
                                                         />
                                                     </li>
                                                 </React.Fragment>
@@ -465,6 +468,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                                             onClose={onClose}
                                             currentPath={pathname}
                                             onAction={handleAction}
+                                            isGuestEnabled={isPrivate}
                                         />
                                     ))}
                                 </React.Fragment>
