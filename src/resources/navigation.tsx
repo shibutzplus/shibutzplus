@@ -7,8 +7,9 @@ export interface ILink {
     name: string | React.ReactNode;
     p: string;
     Icon: React.ReactNode;
-    isForGuest?: boolean;
+    isGuestBlocked?: boolean;
     action?: string;
+    hasDivider?: boolean;
 }
 
 export interface ILinkGroup {
@@ -18,6 +19,7 @@ export interface ILinkGroup {
     type: "private" | "public" | "substitute";
     isCollapse?: boolean;
     isFooter?: boolean;
+    isOpenByDefault?: boolean;
 }
 
 export const NAV_LINK_GROUPS: ILinkGroup[] = [
@@ -31,25 +33,23 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
                 name: routePath.dailyBuild.title,
                 p: routePath.dailyBuild.p,
                 Icon: <Icons.dailyCalendar size={24} />,
-                isForGuest: true,
             },
             {
                 name: routePath.annualView.title,
                 p: routePath.annualView.p,
                 Icon: <Icons.calendar size={24} />,
-                isForGuest: true,
             },
             {
                 name: routePath.history.title,
                 p: routePath.history.p,
                 Icon: <Icons.history size={24} />,
-                isForGuest: false,
+                isGuestBlocked: true,
             },
             {
                 name: routePath.statistics.title,
                 p: routePath.statistics.p,
                 Icon: <Icons.stats size={24} />,
-                isForGuest: false,
+                isGuestBlocked: true,
             },
         ],
     },
@@ -64,37 +64,37 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
                 name: routePath.teachers.title,
                 p: routePath.teachers.p,
                 Icon: <Icons.teacher size={24} />,
-                isForGuest: false,
+                isGuestBlocked: true,
             },
             {
                 name: routePath.substitute.title,
                 p: routePath.substitute.p,
                 Icon: <Icons.substituteTeacher size={24} />,
-                isForGuest: false,
+                isGuestBlocked: true,
             },
             {
                 name: routePath.staff.title,
                 p: routePath.staff.p,
                 Icon: <Icons.staff size={24} />,
-                isForGuest: false,
+                isGuestBlocked: true,
             },
             {
                 name: routePath.subjects.title,
                 p: routePath.subjects.p,
                 Icon: <Icons.book size={24} />,
-                isForGuest: false,
+                isGuestBlocked: true,
             },
             {
                 name: routePath.classes.title,
                 p: routePath.classes.p,
                 Icon: <Icons.chair size={24} />,
-                isForGuest: false,
+                isGuestBlocked: true,
             },
             {
                 name: routePath.groups.title,
                 p: routePath.groups.p,
                 Icon: <Icons.users size={24} />,
-                isForGuest: false,
+                isGuestBlocked: true,
             },
         ],
     },
@@ -108,13 +108,13 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
                 name: "מערכת לפי כיתה",
                 p: routePath.annualBuildByClass.p,
                 Icon: <Icons.calendar size={24} />,
-                isForGuest: false,
+                isGuestBlocked: true,
             },
             {
                 name: "מערכת לפי מורה",
                 p: routePath.annualBuildByTeacher.p,
                 Icon: <Icons.calendar size={24} />,
-                isForGuest: false,
+                isGuestBlocked: true,
             },
         ],
     },
@@ -128,13 +128,13 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
                 name: "שינוי מערכת",
                 p: routePath.annualAltBuild.p,
                 Icon: <Icons.calendar size={24} />,
-                isForGuest: false,
+                isGuestBlocked: true,
             },
             {
                 name: "צפייה לפי כיתה ומורה",
                 p: routePath.annualAltView.p,
                 Icon: <Icons.calendar size={24} />,
-                isForGuest: false,
+                isGuestBlocked: true,
             },
         ],
     },
@@ -148,41 +148,40 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
                 name: "הוספת מנהל",
                 p: routePath.signUp.p,
                 Icon: <Icons.users size={24} />,
-                isForGuest: false,
+                isGuestBlocked: true,
             },
             {
                 name: "ייבוא מערכת שנתית",
                 p: "/annual-import",
                 Icon: <Icons.upload size={24} />,
-                isForGuest: false,
+                isGuestBlocked: true,
             },
             {
                 name: "ניקוי קאש",
                 p: "#",
                 action: "clear_cache",
                 Icon: <Icons.refresh size={24} />,
-                isForGuest: false,
+                isGuestBlocked: true,
             },
 
         ],
     },
     {
         id: "teachers",
-        title: "מסכים למורים",
+        title: "שינויים במערכת היומית",
         type: "public",
-        isCollapse: false,
+        isCollapse: true,
+        isOpenByDefault: true,
         links: [
             {
-                name: "שינויים במערכת שלי",
+                name: "המערכת שלי",
                 p: routePath.teacherChanges.p,
                 Icon: <Icons.teacher size={22} />,
-                isForGuest: false,
             },
             {
                 name: "מערכת בית ספרית",
                 p: routePath.schoolChanges.p,
-                Icon: <Icons.group size={24} />,
-                isForGuest: false,
+                Icon: <Icons.calendar size={24} />,
             },
             {
                 name: (
@@ -194,17 +193,24 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
                 p: routePath.schoolChangesFull.p,
                 Icon: <Icons.tv size={24} />,
             },
+        ],
+    },
+    {
+        id: "emergency_schedule",
+        title: "מערכת לזמן חירום",
+        type: "public",
+        isCollapse: true,
+        isOpenByDefault: true,
+        links: [
             {
-                name: "מערכת לזמן חירום",
+                name: "מערכת שלי",
                 p: routePath.teacherChangesAlt.p,
-                Icon: <Icons.calendar size={24} />,
-                isForGuest: false,
+                Icon: <Icons.teacher size={24} />,
             },
             {
-                name: "מערכת בית ספרית לזמן חירום",
+                name: "מערכת בית ספרית",
                 p: routePath.schoolChangesAlt.p,
                 Icon: <Icons.calendar size={24} />,
-                isForGuest: false,
             },
         ],
     },
@@ -218,7 +224,6 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
                 name: "המערכת שלי",
                 p: routePath.teacherChanges.p,
                 Icon: <Icons.teacher size={24} />,
-                isForGuest: false,
             },
         ],
     },
@@ -230,7 +235,7 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
         isFooter: true,
         links: [
             {
-                name: "יציאה מהמערכת",
+                name: "יציאה",
                 p: "#",
                 action: "logout",
                 Icon: <Icons.logOut size={24} />,
@@ -245,7 +250,7 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
         isFooter: true,
         links: [
             {
-                name: "יציאה מהמערכת",
+                name: "יציאה",
                 p: "#",
                 action: "logout",
                 Icon: <Icons.logOut size={24} />,
@@ -260,7 +265,7 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
         isFooter: true,
         links: [
             {
-                name: "יציאה מהמערכת",
+                name: "יציאה",
                 p: "#",
                 action: "logout",
                 Icon: <Icons.logOut size={24} />,

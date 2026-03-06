@@ -38,7 +38,7 @@ export const ClosableToast: React.FC<ClosableToastProps> = ({ t, message, varian
             >
                 ×
             </button>
-            <div>{message}</div>
+            <div style={{ whiteSpace: "pre-wrap" }}>{message}</div>
         </div>
     )
 }

@@ -125,7 +125,7 @@ tbody .hoursColumn {
 }
 
 .classColumn {
-    min-width: 200px;
-    width: 200px;
-    max-width: 200px;
+    min-width: 160px;
+    width: 160px;
+    max-width: 160px;
 }

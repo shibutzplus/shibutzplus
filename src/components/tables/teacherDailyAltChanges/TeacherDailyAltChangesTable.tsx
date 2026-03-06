@@ -90,11 +90,13 @@ const TeacherDailyAltChangesTable: React.FC<TeacherDailyAltChangesTableProps> = 
                     <tbody>
                         {rows.map((hour) => {
                             const row = dayTable?.[String(hour)];
-                            const visibleClasses = row?.classes?.filter((c) => !c.activity) || [];
-                            const isActivityOnly = (row?.classes?.length || 0) > 0 && visibleClasses.length === 0;
-                            const classText = visibleClasses.map((c) => c.name).join(", ");
-                            const subjectText = isActivityOnly ? "" : (row?.subject?.name ?? "");
-                            const isEmpty = !row || isActivityOnly;
+                            const allClasses = row?.classes || [];
+                            const isActivity = allClasses.some((c) => c.activity);
+                            const classText = allClasses.map((c) => c.name).join(", ");
+                            const subjectText = row?.subject?.name ?? "";
+                            const isEmpty = !row;
+                            const textStyle = isActivity ? { color: "var(--disabled-text-color)" } : {};
+
                             return (
                                 <tr key={hour} className={isEmpty ? styles.emptyRow : styles.row}>
                                     {/* Sticky hours column — circle badge */}
@@ -107,7 +109,7 @@ const TeacherDailyAltChangesTable: React.FC<TeacherDailyAltChangesTableProps> = 
                                         {isEmpty
                                             ? <div className={styles.emptyCard} style={cardStyle} />
                                             : <div className={styles.cellCard} style={cardStyle}>
-                                                <span className={styles.className}>{classText}</span>
+                                                <span className={styles.className} style={textStyle}>{classText}</span>
                                             </div>
                                         }
                                     </td>
@@ -116,7 +118,7 @@ const TeacherDailyAltChangesTable: React.FC<TeacherDailyAltChangesTableProps> = 
                                         {isEmpty
                                             ? <div className={styles.emptyCard} style={cardStyle} />
                                             : <div className={styles.cellCard} style={cardStyle}>
-                                                <span className={styles.subjectName}>{subjectText}</span>
+                                                <span className={styles.subjectName} style={textStyle}>{subjectText}</span>
                                             </div>
                                         }
                                     </td>
