@@ -31,15 +31,14 @@ type LinkComponentProps = {
     onClose: () => void;
     currentPath: string;
     onAction?: (action: string) => void;
-    isGuestEnabled?: boolean;
+    isGuestUser?: boolean;
 };
 
-const LinkComponent: React.FC<LinkComponentProps> = ({ link, onClose, currentPath, onAction, isGuestEnabled }) => {
+const LinkComponent: React.FC<LinkComponentProps> = ({ link, onClose, currentPath, onAction, isGuestUser }) => {
     const isActive = currentPath === link.p || currentPath.startsWith(link.p + "/") || currentPath.startsWith(link.p + "?");
     const { data: session } = useSession();
     const userRole = (session?.user as any)?.role;
-    const isGuest = isGuestEnabled && userRole === USER_ROLES.GUEST;
-    const guest = isGuest && !link.isForGuest;
+    const shouldShowGuestPopup = isGuestUser && link.isGuestBlocked;
     const { handleOpenGuestPopup } = useGuestModePopup();
 
     // Preserve ?schoolId for ADMIN users
@@ -56,10 +55,10 @@ const LinkComponent: React.FC<LinkComponentProps> = ({ link, onClose, currentPat
     return (
         <div className={styles.linkWrapper}>
             <Link
-                href={guest ? "#" : finalHref}
+                href={shouldShowGuestPopup ? "#" : finalHref}
                 className={`${styles.navLink} ${isActive ? styles.active : ""}`}
                 onClick={async (e) => {
-                    if (guest) {
+                    if (shouldShowGuestPopup) {
                         e.preventDefault();
                         handleOpenGuestPopup();
                         return;
@@ -104,7 +103,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
     const { data: session } = useSession();
     const userRole = (session?.user as any)?.role;
     const [teacherState, setTeacherState] = React.useState<any>(null);
-    const isGuest = userRole === USER_ROLES.GUEST;
+    const isGuestUser = userRole === USER_ROLES.GUEST;
     const { handleOpenGuestPopup } = useGuestModePopup();
     const teacher = teacherProp || teacherState;
     const { installPWA, isInstalled } = usePWAInstall();
@@ -195,7 +194,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                     }
                     if (link.p === routePath.teacherChangesAlt.p) {
                         // Only regular teachers see the emergency alternative schedule
-                        // And only if the 'displayAltSchedule' setting is enabled for the school
+                        // And only if the 'displayAltSchedule'
                         const isAltScheduleEnabled = schoolSettings?.displayAltSchedule || context?.settings?.displayAltSchedule;
 
                         if (isAltScheduleEnabled && teacher && teacher.role === TeacherRoleValues.REGULAR) {
@@ -210,7 +209,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                     if (link.p === routePath.schoolChangesAlt.p) {
                         const isAltScheduleEnabled = schoolSettings?.displayAltSchedule || context?.settings?.displayAltSchedule;
 
-                        if (isAltScheduleEnabled && teacher && teacher.role === TeacherRoleValues.REGULAR) {
+                        if (isAltScheduleEnabled && teacher) {
                             return {
                                 ...link,
                                 p: `${routePath.schoolChangesAlt.p}`,
@@ -230,6 +229,14 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
         const stored = getSessionStorage<string[]>(SESSION_KEYS.HAMBURGER_EXPANDED_GROUPS);
         if (stored) {
             setExpandedGroups(stored);
+        } else {
+            // Initialize with groups that should be open by default
+            const defaultExpanded = NAV_LINK_GROUPS
+                .filter(group => group.isOpenByDefault && group.title)
+                .map(group => group.title!);
+            if (defaultExpanded.length > 0) {
+                setExpandedGroups(defaultExpanded);
+            }
         }
     }, []);
 
@@ -357,14 +364,14 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                                                 >
                                                     {group.links.map((link, linkIndex) => (
                                                         <React.Fragment key={linkIndex}>
-                                                            {link.name === "מערכת לזמן חירום" && <div className={styles.groupDivider} />}
+                                                            {link.hasDivider && <div className={styles.groupDivider} />}
                                                             <li>
                                                                 <LinkComponent
                                                                     link={link}
                                                                     onClose={onClose}
                                                                     currentPath={pathname}
                                                                     onAction={handleAction}
-                                                                    isGuestEnabled={isPrivate}
+                                                                    isGuestUser={isPrivate && isGuestUser}
                                                                 />
                                                             </li>
                                                         </React.Fragment>
@@ -376,14 +383,14 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                                         <ul>
                                             {group.links.map((link, linkIndex) => (
                                                 <React.Fragment key={linkIndex}>
-                                                    {link.name === "מערכת לזמן חירום" && <div className={styles.groupDivider} />}
+                                                    {link.hasDivider && <div className={styles.groupDivider} />}
                                                     <li>
                                                         <LinkComponent
                                                             link={link}
                                                             onClose={onClose}
                                                             currentPath={pathname}
                                                             onAction={handleAction}
-                                                            isGuestEnabled={isPrivate}
+                                                            isGuestUser={isPrivate && isGuestUser}
                                                         />
                                                     </li>
                                                 </React.Fragment>
@@ -437,7 +444,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                                     {isPrivate && (
                                         <div
                                             className={styles.navLink}
-                                            onClick={isGuest ? handleOpenGuestPopup : handleOpenSettings}
+                                            onClick={isGuestUser ? handleOpenGuestPopup : handleOpenSettings}
                                             aria-label="הגדרות שיבוץ+"
                                         >
                                             <Icons.settings size={24} />
@@ -468,7 +475,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                                             onClose={onClose}
                                             currentPath={pathname}
                                             onAction={handleAction}
-                                            isGuestEnabled={isPrivate}
+                                            isGuestUser={isPrivate && isGuestUser}
                                         />
                                     ))}
                                 </React.Fragment>
