@@ -14,7 +14,7 @@ import { getDayNameByDateString, getDayNumberByDateString } from "@/utils/time";
 import NotPublished from "@/components/empty/NotPublished/NotPublished";
 
 export default function SchoolAltScheduleClient() {
-    const { settings, selectedDate, schoolId, datesOptions = [], teachers = [], classes = [], subjects = [] } = usePortalContext();
+    const { settings, selectedDate, schoolId, teachers = [], classes = [], subjects = [] } = usePortalContext();
     const [schedule, setSchedule] = useState<WeeklySchedule>({});
     const [isLoading, setIsLoading] = useState(true);
 
