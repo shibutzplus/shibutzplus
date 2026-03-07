@@ -10,10 +10,11 @@ import Preloader from "@/components/ui/Preloader/Preloader";
 import styles from "./schoolAltSchedule.module.css";
 import { populateAllClassesSchedule } from "@/services/annual/populate";
 import { initializeEmptyAnnualSchedule } from "@/services/annual/initialize";
-import { getDayNameByDateString } from "@/utils/time";
+import { getDayNameByDateString, getDayNumberByDateString } from "@/utils/time";
+import NotPublished from "@/components/empty/NotPublished/NotPublished";
 
 export default function SchoolAltScheduleClient() {
-    const { settings, selectedDate, schoolId, teachers = [], classes = [], subjects = [] } = usePortalContext();
+    const { settings, selectedDate, schoolId, datesOptions = [], teachers = [], classes = [], subjects = [] } = usePortalContext();
     const [schedule, setSchedule] = useState<WeeklySchedule>({});
     const [isLoading, setIsLoading] = useState(true);
 
@@ -58,13 +59,22 @@ export default function SchoolAltScheduleClient() {
         );
     }
 
+    const isShabbat = selectedDate ? getDayNumberByDateString(selectedDate) === 7 : false;
+
+    if (isShabbat) {
+        return (
+            <section className={styles.container}>
+                <NotPublished date={selectedDate} text="סוף שבוע נעים" />
+            </section>
+        );
+    }
+
     if (!selectedDate) {
         return <div className={styles.loading}>לא נבחר תאריך למערכת.</div>;
     }
 
     return (
         <section className={styles.container}>
-
             {classes && classes.length > 0 ? (
                 <TeacherDailyAltSchoolTable
                     schedule={schedule}
