@@ -10,6 +10,8 @@ import { GetDailyScheduleResponse } from "@/models/types/dailySchedule";
 import { setStorageTeacher } from "@/lib/localStorage";
 import TeacherDailyAltChangesTable from "@/components/tables/teacherDailyAltChanges/TeacherDailyAltChangesTable";
 import styles from "./teacherAltPortal.module.css";
+import { getDayNumberByDateString } from "@/utils/time";
+import NotPublished from "@/components/empty/NotPublished/NotPublished";
 
 interface TeacherAltPortalClientProps {
     teacher: TeacherType;
@@ -57,6 +59,16 @@ const TeacherAltPortalClient: React.FC<TeacherAltPortalClientProps> = ({
             initialized.current = true;
         }
     }, [teacher, schoolId, settings, datesOptions, selectedDate, scheduleData]);
+
+    const isShabbat = selectedDate ? getDayNumberByDateString(selectedDate) === 7 : false;
+
+    if (isShabbat) {
+        return (
+            <div className={styles.container}>
+                <NotPublished date={selectedDate} text="סוף שבוע נעים" />
+            </div>
+        );
+    }
 
     return (
         <div className={styles.container}>

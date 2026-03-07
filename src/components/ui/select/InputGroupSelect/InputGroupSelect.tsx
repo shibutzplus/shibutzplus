@@ -28,7 +28,6 @@ export interface InputGroupSelectProps {
     hasBorder?: boolean;
     backgroundColor?: string;
     isClearable?: boolean;
-    showClear?: boolean;
     onCreate?: (value: string) => Promise<void>;
     menuWidth?: string;
     color?: string;
@@ -49,7 +48,6 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     hasBorder = false,
     backgroundColor = InputBackgroundColor,
     isClearable = false,
-    showClear,
     onCreate,
     menuWidth,
     color,
