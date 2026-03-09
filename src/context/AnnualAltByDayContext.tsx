@@ -325,9 +325,9 @@ export const AnnualAltByDayProvider: React.FC<{ children: ReactNode }> = ({ chil
                         const teacherName = teacher?.name ?? "המורה";
                         const className = conflictClass?.name ?? "כיתה אחרת";
                         if (conflictClass?.activity) {
-                            successToast(`שימו ❤️: ${teacherName} משובץ/ת גם ל${className}.\nהשיבוץ החדש יחליף את הקודם`, 6000);
+                            successToast(`שימו ❤️: ${teacherName} משובץ/ת גם ל${className}.\nהשיבוץ החדש יחליף את הקודם`, 4000);
                         } else {
-                            errorToast(`שימו ❤️: ${teacherName} כבר משובץ/ת ב${className}`, 10000);
+                            errorToast(`שימו ❤️: ${teacherName} כבר משובץ/ת ב${className}`, 8000);
                         }
                     }
                 }
