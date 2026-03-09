@@ -1,22 +1,17 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { WeeklySchedule, AnnualScheduleType, AnnualInputCellType, AnnualScheduleRequest, } from "@/models/types/annualSchedule";
+import { WeeklySchedule, AnnualScheduleType, AnnualInputCellType, } from "@/models/types/annualSchedule";
 import { useMainContext } from "./MainContext";
 import { createSelectOptions } from "@/utils/format";
 import { TeacherType } from "@/models/types/teachers";
-import { Pair, SelectOption } from "@/models/types";
-import useInitAnnualData from "@/hooks/useInitAnnualData";
-import { SelectMethod } from "@/models/types/actions";
-import { SubjectType } from "@/models/types/subjects";
-import { addAnnualScheduleAction } from "@/app/actions/POST/addAnnualScheduleAction";
-import { deleteAnnualByTeacherAction } from "@/app/actions/DELETE/deleteAnnualByTeacherAction";
+import { SelectOption } from "@/models/types";
 import { errorToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { dayToNumber } from "@/utils/time";
-import { createAnnualByTeacherRequests, createClassSubjectPairs, setNewScheduleTemplate, } from "@/services/annual/initialize";
-import { getSelectedTeacher } from "@/services/annual/get";
+import { setNewScheduleTemplate } from "@/services/annual/initialize";
 import { logErrorAction } from "@/app/actions/POST/logErrorAction";
+import { updateAnnualTeacherScheduleAction } from "@/app/actions/PUT/updateAnnualTeacherScheduleAction";
 
 interface AnnualByTeacherContextType {
     selectedTeacherId?: string;
@@ -36,8 +31,6 @@ interface AnnualByTeacherContextType {
         elementIds: string[],
         day: string,
         hour: number,
-        method: SelectMethod,
-        newElementObj?: any, // Using any here to match the signature flexibility needed, or specify TeacherType | SubjectType | ClassType
     ) => Promise<void>;
 }
 
@@ -52,25 +45,15 @@ export const useAnnualByTeacher = () => {
 };
 
 export const AnnualByTeacherProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { teachers, school, subjects, classes } = useMainContext();
+    const { teachers, school } = useMainContext();
     // teacher filter state
     const [selectedTeacherId, setSelectedTeacherId] = useState<string | undefined>(undefined);
     // per-teacher schedule map: { [teacherId]: WeeklySchedule }
     const [schedule, setSchedule] = useState<WeeklySchedule>({});
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [annualScheduleTable, setAnnualScheduleTable] = useState<
-        AnnualScheduleType[] | undefined
-    >(undefined);
-    const [queueRows, setQueueRows] = useState<AnnualScheduleRequest[]>([]);
+    const { annualScheduleTable, setAnnualScheduleTable, applyBatchAnnualScheduleUpdates } = useMainContext();
 
-    useInitAnnualData({
-        annualScheduleTable,
-        setAnnualScheduleTable,
-        schoolId: school?.id,
-    });
-
-    // Initialize with first teacher
     useEffect(() => {
         const regularTeachers = teachers?.filter((t) => t.role === "regular") || [];
         if (regularTeachers.length > 0) {
@@ -86,94 +69,9 @@ export const AnnualByTeacherProvider: React.FC<{ children: React.ReactNode }> = 
         return createSelectOptions<TeacherType>(regularTeachers);
     };
 
-    useEffect(() => {
-        if (queueRows.length > 0) {
-            handleSave();
-        }
-    }, [queueRows]);
-
-    const addNewAnnualScheduleItem = async (newScheduleItem: AnnualScheduleRequest) => {
-        const response = await addAnnualScheduleAction(newScheduleItem);
-        if (response.success && response.data) {
-            setAnnualScheduleTable((prev) => {
-                if (!response.data) return prev;
-                const updatedSchedule = prev ? [...prev, response.data] : [response.data];
-                return updatedSchedule;
-            });
-            return response.data;
-        }
-        return undefined;
-    };
-
-    const deleteAnnualScheduleItem = async (
-        day: number,
-        hour: number,
-        teacherId: string,
-        schoolId: string,
-    ) => {
-        if (!school?.id) return;
-        const response = await deleteAnnualByTeacherAction(day, hour, teacherId, schoolId);
-        if (response.success && response.deleted) {
-            const deletedIds = response.deleted.map((item) => item.id);
-            setAnnualScheduleTable((prev) => {
-                const updatedSchedule = prev?.filter((item) => !deletedIds.includes(item.id));
-                return updatedSchedule;
-            });
-            return response.deleted;
-        }
-        return undefined;
-    };
-
     const handleTeacherChange = (value: string) => {
         if (value) {
             setSelectedTeacherId(value);
-        }
-    };
-
-    const addToQueue = (rows: AnnualScheduleRequest[]) => {
-        setQueueRows((prev) => (Array.isArray(prev) ? [...prev, ...rows] : [...rows]));
-    };
-
-    const handleSave = async () => {
-        setIsSaving(true);
-        if (queueRows.length === 0 || !school?.id) {
-            setIsSaving(false);
-            return;
-        }
-
-        try {
-            // Collect unique (teacherId + day + hour) tuples to delete safely
-            const uniqueCellsMap = new Map<
-                string,
-                { day: number; hour: number; teacherId: string }
-            >();
-            for (const row of queueRows) {
-                const key = `${row.teacher?.id}_${row.day}_${row.hour}`;
-                if (!uniqueCellsMap.has(key) && row.teacher?.id) {
-                    uniqueCellsMap.set(key, {
-                        day: row.day,
-                        hour: row.hour,
-                        teacherId: row.teacher.id,
-                    });
-                }
-            }
-
-            for (const { day, hour, teacherId } of uniqueCellsMap.values()) {
-                await deleteAnnualScheduleItem(day, hour, teacherId, school.id);
-            }
-
-            for (const row of queueRows) {
-                await addNewAnnualScheduleItem(row);
-            }
-        } catch (error) {
-            logErrorAction({
-                description: `Error saving annual schedule entry: ${error instanceof Error ? error.message : String(error)}`,
-                schoolId: school?.id
-            });
-            errorToast(messages.annualSchedule.error);
-        } finally {
-            setQueueRows([]);
-            setIsSaving(false);
         }
     };
 
@@ -182,50 +80,78 @@ export const AnnualByTeacherProvider: React.FC<{ children: React.ReactNode }> = 
         elementIds: string[],
         day: string,
         hour: number,
-        method: SelectMethod,
-        newElementObj?: any,
     ) => {
         if (!school?.id || !selectedTeacherId) return;
 
-        // Check if the cell was fully populated (valid) BEFORE any changes
         const currentCell = schedule[selectedTeacherId]?.[day]?.[hour];
-        const wasComplete = (currentCell?.classes?.length || 0) > 0 && (currentCell?.subjects?.length || 0) > 0;
+        const prevElementIds = currentCell?.[type] || [];
 
-        const newSchedule = { ...schedule };
-        setNewScheduleTemplate(newSchedule, selectedTeacherId, day, hour, selectedTeacherId);
+        let classIds = type === "classes" ? elementIds : currentCell?.classes || [];
+        let subjectIds = type === "subjects" ? elementIds : currentCell?.subjects || [];
 
-        newSchedule[selectedTeacherId][day][hour][type] = elementIds;
-        const classIds = newSchedule[selectedTeacherId][day][hour].classes;
-        const subjectIds = newSchedule[selectedTeacherId][day][hour].subjects;
-        setSchedule(newSchedule);
+        // If the last class was removed, auto-clear the subjects as well
+        if (type === "classes" && classIds.length === 0) {
+            subjectIds = [];
+        }
 
-        // Handle incomplete data (deletion or partial creation)
-        if (classIds.length === 0 || subjectIds.length === 0) {
-            if ((method === "remove-value" || method === "clear") && wasComplete) {
-                const dayNum = dayToNumber(day);
-                await deleteAnnualScheduleItem(dayNum, hour, selectedTeacherId, school.id);
+        setSchedule((prev) => {
+            const newSchedule = { ...prev };
+            setNewScheduleTemplate(newSchedule, selectedTeacherId, day, hour, selectedTeacherId);
+            newSchedule[selectedTeacherId][day][hour][type] = elementIds;
+            if (type === "classes" && elementIds.length === 0) {
+                newSchedule[selectedTeacherId][day][hour]["subjects"] = [];
             }
-            return;
-        }
+            return newSchedule;
+        });
 
-        // Create
-        let subjectsList = [...(subjects || [])];
-        if (method === "create-option" && newElementObj && type === "subjects") {
-            subjectsList = [newElementObj as SubjectType];
-        }
+        setIsSaving(true);
+        try {
+            const dayNum = dayToNumber(day);
+            const response = await updateAnnualTeacherScheduleAction(
+                dayNum,
+                hour,
+                school.id,
+                selectedTeacherId,
+                classIds,
+                subjectIds
+            );
 
-        const pairs: Pair[] = createClassSubjectPairs(classIds, subjectIds);
-        const selectedTeacherObj = getSelectedTeacher(teachers, selectedTeacherId);
-        const requests: AnnualScheduleRequest[] = createAnnualByTeacherRequests(
-            selectedTeacherObj,
-            school,
-            classes,
-            subjectsList,
-            pairs,
-            day,
-            hour,
-        );
-        addToQueue(requests);
+            if (response.success) {
+                const deletedIds = response.deleted ? response.deleted.map(d => d.id) : [];
+                applyBatchAnnualScheduleUpdates(deletedIds, response.added || []);
+            } else {
+                setSchedule((prev) => {
+                    const revertSchedule = { ...prev };
+                    if (revertSchedule[selectedTeacherId]?.[day]?.[hour]) {
+                        revertSchedule[selectedTeacherId][day][hour][type] = prevElementIds;
+                        // Also revert subjects if we auto-cleared them
+                        if (type === "classes" && elementIds.length === 0) {
+                            revertSchedule[selectedTeacherId][day][hour]["subjects"] = currentCell?.subjects || [];
+                        }
+                    }
+                    return revertSchedule;
+                });
+                errorToast(messages.annualSchedule.error);
+            }
+        } catch (error) {
+            setSchedule((prev) => {
+                const revertSchedule = { ...prev };
+                if (revertSchedule[selectedTeacherId]?.[day]?.[hour]) {
+                    revertSchedule[selectedTeacherId][day][hour][type] = prevElementIds;
+                    if (type === "classes" && elementIds.length === 0) {
+                        revertSchedule[selectedTeacherId][day][hour]["subjects"] = currentCell?.subjects || [];
+                    }
+                }
+                return revertSchedule;
+            });
+            logErrorAction({
+                description: `Error saving annual schedule entry: ${error instanceof Error ? error.message : String(error)}`,
+                schoolId: school.id
+            });
+            errorToast(messages.annualSchedule.error);
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     return (

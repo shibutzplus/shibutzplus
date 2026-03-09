@@ -232,19 +232,19 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
         } else {
             // Initialize with groups that should be open by default
             const defaultExpanded = NAV_LINK_GROUPS
-                .filter(group => group.isOpenByDefault && group.title)
-                .map(group => group.title!);
+                .filter(group => group.isOpenByDefault && group.id)
+                .map(group => group.id);
             if (defaultExpanded.length > 0) {
                 setExpandedGroups(defaultExpanded);
             }
         }
     }, []);
 
-    const toggleGroup = (title: string) => {
+    const toggleGroup = (id: string) => {
         setExpandedGroups((prev) => {
-            const newState = prev.includes(title)
-                ? prev.filter((t) => t !== title)
-                : [...prev, title];
+            const newState = prev.includes(id)
+                ? prev.filter((t) => t !== id)
+                : [...prev, id];
             setSessionStorage(SESSION_KEYS.HAMBURGER_EXPANDED_GROUPS, newState);
             return newState;
         });
@@ -326,8 +326,8 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                         {mainGroups.map((group, groupIndex) => {
                             const isCollapsible = group.isCollapse;
                             const isExpanded =
-                                isCollapsible && group.title
-                                    ? expandedGroups.includes(group.title)
+                                isCollapsible && group.id
+                                    ? expandedGroups.includes(group.id)
                                     : true;
 
                             return (
@@ -335,7 +335,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                                     {isCollapsible && group.title && (
                                         <div
                                             className={styles.groupHeader}
-                                            onClick={() => toggleGroup(group.title!)}
+                                            onClick={() => toggleGroup(group.id)}
                                         >
                                             <h3 className={styles.groupTitle}>{group.title}</h3>
                                             <motion.div

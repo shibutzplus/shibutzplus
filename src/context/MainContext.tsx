@@ -1,13 +1,14 @@
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode, useEffect, useRef } from "react";
-import { AnnualScheduleType } from "@/models/types/annualSchedule";
+import { AnnualScheduleType, AnnualScheduleRequest } from "@/models/types/annualSchedule";
 import { ClassRequest, ClassType } from "@/models/types/classes";
 import { SchoolType } from "@/models/types/school";
 import { ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
 import { SubjectRequest, SubjectType } from "@/models/types/subjects";
 import { TeacherRequest, TeacherType } from "@/models/types/teachers";
 import { SchoolSettingsType } from "@/models/types/settings";
+import { addAnnualScheduleAction } from "@/app/actions/POST/addAnnualScheduleAction";
 import { addClassAction } from "@/app/actions/POST/addClassAction";
 import { addSubjectAction } from "@/app/actions/POST/addSubjectAction";
 import { addTeacherAction } from "@/app/actions/POST/addTeacherAction";
@@ -18,6 +19,7 @@ import { deleteClassAction } from "@/app/actions/DELETE/deleteClassAction";
 import { deleteSubjectAction } from "@/app/actions/DELETE/deleteSubjectAction";
 import { deleteTeacherAction } from "@/app/actions/DELETE/deleteTeacherAction";
 import useInitData from "@/hooks/useInitData";
+import useInitAnnualData from "@/hooks/useInitAnnualData";
 import { errorToast } from "@/lib/toast";
 import { SyncItem, SyncChannel } from "@/services/sync/clientSyncService";
 import { compareHebrew, sortByName } from "@/utils/sort";
@@ -31,6 +33,8 @@ interface MainContextType {
     teachers: TeacherType[] | undefined;
     subjects: SubjectType[] | undefined;
     classes: ClassType[] | undefined;
+    annualScheduleTable: AnnualScheduleType[] | undefined;
+    setAnnualScheduleTable: React.Dispatch<React.SetStateAction<AnnualScheduleType[] | undefined>>;
     annualAfterDelete: AnnualScheduleType[] | undefined;
     addNewClass: (newClass: ClassRequest) => Promise<ClassType | undefined>;
     updateClass: (classId: string, classData: ClassRequest) => Promise<ClassType[] | undefined>;
@@ -47,6 +51,9 @@ interface MainContextType {
         subjectData: SubjectRequest,
     ) => Promise<SubjectType[] | undefined>;
     deleteSubject: (schoolId: string, subjectId: string) => Promise<boolean>;
+    addNewAnnualScheduleItem: (newScheduleItem: AnnualScheduleRequest) => Promise<AnnualScheduleType | undefined>;
+    removeItemsFromAnnualScheduleTable: (deletedIds: string[]) => void;
+    applyBatchAnnualScheduleUpdates: (deletedIds: string[], addedItems: AnnualScheduleType[]) => void;
     setSchool: React.Dispatch<React.SetStateAction<SchoolType | undefined>>;
 }
 
@@ -74,6 +81,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
     const [teachers, setTeachers] = useState<TeacherType[] | undefined>(undefined);
     const [subjects, setSubjects] = useState<SubjectType[] | undefined>(undefined);
     const [classes, setClasses] = useState<ClassType[] | undefined>(undefined);
+    const [annualScheduleTable, setAnnualScheduleTable] = useState<AnnualScheduleType[] | undefined>(undefined);
     const [annualAfterDelete, setAnnualAfterDelete] = useState<AnnualScheduleType[] | undefined>(undefined);
 
     useInitData({
@@ -85,6 +93,12 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         setSubjects,
         classes,
         setClasses,
+    });
+
+    useInitAnnualData({
+        annualScheduleTable,
+        setAnnualScheduleTable,
+        schoolId: school?.id,
     });
 
     // Setup polling for entity changes
@@ -125,6 +139,41 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         };
     }, [school?.id]);
 
+    const addNewAnnualScheduleItem = async (newScheduleItem: AnnualScheduleRequest) => {
+        const response = await addAnnualScheduleAction(newScheduleItem);
+        if (response.success && response.data) {
+            setAnnualScheduleTable((prev) => {
+                if (!response.data) return prev;
+                const updatedSchedule = prev ? [...prev, response.data] : [response.data];
+                return updatedSchedule;
+            });
+            return response.data;
+        }
+        return undefined;
+    };
+
+    const removeItemsFromAnnualScheduleTable = (deletedIds: string[]) => {
+        setAnnualScheduleTable((prev) => {
+            const deletedSet = new Set(deletedIds);
+            const updatedSchedule = prev?.filter((item) => !deletedSet.has(item.id));
+            return updatedSchedule;
+        });
+    };
+
+    const applyBatchAnnualScheduleUpdates = (deletedIds: string[], addedItems: AnnualScheduleType[]) => {
+        setAnnualScheduleTable((prev) => {
+            let next = prev ? [...prev] : [];
+            if (deletedIds.length > 0) {
+                const deletedSet = new Set(deletedIds);
+                next = next.filter((item) => !deletedSet.has(item.id));
+            }
+            if (addedItems.length > 0) {
+                next = [...next, ...addedItems];
+            }
+            return next;
+        });
+    };
+
     const addNewSubject = async (newSubject: SubjectRequest) => {
         const response = await addSubjectAction(newSubject);
         if (response.success && response.data) {
@@ -156,6 +205,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         const response = await deleteSubjectAction(schoolId, subjectId);
         if (response.success && response.subjects && response.annualSchedules) {
             setSubjects(response.subjects);
+            setAnnualScheduleTable(response.annualSchedules);
             setAnnualAfterDelete(response.annualSchedules);
             return true;
         }
@@ -226,6 +276,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         if (response.success && response.classes && response.annualSchedules) {
             setClasses(response.classes);
 
+            setAnnualScheduleTable(response.annualSchedules);
             setAnnualAfterDelete(response.annualSchedules);
 
             if (classToDelete?.activity && classToDelete.name) {
@@ -276,6 +327,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         if (response.success && response.teachers && response.annualSchedules) {
             setTeachers(response.teachers);
 
+            setAnnualScheduleTable(response.annualSchedules);
             setAnnualAfterDelete(response.annualSchedules);
             return true;
         }
@@ -287,6 +339,8 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         teachers,
         subjects,
         classes,
+        annualScheduleTable,
+        setAnnualScheduleTable,
         annualAfterDelete,
         addNewClass,
         updateClass,
@@ -297,6 +351,9 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         addNewSubject,
         updateSubject,
         deleteSubject,
+        addNewAnnualScheduleItem,
+        removeItemsFromAnnualScheduleTable,
+        applyBatchAnnualScheduleUpdates,
         setSchool,
         settings,
     };
