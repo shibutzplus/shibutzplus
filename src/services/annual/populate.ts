@@ -36,7 +36,6 @@ export const populateAllClassesSchedule = (
         if (subjectId && !cell.subjects.includes(subjectId)) {
             cell.subjects.push(subjectId);
         }
-        // const classId is already defined
         if (classId && !cell.classes.includes(classId)) {
             cell.classes.push(classId);
         }
@@ -72,7 +71,6 @@ export const populateAllTeachersSchedule = (
 
         const cell = newSchedule[teacherId][dayName][entry.hour];
 
-        // teacherId already defined
         if (teacherId && !cell.teachers.includes(teacherId)) {
             cell.teachers.push(teacherId);
         }
