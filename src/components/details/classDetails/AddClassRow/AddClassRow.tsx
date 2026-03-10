@@ -25,7 +25,7 @@ const AddClassRow: React.FC<AddClassRowProps> = ({ onSearch, isGroup }) => {
             field={{
                 key: "name",
                 placeholder: isGroup ? "לדוגמה: פרטני או שהייה" : "לדוגמה: כיתה א1",
-                maxLength: 20,
+                maxLength: 22,
             }}
             initialValues={{ name: "" }}
             errorMessages={{ name: messages.classes.createError }}

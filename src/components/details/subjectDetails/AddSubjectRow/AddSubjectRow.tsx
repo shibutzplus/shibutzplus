@@ -22,7 +22,7 @@ const AddSubjectRow: React.FC<AddSubjectRowProps> = ({ onSearch }) => {
             field={{
                 key: "name",
                 placeholder: "לדוגמה: מתמטיקה",
-                maxLength: 20,
+                maxLength: 22,
             }}
             initialValues={{ name: "" }}
             errorMessages={{ name: messages.subjects.createError }}

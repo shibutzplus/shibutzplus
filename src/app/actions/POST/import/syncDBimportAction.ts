@@ -331,6 +331,7 @@ export async function saveTeacherScheduleAction(
         const { revalidateTag } = await import('next/cache');
         const { cacheTags } = await import('@/lib/cacheTags');
         revalidateTag(cacheTags.schoolSchedule(targetSchoolId));
+        void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: targetSchoolId });
 
         return { success: true, message: `המערכת נשמרה בהצלחה!` };
 

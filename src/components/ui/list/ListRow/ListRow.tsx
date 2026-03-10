@@ -115,6 +115,7 @@ function ListRow<T extends Record<string, any>>({
                     error={validationErrors[field.key]}
                     readonly={!isEdit}
                     type={field.inputType || "text"}
+                    maxLength={22}
                 />
             </div>
             <div className={styles.redColumn}></div>

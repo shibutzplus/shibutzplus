@@ -142,6 +142,9 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
                     });
                     setClasses(sorted);
                 }
+
+                // Force refresh of annual schedule table
+                setAnnualScheduleTable(undefined);
             }
         };
     }, [school?.id]);

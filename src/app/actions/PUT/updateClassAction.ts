@@ -5,7 +5,7 @@ import { ActionResponse } from "@/models/types/actions";
 import { checkAuthAndParams, checkIsNotGuest } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
-import { eq } from "drizzle-orm";
+import { eq, asc } from "drizzle-orm";
 import { getClassesAction } from "../GET/getClassesAction";
 import { dbLog } from "@/services/loggerService";
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
@@ -72,8 +72,14 @@ export async function updateClassAction(
             };
         }
 
-        // Fetch all classes for the updated class's school
-        const allClassesResp = await getClassesAction(classData.schoolId);
+        // Fetch all classes for the updated class's school directly to bypass cache for the immediate response
+        const allClasses = await executeQuery(async () => {
+            return await db
+                .select()
+                .from(schema.classes)
+                .where(eq(schema.classes.schoolId, classData.schoolId))
+                .orderBy(asc(schema.classes.activity), asc(schema.classes.name));
+        });
 
         // Invalidate cache - class changes affect schedules AND lists
         revalidateTag(cacheTags.classesList(classData.schoolId));
@@ -84,7 +90,7 @@ export async function updateClassAction(
         return {
             success: true,
             message: messages.classes.updateClassSuccess,
-            data: allClassesResp.data || [],
+            data: (allClasses as ClassType[]) || [],
         };
     } catch (error) {
         // Check if it's a unique constraint violation
