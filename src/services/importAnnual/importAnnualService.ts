@@ -68,15 +68,15 @@ export const importAnnualService = {
 
             const prompts: Record<string, string> = {
                 teachers: `
-                    Extract all unique teacher names from the COLUMN HEADERS of the "Teacher CSV File".
-                    Headers often contain titles like "מערכת שעות למורה ישראל ישראלי".
+                    Extract all unique teacher names from the "Teacher CSV File".
+                    Names are often found in sheet titles like "מערכת שעות למורה ישראל ישראלי" or at the top of the grid.
                     Target: Extract ONLY the Teacher Name.
                     
                     Rules:
-                    1. Remove "מערכת שעות", "למורה", "Schedule for".
-                    2. Clean up any extra labels.
+                    1. Remove "מערכת שעות", "למורה", "Schedule for", "מורה:".
+                    2. Clean up any extra labels or metadata.
                     3. Return ONLY a minified JSON array of strings: ["name1","name2",...]
-                    4. CRITICAL: Do NOT invent names. ONLY extract names explicitly present in the file headers.
+                    4. CRITICAL: Do NOT invent names. ONLY extract names explicitly present in the file.
                     5. STRICTLY NO DUPLICATES. If a name appears multiple times, list it only once.
                     6. SAFETY LIMIT: Return MAXIMUM 100 items. 
                     No whitespace/newlines in JSON. No backticks.
@@ -299,28 +299,35 @@ export const importAnnualService = {
 //
 function bufferToCsv(buffer: Buffer): string {
     const workbook = XLSX.read(buffer, { type: 'buffer' });
-    const sheetName = workbook.SheetNames[0];
-    const sheet = workbook.Sheets[sheetName];
-    const csv = XLSX.utils.sheet_to_csv(sheet);
+    let combinedCsv = "";
 
-    // Cleanup: Remove empty rows and metadata rows
-    return csv
-        .split('\n')
-        .map(line => line.trim())
-        .filter(line => {
-            // 1. Remove empty lines
-            if (!line) return false;
+    workbook.SheetNames.forEach(sheetName => {
+        const sheet = workbook.Sheets[sheetName];
+        const csv = XLSX.utils.sheet_to_csv(sheet);
 
-            // 2. Remove lines with only commas (e.g. ",,,,,,")
-            if (/^,+$/.test(line)) return false;
+        const cleanedSheetCsv = csv
+            .split('\n')
+            .map(line => line.trim())
+            .filter(line => {
+                // 1. Remove empty lines
+                if (!line) return false;
 
-            // 3. Remove metadata lines containing date (e.g. "8/25/25 19:23")
-            // Matches M/D/YY H:mm or similar variations anywhere in the line
-            if (/\d{1,2}\/\d{1,2}\/\d{2,4}\s+\d{1,2}:\d{2}/.test(line)) return false;
+                // 2. Remove lines with only commas (e.g. ",,,,,,")
+                if (/^,+$/.test(line)) return false;
 
-            return true;
-        })
-        .join('\n');
+                // 3. Remove metadata lines containing date (e.g. "8/25/25 19:23")
+                if (/\d{1,2}\/\d{1,2}\/\d{2,4}\s+\d{1,2}:\d{2}/.test(line)) return false;
+
+                return true;
+            })
+            .join('\n');
+
+        if (cleanedSheetCsv) {
+            combinedCsv += cleanedSheetCsv + "\n---\n"; // Marker between sheets
+        }
+    });
+
+    return combinedCsv;
 }
 
 function cleanJsonString(text: string): string {

@@ -8,6 +8,7 @@ import { useMainContext } from "@/context/MainContext";
 import { useAnnualByTeacher } from "@/context/AnnualByTeacherContext";
 import { populateAllTeachersSchedule } from "@/services/annual/populate";
 import { initializeEmptyAnnualSchedule } from "@/services/annual/initialize";
+import { WeeklySchedule } from "@/models/types/annualSchedule";
 import { useValidation } from "@/context/ValidationContext";
 import { hasIncompleteCells } from "@/utils/scheduleValidation";
 
@@ -29,15 +30,24 @@ const AnnualSchedulePage: NextPage = () => {
 
     // Initialize and populate schedule for all teachers on first render
     const blockRef = useRef<boolean>(true);
+    // Reset initialization flag when school changes
+    useEffect(() => {
+        if (school?.id) {
+            blockRef.current = true;
+        }
+    }, [school?.id]);
+
     useEffect(() => {
         if (
             blockRef.current &&
             teachers &&
             teachers.length > 0 &&
             annualScheduleTable &&
+            annualScheduleTable.length > 0 &&
+            school?.id === annualScheduleTable[0].schoolId &&
             Object.keys(schedule).length === 0
         ) {
-            let newSchedule = {};
+            let newSchedule: WeeklySchedule = {};
             // Initialize empty schedule for all teachers
             teachers.forEach((teacher) => {
                 newSchedule = initializeEmptyAnnualSchedule(
@@ -47,13 +57,14 @@ const AnnualSchedulePage: NextPage = () => {
                     school?.toHour ?? 10,
                 );
             });
+
             // Populate schedule for all teachers in one pass
             newSchedule = populateAllTeachersSchedule(annualScheduleTable, newSchedule);
 
             setSchedule(newSchedule);
             blockRef.current = false;
         }
-    }, [teachers, annualScheduleTable]);
+    }, [teachers, annualScheduleTable, school?.id, schedule]);
 
     return (
         <div className={styles.container}>

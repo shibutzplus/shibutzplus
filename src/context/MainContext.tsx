@@ -101,6 +101,13 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         schoolId: school?.id,
     });
 
+    // Clear annual schedule table when school changes to prevent stale data
+    useEffect(() => {
+        if (school?.id) {
+            setAnnualScheduleTable(undefined);
+        }
+    }, [school?.id]);
+
     // Setup polling for entity changes
     const refreshEntitiesRef = useRef<((items: SyncItem[]) => Promise<void> | void) | null>(null);
     usePollingUpdates(refreshEntitiesRef, ENTITY_CHANNELS);
