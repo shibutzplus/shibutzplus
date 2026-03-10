@@ -5,7 +5,7 @@ import { ActionResponse } from "@/models/types/actions";
 import { checkAuthAndParams, checkIsNotGuest } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
-import { eq } from "drizzle-orm";
+import { eq, asc } from "drizzle-orm";
 import { getSubjectsAction } from "@/app/actions/GET/getSubjectsAction";
 import { dbLog } from "@/services/loggerService";
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
@@ -53,8 +53,14 @@ export async function updateSubjectAction(
             };
         }
 
-        // Fetch all subjects for the updated subject's school
-        const allSubjectsResp = await getSubjectsAction(subjectData.schoolId);
+        // Fetch all subjects for the updated subject's school directly to bypass cache for the immediate response
+        const allSubjects = await executeQuery(async () => {
+            return await db
+                .select()
+                .from(schema.subjects)
+                .where(eq(schema.subjects.schoolId, subjectData.schoolId))
+                .orderBy(asc(schema.subjects.name));
+        });
 
         // Invalidate cache - subject changes affect schedules AND lists
         revalidateTag(cacheTags.subjectsList(subjectData.schoolId));
@@ -65,7 +71,7 @@ export async function updateSubjectAction(
         return {
             success: true,
             message: messages.subjects.updateSuccess,
-            data: allSubjectsResp.data || [],
+            data: (allSubjects as SubjectType[]) || [],
         };
     } catch (error) {
         dbLog({

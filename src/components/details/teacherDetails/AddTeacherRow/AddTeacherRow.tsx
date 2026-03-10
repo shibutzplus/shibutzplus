@@ -25,7 +25,7 @@ const AddTeacherRow: React.FC<AddTeacherRowProps> = ({ onSearch }) => {
             field={{
                 key: "name",
                 placeholder: "לדוגמה: ישראל ישראלי",
-                maxLength: 20,
+                maxLength: 22,
             }}
             initialValues={{ name: "" }}
             errorMessages={{ name: messages.teachers.createError }}
