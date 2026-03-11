@@ -20,6 +20,7 @@ export const dailySchedule = pgTable('daily_schedule', {
   instructions: text('instructions'),
   eventTitle: text('event_title'),
   event: text('event'),
+  reason: text('reason'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 }, (table) => {

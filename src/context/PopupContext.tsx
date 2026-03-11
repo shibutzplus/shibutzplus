@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, ReactNode } from "react";
 import PopupModal from "@/components/popups/PopupModal/PopupModal";
 import { PopupSize } from "@/models/types/ui";
 
-export type PopupType = "deleteTeacher" | "deleteClass" | "deleteSubject" | "deleteDailyCol" | "settings" | "guestMode" | "contactUs" | "msgPopup" | "editImportCell" | "notificationsRequest";
+export type PopupType = "deleteTeacher" | "deleteClass" | "deleteSubject" | "deleteDailyCol" | "settings" | "guestMode" | "contactUs" | "msgPopup" | "editImportCell" | "notificationsRequest" | "reasonPopup";
 export const PopupAction: Record<PopupType, PopupType> = {
     deleteTeacher: "deleteTeacher",
     deleteClass: "deleteClass",
@@ -15,7 +15,8 @@ export const PopupAction: Record<PopupType, PopupType> = {
     contactUs: "contactUs",
     msgPopup: "msgPopup",
     editImportCell: "editImportCell",
-    notificationsRequest: "notificationsRequest"
+    notificationsRequest: "notificationsRequest",
+    reasonPopup: "reasonPopup"
 };
 
 interface PopupContextType {

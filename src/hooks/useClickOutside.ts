@@ -1,4 +1,4 @@
-import { useEffect, RefObject } from "react";
+import { useEffect, useRef, RefObject } from "react";
 
 /**
  * Hook to detect clicks outside of a specified element.
@@ -10,23 +10,39 @@ export const useClickOutside = (
     handler: (event: MouseEvent | TouchEvent) => void,
     enabled: boolean = true
 ) => {
+    const mouseDownInsideRef = useRef(false);
+
     useEffect(() => {
         if (!enabled) return;
 
-        const listener = (event: MouseEvent | TouchEvent) => {
-            // Do nothing if clicking ref's element or descendent elements
+        const handleMouseDown = (event: MouseEvent | TouchEvent) => {
+            // Track whether mousedown started inside the ref
+            mouseDownInsideRef.current = !!(ref.current && ref.current.contains(event.target as Node));
+        };
+
+        const handleMouseUp = (event: MouseEvent | TouchEvent) => {
+            // Only trigger handler if mousedown also started outside
+            if (mouseDownInsideRef.current) {
+                mouseDownInsideRef.current = false;
+                return;
+            }
             if (!ref.current || ref.current.contains(event.target as Node)) {
                 return;
             }
             handler(event);
         };
 
-        document.addEventListener("mousedown", listener);
-        document.addEventListener("touchstart", listener);
+        document.addEventListener("mousedown", handleMouseDown);
+        document.addEventListener("mouseup", handleMouseUp);
+        document.addEventListener("touchstart", handleMouseDown);
+        document.addEventListener("touchend", handleMouseUp);
 
         return () => {
-            document.removeEventListener("mousedown", listener);
-            document.removeEventListener("touchstart", listener);
+            document.removeEventListener("mousedown", handleMouseDown);
+            document.removeEventListener("mouseup", handleMouseUp);
+            document.removeEventListener("touchstart", handleMouseDown);
+            document.removeEventListener("touchend", handleMouseUp);
         };
     }, [ref, handler, enabled]);
 };
+

@@ -18,6 +18,7 @@ export const history = pgTable('history', {
     instructions: text('instructions'),
     eventTitle: text('event_title'),
     eventText: text('event'),
+    reason: text('reason'),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
 }, (table) => {
