@@ -11,7 +11,7 @@ import { cacheTags } from "@/lib/cacheTags";
  * Internal service to fetch daily schedule from database.
  * Used by getCachedDailySchedule - do not call directly.
  */
-async function getDailyScheduleService(
+export async function getDailyScheduleService(
     schoolId: string,
     date: string,
 ): Promise<DailyScheduleType[]> {
@@ -39,6 +39,7 @@ async function getDailyScheduleService(
                     originalTeacherId: schedule.originalTeacherId,
                     columnType: schedule.columnType,
                     subTeacherId: schedule.subTeacherId,
+                    reason: schedule.reason,
                     position: schedule.position,
                     createdAt: schedule.createdAt,
                     updatedAt: schedule.updatedAt,

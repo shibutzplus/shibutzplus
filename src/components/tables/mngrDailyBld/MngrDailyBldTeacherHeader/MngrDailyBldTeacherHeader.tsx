@@ -147,7 +147,10 @@ const MngrDailyBldTeacherHeader: React.FC<MngrDailyBldTeacherHeaderProps> = ({
                             <>
                                 <div
                                     onClick={() => {
-                                        const currentReason = mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.reason || "";
+                                        // Read reason from the first cell in the column that has a headerCol
+                                        const columnCells = mainDailyTable[selectedDate]?.[columnId] || {};
+                                        const cellWithHeader = Object.values(columnCells).find(c => c?.headerCol);
+                                        const currentReason = cellWithHeader?.headerCol?.reason || "";
                                         openPopup(
                                             "reasonPopup",
                                             "S",

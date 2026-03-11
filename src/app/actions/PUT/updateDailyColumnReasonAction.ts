@@ -6,8 +6,9 @@ import { eq, and } from "drizzle-orm";
 import { dbLog } from "@/services/loggerService";
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
 import { DAILY_TEACHER_COL_DATA_CHANGED } from "@/models/constant/sync";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { reasonSchema } from "@/models/validation/reason";
+import { cacheTags } from "@/lib/cacheTags";
 
 export async function updateDailyColumnReasonAction(
     schoolId: string,
@@ -34,6 +35,8 @@ export async function updateDailyColumnReasonAction(
             );
 
         revalidatePath("/daily-build");
+        revalidateTag(cacheTags.schoolSchedule(schoolId));
+        revalidateTag(cacheTags.dailySchedule(schoolId, date));
 
         void pushSyncUpdateServer(DAILY_TEACHER_COL_DATA_CHANGED, { schoolId, date });
 
