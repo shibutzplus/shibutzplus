@@ -120,6 +120,7 @@ export async function addDailyTeacherCellsAction(
                 subject: input?.subject,
                 eventTitle: input?.eventTitle,
                 event: input?.event,
+                reason: dbRecord.reason,
                 position: input?.position
             } as DailyScheduleType;
         });
