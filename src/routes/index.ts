@@ -23,7 +23,7 @@ const router: Record<string, IRoute> = {
     annualAltView: { id: "annualAltView", p: "/annual-alt-view", private: true, title: "מערכת זמן חירום" },
     dailyBuild: { id: "dailyBuild", p: "/daily-build", private: true, title: "שיבוץ יומי", },
     history: { id: "history", p: "/history", private: true, title: " היסטוריה מערכות" },
-    statistics: { id: "statistics", p: "/statistics", private: true, title: "סטטיסטיקה" },
+    reports: { id: "reports", p: "/reports", private: true, title: "דוחות" },
     teacherSignIn: { id: "teacherSignIn", p: "/teacher-sign-in", private: false, title: "כניסה למורים", },
     teacherChanges: { id: "teacherChanges", p: "/teacher-changes", private: false, title: "שינויים במערכת שלי", },
     schoolChanges: { id: "schoolChanges", p: "/school-changes", private: false, title: "מערכת יומית", },

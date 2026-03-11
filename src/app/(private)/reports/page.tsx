@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import StatisticsPageLayout from "@/components/layout/pageLayouts/StatisticsPageLayout/StatisticsPageLayout";
+import ReportsPageLayout from "@/components/layout/pageLayouts/ReportsPageLayout/ReportsPageLayout";
 import Preloader from "@/components/ui/Preloader/Preloader";
 import { useOptionalMainContext } from "@/context/MainContext";
 import { getAbsencesByMonthAction, AbsenceByMonth } from "@/app/actions/GET/getAbsencesByMonthAction";
@@ -10,13 +10,13 @@ import { getAbsencesByDayAction, AbsenceByDay } from "@/app/actions/GET/getAbsen
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import styles from "./page.module.css";
 import { errorToast } from "@/lib/toast";
-import { StatisticType, StatisticTypeValues } from "@/models/types/statistics";
+import { ReportType, ReportTypeValues } from "@/models/types/reports";
 import { getHebrewMonthName, getCurrentMonth } from "@/utils/time";
 
-export default function StatisticsPage() {
+export default function ReportsPage() {
     const context = useOptionalMainContext();
     const schoolId = context?.school?.id;
-    const [statType, setStatType] = useState<StatisticType>(StatisticTypeValues.months);
+    const [statType, setStatType] = useState<ReportType>(ReportTypeValues.months);
     const [month, setMonth] = useState<string>(getHebrewMonthName(getCurrentMonth()));
     const [monthData, setMonthData] = useState<AbsenceByMonth[]>([]);
     const [teacherData, setTeacherData] = useState<AbsenceByTeacher[]>([]);
@@ -40,14 +40,14 @@ export default function StatisticsPage() {
         const fetchData = async () => {
             setLoading(true);
             try {
-                if (statType === StatisticTypeValues.months) {
+                if (statType === ReportTypeValues.months) {
                     const res = await getAbsencesByMonthAction(schoolId);
                     if (res.success && res.data) {
                         setMonthData(res.data);
                     } else {
                         errorToast("אופס, משהו השתבש בטעינת הנתונים. נסו לרענן, ואם זה לא מסתדר – דברו איתנו.");
                     }
-                } else if (statType === StatisticTypeValues.teachers) {
+                } else if (statType === ReportTypeValues.teachers) {
                     const res = await getAbsencesByTeacherAction(schoolId, month);
                     if (res.success && res.data) {
                         setTeacherData(res.data);
@@ -73,17 +73,17 @@ export default function StatisticsPage() {
     }, [schoolId, statType, month]);
 
     return (
-        <StatisticsPageLayout statType={statType} setStatType={setStatType} month={month} setMonth={setMonth}>
+        <ReportsPageLayout statType={statType} setStatType={setStatType} month={month} setMonth={setMonth}>
             <div className={styles.chartContainer}>
                 {loading ? (
                     <div style={{ position: 'absolute', top: '40%', left: '50%', transform: 'translate(-50%, -50%)' }}>
                         <Preloader />
                     </div>
-                ) : (statType === StatisticTypeValues.months && monthData.length === 0) || (statType === StatisticTypeValues.teachers && teacherData.length === 0) || (statType === StatisticTypeValues.days && dayData.length === 0) ? (
+                ) : (statType === ReportTypeValues.months && monthData.length === 0) || (statType === ReportTypeValues.teachers && teacherData.length === 0) || (statType === ReportTypeValues.days && dayData.length === 0) ? (
                     <div className={styles.placeholder}>לא נמצאו היעדרויות עבור הסינון שנבחר</div>
                 ) : (
                     <ResponsiveContainer width="100%" height="100%">
-                        {statType === StatisticTypeValues.months ? (
+                        {statType === ReportTypeValues.months ? (
                             <BarChart
                                 data={monthData}
                                 margin={{
@@ -124,7 +124,7 @@ export default function StatisticsPage() {
                                 <Tooltip cursor={{ fill: 'transparent' }} />
                                 <Bar name="ימי היעדרות" dataKey="count" fill="url(#colorMonthGradient)" radius={[4, 4, 0, 0]} maxBarSize={150} />
                             </BarChart>
-                        ) : statType === StatisticTypeValues.teachers ? (
+                        ) : statType === ReportTypeValues.teachers ? (
                             <BarChart
                                 layout="vertical"
                                 data={teacherData}
@@ -194,6 +194,6 @@ export default function StatisticsPage() {
                     </ResponsiveContainer>
                 )}
             </div>
-        </StatisticsPageLayout>
+        </ReportsPageLayout>
     );
 }
