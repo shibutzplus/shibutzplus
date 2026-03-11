@@ -46,8 +46,8 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
                 isGuestBlocked: true,
             },
             {
-                name: routePath.statistics.title,
-                p: routePath.statistics.p,
+                name: routePath.reports.title,
+                p: routePath.reports.p,
                 Icon: <Icons.stats size={24} />,
                 isGuestBlocked: true,
             },
@@ -56,7 +56,7 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
 
     {
         id: "school_settings",
-        title: "בית הספר",
+        title: "ניהול משאבים",
         type: "private",
         isCollapse: true,
         links: [
