@@ -87,6 +87,7 @@ interface DailyTableContextType {
     handleDayChange: (value: string) => void;
     togglePreviewMode: () => void;
     moveColumn: (columnId: string, direction: "left" | "right") => Promise<void>;
+    setMainDailyTable: React.Dispatch<React.SetStateAction<DailySchedule>>;
 }
 
 const updateColumnPositionInSchedule = (
@@ -544,6 +545,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 moveColumn,
 
                 pasteEventColumn,
+                setMainDailyTable,
             }}
         >
             {children}

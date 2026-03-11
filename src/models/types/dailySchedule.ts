@@ -24,6 +24,7 @@ export type DailyScheduleType = {
     subTeacher?: TeacherType;
     subTeacherId?: string; // Added
     instructions?: string;
+    reason?: string;
     position: number;
     createdAt?: Date;
     updatedAt?: Date;
@@ -56,6 +57,7 @@ export type HeaderCol = {
     headerEvent?: string;
     type: ColumnType;
     position?: number;
+    reason?: string;
 };
 
 export type DailyScheduleCell = {

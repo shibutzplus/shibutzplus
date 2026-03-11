@@ -15,6 +15,9 @@ import MngrDailyBldColMenu from "../MngrDailyBldColMenu/MngrDailyBldColMenu";
 import Icons from "@/style/icons";
 import { TeacherType } from "@/models/types/teachers";
 import { useTeacherTableContext } from "@/context/TeacherTableContext";
+import { usePopup } from "@/context/PopupContext";
+import ReasonPopup from "@/components/popups/ReasonPopup/ReasonPopup";
+import { updateDailyColumnReasonAction } from "@/app/actions/PUT/updateDailyColumnReasonAction";
 
 type MngrDailyBldTeacherHeaderProps = {
     columnId: string;
@@ -33,12 +36,13 @@ const MngrDailyBldTeacherHeader: React.FC<MngrDailyBldTeacherHeaderProps> = ({
     isFirst,
     isLast,
 }) => {
-    const { teachers } = useMainContext();
-    const { mainDailyTable, selectedDate, moveColumn, populateTeacherColumn, mapAvailableTeachers } =
+    const { teachers, school } = useMainContext();
+    const { mainDailyTable, selectedDate, moveColumn, populateTeacherColumn, mapAvailableTeachers, setMainDailyTable } =
         useDailyTableContext();
     const { fetchTeacherScheduleDate } = useTeacherTableContext();
     const [isLoading, setIsLoading] = useState(false);
     const { handleOpenPopup } = useConfirmPopup();
+    const { openPopup, closePopup } = usePopup();
 
     const selectedTeacherData =
         mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.headerTeacher;
@@ -140,16 +144,67 @@ const MngrDailyBldTeacherHeader: React.FC<MngrDailyBldTeacherHeaderProps> = ({
                 >
                     {onTeacherClick && selectedTeacherData
                         ? ({ closeMenu }) => (
-                            <div
-                                onClick={() => {
-                                    handlePreviewClick();
-                                    closeMenu();
-                                }}
-                                className={styles.menuItem}
-                            >
-                                <Icons.eye size={14} />
-                                <span>חומר הלימוד</span>
-                            </div>
+                            <>
+                                <div
+                                    onClick={() => {
+                                        const currentReason = mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.reason || "";
+                                        openPopup(
+                                            "reasonPopup",
+                                            "S",
+                                            <ReasonPopup
+                                                initialReason={currentReason}
+                                                onConfirm={async (reason) => {
+                                                    closePopup();
+                                                    if (!school?.id) return;
+                                                    const response = await updateDailyColumnReasonAction(
+                                                        school.id,
+                                                        selectedDate,
+                                                        columnId,
+                                                        reason
+                                                    );
+                                                    if (response.success) {
+                                                        setMainDailyTable((prev: any) => {
+                                                            const updated = { ...prev };
+                                                            if (updated[selectedDate]?.[columnId]) {
+                                                                updated[selectedDate] = { ...updated[selectedDate] };
+                                                                updated[selectedDate][columnId] = { ...updated[selectedDate][columnId] };
+                                                                Object.keys(updated[selectedDate][columnId]).forEach((hour) => {
+                                                                    const cell = updated[selectedDate][columnId][hour];
+                                                                    if (cell?.headerCol) {
+                                                                        updated[selectedDate][columnId][hour] = {
+                                                                            ...cell,
+                                                                            headerCol: { ...cell.headerCol, reason },
+                                                                        };
+                                                                    }
+                                                                });
+                                                            }
+                                                            return updated;
+                                                        });
+                                                    } else {
+                                                        errorToast(response.message || "שגיאה בעדכון");
+                                                    }
+                                                }}
+                                                onCancel={closePopup}
+                                            />
+                                        );
+                                        closeMenu();
+                                    }}
+                                    className={styles.menuItem}
+                                >
+                                    <Icons.info size={14} />
+                                    <span>סיבה</span>
+                                </div>
+                                <div
+                                    onClick={() => {
+                                        handlePreviewClick();
+                                        closeMenu();
+                                    }}
+                                    className={styles.menuItem}
+                                >
+                                    <Icons.eye size={14} />
+                                    <span>חומר הלימוד</span>
+                                </div>
+                            </>
                         )
                         : null}
                 </MngrDailyBldColMenu>

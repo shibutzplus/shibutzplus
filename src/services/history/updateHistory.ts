@@ -80,6 +80,7 @@ export async function processHistoryUpdate(dateString?: string): Promise<History
                     instructions: schedule.instructions,
                     eventTitle: schedule.eventTitle,
                     eventText: schedule.event,
+                    reason: schedule.reason,
                 };
             });
         }
