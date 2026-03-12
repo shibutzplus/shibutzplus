@@ -6,14 +6,18 @@ import { useClickOutside } from "@/hooks/useClickOutside";
 type CommonDailySchoolHeaderMenuProps = {
     onCopy?: () => void;
     onViewMaterial?: () => void;
+    onReason?: () => void;
     showViewMaterial?: boolean;
+    showReason?: boolean;
     disableCopy?: boolean;
 };
 
 const CommonDailySchoolHeaderMenu: React.FC<CommonDailySchoolHeaderMenuProps> = ({
     onCopy,
     onViewMaterial,
+    onReason,
     showViewMaterial = false,
+    showReason = false,
     disableCopy = false,
 }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -75,6 +79,20 @@ const CommonDailySchoolHeaderMenu: React.FC<CommonDailySchoolHeaderMenuProps> = 
                                 <span>חומר הלימוד</span>
                             </div>
                         </>
+                    )}
+                    {/* Reason Option */}
+                    {showReason && onReason && (
+                        <div
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setIsMenuOpen(false);
+                                onReason();
+                            }}
+                            className={styles.menuItem}
+                        >
+                            <Icons.info size={14} />
+                            <span>סיבת היעדרות</span>
+                        </div>
                     )}
                 </div>
             )}

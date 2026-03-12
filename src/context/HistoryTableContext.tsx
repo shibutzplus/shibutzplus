@@ -26,6 +26,7 @@ interface HistoryTableContextType {
     handleMonthChange: (val: string) => void;
     handleDayChange: (val: string) => void;
     mainDailyTable: DailySchedule;
+    setMainDailyTable: React.Dispatch<React.SetStateAction<DailySchedule>>;
     isLoading: boolean;
 }
 
@@ -115,6 +116,7 @@ export const HistoryTableProvider: React.FC<HistoryTableProviderProps> = ({ chil
                 handleMonthChange,
                 handleDayChange,
                 mainDailyTable,
+                setMainDailyTable,
                 isLoading,
             }}
         >

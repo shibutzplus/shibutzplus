@@ -23,6 +23,7 @@ type CommonDailySchoolFullTableProps = {
     appType?: AppType;
     onTeacherClick?: (teacher: TeacherType) => void;
     emptyText?: string;
+    showReasonCaption?: boolean;
 };
 
 const CommonDailySchoolFullTable: React.FC<CommonDailySchoolFullTableProps> = ({
@@ -34,6 +35,7 @@ const CommonDailySchoolFullTable: React.FC<CommonDailySchoolFullTableProps> = ({
     appType = "public",
     onTeacherClick,
     emptyText,
+    showReasonCaption = false,
 }) => {
     const schedule = mainDailyTable[selectedDate];
     const tableColumns = React.useMemo(() => schedule ? Object.keys(schedule) : [], [schedule]);
@@ -150,6 +152,7 @@ const CommonDailySchoolFullTable: React.FC<CommonDailySchoolFullTableProps> = ({
                     // Determine header text
                     let headerText = "";
                     let headerTeacher: TeacherType | undefined;
+                    let reason: string | undefined;
 
                     if (type === ColumnTypeValues.event) {
                         const headerCell = Object.values(column).find(c => c?.headerCol?.headerEvent);
@@ -158,8 +161,10 @@ const CommonDailySchoolFullTable: React.FC<CommonDailySchoolFullTableProps> = ({
                         const headerCell = Object.values(column).find(c => c?.headerCol?.headerTeacher);
                         headerText = headerCell?.headerCol?.headerTeacher?.name || "";
                         headerTeacher = headerCell?.headerCol?.headerTeacher;
+                        reason = headerCell?.headerCol?.reason;
                     }
 
+                    const isMissingTeacher = type === ColumnTypeValues.missingTeacher;
                     const isClickable = !!onTeacherClick && type !== ColumnTypeValues.event && !!headerTeacher;
 
                     return (
@@ -176,10 +181,15 @@ const CommonDailySchoolFullTable: React.FC<CommonDailySchoolFullTableProps> = ({
                                 }
                             }}
                         >
-                            <div className={styles.headerContent}>
+                            <div className={`${styles.headerContent} ${showReasonCaption ? styles.withCaption : ""}`}>
                                 <span className={styles.headerText} title={headerText}>
                                     {headerText}
                                 </span>
+                                {showReasonCaption && (
+                                    <span className={styles.reasonCaption}>
+                                        {isMissingTeacher && !reason ? "אין סיבת היעדרות" : "\u00A0"}
+                                    </span>
+                                )}
                             </div>
                         </div>
                     );
