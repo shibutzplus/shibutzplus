@@ -23,20 +23,13 @@ const DailyScheduleContent: React.FC = () => {
     const { isLoading, selectedDate, mainDailyTable, isPreviewMode, togglePreviewMode } =
         useDailyTableContext();
     const { settings } = useMainContext();
-    const { fetchTeacherScheduleDate } = useTeacherTableContext();
     const { openPopup } = usePopup();
-
     const [isPanelOpen, setIsPanelOpen] = useState<boolean>(false);
     const [teacher, setTeacher] = useState<TeacherType>();
 
     const handleTeacherClick = async (teacher: TeacherType) => {
         setTeacher(teacher);
         setIsPanelOpen(true);
-    };
-
-    const handleFullScreenTeacherClick = async (teacher: TeacherType) => {
-        await fetchTeacherScheduleDate(teacher, selectedDate);
-        handleTeacherClick(teacher);
     };
 
     const handleClosePanel = () => {
@@ -101,7 +94,6 @@ const DailyScheduleContent: React.FC = () => {
                         selectedDate={selectedDate}
                         fromHour={settings?.fromHour}
                         toHour={settings?.toHour}
-                        onTeacherClick={handleFullScreenTeacherClick}
                         showReasonCaption={true}
                     />
                 </FullScreenContainer>

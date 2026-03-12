@@ -126,6 +126,7 @@ const MngrDailyBldEventHeader: React.FC<MngrDailyBldEventHeaderProps> = ({ colum
                         backgroundColor="transparent"
                         hasBorder={false}
                         fontSize="18px"
+                        maxLength={15}
                     />
                 </div>
             </div>

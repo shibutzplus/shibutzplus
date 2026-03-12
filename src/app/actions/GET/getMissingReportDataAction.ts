@@ -17,6 +17,7 @@ export type MissingReportRecord = {
     hour: number;
     classes: string | null;
     subTeacher: string | null;
+    eventText: string | null;
 }
 
 export const getMissingReportDataAction = async (schoolId: string, month: string): Promise<ActionResponse<MissingReportRecord[]>> => {
@@ -57,6 +58,7 @@ export const getMissingReportDataAction = async (schoolId: string, month: string
                     hour: schema.history.hour,
                     classes: schema.history.classes,
                     subTeacher: schema.history.subTeacher,
+                    eventText: schema.history.eventText,
                 })
                 .from(schema.history)
                 .where(and(...conditions));
