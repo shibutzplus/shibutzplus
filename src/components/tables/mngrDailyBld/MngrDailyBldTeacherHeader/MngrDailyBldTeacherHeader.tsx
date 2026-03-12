@@ -195,7 +195,7 @@ const MngrDailyBldTeacherHeader: React.FC<MngrDailyBldTeacherHeaderProps> = ({
                                     className={styles.menuItem}
                                 >
                                     <Icons.info size={14} />
-                                    <span>סיבה</span>
+                                    <span>סיבת היעדרות</span>
                                 </div>
                                 <div
                                     onClick={() => {

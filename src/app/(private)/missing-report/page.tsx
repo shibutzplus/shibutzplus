@@ -14,8 +14,6 @@ export type MissingReportDictionary = Record<string, Record<number, MissingRepor
 export default function MissingReportPage() {
     const context = useOptionalMainContext();
     const schoolId = context?.school?.id;
-    const settings = context?.settings;
-
     const [month, setMonth] = useState<string>(getHebrewMonthName(getCurrentMonth()));
     const [teacherId, setTeacherId] = useState<string | null>("all");
     const [loading, setLoading] = useState<boolean>(false);

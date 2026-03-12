@@ -34,6 +34,7 @@ interface HistoryRecord {
     instructions: string | null;
     eventTitle: string | null;
     eventText: string | null;
+    reason: string | null;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -71,7 +72,8 @@ function mapHistoryToSchedule(record: HistoryRecord, schoolId: string): DailySch
         updatedAt: new Date(),
         fromHour: 1,
         toHour: 8,
-        displaySchedule2Susb: false
+        displaySchedule2Susb: false,
+        displayAltSchedule: false
     };
 
     return {
@@ -89,6 +91,7 @@ function mapHistoryToSchedule(record: HistoryRecord, schoolId: string): DailySch
         columnType: record.columnType as ColumnType,
         subTeacher: makeTeacher(record.subTeacher),
         instructions: record.instructions || undefined,
+        reason: record.reason || undefined,
         position: record.columnPosition,
         createdAt: record.createdAt,
         updatedAt: record.updatedAt

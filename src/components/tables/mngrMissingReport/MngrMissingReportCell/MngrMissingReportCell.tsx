@@ -6,7 +6,7 @@ import { useOptionalMainContext } from "@/context/MainContext";
 import { usePopup } from "@/context/PopupContext";
 import ReasonPopup from "@/components/popups/ReasonPopup/ReasonPopup";
 import { updateHistoryReasonAction } from "@/app/actions/PUT/updateHistoryReasonAction";
-import { errorToast, successToast } from "@/lib/toast";
+import { errorToast } from "@/lib/toast";
 import { getDateReturnString } from "@/utils/time";
 import { ClassType } from "@/models/types/classes";
 
@@ -18,16 +18,16 @@ type MngrMissingReportCellProps = {
 };
 
 const MngrMissingReportCell: React.FC<MngrMissingReportCellProps> = ({
-    dayNumber,
-    teacherId,
+    dayNumber: _dayNumber,
+    teacherId: _teacherId,
     records,
     onRefresh,
 }) => {
     const context = useOptionalMainContext();
-    const contextClasses = context?.classes || [];
     const { openPopup, closePopup } = usePopup();
 
     const displayData = useMemo(() => {
+        const contextClasses = context?.classes || [];
         if (!records || records.length === 0) return null;
 
         // Take the first record to determine the column type (they should all be the same for this block)
@@ -85,7 +85,7 @@ const MngrMissingReportCell: React.FC<MngrMissingReportCellProps> = ({
                 replacementCount
             };
         }
-    }, [records, contextClasses]);
+    }, [records, context?.classes]);
 
     const handleClick = () => {
         if (!displayData || !records[0]?.date) return;
@@ -132,7 +132,7 @@ const MngrMissingReportCell: React.FC<MngrMissingReportCellProps> = ({
                     <>
                         <div className={`${styles.reasonText} ${styles.missingText}`}>{displayData.reason}</div>
                         {displayData.activityFalseCount > 0 && <div className={styles.countText}>{displayData.activityFalseCount} שעות הוראה</div>}
-                        {displayData.activityTrueCount > 0 && <div className={styles.countText}>{displayData.activityTrueCount} שעות ק"ע</div>}
+                        {displayData.activityTrueCount > 0 && <div className={styles.countText}>{displayData.activityTrueCount} שעות ק&quot;ע</div>}
                     </>
                 )}
                 {displayData && displayData.type === "existing" && displayData.replacementCount > 0 && displayData.reason && (
