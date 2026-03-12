@@ -9,6 +9,7 @@ import { SelectOption } from "@/models/types";
 const REASON_OPTIONS: SelectOption[] = [
     { value: "מחלה", label: "מחלה" },
     { value: "מחלת ילד", label: "מחלת ילד" },
+    { value: "בדיקות", label: "בדיקות" },
     { value: "מילואים", label: "מילואים" },
     { value: "יום בחירה", label: "יום בחירה" },
 ];

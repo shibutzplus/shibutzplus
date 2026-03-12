@@ -1,0 +1,89 @@
+.scheduleCell {
+    position: relative;
+    padding: 4px;
+    box-sizing: border-box;
+    vertical-align: top;
+    min-width: 140px;
+    width: 140px;
+    max-width: 140px;
+    height: 1px;
+}
+
+.cellContent {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+    height: 100%;
+    min-height: 80px;
+    background-color: var(--tab-color);
+    border-radius: var(--border-radius-cell);
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.clickable:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.reasonText {
+    font-size: 15px;
+    font-weight: bold;
+    color: var(--dark-text-color);
+    text-align: center;
+    margin-bottom: 2px;
+}
+
+.missingText {
+    color: #d32f2f !important; /* Red */
+}
+
+.existingText {
+    color: #1976d2 !important; /* Blue */
+}
+
+.countText {
+    font-size: 13px;
+    color: #555;
+    text-align: center;
+}
+
+@media print {
+    .scheduleCell {
+        height: auto !important;
+        min-height: 60px;
+        width: 65px !important;
+        min-width: 65px !important;
+        max-width: 65px !important;
+        border: 2px solid #ddd !important;
+    }
+
+    .cellContent {
+        background-color: #fff !important;
+        border: none !important;
+        min-height: 50px !important;
+        gap: 2px !important;
+    }
+
+    .reasonText {
+        color: #000 !important;
+        font-size: 11px !important;
+    }
+
+    .countText {
+        color: #333 !important;
+        font-size: 9px !important;
+    }
+
+    .clickable {
+        cursor: default !important;
+    }
+
+    .clickable:hover {
+        background-color: transparent !important;
+    }
+}

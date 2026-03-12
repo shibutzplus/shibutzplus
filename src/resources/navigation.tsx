@@ -35,12 +35,6 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
                 p: routePath.dailyBuild.p,
                 Icon: <Icons.dailyCalendar size={24} />,
             },
-            {
-                name: routePath.history.menuTitle ?? routePath.history.title,
-                p: routePath.history.p,
-                Icon: <Icons.history size={24} />,
-                isGuestBlocked: true,
-            },
         ],
     },
 
@@ -96,6 +90,18 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
         type: "private",
         isCollapse: true,
         links: [
+            {
+                name: routePath.missingReport.menuTitle ?? routePath.missingReport.title,
+                p: routePath.missingReport.p,
+                Icon: <Icons.report size={24} />,
+                isGuestBlocked: true,
+            },
+            {
+                name: routePath.history.menuTitle ?? routePath.history.title,
+                p: routePath.history.p,
+                Icon: <Icons.history size={24} />,
+                isGuestBlocked: true,
+            },
             {
                 name: routePath.statistics.menuTitle ?? routePath.statistics.title,
                 p: routePath.statistics.p,

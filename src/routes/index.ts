@@ -29,6 +29,7 @@ const router: Record<string, IRoute> = {
     annualBuildByTeacher: { id: "annualBuildByTeacher", p: "/annual-build-teacher", private: true, title: "מערכת לפי מורה", menuTitle: "שינוי מערכת לפי מורה" },
     annualAltBuild: { id: "annualAltBuild", p: "/annual-alt-build", private: true, title: "מערכת זמן חירום", menuTitle: "שינוי מערכת" },
     annualAltView: { id: "annualAltView", p: "/annual-alt-view", private: true, title: "מערכת זמן חירום", menuTitle: "צפייה לפי כיתה ומורה" },
+    missingReport: { id: "missingReport", p: "/missing-report", private: true, title: "דיווח חודשי" },
     statistics: { id: "statistics", p: "/statistics", private: true, title: "סטטיסטיקות" },
 
     // Teachers Portal

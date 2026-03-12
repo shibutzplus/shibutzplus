@@ -10,7 +10,6 @@
     width: max-content;
     min-width: 100%;
     background-color: var(--table-gray-color);
-    border-radius: var(--border-radius-table);
     border-collapse: separate;
     border-spacing: 0;
     border: none;
