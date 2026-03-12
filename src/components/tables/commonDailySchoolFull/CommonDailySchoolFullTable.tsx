@@ -8,7 +8,6 @@ import { getCellDisplayData } from "@/utils/dailyCellDisplay";
 import { COLOR_BY_TYPE } from "@/models/constant/daily";
 import { calculateVisibleRowsForDaily } from "@/utils/tableUtils";
 import { AppType } from "@/models/types";
-import type { TeacherType } from "@/models/types/teachers";
 import { successToast } from "@/lib/toast";
 import CommonDailySchoolFullEventCell from "./CommonDailySchoolFullEventCell";
 
@@ -21,7 +20,6 @@ type CommonDailySchoolFullTableProps = {
     toHour?: number;
     EmptyTable?: React.FC<{ date?: string; text?: string }>;
     appType?: AppType;
-    onTeacherClick?: (teacher: TeacherType) => void;
     emptyText?: string;
     showReasonCaption?: boolean;
 };
@@ -33,7 +31,6 @@ const CommonDailySchoolFullTable: React.FC<CommonDailySchoolFullTableProps> = ({
     toHour = 10,
     EmptyTable,
     appType = "public",
-    onTeacherClick,
     emptyText,
     showReasonCaption = false,
 }) => {
@@ -151,7 +148,6 @@ const CommonDailySchoolFullTable: React.FC<CommonDailySchoolFullTableProps> = ({
 
                     // Determine header text
                     let headerText = "";
-                    let headerTeacher: TeacherType | undefined;
                     let reason: string | undefined;
 
                     if (type === ColumnTypeValues.event) {
@@ -160,12 +156,11 @@ const CommonDailySchoolFullTable: React.FC<CommonDailySchoolFullTableProps> = ({
                     } else {
                         const headerCell = Object.values(column).find(c => c?.headerCol?.headerTeacher);
                         headerText = headerCell?.headerCol?.headerTeacher?.name || "";
-                        headerTeacher = headerCell?.headerCol?.headerTeacher;
                         reason = headerCell?.headerCol?.reason;
                     }
 
                     const isMissingTeacher = type === ColumnTypeValues.missingTeacher;
-                    const isClickable = !!onTeacherClick && type !== ColumnTypeValues.event && !!headerTeacher;
+                    const isExistingTeacher = type === ColumnTypeValues.existingTeacher;
 
                     return (
                         <div
@@ -173,21 +168,16 @@ const CommonDailySchoolFullTable: React.FC<CommonDailySchoolFullTableProps> = ({
                             className={styles.headerCell}
                             style={{
                                 backgroundColor: COLOR_BY_TYPE[type] || "#ccc",
-                                cursor: isClickable ? "pointer" : "default"
-                            }}
-                            onClick={() => {
-                                if (isClickable && headerTeacher && onTeacherClick) {
-                                    onTeacherClick(headerTeacher);
-                                }
+                                cursor: "default"
                             }}
                         >
-                            <div className={`${styles.headerContent} ${showReasonCaption ? styles.withCaption : ""}`}>
+                            <div className={styles.headerContent}>
                                 <span className={styles.headerText} title={headerText}>
                                     {headerText}
                                 </span>
                                 {showReasonCaption && (
                                     <span className={styles.reasonCaption}>
-                                        {isMissingTeacher && !reason ? "אין סיבת היעדרות" : "\u00A0"}
+                                        {isMissingTeacher && !reason ? "חסרה סיבת היעדרות" : (isExistingTeacher && !reason ? "חסרה סיבה לשינוי" : "")}
                                     </span>
                                 )}
                             </div>

@@ -118,9 +118,9 @@
 
 @media (max-width: 410px) {
     .teacherSelectWrapper {
-        width: 100px;
-        min-width: 100px;
-        max-width: 100px;
+        width: 150px;
+        min-width: 150px;
+        max-width: 150px;
     }
 }
 

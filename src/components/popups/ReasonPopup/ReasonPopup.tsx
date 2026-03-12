@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import styles from "./ReasonPopup.module.css";
-import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import { reasonSchema } from "@/models/validation/reason";
 import { SelectOption } from "@/models/types";
 
@@ -25,11 +24,18 @@ const ReasonPopup: React.FC<ReasonPopupProps> = ({
     onConfirm,
     onCancel,
 }) => {
-    const [reason, setReason] = useState(initialReason);
+    // Check if initialReason is in predefined options
+    const isPredefined = REASON_OPTIONS.some(opt => opt.value === initialReason);
+    const initialSelectValue = initialReason === "" ? "" : (isPredefined ? initialReason : "other");
+    const initialCustomValue = isPredefined ? "" : initialReason;
+
+    const [selectValue, setSelectValue] = useState(initialSelectValue);
+    const [customReason, setCustomReason] = useState(initialCustomValue);
     const [error, setError] = useState("");
 
     const handleConfirm = () => {
-        const trimmed = reason.trim();
+        const finalReason = selectValue === "other" ? customReason : selectValue;
+        const trimmed = finalReason.trim();
         if (!trimmed) {
             onConfirm("");
             return;
@@ -44,8 +50,17 @@ const ReasonPopup: React.FC<ReasonPopupProps> = ({
         onConfirm(parsed.data);
     };
 
-    const handleChange = (value: string) => {
-        setReason(value);
+    const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const val = e.target.value;
+        setSelectValue(val);
+        if (val !== "other") {
+            setCustomReason("");
+        }
+        if (error) setError("");
+    };
+
+    const handleCustomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setCustomReason(e.target.value);
         if (error) setError("");
     };
 
@@ -54,18 +69,31 @@ const ReasonPopup: React.FC<ReasonPopupProps> = ({
             <div className={styles.title}>סיבת היעדרות</div>
 
             <div className={styles.inputContainer}>
-                <DynamicInputSelect
-                    options={REASON_OPTIONS}
-                    value={reason}
-                    onChange={handleChange}
-                    placeholder="בחירה או הקלדה חופשית"
-                    isSearchable
-                    isCreatable
-                    isClearable
-                    hasBorder
-                    formatCreateLabel={(inputValue) => `"${inputValue}"`}
-                    menuPortalTarget={null}
-                />
+                <select
+                    className={styles.nativeSelect}
+                    value={selectValue}
+                    onChange={handleSelectChange}
+                >
+                    <option value="">ללא סיבה...</option>
+                    {REASON_OPTIONS.map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                        </option>
+                    ))}
+                    <option value="other">אחר...</option>
+                </select>
+
+                {selectValue === "other" && (
+                    <input
+                        type="text"
+                        className={styles.customInput}
+                        value={customReason}
+                        onChange={handleCustomChange}
+                        placeholder="הקלדת סיבה..."
+                        maxLength={20}
+                        autoFocus
+                    />
+                )}
                 {error && <div className={styles.errorMessage}>{error}</div>}
             </div>
 
