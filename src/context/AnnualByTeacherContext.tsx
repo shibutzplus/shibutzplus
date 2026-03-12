@@ -86,7 +86,7 @@ export const AnnualByTeacherProvider: React.FC<{ children: React.ReactNode }> = 
         const currentCell = schedule[selectedTeacherId]?.[day]?.[hour];
         const prevElementIds = currentCell?.[type] || [];
 
-        let classIds = type === "classes" ? elementIds : currentCell?.classes || [];
+        const classIds = type === "classes" ? elementIds : currentCell?.classes || [];
         let subjectIds = type === "subjects" ? elementIds : currentCell?.subjects || [];
 
         // If the last class was removed, auto-clear the subjects as well

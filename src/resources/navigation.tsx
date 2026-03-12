@@ -10,6 +10,7 @@ export interface ILink {
     isGuestBlocked?: boolean;
     action?: string;
     hasDivider?: boolean;
+    shortcut?: string;
 }
 
 export interface ILinkGroup {
@@ -30,88 +31,39 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
         isCollapse: false,
         links: [
             {
-                name: routePath.dailyBuild.title,
+                name: routePath.dailyBuild.menuTitle ?? routePath.dailyBuild.title,
                 p: routePath.dailyBuild.p,
                 Icon: <Icons.dailyCalendar size={24} />,
             },
             {
-                name: routePath.annualView.title,
-                p: routePath.annualView.p,
-                Icon: <Icons.calendar size={24} />,
-            },
-            {
-                name: routePath.history.title,
+                name: routePath.history.menuTitle ?? routePath.history.title,
                 p: routePath.history.p,
                 Icon: <Icons.history size={24} />,
-                isGuestBlocked: true,
-            },
-            {
-                name: routePath.reports.title,
-                p: routePath.reports.p,
-                Icon: <Icons.stats size={24} />,
                 isGuestBlocked: true,
             },
         ],
     },
 
     {
-        id: "school_settings",
-        title: "ניהול משאבים",
-        type: "private",
-        isCollapse: true,
-        links: [
-            {
-                name: routePath.teachers.title,
-                p: routePath.teachers.p,
-                Icon: <Icons.teacher size={24} />,
-                isGuestBlocked: true,
-            },
-            {
-                name: routePath.substitute.title,
-                p: routePath.substitute.p,
-                Icon: <Icons.substituteTeacher size={24} />,
-                isGuestBlocked: true,
-            },
-            {
-                name: routePath.staff.title,
-                p: routePath.staff.p,
-                Icon: <Icons.staff size={24} />,
-                isGuestBlocked: true,
-            },
-            {
-                name: routePath.subjects.title,
-                p: routePath.subjects.p,
-                Icon: <Icons.book size={24} />,
-                isGuestBlocked: true,
-            },
-            {
-                name: routePath.classes.title,
-                p: routePath.classes.p,
-                Icon: <Icons.chair size={24} />,
-                isGuestBlocked: true,
-            },
-            {
-                name: routePath.groups.title,
-                p: routePath.groups.p,
-                Icon: <Icons.users size={24} />,
-                isGuestBlocked: true,
-            },
-        ],
-    },
-    {
         id: "built_schedule",
-        title: "שינויים במערכת השנתית",
+        title: "מערכת שנתית",
         type: "private",
         isCollapse: true,
         links: [
             {
-                name: "מערכת לפי כיתה",
+                name: routePath.annualView.menuTitle ?? routePath.annualView.title,
+                p: routePath.annualView.p,
+                Icon: <Icons.calendar size={24} />,
+                shortcut: "Ctrl+M",
+            },
+            {
+                name: routePath.annualBuildByClass.menuTitle ?? routePath.annualBuildByClass.title,
                 p: routePath.annualBuildByClass.p,
                 Icon: <Icons.calendar size={24} />,
                 isGuestBlocked: true,
             },
             {
-                name: "מערכת לפי מורה",
+                name: routePath.annualBuildByTeacher.menuTitle ?? routePath.annualBuildByTeacher.title,
                 p: routePath.annualBuildByTeacher.p,
                 Icon: <Icons.calendar size={24} />,
                 isGuestBlocked: true,
@@ -125,13 +77,13 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
         isCollapse: true,
         links: [
             {
-                name: "שינוי מערכת",
+                name: routePath.annualAltBuild.menuTitle ?? routePath.annualAltBuild.title,
                 p: routePath.annualAltBuild.p,
                 Icon: <Icons.calendar size={24} />,
                 isGuestBlocked: true,
             },
             {
-                name: "צפייה לפי כיתה ומורה",
+                name: routePath.annualAltView.menuTitle ?? routePath.annualAltView.title,
                 p: routePath.annualAltView.p,
                 Icon: <Icons.calendar size={24} />,
                 isGuestBlocked: true,
@@ -139,13 +91,73 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
         ],
     },
     {
+        id: "statistics",
+        title: "דוחות",
+        type: "private",
+        isCollapse: true,
+        links: [
+            {
+                name: routePath.statistics.menuTitle ?? routePath.statistics.title,
+                p: routePath.statistics.p,
+                Icon: <Icons.stats size={24} />,
+                isGuestBlocked: true,
+            },
+        ],
+    },
+
+    {
+        id: "school_settings",
+        title: "ניהול משאבים",
+        type: "private",
+        isCollapse: true,
+        links: [
+            {
+                name: routePath.teachers.menuTitle ?? routePath.teachers.title,
+                p: routePath.teachers.p,
+                Icon: <Icons.teacher size={22} />,
+                isGuestBlocked: true,
+            },
+            {
+                name: routePath.substitute.menuTitle ?? routePath.substitute.title,
+                p: routePath.substitute.p,
+                Icon: <Icons.substituteTeacher size={24} />,
+                isGuestBlocked: true,
+            },
+            {
+                name: routePath.staff.menuTitle ?? routePath.staff.title,
+                p: routePath.staff.p,
+                Icon: <Icons.staff size={24} />,
+                isGuestBlocked: true,
+            },
+            {
+                name: routePath.subjects.menuTitle ?? routePath.subjects.title,
+                p: routePath.subjects.p,
+                Icon: <Icons.book size={24} />,
+                isGuestBlocked: true,
+            },
+            {
+                name: routePath.classes.menuTitle ?? routePath.classes.title,
+                p: routePath.classes.p,
+                Icon: <Icons.chair size={24} />,
+                isGuestBlocked: true,
+            },
+            {
+                name: routePath.groups.menuTitle ?? routePath.groups.title,
+                p: routePath.groups.p,
+                Icon: <Icons.users size={24} />,
+                isGuestBlocked: true,
+            },
+        ],
+    },
+
+    {
         id: USER_ROLES.ADMIN,
         title: "Admin",
         type: "private",
         isCollapse: true,
         links: [
             {
-                name: "הוספת מנהל",
+                name: routePath.signUp.menuTitle ?? routePath.signUp.title,
                 p: routePath.signUp.p,
                 Icon: <Icons.users size={24} />,
                 isGuestBlocked: true,
@@ -174,19 +186,19 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
         isOpenByDefault: true,
         links: [
             {
-                name: "המערכת שלי",
+                name: routePath.teacherChanges.menuTitle ?? routePath.teacherChanges.title,
                 p: routePath.teacherChanges.p,
                 Icon: <Icons.teacher size={22} />,
             },
             {
-                name: "מערכת בית ספרית",
+                name: routePath.schoolChanges.menuTitle ?? routePath.schoolChanges.title,
                 p: routePath.schoolChanges.p,
                 Icon: <Icons.calendar size={24} />,
             },
             {
                 name: (
                     <div style={{ display: "flex", flexDirection: "column", lineHeight: "1.2" }}>
-                        <span>מערכת בית ספרית</span>
+                        <span>{(routePath.schoolChangesFull.menuTitle ?? routePath.schoolChangesFull.title) as string}</span>
                         <span style={{ fontSize: "0.85em", paddingTop: "5px" }}>(מסך מלא)</span>
                     </div>
                 ),
@@ -203,12 +215,12 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
         isOpenByDefault: true,
         links: [
             {
-                name: "מערכת שלי",
+                name: routePath.teacherChangesAlt.menuTitle ?? routePath.teacherChangesAlt.title,
                 p: routePath.teacherChangesAlt.p,
                 Icon: <Icons.teacher size={24} />,
             },
             {
-                name: "מערכת בית ספרית",
+                name: routePath.schoolChangesAlt.menuTitle ?? routePath.schoolChangesAlt.title,
                 p: routePath.schoolChangesAlt.p,
                 Icon: <Icons.calendar size={24} />,
             },

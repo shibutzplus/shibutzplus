@@ -6,7 +6,6 @@ import { checkAuthAndParams, checkIsNotGuest } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { eq, asc } from "drizzle-orm";
-import { getSubjectsAction } from "@/app/actions/GET/getSubjectsAction";
 import { dbLog } from "@/services/loggerService";
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
 import { ENTITIES_DATA_CHANGED } from "@/models/constant/sync";

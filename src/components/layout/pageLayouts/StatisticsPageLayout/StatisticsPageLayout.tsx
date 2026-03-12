@@ -1,23 +1,23 @@
 "use client";
 import React from "react";
-import styles from "./ReportsPageLayout.module.css";
+import styles from "./StatisticsPageLayout.module.css";
 import PageLayout from "../../PageLayout/PageLayout";
 import router from "@/routes";
-import { ReportType, ReportTypeValues } from "@/models/types/reports";
+import { StatisticsType, StatisticsTypeValues } from "@/models/types/statistics";
 import { SCHOOL_MONTHS } from "@/utils/time";
 
-type ReportsPageLayoutProps = {
+type StatisticsPageLayoutProps = {
     children: React.ReactNode;
-    statType: ReportType;
-    setStatType: (type: ReportType) => void;
+    statType: StatisticsType;
+    setStatType: (type: StatisticsType) => void;
     month: string;
     setMonth: (month: string) => void;
 };
 
 const OPTIONS = [
-    { value: ReportTypeValues.months, label: "היעדרות לפי חודשים" },
-    { value: ReportTypeValues.teachers, label: "היעדרות לפי מורים" },
-    { value: ReportTypeValues.days, label: "היעדרות לפי ימי השבוע" },
+    { value: StatisticsTypeValues.months, label: "היעדרות לפי חודשים" },
+    { value: StatisticsTypeValues.teachers, label: "היעדרות לפי מורים" },
+    { value: StatisticsTypeValues.days, label: "היעדרות לפי ימי השבוע" },
 ];
 
 const MONTH_OPTIONS = [
@@ -26,9 +26,9 @@ const MONTH_OPTIONS = [
 ];
 
 const SHORT_OPTIONS = [
-    { value: ReportTypeValues.months, label: "לפי חודש" },
-    { value: ReportTypeValues.teachers, label: "לפי מורה" },
-    { value: ReportTypeValues.days, label: "לפי ימים" },
+    { value: StatisticsTypeValues.months, label: "לפי חודש" },
+    { value: StatisticsTypeValues.teachers, label: "לפי מורה" },
+    { value: StatisticsTypeValues.days, label: "לפי ימים" },
 ];
 
 // Helper to generate formatted month options for mobile
@@ -48,16 +48,16 @@ const getMobileMonthOptions = () => {
     ];
 };
 
-export default function ReportsPageLayout({
+export default function StatisticsPageLayout({
     children,
     statType,
     setStatType,
     month,
     setMonth,
-}: ReportsPageLayoutProps) {
+}: StatisticsPageLayoutProps) {
     const handleChange = (value: string) => {
-        if (value in ReportTypeValues) {
-            setStatType(value as ReportType);
+        if (value in StatisticsTypeValues) {
+            setStatType(value as StatisticsType);
         }
     };
     const handleMonthChange = (value: string) => {
@@ -68,7 +68,7 @@ export default function ReportsPageLayout({
 
     const HeaderRightActions = (
         <>
-            <h3 className={styles.pageTitle}>{router.reports.title}</h3>
+            <h3 className={styles.pageTitle}>{router.statistics.title}</h3>
             <div className={styles.selectContainer}>
                 <div className={styles.statsSelectWrapper}>
                     {/* Desktop Select */}
@@ -97,7 +97,7 @@ export default function ReportsPageLayout({
                         ))}
                     </select>
                 </div>
-                {statType !== ReportTypeValues.months && (
+                {statType !== StatisticsTypeValues.months && (
                     <div className={styles.monthSelectWrapper}>
                         {/* Desktop Month Select */}
                         <select

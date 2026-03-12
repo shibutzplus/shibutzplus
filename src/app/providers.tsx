@@ -6,40 +6,48 @@ import { PopupProvider } from "@/context/PopupContext"
 import { ValidationProvider } from "@/context/ValidationContext"
 import { ColumnClipboardProvider } from "@/context/ColumnClipboardContext"
 import { BorderRadiusCell, DarkTextColor, FontSize, TabColor } from "@/style/root"
+import { useGlobalShortcuts } from "@/hooks/browser/useGlobalShortcuts"
+
+const GlobalShortcutsHandler = ({ children }: { children: React.ReactNode }) => {
+    useGlobalShortcuts();
+    return <>{children}</>;
+};
 
 export default function Providers({ children }: { children: React.ReactNode }) {
     return (
         <SessionProvider>
-            <ValidationProvider>
-                <ColumnClipboardProvider>
-                    <PopupProvider>
-                        {children}
-                        <Toaster
-                            containerStyle={{
-                                position: "fixed",
-                                top: "50%",
-                                left: "50%",
-                                transform: "translate(-50%, -50%)",
-                                zIndex: 99999,
-                            }}
-                            toastOptions={{
-                                duration: 5000,
-                                style: {
-                                    background: TabColor,
-                                    color: DarkTextColor,
-                                    fontSize: FontSize,
-                                    padding: "4px 10px",
-                                    minHeight: "120px",
-                                    minWidth: "310px",
-                                    lineHeight: "2rem",
-                                    borderRadius: BorderRadiusCell,
-                                    boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.5)",
-                                },
-                            }}
-                        />
-                    </PopupProvider>
-                </ColumnClipboardProvider>
-            </ValidationProvider>
+            <GlobalShortcutsHandler>
+                <ValidationProvider>
+                    <ColumnClipboardProvider>
+                        <PopupProvider>
+                            {children}
+                            <Toaster
+                                containerStyle={{
+                                    position: "fixed",
+                                    top: "50%",
+                                    left: "50%",
+                                    transform: "translate(-50%, -50%)",
+                                    zIndex: 99999,
+                                }}
+                                toastOptions={{
+                                    duration: 5000,
+                                    style: {
+                                        background: TabColor,
+                                        color: DarkTextColor,
+                                        fontSize: FontSize,
+                                        padding: "4px 10px",
+                                        minHeight: "120px",
+                                        minWidth: "310px",
+                                        lineHeight: "2rem",
+                                        borderRadius: BorderRadiusCell,
+                                        boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.5)",
+                                    },
+                                }}
+                            />
+                        </PopupProvider>
+                    </ColumnClipboardProvider>
+                </ValidationProvider>
+            </GlobalShortcutsHandler>
         </SessionProvider>
     )
 }

@@ -3,7 +3,7 @@ import { PortalProvider } from "@/context/PortalContext";
 import { TeacherTableProvider } from "@/context/TeacherTableContext";
 
 export const metadata: Metadata = {
-    title: "המערכת שלי - שינויים",
+    title: "המערכת שלי",
     robots: "noindex, nofollow",
 };
 
