@@ -20,8 +20,8 @@
 .nav {
     position: fixed;
     top: 0;
-    right: -290px;
-    width: 290px;
+    right: -330px;
+    width: 330px;
     height: 100%;
     background-color: var(--tab-color);
     box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
@@ -35,7 +35,7 @@
 }
 
 .nav.open {
-    transform: translateX(-280px);
+    transform: translateX(-320px);
 }
 
 .navHeader {
@@ -63,13 +63,6 @@
     align-items: center;
     gap: 8px;
     margin-right: auto;
-}
-
-.schoolName {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--dark-text-color);
-    opacity: 0.5;
 }
 
 .closeButton:hover {
@@ -129,7 +122,7 @@
 }
 
 .nestedList {
-    padding-right: 15px !important;
+    padding-right: 10px !important;
 }
 
 .navLink {

@@ -1,0 +1,236 @@
+.tableContainer {
+    flex: 1;
+    overflow: auto;
+    max-width: 100%;
+    overscroll-behavior: none;
+    height: 100%;
+}
+
+.scheduleTable {
+    width: max-content;
+    background-color: var(--table-gray-color);
+    border-collapse: separate;
+    border-spacing: 0;
+    border: none;
+}
+
+.scheduleTable thead,
+.scheduleTable tr {
+    border: none !important;
+}
+
+.scheduleTable thead {
+    position: sticky;
+    top: 0;
+    z-index: 21;
+    background-color: transparent;
+}
+
+.scheduleTableBody {
+    width: 100%;
+}
+
+.headerCell {
+    position: sticky;
+    top: 0px;
+    z-index: 50;
+    text-align: center;
+    height: var(--table-annual-header-height);
+    vertical-align: middle;
+    background-color: var(--background-color);
+    border-radius: 0;
+}
+
+.headerInner {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--table-gray-color);
+}
+
+.scheduleTable thead th:nth-child(3) .headerInner {
+    border-top-right-radius: var(--border-radius-table);
+}
+
+.scheduleTable thead th:last-child .headerInner {
+    border-top-left-radius: var(--border-radius-table);
+}
+
+.teacherColumn {
+    position: sticky;
+    right: 0;
+    width: 130px;
+    min-width: 130px;
+    max-width: 130px;
+    padding: 0;
+}
+
+thead .teacherColumn {
+    z-index: 60;
+    background-color: var(--background-color) !important;
+}
+
+tbody .teacherColumn {
+    z-index: 4;
+    background-color: var(--table-gray-color) !important;
+}
+
+tbody tr:first-child .teacherColumn {
+    background-color: var(--background-color) !important;
+}
+
+tbody tr:first-child .teacherCell {
+    background-color: var(--table-gray-color) !important;
+    border-top-right-radius: var(--border-radius-table) !important;
+    border-top-left-radius: var(--border-radius-table) !important;
+    position: absolute;
+    inset: 0;
+    margin: 0 !important;
+}
+
+.teacherCell {
+    text-align: right;
+    vertical-align: middle;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-right: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--dark-text-color);
+    background-color: transparent;
+    border-radius: 0;
+    margin: auto;
+}
+
+.emptyColSeparator,
+.emptyCell {
+    background-color: var(--background-color) !important;
+    width: 5px !important;
+    min-width: 5px !important;
+    padding: 0;
+    border: none !important;
+}
+
+.emptyColSeparator {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    outline: none !important;
+}
+
+.dayColumn {
+    min-width: 140px;
+    width: 140px;
+    max-width: 140px;
+}
+
+.placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60vh;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+@media print {
+    @page {
+        size: landscape;
+        margin: 1cm;
+    }
+
+    .tableContainer {
+        overflow: visible !important;
+        height: auto !important;
+        display: block !important;
+    }
+
+    .scheduleTable {
+        width: max-content !important;
+        max-width: none !important;
+        border-collapse: collapse !important;
+        table-layout: auto !important;
+        background-color: #fff !important;
+        direction: rtl !important;
+    }
+
+    .headerCell,
+    .teacherColumn,
+    .emptyColSeparator,
+    tbody .teacherColumn,
+    tbody tr:first-child .teacherColumn {
+        position: relative !important;
+        background-color: transparent !important;
+        border: 1px solid #ddd !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        right: auto !important;
+        left: auto !important;
+        visibility: visible !important;
+        z-index: auto !important;
+    }
+
+    .teacherColumn {
+        width: 100px !important;
+        min-width: 100px !important;
+        max-width: 100px !important;
+    }
+
+    .headerInner {
+        background-color: #f5f5f5 !important;
+        color: #000 !important;
+        font-size: 14px !important;
+    }
+
+    thead .teacherColumn .headerInner {
+        background-color: transparent !important;
+    }
+
+    .dayColumn {
+        width: 85px !important;
+        min-width: 85px !important;
+        max-width: 85px !important;
+    }
+
+    .headerInner {
+        background-color: #f5f5f5 !important;
+        color: #000 !important;
+        font-size: 14px !important;
+    }
+
+    .teacherCell {
+        color: #000 !important;
+        width: 100% !important;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        visibility: visible !important;
+        font-size: 12px !important;
+        position: static !important;
+        /* Neutralize the absolute positioning from tr:first-child */
+        background-color: transparent !important;
+    }
+
+    tbody tr:first-child .teacherCell {
+        position: static !important;
+        inset: auto !important;
+        border-radius: 0 !important;
+        background-color: transparent !important;
+    }
+
+    .emptyColSeparator,
+    .emptyCell {
+        display: table-cell !important;
+        width: 4px !important;
+        min-width: 4px !important;
+        background-color: #fff !important;
+        border: none !important;
+    }
+}
