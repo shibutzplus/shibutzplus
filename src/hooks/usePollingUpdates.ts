@@ -39,7 +39,7 @@ export const usePollingUpdates = (
 
         const NO_POLLING_ROUTES = [
             router.history.p,
-            router.reports.p,
+            router.statistics.p,
             router.faqManager.p,
             router.faqTeachers.p,
         ];

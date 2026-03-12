@@ -74,6 +74,9 @@ const LinkComponent: React.FC<LinkComponentProps> = ({ link, onClose, currentPat
             >
                 {link.Icon}
                 <span>{link.name}</span>
+                {link.shortcut && (
+                    <span className={styles.shortcut}>{link.shortcut}</span>
+                )}
             </Link>
         </div>
     );
@@ -145,7 +148,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
         .filter((group) => {
             if (group.id === "admin" && userRole !== USER_ROLES.ADMIN) return false;
 
-            if (group.id === "alt_schedule") {
+            if (group.id === "alt_schedule" || group.id === "emergency_schedule") {
                 const isAltScheduleEnabled = schoolSettings?.displayAltSchedule || context?.settings?.displayAltSchedule;
                 if (!isAltScheduleEnabled) return false;
             }
@@ -221,7 +224,8 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                     return link;
                 }).filter(Boolean) as ILink[],
             };
-        });
+        })
+        .filter((group) => group.links.length > 0);
 
     const [expandedGroups, setExpandedGroups] = React.useState<string[]>([]);
 

@@ -3,7 +3,7 @@ import Icons from "@/style/icons";
 
 export interface FaqItemResource {
     question: string;
-    answer: (context?: any) => React.ReactNode;
+    answer: (context?: unknown) => React.ReactNode;
 }
 
 export const FAQ_TEACHERS_ITEMS = (teacherLink: string, onCopyLink: () => void): FaqItemResource[] => [
@@ -111,7 +111,7 @@ export const FAQ_MANAGER_ITEMS: FaqItemResource[] = [
                 <br />
                 למה זה טוב?
                 <br />
-                כדי שתוכלו לזהות בקלות מי מהמורים יותר זמין. הרבה יותר קל "למשוך" למילוי מקום מורה שנמצא בשעת שהייה או בישיבה מאשר מורה שנמצא בשיעור מול כיתה.
+                כדי שתוכלו לזהות בקלות מי מהמורים יותר זמין. הרבה יותר קל &quot;למשוך&quot; למילוי מקום מורה שנמצא בשעת שהייה או בישיבה מאשר מורה שנמצא בשיעור מול כיתה.
             </>
         ),
     },
