@@ -3,8 +3,8 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "next dev --turbopack",
-        "dev:open": "open http://localhost:3000 && next dev --turbopack",
+        "dev": "start http://localhost:3000 && next dev --turbopack",
+        "dev:open": "start http://localhost:3000 && next dev --turbopack",
         "build": "next build",
         "start": "next start",
         "lint": "next lint",

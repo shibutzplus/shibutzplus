@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { NextPage } from "next";
 import { useMainContext } from "@/context/MainContext";
 import { useDailyTableContext } from "@/context/DailyTableContext";
-import { TeacherTableProvider, useTeacherTableContext } from "@/context/TeacherTableContext";
+import { TeacherTableProvider } from "@/context/TeacherTableContext";
 import Preloader from "@/components/ui/Preloader/Preloader";
 import SlidingPanel from "@/components/ui/SlidingPanel/SlidingPanel";
 import FullScreenContainer from "@/components/layout/pageLayouts/FullScreenLayout/FullScreenContainer";
