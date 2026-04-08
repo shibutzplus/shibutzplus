@@ -28,7 +28,7 @@ if (!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY)
     }
 } else {
     webpush.setVapidDetails(
-        "mailto:shibutzplus@gmail.com",
+        "mailto:contact@shibutzplus.com",
         process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY.trim(),
         process.env.VAPID_PRIVATE_KEY.trim()
     );

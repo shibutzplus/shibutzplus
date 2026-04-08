@@ -4,7 +4,7 @@ const messages = {
         serverError: "שגיאת בשליפת הנתונים. אנא נסו שוב"
     },
     auth: {
-        accessDenied: "נראה שהגעתם לאזור המיועד למנהלי המערכת. אם ברצונכם להצטרף או להתנסות בשיבוץ+, כיתבו לנו ל-shibutzplus@gmail.com",
+        accessDenied: "נראה שהגעתם לאזור המיועד למנהלי המערכת. אם ברצונכם להצטרף או להתנסות בשיבוץ+, כיתבו לנו ל-contact@shibutzplus.com",
         unauthorized: "אין הרשאה. יש להתחבר כדי לגשת למידע זה",
         paramRequired: "פרמטר נדרש",
         login: {

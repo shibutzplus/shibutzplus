@@ -24,19 +24,75 @@ type CommonDailySchoolTeacherHeaderProps = {
     };
 };
 
-const CommonDailySchoolTeacherHeader: React.FC<CommonDailySchoolTeacherHeaderProps> = ({
+// ─── Shared base layout (no context hooks) ────────────────────────────────────
+
+type TeacherHeaderBaseProps = {
+    type: ColumnType;
+    selectedTeacherName: string;
+    showMenu: boolean;
+    headerRef: React.RefObject<HTMLDivElement | null>;
+    onViewMaterial: () => void;
+    onReasonClick: () => void;
+};
+
+const TeacherHeaderBase: React.FC<TeacherHeaderBaseProps> = ({
     type,
-    column,
-    appType,
-    selectedDate,
-    onTeacherClick,
-}) => {
+    selectedTeacherName,
+    showMenu,
+    headerRef,
+    onViewMaterial,
+    onReasonClick,
+}) => (
+    <div ref={headerRef} className={styles.columnHeaderWrapper}>
+        <div className={styles.columnHeader} style={{ backgroundColor: COLOR_BY_TYPE[type] }}>
+            {showMenu && (
+                <div className={styles.menuContainer}>
+                    <CommonDailySchoolHeaderMenu
+                        onViewMaterial={onViewMaterial}
+                        onReason={onReasonClick}
+                        showViewMaterial={true}
+                        showReason={true}
+                    />
+                </div>
+            )}
+            <div className={styles.headerText}>{selectedTeacherName}</div>
+        </div>
+    </div>
+);
+
+// ─── Public variant — no private context hooks ────────────────────────────────
+
+const CommonDailySchoolTeacherHeaderPublic: React.FC<
+    Omit<CommonDailySchoolTeacherHeaderProps, "appType">
+> = ({ type, column }) => {
+    const selectedTeacherName = column?.["1"]?.headerCol?.headerTeacher?.name ?? "";
+    const headerRef = React.useRef<HTMLDivElement>(null);
+    useStickyHeader(headerRef);
+
+    return (
+        <TeacherHeaderBase
+            type={type}
+            selectedTeacherName={selectedTeacherName}
+            showMenu={false}
+            headerRef={headerRef}
+            onViewMaterial={() => { }}
+            onReasonClick={() => { }}
+        />
+    );
+};
+
+// ─── Private variant — uses MainContext / HistoryTable / Popup ────────────────
+
+const CommonDailySchoolTeacherHeaderPrivate: React.FC<
+    Omit<CommonDailySchoolTeacherHeaderProps, "appType">
+> = ({ type, column, selectedDate, onTeacherClick }) => {
     const { school } = useMainContext();
     const { fetchTeacherScheduleDate } = useTeacherTableContext();
     const { openPopup, closePopup } = usePopup();
     const { setMainDailyTable } = useHistoryTable();
 
     const selectedTeacherData = column?.["1"]?.headerCol?.headerTeacher;
+    const selectedTeacherName = selectedTeacherData?.name ?? "";
     const isClickable = !!selectedTeacherData?.name;
     const headerRef = React.useRef<HTMLDivElement>(null);
     useStickyHeader(headerRef);
@@ -51,8 +107,7 @@ const CommonDailySchoolTeacherHeader: React.FC<CommonDailySchoolTeacherHeaderPro
     const handleReasonClick = () => {
         if (!isClickable || !selectedTeacherData?.name || !school?.id) return;
 
-        // Find current reason
-        const cellWithHeader = Object.values(column).find(c => c?.headerCol);
+        const cellWithHeader = Object.values(column).find((c) => c?.headerCol);
         const currentReason = cellWithHeader?.headerCol?.reason || "";
 
         openPopup(
@@ -65,7 +120,7 @@ const CommonDailySchoolTeacherHeader: React.FC<CommonDailySchoolTeacherHeaderPro
                     const response = await updateHistoryReasonAction(
                         school.id,
                         selectedDate,
-                        selectedTeacherData.name, // The history table uses teacher name as identifier in the action
+                        selectedTeacherData.name,
                         newReason
                     );
 
@@ -76,7 +131,7 @@ const CommonDailySchoolTeacherHeader: React.FC<CommonDailySchoolTeacherHeaderPro
                                 updated[selectedDate] = { ...updated[selectedDate] };
                                 Object.keys(updated[selectedDate]).forEach((colId) => {
                                     const col = updated[selectedDate][colId];
-                                    const colHeader = Object.values(col).find(c => c?.headerCol)?.headerCol;
+                                    const colHeader = Object.values(col).find((c) => c?.headerCol)?.headerCol;
                                     if (colHeader?.headerTeacher?.name === selectedTeacherData.name) {
                                         updated[selectedDate][colId] = { ...col };
                                         Object.keys(updated[selectedDate][colId]).forEach((hour) => {
@@ -102,32 +157,25 @@ const CommonDailySchoolTeacherHeader: React.FC<CommonDailySchoolTeacherHeaderPro
         );
     };
 
-    // Only show menu in private app mode (history screen)
-    const showMenu = appType === "private" && isClickable;
-
     return (
-        <div
-            ref={headerRef}
-            className={styles.columnHeaderWrapper}
-        >
-            <div
-                className={styles.columnHeader}
-                style={{ backgroundColor: COLOR_BY_TYPE[type] }}
-            >
-                {showMenu && (
-                    <div className={styles.menuContainer}>
-                        <CommonDailySchoolHeaderMenu
-                            onViewMaterial={handleViewMaterial}
-                            onReason={handleReasonClick}
-                            showViewMaterial={true}
-                            showReason={true}
-                        />
-                    </div>
-                )}
-                <div className={styles.headerText}>{selectedTeacherData?.name || ""}</div>
-            </div>
-        </div>
+        <TeacherHeaderBase
+            type={type}
+            selectedTeacherName={selectedTeacherName}
+            showMenu={isClickable}
+            headerRef={headerRef}
+            onViewMaterial={handleViewMaterial}
+            onReasonClick={handleReasonClick}
+        />
     );
+};
+
+// ─── Public export — picks the right variant based on appType ─────────────────
+
+const CommonDailySchoolTeacherHeader: React.FC<CommonDailySchoolTeacherHeaderProps> = (props) => {
+    if (props.appType === "public") {
+        return <CommonDailySchoolTeacherHeaderPublic {...props} />;
+    }
+    return <CommonDailySchoolTeacherHeaderPrivate {...props} />;
 };
 
 export default CommonDailySchoolTeacherHeader;
