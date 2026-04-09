@@ -48,7 +48,14 @@ shibutzplus@gmail.com
 ## Trello
 https://trello.com/b/SrahpnDm/%D7%A9%D7%99%D7%91%D7%95%D7%A5
 
-## GIT
-git checkout -b NewName
-git checkout main
+## Github - How to?
+git checkout -b NewName    /* Need to develop in new brach */
+
+git checkout main           /* Need to pull the main brach after deploy on vercel */
 git pull origin main
+
+## Deploy on Vercel
+Goto Github https://github.com/shibutzplus/shibutzplus/pulls
+Click on "New pull request"
+Click on "Create pull request"
+Click on "Merge pull request"
