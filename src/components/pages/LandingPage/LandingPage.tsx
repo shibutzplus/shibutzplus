@@ -222,7 +222,7 @@ export default function LandingPage() {
                                 </motion.li>
                                 <motion.li variants={fadeInUp}>
                                     <strong>שקיפות / סנכרון:</strong> המנהל והמורים רואים את כל
-                                    השינויים והעדכונים אצלם במחשב או בטלפון בזמן אמת.
+                                    השינויים והעדכונים אצלם במחשב או בטלפון הנייד בזמן אמת.
                                 </motion.li>
                                 <motion.li variants={fadeInUp}>
                                     <strong>אירועים בית ספריים:</strong> שילוב אירועים ופעילויות
@@ -234,7 +234,7 @@ export default function LandingPage() {
                                 </motion.li>
                                 <motion.li variants={fadeInUp}>
                                     <strong>פשטות ונגישות:</strong> מערכת ידידותית וקלה לתפעול,
-                                    זמינה מכל מחשב או סמארטפון ללא צורך בהתקנה.
+                                    זמינה מכל מחשב או טלפון נייד ללא צורך בהתקנה.
                                 </motion.li>
                                 <motion.li variants={fadeInUp}>
                                     <strong>עלות:</strong> המערכת כרגע בהרצה ולכן השימוש בה בשלב זה
