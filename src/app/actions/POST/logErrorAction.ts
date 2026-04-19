@@ -7,7 +7,12 @@ import { dbLog, LogParams } from "@/services/loggerService";
  */
 export async function logErrorAction(params: LogParams) {
     const description = params.description || "";
-    if (description.includes("Failed to fetch") || description.includes("Load failed")) {
+    const lowercaseDescription = description.toLowerCase();
+    if (
+        lowercaseDescription.includes("failed to fetch") ||
+        lowercaseDescription.includes("load failed") ||
+        lowercaseDescription.includes("network error")
+    ) {
         return { success: true };
     }
     await dbLog(params);

@@ -28,7 +28,6 @@ export async function publishDailyScheduleAction(
         // Don't add duplicate dates
         const publishDates = Array.isArray(school.publishDates) ? school.publishDates : [];
         if (publishDates.includes(date)) {
-            dbLog({ description: "Error publishing daily schedule: Date already published", schoolId, metadata: { date } });
             return { success: true };
         }
 
