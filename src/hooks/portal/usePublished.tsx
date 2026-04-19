@@ -38,10 +38,10 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
                 getSchoolAction(schoolId) // Public school info
             ]);
 
-            if (teachersRes.success && teachersRes.data) setAllTeachers(teachersRes.data);
-            if (subjectsRes.success && subjectsRes.data) setAllSubjects(subjectsRes.data);
-            if (classesRes.success && classesRes.data) setAllClasses(classesRes.data);
-            if (schoolRes.success && schoolRes.data) {
+            if (teachersRes?.success && teachersRes?.data) setAllTeachers(teachersRes.data);
+            if (subjectsRes?.success && subjectsRes?.data) setAllSubjects(subjectsRes.data);
+            if (classesRes?.success && classesRes?.data) setAllClasses(classesRes.data);
+            if (schoolRes?.success && schoolRes?.data) {
                 setFromHour(schoolRes.data.fromHour ?? 1);
                 setToHour(schoolRes.data.toHour ?? 10);
             }
@@ -49,9 +49,9 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
             setListSchoolId(schoolId);
 
             return {
-                teachers: teachersRes.data,
-                subjects: subjectsRes.data,
-                classes: classesRes.data
+                teachers: teachersRes?.data,
+                subjects: subjectsRes?.data,
+                classes: classesRes?.data
             };
 
         } catch (e) {
@@ -103,7 +103,7 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
                 }
             }
 
-            if (response?.success && response.data && effectiveTeacher) {
+            if (response?.success && response?.data && effectiveTeacher) {
                 const newSchedule = await populateDailyScheduleTable(
                     mainPublishTable,
                     effectiveDate,
@@ -144,7 +144,7 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
             return;
         }
 
-        if (!response.success) {
+        if (!response?.success) {
             if (response.message !== messages.dailySchedule.notPublished) {
                 errorToast(response.message || "בעיה בטעינת המידע, נסו שוב");
             }
