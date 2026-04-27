@@ -97,6 +97,12 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
                 isGuestBlocked: true,
             },
             {
+                name: routePath.replaceReport.menuTitle ?? routePath.replaceReport.title,
+                p: routePath.replaceReport.p,
+                Icon: <Icons.report size={24} />,
+                isGuestBlocked: true,
+            },
+            {
                 name: routePath.history.menuTitle ?? routePath.history.title,
                 p: routePath.history.p,
                 Icon: <Icons.history size={24} />,

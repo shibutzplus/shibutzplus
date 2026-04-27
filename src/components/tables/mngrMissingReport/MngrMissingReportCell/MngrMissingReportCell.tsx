@@ -32,28 +32,40 @@ const MngrMissingReportCell: React.FC<MngrMissingReportCellProps> = ({
         const primaryRecord = records[0];
         const isMissingTeacher = primaryRecord.columnType === ColumnTypeValues.missingTeacher;
 
+        // Build substitute list: group by subTeacher name, count hours, look up role
+        const teachers = context?.teachers || [];
+        const hoursByName: Record<string, number> = {};
+        records.forEach(r => {
+            if (r.subTeacher) {
+                const found = teachers.find(t => t.name === r.subTeacher);
+                if (found) {
+                    hoursByName[r.subTeacher] = (hoursByName[r.subTeacher] || 0) + 1;
+                }
+            }
+        });
+        const substituteList = Object.entries(hoursByName)
+            .sort((a, b) => b[1] - a[1])
+            .map(([name, count]) => {
+                const teacher = teachers.find(t => t.name === name);
+                return { name, count, role: teacher?.role ?? "regular" };
+            });
+
         if (isMissingTeacher) {
             return {
                 type: "missing" as const,
                 reason: primaryRecord.reason || "ללא סיבה",
-                replacementCount: 0
+                substituteList
             };
         } else {
-            // ExistingTeacher: count hours where subTeacher is not null
-            let replacementCount = 0;
-            records.forEach(r => {
-                if (r.subTeacher || r.eventText) {
-                    replacementCount++;
-                }
-            });
-
+            const replacementCount = substituteList.reduce((sum, s) => sum + s.count, 0);
             return {
                 type: "existing" as const,
                 reason: primaryRecord.reason || "",
+                substituteList,
                 replacementCount
             };
         }
-    }, [records]);
+    }, [records, context?.teachers]);
 
     const handleClick = () => {
         if (!displayData || !records[0]?.date) return;
@@ -90,6 +102,24 @@ const MngrMissingReportCell: React.FC<MngrMissingReportCellProps> = ({
         );
     };
 
+    const renderSubstituteList = (list: { name: string; count: number; role: string }[]) => {
+        if (!list || list.length === 0) return null;
+        return (
+            <div className={styles.substituteList}>
+                {list.map(s => (
+                    <div
+                        key={s.name}
+                        className={`${styles.substituteItem} ${
+                            s.role === "substitute" ? styles.substituteRoleSubstitute : styles.substituteRoleRegular
+                        }`}
+                    >
+                        {s.name} ({s.count})
+                    </div>
+                ))}
+            </div>
+        );
+    };
+
     return (
         <td
             className={`${styles.scheduleCell} ${displayData ? styles.clickable : ""}`}
@@ -97,12 +127,15 @@ const MngrMissingReportCell: React.FC<MngrMissingReportCellProps> = ({
         >
             <div className={styles.cellContent}>
                 {displayData && displayData.type === "missing" && (
-                    <div className={`${styles.reasonText} ${styles.missingText}`}>{displayData.reason}</div>
+                    <>
+                        <div className={`${styles.reasonText} ${styles.missingText}`}>{displayData.reason}</div>
+                        {renderSubstituteList(displayData.substituteList)}
+                    </>
                 )}
                 {displayData && displayData.type === "existing" && displayData.replacementCount > 0 && displayData.reason && (
                     <>
                         <div className={`${styles.reasonText} ${styles.existingText}`}>{displayData.reason}</div>
-                        <div className={styles.countText}> {displayData.replacementCount} שעות הוראה</div>
+                        {renderSubstituteList(displayData.substituteList)}
                     </>
                 )}
             </div>

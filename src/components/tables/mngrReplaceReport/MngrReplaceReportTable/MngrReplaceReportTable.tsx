@@ -1,50 +1,37 @@
 import React, { useMemo } from "react";
-import MngrMissingReportCell from "../MngrMissingReportCell/MngrMissingReportCell";
-import styles from "./MngrMissingReportTable.module.css";
+import styles from "./MngrReplaceReportTable.module.css";
 import { SCHOOL_MONTHS, daysInMonth, getCurrentYear, getDayLetterByMonthAndDay } from "@/utils/time";
 import { TeacherType } from "@/models/types/teachers";
-import { MissingReportDictionary } from "@/app/(private)/missing-report/page";
-import { ColumnTypeValues } from "@/models/types/dailySchedule";
+import { ReplaceReportDictionary } from "@/app/(private)/replace-report/page";
 
-type MngrMissingReportTableProps = {
+type MngrReplaceReportTableProps = {
     month: string;
     teacherId: string | null;
     teachers: TeacherType[];
-    reportData: MissingReportDictionary;
-    onRefresh: () => void;
+    reportData: ReplaceReportDictionary;
 };
 
-const MngrMissingReportTable: React.FC<MngrMissingReportTableProps> = ({
+const MngrReplaceReportTable: React.FC<MngrReplaceReportTableProps> = ({
     month,
     teacherId,
     teachers,
     reportData,
-    onRefresh,
 }) => {
-    const isRecordDisplayable = (r: any) => {
-        if (r.columnType === ColumnTypeValues.missingTeacher) return true;
-        if (r.columnType === ColumnTypeValues.existingTeacher) {
-            return !!r.subTeacher && !!r.reason;
-        }
-        return false;
-    };
-
+    // Teachers that have at least one substitution hour this month
     const displayedTeachers = useMemo(() => {
-        const getIsVisible = (tId: string) => {
-            const teacherData = reportData[tId];
-            if (!teacherData) return false;
-            return Object.values(teacherData).some(dayRecords =>
-                dayRecords.some(isRecordDisplayable)
-            );
+        const hasData = (tId: string) => {
+            const days = reportData[tId];
+            if (!days) return false;
+            return Object.values(days).some((count) => count > 0);
         };
 
         if (!teacherId || teacherId === "all") {
-            return teachers.filter(t => getIsVisible(t.id));
+            return teachers.filter((t) => hasData(t.id));
         }
-        return teachers.filter((t) => t.id === teacherId && getIsVisible(t.id));
+        return teachers.filter((t) => t.id === teacherId && hasData(t.id));
     }, [teacherId, teachers, reportData]);
 
-    // Determine how many days to display based on selected month and actual data
+    // Active days: days that have at least one substitution for any displayed teacher
     const activeDaysArray = useMemo(() => {
         let baseDays: number[] = [];
         if (month === "all") {
@@ -58,18 +45,14 @@ const MngrMissingReportTable: React.FC<MngrMissingReportTableProps> = ({
             }
         }
 
-        // Filter out days that have no displayable data for any displayed teacher
-        return baseDays.filter(dayNum => {
-            return displayedTeachers.some(teacher => {
-                const dayRecords = reportData[teacher.id]?.[dayNum];
-                return dayRecords?.some(isRecordDisplayable);
-            });
-        });
+        return baseDays.filter((dayNum) =>
+            displayedTeachers.some((teacher) => (reportData[teacher.id]?.[dayNum] ?? 0) > 0)
+        );
     }, [month, displayedTeachers, reportData]);
 
     if (displayedTeachers.length === 0) {
         return (
-            <div className={styles.placeholder}>אין חיסורים החודש</div>
+            <div className={styles.placeholder}>אין נתוני החלפה החודש</div>
         );
     }
 
@@ -101,15 +84,21 @@ const MngrMissingReportTable: React.FC<MngrMissingReportTableProps> = ({
                                 <div className={styles.teacherCell}>{teacher.name}</div>
                             </td>
                             <td className={styles.emptyCell}></td>
-                            {activeDaysArray.map((dayNum) => (
-                                <MngrMissingReportCell
-                                    key={`${dayNum}-${teacher.id}`}
-                                    dayNumber={dayNum}
-                                    teacherId={teacher.id}
-                                    records={reportData[teacher.id]?.[dayNum] || []}
-                                    onRefresh={onRefresh}
-                                />
-                            ))}
+                            {activeDaysArray.map((dayNum) => {
+                                const count = reportData[teacher.id]?.[dayNum] ?? 0;
+                                return (
+                                    <td
+                                        key={`${teacher.id}-${dayNum}`}
+                                        className={styles.scheduleCell}
+                                    >
+                                        <div className={styles.cellContent}>
+                                            {count > 0 && (
+                                                <span className={styles.hourCount}>{count}</span>
+                                            )}
+                                        </div>
+                                    </td>
+                                );
+                            })}
                         </tr>
                     ))}
                 </tbody>
@@ -118,4 +107,4 @@ const MngrMissingReportTable: React.FC<MngrMissingReportTableProps> = ({
     );
 };
 
-export default MngrMissingReportTable;
+export default MngrReplaceReportTable;

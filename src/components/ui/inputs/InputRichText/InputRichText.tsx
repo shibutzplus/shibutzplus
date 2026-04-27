@@ -18,6 +18,7 @@ import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 type InputRichTextProps = {
     value: string;
     placeholder?: string;
+    placeholderColor?: string;
     onChangeHTML: (html: string) => void;
     onBlurHTML?: (html: string) => void;
     minHeight?: number;
@@ -36,6 +37,7 @@ const normalize = (html: string) => {
 const InputRichText: React.FC<InputRichTextProps> = ({
     value,
     placeholder,
+    placeholderColor,
     onChangeHTML,
     onBlurHTML,
     minHeight = 40,
@@ -244,7 +246,10 @@ const InputRichText: React.FC<InputRichTextProps> = ({
                         onBlur={() => onBlurHTML?.(normalize(editor.getHTML()))}
                     />
                     {value === "" ? (
-                        <div className={styles.placeholder}>
+                        <div
+                            className={styles.placeholder}
+                            style={{ color: placeholderColor }}
+                        >
                             {placeholder || ""}
                         </div>
                     ) : null}
