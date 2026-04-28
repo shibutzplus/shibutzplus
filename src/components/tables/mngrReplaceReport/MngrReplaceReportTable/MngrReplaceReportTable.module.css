@@ -125,9 +125,32 @@ tbody tr:first-child .teacherCell {
 }
 
 .dayColumn {
-    min-width: 140px;
-    width: 140px;
-    max-width: 140px;
+    min-width: 80px;
+    width: 80px;
+    max-width: 80px;
+}
+
+/* --- Cell --- */
+.scheduleCell {
+    padding: 4px;
+    box-sizing: border-box;
+    vertical-align: top;
+}
+
+.cellContent {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 56px;
+    background-color: var(--tab-color);
+    border-radius: var(--border-radius-cell);
+}
+
+.hourCount {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--dark-text-color);
 }
 
 .dayLetter {
@@ -169,7 +192,7 @@ tbody tr:first-child .teacherCell {
         direction: rtl !important;
     }
 
-    /* Release sticky positioning */
+    /* Release sticky positioning for all header/teacher cells */
     .headerCell,
     .teacherColumn,
     .emptyColSeparator,
@@ -186,7 +209,7 @@ tbody tr:first-child .teacherCell {
         z-index: auto !important;
     }
 
-    /* Teacher name column */
+    /* Teacher name column — compact but readable */
     .teacherColumn {
         width: 70px !important;
         min-width: 70px !important;
@@ -194,11 +217,11 @@ tbody tr:first-child .teacherCell {
         padding: 1px 2px !important;
     }
 
-    /* Day number + letter header — compact */
+    /* Day number header — as narrow as possible */
     .dayColumn {
-        width: 65px !important;
-        min-width: 65px !important;
-        max-width: 65px !important;
+        width: 32px !important;
+        min-width: 32px !important;
+        max-width: 32px !important;
         padding: 0 !important;
     }
 
@@ -216,6 +239,7 @@ tbody tr:first-child .teacherCell {
         background-color: transparent !important;
     }
 
+    /* Day letter in header — keep but tiny */
     .dayLetter {
         font-size: 8px !important;
         margin-right: 0 !important;
@@ -246,7 +270,7 @@ tbody tr:first-child .teacherCell {
         background-color: transparent !important;
     }
 
-    /* Collapse separator column */
+    /* Collapse the separator column to almost nothing */
     .emptyColSeparator,
     .emptyCell {
         display: table-cell !important;
@@ -258,27 +282,22 @@ tbody tr:first-child .teacherCell {
         border: none !important;
     }
 
-    /* Cell in MngrMissingReportCell */
+    /* Data cells */
     .scheduleCell {
         padding: 1px !important;
     }
 
-    .reasonText {
-        font-size: 9px !important;
-        margin-bottom: 1px !important;
+    .cellContent {
+        background-color: #fff !important;
+        border: 1px solid #ddd !important;
+        border-radius: 0 !important;
+        min-height: 22px !important;
+        padding: 0 !important;
     }
 
-    .countText {
-        font-size: 8px !important;
-    }
-
-    .substituteList {
-        gap: 0 !important;
-        margin-top: 1px !important;
-    }
-
-    .substituteItem {
-        font-size: 8px !important;
+    .hourCount {
+        font-size: 10px !important;
+        font-weight: 700 !important;
         color: #000 !important;
     }
 }

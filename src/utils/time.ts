@@ -286,3 +286,24 @@ export const getCurrentSchoolYearRange = (): { start: string; end: string } => {
         end: getDateReturnString(endDate),
     };
 };
+
+/**
+ * Returns the Hebrew day-of-week letter (א–ש) for a given school month name and day-of-month.
+ * Uses the current school year to determine the correct calendar year.
+ */
+export const getDayLetterByMonthAndDay = (month: string, dayOfMonth: number): string => {
+    const monthIndex = SCHOOL_MONTHS.indexOf(month);
+    if (monthIndex === -1) return "";
+
+    // actualMonth: 0-indexed JS calendar month (0=Jan, 8=Sept)
+    const actualMonth = (monthIndex + 8) % 12;
+
+    const { start } = getCurrentSchoolYearRange();
+    const startYear = new Date(start).getFullYear();
+
+    // Sept-Dec belong to startYear; Jan-Aug belong to startYear+1
+    const year = actualMonth >= 8 ? startYear : startYear + 1;
+
+    const dayOfWeek = new Date(year, actualMonth, dayOfMonth).getDay(); // 0=Sun
+    return DAYS_OF_WEEK[dayOfWeek] ?? "";
+};

@@ -177,7 +177,7 @@ const CommonDailySchoolFullTable: React.FC<CommonDailySchoolFullTableProps> = ({
                                 </span>
                                 {showReasonCaption && (
                                     <span className={styles.reasonCaption}>
-                                        {isMissingTeacher && !reason ? "חסרה סיבת היעדרות" : (isExistingTeacher && !reason ? "חסרה סיבה לשינוי" : "")}
+                                        {isMissingTeacher && !reason ? "סיבת היעדרות?" : (isExistingTeacher && !reason ? "סיבת השינוי?" : "")}
                                     </span>
                                 )}
                             </div>

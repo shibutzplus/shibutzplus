@@ -38,6 +38,8 @@ const TeacherDailyChangesInstructionsCell: React.FC<TeacherDailyChangesInstructi
 
     const isSubstitute = !!(row?.originalTeacher && teacher?.id !== row.originalTeacher?.id);
 
+    const placeholderInfo = getInstructionPlaceholder(row, teacher);
+
     return (
         <div className={`${row ? styles.cellContent : styles.emptyCell}`}>
             {row ? (
@@ -45,7 +47,8 @@ const TeacherDailyChangesInstructionsCell: React.FC<TeacherDailyChangesInstructi
                     value={instructions}
                     onChangeHTML={setInstructions}
                     onBlurHTML={handleChange}
-                    placeholder={getInstructionPlaceholder(row, teacher)}
+                    placeholder={placeholderInfo.text}
+                    placeholderColor={placeholderInfo.color}
                     minHeight={60}
                     readOnly={isHistoryPage}
                     hideButtons={isSubstitute || row?.isRegular}
