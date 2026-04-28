@@ -12,10 +12,11 @@ import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
 import { ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
 import { revalidateTag } from "next/cache";
 import { cacheTags } from "@/lib/cacheTags";
+import { and, eq, isNull, gte } from "drizzle-orm";
 
 export async function addTeacherAction(
     teacherData: TeacherRequest,
-): Promise<ActionResponse & { data?: TeacherType; errorCode?: string }> {
+): Promise<ActionResponse & { data?: TeacherType; errorCode?: string; hasMatchingDailyText?: boolean }> {
     try {
         const validation = teacherSchema.safeParse(teacherData);
         if (!validation.success) {
@@ -61,10 +62,25 @@ export async function addTeacherAction(
 
         void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: teacherData.schoolId });
 
+        // Check for matching free text in daily schedule (Performance optimized: indexed, limited, future-only)
+        const today = new Date().toISOString().split('T')[0];
+        const matchingDaily = await db.select({ id: schema.dailySchedule.id })
+            .from(schema.dailySchedule)
+            .where(
+                and(
+                    eq(schema.dailySchedule.schoolId, teacherData.schoolId),
+                    isNull(schema.dailySchedule.subTeacherId),
+                    eq(schema.dailySchedule.event, teacherData.name.trim()),
+                    gte(schema.dailySchedule.date, today)
+                )
+            )
+            .limit(1);
+
         return {
             success: true,
             message: messages.teachers.createSuccess,
             data: newTeacher,
+            hasMatchingDailyText: matchingDaily.length > 0,
         };
     } catch (error: any) {
         const pgCode = error?.code ?? error?.cause?.code ?? error?.originalError?.code;
