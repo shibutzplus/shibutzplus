@@ -5,7 +5,7 @@ import { ActionResponse } from "@/models/types/actions";
 import { checkAuthAndParams, checkIsNotGuest } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
-import { eq } from "drizzle-orm";
+import { eq, and, isNull, gte } from "drizzle-orm";
 import { dbLog } from "@/services/loggerService";
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
 import { ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
@@ -15,7 +15,7 @@ import { cacheTags } from "@/lib/cacheTags";
 export async function updateTeacherAction(
     teacherId: string,
     teacherData: TeacherRequest,
-): Promise<ActionResponse & { data?: TeacherType[] }> {
+): Promise<ActionResponse & { data?: TeacherType[]; hasMatchingDailyText?: boolean }> {
     try {
         const authError = await checkAuthAndParams({
             teacherId,
@@ -62,10 +62,25 @@ export async function updateTeacherAction(
 
         void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: teacherData.schoolId });
 
+        // Check for matching free text in daily schedule (Performance optimized: indexed, limited, future-only)
+        const today = new Date().toISOString().split('T')[0];
+        const matchingDaily = await db.select({ id: schema.dailySchedule.id })
+            .from(schema.dailySchedule)
+            .where(
+                and(
+                    eq(schema.dailySchedule.schoolId, teacherData.schoolId),
+                    isNull(schema.dailySchedule.subTeacherId),
+                    eq(schema.dailySchedule.event, teacherData.name.trim()),
+                    gte(schema.dailySchedule.date, today)
+                )
+            )
+            .limit(1);
+
         return {
             success: true,
             message: messages.teachers.updateSuccess,
             data: allTeachersResp || [],
+            hasMatchingDailyText: matchingDaily.length > 0,
         };
     } catch (error) {
         dbLog({

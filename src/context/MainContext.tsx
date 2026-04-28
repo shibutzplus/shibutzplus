@@ -20,7 +20,7 @@ import { deleteSubjectAction } from "@/app/actions/DELETE/deleteSubjectAction";
 import { deleteTeacherAction } from "@/app/actions/DELETE/deleteTeacherAction";
 import useInitData from "@/hooks/useInitData";
 import useInitAnnualData from "@/hooks/useInitAnnualData";
-import { errorToast } from "@/lib/toast";
+import { errorToast, successToast } from "@/lib/toast";
 import { SyncItem, SyncChannel } from "@/services/sync/clientSyncService";
 import { compareHebrew, sortByName } from "@/utils/sort";
 import { usePollingUpdates } from "@/hooks/usePollingUpdates";
@@ -314,6 +314,11 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
 
                 return updatedTeachers;
             });
+
+            if (response.hasMatchingDailyText) {
+                successToast("שימו לב! השם של המורה מופיע כרגע כטקסט חופשי בשיבוץ היומי. יש למחוק את המורה המחליף במסך השיבוץ היומי ולבחור מחדש כדי שהמערכת תוצג בצורה תקינה.", Infinity);
+            }
+
             return response.data;
         }
         if (!response.success && (response as any).errorCode === "23505") {
@@ -326,6 +331,10 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         const response = await updateTeacherAction(teacherId, teacherData);
         if (response.success && response.data) {
             setTeachers(response.data as TeacherType[]);
+
+            if (response.hasMatchingDailyText) {
+                successToast("שימו לב! השם של המורה מופיע כרגע כטקסט חופשי בשיבוץ היומי. יש למחוק את המורה המחליף במסך השיבוץ היומי ולבחור מחדש כדי שהמערכת תוצג בצורה תקינה.", Infinity);
+            }
 
             return response.data;
         }
