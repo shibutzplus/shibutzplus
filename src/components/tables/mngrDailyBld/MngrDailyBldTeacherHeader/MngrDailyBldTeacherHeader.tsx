@@ -18,6 +18,7 @@ import { useTeacherTableContext } from "@/context/TeacherTableContext";
 import { usePopup } from "@/context/PopupContext";
 import ReasonPopup from "@/components/popups/ReasonPopup/ReasonPopup";
 import { updateDailyColumnReasonAction } from "@/app/actions/PUT/updateDailyColumnReasonAction";
+import TeacherCommentPopup from "@/components/popups/TeacherCommentPopup/TeacherCommentPopup";
 
 type MngrDailyBldTeacherHeaderProps = {
     columnId: string;
@@ -206,6 +207,46 @@ const MngrDailyBldTeacherHeader: React.FC<MngrDailyBldTeacherHeaderProps> = ({
                                 >
                                     <Icons.eye size={14} />
                                     <span>חומר הלימוד</span>
+                                </div>
+                                <div
+                                    onClick={() => {
+                                        if (!school?.id) return;
+                                        const columnCells = mainDailyTable[selectedDate]?.[columnId] || {};
+                                        openPopup(
+                                            "teacherCommentPopup",
+                                            "M",
+                                            <TeacherCommentPopup
+                                                teacherName={selectedTeacherData.name || ""}
+                                                columnId={columnId}
+                                                selectedDate={selectedDate}
+                                                columnCells={columnCells}
+                                                schoolId={school.id}
+                                                onSaved={(updatedComments) => {
+                                                    closePopup();
+                                                    setMainDailyTable((prev: any) => {
+                                                        const updated = { ...prev };
+                                                        if (updated[selectedDate]?.[columnId]) {
+                                                            updated[selectedDate] = { ...updated[selectedDate] };
+                                                            updated[selectedDate][columnId] = { ...updated[selectedDate][columnId] };
+                                                            Object.entries(updatedComments).forEach(([hour, comment]) => {
+                                                                const cell = updated[selectedDate][columnId][hour];
+                                                                if (cell) {
+                                                                    updated[selectedDate][columnId][hour] = { ...cell, comment };
+                                                                }
+                                                            });
+                                                        }
+                                                        return updated;
+                                                    });
+                                                }}
+                                                onCancel={closePopup}
+                                            />
+                                        );
+                                        closeMenu();
+                                    }}
+                                    className={styles.menuItem}
+                                >
+                                    <Icons.messageSquare size={14} />
+                                    <span>הערות</span>
                                 </div>
                             </>
                         )

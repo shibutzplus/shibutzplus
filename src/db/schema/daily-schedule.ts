@@ -18,6 +18,7 @@ export const dailySchedule = pgTable('daily_schedule', {
   subjectId: text('subject_id').references(() => subjects.id, { onDelete: 'cascade' }),
   subTeacherId: text('sub_teacher_id').references(() => teachers.id, { onDelete: 'set null' }),
   instructions: text('instructions'),
+  comment: text('comment'),
   eventTitle: text('event_title'),
   event: text('event'),
   reason: text('reason'),

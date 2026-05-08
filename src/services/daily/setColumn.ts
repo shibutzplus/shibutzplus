@@ -56,6 +56,8 @@ export const setTeacherColumn = (
                 event: existingData.event,
                 headerCol: existingData.headerCol,
                 DBid: existingData.DBid,
+                comment: existingData.comment,
+                instructions: existingData.instructions,
             };
         } else {
             // Empty cell

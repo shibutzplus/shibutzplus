@@ -8,18 +8,20 @@ import {
 import { IoMdRefresh } from "react-icons/io";
 import { RiEdit2Fill, RiDeleteBin6Line } from "react-icons/ri";
 import { BsMegaphoneFill, BsCalendar4Event, BsThreeDotsVertical, BsFiletypePdf, BsTable, BsMagic } from "react-icons/bs";
-import { MdPersonAdd, MdPerson, MdSwapHoriz, MdOpenInNew, MdOutlineInstallMobile, MdOutlineInstallDesktop } from "react-icons/md";
+import { MdPersonAdd, MdPerson, MdSwapHoriz, MdOpenInNew, MdOutlineInstallMobile, MdOutlineInstallDesktop, MdMessage } from "react-icons/md";
 import { FaPlus, FaRegCopy, FaRegPaste } from "react-icons/fa6";
 import { FaSave, FaShareAlt, FaQuestion, FaLink, FaCaretLeft, FaCaretRight } from "react-icons/fa";
 import { PiChairLight, PiMonitor, PiMonitorFill, PiBriefcase, PiTableThin } from "react-icons/pi";
 import { GoHistory } from "react-icons/go";
 import { LuEye } from "react-icons/lu";
-import { FiCheckCircle } from "react-icons/fi";
+import { FiCheckCircle, FiMessageSquare } from "react-icons/fi";
 import { GrSchedule, GrDocumentUpload } from "react-icons/gr";
 import { FcGoogle } from "react-icons/fc";
 import { AiOutlineHourglass } from "react-icons/ai";
 
 const Icons = {
+    messageSquare: FiMessageSquare,
+    messageSquareSolid: MdMessage,
     addTeacher: MdPersonAdd,
     bell: IoNotifications,
     arrowDown: IoChevronDown,

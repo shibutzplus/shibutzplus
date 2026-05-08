@@ -24,10 +24,10 @@ This hook encapsulates the polling logic:
 - **Auto-Refresh:** When an update is detected for the active school/date, it triggers a callback (`onRefreshRef`) to re-fetch the necessary data from the database.
 
 ## Workflow Example
-1. **Change:** A principal publishes the schedule for 2024-05-20.
-2. **Push:** The server executes `pushSyncUpdateServer(DAILY_PUBLISH_DATA_CHANGED, { schoolId, date })`.
+1. **Change:** A principal publishes the schedule for 2024-05-20 (or a manager adds a comment via `updateDailyTeacherCommentAction`).
+2. **Push:** The server executes `pushSyncUpdateServer(DAILY_PUBLISH_DATA_CHANGED, { schoolId, date })` (or `DAILY_TEACHER_COL_DATA_CHANGED`).
 3. **Poll:** A teacher's browser, polling every 10s, calls `/api/sync/poll?since=1716180000`.
-4. **Detect:** The server returns the "Publish" event from Redis.
+4. **Detect:** The server returns the event from Redis.
 5. **Update:** The `usePollingUpdates` hook sees the event and triggers a refresh of the teacher's schedule view.
 
 ## Performance & Optimization

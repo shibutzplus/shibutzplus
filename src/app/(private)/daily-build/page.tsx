@@ -94,7 +94,6 @@ const DailyScheduleContent: React.FC = () => {
                         selectedDate={selectedDate}
                         fromHour={settings?.fromHour}
                         toHour={settings?.toHour}
-                        showReasonCaption={true}
                     />
                 </FullScreenContainer>
             ) : (
@@ -116,7 +115,6 @@ const DailyScheduleContent: React.FC = () => {
                                 selectedDate={selectedDate}
                                 fromHour={settings?.fromHour}
                                 toHour={settings?.toHour}
-                                showReasonCaption={true}
                             />
                         </div>
                     )}

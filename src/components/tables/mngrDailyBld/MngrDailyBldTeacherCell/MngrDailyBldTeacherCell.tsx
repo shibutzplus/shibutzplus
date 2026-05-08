@@ -7,9 +7,10 @@ import { ColumnType, ColumnTypeValues, DailyScheduleCell } from "@/models/types/
 import { EmptyValue } from "@/models/constant/daily";
 import { getCellDisplayData } from "@/utils/dailyCellDisplay";
 import DynamicInputGroupSelect from "@/components/ui/select/InputGroupSelect/DynamicInputGroupSelect";
-import { errorToast } from "@/lib/toast";
+import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { sortDailyTeachers } from "@/utils/sort";
+import Icons from "@/style/icons";
 
 import EmptyCell from "@/components/ui/table/EmptyCell/EmptyCell";
 
@@ -200,6 +201,19 @@ const MngrDailyBldTeacherCell: React.FC<MngrDailyBldTeacherCellProps> = ({ colum
                             >
                                 {getDisplayText()}
                             </div>
+                            {cell?.comment && (
+                                <span
+                                    className={styles.commentIcon}
+                                    title={cell.comment}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        successToast(cell.comment!);
+                                    }}
+                                    style={{ cursor: "pointer" }}
+                                >
+                                    <Icons.messageSquare size={15} />
+                                </span>
+                            )}
                             <div className={styles.teacherSelect}>
                                 <DynamicInputGroupSelect
                                     options={sortedTeacherOptions}

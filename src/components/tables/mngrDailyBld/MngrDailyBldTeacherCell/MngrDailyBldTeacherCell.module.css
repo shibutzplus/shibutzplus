@@ -13,6 +13,7 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    position: relative;
 }
 
 .innerCellContent :global(.custom-select-clear-btn) {
@@ -72,4 +73,15 @@
     font-weight: 600;
     padding-inline: 10px;
     padding-top: 5px;
+}
+
+.commentIcon {
+    position: absolute;
+    left: 14px;
+    top: 12px;
+    color: var(--disabled-text-color);
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    z-index: 10;
 }

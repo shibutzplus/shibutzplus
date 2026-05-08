@@ -1,12 +1,13 @@
 "use client";
 
 import React from "react";
-import styles from "./TeacherDailyChangesDetailsCell.module.css";
 import { TeacherScheduleType } from "@/models/types/portalSchedule";
 import { TeacherType } from "@/models/types/teachers";
 import { ColumnTypeValues } from "@/models/types/dailySchedule";
-
 import { getCellDisplayData } from "@/utils/dailyCellDisplay";
+import Icons from "@/style/icons";
+import styles from "./TeacherDailyChangesDetailsCell.module.css";
+import { successToast } from "@/lib/toast";
 
 type TeacherDailyChangesDetailsCellProps = {
     row?: TeacherScheduleType;
@@ -86,6 +87,16 @@ const TeacherDailyChangesDetailsCell: React.FC<TeacherDailyChangesDetailsCellPro
 
     return (
         <div className={`${row ? styles.cellContent : styles.emptyCell}`}>
+            {row?.comment && (
+                <span 
+                    className={styles.commentIcon} 
+                    title={row.comment}
+                    onClick={() => successToast(row.comment!)}
+                    style={{ cursor: "pointer" }}
+                >
+                    <Icons.messageSquareSolid size={15} />
+                </span>
+            )}
             <div className={styles.combinedContent}>
                 <span className={`${styles.classAndSubject} ${isActivity ? styles.activityText : ""} ${hasSub ? styles.hasSub : ""} ${row?.isRegular ? styles.regularText : ""}`}>
                     {displayText}
