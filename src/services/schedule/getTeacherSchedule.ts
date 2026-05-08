@@ -139,6 +139,7 @@ async function getTeacherScheduleService(
                 subTeacher: ds.subTeacher || undefined,
                 position: ds.position || 0,
                 instructions: ds.instructions || undefined,
+                comment: ds.comment || undefined,
                 isRegular: (isOriginal && !isReplaced && ds.columnType === 1 && !ds.event),
                 createdAt: ds.createdAt,
                 updatedAt: ds.updatedAt,

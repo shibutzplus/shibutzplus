@@ -1,0 +1,139 @@
+.popupContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    gap: 16px;
+    min-width: 320px;
+}
+
+.title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    text-align: right;
+    width: 100%;
+}
+
+.hoursList {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.emptyState {
+    text-align: center;
+    color: #999;
+    font-size: 14px;
+    padding: 20px 0;
+}
+
+.hourBlock {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.hourLabel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    direction: rtl;
+}
+
+.hourBadge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid #e0e0e0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--dark-text-color, #333);
+    flex-shrink: 0;
+}
+
+.hourSubject {
+    font-size: 13px;
+    color: #555;
+    font-weight: 500;
+}
+
+.commentTextarea {
+    width: 100%;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 14px;
+    color: #333;
+    background-color: #fff;
+    outline: none;
+    resize: none;
+    text-align: right;
+    direction: rtl;
+    box-sizing: border-box;
+    font-family: inherit;
+    line-height: 1.5;
+    transition: border-color 0.15s;
+}
+
+.commentTextarea:focus {
+    border-color: #bbb;
+}
+
+.buttonContainer {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.confirmButton,
+.cancelButton {
+    flex: 1;
+    border-radius: 6px;
+    border: none;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.confirmButton {
+    background-color: black;
+    color: white;
+}
+
+.confirmButton:hover:not(:disabled) {
+    background-color: #333;
+}
+
+.confirmButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.cancelButton {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.cancelButton:hover:not(:disabled) {
+    background-color: #e0e0e0;
+}
+
+.cancelButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

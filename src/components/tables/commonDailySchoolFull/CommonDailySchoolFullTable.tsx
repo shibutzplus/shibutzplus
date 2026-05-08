@@ -10,8 +10,8 @@ import { calculateVisibleRowsForDaily } from "@/utils/tableUtils";
 import { AppType } from "@/models/types";
 import { successToast } from "@/lib/toast";
 import CommonDailySchoolFullEventCell from "./CommonDailySchoolFullEventCell";
-
 import { getCookie, setCookie, COOKIES_KEYS } from "@/lib/cookies";
+import Icons from "@/style/icons";
 
 type CommonDailySchoolFullTableProps = {
     mainDailyTable: DailySchedule;
@@ -21,7 +21,6 @@ type CommonDailySchoolFullTableProps = {
     EmptyTable?: React.FC<{ date?: string; text?: string }>;
     appType?: AppType;
     emptyText?: string;
-    showReasonCaption?: boolean;
 };
 
 const CommonDailySchoolFullTable: React.FC<CommonDailySchoolFullTableProps> = ({
@@ -32,7 +31,6 @@ const CommonDailySchoolFullTable: React.FC<CommonDailySchoolFullTableProps> = ({
     EmptyTable,
     appType = "public",
     emptyText,
-    showReasonCaption = false,
 }) => {
     const schedule = mainDailyTable[selectedDate];
     const tableColumns = React.useMemo(() => schedule ? Object.keys(schedule) : [], [schedule]);
@@ -148,7 +146,6 @@ const CommonDailySchoolFullTable: React.FC<CommonDailySchoolFullTableProps> = ({
 
                     // Determine header text
                     let headerText = "";
-                    let reason: string | undefined;
 
                     if (type === ColumnTypeValues.event) {
                         const headerCell = Object.values(column).find(c => c?.headerCol?.headerEvent);
@@ -156,11 +153,7 @@ const CommonDailySchoolFullTable: React.FC<CommonDailySchoolFullTableProps> = ({
                     } else {
                         const headerCell = Object.values(column).find(c => c?.headerCol?.headerTeacher);
                         headerText = headerCell?.headerCol?.headerTeacher?.name || "";
-                        reason = headerCell?.headerCol?.reason;
                     }
-
-                    const isMissingTeacher = type === ColumnTypeValues.missingTeacher;
-                    const isExistingTeacher = type === ColumnTypeValues.existingTeacher;
 
                     return (
                         <div
@@ -175,11 +168,7 @@ const CommonDailySchoolFullTable: React.FC<CommonDailySchoolFullTableProps> = ({
                                 <span className={styles.headerText} title={headerText}>
                                     {headerText}
                                 </span>
-                                {showReasonCaption && (
-                                    <span className={styles.reasonCaption}>
-                                        {isMissingTeacher && !reason ? "סיבת היעדרות?" : (isExistingTeacher && !reason ? "סיבת השינוי?" : "")}
-                                    </span>
-                                )}
+
                             </div>
                         </div>
                     );
@@ -227,6 +216,19 @@ const CommonDailySchoolFullTable: React.FC<CommonDailySchoolFullTableProps> = ({
 
                             return (
                                 <div key={`${colId}-${row}`} className={styles.cell}>
+                                    {cellData?.comment && (
+                                        <span
+                                            className={styles.commentIcon}
+                                            title={cellData.comment}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                successToast(cellData.comment!);
+                                            }}
+                                            style={{ cursor: "pointer" }}
+                                        >
+                                            <Icons.messageSquare size={15} />
+                                        </span>
+                                    )}
                                     {!cellDisplay.isEmpty && (
                                         <>
                                             {cellDisplay.isEvent ? (

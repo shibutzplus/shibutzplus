@@ -15,6 +15,7 @@ export type TeacherScheduleType = {
     subTeacher?: TeacherType;
     event?: string;
     instructions?: string;
+    comment?: string;
     secondary?: TeacherScheduleType;
     isRegular?: boolean;
 };

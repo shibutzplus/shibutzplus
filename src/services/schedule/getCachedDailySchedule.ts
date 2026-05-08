@@ -34,6 +34,8 @@ export async function getCachedDailySchedule(
                         originalTeacherId: schedule.originalTeacherId,
                         columnType: schedule.columnType,
                         subTeacherId: schedule.subTeacherId,
+                        instructions: schedule.instructions,
+                        comment: schedule.comment,
                         reason: schedule.reason,
                         position: schedule.position,
                         createdAt: schedule.createdAt,
