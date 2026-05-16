@@ -10,6 +10,9 @@ interface MsgPopupProps {
     onOk?: () => void;
     okText?: string;
     preventGlobalClose?: boolean;
+    okButtonClassName?: string;
+    children?: React.ReactNode;
+    hideOkButton?: boolean;
 }
 
 const MsgPopup: React.FC<MsgPopupProps> = ({
@@ -17,6 +20,9 @@ const MsgPopup: React.FC<MsgPopupProps> = ({
     onOk,
     okText = "אישור",
     preventGlobalClose = false,
+    okButtonClassName = "",
+    children,
+    hideOkButton = false,
 }) => {
     const { closePopup } = usePopup();
 
@@ -32,13 +38,16 @@ const MsgPopup: React.FC<MsgPopupProps> = ({
             <div className={styles.title}>{message}</div>
 
             <div className={styles.buttonContainer}>
-                <button
-                    className={styles.okButton}
-                    onClick={handleOk}
-                    autoFocus
-                >
-                    {okText}
-                </button>
+                {!hideOkButton && (
+                    <button
+                        className={`${styles.okButton} ${okButtonClassName}`}
+                        onClick={handleOk}
+                        autoFocus
+                    >
+                        {okText}
+                    </button>
+                )}
+                {children}
             </div>
         </div>
     );

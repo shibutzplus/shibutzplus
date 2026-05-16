@@ -5,9 +5,11 @@ import styles from "./ContactUs.module.css";
 
 interface ContactUsProps {
     onSend: (message: string) => Promise<void>;
+    title?: string;
+    placeholder?: string;
 }
 
-export default function ContactUs({ onSend }: ContactUsProps) {
+export default function ContactUs({ onSend, title, placeholder }: ContactUsProps) {
     const [contactMessage, setContactMessage] = useState<string>("");
     const [isSending, setIsSending] = useState<boolean>(false);
 
@@ -27,11 +29,11 @@ export default function ContactUs({ onSend }: ContactUsProps) {
 
     return (
         <div className={styles.contactSection}>
-            שאלות? הצעות? צרו איתנו קשר
+            {title ?? "שאלות? הצעות? צרו איתנו קשר"}
             <br />
             <div className={styles.contactInlineForm}>
                 <textarea
-                    placeholder={`כתבו כאן את ההודעה שלכם
+                    placeholder={placeholder ?? `כתבו כאן את ההודעה שלכם
 כולל מספר טלפון לקשר מהיר בווטסאפ או כתובת מייל`}
                     value={contactMessage}
                     onChange={(e) => setContactMessage(e.target.value)}
