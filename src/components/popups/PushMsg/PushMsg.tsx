@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { usePopup } from "@/context/PopupContext";
 import { PopupAction } from "@/context/PopupContext";
 import MsgPopup from "@/components/popups/MsgPopup/MsgPopup";
@@ -12,6 +12,7 @@ import { useOptionalMainContext } from "@/context/MainContext";
 import { useSession } from "next-auth/react";
 import { getStorageTeacher } from "@/lib/localStorage";
 import { getSchoolAction } from "@/app/actions/GET/getSchoolAction";
+import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 import styles from "./PushMsg.module.css";
 
 const PUSH_MSG_EXPIRES_DAYS = 20;
@@ -51,10 +52,42 @@ export const PushMsgContent: React.FC<PushMsgContentProps> = ({ message }) => {
         }
     }, [schoolId, schoolName]);
 
+    const logDataRef = useRef({ schoolId, schoolName, teacherName, isSent: false, isUnmountingForReal: false });
+    useEffect(() => {
+        logDataRef.current = { schoolId, schoolName, teacherName, isSent: logDataRef.current.isSent, isUnmountingForReal: logDataRef.current.isUnmountingForReal };
+    }, [schoolId, schoolName, teacherName]);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            logDataRef.current.isUnmountingForReal = true;
+        }, 200);
+
+        return () => {
+            clearTimeout(timer);
+            const { schoolId, schoolName, teacherName, isSent, isUnmountingForReal } = logDataRef.current;
+            if (isUnmountingForReal && !isSent) {
+                void logErrorAction({
+                    description: "[PushMsg] Closed",
+                    schoolId: schoolId,
+                    user: teacherName || "Unknown User",
+                    metadata: { schoolName: schoolName || "Unknown School", teacherName: teacherName || "Unknown User" },
+                });
+            }
+        };
+    }, []);
+
     const handleSendContact = async (msg: string) => {
+        logDataRef.current.isSent = true;
         let metaInfo = "";
         if (teacherName) metaInfo += `\n\n ${teacherName}`;
         if (schoolName) metaInfo += `\nבית הספר: ${schoolName}`;
+
+        void logErrorAction({
+            description: "[PushMsg] Sent",
+            schoolId: schoolId,
+            user: teacherName || "Unknown User",
+            metadata: { schoolName: schoolName || "Unknown School", teacherName: teacherName || "Unknown User", message: msg },
+        });
 
         await sendAdminContactEmail({
             adminName: "PushMsg Popup User",
