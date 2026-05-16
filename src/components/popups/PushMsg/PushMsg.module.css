@@ -1,0 +1,45 @@
+.container {
+    text-align: right !important;
+    line-height: 1.6 !important;
+    font-size: 19px !important;
+    margin-right: -15% !important;
+    margin-left: -15% !important;
+    width: 135% !important;
+    box-sizing: border-box !important;
+}
+
+.greeting {
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.contactWrapper {
+    width: 125% !important;
+    max-width: none !important;
+    margin: -5px -12.5% 0 -12.5% !important;
+    animation: fadeIn 0.3s ease-out !important;
+    text-align: right !important;
+    box-sizing: border-box !important;
+}
+
+.contactWrapper>div:first-child {
+    margin-top: 0 !important;
+}
+
+.facebookPrompt {
+    margin-top: 16px !important;
+    font-size: 13px !important;
+    text-align: center !important;
+    color: #4b5563 !important;
+}
+
+.facebookLink {
+    color: #1877f2 !important;
+    font-weight: 600 !important;
+    text-decoration: underline !important;
+    transition: color 0.2s ease !important;
+}
+
+.facebookLink:hover {
+    color: #145dbf !important;
+}

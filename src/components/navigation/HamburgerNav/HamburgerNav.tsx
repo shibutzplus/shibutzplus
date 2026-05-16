@@ -10,7 +10,8 @@ import { motion, AnimatePresence } from "motion/react";
 import { useAccessibility } from "../../../hooks/browser/useAccessibility";
 import routePath from "../../../routes";
 import { clearStorage, getStorageTeacher } from "@/lib/localStorage";
-import { usePopup } from "@/context/PopupContext";
+import { usePopup, PopupAction } from "@/context/PopupContext";
+import { PushMsgContent, PUSH_MSG_MESSAGE } from "@/components/popups/PushMsg/PushMsg";
 import SettingsPopup from "@/components/popups/SettingsPopup/SettingsPopup";
 import { useOptionalMainContext } from "@/context/MainContext";
 import { clearSessionStorage, getSessionStorage, SESSION_KEYS, setSessionStorage, } from "@/lib/sessionStorage";
@@ -414,6 +415,21 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                         <section className={styles.logoutSection}>
                             {(Boolean(!isSubstituteTeacher) || Boolean(isPrivate)) && (
                                 <>
+                                    <div
+                                        className={styles.navLink}
+                                        onClick={() => {
+                                            onClose();
+                                            openPopup(
+                                                PopupAction.msgPopup,
+                                                "M",
+                                                <PushMsgContent message={PUSH_MSG_MESSAGE} />
+                                            );
+                                        }}
+                                    >
+                                        <Icons.certificate size={24} />
+                                        <span>משוב לתעודה</span>
+                                    </div>
+
                                     {!isInstalled && (
                                         <div className={styles.navLink} onClick={installPWA}>
                                             <div className={styles.mobileIcon}>
