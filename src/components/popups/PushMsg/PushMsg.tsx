@@ -6,17 +6,17 @@ import { PopupAction } from "@/context/PopupContext";
 import MsgPopup from "@/components/popups/MsgPopup/MsgPopup";
 import ContactUs from "@/components/faq/ContactUs/ContactUs";
 import { sendAdminContactEmail } from "@/app/actions/POST/sendEmailAction";
-import { getCookie, setCookie, COOKIES_KEYS } from "@/lib/cookies";
+import { getCookie, setCookie } from "@/lib/cookies";
 import { successToast } from "@/lib/toast";
 import { useOptionalMainContext } from "@/context/MainContext";
 import { useSession } from "next-auth/react";
 import { getStorageTeacher } from "@/lib/localStorage";
 import { getSchoolAction } from "@/app/actions/GET/getSchoolAction";
 import { logErrorAction } from "@/app/actions/POST/logErrorAction";
+import { checkPushMsgClosedAction, deletePushMsgClosedAction } from "@/app/actions/tmpPushMsgActions";
 import styles from "./PushMsg.module.css";
 
-const PUSH_MSG_EXPIRES_DAYS = 20;
-const PUSH_MSG_ENABLED = true; // *** Set to false to disable the entire notification mechanism ***
+const PUSH_MSG_EXPIRES_DAYS = 10;
 
 interface PushMsgContentProps {
     message: React.ReactNode;
@@ -24,14 +24,14 @@ interface PushMsgContentProps {
 
 export const PUSH_MSG_MESSAGE = (
     <div className={styles.container}>
-        <div className={styles.greeting}>היי,</div>
-        <div>רגע לפני ששנת הלימודים מסתיימת 🎉</div>
+        <div className={styles.greeting}>היי, נסיון אחרון 🙏</div>
         <div style={{ height: "10px" }} />
-        <div>נשמח מאוד לשמוע אתכם! נשמח לכל תובנה, מחשבה או מילה טובה על השימוש שלכם במערכת.</div>
+        <div>ממש חשוב לנו לשמוע אתכם! נשמח לכל תובנה, מחשבה או מילה טובה על השימוש שלכם במערכת.</div>
     </div>
 );
 
 export const PushMsgContent: React.FC<PushMsgContentProps> = ({ message }) => {
+    const { closePopup } = usePopup();
     const context = useOptionalMainContext();
     const { data: session } = useSession();
     const sessionUserName = session?.user?.name;
@@ -82,6 +82,8 @@ export const PushMsgContent: React.FC<PushMsgContentProps> = ({ message }) => {
         if (teacherName) metaInfo += `\n\n ${teacherName}`;
         if (schoolName) metaInfo += `\nבית הספר: ${schoolName}`;
 
+        void deletePushMsgClosedAction(schoolId, teacherName);
+
         void logErrorAction({
             description: "[PushMsg] Sent",
             schoolId: schoolId,
@@ -95,6 +97,7 @@ export const PushMsgContent: React.FC<PushMsgContentProps> = ({ message }) => {
             message: `${msg}${metaInfo}`,
         });
         successToast("תודה רבה!", 2500);
+        closePopup();
     };
 
     return (
@@ -105,13 +108,10 @@ export const PushMsgContent: React.FC<PushMsgContentProps> = ({ message }) => {
         >
             <div className={styles.contactWrapper}>
                 <ContactUs
-                    title="נותנים משוב בתעודה 😉"
+                    title="המשוב שלכם חשוב לנו!"
                     placeholder=""
                     onSend={handleSendContact}
                 />
-                <div className={styles.facebookPrompt}>
-                    נשמח גם ל-<a href="https://www.facebook.com/shibutzplus" target="_blank" rel="noopener noreferrer" className={styles.facebookLink}>Like בפייסבוק</a> אם במקרה אתם שם 🙏
-                </div>
             </div>
         </MsgPopup>
     );
@@ -119,22 +119,38 @@ export const PushMsgContent: React.FC<PushMsgContentProps> = ({ message }) => {
 
 const PushMsg: React.FC = () => {
     const { openPopup } = usePopup();
+    const context = useOptionalMainContext();
+    const { data: session } = useSession();
+    const sessionUserName = session?.user?.name;
+    const sessionSchoolId = (session?.user as any)?.schoolId;
+    const storageTeacher = getStorageTeacher();
+    const teacherName = storageTeacher?.name || sessionUserName;
+    const schoolId = storageTeacher?.schoolId || sessionSchoolId || context?.school?.id;
 
     useEffect(() => {
-        if (!PUSH_MSG_ENABLED) return;
+        // We need both schoolId and teacherName (or at least one) to check the DB
+        if (!schoolId && !teacherName) return;
 
-        // If the cookie already exists, the message has already been displayed, do not show again
-        if (getCookie(COOKIES_KEYS.MSG_DISPLAYED)) return;
+        // Check if already handled in this V2 round
+        if (getCookie("shibutz_msg_displayed_v2")) return;
 
-        // Mark immediately to prevent double display
-        setCookie(COOKIES_KEYS.MSG_DISPLAYED, true, { expires: PUSH_MSG_EXPIRES_DAYS });
+        const checkAndOpen = async () => {
+            const hasClosed = await checkPushMsgClosedAction(schoolId, teacherName);
+            if (hasClosed) {
+                setCookie("shibutz_msg_displayed_v2", true, { expires: PUSH_MSG_EXPIRES_DAYS });
+                openPopup(
+                    PopupAction.msgPopup,
+                    "M",
+                    <PushMsgContent message={PUSH_MSG_MESSAGE} />
+                );
+            } else {
+                // If they haven't closed it (e.g. already sent feedback or never saw it), mark so we don't query DB every time
+                setCookie("shibutz_msg_displayed_v2", true, { expires: PUSH_MSG_EXPIRES_DAYS });
+            }
+        };
 
-        openPopup(
-            PopupAction.msgPopup,
-            "M",
-            <PushMsgContent message={PUSH_MSG_MESSAGE} />
-        );
-    }, [openPopup]);
+        checkAndOpen();
+    }, [openPopup, schoolId, teacherName]);
 
     return null;
 };

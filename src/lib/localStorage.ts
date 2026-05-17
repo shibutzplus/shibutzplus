@@ -3,6 +3,7 @@ import { TeacherType } from "@/models/types/teachers";
 // Local storage keys
 export const STORAGE_KEYS = {
     TEACHER_DATA: "teacher_data",   // Used by Teacher Portal public pages
+    ROTATE_DEVICE_TOAST: "shibutz_rotate_device",
 };
 
 export const getStorage = <T>(key: string) => {

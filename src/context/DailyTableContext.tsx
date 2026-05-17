@@ -232,7 +232,10 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                     if (!isBackground) errorToast("חלה שגיאה באימות המשתמש. נא להתנתק ולהתחבר מחדש.");
                 }
             } catch (error) {
-                logErrorAction({ description: `Error fetching daily schedule data (daily table): ${error instanceof Error ? error.message : String(error)}`, schoolId: school?.id });
+                const msg = error instanceof Error ? error.message : String(error);
+                if (!msg.includes("Loading chunk")) {
+                    logErrorAction({ description: `Error fetching daily schedule data (daily table): ${msg}`, schoolId: school?.id });
+                }
             } finally {
                 if (!isBackground) setIsLoading(false);
             }
@@ -260,7 +263,10 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                         }
                     }
                 } catch (e) {
-                    logErrorAction({ description: `Failed to refresh school data (polling): ${e instanceof Error ? e.message : String(e)}`, schoolId: school?.id });
+                    const msg = e instanceof Error ? e.message : String(e);
+                    if (!msg.includes("Loading chunk")) {
+                        logErrorAction({ description: `Failed to refresh school data (polling): ${msg}`, schoolId: school?.id });
+                    }
                 }
             }
 

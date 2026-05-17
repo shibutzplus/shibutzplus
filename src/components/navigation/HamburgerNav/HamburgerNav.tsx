@@ -415,6 +415,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                         <section className={styles.logoutSection}>
                             {(Boolean(!isSubstituteTeacher) || Boolean(isPrivate)) && (
                                 <>
+                                {/*
                                     <div
                                         className={styles.navLink}
                                         onClick={() => {
@@ -429,6 +430,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                                         <Icons.certificate size={24} />
                                         <span>משוב לתעודה</span>
                                     </div>
+                                */}
 
                                     {!isInstalled && (
                                         <div className={styles.navLink} onClick={installPWA}>

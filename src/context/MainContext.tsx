@@ -24,6 +24,7 @@ import { errorToast, successToast } from "@/lib/toast";
 import { SyncItem, SyncChannel } from "@/services/sync/clientSyncService";
 import { compareHebrew, sortByName } from "@/utils/sort";
 import { usePollingUpdates } from "@/hooks/usePollingUpdates";
+import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
 const ENTITY_CHANNELS: SyncChannel[] = [ENTITIES_DATA_CHANGED];
 
@@ -122,29 +123,36 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
             });
 
             if (relevantUpdates.length > 0 && school?.id) {
-                const { getInitialDataAction } = await import("@/app/actions/GET/getInitialDataAction");
-                const { teachers: fetchedTeachers, subjects: fetchedSubjects, classes: fetchedClasses } = await getInitialDataAction(school.id);
+                try {
+                    const { getInitialDataAction } = await import("@/app/actions/GET/getInitialDataAction");
+                    const { teachers: fetchedTeachers, subjects: fetchedSubjects, classes: fetchedClasses } = await getInitialDataAction(school.id);
 
-                if (fetchedTeachers.success && fetchedTeachers.data) {
-                    const sorted = [...fetchedTeachers.data].sort(sortByName);
-                    setTeachers(sorted);
+                    if (fetchedTeachers.success && fetchedTeachers.data) {
+                        const sorted = [...fetchedTeachers.data].sort(sortByName);
+                        setTeachers(sorted);
+                    }
+
+                    if (fetchedSubjects.success && fetchedSubjects.data) {
+                        const sorted = [...fetchedSubjects.data].sort(sortByName);
+                        setSubjects(sorted);
+                    }
+
+                    if (fetchedClasses.success && fetchedClasses.data) {
+                        const sorted = [...fetchedClasses.data].sort((a, b) => {
+                            if (a.activity !== b.activity) return a.activity ? 1 : -1;
+                            return compareHebrew(a.name, b.name);
+                        });
+                        setClasses(sorted);
+                    }
+
+                    // Force refresh of annual schedule table
+                    setAnnualScheduleTable(undefined);
+                } catch (e) {
+                    const msg = e instanceof Error ? e.message : String(e);
+                    if (!msg.includes("Loading chunk")) {
+                        logErrorAction({ description: `Error refreshing entities (polling): ${msg}`, schoolId: school?.id });
+                    }
                 }
-
-                if (fetchedSubjects.success && fetchedSubjects.data) {
-                    const sorted = [...fetchedSubjects.data].sort(sortByName);
-                    setSubjects(sorted);
-                }
-
-                if (fetchedClasses.success && fetchedClasses.data) {
-                    const sorted = [...fetchedClasses.data].sort((a, b) => {
-                        if (a.activity !== b.activity) return a.activity ? 1 : -1;
-                        return compareHebrew(a.name, b.name);
-                    });
-                    setClasses(sorted);
-                }
-
-                // Force refresh of annual schedule table
-                setAnnualScheduleTable(undefined);
             }
         };
     }, [school?.id]);
