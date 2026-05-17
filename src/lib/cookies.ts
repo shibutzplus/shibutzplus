@@ -5,8 +5,6 @@ import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 // Cookies keys
 export const COOKIES_KEYS = {
     FFU: "shibutz_ffu",
-    ROTATE_DEVICE_TOAST: "shibutz_rotate_device",
-    MSG_DISPLAYED: "shibutz_msg_displayed",
 };
 
 export const getCookie = <T = string>(key: string): T | null => {

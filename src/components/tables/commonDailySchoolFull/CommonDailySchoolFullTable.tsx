@@ -10,7 +10,7 @@ import { calculateVisibleRowsForDaily } from "@/utils/tableUtils";
 import { AppType } from "@/models/types";
 import { successToast } from "@/lib/toast";
 import CommonDailySchoolFullEventCell from "./CommonDailySchoolFullEventCell";
-import { getCookie, setCookie, COOKIES_KEYS } from "@/lib/cookies";
+import { getStorage, setStorage, STORAGE_KEYS } from "@/lib/localStorage";
 import Icons from "@/style/icons";
 
 type CommonDailySchoolFullTableProps = {
@@ -100,11 +100,11 @@ const CommonDailySchoolFullTable: React.FC<CommonDailySchoolFullTableProps> = ({
     const hasShownToast = React.useRef(false);
 
     React.useEffect(() => {
-        const hasSeenToast = getCookie(COOKIES_KEYS.ROTATE_DEVICE_TOAST);
+        const hasSeenToast = getStorage(STORAGE_KEYS.ROTATE_DEVICE_TOAST);
 
-        if (!hasSeenToast && window.innerWidth < 500 && sortedTableColumns.length > 5 && !hasShownToast.current) {
-            successToast("לצפייה מיטבית, מומלץ לסובב את המכשיר לרוחב. ", Infinity);
-            setCookie(COOKIES_KEYS.ROTATE_DEVICE_TOAST, "true", { expires: 365 });
+        if (!hasSeenToast && window.innerWidth < 500 && sortedTableColumns.length > 7 && !hasShownToast.current) {
+            successToast("לצפייה מיטבית, מומלץ לסובב את המכשיר לרוחב. ", 1500);
+            setStorage(STORAGE_KEYS.ROTATE_DEVICE_TOAST, true);
             hasShownToast.current = true;
         }
     }, [sortedTableColumns.length]);
