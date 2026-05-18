@@ -7,7 +7,6 @@ import { ValidationProvider } from "@/context/ValidationContext"
 import { ColumnClipboardProvider } from "@/context/ColumnClipboardContext"
 import { BorderRadiusCell, DarkTextColor, FontSize, TabColor } from "@/style/root"
 import { useGlobalShortcuts } from "@/hooks/browser/useGlobalShortcuts"
-import PushMsg from "@/components/popups/PushMsg/PushMsg"
 
 const GlobalShortcutsHandler = ({ children }: { children: React.ReactNode }) => {
     useGlobalShortcuts();
@@ -21,7 +20,6 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                 <ValidationProvider>
                     <ColumnClipboardProvider>
                         <PopupProvider>
-                            <PushMsg />
                             {children}
                             <Toaster
                                 containerStyle={{
