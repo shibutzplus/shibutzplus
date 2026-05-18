@@ -415,22 +415,22 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                         <section className={styles.logoutSection}>
                             {(Boolean(!isSubstituteTeacher) || Boolean(isPrivate)) && (
                                 <>
-                                {/*
-                                    <div
-                                        className={styles.navLink}
-                                        onClick={() => {
-                                            onClose();
-                                            openPopup(
-                                                PopupAction.msgPopup,
-                                                "M",
-                                                <PushMsgContent message={PUSH_MSG_MESSAGE} />
-                                            );
-                                        }}
-                                    >
-                                        <Icons.certificate size={24} />
-                                        <span>משוב לתעודה</span>
-                                    </div>
-                                */}
+                                    {!isPrivate && (
+                                        <div
+                                            className={styles.navLink}
+                                            onClick={() => {
+                                                onClose();
+                                                openPopup(
+                                                    PopupAction.msgPopup,
+                                                    "M",
+                                                    <PushMsgContent message={PUSH_MSG_MESSAGE} />
+                                                );
+                                            }}
+                                        >
+                                            <Icons.messageSquare size={24} />
+                                            <span>דברו איתנו</span>
+                                        </div>
+                                    )}
 
                                     {!isInstalled && (
                                         <div className={styles.navLink} onClick={installPWA}>

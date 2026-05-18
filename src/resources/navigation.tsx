@@ -194,7 +194,7 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
         id: "teachers",
         title: "שינויים במערכת היומית",
         type: "public",
-        isCollapse: true,
+        isCollapse: false,
         isOpenByDefault: true,
         links: [
             {
