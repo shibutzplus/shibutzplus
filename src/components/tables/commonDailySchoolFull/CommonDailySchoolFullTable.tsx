@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import styles from "./CommonDailySchoolFullTable.module.css";
 import { DailySchedule, ColumnType, ColumnTypeValues } from "@/models/types/dailySchedule";
 import { sortDailyColumnIdsByPosition } from "@/utils/sort";
 import { getCellDisplayData } from "@/utils/dailyCellDisplay";
@@ -11,7 +10,9 @@ import { AppType } from "@/models/types";
 import { successToast } from "@/lib/toast";
 import CommonDailySchoolFullEventCell from "./CommonDailySchoolFullEventCell";
 import { getStorage, setStorage, STORAGE_KEYS } from "@/lib/localStorage";
+import { TeacherType } from "@/models/types/teachers";
 import Icons from "@/style/icons";
+import styles from "./CommonDailySchoolFullTable.module.css";
 
 type CommonDailySchoolFullTableProps = {
     mainDailyTable: DailySchedule;
@@ -21,6 +22,7 @@ type CommonDailySchoolFullTableProps = {
     EmptyTable?: React.FC<{ date?: string; text?: string }>;
     appType?: AppType;
     emptyText?: string;
+    onTeacherClick?: (teacher: TeacherType) => void;
 };
 
 const CommonDailySchoolFullTable: React.FC<CommonDailySchoolFullTableProps> = ({
@@ -31,6 +33,7 @@ const CommonDailySchoolFullTable: React.FC<CommonDailySchoolFullTableProps> = ({
     EmptyTable,
     appType = "public",
     emptyText,
+    onTeacherClick,
 }) => {
     const schedule = mainDailyTable[selectedDate];
     const tableColumns = React.useMemo(() => schedule ? Object.keys(schedule) : [], [schedule]);
@@ -146,6 +149,7 @@ const CommonDailySchoolFullTable: React.FC<CommonDailySchoolFullTableProps> = ({
 
                     // Determine header text
                     let headerText = "";
+                    let teacher: TeacherType | undefined = undefined;
 
                     if (type === ColumnTypeValues.event) {
                         const headerCell = Object.values(column).find(c => c?.headerCol?.headerEvent);
@@ -153,15 +157,23 @@ const CommonDailySchoolFullTable: React.FC<CommonDailySchoolFullTableProps> = ({
                     } else {
                         const headerCell = Object.values(column).find(c => c?.headerCol?.headerTeacher);
                         headerText = headerCell?.headerCol?.headerTeacher?.name || "";
+                        teacher = headerCell?.headerCol?.headerTeacher ?? undefined;
                     }
+
+                    const isClickable = !!(teacher && onTeacherClick);
 
                     return (
                         <div
                             key={colId}
                             className={styles.headerCell}
+                            onClick={() => {
+                                if (isClickable && teacher) {
+                                    onTeacherClick(teacher);
+                                }
+                            }}
                             style={{
                                 backgroundColor: COLOR_BY_TYPE[type] || "#ccc",
-                                cursor: "default"
+                                cursor: isClickable ? "pointer" : "default"
                             }}
                         >
                             <div className={styles.headerContent}>

@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { NextPage } from "next";
 import { useMainContext } from "@/context/MainContext";
 import { useDailyTableContext } from "@/context/DailyTableContext";
-import { TeacherTableProvider } from "@/context/TeacherTableContext";
+import { TeacherTableProvider, useTeacherTableContext } from "@/context/TeacherTableContext";
 import Preloader from "@/components/ui/Preloader/Preloader";
 import SlidingPanel from "@/components/ui/SlidingPanel/SlidingPanel";
 import FullScreenContainer from "@/components/layout/pageLayouts/FullScreenLayout/FullScreenContainer";
@@ -24,12 +24,20 @@ const DailyScheduleContent: React.FC = () => {
         useDailyTableContext();
     const { settings } = useMainContext();
     const { openPopup } = usePopup();
+    const { fetchTeacherScheduleDate, resetSchedule } = useTeacherTableContext();
     const [isPanelOpen, setIsPanelOpen] = useState<boolean>(false);
     const [teacher, setTeacher] = useState<TeacherType>();
 
     const handleTeacherClick = async (teacher: TeacherType) => {
         setTeacher(teacher);
         setIsPanelOpen(true);
+    };
+
+    const handlePreviewTeacherClick = async (teacher: TeacherType) => {
+        resetSchedule();
+        setTeacher(teacher);
+        setIsPanelOpen(true);
+        await fetchTeacherScheduleDate(teacher, selectedDate);
     };
 
     const handleClosePanel = () => {
@@ -94,6 +102,7 @@ const DailyScheduleContent: React.FC = () => {
                         selectedDate={selectedDate}
                         fromHour={settings?.fromHour}
                         toHour={settings?.toHour}
+                        onTeacherClick={handlePreviewTeacherClick}
                     />
                 </FullScreenContainer>
             ) : (
