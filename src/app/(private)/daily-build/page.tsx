@@ -47,33 +47,28 @@ const DailyScheduleContent: React.FC = () => {
     const { data: session } = useSession();
 
     useEffect(() => {
-        if (session?.user?.createdAt) {
-            const createdAt = new Date(session.user.createdAt).getTime();
-            const now = Date.now();
-            const isNewUser = (now - createdAt) < 60000;
-
-            if (isNewUser) {
-                const hasShown = sessionStorage.getItem("welcomeToastShown");
-                if (!hasShown) {
-                    openPopup(
-                        "msgPopup",
-                        "S",
-                        <MsgPopup
-                            message={
-                                <div style={{ textAlign: "right" }}>
-                                    <p style={{ fontWeight: "bold", marginBottom: "20px", fontSize: "24px" }}>ברוכים הבאים לשיבוץ+</p>
-                                    <p style={{ marginBottom: "10px" }}>
-                                        אתם נמצאים במצב &quot;התנסות&quot; בבית ספר לדוגמה.
-                                    </p>
-                                    <p style={{ marginBottom: "10px" }}>
-                                        מוזמנים להתנסות בשיבוץ המערכת היומית.
-                                    </p>
-                                </div>
-                            }
-                        />
-                    );
-                    sessionStorage.setItem("welcomeToastShown", "true");
-                }
+        const isDemo = session?.user?.isDemo;
+        if (isDemo) {
+            const hasShown = sessionStorage.getItem("welcomeToastShown");
+            if (!hasShown) {
+                openPopup(
+                    "msgPopup",
+                    "S",
+                    <MsgPopup
+                        message={
+                            <div style={{ textAlign: "right" }}>
+                                <p style={{ fontWeight: "bold", marginBottom: "20px", fontSize: "24px" }}>ברוכים הבאים לשיבוץ+</p>
+                                <p style={{ marginBottom: "10px" }}>
+                                    אתם נמצאים במצב &quot;התנסות&quot; בבית ספר לדוגמה.
+                                </p>
+                                <p style={{ marginBottom: "10px" }}>
+                                    מוזמנים להתנסות בשיבוץ המערכת היומית.
+                                </p>
+                            </div>
+                        }
+                    />
+                );
+                sessionStorage.setItem("welcomeToastShown", "true");
             }
         }
     }, [session, openPopup]);

@@ -43,6 +43,7 @@ declare module "next-auth" {
             status?: string;
             maxAge?: number;
             createdAt?: Date;
+            isDemo?: boolean;
         };
     }
 
@@ -54,5 +55,6 @@ declare module "next-auth" {
         status?: string;
         maxAge?: number;
         createdAt?: Date;
+        isDemo?: boolean;
     }
 }

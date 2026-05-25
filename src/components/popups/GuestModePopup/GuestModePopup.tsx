@@ -46,16 +46,6 @@ const GuestModePopup: React.FC<GuestModePopupProps> = ({ onClose }) => {
                     className=""
                 />
             </div>
-
-            <div className={styles.buttonContainer}>
-                {/* Close button provided by ContactUsForm implicitly via flow or explicit below */}
-                <button
-                    className={styles.closeButton}
-                    onClick={handleClose}
-                >
-                    סגור
-                </button>
-            </div>
         </div>
     );
 };
