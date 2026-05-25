@@ -44,9 +44,10 @@ export const authOptions: NextAuthOptions = {
                         id: user.id,
                         email: user.email,
                         name: user.name,
-                        role: user.role,
+                        role: USER_ROLES.GUEST,
                         gender: user.gender,
                         schoolId: user.schoolId,
+                        isDemo: true,
                     };
                 }
 
@@ -115,6 +116,7 @@ export const authOptions: NextAuthOptions = {
                 token.status = SCHOOL_STATUS.ANNUAL;
                 token.maxAge = getSessionMaxAge(true);
                 token.exp = nowInSec() + Number(token.maxAge);
+                token.isDemo = (user as any).isDemo;
             } else if ((account?.provider === AUTH_TYPE.GOOGLE && profile?.email) || (user && user.email)) {
                 const email = (user?.email || profile?.email) as string;
                 const response = await getUserByEmailAction(email);
@@ -147,6 +149,8 @@ export const authOptions: NextAuthOptions = {
                 session.user.status = token.status as string;
                 session.user.createdAt = token.createdAt as Date;
                 session.user.maxAge = token.maxAge as number;
+                session.user.email = token.email as string;
+                session.user.isDemo = token.isDemo as boolean;
                 session.expires = new Date((token.exp as number) * 1000).toISOString();
             }
             return session;
