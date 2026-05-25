@@ -13,7 +13,7 @@ import useContactUsPopup from "@/hooks/useContactUsPopup";
 import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { signInWithGoogle } from "@/app/actions/POST/signInAction";
-import { useSession } from "next-auth/react";
+import { useSession, signIn } from "next-auth/react";
 import { STATUS_LOADING, STATUS_UNAUTH } from "@/models/constant/session";
 
 const HeroSignInButton = (props: { title: string; className?: string }) => {
@@ -69,6 +69,51 @@ const HeroSignInButton = (props: { title: string; className?: string }) => {
     );
 };
 
+const DemoSignInButton = (props: { title: string; className?: string }) => {
+    const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
+
+    const handleDemoSignIn = async () => {
+        setIsLoading(true);
+        try {
+            const res = await signIn("credentials", {
+                isDemo: "true",
+                redirect: false,
+                callbackUrl: "/daily-build?schoolId=ebrb8pj1ofvug78ratnbyd4o",
+            });
+
+            if (res?.error) {
+                errorToast(messages.auth.login.failed);
+                setIsLoading(false);
+            } else if (res?.url) {
+                router.push(res.url);
+            } else {
+                router.push("/daily-build?schoolId=ebrb8pj1ofvug78ratnbyd4o");
+            }
+        } catch {
+            errorToast(messages.common.serverError);
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <button
+            type="button"
+            className={props.className || styles.btnHero}
+            onClick={handleDemoSignIn}
+            disabled={isLoading}
+            style={{
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+            }}
+        >
+            {isLoading && <Loading />} {props.title}
+        </button>
+    );
+};
+
 // Animation variants
 const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
@@ -92,7 +137,7 @@ export default function LandingPage() {
                 <div className={styles.navContent}>
                     <div className={styles.navLinks}>
                         <Suspense fallback={<Loading />}>
-                            <HeroSignInButton title="התחברות למנהלים" className={styles.navLogin} />
+                            <DemoSignInButton title="התנסות במערכת" className={styles.navLogin} />
                         </Suspense>
                         <button
                             type="button"
@@ -131,8 +176,8 @@ export default function LandingPage() {
                             transition={{ duration: 0.6 }}
                         >
                             <span className={styles.highlight}>שיבוץ+</span>
-                            <div>ניהול מערכת השעות</div>
-                            <span>היומית</span>
+                            <div>הפתרון לשינויים</div>
+                            <span>במערכת השעות היומית</span>
                         </motion.h1>
                         <motion.div
                             className={styles.alert}

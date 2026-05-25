@@ -85,7 +85,7 @@ const TeacherCommentPopup: React.FC<TeacherCommentPopupProps> = ({
 
             const anyFailed = results.some((r) => !r.success);
             if (anyFailed) {
-                errorToast("שגיאה בשמירת חלק מההערות");
+                errorToast("שגיאה בשמירת חלק מההודעות");
             }
 
             // Build map of saved values (even partial success)
@@ -98,7 +98,7 @@ const TeacherCommentPopup: React.FC<TeacherCommentPopupProps> = ({
 
             onSaved(savedComments);
         } catch {
-            errorToast("שגיאה בשמירת ההערות");
+            errorToast("שגיאה בשמירת ההודעות");
         } finally {
             setIsSaving(false);
         }
@@ -106,7 +106,7 @@ const TeacherCommentPopup: React.FC<TeacherCommentPopupProps> = ({
 
     return (
         <div className={styles.popupContent} onMouseDown={(e) => e.stopPropagation()}>
-            <div className={styles.title}>הערות עבור {teacherName} ומורים מחליפים</div>
+            <div className={styles.title}>הודעות עבור {teacherName} ומורים מחליפים</div>
 
             <div className={styles.hoursList}>
                 {hourEntries.length === 0 ? (
@@ -124,7 +124,7 @@ const TeacherCommentPopup: React.FC<TeacherCommentPopupProps> = ({
                                 onChange={(e) =>
                                     setComments((prev) => ({ ...prev, [entry.hour]: e.target.value }))
                                 }
-                                placeholder="הערה..."
+                                placeholder="הודעה למורה..."
                                 maxLength={150}
                                 rows={2}
                                 dir="rtl"

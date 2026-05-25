@@ -70,7 +70,7 @@
 }
 
 .navLogin {
-  background-color: var(--text-dark);
+  background-color: #581C87;
   color: white;
   padding: 0.5rem 1.25rem;
   border-radius: 8px;
@@ -83,7 +83,7 @@
 }
 
 .navLogin:hover {
-  background-color: #000;
+  background-color: #3b0764;
   transform: translateY(-2px);
   color: white;
 }
