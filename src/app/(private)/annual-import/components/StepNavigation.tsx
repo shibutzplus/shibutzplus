@@ -33,26 +33,28 @@ const StepNavigation: React.FC<StepNavigationProps> = ({
 }) => {
     return (
         <div className={styles.actions} style={{ justifyContent: 'space-between' }}>
-            {onRefresh && (
+            {(onRefresh || onSaveToDB) && (
                 <div style={{ display: 'flex', gap: '10px' }}>
-                    <button
-                        type="button"
-                        onClick={onRefresh}
-                        disabled={isRefreshing}
-                        className={styles.btnRefresh}
-                        title="שלוף בעזרת AI"
-                    >
-                        {isRefreshing ? "⏳" : (
-                            <Icons.magic size={24} />
-                        )}
-                    </button>
+                    {onRefresh && (
+                        <button
+                            type="button"
+                            onClick={onRefresh}
+                            disabled={isRefreshing}
+                            className={styles.btnRefresh}
+                            title="שלוף בעזרת AI"
+                        >
+                            {isRefreshing ? "⏳" : (
+                                <Icons.magic size={24} />
+                            )}
+                        </button>
+                    )}
                     {onSaveToDB && (
                         <button
                             type="button"
                             onClick={onSaveToDB}
                             disabled={isSaving}
                             className={styles.btnRefresh} // Reusing same style for icon button
-                            title="שמור את הנתונים למסד הנתונים"
+                            title="שמור ל DB"
                         >
                             {isSaving ? "⏳" : (
                                 <Icons.save size={24} />

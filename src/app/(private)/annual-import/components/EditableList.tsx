@@ -1,11 +1,11 @@
 import React from 'react';
 import styles from '../page.module.css';
-import { FaCheck, FaMagic, FaDatabase, FaSearch } from 'react-icons/fa';
+import { FaCheck, FaMagic, FaDatabase, FaSearch, FaFileAlt } from 'react-icons/fa';
 
 export interface ListItem {
     name: string;
     exists?: boolean; // Deprecated in favor of source, keeping for backward compat if needed during refactor
-    source?: 'db' | 'ai' | 'both' | 'manual';
+    source?: 'db' | 'ai' | 'both' | 'manual' | 'file';
 }
 
 interface EditableListProps {
@@ -90,8 +90,9 @@ const EditableList: React.FC<EditableListProps> = ({ title, items, onSave, onAdd
                             >
                                 {/* Icon Logic */}
                                 <span className={styles.iconContainer}>
-                                    {item.source === 'both' && <FaCheck className={styles.iconBoth} title="קיים ב-DB וזוהה גם על ידי AI" />}
+                                    {item.source === 'both' && <FaCheck className={styles.iconBoth} title="קיים ב-DB ונמצא גם בקובץ" />}
                                     {item.source === 'ai' && <FaMagic className={styles.iconAi} title="זוהה על ידי AI ולא קיים עוד ב-DB" />}
+                                    {item.source === 'file' && <FaFileAlt className={styles.iconFile} title="נמצא בקובץ הייבוא ולא קיים עוד ב-DB" />}
                                     {item.source === 'manual' && <FaSearch className={styles.iconManual} title="נמצא בחיפוש בקוד שלנו" />}
                                     {item.source === 'db' && <FaDatabase className={styles.iconDb} title="קיים ב-DB" />}
 
