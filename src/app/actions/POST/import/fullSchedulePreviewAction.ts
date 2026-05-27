@@ -2,7 +2,7 @@
 
 import * as XLSX from 'xlsx';
 import { dbLog } from "@/services/loggerService";
-
+import AdmZip from "adm-zip";
 
 // Types
 interface ScheduleItem {
@@ -40,27 +40,180 @@ function cleanCSVValue(val: string): string {
     return clean.trim();
 }
 
-export const fullSchedulePreviewAction = async (formData: FormData, entities: { teachers: string[], classes: string[], subjects: string[], workGroups: string[] }): Promise<ServiceResponse> => {
+/**
+ * Extracts paragraphs from a DOCX file buffer.
+ */
+function extractParagraphsFromDocx(buffer: Buffer): string[] {
+    const zip = new AdmZip(buffer);
+    const entry = zip.getEntry("word/document.xml");
+    if (!entry) throw new Error("word/document.xml not found");
+    const xmlContent = entry.getData().toString("utf8");
+
+    const paragraphs: string[] = [];
+    const wpRegex = /<w:p(?:\s[^>]*)?>([\s\S]*?)<\/w:p>/g;
+    let wpMatch;
+    while ((wpMatch = wpRegex.exec(xmlContent)) !== null) {
+        const pContent = wpMatch[1];
+        const wtRegex = /<w:t(?:\s[^>]*)?>([^<]*)<\/w:t>/g;
+        let wtMatch;
+        const textParts: string[] = [];
+        while ((wtMatch = wtRegex.exec(pContent)) !== null) {
+            textParts.push(wtMatch[1]);
+        }
+        const pText = textParts.join("").trim();
+        if (pText) {
+            paragraphs.push(pText);
+        }
+    }
+    return paragraphs;
+}
+
+export const fullSchedulePreviewAction = async (
+    formData: FormData,
+    entities: { teachers: string[], classes: string[], subjects: string[], workGroups: string[] }
+): Promise<ServiceResponse> => {
     let schoolId: string | undefined;
     try {
         schoolId = formData.get("schoolId") as string || undefined;
-        const teacherFile = formData.get("teacherFile") as File;
-        const classFile = formData.get("classFile") as File;
-        if (!teacherFile || !classFile) {
+
+        const teacherFile = formData.get("teacherFile") as File | null;
+        const classFile = formData.get("classFile") as File | null;
+        const teacherWordFile = formData.get("teacherWordFile") as File | null;
+
+        const isWordMode = !!teacherWordFile;
+
+        if (!isWordMode && (!teacherFile || !classFile)) {
             return { success: false, message: "Missing files" };
         }
 
-        const teacherBuffer = Buffer.from(await teacherFile.arrayBuffer());
-        const classBuffer = Buffer.from(await classFile.arrayBuffer());
+        const DAY_HEADERS: Record<string, number> = { "ראשון": 1, "שני": 2, "שלישי": 3, "רביעי": 4, "חמישי": 5, "שישי": 6 };
+
+        // Normalized lookups
+        const normalizedTeachers = entities.teachers.map(t => ({ original: t, clean: cleanCSVValue(t) }));
+        const normalizedSubjects = entities.subjects.map(s => ({ original: s, clean: cleanCSVValue(s) }));
+        const normalizedClasses = entities.classes.map(c => ({ original: c, clean: cleanCSVValue(c) }));
+        const normalizedWorkGroups = entities.workGroups.map(w => ({ original: w, clean: cleanCSVValue(w) }));
+
+        // ------------------ WORD (DOCX) FLOW ------------------
+        if (isWordMode) {
+            const teacherBuffer = await teacherWordFile!.arrayBuffer().then(ab => Buffer.from(ab));
+            const teacherParagraphs = extractParagraphsFromDocx(teacherBuffer);
+
+            const stripQuotes = (s: string) => s.replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019]/g, "").replace(/\s+/g, " ").trim();
+
+            const scheduleItems: ScheduleItem[] = [];
+            let currentTeacher: string | null = null;
+            let currentTeacherDay: number | null = null;
+
+            for (let i = 0; i < teacherParagraphs.length; i++) {
+                const cleanLine = cleanCSVValue(teacherParagraphs[i]);
+
+                if (cleanLine.includes("מערכת שעות מורה")) {
+                    const rawTeacherName = cleanLine.replace(/מערכת שעות\s+מורה\s+/, "").trim();
+                    const cleanRawTeacher = stripQuotes(rawTeacherName);
+                    
+                    let matchedTeacher = normalizedTeachers.find(t => stripQuotes(t.clean) === cleanRawTeacher);
+                    if (!matchedTeacher) {
+                        matchedTeacher = normalizedTeachers
+                            .filter(t => {
+                                const cleanT = stripQuotes(t.clean);
+                                return cleanRawTeacher.includes(cleanT) || cleanT.includes(cleanRawTeacher);
+                            })
+                            .sort((a, b) => b.clean.length - a.clean.length)[0];
+                    }
+                    currentTeacher = matchedTeacher ? matchedTeacher.original : null;
+                    
+                    continue;
+                }
+
+                if (currentTeacher) {
+                    let foundDay = false;
+                    for (const [dayName, dayNum] of Object.entries(DAY_HEADERS)) {
+                        if (cleanLine === `יום ${dayName}` || cleanLine === dayName) {
+                            currentTeacherDay = dayNum;
+                            foundDay = true;
+                            break;
+                        }
+                    }
+                    if (foundDay) continue;
+
+                    const parts = cleanLine.split(",").map(p => p.trim());
+                    if (parts.length >= 2 && currentTeacherDay) {
+                        const nextLine = i + 1 < teacherParagraphs.length ? cleanCSVValue(teacherParagraphs[i + 1]) : "";
+                        const hourMatch = nextLine.match(/שעה\s+(\d+)/);
+                        if (hourMatch) {
+                            const hour = parseInt(hourMatch[1]);
+
+                            let finalSub = "";
+                            let finalCls = "";
+
+                            const candidateSub = parts[0];
+                            const candidateCls = parts[1];
+
+                            const cleanCandidateSub = stripQuotes(candidateSub);
+                            const cleanCandidateCls = stripQuotes(candidateCls);
+
+                            // For Word mode, we match names exactly (ignoring quotes)
+                            const exactWg = normalizedWorkGroups.find(w => stripQuotes(w.clean) === cleanCandidateSub);
+                            if (exactWg) {
+                                finalSub = exactWg.original;
+                                finalCls = "קבוצה";
+                            } else {
+                                const exactSub = normalizedSubjects.find(s => stripQuotes(s.clean) === cleanCandidateSub);
+                                if (exactSub) {
+                                    finalSub = exactSub.original;
+                                }
+
+                                if (candidateCls) {
+                                    const exactCls = normalizedClasses.find(c => stripQuotes(c.clean) === cleanCandidateCls);
+                                    if (exactCls) finalCls = exactCls.original;
+                                }
+                            }
+
+                            if (finalSub || finalCls) {
+                                scheduleItems.push({
+                                    teacher: currentTeacher,
+                                    class: finalCls || "ללא כיתה",
+                                    subject: finalSub || "ללא מקצוע",
+                                    day: currentTeacherDay,
+                                    hour: hour,
+                                    originalText: cleanLine
+                                });
+                            }
+                            i++; // Skip the hour paragraph in the next iteration
+                        }
+                    }
+                }
+            }
+
+            dbLog({
+                description: `[fullSchedulePreviewAction] Generated Word schedule with ${scheduleItems.length} lessons`,
+                schoolId
+            });
+
+            return {
+                success: true,
+                data: {
+                    teachers: entities.teachers,
+                    classes: entities.classes,
+                    workGroups: entities.workGroups,
+                    subjects: entities.subjects,
+                    schedule: scheduleItems,
+                    unmapped: []
+                },
+                message: `Successfully constructed schedule from Word with ${scheduleItems.length} lessons.`
+            };
+        }
+
+        // ------------------ EXCEL/CSV FLOW ------------------
+        const teacherBuffer = Buffer.from(await teacherFile!.arrayBuffer());
+        const classBuffer = Buffer.from(await classFile!.arrayBuffer());
 
         // Parse Class File to build Original Text Map
         const classOriginalTextMap = new Map<string, string>();
 
         try {
             const classWorkbook = XLSX.read(classBuffer, { type: 'buffer' });
-            const DAY_HEADERS: Record<string, number> = { "ראשון": 1, "שני": 2, "שלישי": 3, "רביעי": 4, "חמישי": 5, "שישי": 6 };
-            const normalizedClassList = entities.classes.map(c => ({ original: c, clean: cleanCSVValue(c) }));
-
             classWorkbook.SheetNames.forEach(sheetName => {
                 const classSheet = classWorkbook.Sheets[sheetName];
                 const classRows: any[][] = XLSX.utils.sheet_to_json(classSheet, { header: 1, defval: null });
@@ -78,7 +231,7 @@ export const fullSchedulePreviewAction = async (formData: FormData, entities: { 
                     for (const cell of row) {
                         if (typeof cell === 'string') {
                             const cleanCell = cleanCSVValue(cell);
-                            const matchedCls = normalizedClassList
+                            const matchedCls = normalizedClasses
                                 .filter(c => cleanCell.includes(c.clean))
                                 .sort((a, b) => b.clean.length - a.clean.length)[0];
 
@@ -153,7 +306,7 @@ export const fullSchedulePreviewAction = async (formData: FormData, entities: { 
                                 for (const cell of nextRow) {
                                     if (typeof cell === 'string') {
                                         const clean = cleanCSVValue(cell);
-                                        if (normalizedClassList.some(c => clean.includes(c.clean))) {
+                                        if (normalizedClasses.some(c => clean.includes(c.clean))) {
                                             isNextTitle = true;
                                             break;
                                         }
@@ -195,15 +348,8 @@ export const fullSchedulePreviewAction = async (formData: FormData, entities: { 
         const workbook = XLSX.read(teacherBuffer, { type: 'buffer' });
         const scheduleItems: ScheduleItem[] = [];
 
-        // Normalized lookups
-        const normalizedTeachers = entities.teachers.map(t => ({ original: t, clean: cleanCSVValue(t) }));
-        const normalizedSubjects = entities.subjects.map(s => ({ original: s, clean: cleanCSVValue(s) }));
-        const normalizedClasses = entities.classes.map(c => ({ original: c, clean: cleanCSVValue(c) }));
-        const normalizedWorkGroups = entities.workGroups.map(w => ({ original: w, clean: cleanCSVValue(w) }));
-
         // Regex helpers
         const TEACHER_TITLE_REGEX = /מערכת שעות למורה|למורה/i;
-        const DAY_HEADERS: Record<string, number> = { "ראשון": 1, "שני": 2, "שלישי": 3, "רביעי": 4, "חמישי": 5, "שישי": 6 };
 
         workbook.SheetNames.forEach(sheetName => {
             const worksheet = workbook.Sheets[sheetName];

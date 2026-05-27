@@ -8,12 +8,14 @@ import EditableList, { ListItem } from "./components/EditableList";
 import StepNavigation from "./components/StepNavigation";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import { extractEntitiesFromFilesAction } from "@/app/actions/POST/import/extractEntitiesFromFilesAction";
+import { extractEntitiesFromWordAction } from "@/app/actions/POST/import/extractEntitiesFromWordAction";
 import { fullSchedulePreviewAction } from "@/app/actions/POST/import/fullSchedulePreviewAction";
 import { loadEntitiesFromDBAction } from "@/app/actions/POST/import/loadEntitiesFromDBAction";
 import { syncAllEntityValuesAction } from "@/app/actions/POST/import/syncDBimportAction";
-import { saveTeacherScheduleAction } from "@/app/actions/POST/import/syncDBimportAction";
+import { saveTeacherScheduleAction, saveAllTeachersSchedulesAction } from "@/app/actions/POST/import/syncDBimportAction";
 import { addSingleEntityAction } from "@/app/actions/POST/import/syncDBimportAction";
 import styles from "./page.module.css";
+import Icons from "@/style/icons";
 import { usePopup } from "@/context/PopupContext";
 import MsgPopup from "@/components/popups/MsgPopup/MsgPopup";
 import EditCellPopup from "./components/EditCellPopup";
@@ -54,13 +56,23 @@ const AnnualImportContent = () => {
 
     // Track where the data came from
     const [importSource, setImportSource] = useState<'AI' | 'DB'>('DB');
+
+    // File mode: CSV/Excel (existing) or Word (new)
+    const [fileMode, setFileMode] = useState<'csv' | 'word'>('word');
+
+    // CSV/Excel files (existing flow)
     const [teacherFile, setTeacherFile] = useState<File | null>(null);
     const [classFile, setClassFile] = useState<File | null>(null);
+
+    // Word files (new flow)
+    const [teacherWordFile, setTeacherWordFile] = useState<File | null>(null);
+    const [classWordFile, setClassWordFile] = useState<File | null>(null);
     const [selectedTeacherId, setSelectedTeacherId] = useState<string | null>(null);
     const [teacherHasExistingSchedule, setTeacherHasExistingSchedule] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [isSavingAll, setIsSavingAll] = useState(false);
     const { openPopup } = usePopup();
 
     const popupMsg = (message: string) => {
@@ -97,6 +109,7 @@ const AnnualImportContent = () => {
     };
 
     // Phase 1: Fetch Existing Entities values from DB (if exists)
+    // Then, if Word mode, also extract entities from Word files and merge with DB data
     const getEntityValuesFromDB = async () => {
         setIsLoading(true);
         setImportSource('DB');
@@ -106,19 +119,176 @@ const AnnualImportContent = () => {
 
             const res = await loadEntitiesFromDBAction(formData);
 
-            if (res.success && res.data) {
-                setAnalyzedData(prev => ({
-                    ...prev,
-                    teachers: res.data!.teachers.map(t => ({ ...t, source: 'db' })),
-                    classes: res.data!.classes.map(c => ({ ...c, source: 'db' })),
-                    subjects: res.data!.subjects.map(s => ({ ...s, source: 'db' })),
-                    workGroups: res.data!.workGroups.map(w => ({ ...w, source: 'db' })),
-                    schedule: []
-                }));
-                setStep(2);
-            } else {
+            if (!res.success || !res.data) {
                 popupMsg(`שגיאה בטעינת נתונים:\n${res.message}`);
+                return;
             }
+
+            // Base data from DB
+            let teachers: ListItem[] = res.data.teachers.map(t => ({ ...t, source: 'db' as ListItem['source'] }));
+            let classes: ListItem[] = res.data.classes.map(c => ({ ...c, source: 'db' as ListItem['source'] }));
+            let subjects: ListItem[] = res.data.subjects.map(s => ({ ...s, source: 'db' as ListItem['source'] }));
+            let workGroups: ListItem[] = res.data.workGroups.map(w => ({ ...w, source: 'db' as ListItem['source'] }));
+
+            // --- Word mode: extract from Word files and merge ---
+            if (fileMode === 'word' && teacherWordFile && classWordFile) {
+                const wordFormData = new FormData();
+                wordFormData.append("teacherWordFile", teacherWordFile);
+                wordFormData.append("classWordFile", classWordFile);
+                if (schoolId) wordFormData.append("schoolId", schoolId);
+
+                const wordRes = await extractEntitiesFromWordAction(wordFormData);
+
+                if (wordRes.success && wordRes.data) {
+                    const dbTeacherMap = new Map(teachers.map(t => [t.name, t]));
+                    const dbClassMap = new Map(classes.map(c => [c.name, c]));
+
+                    // Merge teachers from Word with DB teachers
+                    const mergedTeachers: typeof teachers = [];
+                    const seenTeachers = new Set<string>();
+
+                    wordRes.data.teachers.forEach(name => {
+                        if (seenTeachers.has(name)) return;
+                        seenTeachers.add(name);
+
+                        // Try exact match first, then partial match with DB
+                        let dbMatch: string | undefined;
+                        if (dbTeacherMap.has(name)) {
+                            dbMatch = name;
+                        } else {
+                            for (const [dbName] of dbTeacherMap) {
+                                if (dbName.includes(name) || name.includes(dbName)) {
+                                    dbMatch = dbName;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (dbMatch) {
+                            dbTeacherMap.delete(dbMatch);
+                            mergedTeachers.push({ name: dbMatch, source: 'both', exists: true });
+                        } else {
+                            mergedTeachers.push({ name, source: 'file', exists: false });
+                        }
+                    });
+
+                    // Add remaining DB teachers that weren't in Word file
+                    dbTeacherMap.forEach(item => mergedTeachers.push({ ...item, source: 'db', exists: true }));
+                    teachers = mergedTeachers.sort((a, b) => a.name.localeCompare(b.name, 'he'));
+
+                    // Merge classes from Word with DB classes
+                    const mergedClasses: typeof classes = [];
+                    const seenClasses = new Set<string>();
+
+                    wordRes.data.classes.forEach(name => {
+                        if (seenClasses.has(name)) return;
+                        seenClasses.add(name);
+
+                        let dbMatch: string | undefined;
+                        if (dbClassMap.has(name)) {
+                            dbMatch = name;
+                        } else {
+                            for (const [dbName] of dbClassMap) {
+                                if (dbName.includes(name) || name.includes(dbName)) {
+                                    dbMatch = dbName;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (dbMatch) {
+                            dbClassMap.delete(dbMatch);
+                            mergedClasses.push({ name: dbMatch, source: 'both', exists: true });
+                        } else {
+                            mergedClasses.push({ name, source: 'file', exists: false });
+                        }
+                    });
+
+                    // Add remaining DB classes
+                    dbClassMap.forEach(item => mergedClasses.push({ ...item, source: 'db', exists: true }));
+                    classes = mergedClasses.sort((a, b) => a.name.localeCompare(b.name, 'he'));
+
+                    // Merge subjects from Word with DB subjects
+                    const mergedSubjects: typeof subjects = [];
+                    const seenSubjects = new Set<string>();
+                    const dbSubjectMap = new Map(subjects.map(s => [s.name, s]));
+
+                    wordRes.data.subjects.forEach(name => {
+                        if (seenSubjects.has(name)) return;
+                        seenSubjects.add(name);
+
+                        let dbMatch: string | undefined;
+                        if (dbSubjectMap.has(name)) {
+                            dbMatch = name;
+                        } else {
+                            for (const [dbName] of dbSubjectMap) {
+                                if (dbName.includes(name) || name.includes(dbName)) {
+                                    dbMatch = dbName;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (dbMatch) {
+                            dbSubjectMap.delete(dbMatch);
+                            mergedSubjects.push({ name: dbMatch, source: 'both', exists: true });
+                        } else {
+                            mergedSubjects.push({ name, source: 'file', exists: false });
+                        }
+                    });
+
+                    dbSubjectMap.forEach(item => mergedSubjects.push({ ...item, source: 'db', exists: true }));
+                    subjects = mergedSubjects.sort((a, b) => a.name.localeCompare(b.name, 'he'));
+
+                    // Merge workGroups from Word with DB workGroups
+                    const mergedWorkGroups: typeof workGroups = [];
+                    const seenWorkGroups = new Set<string>();
+                    const dbWorkGroupMap = new Map(workGroups.map(w => [w.name, w]));
+
+                    wordRes.data.workGroups.forEach(name => {
+                        if (seenWorkGroups.has(name)) return;
+                        seenWorkGroups.add(name);
+
+                        let dbMatch: string | undefined;
+                        if (dbWorkGroupMap.has(name)) {
+                            dbMatch = name;
+                        } else {
+                            for (const [dbName] of dbWorkGroupMap) {
+                                if (dbName.includes(name) || name.includes(dbName)) {
+                                    dbMatch = dbName;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (dbMatch) {
+                            dbWorkGroupMap.delete(dbMatch);
+                            mergedWorkGroups.push({ name: dbMatch, source: 'both', exists: true });
+                        } else {
+                            mergedWorkGroups.push({ name, source: 'file', exists: false });
+                        }
+                    });
+
+                    dbWorkGroupMap.forEach(item => mergedWorkGroups.push({ ...item, source: 'db', exists: true }));
+                    workGroups = mergedWorkGroups.sort((a, b) => a.name.localeCompare(b.name, 'he'));
+
+                    setImportSource('AI');
+                } else {
+                    popupMsg(`שגיאה בקריאת קבצי Word:\n${wordRes.message}`);
+                    return;
+                }
+            }
+
+            setAnalyzedData(prev => ({
+                ...prev,
+                teachers,
+                classes,
+                subjects,
+                workGroups,
+                schedule: []
+            }));
+            setStep(2);
+
         } catch (err) {
             logErrorAction({ description: `Error loading entities from DB (annual-import): ${err instanceof Error ? err.message : String(err)}`, schoolId: schoolId || undefined });
             popupMsg("שגיאה כללית בטעינת נתונים");
@@ -132,8 +302,13 @@ const AnnualImportContent = () => {
         setIsLoading(true);
         try {
             const formData = new FormData();
-            formData.append("teacherFile", teacherFile!);
-            formData.append("classFile", classFile!);
+            if (fileMode === 'word') {
+                formData.append("teacherWordFile", teacherWordFile!);
+                formData.append("classWordFile", classWordFile!);
+            } else {
+                formData.append("teacherFile", teacherFile!);
+                formData.append("classFile", classFile!);
+            }
             if (schoolId) formData.append("schoolId", schoolId);
 
             // Prepare the approved lists (Map back to strings for the action)
@@ -169,11 +344,140 @@ const AnnualImportContent = () => {
         }
     };
 
-    const handleNext = () => {
+    const handleNext = async () => {
         if (step === 5) {
             DisplayTeachersFinalSchedule();
             return;
         }
+
+        if (fileMode === 'word' && teacherWordFile && classWordFile) {
+            setIsLoading(true);
+            try {
+                const wordFormData = new FormData();
+                wordFormData.append("teacherWordFile", teacherWordFile);
+                wordFormData.append("classWordFile", classWordFile);
+                if (schoolId) wordFormData.append("schoolId", schoolId);
+
+                const wordRes = await extractEntitiesFromWordAction(wordFormData);
+
+                if (wordRes.success && wordRes.data) {
+                    const dbRes = await loadEntitiesFromDBAction(wordFormData);
+                    if (dbRes.success && dbRes.data) {
+                        if (step === 2) {
+                            // Extract and merge classes (Step 3 target)
+                            const dbClasses = dbRes.data.classes.map(c => ({ ...c, source: 'db' as ListItem['source'] }));
+                            const dbClassMap = new Map(dbClasses.map(c => [c.name, c]));
+                            const mergedClasses: ListItem[] = [];
+                            const seenClasses = new Set<string>();
+
+                            wordRes.data.classes.forEach(name => {
+                                if (seenClasses.has(name)) return;
+                                seenClasses.add(name);
+
+                                let dbMatch: string | undefined;
+                                if (dbClassMap.has(name)) {
+                                    dbMatch = name;
+                                } else {
+                                    for (const [dbName] of dbClassMap) {
+                                        if (dbName.includes(name) || name.includes(dbName)) {
+                                            dbMatch = dbName;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                if (dbMatch) {
+                                    dbClassMap.delete(dbMatch);
+                                    mergedClasses.push({ name: dbMatch, source: 'both', exists: true });
+                                } else {
+                                    mergedClasses.push({ name, source: 'file', exists: false });
+                                }
+                            });
+
+                            dbClassMap.forEach(item => mergedClasses.push({ ...item, source: 'db', exists: true }));
+                            const sortedClasses = mergedClasses.sort((a, b) => a.name.localeCompare(b.name, 'he'));
+
+                            setAnalyzedData(prev => ({ ...prev, classes: sortedClasses }));
+                        } else if (step === 3) {
+                            // Extract and merge subjects (Step 4 target)
+                            const dbSubjects = dbRes.data.subjects.map(s => ({ ...s, source: 'db' as ListItem['source'] }));
+                            const dbSubjectMap = new Map(dbSubjects.map(s => [s.name, s]));
+                            const mergedSubjects: ListItem[] = [];
+                            const seenSubjects = new Set<string>();
+
+                            wordRes.data.subjects.forEach(name => {
+                                if (seenSubjects.has(name)) return;
+                                seenSubjects.add(name);
+
+                                let dbMatch: string | undefined;
+                                if (dbSubjectMap.has(name)) {
+                                    dbMatch = name;
+                                } else {
+                                    for (const [dbName] of dbSubjectMap) {
+                                        if (dbName.includes(name) || name.includes(dbName)) {
+                                            dbMatch = dbName;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                if (dbMatch) {
+                                    dbSubjectMap.delete(dbMatch);
+                                    mergedSubjects.push({ name: dbMatch, source: 'both', exists: true });
+                                } else {
+                                    mergedSubjects.push({ name, source: 'file', exists: false });
+                                }
+                            });
+
+                            dbSubjectMap.forEach(item => mergedSubjects.push({ ...item, source: 'db', exists: true }));
+                            const sortedSubjects = mergedSubjects.sort((a, b) => a.name.localeCompare(b.name, 'he'));
+
+                            setAnalyzedData(prev => ({ ...prev, subjects: sortedSubjects }));
+                        } else if (step === 4) {
+                            // Extract and merge workGroups (Step 5 target)
+                            const dbWorkGroups = dbRes.data.workGroups.map(w => ({ ...w, source: 'db' as ListItem['source'] }));
+                            const dbWorkGroupMap = new Map(dbWorkGroups.map(w => [w.name, w]));
+                            const mergedWorkGroups: ListItem[] = [];
+                            const seenWorkGroups = new Set<string>();
+
+                            wordRes.data.workGroups.forEach(name => {
+                                if (seenWorkGroups.has(name)) return;
+                                seenWorkGroups.add(name);
+
+                                let dbMatch: string | undefined;
+                                if (dbWorkGroupMap.has(name)) {
+                                    dbMatch = name;
+                                } else {
+                                    for (const [dbName] of dbWorkGroupMap) {
+                                        if (dbName.includes(name) || name.includes(dbName)) {
+                                            dbMatch = dbName;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                if (dbMatch) {
+                                    dbWorkGroupMap.delete(dbMatch);
+                                    mergedWorkGroups.push({ name: dbMatch, source: 'both', exists: true });
+                                } else {
+                                    mergedWorkGroups.push({ name, source: 'file', exists: false });
+                                }
+                            });
+
+                            dbWorkGroupMap.forEach(item => mergedWorkGroups.push({ ...item, source: 'db', exists: true }));
+                            const sortedWorkGroups = mergedWorkGroups.sort((a, b) => a.name.localeCompare(b.name, 'he'));
+
+                            setAnalyzedData(prev => ({ ...prev, workGroups: sortedWorkGroups }));
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error("Error during step transition re-extraction:", err);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+
         setStep(prev => prev + 1);
     };
 
@@ -271,7 +575,7 @@ const AnnualImportContent = () => {
             const res = await syncAllEntityValuesAction(schoolId || undefined, entityType, items);
 
             if (res.success) {
-                popupMsg("הנתונים נשמרו בהצלחה למסד הנתונים!");
+                popupMsg("הנתונים נשמרו בהצלחה!");
                 setAnalyzedData(prev => ({
                     ...prev,
                     [entityType]: prev[entityType].map(item => ({
@@ -302,30 +606,87 @@ const AnnualImportContent = () => {
                     <div className={styles.stepContainer}>
                         <h2 className={`${styles.title} ${styles.stepTitle}`}>יבוא מערכת השעות - העלאת קבצים (שלב 1/6)</h2>
 
-                        <div className={styles.uploadContainer}>
-                            <div>
-                                <h3 className={styles.subTitle}>קובץ מערכת לפי מורים</h3>
-                                <input
-                                    type="file"
-                                    accept=".xlsx, .xls, .csv"
-                                    onChange={(e) => handleFileChange(e, setTeacherFile)}
-                                    disabled={isLoading}
-                                    className={styles.fileInput}
-                                />
-                                {teacherFile && <span className={styles.fileSuccess}>נבחר: {teacherFile.name}</span>}
-
-                                <br /><br />
-                                <h3 className={styles.subTitle}>קובץ מערכת לפי כיתות</h3>
-                                <input
-                                    type="file"
-                                    accept=".xlsx, .xls, .csv"
-                                    onChange={(e) => handleFileChange(e, setClassFile)}
-                                    disabled={isLoading}
-                                    className={styles.fileInput}
-                                />
-                                {classFile && <span className={styles.fileSuccess}>נבחר: {classFile.name}</span>}
-                            </div>
+                        {/* File mode toggle */}
+                        <div className={styles.fileModeToggle}>
+                            <button
+                                type="button"
+                                id="file-mode-csv"
+                                className={`${styles.fileModeBtn} ${fileMode === 'csv' ? styles.fileModeBtnActive : ''}`}
+                                onClick={() => { setFileMode('csv'); setTeacherWordFile(null); setClassWordFile(null); }}
+                                disabled={isLoading}
+                            >
+                                📊 CSV / Excel
+                            </button>
+                            <button
+                                type="button"
+                                id="file-mode-word"
+                                className={`${styles.fileModeBtn} ${fileMode === 'word' ? styles.fileModeBtnActive : ''}`}
+                                onClick={() => { setFileMode('word'); setTeacherFile(null); setClassFile(null); }}
+                                disabled={isLoading}
+                            >
+                                📄 Word (.docx)
+                            </button>
                         </div>
+
+                        {/* CSV / Excel inputs */}
+                        {fileMode === 'csv' && (
+                            <div className={styles.uploadContainer}>
+                                <div>
+                                    <h3 className={styles.subTitle}>קובץ מערכת לפי מורים</h3>
+                                    <input
+                                        type="file"
+                                        id="teacher-csv-input"
+                                        accept=".xlsx, .xls, .csv"
+                                        onChange={(e) => handleFileChange(e, setTeacherFile)}
+                                        disabled={isLoading}
+                                        className={styles.fileInput}
+                                    />
+                                    {teacherFile && <span className={styles.fileSuccess}>נבחר: {teacherFile.name}</span>}
+
+                                    <br /><br />
+                                    <h3 className={styles.subTitle}>קובץ מערכת לפי כיתות</h3>
+                                    <input
+                                        type="file"
+                                        id="class-csv-input"
+                                        accept=".xlsx, .xls, .csv"
+                                        onChange={(e) => handleFileChange(e, setClassFile)}
+                                        disabled={isLoading}
+                                        className={styles.fileInput}
+                                    />
+                                    {classFile && <span className={styles.fileSuccess}>נבחר: {classFile.name}</span>}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Word (.docx) inputs */}
+                        {fileMode === 'word' && (
+                            <div className={styles.uploadContainer}>
+                                <div>
+                                    <h3 className={styles.subTitle}>קובץ מערכת לפי מורים (.docx)</h3>
+                                    <input
+                                        type="file"
+                                        id="teacher-word-input"
+                                        accept=".docx"
+                                        onChange={(e) => handleFileChange(e, setTeacherWordFile)}
+                                        disabled={isLoading}
+                                        className={styles.fileInput}
+                                    />
+                                    {teacherWordFile && <span className={styles.fileSuccess}>נבחר: {teacherWordFile.name}</span>}
+
+                                    <br /><br />
+                                    <h3 className={styles.subTitle}>קובץ מערכת לפי כיתות (.docx)</h3>
+                                    <input
+                                        type="file"
+                                        id="class-word-input"
+                                        accept=".docx"
+                                        onChange={(e) => handleFileChange(e, setClassWordFile)}
+                                        disabled={isLoading}
+                                        className={styles.fileInput}
+                                    />
+                                    {classWordFile && <span className={styles.fileSuccess}>נבחר: {classWordFile.name}</span>}
+                                </div>
+                            </div>
+                        )}
 
                         <div className={styles.actions}>
                             <SubmitBtn
@@ -334,7 +695,11 @@ const AnnualImportContent = () => {
                                 buttonText="המשך"
                                 className={styles.btnPrimary}
                                 isLoading={isLoading}
-                                disabled={!teacherFile || !classFile}
+                                disabled={
+                                    fileMode === 'csv'
+                                        ? (!teacherFile || !classFile)
+                                        : (!teacherWordFile || !classWordFile)
+                                }
                             />
                         </div>
                     </div>
@@ -357,14 +722,11 @@ const AnnualImportContent = () => {
                                     }));
                                 }
                             }}
-                            fromAI={importSource === 'AI'}
                         />
                         <StepNavigation
                             onNext={handleNext}
                             onPrev={handlePrev}
-                            onRefresh={() => handleRefresh('teachers')}
                             onSaveToDB={() => handleSaveToDB('teachers')}
-                            isRefreshing={isRefreshing}
                             isSaving={isSaving}
                             isLoading={isLoading}
                         />
@@ -387,14 +749,11 @@ const AnnualImportContent = () => {
                                     }));
                                 }
                             }}
-                            fromAI={importSource === 'AI'}
                         />
                         <StepNavigation
                             onNext={handleNext}
                             onPrev={handlePrev}
-                            onRefresh={() => handleRefresh('classes')}
                             onSaveToDB={() => handleSaveToDB('classes')}
-                            isRefreshing={isRefreshing}
                             isSaving={isSaving}
                             isLoading={isLoading}
                         />
@@ -422,7 +781,7 @@ const AnnualImportContent = () => {
                         <StepNavigation
                             onNext={handleNext}
                             onPrev={handlePrev}
-                            onRefresh={() => handleRefresh('subjects')}
+                            onRefresh={fileMode === 'word' ? undefined : () => handleRefresh('subjects')}
                             onSaveToDB={() => handleSaveToDB('subjects')}
                             isRefreshing={isRefreshing}
                             isSaving={isSaving}
@@ -452,7 +811,7 @@ const AnnualImportContent = () => {
                         <StepNavigation
                             onNext={handleNext}
                             onPrev={handlePrev}
-                            onRefresh={() => handleRefresh('workGroups')}
+                            onRefresh={fileMode === 'word' ? undefined : () => handleRefresh('workGroups')}
                             onSaveToDB={() => handleSaveToDB('workGroups')}
                             isRefreshing={isRefreshing}
                             isSaving={isSaving}
@@ -561,7 +920,7 @@ const AnnualImportContent = () => {
 
                                                                         // Partial Match Check (Secondary Subject Detection)
                                                                         // We only flag RED if the leftovers contain ANOTHER known subject.
-                                                                        if (cell.originalText && cell.subject) {
+                                                                        if (fileMode !== 'word' && cell.originalText && cell.subject) {
                                                                             const leftovers = cell.originalText.replace(cell.subject, "");
 
                                                                             const hasAnotherSubject = analyzedData.subjects.some(subj => {
@@ -645,32 +1004,84 @@ const AnnualImportContent = () => {
                             </div>
 
                             <div className={styles.previewActions} style={{ justifyContent: 'space-between' }}>
-                                <div style={{ display: 'flex', gap: '10px' }}>
+                                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                                     {selectedTeacherId && (
-                                        <SubmitBtn
+                                        <button
+                                            type="button"
                                             onClick={async () => {
-                                                const scheduleItems = analyzedData.schedule
-                                                    .filter(s => s.teacher === selectedTeacherId)
-                                                    .map(s => ({
-                                                        day: s.day,
-                                                        hour: s.hour,
-                                                        className: s.class,
-                                                        subjectName: s.subject
-                                                    }));
+                                                setIsSaving(true);
+                                                try {
+                                                    const scheduleItems = analyzedData.schedule
+                                                        .filter(s => s.teacher === selectedTeacherId)
+                                                        .map(s => ({
+                                                            day: s.day,
+                                                            hour: s.hour,
+                                                            className: s.class,
+                                                            subjectName: s.subject
+                                                        }));
 
-                                                const res = await saveTeacherScheduleAction(
-                                                    selectedTeacherId,
+                                                    const res = await saveTeacherScheduleAction(
+                                                        selectedTeacherId,
+                                                        schoolId || '',
+                                                        scheduleItems
+                                                    );
+                                                    popupMsg(res.message);
+                                                    
+                                                    const hasSchedule = await checkTeacherHasScheduleAction(selectedTeacherId, schoolId || '');
+                                                    setTeacherHasExistingSchedule(hasSchedule);
+                                                } catch (err) {
+                                                    console.error("Error saving teacher schedule:", err);
+                                                    popupMsg("שגיאה בשמירת מערכת המורה");
+                                                } finally {
+                                                    setIsSaving(false);
+                                                }
+                                            }}
+                                            disabled={isSaving}
+                                            className={styles.btnRefresh}
+                                            title={teacherHasExistingSchedule ? 'עדכון המערכת' : 'הוספת המערכת'}
+                                        >
+                                            {isSaving ? "⏳" : (
+                                                <Icons.save size={24} />
+                                            )}
+                                        </button>
+                                    )}
+                                    <button
+                                        type="button"
+                                        onClick={async () => {
+                                            setIsSavingAll(true);
+                                            try {
+                                                const bulkSchedules = analyzedData.teachers.map(teacher => {
+                                                    const teacherScheduleItems = analyzedData.schedule
+                                                        .filter(s => s.teacher === teacher.name)
+                                                        .map(s => ({
+                                                            day: s.day,
+                                                            hour: s.hour,
+                                                            className: s.class,
+                                                            subjectName: s.subject
+                                                        }));
+                                                    return {
+                                                        teacherName: teacher.name,
+                                                        scheduleItems: teacherScheduleItems
+                                                    };
+                                                });
+
+                                                const res = await saveAllTeachersSchedulesAction(
                                                     schoolId || '',
-                                                    scheduleItems
+                                                    bulkSchedules
                                                 );
                                                 popupMsg(res.message);
-                                            }}
-                                            buttonText={teacherHasExistingSchedule ? 'עדכון המערכת' : 'הוספת המערכת'}
-                                            className={styles.btnSingleUpdate}
-                                            isLoading={isLoading}
-                                            type="button"
-                                        />
-                                    )}
+                                            } catch (err) {
+                                                console.error("Error saving all schedules:", err);
+                                                popupMsg("שגיאה בשמירת כל המערכות");
+                                            } finally {
+                                                setIsSavingAll(false);
+                                            }
+                                        }}
+                                        className={styles.btnPrimary}
+                                        disabled={isSavingAll}
+                                    >
+                                        {isSavingAll ? "עדכון כל המערכות..." : "עדכן את כל המערכות"}
+                                    </button>
                                 </div>
 
                                 <div style={{ display: 'flex', gap: '10px' }}>

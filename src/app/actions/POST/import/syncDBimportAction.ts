@@ -4,8 +4,9 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/db";
 import { teachers, classes, subjects, annualSchedule, type NewAnnualScheduleSchema } from "@/db/schema";
-import { eq, and, notInArray } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { eq, and, notInArray, inArray } from "drizzle-orm";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { cacheTags } from "@/lib/cacheTags";
 import { dbLog } from "@/services/loggerService";
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
 import { ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
@@ -96,6 +97,18 @@ export const addSingleEntityAction = async (
         } else {
             return { success: false, message: "Invalid entity type" };
         }
+
+        if (entityType === 'teachers') {
+            revalidateTag(cacheTags.teachersList(targetSchoolId));
+        } else if (entityType === 'classes') {
+            revalidateTag(cacheTags.classesList(targetSchoolId));
+        } else if (entityType === 'subjects') {
+            revalidateTag(cacheTags.subjectsList(targetSchoolId));
+        } else if (entityType === 'workGroups') {
+            revalidateTag(cacheTags.classesList(targetSchoolId));
+            revalidateTag(cacheTags.subjectsList(targetSchoolId));
+        }
+        revalidateTag(cacheTags.schoolSchedule(targetSchoolId));
 
         revalidatePath('/annual-import');
         void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: targetSchoolId });
@@ -191,13 +204,22 @@ export const syncAllEntityValuesAction = async (
             }
         };
 
-        if (entityType === 'teachers') await syncTable(teachers, { role: 'regular' });
-        else if (entityType === 'classes') await syncTable(classes, { activity: false }, [eq(classes.activity, false)]);
-        else if (entityType === 'subjects') await syncTable(subjects, { activity: false }, [eq(subjects.activity, false)]);
-        else if (entityType === 'workGroups') {
+        if (entityType === 'teachers') {
+            await syncTable(teachers, { role: 'regular' });
+            revalidateTag(cacheTags.teachersList(targetSchoolId));
+        } else if (entityType === 'classes') {
+            await syncTable(classes, { activity: false }, [eq(classes.activity, false)]);
+            revalidateTag(cacheTags.classesList(targetSchoolId));
+        } else if (entityType === 'subjects') {
+            await syncTable(subjects, { activity: false }, [eq(subjects.activity, false)]);
+            revalidateTag(cacheTags.subjectsList(targetSchoolId));
+        } else if (entityType === 'workGroups') {
             await syncTable(classes, { activity: true }, [eq(classes.activity, true)]);
             await syncTable(subjects, { activity: true }, [eq(subjects.activity, true)]);
+            revalidateTag(cacheTags.classesList(targetSchoolId));
+            revalidateTag(cacheTags.subjectsList(targetSchoolId));
         }
+        revalidateTag(cacheTags.schoolSchedule(targetSchoolId));
 
         void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: targetSchoolId });
         return { success: true, message: "Database updated successfully" };
@@ -340,6 +362,133 @@ export async function saveTeacherScheduleAction(
             description: `Error in saveTeacherScheduleAction: ${error instanceof Error ? error.message : String(error)}`,
             schoolId,
             metadata: { teacherName }
+        });
+        return { success: false, message: `Error: ${error.message}` };
+    }
+}
+
+/**
+ * Step 6: Save schedules for ALL teachers at once
+ */
+export async function saveAllTeachersSchedulesAction(
+    schoolId: string,
+    schedules: {
+        teacherName: string;
+        scheduleItems: { day: number; hour: number; className: string; subjectName: string }[];
+    }[]
+) {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user) return { success: false, message: "Not authenticated" };
+
+        const targetSchoolId = schoolId || session.user.schoolId;
+        if (!targetSchoolId) return { success: false, message: "No school ID available" };
+
+        // 1. Fetch maps of teachers, classes, and subjects for the school
+        const allTeacherList = await db.query.teachers.findMany({
+            where: and(eq(teachers.schoolId, targetSchoolId), eq(teachers.role, 'regular'))
+        });
+        const teacherMap = new Map(allTeacherList.map(t => [t.name, t.id]));
+
+        const allClassList = await db.query.classes.findMany({
+            where: eq(classes.schoolId, targetSchoolId)
+        });
+        const classMap = new Map(allClassList.map(c => [c.name, c.id]));
+
+        const allSubjectList = await db.query.subjects.findMany({
+            where: eq(subjects.schoolId, targetSchoolId)
+        });
+        const subjectMap = new Map(allSubjectList.map(s => [s.name, s.id]));
+
+        const toInsert: NewAnnualScheduleSchema[] = [];
+        const missingTeachers: string[] = [];
+        const missingClasses: string[] = [];
+        const missingSubjects: string[] = [];
+
+        const teacherIdsToClear = new Set<string>();
+
+        for (const teacherSched of schedules) {
+            const { teacherName, scheduleItems } = teacherSched;
+            const teacherId = teacherMap.get(teacherName);
+
+            if (!teacherId) {
+                if (!missingTeachers.includes(teacherName)) missingTeachers.push(teacherName);
+                continue;
+            }
+
+            teacherIdsToClear.add(teacherId);
+
+            for (const item of scheduleItems) {
+                if (item.className === "ללא כיתה" && item.subjectName === "ללא מקצוע") {
+                    continue;
+                }
+
+                const isWorkGroup = item.className === "קבוצה";
+                const classLookupName = isWorkGroup ? item.subjectName : item.className;
+                
+                const classId = classMap.get(classLookupName);
+                const subjectId = subjectMap.get(item.subjectName);
+
+                if (!classId && item.className !== "ללא כיתה") {
+                    const missingName = isWorkGroup ? item.subjectName : item.className;
+                    if (!missingClasses.includes(missingName)) missingClasses.push(missingName);
+                }
+
+                if (!subjectId && item.subjectName !== "ללא מקצוע") {
+                    if (!missingSubjects.includes(item.subjectName)) missingSubjects.push(item.subjectName);
+                }
+
+                if (classId && subjectId) {
+                    toInsert.push({
+                        schoolId: targetSchoolId,
+                        teacherId: teacherId,
+                        day: item.day,
+                        hour: item.hour,
+                        classId: classId,
+                        subjectId: subjectId,
+                    });
+                }
+            }
+        }
+
+        // Validate
+        if (missingClasses.length > 0 || missingSubjects.length > 0) {
+            let errorMsg = "לא ניתן לשמור את המערכת כי חסרים נתונים במאגר:\n";
+            if (missingClasses.length > 0) errorMsg += `כיתות חסרות: ${missingClasses.join(", ")}\n`;
+            if (missingSubjects.length > 0) errorMsg += `מקצועות חסרים: ${missingSubjects.join(", ")}\n`;
+            errorMsg += "יש לשמור את הפריטים הללו בשלבים הקודמים.";
+            return { success: false, message: errorMsg };
+        }
+
+        // Clear schedules of teachers that are in the import file
+        const teacherIdArray = Array.from(teacherIdsToClear);
+        if (teacherIdArray.length > 0) {
+            await db.delete(annualSchedule)
+                .where(and(
+                    eq(annualSchedule.schoolId, targetSchoolId),
+                    inArray(annualSchedule.teacherId, teacherIdArray)
+                ));
+        }
+
+        // Insert new schedule rows
+        if (toInsert.length > 0) {
+            await db.insert(annualSchedule).values(toInsert);
+        }
+
+        revalidatePath('/annual-import');
+        revalidatePath('/annual-build-teacher');
+        revalidatePath('/annual-build-class');
+        revalidatePath('/annual-view');
+
+        revalidateTag(cacheTags.schoolSchedule(targetSchoolId));
+        void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: targetSchoolId });
+
+        return { success: true, message: `כל המערכות נשמרו בהצלחה!` };
+
+    } catch (error: any) {
+        dbLog({
+            description: `Error in saveAllTeachersSchedulesAction: ${error instanceof Error ? error.message : String(error)}`,
+            schoolId,
         });
         return { success: false, message: `Error: ${error.message}` };
     }
