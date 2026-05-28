@@ -3,25 +3,32 @@ import {
     DAYS_OF_WEEK, getDateReturnString, getDayNumberByDate, getTodayDateString,
     getTomorrowDateString, SATURDAY_NUMBER, israelTimezoneDate, generateDateRange,
     getCurrentMonth, getCurrentYear, DAYS_OF_WEEK_FORMAT, formatTMDintoDMY,
-    AUTO_SWITCH_TIME, getIsraelDateComponents,
+    AUTO_SWITCH_TIME, getIsraelDateComponents, getTwoDaysFromNowDateString,
 } from "@/utils/time";
 
 // Used in Daily Schedule
 export function getIsraeliDateOptions(short: boolean = false): SelectOption[] {
 
     // 1. Determine "Time State" (Before/After 16:00)
-    const { hour: currentHour, minute: currentMinute } = getIsraelDateComponents();
+    const israelTodayComponents = getIsraelDateComponents();
+    const { hour: currentHour, minute: currentMinute, year, month, day } = israelTodayComponents;
     const [switchHour, switchMinute] = AUTO_SWITCH_TIME.split(":").map(Number);
     const isAfterSwitch = currentHour > switchHour ||
         (currentHour === switchHour && currentMinute >= switchMinute);
 
-    // 2. Define Date Range (Yesterday -> Today + 1 Month)
-    const israelToday = israelTimezoneDate();
+    // 2. Define Date Range (Yesterday -> June 30th of the current school year)
+    const israelToday = new Date(year, month - 1, day, currentHour, currentMinute);
     const start = new Date(israelToday);
     start.setDate(start.getDate() - 1);
 
-    const end = new Date(israelToday);
-    end.setMonth(end.getMonth() + 1);
+    const currentMonth = month - 1; // 0-11
+    const endYear = currentMonth >= 8 ? year + 1 : year;
+    let end = new Date(endYear, 5, 30); // June 30th
+
+    if (end < start) {
+        end = new Date(israelToday);
+        end.setMonth(end.getMonth() + 1);
+    }
 
     // 3. Constants for comparison
     const todayStr = getDateReturnString(israelToday);
@@ -29,10 +36,13 @@ export function getIsraeliDateOptions(short: boolean = false): SelectOption[] {
 
     // 4. Generate & Map
     return generateDateRange(start, end)
-        .filter(dateStr => new Date(dateStr).getDay() !== SATURDAY_NUMBER) // Filter Saturdays
         .map(dateStr => {
             const date = new Date(dateStr);
-            const hebrewDay = DAYS_OF_WEEK_FORMAT[date.getDay()];
+            return { dateStr, date, dayOfWeek: date.getDay() };
+        })
+        .filter(({ dayOfWeek }) => dayOfWeek !== SATURDAY_NUMBER) // Filter Saturdays
+        .map(({ dateStr, date, dayOfWeek }) => {
+            const hebrewDay = DAYS_OF_WEEK_FORMAT[dayOfWeek];
 
             // Format Date (DD-MM-YYYY or DD-MM)
             let dateDisplay = formatTMDintoDMY(dateStr);
@@ -79,7 +89,7 @@ export const getTodayOption = () => {
     return getTodayDateString();
 };
 
-import { getTwoDaysFromNowDateString } from "@/utils/time";
+
 
 export const getTomorrowOption = () => {
     const tomorrow = new Date(getTomorrowDateString());

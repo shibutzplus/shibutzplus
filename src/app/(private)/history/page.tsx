@@ -56,7 +56,7 @@ const HistoryScheduleContent: React.FC = () => {
                         mainDailyTable={mainDailyTable}
                         selectedDate={selectedYearDate}
                         EmptyTable={NotPublished}
-                        emptyText="אין נתוני היסטוריה ליום שנבחר"
+                        emptyText="אין שינויים ליום שנבחר"
                         onTeacherClick={handleTeacherClick}
                         fromHour={settings?.fromHour}
                         toHour={settings?.toHour}
