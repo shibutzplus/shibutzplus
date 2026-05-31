@@ -33,7 +33,7 @@ export const getInstructionPlaceholder = (row?: TeacherScheduleType, teacher?: T
     // Chain replacement (e.g. A→B→C→A) - can't be traced automatically, coordinate manually
     if (row.secondary) {
         return {
-            text: "שימו לב! במצב כזה השדה אינו רלוונטי והחילוף מחייב תיאום ישיר בין המורים",
+            text: "שימו לב! במצב כזה השדה אינו רלוונטי והתיאום מחייב שיח בין המורים",
             color: "#c19090ff"
         };
     };
