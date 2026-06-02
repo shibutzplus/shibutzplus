@@ -38,25 +38,19 @@ const TeacherDailyChangesDetailsCell: React.FC<TeacherDailyChangesDetailsCellPro
 
     const displayReplaceTeacher = () => {
 
-
         if (isDouble && primary && secondary) {
-            const texts = [primary, secondary].sort((a, _b) => {
-                if (a.type === "replacing") return 1;
-                return -1;
-            });
+            const replacingItem = primary.type === "replacing" ? primary : secondary;
+            const replacedItem = primary.type === "replaced" ? primary : secondary;
 
-            const firstLine = texts[0].type === "replaced"
-                ? <>{texts[0].text} <span>במקומי</span></>
-                : texts[0].text;
-            const replacingRow = primary?.type === "replacing" ? row : row?.secondary;
+            const replacingRow = primary.type === "replacing" ? row : row?.secondary;
             const replacingClasses = replacingRow?.classes?.map((cls) => cls.name).join(", ");
-            const secondLine = texts[1].type === "replacing"
-                ? <>אני במקום <span>{texts[1].text}</span>{replacingClasses ? ` (${replacingClasses})` : ""}</>
-                : texts[1].text;
+
+            const replacingText = <span className={styles.replacingText}>אני במקום <span>{replacingItem.text}</span>{replacingClasses ? ` (${replacingClasses})` : ""}</span>;
+            const replacedText = <span className={styles.replacedText}>{replacedItem.text} <span>במקומי</span></span>;
 
             return (
                 <div className={styles.doubleRow}>
-                    {firstLine}, {secondLine}
+                    {replacingText}, {replacedText}
                 </div>
             );
         }
@@ -88,8 +82,8 @@ const TeacherDailyChangesDetailsCell: React.FC<TeacherDailyChangesDetailsCellPro
     return (
         <div className={`${row ? styles.cellContent : styles.emptyCell}`}>
             {row?.comment && (
-                <span 
-                    className={styles.commentIcon} 
+                <span
+                    className={styles.commentIcon}
                     title={row.comment}
                     onClick={() => successToast(row.comment!)}
                     style={{ cursor: "pointer" }}

@@ -59,7 +59,7 @@ const TeacherPortalPage: NextPage = () => {
 
             // 2. Hydrate Schedule Context if available
             if (scheduleData && scheduleData.success && scheduleData.data) {
-                const scheduleMap = populatePortalTable(scheduleData.data, {}, selectedDate);
+                const scheduleMap = populatePortalTable(scheduleData.data, {}, selectedDate, teacher.id);
                 if (scheduleMap) {
                     hydrateSchedule(scheduleMap, selectedDate);
                 }

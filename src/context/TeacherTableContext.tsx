@@ -85,14 +85,9 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
             }
 
             if (response?.success && response?.data) {
-                const newSchedule = populatePortalTable(response.data, mainPortalTable, selectedDate);
+                const newSchedule = populatePortalTable(response.data, mainPortalTable, selectedDate, teacher.id);
                 if (newSchedule) setMainPortalTable(newSchedule);
             } else { // Error is suppressed as it was investigated and no need to Log it anymore
-                // if (!response) {
-                //     logErrorAction({
-                //         description: "Error fetching Teacher Material page data: Response undefined",
-                //         schoolId: teacher?.schoolId, user: teacher?.name, metadata: { selectedDate, isHistoryPage }});
-                // }
                 return false;
             }
             return true;
@@ -144,7 +139,14 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
             );
             if (response?.success) {
                 const portalSchedule = { ...mainPortalTable };
-                portalSchedule[selectedDate][`${row.hour}`].instructions = instructions;
+                const hourKey = `${row.hour}`;
+                if (portalSchedule[selectedDate]?.[hourKey]) {
+                    if (portalSchedule[selectedDate][hourKey].DBid === row.DBid) {
+                        portalSchedule[selectedDate][hourKey].instructions = instructions;
+                    } else if (portalSchedule[selectedDate][hourKey].secondary?.DBid === row.DBid) {
+                        portalSchedule[selectedDate][hourKey].secondary!.instructions = instructions;
+                    }
+                }
                 setMainPortalTable(portalSchedule);
             } else {
                 errorToast(messages.dailySchedule.error);

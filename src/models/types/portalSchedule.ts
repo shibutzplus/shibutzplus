@@ -18,6 +18,9 @@ export type TeacherScheduleType = {
     comment?: string;
     secondary?: TeacherScheduleType;
     isRegular?: boolean;
+    isChainOriginalReplacing?: boolean;
+    isChainSubReplaced?: boolean;
+    chainTeacherName?: string;
 };
 
 export type PortalSchedule = {

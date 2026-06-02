@@ -27,23 +27,32 @@ export const getInstructionPlaceholder = (row?: TeacherScheduleType, teacher?: T
         row.subTeacher.id === row.secondary.originalTeacher?.id;
 
     if (isCrossReplacement) {
-        return { text: `הזינו כאן חומרי לימוד הדדיים (הצרכה)` };
+        return { text: `הזינו כאן את חומרי הלימוד (הצרחה)` };
     }
 
-    // Chain replacement (e.g. A→B→C→A) - can't be traced automatically, coordinate manually
-    if (row.secondary) {
+    // Chain replacement (e.g. A→B→C→D) - general warning placeholder for double chain replacements (replacing and being replaced)
+    if (row.isChainOriginalReplacing && row.isChainSubReplaced) {
         return {
-            text: "שימו לב! במצב כזה השדה אינו רלוונטי והתיאום מחייב שיח בין המורים",
-            color: "#c19090ff"
+            text: "עקב שרשרת החלפות בשיעור זה, יש לתאם את חומר הלימוד ישירות מול המורים.",
+            color: "#c04949ff"
         };
-    };
+    }
+
+    // Chain replacement (e.g. A→B→C→D) - warning placeholder for the last substitute in the chain
+    if (row.isChainOriginalReplacing) {
+        const originalName = row.originalTeacher?.name || "המורה";
+        return {
+            text: `עקב שרשרת החלפות בשיעור זה, יש לתאם את חומר הלימוד ישירות מול ${originalName}.`,
+            color: "#c04949ff"
+        };
+    }
 
     // If I am the main teacher
     const isOriginalTeacher = teacher.id === row.originalTeacher?.id;
     const subName = row.subTeacher?.name;
     if (isOriginalTeacher) {
         return {
-            text: subName ? `הזינו חומר לימוד ל${subName}` : "הזינו כאן חומר לימוד למורה המחליף"
+            text: subName ? `הזינו חומר לימוד ל${subName}` : ""
         };
     }
 

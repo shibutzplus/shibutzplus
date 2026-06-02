@@ -114,6 +114,21 @@ async function getTeacherScheduleService(
     });
 
     // Process Daily Schedules
+    const hours = dailySchedules.map((ds: any) => ds.hour);
+    let chainSchedules: any[] = [];
+    if (hours.length > 0) {
+        chainSchedules = await db.query.dailySchedule.findMany({
+            where: and(
+                eq(schema.dailySchedule.date, date),
+                inArray(schema.dailySchedule.hour, hours),
+            ),
+            with: {
+                originalTeacher: true,
+                subTeacher: true,
+            },
+        });
+    }
+
     dailySchedules.forEach((ds: any) => {
         const isSub = ds.subTeacherId === teacherId;
         const isOriginal = ds.originalTeacherId === teacherId;
@@ -123,6 +138,47 @@ async function getTeacherScheduleService(
         // 1. I am the substitute teacher
         // 2. I am the original teacher (even if replaced, so I can see "Replaced by X")
         if (isSub || isOriginal) {
+            const otherEntries = chainSchedules.filter((c: any) => c.hour === ds.hour && c.id !== ds.id);
+
+            let isChainOriginalReplacing = false;
+            let isChainSubReplaced = false;
+            let chainTeacherName: string | undefined = undefined;
+
+            if (isSub) {
+                // 1. Am I (B) also being replaced in another entry at this hour? (A -> B -> C)
+                const otherReplaced = otherEntries.find((c: any) => 
+                    c.originalTeacherId === teacherId && 
+                    c.subTeacherId &&
+                    !(c.subTeacherId === ds.originalTeacherId && c.originalTeacherId === ds.subTeacherId)
+                );
+                if (otherReplaced) {
+                    isChainSubReplaced = true;
+                    chainTeacherName = otherReplaced.subTeacher?.name || undefined;
+                }
+
+                // 2. Is the teacher I am replacing (B) also a substitute in another entry? (A -> B -> C)
+                const otherReplacing = otherEntries.find((c: any) => 
+                    c.subTeacherId === ds.originalTeacherId &&
+                    !(c.subTeacherId === ds.originalTeacherId && c.originalTeacherId === ds.subTeacherId)
+                );
+                if (otherReplacing) {
+                    isChainOriginalReplacing = true;
+                    chainTeacherName = otherReplacing.originalTeacher?.name || undefined;
+                }
+            }
+
+            if (isOriginal) {
+                // 3. Am I (B) also a substitute in another entry? (A -> B -> C)
+                const otherReplacing = otherEntries.find((c: any) => 
+                    c.subTeacherId === teacherId &&
+                    !(c.subTeacherId === ds.originalTeacherId && c.originalTeacherId === ds.subTeacherId)
+                );
+                if (otherReplacing) {
+                    isChainOriginalReplacing = true;
+                    chainTeacherName = otherReplacing.originalTeacher?.name || undefined;
+                }
+            }
+
             results.push({
                 id: ds.id,
                 date: new Date(ds.date),
@@ -141,6 +197,9 @@ async function getTeacherScheduleService(
                 instructions: ds.instructions || undefined,
                 comment: ds.comment || undefined,
                 isRegular: (isOriginal && !isReplaced && ds.columnType === 1 && !ds.event),
+                isChainOriginalReplacing,
+                isChainSubReplaced,
+                chainTeacherName,
                 createdAt: ds.createdAt,
                 updatedAt: ds.updatedAt,
             });
