@@ -40,6 +40,7 @@ export const populatePortalTable = (
     dataColumns: DailyScheduleType[],
     mainPortalTable: PortalSchedule,
     selectedDate: string,
+    teacherId?: string,
 ) => {
     if (!selectedDate) return;
 
@@ -67,10 +68,19 @@ export const populatePortalTable = (
                 instructions: entry.instructions,
                 comment: entry.comment,
                 isRegular: entry.isRegular,
+                isChainOriginalReplacing: entry.isChainOriginalReplacing,
+                isChainSubReplaced: entry.isChainSubReplaced,
+                chainTeacherName: entry.chainTeacherName,
             };
 
             if (next[selectedDate]![hour]) {
-                next[selectedDate]![hour].secondary = newEntry;
+                const existing = next[selectedDate]![hour];
+                if (teacherId && newEntry.subTeacher?.id === teacherId) {
+                    newEntry.secondary = existing;
+                    next[selectedDate]![hour] = newEntry;
+                } else {
+                    existing.secondary = newEntry;
+                }
             } else {
                 next[selectedDate]![hour] = newEntry;
             }

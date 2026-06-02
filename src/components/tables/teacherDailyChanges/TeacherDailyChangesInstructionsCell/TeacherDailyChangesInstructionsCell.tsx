@@ -37,22 +37,35 @@ const TeacherDailyChangesInstructionsCell: React.FC<TeacherDailyChangesInstructi
     };
 
     const isSubstitute = !!(row?.originalTeacher && teacher?.id !== row.originalTeacher?.id);
+    const isReadOnly = isHistoryPage || !!row?.isChainOriginalReplacing;
+    const hideButtons = isReadOnly || isSubstitute || row?.isRegular;
 
     const placeholderInfo = getInstructionPlaceholder(row, teacher);
+    const isDoubleChain = !!(row?.isChainOriginalReplacing && row?.isChainSubReplaced);
+    const warningText = (row?.isChainSubReplaced && !isDoubleChain)
+        ? `שימו לב ש${row.chainTeacherName || "המורה"} מחליף/ה אותך בשיעור זה. עקב שרשרת ההחלפות, יש לתאם את חומר הלימוד ישירות מולו/ה.`
+        : null;
 
     return (
         <div className={`${row ? styles.cellContent : styles.emptyCell}`}>
             {row ? (
-                <InputRichText
-                    value={instructions}
-                    onChangeHTML={setInstructions}
-                    onBlurHTML={handleChange}
-                    placeholder={placeholderInfo.text}
-                    placeholderColor={placeholderInfo.color}
-                    minHeight={60}
-                    readOnly={isHistoryPage}
-                    hideButtons={isSubstitute || row?.isRegular}
-                />
+                <>
+                    <InputRichText
+                        value={instructions}
+                        onChangeHTML={setInstructions}
+                        onBlurHTML={handleChange}
+                        placeholder={placeholderInfo.text}
+                        placeholderColor={placeholderInfo.color}
+                        minHeight={60}
+                        readOnly={isReadOnly}
+                        hideButtons={hideButtons}
+                    />
+                    {warningText && (
+                        <div className={styles.warningText}>
+                            {warningText}
+                        </div>
+                    )}
+                </>
             ) : null}
         </div>
     );

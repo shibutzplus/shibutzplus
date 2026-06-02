@@ -30,6 +30,9 @@ export type DailyScheduleType = {
     createdAt?: Date;
     updatedAt?: Date;
     isRegular?: boolean;
+    isChainOriginalReplacing?: boolean;
+    isChainSubReplaced?: boolean;
+    chainTeacherName?: string;
 };
 
 export type DailyScheduleRequest = {
