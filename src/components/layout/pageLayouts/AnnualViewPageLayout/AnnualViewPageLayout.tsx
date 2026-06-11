@@ -10,7 +10,7 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 import AnnualSchedulePdf from "@/components/pdf/AnnualSchedulePdf";
 import { useMainContext } from "@/context/MainContext";
 import Icons from "@/style/icons";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 type AnnualViewPageLayoutProps = {
     children: React.ReactNode;
@@ -20,6 +20,7 @@ const ChangeScheduleDropdown: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const nav = useRouter();
+    const searchParams = useSearchParams();
     const { selectedClassId, selectedTeacherId } = useAnnualView();
 
     useEffect(() => {
@@ -58,26 +59,28 @@ const ChangeScheduleDropdown: React.FC = () => {
                     <button
                         type="button"
                         className={styles.dropdownItem}
-                        onClick={() =>
-                            handleOptionClick(
-                                selectedClassId
-                                    ? `/annual-build-class?classId=${selectedClassId}`
-                                    : "/annual-build-class"
-                            )
-                        }
+                        onClick={() => {
+                            const schoolId = searchParams.get("schoolId");
+                            const params = new URLSearchParams();
+                            if (selectedClassId) params.set("classId", selectedClassId);
+                            if (schoolId) params.set("schoolId", schoolId);
+                            const qs = params.toString();
+                            handleOptionClick(`/annual-build-class${qs ? `?${qs}` : ""}`);
+                        }}
                     >
                         לפי כיתה
                     </button>
                     <button
                         type="button"
                         className={styles.dropdownItem}
-                        onClick={() =>
-                            handleOptionClick(
-                                selectedTeacherId
-                                    ? `/annual-build-teacher?teacherId=${selectedTeacherId}`
-                                    : "/annual-build-teacher"
-                            )
-                        }
+                        onClick={() => {
+                            const schoolId = searchParams.get("schoolId");
+                            const params = new URLSearchParams();
+                            if (selectedTeacherId) params.set("teacherId", selectedTeacherId);
+                            if (schoolId) params.set("schoolId", schoolId);
+                            const qs = params.toString();
+                            handleOptionClick(`/annual-build-teacher${qs ? `?${qs}` : ""}`);
+                        }}
                     >
                         לפי מורה
                     </button>
