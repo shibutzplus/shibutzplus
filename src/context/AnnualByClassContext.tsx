@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { useMainContext } from "./MainContext";
 import { createSelectOptions } from "@/utils/format";
 import { ClassType } from "@/models/types/classes";
@@ -63,6 +64,18 @@ export const AnnualByClassProvider: React.FC<{ children: ReactNode }> = ({ child
             }
         }
     }, [classes, selectedClassId]);
+
+    const searchParams = useSearchParams();
+
+    useEffect(() => {
+        const classId = searchParams.get("classId") || searchParams.get("id");
+        if (classId && classes && classes.length > 0) {
+            const isValid = classes.some((c) => c.id === classId);
+            if (isValid) {
+                setSelectedClassId(classId);
+            }
+        }
+    }, [searchParams, classes]);
 
     const classesSelectOptions = () => {
         return createSelectOptions<ClassType>(classes || []);

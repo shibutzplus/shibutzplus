@@ -18,16 +18,26 @@
 
 .innerCellContent :global(.custom-select-clear-btn) {
     opacity: 0;
-    transition: opacity 0.15s ease;
+    max-width: 0;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden;
+    transition: opacity 0.15s ease, max-width 0.15s ease, padding 0.15s ease, margin 0.15s ease;
 }
 
 .innerCellContent:hover :global(.custom-select-clear-btn) {
     opacity: 1;
+    max-width: 75px;
+    padding: 0 3px !important;
+    margin-right: 3px !important;
 }
 
 @media (max-width: 800px) {
     .innerCellContent :global(.custom-select-clear-btn) {
         opacity: 1 !important;
+        max-width: 50px !important;
+        padding: 0 6px !important;
+        margin-right: 9px !important;
     }
 }
 
