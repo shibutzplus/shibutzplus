@@ -194,7 +194,16 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
         const [isHovered, setIsHovered] = useState(false);
         return (
             <components.SingleValue {...props}>
-                {props.children}
+                <span
+                    style={{
+                        flex: "0 1 auto",
+                        overflow: "hidden",
+                        textOverflow: "clip",
+                        whiteSpace: "nowrap",
+                    }}
+                >
+                    {props.children}
+                </span>
                 {isClearable && selectedOption && (
                     <div
                         className="custom-select-clear-btn"
@@ -220,6 +229,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
                             zIndex: 5,
                             position: "relative",
                             pointerEvents: "auto",
+                            flexShrink: 0,
                         }}
                     >
                         <svg

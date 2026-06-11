@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styles from "./AnnualViewPageLayout.module.css";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import { useAnnualView } from "@/context/AnnualViewContext";
@@ -10,9 +10,81 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 import AnnualSchedulePdf from "@/components/pdf/AnnualSchedulePdf";
 import { useMainContext } from "@/context/MainContext";
 import Icons from "@/style/icons";
+import { useRouter } from "next/navigation";
 
 type AnnualViewPageLayoutProps = {
     children: React.ReactNode;
+};
+
+const ChangeScheduleDropdown: React.FC = () => {
+    const [isOpen, setIsOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+    const nav = useRouter();
+    const { selectedClassId, selectedTeacherId } = useAnnualView();
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
+    const handleOptionClick = (path: string) => {
+        setIsOpen(false);
+        nav.push(path);
+    };
+
+    return (
+        <div className={styles.dropdownContainer} ref={dropdownRef}>
+            <button
+                type="button"
+                className={styles.dropdownTrigger}
+                onClick={() => setIsOpen(!isOpen)}
+            >
+                <span className={styles.textLong}>שינוי המערכת</span>
+                <span className={styles.textShort}>שינוי</span>
+                <Icons.arrowDown
+                    size={16}
+                    className={`${styles.chevron} ${isOpen ? styles.chevronOpen : ""}`}
+                />
+            </button>
+            {isOpen && (
+                <div className={styles.dropdownMenu}>
+                    <button
+                        type="button"
+                        className={styles.dropdownItem}
+                        onClick={() =>
+                            handleOptionClick(
+                                selectedClassId
+                                    ? `/annual-build-class?classId=${selectedClassId}`
+                                    : "/annual-build-class"
+                            )
+                        }
+                    >
+                        לפי כיתה
+                    </button>
+                    <button
+                        type="button"
+                        className={styles.dropdownItem}
+                        onClick={() =>
+                            handleOptionClick(
+                                selectedTeacherId
+                                    ? `/annual-build-teacher?teacherId=${selectedTeacherId}`
+                                    : "/annual-build-teacher"
+                            )
+                        }
+                    >
+                        לפי מורה
+                    </button>
+                </div>
+            )}
+        </div>
+    );
 };
 
 export default function AnnualViewPageLayout({ children }: AnnualViewPageLayoutProps) {
@@ -82,6 +154,9 @@ export default function AnnualViewPageLayout({ children }: AnnualViewPageLayoutP
                             isClearable
                         />
                     </div>
+                    <div className={styles.desktopDropdownContainer}>
+                        <ChangeScheduleDropdown />
+                    </div>
                     <div className={styles.pdfContainer}>
                         {pdfDownloadButton}
                     </div>
@@ -113,11 +188,15 @@ export default function AnnualViewPageLayout({ children }: AnnualViewPageLayoutP
                             isClearable
                         />
                     </div>
+                    <div className={styles.bar2DropdownContainer}>
+                        <ChangeScheduleDropdown />
+                    </div>
                     {pdfDownloadButton}
                 </div>
             }
             HeaderLeftActions={
                 <div className={styles.pdfLeftContainer}>
+                    <ChangeScheduleDropdown />
                     {pdfDownloadButton}
                 </div>
             }

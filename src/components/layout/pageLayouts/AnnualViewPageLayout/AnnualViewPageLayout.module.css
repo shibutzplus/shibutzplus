@@ -16,6 +16,8 @@
 .pdfLeftContainer {
     display: none;
     margin-left: 10px;
+    align-items: center;
+    gap: 10px;
 }
 
 .bar2Container {
@@ -23,6 +25,105 @@
     min-width: 230px;
     max-width: 230px;
     display: none;
+}
+
+.bar2DropdownContainer {
+    display: none;
+}
+
+.desktopDropdownContainer {
+    display: block;
+}
+
+.textShort {
+    display: none;
+}
+
+/* Dropdown component styles */
+.dropdownContainer {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdownTrigger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: transparent;
+    border: none;
+    border-radius: var(--border-radius-input);
+    padding: 8px 16px;
+    font-size: 15px;
+    font-weight: bold;
+    color: var(--dark-text-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    height: 40px;
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+
+.dropdownTrigger:hover {
+    background-color: var(--tab-color-hover);
+    border-color: var(--dark-border-color);
+}
+
+.chevron {
+    transition: transform 0.2s ease;
+    display: flex;
+    align-items: center;
+}
+
+.chevronOpen {
+    transform: rotate(180deg);
+}
+
+.dropdownMenu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    min-width: 150px;
+    background-color: var(--tab-color);
+    border: 1px solid var(--bright-border-color);
+    border-radius: var(--border-radius-input);
+    box-shadow: var(--box-shadow-primary);
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    padding: 4px;
+    animation: fadeInScale 0.15s ease-out;
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.dropdownItem {
+    width: 100%;
+    text-align: right;
+    padding: 10px 14px;
+    background: transparent;
+    border: none;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--dark-text-color);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.dropdownItem:hover {
+    background-color: var(--tab-color-hover);
+    color: #000;
 }
 
 .pdfButton {
@@ -56,6 +157,10 @@
         display: none;
     }
 
+    .desktopDropdownContainer {
+        display: none;
+    }
+
     .pdfContainer {
         display: none;
     }
@@ -75,15 +180,49 @@
         max-width: 230px;
         flex: 1;
     }
+
+    .bar2DropdownContainer {
+        display: block;
+    }
 }
 
 /* < 440px */
 @media (max-width: 440px) {
     .pdfLeftContainer {
-        display: block;
+        display: flex;
     }
 
     .bar2Container .pdfButton {
         display: none;
+    }
+
+    .bar2DropdownContainer {
+        display: none;
+    }
+}
+
+/* <= 360px */
+@media (max-width: 360px) {
+    .textLong {
+        display: none;
+    }
+
+    .textShort {
+        display: inline;
+    }
+}
+
+/* <= 320px */
+@media (max-width: 320px) {
+    .pdfLeftContainer {
+        gap: 2px;
+        margin-left: 0px;
+    }
+
+    .dropdownTrigger {
+        padding: 1px 2px;
+        gap: 2px;
+        font-size: 14px;
+        height: 34px;
     }
 }

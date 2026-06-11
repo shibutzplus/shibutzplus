@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { WeeklySchedule, AnnualScheduleType, AnnualInputCellType, } from "@/models/types/annualSchedule";
 import { useMainContext } from "./MainContext";
 import { createSelectOptions } from "@/utils/format";
@@ -63,6 +64,19 @@ export const AnnualByTeacherProvider: React.FC<{ children: React.ReactNode }> = 
             }
         }
     }, [teachers, selectedTeacherId]);
+
+    const searchParams = useSearchParams();
+
+    useEffect(() => {
+        const teacherId = searchParams.get("teacherId") || searchParams.get("id");
+        if (teacherId && teachers && teachers.length > 0) {
+            const regularTeachers = teachers.filter((t) => t.role === "regular");
+            const isValid = regularTeachers.some((t) => t.id === teacherId);
+            if (isValid) {
+                setSelectedTeacherId(teacherId);
+            }
+        }
+    }, [searchParams, teachers]);
 
     const teachersSelectOptions = (): SelectOption[] => {
         const regularTeachers = teachers?.filter((t) => t.role === "regular") || [];

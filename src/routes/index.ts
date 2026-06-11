@@ -24,7 +24,7 @@ const router: Record<string, IRoute> = {
     subjects: { id: "subjects", p: "/subjects", private: true, title: "מקצועות" },
     substitute: { id: "substitute", p: "/substitute", private: true, title: "מורים מילוי מקום" },
     staff: { id: "staff", p: "/staff", private: true, title: "אנשי מנהלה" },
-    annualView: { id: "annualView", p: "/annual-view", private: true, title: "מערכת שנתית", menuTitle: "צפייה במערכות" },
+    annualView: { id: "annualView", p: "/annual-view", private: true, title: "מערכת שנתית", menuTitle: "מערכת שנתית" },
     annualBuildByClass: { id: "annualBuildByClass", p: "/annual-build-class", private: true, title: "מערכת לפי כיתה", menuTitle: "שינוי מערכות לפי כיתה" },
     annualBuildByTeacher: { id: "annualBuildByTeacher", p: "/annual-build-teacher", private: true, title: "מערכת לפי מורה", menuTitle: "שינוי מערכות לפי מורה" },
     annualAltBuild: { id: "annualAltBuild", p: "/annual-alt-build", private: true, title: "מערכת זמן חירום", menuTitle: "שינוי מערכת" },

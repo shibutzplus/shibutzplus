@@ -35,32 +35,10 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
                 p: routePath.dailyBuild.p,
                 Icon: <Icons.dailyCalendar size={24} />,
             },
-        ],
-    },
-
-    {
-        id: "built_schedule",
-        title: "מערכת שנתית",
-        type: "private",
-        isCollapse: true,
-        links: [
             {
                 name: routePath.annualView.menuTitle ?? routePath.annualView.title,
                 p: routePath.annualView.p,
                 Icon: <Icons.calendar size={24} />,
-                shortcut: "Ctrl+M",
-            },
-            {
-                name: routePath.annualBuildByClass.menuTitle ?? routePath.annualBuildByClass.title,
-                p: routePath.annualBuildByClass.p,
-                Icon: <Icons.calendar size={24} />,
-                isGuestBlocked: true,
-            },
-            {
-                name: routePath.annualBuildByTeacher.menuTitle ?? routePath.annualBuildByTeacher.title,
-                p: routePath.annualBuildByTeacher.p,
-                Icon: <Icons.calendar size={24} />,
-                isGuestBlocked: true,
             },
         ],
     },
