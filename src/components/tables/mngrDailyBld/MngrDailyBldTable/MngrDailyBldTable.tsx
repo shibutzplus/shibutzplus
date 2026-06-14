@@ -11,6 +11,7 @@ import { sortDailyColumnIdsByPosition } from "@/utils/sort";
 import { DEFAULT_FROM_HOUR, DEFAULT_TO_HOUR } from "@/utils/time";
 import { TeacherType } from "@/models/types/teachers";
 import { DailySchedule, ColumnType, ColumnTypeValues } from "@/models/types/dailySchedule";
+import { CommentPanelData } from "@/components/tables/teacherDailyChanges/TeacherCommentsPanelContent/TeacherCommentsPanelContent";
 import styles from "./MngrDailyBldTable.module.css";
 
 type AnimatedHeaderWrapperProps = {
@@ -85,12 +86,14 @@ type MngrDailyBldTableProps = {
     mainDailyTable: DailySchedule;
     selectedDate: string;
     onTeacherClick?: (teacher: TeacherType) => void;
+    onCommentsClick?: (data: CommentPanelData) => void;
 };
 
 const MngrDailyBldTable: React.FC<MngrDailyBldTableProps> = ({
     mainDailyTable,
     selectedDate,
     onTeacherClick,
+    onCommentsClick,
 }) => {
     const { settings } = useMainContext();
 
@@ -221,6 +224,7 @@ const MngrDailyBldTable: React.FC<MngrDailyBldTableProps> = ({
                                             type={type}
                                             onDelete={isAnimating ? undefined : (id) => handleColumnAnimation(id, "remove")}
                                             onTeacherClick={onTeacherClick}
+                                            onCommentsClick={onCommentsClick}
                                             isFirst={isFirst}
                                             isLast={isLast}
                                         />

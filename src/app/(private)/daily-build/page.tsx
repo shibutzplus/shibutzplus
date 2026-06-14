@@ -11,6 +11,7 @@ import FullScreenContainer from "@/components/layout/pageLayouts/FullScreenLayou
 import CommonDailySchoolFullTable from "@/components/tables/commonDailySchoolFull/CommonDailySchoolFullTable";
 import MngrDailyBldTable from "@/components/tables/mngrDailyBld/MngrDailyBldTable/MngrDailyBldTable";
 import TeacherDailyChangesTable from "@/components/tables/teacherDailyChanges/TeacherDailyChangesTable/TeacherDailyChangesTable";
+import TeacherCommentsPanelContent, { CommentPanelData } from "@/components/tables/teacherDailyChanges/TeacherCommentsPanelContent/TeacherCommentsPanelContent";
 import styles from "./DailySchedule.module.css";
 import { TeacherType } from "@/models/types/teachers";
 import { useEffect } from "react";
@@ -26,10 +27,20 @@ const DailyScheduleContent: React.FC = () => {
     const { openPopup } = usePopup();
     const { fetchTeacherScheduleDate, resetSchedule } = useTeacherTableContext();
     const [isPanelOpen, setIsPanelOpen] = useState<boolean>(false);
+    const [panelMode, setPanelMode] = useState<"schedule" | "comments">("schedule");
     const [teacher, setTeacher] = useState<TeacherType>();
+    const [commentPanelData, setCommentPanelData] = useState<CommentPanelData | null>(null);
+    const { setMainDailyTable } = useDailyTableContext();
 
     const handleTeacherClick = async (teacher: TeacherType) => {
         setTeacher(teacher);
+        setPanelMode("schedule");
+        setIsPanelOpen(true);
+    };
+
+    const handleCommentsClick = (data: CommentPanelData) => {
+        setCommentPanelData(data);
+        setPanelMode("comments");
         setIsPanelOpen(true);
     };
 
@@ -40,9 +51,6 @@ const DailyScheduleContent: React.FC = () => {
         await fetchTeacherScheduleDate(teacher, selectedDate);
     };
 
-    const handleClosePanel = () => {
-        setIsPanelOpen(false);
-    };
 
     const { data: session } = useSession();
 
@@ -108,6 +116,7 @@ const DailyScheduleContent: React.FC = () => {
                             mainDailyTable={mainDailyTable}
                             selectedDate={selectedDate}
                             onTeacherClick={handleTeacherClick}
+                            onCommentsClick={handleCommentsClick}
                         />
                     </div>
 
@@ -127,10 +136,45 @@ const DailyScheduleContent: React.FC = () => {
 
             <SlidingPanel
                 isOpen={isPanelOpen}
-                onClose={handleClosePanel}
-                title={teacher?.name || ""}
+                onClose={() => setIsPanelOpen(false)}
+                title={
+                    panelMode === "comments" && commentPanelData
+                        ? `הודעות עבור ${commentPanelData.teacherName} והמורים המחליפים`
+                        : `הנחיות של ${teacher?.name || ""} לממלא המקום`
+                }
+                subtitle={null}
             >
-                {teacher ? (
+                {panelMode === "comments" && commentPanelData ? (
+                    <TeacherCommentsPanelContent
+                        data={commentPanelData}
+                        selectedDate={selectedDate}
+                        onUpdate={(hour, comment) => {
+                            setMainDailyTable((prev: any) => {
+                                const updated = { ...prev };
+                                const { columnId } = commentPanelData;
+                                if (updated[selectedDate]?.[columnId]) {
+                                    updated[selectedDate] = { ...updated[selectedDate] };
+                                    updated[selectedDate][columnId] = { ...updated[selectedDate][columnId] };
+                                    const cell = updated[selectedDate][columnId][hour];
+                                    if (cell) {
+                                        updated[selectedDate][columnId][hour] = { ...cell, comment };
+                                    }
+                                }
+                                return updated;
+                            });
+                            // Keep commentPanelData in sync so re-opens show updated comments
+                            setCommentPanelData((prev) =>
+                                prev ? {
+                                    ...prev,
+                                    columnCells: {
+                                        ...prev.columnCells,
+                                        [hour]: { ...prev.columnCells[hour], comment },
+                                    },
+                                } : prev
+                            );
+                        }}
+                    />
+                ) : teacher ? (
                     <TeacherDailyChangesTable
                         teacher={teacher}
                         selectedDate={selectedDate}
