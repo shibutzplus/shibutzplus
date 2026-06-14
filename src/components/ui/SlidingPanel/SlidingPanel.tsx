@@ -9,6 +9,7 @@ type SlidingPanelProps = {
     isOpen: boolean;
     onClose: () => void;
     title: string;
+    subtitle?: string | null;
     children: React.ReactNode;
     position?: "left" | "right";
 };
@@ -17,6 +18,7 @@ const SlidingPanel: React.FC<SlidingPanelProps> = ({
     isOpen,
     onClose,
     title,
+    subtitle = "הנחיות למורה מחליף",
     children,
     position = "left",
 }) => {
@@ -65,7 +67,7 @@ const SlidingPanel: React.FC<SlidingPanelProps> = ({
                 aria-modal="true"
             >
                 <header className={styles.panelHeader}>
-                    <h3>{title} - הנחיות למורה מחליף</h3>
+                    <h3>{title}{subtitle ? ` - ${subtitle}` : ""}</h3>
                     <button
                         onClick={onClose}
                         className={styles.closeButton}
