@@ -3,7 +3,7 @@
 import React, { createContext, useContext, ReactNode, useState } from "react";
 import { TeacherType } from "@/models/types/teachers";
 import { PortalSchedule, TeacherScheduleType } from "@/models/types/portalSchedule";
-import getTeacherFullScheduleAction from "@/app/actions/GET/getTeacherFullScheduleAction";
+import { getTeacherFullScheduleAction } from "@/app/actions/GET/getTeacherFullScheduleAction";
 import { getTeacherHistoryScheduleAction } from "@/app/actions/GET/getTeacherHistoryScheduleAction";
 import { populatePortalTable } from "@/services/portalTeacherService";
 import { errorToast } from "@/lib/toast";
@@ -122,9 +122,9 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
         selectedDate?: string,
     ) => {
         if (!row || !selectedDate) return;
-        const schoolId = row.schoolId ?? row.school?.id;
-        const originalTeacherId = row.originalTeacher?.id ?? undefined;
-        const subTeacherId = row.subTeacher?.id ?? undefined;
+        const schoolId = row.schoolId ?? row.school?.id ?? null;
+        const originalTeacherId = row.originalTeacher?.id ?? null;
+        const subTeacherId = row.subTeacher?.id ?? null;
 
         try {
             setIsSavingLoading(true);
@@ -152,7 +152,7 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
                 errorToast(messages.dailySchedule.error);
             }
         } catch (error) {
-            logErrorAction({ description: `Error updating daily schedule entry: ${error instanceof Error ? error.message : String(error)}`, schoolId });
+            logErrorAction({ description: `Error updating daily schedule entry: ${error instanceof Error ? error.message : String(error)}`, schoolId: schoolId || undefined });
             errorToast("בעיה בתקשורת - ההנחיות לא נשמרו. בדקו את החיבור לאינטרנט ונסו שוב");
         } finally {
             setIsSavingLoading(false);

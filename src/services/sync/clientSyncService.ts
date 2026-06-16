@@ -43,8 +43,11 @@ const pollUpdates = async (params: PollUpdatesParams): Promise<SyncPollResponse 
         // Stop sync on unauthorized/logged out user
         return null;
       }
-      // followup on: 520 error to make sure it is rare so we can ignore it
-      logErrorAction({ description: `Sync poll failed with status: ${res.status}` });
+      // Do not log temporary network gateway errors/timeouts (502, 503, 504, 520, 524) to the DB
+      const ignoredStatuses = [502, 503, 504, 520, 524];
+      if (!ignoredStatuses.includes(res.status)) {
+        logErrorAction({ description: `Sync poll failed with status: ${res.status}` });
+      }
       return null;
     }
 

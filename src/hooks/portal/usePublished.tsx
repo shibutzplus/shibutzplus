@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react";
-import { getCachedClassesAction } from "@/app/actions/GET/getCachedClassesAction";
-import { getCachedSubjectsAction } from "@/app/actions/GET/getCachedSubjectsAction";
-import { getCachedTeachersAction } from "@/app/actions/GET/getCachedTeachersAction";
-import { getSchoolAction } from "@/app/actions/GET/getSchoolAction";
+import { getPublishedPortalDataAction } from "@/app/actions/GET/getPublishedPortalDataAction";
 import { getCachedDailyScheduleAction } from "@/app/actions/GET/getCachedDailyScheduleAction";
 import { DailySchedule, GetDailyScheduleResponse } from "@/models/types/dailySchedule";
 import { ClassType } from "@/models/types/classes";
@@ -30,30 +27,27 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
     const refreshEntities = async () => {
         if (!schoolId) return;
         try {
-            // Use cached versions instead of direct DB queries
-            const [teachersRes, subjectsRes, classesRes, schoolRes] = await Promise.all([
-                getCachedTeachersAction(schoolId, { portalType: PortalType.Teacher, includeSubstitutes: true }),
-                getCachedSubjectsAction(schoolId, { portalType: PortalType.Teacher }),
-                getCachedClassesAction(schoolId, { portalType: PortalType.Teacher }),
-                getSchoolAction(schoolId) // Public school info
-            ]);
+            // Fetch all in a single combined cached server action to prevent Connection Closed errors
+            const res = await getPublishedPortalDataAction(schoolId, { portalType: PortalType.Teacher });
 
-            if (teachersRes?.success && teachersRes?.data) setAllTeachers(teachersRes.data);
-            if (subjectsRes?.success && subjectsRes?.data) setAllSubjects(subjectsRes.data);
-            if (classesRes?.success && classesRes?.data) setAllClasses(classesRes.data);
-            if (schoolRes?.success && schoolRes?.data) {
-                setFromHour(schoolRes.data.fromHour ?? 1);
-                setToHour(schoolRes.data.toHour ?? 10);
+            if (res?.success && res.data) {
+                const { teachers, subjects, classes, school } = res.data;
+                if (teachers) setAllTeachers(teachers);
+                if (subjects) setAllSubjects(subjects);
+                if (classes) setAllClasses(classes);
+                if (school) {
+                    setFromHour(school.fromHour ?? 1);
+                    setToHour(school.toHour ?? 10);
+                }
+
+                setListSchoolId(schoolId);
+
+                return {
+                    teachers,
+                    subjects,
+                    classes
+                };
             }
-
-            setListSchoolId(schoolId);
-
-            return {
-                teachers: teachersRes?.data,
-                subjects: subjectsRes?.data,
-                classes: classesRes?.data
-            };
-
         } catch (e) {
             logErrorAction({ description: `Error fetching public lists: ${e instanceof Error ? e.message : String(e)} ` });
         }
