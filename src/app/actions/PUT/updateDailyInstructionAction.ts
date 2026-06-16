@@ -16,11 +16,11 @@ import { MATERIAL_CHANGED } from "@/models/constant/sync";
 export async function updateDailyInstructionAction(
     date: string,
     rowId: string,
-    instructions?: string,
-    hour?: number,
-    schoolId?: string,
-    originalTeacherId?: string,
-    subTeacherId?: string,
+    instructions?: string | null,
+    hour?: number | null,
+    schoolId?: string | null,
+    originalTeacherId?: string | null,
+    subTeacherId?: string | null,
 ): Promise<ActionResponse> {
     try {
         const validation = dailyInstructionSchema.safeParse({ instructions });
@@ -99,7 +99,7 @@ export async function updateDailyInstructionAction(
     } catch (error) {
         dbLog({
             description: `Error updating daily instruction: ${error instanceof Error ? error.message : String(error)}`,
-            schoolId,
+            schoolId: schoolId || undefined,
             metadata: { date, rowId }
         });
         return {

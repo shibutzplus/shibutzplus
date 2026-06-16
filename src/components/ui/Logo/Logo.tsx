@@ -23,6 +23,7 @@ const Logo: React.FC<LogoProps> = ({ size = "S", isVisible = true }) => {
                 width={imageSize}
                 height={imageSize}
                 className={styles.logo}
+                priority
             />
         </div>
     );

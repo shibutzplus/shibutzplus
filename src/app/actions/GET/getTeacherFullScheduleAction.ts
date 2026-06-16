@@ -10,11 +10,11 @@ import { executeQuery } from "../../../db";
 import { dbLog } from "@/services/loggerService";
 import { getCachedTeacherSchedule } from "@/services/schedule/getTeacherSchedule";
 
-const getTeacherFullScheduleAction = async (
+export async function getTeacherFullScheduleAction(
     teacherId: string,
     date: string,
     schoolId: string,
-): Promise<GetDailyScheduleResponse> => {
+): Promise<GetDailyScheduleResponse> {
     try {
         const authError = await publicAuthAndParams({ teacherId, date });
         if (authError) {
@@ -41,6 +41,4 @@ const getTeacherFullScheduleAction = async (
             message: messages.common.serverError,
         };
     }
-};
-
-export default getTeacherFullScheduleAction;
+}
