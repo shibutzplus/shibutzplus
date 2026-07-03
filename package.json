@@ -34,6 +34,7 @@
         "@upstash/redis": "^1.35.6",
         "adm-zip": "^0.5.17",
         "bcryptjs": "^3.0.2",
+        "crypto-browserify": "^3.12.1",
         "dotenv": "^16.5.0",
         "drizzle-orm": "^0.44.2",
         "emailjs-com": "^3.2.0",

@@ -7,16 +7,12 @@ const nextConfig: NextConfig = {
     eslint: {
         ignoreDuringBuilds: true,
     },
-    webpack: (config, { isServer }) => {
-        if (!isServer) {
-            if (!config.resolve) {
-                config.resolve = {};
-            }
-            config.resolve.fallback = {
-                ...config.resolve.fallback,
-                crypto: false,
-            };
-        }
+    webpack: (config) => {
+        config.resolve = config.resolve || {};
+        config.resolve.fallback = {
+            ...config.resolve.fallback,
+            crypto: require.resolve("crypto-browserify"),
+        };
         return config;
     },
 };
