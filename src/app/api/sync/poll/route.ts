@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+export const dynamic = 'force-dynamic';
 //
 // GET /api/sync/poll?since=TIMESTAMP&channels=teacher,event,lists,publish
 //

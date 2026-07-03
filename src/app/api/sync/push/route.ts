@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+export const dynamic = 'force-dynamic';
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
 import { SyncChannel } from "@/models/types/sync";
 import { dbLog } from "@/services/loggerService";
