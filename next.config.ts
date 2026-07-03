@@ -12,6 +12,7 @@ const nextConfig: NextConfig = {
             config.resolve.fallback = {
                 ...config.resolve.fallback,
                 crypto: require.resolve("crypto-browserify"),
+                querystring: require.resolve("querystring-es3"),
                 stream: false,
                 util: false,
                 http: false,
@@ -19,6 +20,8 @@ const nextConfig: NextConfig = {
                 net: false,
                 tls: false,
                 zlib: false,
+                url: false,
+                assert: false,
             };
         }
         return config;
