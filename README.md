@@ -61,3 +61,6 @@ Goto Github https://github.com/shibutzplus/shibutzplus/pulls
 Click on "New pull request"
 Click on "Create pull request"
 Click on "Merge pull request"
+
+
+## Check Cloudflare
