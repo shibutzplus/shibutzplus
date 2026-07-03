@@ -161,5 +161,5 @@ export const authOptions: NextAuthOptions = {
         error: "/",
         newUser: "/sign-up",
     },
-    secret: process.env.NEXTAUTH_SECRET,
+    secret: process.env.NEXTAUTH_SECRET || "temporary_secret_for_build_purposes_only_1234567890",
 };
