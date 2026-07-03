@@ -10,6 +10,13 @@ interface PageProps {
 }
 
 export default async function TeacherSignInPage({ params }: PageProps) {
+    // הגנה מפני קריסה בשלב ה-Build הסטטי של קלאודפלייר כשמשתני הסביבה חסרים
+    const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build' || !process.env.NEXTAUTH_SECRET;
+    
+    if (isBuildTime) {
+        return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    }
+
     const { schoolId: rawSchoolId } = await params;
     const decodedSchoolId = decodeURIComponent(rawSchoolId);
     const schoolId = decodedSchoolId.replace(/[^a-zA-Z0-9-_]/g, "");
