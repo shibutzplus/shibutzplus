@@ -1,4 +1,5 @@
 export const dynamic = 'force-dynamic';
+export const runtime = 'edge';
 
 import TeacherSignInClient from "./TeacherSignInClient";
 import { getSchoolAction } from "@/app/actions/GET/getSchoolAction";

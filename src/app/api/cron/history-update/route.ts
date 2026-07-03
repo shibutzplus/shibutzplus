@@ -27,6 +27,7 @@ import { dbLog } from '@/services/loggerService';
 
 export const maxDuration = 60;
 export const dynamic = 'force-dynamic';
+export const runtime = 'edge';
 
 export async function GET(request: Request) {
     const authHeader = request.headers.get('authorization');
