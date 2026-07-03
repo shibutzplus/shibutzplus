@@ -1,5 +1,7 @@
 "use client";
 
+export const runtime = 'edge';
+
 import React, { useEffect } from "react";
 import router from "@/routes";
 import { NextPage } from "next";

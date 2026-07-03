@@ -1,5 +1,6 @@
 import "server-only";
-export const runtime = "nodejs";
+// export const runtime = "nodejs";
+export const runtime = 'edge';
 import NextAuth from "next-auth";
 import { authOptions } from "@/lib/auth";
 

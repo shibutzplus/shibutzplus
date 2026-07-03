@@ -1,3 +1,4 @@
+export const runtime = 'edge';
 /**
  * Remember this device so we can notify it
  * 1. Takes the user's subscription (their device unique ID for notifications).

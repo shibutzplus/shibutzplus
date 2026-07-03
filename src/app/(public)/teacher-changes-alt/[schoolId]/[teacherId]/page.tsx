@@ -1,3 +1,4 @@
+export const runtime = 'edge';
 import React from "react";
 import { NextPage } from "next";
 import { getTeacherAltPortalDataAction } from "@/app/actions/GET/getTeacherAltPortalDataAction";

@@ -1,3 +1,4 @@
+export const runtime = 'edge';
 //
 // GET /api/sync/poll?since=TIMESTAMP&channels=teacher,event,lists,publish
 //

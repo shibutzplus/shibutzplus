@@ -1,3 +1,4 @@
+export const runtime = 'edge';
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
 import { SyncChannel } from "@/models/types/sync";
 import { dbLog } from "@/services/loggerService";
