@@ -1,6 +1,6 @@
 "use client";
 
-export const runtime = 'edge';
+export const dynamic = 'force-dynamic';
 
 import React, { useEffect } from "react";
 import router from "@/routes";
