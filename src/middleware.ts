@@ -92,6 +92,7 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
+    runtime: "experimental-edge",
     // Match all requests except:
     // - Next.js internals (_next/static, _next/image)
     // - Static files (images, CSS, JS, etc.)
