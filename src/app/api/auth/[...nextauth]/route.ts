@@ -3,7 +3,7 @@ import NextAuth from "next-auth";
 import { authOptions } from "@/lib/auth";
 
 export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
+export const runtime = 'edge';
 
 // During Next.js production build phase, return a stub response to skip
 // running NextAuth (which requires Node.js APIs unavailable in Edge at build time).
