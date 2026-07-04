@@ -1,6 +1,6 @@
 import TeacherSignInClient from "./TeacherSignInClient";
-import ContactAdminError from "@/components/auth/ContactAdminError/ContactAdminError";
 import { getSchoolAction } from "@/app/actions/GET/getSchoolAction";
+import ContactAdminError from "@/components/auth/ContactAdminError/ContactAdminError";
 
 interface PageProps {
     params: Promise<{ schoolId: string }>;

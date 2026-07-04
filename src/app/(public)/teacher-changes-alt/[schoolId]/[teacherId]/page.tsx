@@ -1,10 +1,10 @@
 import React from "react";
 import { NextPage } from "next";
+import { getTeacherAltPortalDataAction } from "@/app/actions/GET/getTeacherAltPortalDataAction";
 import { TeacherRoleValues } from "@/models/types/teachers";
 import router from "@/routes";
 import { redirect } from "next/navigation";
 import TeacherAltPortalClient from "./TeacherAltPortalClient";
-import { getTeacherAltPortalDataAction } from "@/app/actions/GET/getTeacherAltPortalDataAction";
 
 interface Props {
     params: Promise<{

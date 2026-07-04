@@ -10,10 +10,10 @@ import TeacherDailyChangesTable from "@/components/tables/teacherDailyChanges/Te
 import Preloader from "@/components/ui/Preloader/Preloader";
 import NotPublished from "@/components/empty/NotPublished/NotPublished";
 import { getDayNumberByDateString } from "@/utils/time";
+import { getTeacherPortalDataAction } from "@/app/actions/GET/getTeacherPortalDataAction";
 import { populatePortalTable } from "@/services/portalTeacherService";
 import { setStorageTeacher } from "@/lib/localStorage";
 import styles from "./teacherPortal.module.css";
-import { getTeacherPortalDataAction } from "@/app/actions/GET/getTeacherPortalDataAction";
 
 const TeacherPortalPage: NextPage = () => {
     const { selectedDate, teacher, datesOptions, settings, hydratePortalData } = usePortalContext();
