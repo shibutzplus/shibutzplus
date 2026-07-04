@@ -1,5 +1,3 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { USER_ROLES } from "@/models/constant/auth";
 import { ActionResponse } from "@/models/types/actions";
 import messages from "@/resources/messages";
@@ -14,6 +12,11 @@ import bcrypt from "bcryptjs";
 export async function checkAuthAndParams(
     requiredParams: Record<string, any>,
 ): Promise<ActionResponse | null> {
+    // Dynamic import to avoid loading next-auth at module initialization time
+    // (prevents Edge Runtime build failures for pages that don't need auth)
+    const { getServerSession } = await import("next-auth");
+    const { authOptions } = await import("@/lib/auth");
+
     // Check if user is authenticated
     const session = await getServerSession(authOptions);
     if (!session) {
@@ -64,6 +67,10 @@ export async function publicAuthAndParams(
  * @returns An ActionResponse object with success status and message if guest, otherwise null
  */
 export async function checkIsNotGuest(): Promise<ActionResponse | null> {
+    // Dynamic import to avoid loading next-auth at module initialization time
+    const { getServerSession } = await import("next-auth");
+    const { authOptions } = await import("@/lib/auth");
+
     const session = await getServerSession(authOptions);
     if (session?.user?.role === USER_ROLES.GUEST) {
         return {
