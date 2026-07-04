@@ -1,7 +1,6 @@
 name = "shibutzplus"
 compatibility_date = "2026-07-04"
 compatibility_flags = ["nodejs_compat"]
-pages_build_output_dir = ".vercel/output"
 keep_vars = true
 
 [vars]
