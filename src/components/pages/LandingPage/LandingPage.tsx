@@ -184,7 +184,7 @@ export default function LandingPage() {
                             variants={fadeInUp}
                             transition={{ duration: 0.6, delay: 0.1 }}
                         >
-                            <div>שיבוץ מורים מחליפים בקלות.</div>
+                            <div>שיבוץ מורים מחליפים בקלות,</div>
                             <div>חיסכון בזמן יקר לסגני מנהלים/רכזי מערכת/מורים.</div>
                         </motion.div>
                         <motion.div

@@ -15,8 +15,9 @@ import { populatePortalTable } from "@/services/portalTeacherService";
 import { setStorageTeacher } from "@/lib/localStorage";
 import styles from "./teacherPortal.module.css";
 
-const TeacherPortalPage: NextPage = () => {
+export const runtime = 'edge';
 
+const TeacherPortalPage: NextPage = () => {
     const { selectedDate, teacher, datesOptions, settings, hydratePortalData } = usePortalContext();
     const { fetchTeacherScheduleDate, hydrateSchedule } = useTeacherTableContext();
     const params = useParams();

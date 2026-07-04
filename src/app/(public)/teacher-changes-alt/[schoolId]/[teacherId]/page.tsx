@@ -6,6 +6,8 @@ import router from "@/routes";
 import { redirect } from "next/navigation";
 import TeacherAltPortalClient from "./TeacherAltPortalClient";
 
+export const runtime = 'edge';
+
 interface Props {
     params: Promise<{
         schoolId: string;

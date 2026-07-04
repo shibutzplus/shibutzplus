@@ -3,9 +3,9 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "start http://localhost:3000 && next dev --turbopack",
-        "dev:open": "start http://localhost:3000 && next dev --turbopack",
-        "build": "next build",
+        "dev": "node scripts/set-runtime.js dev && start http://localhost:3000 && next dev --turbopack",
+        "dev:open": "node scripts/set-runtime.js dev && start http://localhost:3000 && next dev --turbopack",
+        "build": "node scripts/set-runtime.js prod && next build",
         "start": "next start",
         "lint": "next lint",
         "format": "prettier --write .",
@@ -34,6 +34,7 @@
         "@upstash/redis": "^1.35.6",
         "adm-zip": "^0.5.17",
         "bcryptjs": "^3.0.2",
+        "crypto-browserify": "^3.12.1",
         "dotenv": "^16.5.0",
         "drizzle-orm": "^0.44.2",
         "emailjs-com": "^3.2.0",
@@ -52,11 +53,13 @@
         "react-markdown": "^9.1.0",
         "react-select": "^5.10.1",
         "recharts": "^3.6.0",
+        "vm-browserify": "^1.1.2",
         "web-push": "^3.6.7",
         "xlsx": "^0.18.5",
         "zod": "^4.0.17"
     },
     "devDependencies": {
+        "@cloudflare/next-on-pages": "^1.13.16",
         "@eslint/eslintrc": "^3",
         "@types/dompurify": "^3.0.5",
         "@types/node": "^20",
@@ -68,6 +71,7 @@
         "eslint-config-next": "15.3.3",
         "eslint-config-prettier": "^10.1.5",
         "prettier": "^3.5.3",
+        "querystring-es3": "^0.2.1",
         "ts-node": "^10.9.2",
         "tsx": "^4.20.3",
         "typescript": "^5"

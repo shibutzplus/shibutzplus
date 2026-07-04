@@ -2,6 +2,8 @@ import TeacherSignInClient from "./TeacherSignInClient";
 import { getSchoolAction } from "@/app/actions/GET/getSchoolAction";
 import ContactAdminError from "@/components/auth/ContactAdminError/ContactAdminError";
 
+export const runtime = 'edge';
+
 interface PageProps {
     params: Promise<{ schoolId: string }>;
 }
