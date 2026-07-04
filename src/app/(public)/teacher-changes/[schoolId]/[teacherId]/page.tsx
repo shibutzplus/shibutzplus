@@ -13,12 +13,17 @@ import TeacherDailyChangesTable from "@/components/tables/teacherDailyChanges/Te
 import Preloader from "@/components/ui/Preloader/Preloader";
 import NotPublished from "@/components/empty/NotPublished/NotPublished";
 import { getDayNumberByDateString } from "@/utils/time";
-import { getTeacherPortalDataAction } from "@/app/actions/GET/getTeacherPortalDataAction";
 import { populatePortalTable } from "@/services/portalTeacherService";
 import { setStorageTeacher } from "@/lib/localStorage";
 import styles from "./teacherPortal.module.css";
 
 const TeacherPortalPage: NextPage = () => {
+    // הגנה מלאה - אם אנחנו בזמן בילד, אל תיגע בכלום ואל תטען שום ספריה
+    const isBuildTime = typeof window === 'undefined' && (process.env.NEXT_PHASE === 'phase-production-build' || !process.env.NEXTAUTH_SECRET);
+    
+    if (isBuildTime) {
+        return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    }
 
     const { selectedDate, teacher, datesOptions, settings, hydratePortalData } = usePortalContext();
     const { fetchTeacherScheduleDate, hydrateSchedule } = useTeacherTableContext();
@@ -35,6 +40,7 @@ const TeacherPortalPage: NextPage = () => {
         const initPortal = async () => {
             initialized.current = true;
 
+            const { getTeacherPortalDataAction } = await import("@/app/actions/GET/getTeacherPortalDataAction");
             const data = await getTeacherPortalDataAction(schoolId, teacherId);
 
             if (!data.success || !data.teacher || !data.settings || !data.datesOptions || !data.selectedDate) {
