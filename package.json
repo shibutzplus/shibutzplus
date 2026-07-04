@@ -3,9 +3,9 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "start http://localhost:3000 && next dev --turbopack",
-        "dev:open": "start http://localhost:3000 && next dev --turbopack",
-        "build": "next build",
+        "dev": "node scripts/set-runtime.js dev && start http://localhost:3000 && next dev --turbopack",
+        "dev:open": "node scripts/set-runtime.js dev && start http://localhost:3000 && next dev --turbopack",
+        "build": "node scripts/set-runtime.js prod && next build",
         "start": "next start",
         "lint": "next lint",
         "format": "prettier --write .",

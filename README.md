@@ -7,16 +7,17 @@ Shibutz Plus built with Next.js 15.3.3.
 - **TypeScript** for type safety
 - **CSS Modules** for component-scoped styling
 - **Next-Auth** for authentication
-- **MongoDB** for database
-- **Mongoose** for MongoDB schema
+- **Neon** for PostgreSQL database
+- **Drizzle ORM** for database schema and migrations
 - **Nodemailer** for email sending
 - **React Email** for email templates
 
 ## Login / Authentication with Next-Auth
 The application uses Next-Auth for authentication. 
 
-## Server - Vercel
-https://vercel.com/shibutz-plus-projects/shibutzplus
+## Production Server & Dashboard (Cloudflare)
+- **Live Site:** https://shibutzplus.com
+- **Cloudflare Dashboard:** https://dash.cloudflare.com/9c530885ad264c96d05babc5c7dc69a3/workers/services/view/shibutzplus/production
 
 # Email
 shibutzplus@gmail.com   (g1M...)
@@ -29,14 +30,13 @@ https://www.emailjs.com/
 https://upstash.com/
 https://console.upstash.com/redis/62bf20b4-e16e-45ae-8c38-6d673b6955ac?teamid=0
 
-## File Storage Service
+## File Storage Service (Cloudflare R2)
 https://dash.cloudflare.com/09e65e9e58fb283402e234e907e36587/r2/default/buckets/shibutz-plus-uploads
 
 ## DB Neon (shibutzplus@gmail.com google login)
 # Make sure to update DB for production and staging (defined in env.local)
 https://console.neon.tech/app/projects/curly-feather-89043363
 npx drizzle-kit push
-
 
 ## Env Commands
 npm run dev
@@ -51,16 +51,13 @@ shibutzplus@gmail.com
 https://trello.com/b/SrahpnDm/%D7%A9%D7%99%D7%91%D7%95%D7%A5
 
 ## Github - How to?
-git checkout -b NewName    /* Need to develop in new brach */
-
-git checkout main           /* Need to pull the main brach after deploy on vercel */
+git checkout -b NewName     /* Develop in branch */
+git checkout main           /* pull the main branch after deploy on Cloudflare */
 git pull origin main
 
-## Deploy on Vercel
-Goto Github https://github.com/shibutzplus/shibutzplus/pulls
-Click on "New pull request"
-Click on "Create pull request"
-Click on "Merge pull request"
-
-
-## Check Cloudflare
+## Deploy on Cloudflare (via GitHub Merging)
+1. Go to GitHub: https://github.com/shibutzplus/shibutzplus/pulls
+2. Click on "New pull request" (from your feature branch to main)
+3. Click on "Create pull request"
+4. Click on "Merge pull request"
+5. This will automatically trigger the Cloudflare Build & Deploy pipeline to update production.

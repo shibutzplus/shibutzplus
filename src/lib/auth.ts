@@ -5,8 +5,6 @@ import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import { getSessionMaxAge, TWENTY_FOUR_HOURS } from "@/utils/time";
 import type { UserRole, UserGender } from "@/models/types/auth";
-import { registerNewGoogleUserAction } from "@/app/actions/POST/registerNewGoogleUserAction";
-import { getUserByEmailAction } from "@/app/actions/GET/getUserByEmailAction";
 import { db, schema, executeQuery } from "@/db";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
@@ -96,6 +94,7 @@ export const authOptions: NextAuthOptions = {
                 const name = typeof profile?.name === "string" ? profile.name : undefined;
                 if (!email || !name) return false;
                 try {
+                    const { registerNewGoogleUserAction } = await import("@/app/actions/POST/registerNewGoogleUserAction");
                     const response = await registerNewGoogleUserAction({ email, name });
                     if (!response.success) return false;
                 } catch {
@@ -119,6 +118,7 @@ export const authOptions: NextAuthOptions = {
                 token.isDemo = (user as any).isDemo;
             } else if ((account?.provider === AUTH_TYPE.GOOGLE && profile?.email) || (user && user.email)) {
                 const email = (user?.email || profile?.email) as string;
+                const { getUserByEmailAction } = await import("@/app/actions/GET/getUserByEmailAction");
                 const response = await getUserByEmailAction(email);
                 if (response.success && response.data) {
                     token.id = response.data.id;
@@ -161,5 +161,5 @@ export const authOptions: NextAuthOptions = {
         error: "/",
         newUser: "/sign-up",
     },
-    secret: process.env.NEXTAUTH_SECRET || "temporary_secret_for_build_purposes_only_1234567890",
+    secret: process.env.NEXTAUTH_SECRET,
 };
