@@ -2,7 +2,7 @@ import { USER_ROLES } from "@/models/constant/auth";
 import { ActionResponse } from "@/models/types/actions";
 import messages from "@/resources/messages";
 import { getExpireTime } from "./time";
-import bcrypt from "bcryptjs";
+import { compare } from "bcrypt-ts";
 
 /**
  * Checks if the user is authenticated and validates required parameters
@@ -89,7 +89,7 @@ export const authUser = async (
     const {
         data: { id, name, email, password, role, gender, schoolId, status },
     } = response;
-    const isValid = await bcrypt.compare(credentialsPass, password);
+    const isValid = await compare(credentialsPass, password);
 
     if (isValid) {
         const maxAge = getExpireTime(credentialsRemember === "true");

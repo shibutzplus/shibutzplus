@@ -7,7 +7,7 @@ import { db, schema, executeQuery } from "@/db";
 import { dbLog } from "@/services/loggerService";
 import { eq } from "drizzle-orm";
 import msg from "@/resources/messages";
-import bcrypt from "bcryptjs";
+import { hash as hashPassword } from "bcrypt-ts";
 
 const signUp = async (params: RegisterRequest): Promise<RegisterResponse> => {
     try {
@@ -28,7 +28,7 @@ const signUp = async (params: RegisterRequest): Promise<RegisterResponse> => {
             return { success: false, message: msg.auth.register.emailInUse };
         }
 
-        const hash = await bcrypt.hash(password, 10);
+        const hash = await hashPassword(password, 10);
 
         // Find school by name
         const existingSchool = await executeQuery(async () => {

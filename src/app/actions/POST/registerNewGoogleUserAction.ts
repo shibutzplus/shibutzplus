@@ -7,7 +7,7 @@ import { eq } from "drizzle-orm";
 import type { ActionResponse } from "@/models/types/actions";
 import messages from "@/resources/messages";
 import type { UserSchema } from "@/db/schema/users";
-import bcrypt from "bcryptjs";
+import { hash } from "bcrypt-ts";
 import { AUTH_TYPE, USER_GENDER, USER_ROLES } from "@/models/constant/auth";
 
 export interface RegisterGoogleUserInput {
@@ -39,7 +39,7 @@ export async function registerNewGoogleUserAction({
         }
 
         // User does not exist, create new user
-        const hashedPassword = await bcrypt.hash("123456", 10);
+        const hashedPassword = await hash("123456", 10);
         const schoolId = "ebrb8pj1ofvug78ratnbyd4o"; // Hardcoded school ID for "הדגמה"
 
         const newUser = await executeQuery(async () => {

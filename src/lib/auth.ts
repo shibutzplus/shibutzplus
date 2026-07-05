@@ -7,7 +7,7 @@ import { getSessionMaxAge, TWENTY_FOUR_HOURS } from "@/utils/time";
 import type { UserRole, UserGender } from "@/models/types/auth";
 import { db, schema, executeQuery } from "@/db";
 import { eq } from "drizzle-orm";
-import bcrypt from "bcryptjs";
+import { compare } from "bcrypt-ts";
 
 // Always take the current time, so each login gets a fresh session timer.
 const nowInSec = () => Math.floor(Date.now() / 1000);
@@ -63,7 +63,7 @@ export const authOptions: NextAuthOptions = {
                     return null;
                 }
 
-                const isValid = await bcrypt.compare(credentials.password, user.password);
+                const isValid = await compare(credentials.password, user.password);
 
                 if (!isValid) {
                     return null;
