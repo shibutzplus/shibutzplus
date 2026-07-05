@@ -12,13 +12,9 @@ import { compare } from "bcrypt-ts";
 export async function checkAuthAndParams(
     requiredParams: Record<string, any>,
 ): Promise<ActionResponse | null> {
-    // Dynamic import to avoid loading next-auth at module initialization time
-    // (prevents Edge Runtime build failures for pages that don't need auth)
-    const { getServerSession } = await import("next-auth");
-    const { authOptions } = await import("@/lib/auth");
+    const { auth } = await import("@/auth");
+    const session = await auth();
 
-    // Check if user is authenticated
-    const session = await getServerSession(authOptions);
     if (!session) {
         return {
             success: false,
@@ -67,12 +63,10 @@ export async function publicAuthAndParams(
  * @returns An ActionResponse object with success status and message if guest, otherwise null
  */
 export async function checkIsNotGuest(): Promise<ActionResponse | null> {
-    // Dynamic import to avoid loading next-auth at module initialization time
-    const { getServerSession } = await import("next-auth");
-    const { authOptions } = await import("@/lib/auth");
+    const { auth } = await import("@/auth");
+    const session = await auth();
 
-    const session = await getServerSession(authOptions);
-    if (session?.user?.role === USER_ROLES.GUEST) {
+    if ((session?.user as any)?.role === USER_ROLES.GUEST) {
         return {
             success: false,
             message: messages.auth.unauthorized,

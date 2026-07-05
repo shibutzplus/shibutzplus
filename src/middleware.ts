@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
 import { USER_ROLES } from "@/models/constant/auth";
-import type { NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
+import { auth } from "@/auth";
 import router from "@/routes";
 import { apiAuthPrefix, authRoutes, DEFAULT_REDIRECT, GUEST_REDIRECT, GUEST_UNAUTHORIZED, protectedPaths } from "@/routes/protectedAuth";
 
-export async function middleware(req: NextRequest) {
+export const middleware = auth(async (req) => {
     const { nextUrl: url } = req;
 
     // Skip NextAuth and public API routes (manifest for PWA, sync polling, cron jobs)
@@ -23,10 +22,6 @@ export async function middleware(req: NextRequest) {
     // Check if this is a protected API route (any /api/* route not in publicApiRoutes)
     const isProtectedApi = url.pathname.startsWith("/api/");
 
-    // Only fetch token when we actually need to check authentication:
-    // 1. Protected routes (obviously)
-    // 2. Auth routes or Home page (to redirect logged-in users away)
-    // 3. Protected API routes
     const isAuthRoute = authRoutes.includes(url.pathname);
     const isHomePage = url.pathname === router.home.p;
     const needsAuthCheck = isProtected || isAuthRoute || isHomePage || isProtectedApi;
@@ -35,30 +30,12 @@ export async function middleware(req: NextRequest) {
         return NextResponse.next();
     }
 
-    // --- DEBUG PLUG ---
-    console.log("[MIDDLEWARE_DEBUG] Checking NextAuth Secret existence:", !!process.env.NEXTAUTH_SECRET);
-    const allCookies = req.cookies.getAll().map(c => c.name);
-    console.log("[MIDDLEWARE_DEBUG] Incoming cookies names:", allCookies);
-    // -------------------
+    // req.auth is populated by the auth() middleware wrapper (null if not logged in)
+    const session = req.auth;
+    console.log("[MIDDLEWARE_DEBUG] session resolved. LoggedIn:", !!session);
 
-    let isLoggedIn = null;
-    try {
-        isLoggedIn = await getToken({ 
-            req, 
-            secret: process.env.NEXTAUTH_SECRET,
-            secureCookie: process.env.NODE_ENV === "production",
-        });
-        console.log("[MIDDLEWARE_DEBUG] getToken resolved successfully. LoggedIn:", !!isLoggedIn);
-    } catch (err: any) {
-        console.error("[MIDDLEWARE_AUTH_ERROR] Failed to fetch token in Edge Runtime!");
-        console.error("[MIDDLEWARE_AUTH_ERROR] Error message:", err?.message || err);
-        console.error("[MIDDLEWARE_AUTH_ERROR] Error stack:", err?.stack || "No stack trace");
-        isLoggedIn = null;
-    }
-
-    if (isLoggedIn) {
-        // Normalize role from token (can be at root or under user property)
-        const role = (isLoggedIn as any)?.role ?? (isLoggedIn as any)?.user?.role;
+    if (session) {
+        const role = (session.user as any)?.role;
 
         // If logged in and on home or auth route (sign-in), redirect to dashboard
         if (isAuthRoute || isHomePage) {
@@ -108,9 +85,7 @@ export async function middleware(req: NextRequest) {
 
     // Allow public routes (Home, etc)
     return NextResponse.next();
-}
-
-export const runtime = "experimental-edge";
+});
 
 export const config = {
     // Match all requests except:

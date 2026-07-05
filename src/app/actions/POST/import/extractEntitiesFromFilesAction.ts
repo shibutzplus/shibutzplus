@@ -1,8 +1,7 @@
 "use server";
 
 import { importAnnualService } from "@/services/importAnnual/importAnnualService";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/auth";
 import { db, schema } from "@/db";
 import { eq, and, isNotNull } from "drizzle-orm";
 import { dbLog } from "@/services/loggerService";
@@ -19,7 +18,7 @@ export const extractEntitiesFromFilesAction = async (
 ) => {
     let schoolId: string | undefined;
     try {
-        const session = await getServerSession(authOptions);
+        const session = await auth();
         if (!session?.user) {
             return { success: false, message: "Not authenticated" };
         }

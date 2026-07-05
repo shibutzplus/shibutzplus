@@ -1,5 +1,6 @@
-// Extend the next-auth types
+// Extend next-auth v5 (Auth.js) types
 import "next-auth";
+import "next-auth/jwt";
 import { ActionResponse } from "./actions";
 import { SchoolLevel } from "./school";
 import { USER_ROLES, USER_GENDER, AUTH_TYPE } from "../constant/auth";
@@ -35,8 +36,9 @@ declare module "next-auth" {
     interface Session {
         user: {
             token?: string;
-            name?: string;
+            name?: string | null;
             email?: string | null;
+            image?: string | null;
             gender?: UserGender;
             role?: UserRole;
             schoolId?: string;
@@ -46,11 +48,15 @@ declare module "next-auth" {
             isDemo?: boolean;
         };
     }
+}
 
-    // Include JWT interface directly in next-auth module
+declare module "next-auth/jwt" {
     interface JWT {
+        id?: string;
         name?: string;
+        email?: string;
         role?: UserRole;
+        gender?: UserGender;
         schoolId?: string;
         status?: string;
         maxAge?: number;

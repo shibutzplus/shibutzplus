@@ -1,18 +1,17 @@
-import { NextAuthOptions } from "next-auth";
-import { USER_ROLES, AUTH_TYPE, USER_GENDER } from "@/models/constant/auth";
-import { SCHOOL_STATUS } from "@/models/constant/school";
+import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
+import { USER_ROLES, AUTH_TYPE, USER_GENDER } from "@/models/constant/auth";
+import { SCHOOL_STATUS } from "@/models/constant/school";
 import { getSessionMaxAge, TWENTY_FOUR_HOURS } from "@/utils/time";
 import type { UserRole, UserGender } from "@/models/types/auth";
 import { db, schema, executeQuery } from "@/db";
 import { eq } from "drizzle-orm";
 import { compare, hash } from "bcrypt-ts";
 
-// Always take the current time, so each login gets a fresh session timer.
 const nowInSec = () => Math.floor(Date.now() / 1000);
 
-export const authOptions: NextAuthOptions = {
+export const { handlers, auth, signIn: authSignIn, signOut: authSignOut } = NextAuth({
     providers: [
         Google({
             clientId: process.env.GOOGLE_CLIENT_ID || "",
@@ -36,9 +35,7 @@ export const authOptions: NextAuthOptions = {
                             });
                         });
 
-                        if (!user) {
-                            return null;
-                        }
+                        if (!user) return null;
 
                         return {
                             id: user.id,
@@ -48,35 +45,29 @@ export const authOptions: NextAuthOptions = {
                             gender: user.gender,
                             schoolId: user.schoolId,
                             isDemo: true,
-                        };
+                        } as any;
                     }
 
-                    if (!credentials?.email || !credentials?.password) {
-                        return null;
-                    }
+                    if (!credentials?.email || !credentials?.password) return null;
 
                     const user = await executeQuery(async () => {
                         return await db.query.users.findFirst({
-                            where: eq(schema.users.email, credentials.email),
+                            where: eq(schema.users.email, credentials.email as string),
                         });
                     });
 
-                    if (!user || user.role !== USER_ROLES.ADMIN) {
-                        return null;
-                    }
+                    if (!user || user.role !== USER_ROLES.ADMIN) return null;
 
                     let isValid = false;
                     try {
-                        isValid = await compare(credentials.password, user.password);
+                        isValid = await compare(credentials.password as string, user.password);
                         console.log("[AUTH_DEBUG] bcrypt compare succeeded. isValid:", isValid);
                     } catch (compareErr) {
                         console.error("[AUTH_DEBUG] bcrypt compare FAILED (Edge incompatibility?):", compareErr);
                         throw compareErr;
                     }
 
-                    if (!isValid) {
-                        return null;
-                    }
+                    if (!isValid) return null;
 
                     return {
                         id: user.id,
@@ -85,50 +76,47 @@ export const authOptions: NextAuthOptions = {
                         role: user.role,
                         gender: user.gender,
                         schoolId: user.schoolId,
-                    };
+                    } as any;
                 } catch (err) {
                     console.error("[AUTH_DEBUG] Authorize failed:", err);
-                    throw err;
+                    return null;
                 }
             },
         }),
     ],
     session: {
         strategy: "jwt",
-        updateAge: TWENTY_FOUR_HOURS,
+        maxAge: TWENTY_FOUR_HOURS,
     },
     callbacks: {
-        async signIn({ account, profile, user: _user }) {
+        async signIn({ account, profile }) {
             console.log("[AUTH_DEBUG] SignIn callback triggered for provider:", account?.provider);
             try {
-                if (account?.provider === AUTH_TYPE.CREDENTIALS) {
-                    return true;
-                }
+                if (account?.provider === AUTH_TYPE.CREDENTIALS) return true;
+
                 if (account?.provider === AUTH_TYPE.GOOGLE) {
                     const email = typeof profile?.email === "string" ? profile.email : undefined;
                     const name = typeof profile?.name === "string" ? profile.name : undefined;
                     if (!email || !name) return false;
                     try {
-                        // Check if user exists directly in DB
                         const existing = await executeQuery(async () => {
                             return await db.query.users.findFirst({
-                                where: eq(schema.users.email, email)
+                                where: eq(schema.users.email, email),
                             });
                         });
 
                         if (!existing) {
-                            // User does not exist, create new user
                             const hashedPassword = await hash("123456", 10);
-                            const schoolId = "ebrb8pj1ofvug78ratnbyd4o"; // Hardcoded school ID for "הדגמה"
+                            const schoolId = "ebrb8pj1ofvug78ratnbyd4o"; // Default demo school ID
                             await executeQuery(async () => {
                                 await db.insert(schema.users).values({
-                                    name: name,
-                                    email: email,
+                                    name,
+                                    email,
                                     password: hashedPassword,
                                     role: USER_ROLES.GUEST,
                                     gender: USER_GENDER.FEMALE,
                                     authType: AUTH_TYPE.GOOGLE,
-                                    schoolId: schoolId,
+                                    schoolId,
                                 });
                             });
                         }
@@ -149,19 +137,18 @@ export const authOptions: NextAuthOptions = {
             try {
                 if (account?.provider === AUTH_TYPE.CREDENTIALS && user) {
                     token.id = user.id;
-                    token.email = user.email;
-                    token.name = user.name;
+                    token.email = user.email ?? undefined;
+                    token.name = user.name ?? undefined;
                     token.role = (user as any).role;
                     token.gender = (user as any).gender;
                     token.schoolId = (user as any).schoolId;
                     token.status = SCHOOL_STATUS.ANNUAL;
                     token.maxAge = getSessionMaxAge(true);
                     token.exp = nowInSec() + Number(token.maxAge);
-                    token.isDemo = (user as any).isDemo;
+                    token.isDemo = (user as any).isDemo ?? false;
                 } else if ((account?.provider === AUTH_TYPE.GOOGLE && profile?.email) || (user && user.email)) {
                     const email = (user?.email || profile?.email) as string;
                     try {
-                        // Fetch user from DB directly
                         const [row] = await executeQuery(async () => {
                             return await db
                                 .select({
@@ -181,8 +168,8 @@ export const authOptions: NextAuthOptions = {
                         if (row) {
                             token.id = row.id;
                             token.role = row.role;
-                            token.gender = row.gender;
-                            token.schoolId = row.schoolId;
+                            token.gender = row.gender ?? undefined;
+                            token.schoolId = row.schoolId ?? undefined;
                             token.status = row.status ?? SCHOOL_STATUS.ONBOARDING;
                             token.createdAt = row.createdAt;
                         }
@@ -191,8 +178,7 @@ export const authOptions: NextAuthOptions = {
                         throw err;
                     }
                     token.email = email;
-                    token.name = user?.name || profile?.name;
-                    token.image = user?.image || profile?.image;
+                    token.name = (user?.name || profile?.name) ?? undefined;
                     token.maxAge = getSessionMaxAge(true);
                     token.exp = nowInSec() + Number(token.maxAge);
                 }
@@ -208,16 +194,16 @@ export const authOptions: NextAuthOptions = {
         async session({ session, token }) {
             if (token) {
                 session.user = session.user || ({} as any);
-                session.user.token = token.id as string;
-                session.user.role = token.role as UserRole;
-                session.user.gender = token.gender as UserGender;
-                session.user.schoolId = token.schoolId as string;
-                session.user.status = token.status as string;
-                session.user.createdAt = token.createdAt as Date;
-                session.user.maxAge = token.maxAge as number;
+                (session.user as any).token = token.id as string;
+                (session.user as any).role = token.role as UserRole;
+                (session.user as any).gender = token.gender as UserGender;
+                (session.user as any).schoolId = token.schoolId as string;
+                (session.user as any).status = token.status as string;
+                (session.user as any).createdAt = token.createdAt as Date;
+                (session.user as any).maxAge = token.maxAge as number;
                 session.user.email = token.email as string;
-                session.user.isDemo = token.isDemo as boolean;
-                session.expires = new Date((token.exp as number) * 1000).toISOString();
+                (session.user as any).isDemo = token.isDemo as boolean;
+                session.expires = new Date((token.exp as number) * 1000).toISOString() as any;
             }
             return session;
         },
@@ -227,17 +213,8 @@ export const authOptions: NextAuthOptions = {
         error: "/",
         newUser: "/sign-up",
     },
-    debug: true,
+    debug: process.env.NODE_ENV === "development",
     secret: process.env.NEXTAUTH_SECRET,
-    cookies: {
-        sessionToken: {
-            name: process.env.NODE_ENV === "production" ? `__Secure-next-auth.session-token` : `next-auth.session-token`,
-            options: {
-                httpOnly: true,
-                sameSite: "lax",
-                path: "/",
-                secure: process.env.NODE_ENV === "production",
-            },
-        },
-    },
-};
+    // Required for Cloudflare Pages — trusts X-Forwarded-Host from the Cloudflare proxy
+    trustHost: true,
+});

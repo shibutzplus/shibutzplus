@@ -1,7 +1,6 @@
 "use server";
 
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/auth";
 import { dbLog } from "@/services/loggerService";
 import AdmZip from "adm-zip";
 
@@ -180,7 +179,7 @@ export const extractEntitiesFromWordAction = async (
     let schoolId: string | undefined;
 
     try {
-        const session = await getServerSession(authOptions);
+        const session = await auth();
         if (!session?.user) {
             return { success: false, message: "Not authenticated" };
         }

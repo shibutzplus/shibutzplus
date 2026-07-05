@@ -3,13 +3,12 @@
 import { db, schema, executeQuery } from "@/db";
 import { asc, eq, and } from "drizzle-orm";
 
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/auth";
 import { USER_ROLES } from "@/models/constant/auth";
 
 // Returns [{ id, name, city, deputyName }]
 export async function getSchoolsMinAction(): Promise<Array<{ id: string; name: string; city: string; deputyName: string | null }>> {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (!session || (session.user as any)?.role !== USER_ROLES.ADMIN) {
     throw new Error("Unauthorized: Only administrators can access school list");

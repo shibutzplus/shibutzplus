@@ -1,7 +1,6 @@
 "use server";
 
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/auth";
 import { db, schema } from "@/db";
 import { eq } from "drizzle-orm";
 import { dbLog } from "@/services/loggerService";
@@ -53,7 +52,7 @@ const fetchSchoolEntities = async (schoolId: string) => {
 export const loadEntitiesFromDBAction = async (formData: FormData) => {
     let schoolId = "";
     try {
-        const session = await getServerSession(authOptions);
+        const session = await auth();
         if (!session?.user) {
             return { success: false, message: "Not authenticated" };
         }

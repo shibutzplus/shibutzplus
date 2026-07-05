@@ -1,7 +1,6 @@
 "use server";
 
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/auth";
 import { db } from "@/db";
 import { teachers, classes, subjects, annualSchedule, type NewAnnualScheduleSchema } from "@/db/schema";
 import { eq, and, notInArray, inArray } from "drizzle-orm";
@@ -20,7 +19,7 @@ export const addSingleEntityAction = async (
     itemName: string
 ) => {
     try {
-        const session = await getServerSession(authOptions);
+        const session = await auth();
         if (!session?.user) return { success: false, message: "Not authenticated" };
 
         const targetSchoolId = schoolId || session.user.schoolId;
@@ -133,7 +132,7 @@ export const syncAllEntityValuesAction = async (
     items: string[]
 ) => {
     try {
-        const session = await getServerSession(authOptions);
+        const session = await auth();
         if (!session?.user) return { success: false, message: "Not authenticated" };
 
         const targetSchoolId = schoolId || session.user.schoolId;
@@ -243,7 +242,7 @@ export async function saveTeacherScheduleAction(
     scheduleItems: { day: number, hour: number, className: string, subjectName: string }[]
 ) {
     try {
-        const session = await getServerSession(authOptions);
+        const session = await auth();
         if (!session?.user) return { success: false, message: "Not authenticated" };
 
         const targetSchoolId = schoolId || session.user.schoolId;
@@ -378,7 +377,7 @@ export async function saveAllTeachersSchedulesAction(
     }[]
 ) {
     try {
-        const session = await getServerSession(authOptions);
+        const session = await auth();
         if (!session?.user) return { success: false, message: "Not authenticated" };
 
         const targetSchoolId = schoolId || session.user.schoolId;
