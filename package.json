@@ -5,7 +5,7 @@
     "scripts": {
         "dev": "node scripts/set-runtime.js dev && start http://localhost:3000 && next dev --turbopack",
         "dev:open": "node scripts/set-runtime.js dev && start http://localhost:3000 && next dev --turbopack",
-        "build": "node scripts/set-runtime.js prod && next build && npx @cloudflare/next-on-pages",
+        "build": "node scripts/set-runtime.js prod && next build",
         "start": "next start",
         "lint": "next lint",
         "format": "prettier --write .",
