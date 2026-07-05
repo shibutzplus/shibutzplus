@@ -219,8 +219,8 @@ export const { handlers, auth, signIn: authSignIn, signOut: authSignOut } = Next
         error: "/",
         newUser: "/sign-up",
     },
-    debug: process.env.NODE_ENV === "development",
-    secret: process.env.NEXTAUTH_SECRET,
+    debug: true,
+    secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
     // Required for Cloudflare Pages — trusts X-Forwarded-Host from the Cloudflare proxy
     trustHost: true,
 });

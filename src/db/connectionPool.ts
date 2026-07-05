@@ -8,6 +8,8 @@ const isProd = process.env.NODE_ENV === 'production';
 // Select the ConnectionString with a secure fallback for build-time safety
 const databaseUrl = (isProd ? prodDb : (stagingDb || prodDb)) || "postgresql://mock_user:mock_pass@localhost:5432/mock_db";
 
+console.log("[DB_DEBUG] Database URL loaded. Type:", databaseUrl.includes("localhost") ? "MOCK" : "NEON", "Starts with:", databaseUrl.substring(0, 35));
+
 // Create a single neon client with proper configuration
 export const sql = neon(databaseUrl, {
   arrayMode: false,
