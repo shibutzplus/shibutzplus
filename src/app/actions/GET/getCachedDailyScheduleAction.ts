@@ -4,7 +4,6 @@ import { GetDailyScheduleResponse } from "@/models/types/dailySchedule";
 import { publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { dbLog } from "@/services/loggerService";
-import { getCachedDailySchedule } from "@/services/schedule/getDailySchedule";
 import { getSchoolAction } from "@/app/actions/GET/getSchoolAction";
 
 /**
@@ -30,8 +29,8 @@ export async function getCachedDailyScheduleAction(
             };
         }
 
-        // Fetch from cache
-        const dailySchedule = await getCachedDailySchedule(schoolId, date);
+        const { getDailyScheduleService } = await import("@/services/schedule/getCachedDailySchedule");
+        const dailySchedule = await getDailyScheduleService(schoolId, date);
 
         return {
             success: true,

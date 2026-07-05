@@ -8,12 +8,11 @@ import { publicAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { executeQuery } from "../../../db";
 import { dbLog } from "@/services/loggerService";
-import { getCachedTeacherSchedule } from "@/services/schedule/getTeacherSchedule";
+import { getTeacherScheduleService } from "@/services/schedule/getTeacherSchedule";
 
 export async function getTeacherFullScheduleAction(
     teacherId: string,
     date: string,
-    schoolId: string,
 ): Promise<GetDailyScheduleResponse> {
     try {
         const authError = await publicAuthAndParams({ teacherId, date });
@@ -22,7 +21,7 @@ export async function getTeacherFullScheduleAction(
         }
 
         const result = await executeQuery(async () => {
-            return await getCachedTeacherSchedule(teacherId, date, schoolId);
+            return await getTeacherScheduleService(teacherId, date);
         });
 
         return {

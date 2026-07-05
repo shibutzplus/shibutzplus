@@ -32,8 +32,8 @@ export async function getDailyScheduleAction(
             }
         }
 
-        const { getCachedDailySchedule } = await import("@/services/schedule/getCachedDailySchedule");
-        const dailySchedule = await getCachedDailySchedule(schoolId, date);
+        const { getDailyScheduleService } = await import("@/services/schedule/getCachedDailySchedule");
+        const dailySchedule = await getDailyScheduleService(schoolId, date);
 
         return {
             success: true,

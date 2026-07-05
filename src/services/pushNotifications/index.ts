@@ -11,18 +11,19 @@ import { teachers } from "@/db/schema/teachers";
 import { dailySchedule } from "@/db/schema/daily-schedule";
 import { eq, and, inArray, isNotNull } from "drizzle-orm";
 
-let agent: any = undefined;
+let agent: import("https").Agent | null | undefined = undefined;
 
 async function getHttpsAgent() {
     if (agent !== undefined) return agent;
     try {
-        const https = (await import("https")).default;
+        const libName = "https";
+        const https = (await import(libName)).default;
         agent = new https.Agent({
             keepAlive: true,
             keepAliveMsecs: 1000,
             maxSockets: 50,
         });
-    } catch (e) {
+    } catch (_e) {
         agent = null;
     }
     return agent;
@@ -31,7 +32,8 @@ async function getHttpsAgent() {
 let isVapidInitialized = false;
 
 async function getWebPush() {
-    const webpush = (await import("web-push")).default;
+    const libName = "web-push";
+    const webpush = (await import(libName)).default;
     if (!isVapidInitialized) {
         if (!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) {
             const msg = "VAPID keys are missing. Push notifications will not work.";

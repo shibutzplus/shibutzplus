@@ -62,26 +62,29 @@ export async function getDailyScheduleService(
  * @param date - The date string (YYYY-MM-DD format expected by DB)
  * @returns Daily schedule data for the specified school and date
  */
+const dailyScheduleCache = new Map<string, any>();
+
 export async function getCachedDailySchedule(
     schoolId: string,
     date: string,
 ): Promise<DailyScheduleType[]> {
-    const cachedFn = unstable_cache(
-        async () => getDailyScheduleService(schoolId, date),
-        // Cache keys - MUST include ALL parameters that affect the result
-        ['getDailySchedule', schoolId, date],
-        {
-            // School-level tag for bulk invalidation
-            tags: [cacheTags.schoolSchedule(schoolId)],
-            revalidate: 86400, // 24 hours - since we have precise tag invalidation
-        }
-    );
+    const cacheKey = `${schoolId}-${date}`;
+    if (!dailyScheduleCache.has(cacheKey)) {
+        dailyScheduleCache.set(cacheKey, unstable_cache(
+            async () => getDailyScheduleService(schoolId, date),
+            ['getDailySchedule', schoolId, date],
+            {
+                tags: [cacheTags.schoolSchedule(schoolId)],
+                revalidate: 86400, // 24 hours
+            }
+        ));
+    }
 
-    const cachedResults = await cachedFn();
+    const cachedResults = await dailyScheduleCache.get(cacheKey)!();
 
     // IMPORTANT: unstable_cache serializes Date objects to strings
     // We need to convert them back to Date objects
-    return cachedResults.map(schedule => ({
+    return cachedResults.map((schedule: any) => ({
         ...schedule,
         date: typeof schedule.date === 'string' ? new Date(schedule.date) : schedule.date,
         createdAt: typeof schedule.createdAt === 'string' ? new Date(schedule.createdAt) : schedule.createdAt,

@@ -6,16 +6,15 @@ import * as fs from 'fs';
 export function loadEnv() {
   const rootDir = path.resolve(__dirname, '../..');
   const envPath = path.join(rootDir, '.env.local');
-  
+
   if (fs.existsSync(envPath)) {
-    console.log(`Loading environment variables from ${envPath}`);
     const result = dotenv.config({ path: envPath });
-    
+
     if (result.error) {
       console.error('Error loading .env.local file:', result.error);
       throw result.error;
     }
-    
+
     return true;
   } else {
     console.warn(`No .env.local file found at ${envPath}`);

@@ -22,10 +22,12 @@ export async function getTeacherByIdAction(teacherId: string): Promise<GetTeache
                 message: messages.teachers.invalid,
             };
         }
-        const teacher = await executeQuery(async () => {
-            return await db.query.teachers.findFirst({
-                where: eq(teachers.id, teacherId),
-            });
+        const [teacher] = await executeQuery(async () => {
+            return await db
+                .select()
+                .from(teachers)
+                .where(eq(teachers.id, teacherId))
+                .limit(1);
         });
         if (!teacher) {
             return {

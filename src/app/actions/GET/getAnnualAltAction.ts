@@ -10,6 +10,8 @@ import { AnnualScheduleType } from "@/models/types/annualSchedule";
 import { unstable_cache } from "next/cache";
 import { cacheTags } from "@/lib/cacheTags";
 
+const annualAltCache = new Map<string, any>();
+
 export const getAnnualAltAction = async (
     schoolId: string,
 ): Promise<GetAnnualScheduleResponse> => {
@@ -19,20 +21,25 @@ export const getAnnualAltAction = async (
             return authError as GetAnnualScheduleResponse;
         }
 
-        const schedules = await unstable_cache(
-            async () => {
-                return await executeQuery(async () => {
-                    return await db.query.annualScheduleAlt.findMany({
-                        where: eq(schema.annualScheduleAlt.schoolId, schoolId),
+        if (!annualAltCache.has(schoolId)) {
+            annualAltCache.set(schoolId, unstable_cache(
+                async () => {
+                    return await executeQuery(async () => {
+                        return await db
+                            .select()
+                            .from(schema.annualScheduleAlt)
+                            .where(eq(schema.annualScheduleAlt.schoolId, schoolId));
                     });
-                });
-            },
-            ['getAnnualAlt', schoolId],
-            {
-                tags: [cacheTags.annualAltSchedule(schoolId)],
-                revalidate: 604800, // 7 days
-            }
-        )();
+                },
+                ['getAnnualAlt', schoolId],
+                {
+                    tags: [cacheTags.annualAltSchedule(schoolId)],
+                    revalidate: 604800, // 7 days
+                }
+            ));
+        }
+
+        const schedules = await annualAltCache.get(schoolId)();
 
         const data: AnnualScheduleType[] = (schedules || []).map((s: any) => ({
             id: s.id,

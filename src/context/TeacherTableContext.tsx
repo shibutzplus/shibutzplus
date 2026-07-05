@@ -71,7 +71,7 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
             if (isHistoryPage && teacher.name) {
                 response = await getTeacherHistoryScheduleAction(teacher.name, teacher.schoolId, selectedDate);
             } else {
-                response = await getTeacherFullScheduleAction(teacher.id, selectedDate, teacher.schoolId);
+                response = await getTeacherFullScheduleAction(teacher.id, selectedDate);
             }
 
             // Due to recurrent error we added a retry once if response is undefined (network glitch / timeout)
@@ -80,7 +80,7 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
                 if (isHistoryPage && teacher.name) {
                     response = await getTeacherHistoryScheduleAction(teacher.name, teacher.schoolId, selectedDate);
                 } else {
-                    response = await getTeacherFullScheduleAction(teacher.id, selectedDate, teacher.schoolId);
+                    response = await getTeacherFullScheduleAction(teacher.id, selectedDate);
                 }
             }
 

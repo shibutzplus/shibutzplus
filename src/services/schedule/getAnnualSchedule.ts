@@ -10,37 +10,41 @@ import { AnnualScheduleType } from "@/models/types/annualSchedule";
  * @param schoolId - The school ID
  * @returns Array of annual schedule records
  */
+const annualScheduleCache = new Map<string, any>();
+
 export async function getCachedAnnualSchedule(schoolId: string): Promise<AnnualScheduleType[]> {
-    const cachedFn = unstable_cache(
-        async () => {
-            return await executeQuery(async () => {
-                const schedules = await db
-                    .select()
-                    .from(schema.annualSchedule)
-                    .where(eq(schema.annualSchedule.schoolId, schoolId));
+    if (!annualScheduleCache.has(schoolId)) {
+        annualScheduleCache.set(schoolId, unstable_cache(
+            async () => {
+                return await executeQuery(async () => {
+                    const schedules = await db
+                        .select()
+                        .from(schema.annualSchedule)
+                        .where(eq(schema.annualSchedule.schoolId, schoolId));
 
-                return schedules.map(
-                    (schedule: any) =>
-                        ({
-                            id: schedule.id,
-                            day: schedule.day,
-                            hour: schedule.hour,
-                            schoolId: schedule.schoolId,
-                            classId: schedule.classId,
-                            teacherId: schedule.teacherId,
-                            subjectId: schedule.subjectId,
-                            createdAt: schedule.createdAt,
-                            updatedAt: schedule.updatedAt,
-                        }) as unknown as AnnualScheduleType,
-                );
-            });
-        },
-        ['getAnnualSchedule', schoolId],
-        {
-            tags: [cacheTags.schoolSchedule(schoolId)],
-            revalidate: 604800, // 7 days
-        }
-    );
+                    return schedules.map(
+                        (schedule: any) =>
+                            ({
+                                id: schedule.id,
+                                day: schedule.day,
+                                hour: schedule.hour,
+                                schoolId: schedule.schoolId,
+                                classId: schedule.classId,
+                                teacherId: schedule.teacherId,
+                                subjectId: schedule.subjectId,
+                                createdAt: schedule.createdAt,
+                                updatedAt: schedule.updatedAt,
+                            }) as unknown as AnnualScheduleType,
+                    );
+                });
+            },
+            ['getAnnualSchedule', schoolId],
+            {
+                tags: [cacheTags.schoolSchedule(schoolId)],
+                revalidate: 604800, // 7 days
+            }
+        ));
+    }
 
-    return cachedFn();
+    return annualScheduleCache.get(schoolId)!();
 }
