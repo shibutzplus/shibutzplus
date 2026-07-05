@@ -27,14 +27,47 @@ export const authOptions: NextAuthOptions = {
                 isDemo: { label: "Is Demo", type: "text" },
             },
             async authorize(credentials) {
-                if (credentials?.isDemo === "true") {
+                console.log("[AUTH_DEBUG] Authorize triggered with credentials:", credentials?.email);
+                try {
+                    if (credentials?.isDemo === "true") {
+                        const user = await executeQuery(async () => {
+                            return await db.query.users.findFirst({
+                                where: eq(schema.users.email, "shibutzplus@gmail.com"),
+                            });
+                        });
+
+                        if (!user) {
+                            return null;
+                        }
+
+                        return {
+                            id: user.id,
+                            email: user.email,
+                            name: user.name,
+                            role: USER_ROLES.GUEST,
+                            gender: user.gender,
+                            schoolId: user.schoolId,
+                            isDemo: true,
+                        };
+                    }
+
+                    if (!credentials?.email || !credentials?.password) {
+                        return null;
+                    }
+
                     const user = await executeQuery(async () => {
                         return await db.query.users.findFirst({
-                            where: eq(schema.users.email, "shibutzplus@gmail.com"),
+                            where: eq(schema.users.email, credentials.email),
                         });
                     });
 
-                    if (!user) {
+                    if (!user || user.role !== USER_ROLES.ADMIN) {
+                        return null;
+                    }
+
+                    const isValid = await compare(credentials.password, user.password);
+
+                    if (!isValid) {
                         return null;
                     }
 
@@ -42,41 +75,14 @@ export const authOptions: NextAuthOptions = {
                         id: user.id,
                         email: user.email,
                         name: user.name,
-                        role: USER_ROLES.GUEST,
+                        role: user.role,
                         gender: user.gender,
                         schoolId: user.schoolId,
-                        isDemo: true,
                     };
+                } catch (err) {
+                    console.error("[AUTH_DEBUG] Authorize failed:", err);
+                    throw err;
                 }
-
-                if (!credentials?.email || !credentials?.password) {
-                    return null;
-                }
-
-                const user = await executeQuery(async () => {
-                    return await db.query.users.findFirst({
-                        where: eq(schema.users.email, credentials.email),
-                    });
-                });
-
-                if (!user || user.role !== USER_ROLES.ADMIN) {
-                    return null;
-                }
-
-                const isValid = await compare(credentials.password, user.password);
-
-                if (!isValid) {
-                    return null;
-                }
-
-                return {
-                    id: user.id,
-                    email: user.email,
-                    name: user.name,
-                    role: user.role,
-                    gender: user.gender,
-                    schoolId: user.schoolId,
-                };
             },
         }),
     ],
@@ -86,58 +92,76 @@ export const authOptions: NextAuthOptions = {
     },
     callbacks: {
         async signIn({ account, profile, user: _user }) {
-            if (account?.provider === AUTH_TYPE.CREDENTIALS) {
-                return true;
-            }
-            if (account?.provider === AUTH_TYPE.GOOGLE) {
-                const email = typeof profile?.email === "string" ? profile.email : undefined;
-                const name = typeof profile?.name === "string" ? profile.name : undefined;
-                if (!email || !name) return false;
-                try {
-                    const { registerNewGoogleUserAction } = await import("@/app/actions/POST/registerNewGoogleUserAction");
-                    const response = await registerNewGoogleUserAction({ email, name });
-                    if (!response.success) return false;
-                } catch {
-                    return false;
+            console.log("[AUTH_DEBUG] SignIn callback triggered for provider:", account?.provider);
+            try {
+                if (account?.provider === AUTH_TYPE.CREDENTIALS) {
+                    return true;
                 }
-                return true;
+                if (account?.provider === AUTH_TYPE.GOOGLE) {
+                    const email = typeof profile?.email === "string" ? profile.email : undefined;
+                    const name = typeof profile?.name === "string" ? profile.name : undefined;
+                    if (!email || !name) return false;
+                    try {
+                        const { registerNewGoogleUserAction } = await import("@/app/actions/POST/registerNewGoogleUserAction");
+                        const response = await registerNewGoogleUserAction({ email, name });
+                        if (!response.success) return false;
+                    } catch (err) {
+                        console.error("[AUTH_DEBUG] Google registration failed inside signIn:", err);
+                        return false;
+                    }
+                    return true;
+                }
+                return false;
+            } catch (err) {
+                console.error("[AUTH_DEBUG] SignIn callback failed:", err);
+                return false;
             }
-            return false;
         },
         async jwt({ token, user, account, profile }) {
-            if (account?.provider === AUTH_TYPE.CREDENTIALS && user) {
-                token.id = user.id;
-                token.email = user.email;
-                token.name = user.name;
-                token.role = (user as any).role;
-                token.gender = (user as any).gender;
-                token.schoolId = (user as any).schoolId;
-                token.status = SCHOOL_STATUS.ANNUAL;
-                token.maxAge = getSessionMaxAge(true);
-                token.exp = nowInSec() + Number(token.maxAge);
-                token.isDemo = (user as any).isDemo;
-            } else if ((account?.provider === AUTH_TYPE.GOOGLE && profile?.email) || (user && user.email)) {
-                const email = (user?.email || profile?.email) as string;
-                const { getUserByEmailAction } = await import("@/app/actions/GET/getUserByEmailAction");
-                const response = await getUserByEmailAction(email);
-                if (response.success && response.data) {
-                    token.id = response.data.id;
-                    token.role = response.data.role;
-                    token.gender = response.data.gender;
-                    token.schoolId = response.data.schoolId;
-                    token.status = response.data.status;
-                    token.createdAt = response.data.createdAt;
+            console.log("[AUTH_DEBUG] JWT callback triggered. Token email:", token?.email);
+            try {
+                if (account?.provider === AUTH_TYPE.CREDENTIALS && user) {
+                    token.id = user.id;
+                    token.email = user.email;
+                    token.name = user.name;
+                    token.role = (user as any).role;
+                    token.gender = (user as any).gender;
+                    token.schoolId = (user as any).schoolId;
+                    token.status = SCHOOL_STATUS.ANNUAL;
+                    token.maxAge = getSessionMaxAge(true);
+                    token.exp = nowInSec() + Number(token.maxAge);
+                    token.isDemo = (user as any).isDemo;
+                } else if ((account?.provider === AUTH_TYPE.GOOGLE && profile?.email) || (user && user.email)) {
+                    const email = (user?.email || profile?.email) as string;
+                    try {
+                        const { getUserByEmailAction } = await import("@/app/actions/GET/getUserByEmailAction");
+                        const response = await getUserByEmailAction(email);
+                        if (response.success && response.data) {
+                            token.id = response.data.id;
+                            token.role = response.data.role;
+                            token.gender = response.data.gender;
+                            token.schoolId = response.data.schoolId;
+                            token.status = response.data.status;
+                            token.createdAt = response.data.createdAt;
+                        }
+                    } catch (err) {
+                        console.error("[AUTH_DEBUG] JWT callback failed during DB call:", err);
+                        throw err;
+                    }
+                    token.email = email;
+                    token.name = user?.name || profile?.name;
+                    token.image = user?.image || profile?.image;
+                    token.maxAge = getSessionMaxAge(true);
+                    token.exp = nowInSec() + Number(token.maxAge);
                 }
-                token.email = email;
-                token.name = user?.name || profile?.name;
-                token.image = user?.image || profile?.image;
-                token.maxAge = getSessionMaxAge(true);
-                token.exp = nowInSec() + Number(token.maxAge);
+                if (token.maxAge && (!token.exp || Number(token.exp) < nowInSec())) {
+                    token.exp = nowInSec() + Number(token.maxAge);
+                }
+                return token;
+            } catch (err) {
+                console.error("[AUTH_DEBUG] JWT callback failed:", err);
+                return token;
             }
-            if (token.maxAge && (!token.exp || Number(token.exp) < nowInSec())) {
-                token.exp = nowInSec() + Number(token.maxAge);
-            }
-            return token;
         },
         async session({ session, token }) {
             if (token) {
@@ -163,4 +187,15 @@ export const authOptions: NextAuthOptions = {
     },
     debug: true,
     secret: process.env.NEXTAUTH_SECRET,
+    cookies: {
+        sessionToken: {
+            name: process.env.NODE_ENV === "production" ? `__Secure-next-auth.session-token` : `next-auth.session-token`,
+            options: {
+                httpOnly: true,
+                sameSite: "lax",
+                path: "/",
+                secure: true,
+            },
+        },
+    },
 };
