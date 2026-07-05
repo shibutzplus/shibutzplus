@@ -1,4 +1,4 @@
-import { VertexAI, Part } from '@google-cloud/vertexai';
+import type { Part } from '@google-cloud/vertexai';
 import { dbLog } from "@/services/loggerService";
 
 /**
@@ -9,6 +9,8 @@ const DEFAULT_MODEL = 'gemini-2.0-flash-lite-001';
 export const geminiService = {
     runGemini: async (input: string | Part[], modelName: string = DEFAULT_MODEL, generationConfig?: any) => {
         try {
+            const { VertexAI } = await import('@google-cloud/vertexai');
+
             const project = process.env.GOOGLE_VERTEX_PROJECT_ID || process.env.GOOGLE_CLOUD_PROJECT || 'shibutzplus';
             const location = process.env.GOOGLE_CLOUD_LOCATION || 'us-central1';
             const clientEmail = process.env.GOOGLE_VERTEX_CLIENT_EMAIL;
