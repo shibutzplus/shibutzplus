@@ -25,6 +25,9 @@ export const middleware = auth(async (req) => {
     const isAuthRoute = authRoutes.includes(url.pathname);
     const isHomePage = url.pathname === router.home.p;
     const needsAuthCheck = isProtected || isAuthRoute || isHomePage || isProtectedApi;
+    // --- DEBUG PLUG ---
+    console.log(`[MIDDLEWARE_DEBUG] Path: ${url.pathname} | isProtected: ${isProtected} | isHomePage: ${isHomePage} | needsAuthCheck: ${needsAuthCheck}`);
+    // -------------------
 
     if (!needsAuthCheck) {
         return NextResponse.next();
@@ -32,7 +35,7 @@ export const middleware = auth(async (req) => {
 
     // req.auth is populated by the auth() middleware wrapper (null if not logged in)
     const session = req.auth;
-    console.log("[MIDDLEWARE_DEBUG] session resolved. LoggedIn:", !!session);
+    console.log("[MIDDLEWARE_DEBUG] session resolved. LoggedIn:", !!session, "Session:", JSON.stringify(session));
 
     if (session) {
         const role = (session.user as any)?.role;
