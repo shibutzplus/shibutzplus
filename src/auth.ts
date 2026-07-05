@@ -29,10 +29,12 @@ export const { handlers, auth, signIn: authSignIn, signOut: authSignOut } = Next
                 console.log("[AUTH_DEBUG] Authorize triggered with credentials:", credentials?.email);
                 try {
                     if (credentials?.isDemo === "true") {
-                        const user = await executeQuery(async () => {
-                            return await db.query.users.findFirst({
-                                where: eq(schema.users.email, "shibutzplus@gmail.com"),
-                            });
+                        const [user] = await executeQuery(async () => {
+                            return await db
+                                .select()
+                                .from(schema.users)
+                                .where(eq(schema.users.email, "shibutzplus@gmail.com"))
+                                .limit(1);
                         });
 
                         if (!user) return null;
@@ -50,10 +52,12 @@ export const { handlers, auth, signIn: authSignIn, signOut: authSignOut } = Next
 
                     if (!credentials?.email || !credentials?.password) return null;
 
-                    const user = await executeQuery(async () => {
-                        return await db.query.users.findFirst({
-                            where: eq(schema.users.email, credentials.email as string),
-                        });
+                    const [user] = await executeQuery(async () => {
+                        return await db
+                            .select()
+                            .from(schema.users)
+                            .where(eq(schema.users.email, credentials.email as string))
+                            .limit(1);
                     });
 
                     if (!user || user.role !== USER_ROLES.ADMIN) return null;
@@ -99,10 +103,12 @@ export const { handlers, auth, signIn: authSignIn, signOut: authSignOut } = Next
                     const name = typeof profile?.name === "string" ? profile.name : undefined;
                     if (!email || !name) return false;
                     try {
-                        const existing = await executeQuery(async () => {
-                            return await db.query.users.findFirst({
-                                where: eq(schema.users.email, email),
-                            });
+                        const [existing] = await executeQuery(async () => {
+                            return await db
+                                .select()
+                                .from(schema.users)
+                                .where(eq(schema.users.email, email))
+                                .limit(1);
                         });
 
                         if (!existing) {
