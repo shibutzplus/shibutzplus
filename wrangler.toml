@@ -5,11 +5,7 @@ compatibility_flags = ["nodejs_compat"]
 keep_vars = true
 
 [vars]
-COMPANY_NAME = "שיבוץ+"
 GOOGLE_CLOUD_LOCATION = "us-central1"
 GOOGLE_VERTEX_PROJECT_ID = "shibutzplus"
-LOGO_URL = "https://shibutzplus.com/logo.png"
-NEXT_PUBLIC_POWER_USER_EMAIL = "shibutzplus@gmail.com"
 NEXT_PUBLIC_VAPID_PUBLIC_KEY = "BMOFOO-2EKwKYudVLplPVTtuq9W-LDmT7lJrDK40FLgkZ8wZoYvWWzRzD-v5xNq6iTipgR-biNB1SxaNF6CBytE"
 R2_PUBLIC_DOMAIN = "https://pub-0c05afa19f0940aa9f31213ea541412e.r2.dev"
-WEBSITE_URL = "https://shibutzplus.com"
