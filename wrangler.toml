@@ -1,7 +1,7 @@
 name = "shibutzplus"
-main = ".vercel/output/static/_worker.js/index.js"
 compatibility_date = "2026-07-04"
-compatibility_flags = ["nodejs_compat"]
+compatibility_flags = ["nextjs_compat"]
+pages_build_output_dir = ".vercel/output"
 keep_vars = true
 
 [vars]
