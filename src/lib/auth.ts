@@ -1,5 +1,5 @@
 import { NextAuthOptions } from "next-auth";
-import { USER_ROLES, AUTH_TYPE } from "@/models/constant/auth";
+import { USER_ROLES, AUTH_TYPE, USER_GENDER } from "@/models/constant/auth";
 import { SCHOOL_STATUS } from "@/models/constant/school";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
@@ -7,7 +7,7 @@ import { getSessionMaxAge, TWENTY_FOUR_HOURS } from "@/utils/time";
 import type { UserRole, UserGender } from "@/models/types/auth";
 import { db, schema, executeQuery } from "@/db";
 import { eq } from "drizzle-orm";
-import { compare } from "bcrypt-ts";
+import { compare, hash } from "bcrypt-ts";
 
 // Always take the current time, so each login gets a fresh session timer.
 const nowInSec = () => Math.floor(Date.now() / 1000);
@@ -65,7 +65,14 @@ export const authOptions: NextAuthOptions = {
                         return null;
                     }
 
-                    const isValid = await compare(credentials.password, user.password);
+                    let isValid = false;
+                    try {
+                        isValid = await compare(credentials.password, user.password);
+                        console.log("[AUTH_DEBUG] bcrypt compare succeeded. isValid:", isValid);
+                    } catch (compareErr) {
+                        console.error("[AUTH_DEBUG] bcrypt compare FAILED (Edge incompatibility?):", compareErr);
+                        throw compareErr;
+                    }
 
                     if (!isValid) {
                         return null;
@@ -102,9 +109,29 @@ export const authOptions: NextAuthOptions = {
                     const name = typeof profile?.name === "string" ? profile.name : undefined;
                     if (!email || !name) return false;
                     try {
-                        const { registerNewGoogleUserAction } = await import("@/app/actions/POST/registerNewGoogleUserAction");
-                        const response = await registerNewGoogleUserAction({ email, name });
-                        if (!response.success) return false;
+                        // Check if user exists directly in DB
+                        const existing = await executeQuery(async () => {
+                            return await db.query.users.findFirst({
+                                where: eq(schema.users.email, email)
+                            });
+                        });
+
+                        if (!existing) {
+                            // User does not exist, create new user
+                            const hashedPassword = await hash("123456", 10);
+                            const schoolId = "ebrb8pj1ofvug78ratnbyd4o"; // Hardcoded school ID for "הדגמה"
+                            await executeQuery(async () => {
+                                await db.insert(schema.users).values({
+                                    name: name,
+                                    email: email,
+                                    password: hashedPassword,
+                                    role: USER_ROLES.GUEST,
+                                    gender: USER_GENDER.FEMALE,
+                                    authType: AUTH_TYPE.GOOGLE,
+                                    schoolId: schoolId,
+                                });
+                            });
+                        }
                     } catch (err) {
                         console.error("[AUTH_DEBUG] Google registration failed inside signIn:", err);
                         return false;
@@ -134,15 +161,30 @@ export const authOptions: NextAuthOptions = {
                 } else if ((account?.provider === AUTH_TYPE.GOOGLE && profile?.email) || (user && user.email)) {
                     const email = (user?.email || profile?.email) as string;
                     try {
-                        const { getUserByEmailAction } = await import("@/app/actions/GET/getUserByEmailAction");
-                        const response = await getUserByEmailAction(email);
-                        if (response.success && response.data) {
-                            token.id = response.data.id;
-                            token.role = response.data.role;
-                            token.gender = response.data.gender;
-                            token.schoolId = response.data.schoolId;
-                            token.status = response.data.status;
-                            token.createdAt = response.data.createdAt;
+                        // Fetch user from DB directly
+                        const [row] = await executeQuery(async () => {
+                            return await db
+                                .select({
+                                    id: schema.users.id,
+                                    role: schema.users.role,
+                                    gender: schema.users.gender,
+                                    schoolId: schema.users.schoolId,
+                                    status: schema.schools.status,
+                                    createdAt: schema.users.createdAt,
+                                })
+                                .from(schema.users)
+                                .leftJoin(schema.schools, eq(schema.schools.id, schema.users.schoolId))
+                                .where(eq(schema.users.email, email))
+                                .limit(1);
+                        });
+
+                        if (row) {
+                            token.id = row.id;
+                            token.role = row.role;
+                            token.gender = row.gender;
+                            token.schoolId = row.schoolId;
+                            token.status = row.status ?? SCHOOL_STATUS.ONBOARDING;
+                            token.createdAt = row.createdAt;
                         }
                     } catch (err) {
                         console.error("[AUTH_DEBUG] JWT callback failed during DB call:", err);
@@ -194,7 +236,7 @@ export const authOptions: NextAuthOptions = {
                 httpOnly: true,
                 sameSite: "lax",
                 path: "/",
-                secure: true,
+                secure: process.env.NODE_ENV === "production",
             },
         },
     },
