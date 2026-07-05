@@ -1,4 +1,6 @@
 import React from "react";
+
+export const dynamic = "force-dynamic";
 import { MainContextProvider } from "@/context/MainContext";
 import AuthGuard from "@/components/auth/AuthGuard";
 import Preloader from "@/components/ui/Preloader/Preloader";
