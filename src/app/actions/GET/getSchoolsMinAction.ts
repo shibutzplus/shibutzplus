@@ -10,28 +10,39 @@ import { USER_ROLES } from "@/models/constant/auth";
 export async function getSchoolsMinAction(): Promise<Array<{ id: string; name: string; city: string; deputyName: string | null }>> {
   const session = await auth();
 
+  console.log("[SCHOOL_SELECT_DEBUG] Session in server action:", JSON.stringify(session));
+
   if (!session || (session.user as any)?.role !== USER_ROLES.ADMIN) {
+    console.error("[SCHOOL_SELECT_DEBUG] Unauthorized access attempt. Session User:", session?.user);
     throw new Error("Unauthorized: Only administrators can access school list");
   }
 
-  const rows = await executeQuery(async () => {
-    return await db
-      .select({
-        id: schema.schools.id,
-        name: schema.schools.name,
-        city: schema.schools.city,
-        deputyName: schema.users.name,
-      })
-      .from(schema.schools)
-      .leftJoin(
-        schema.users,
-        and(
-          eq(schema.users.schoolId, schema.schools.id),
-          eq(schema.users.role, USER_ROLES.DEPUTY_PRINCIPAL)
+  console.log("[SCHOOL_SELECT_DEBUG] Authorized. Running DB query...");
+  let rows: any[] = [];
+  try {
+    rows = await executeQuery(async () => {
+      return await db
+        .select({
+          id: schema.schools.id,
+          name: schema.schools.name,
+          city: schema.schools.city,
+          deputyName: schema.users.name,
+        })
+        .from(schema.schools)
+        .leftJoin(
+          schema.users,
+          and(
+            eq(schema.users.schoolId, schema.schools.id),
+            eq(schema.users.role, USER_ROLES.DEPUTY_PRINCIPAL)
+          )
         )
-      )
-      .orderBy(asc(schema.schools.name));
-  });
+        .orderBy(asc(schema.schools.name));
+    });
+    console.log("[SCHOOL_SELECT_DEBUG] DB query returned rows count:", rows.length);
+  } catch (err) {
+    console.error("[SCHOOL_SELECT_DEBUG] DB query failed with error:", err);
+    throw err;
+  }
 
   const schoolMap = new Map<string, { id: string; name: string; city: string; deputyName: string | null }>();
 
