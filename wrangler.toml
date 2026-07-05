@@ -4,7 +4,13 @@ compatibility_flags = ["nextjs_compat"]
 pages_build_output_dir = ".vercel/output"
 
 [vars]
+NODE_ENV = "production"
+NEXTAUTH_URL = "https://shibutzplus.com"
+NEXTAUTH_SECRET = "1jKnHqdSGbU2ZQ1sBe7kKQegMjaBNzkwEM/yOlfsTzA="
+
+DATABASE_URL = "postgresql://shibutzplus_owner:npg_nLsFwZc4z6EI@ep-frosty-base-a2h07xmx-pooler.eu-central-1.aws.neon.tech/shibutzplus?sslmode=require"
+R2_PUBLIC_DOMAIN = "https://pub-0c05afa19f0940aa9f31213ea541412e.r2.dev"
+
 GOOGLE_CLOUD_LOCATION = "us-central1"
 GOOGLE_VERTEX_PROJECT_ID = "shibutzplus"
 NEXT_PUBLIC_VAPID_PUBLIC_KEY = "BMOFOO-2EKwKYudVLplPVTtuq9W-LDmT7lJrDK40FLgkZ8wZoYvWWzRzD-v5xNq6iTipgR-biNB1SxaNF6CBytE"
-R2_PUBLIC_DOMAIN = "https://pub-0c05afa19f0940aa9f31213ea541412e.r2.dev"
