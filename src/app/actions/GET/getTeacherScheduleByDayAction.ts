@@ -22,18 +22,32 @@ export async function getTeacherScheduleByDayAction(
             return authError as GetTeacherScheduleResponse;
         }
         const teacherSchedule = await executeQuery(async () => {
-            const schedules = await db.query.annualSchedule.findMany({
-                where: and(
+            const rows = await db
+                .select({
+                    id: schema.annualSchedule.id,
+                    day: schema.annualSchedule.day,
+                    hour: schema.annualSchedule.hour,
+                    schoolId: schema.annualSchedule.schoolId,
+                    class: schema.classes,
+                    subject: schema.subjects,
+                    teacher: schema.teachers,
+                })
+                .from(schema.annualSchedule)
+                .leftJoin(schema.classes, eq(schema.annualSchedule.classId, schema.classes.id))
+                .leftJoin(schema.subjects, eq(schema.annualSchedule.subjectId, schema.subjects.id))
+                .leftJoin(schema.teachers, eq(schema.annualSchedule.teacherId, schema.teachers.id))
+                .where(and(
                     eq(schema.annualSchedule.teacherId, teacherId),
                     eq(schema.annualSchedule.day, day),
-                ),
-                with: {
-                    class: true,
-                    subject: true,
-                    teacher: true,
-                },
-                orderBy: [asc(schema.annualSchedule.hour)],
-            });
+                ))
+                .orderBy(asc(schema.annualSchedule.hour));
+
+            const schedules = rows.map((r: any) => ({
+                ...r,
+                class: r.class && r.class.id ? r.class : null,
+                subject: r.subject && r.subject.id ? r.subject : null,
+                teacher: r.teacher && r.teacher.id ? r.teacher : null,
+            }));
 
             if (!schedules || schedules.length === 0) {
                 return [];

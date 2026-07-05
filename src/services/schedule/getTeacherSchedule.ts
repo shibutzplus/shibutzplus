@@ -3,6 +3,7 @@
  */
 import { DailyScheduleType } from "@/models/types/dailySchedule";
 import { and, eq, or, inArray } from "drizzle-orm";
+import { alias } from "drizzle-orm/pg-core";
 import { db, schema } from "@/db";
 import { unstable_cache } from "next/cache";
 import { cacheTags } from "@/lib/cacheTags";
@@ -18,38 +19,86 @@ async function getTeacherScheduleService(
     const dateObj = new Date(date);
     const dayOfWeek = dateObj.getDay() + 1; // 1-7 (Sunday is 1)
 
-    const [annualSchedules, dailySchedules] = await Promise.all([
+    const originalTeacher = alias(schema.teachers, "originalTeacher");
+    const subTeacher = alias(schema.teachers, "subTeacher");
+
+    const [annualRows, dailyRows] = await Promise.all([
         // 1. Get Annual Schedule (to show regular schedule graid)
-        db.query.annualSchedule.findMany({
-            where: and(
+        db
+            .select({
+                id: schema.annualSchedule.id,
+                day: schema.annualSchedule.day,
+                hour: schema.annualSchedule.hour,
+                createdAt: schema.annualSchedule.createdAt,
+                updatedAt: schema.annualSchedule.updatedAt,
+                school: schema.schools,
+                class: schema.classes,
+                subject: schema.subjects,
+            })
+            .from(schema.annualSchedule)
+            .leftJoin(schema.schools, eq(schema.annualSchedule.schoolId, schema.schools.id))
+            .leftJoin(schema.classes, eq(schema.annualSchedule.classId, schema.classes.id))
+            .leftJoin(schema.subjects, eq(schema.annualSchedule.subjectId, schema.subjects.id))
+            .where(and(
                 eq(schema.annualSchedule.teacherId, teacherId),
                 eq(schema.annualSchedule.day, dayOfWeek),
-            ),
-            with: {
-                subject: true,
-                class: true,
-                school: true,
-            },
-        }),
+            )),
 
         // 2. Get daily schedule entries
-        db.query.dailySchedule.findMany({
-            where: and(
+        db
+            .select({
+                id: schema.dailySchedule.id,
+                date: schema.dailySchedule.date,
+                day: schema.dailySchedule.day,
+                hour: schema.dailySchedule.hour,
+                columnId: schema.dailySchedule.columnId,
+                eventTitle: schema.dailySchedule.eventTitle,
+                event: schema.dailySchedule.event,
+                schoolId: schema.dailySchedule.schoolId,
+                classIds: schema.dailySchedule.classIds,
+                subjectId: schema.dailySchedule.subjectId,
+                originalTeacherId: schema.dailySchedule.originalTeacherId,
+                subTeacherId: schema.dailySchedule.subTeacherId,
+                columnType: schema.dailySchedule.columnType,
+                position: schema.dailySchedule.position,
+                instructions: schema.dailySchedule.instructions,
+                comment: schema.dailySchedule.comment,
+                createdAt: schema.dailySchedule.createdAt,
+                updatedAt: schema.dailySchedule.updatedAt,
+                subject: schema.subjects,
+                school: schema.schools,
+                originalTeacher: originalTeacher,
+                subTeacher: subTeacher,
+            })
+            .from(schema.dailySchedule)
+            .leftJoin(schema.subjects, eq(schema.dailySchedule.subjectId, schema.subjects.id))
+            .leftJoin(schema.schools, eq(schema.dailySchedule.schoolId, schema.schools.id))
+            .leftJoin(originalTeacher, eq(schema.dailySchedule.originalTeacherId, originalTeacher.id))
+            .leftJoin(subTeacher, eq(schema.dailySchedule.subTeacherId, subTeacher.id))
+            .where(and(
                 eq(schema.dailySchedule.date, date),
                 or(
                     eq(schema.dailySchedule.subTeacherId, teacherId),
                     eq(schema.dailySchedule.originalTeacherId, teacherId),
                 ),
-            ),
-            with: {
-                subject: true,
-                originalTeacher: true,
-                subTeacher: true,
-                school: true,
-            },
-            orderBy: schema.dailySchedule.hour,
-        })
+            ))
+            .orderBy(schema.dailySchedule.hour)
     ]);
+
+    const annualSchedules = annualRows.map((r: any) => ({
+        ...r,
+        school: r.school && r.school.id ? r.school : null,
+        class: r.class && r.class.id ? r.class : null,
+        subject: r.subject && r.subject.id ? r.subject : null,
+    }));
+
+    const dailySchedules = dailyRows.map((r: any) => ({
+        ...r,
+        school: r.school && r.school.id ? r.school : null,
+        subject: r.subject && r.subject.id ? r.subject : null,
+        originalTeacher: r.originalTeacher && r.originalTeacher.id ? r.originalTeacher : null,
+        subTeacher: r.subTeacher && r.subTeacher.id ? r.subTeacher : null,
+    }));
 
     // Fetch classes array manually since it's an array of IDs
     const allClassIds = new Set<string>();
@@ -61,9 +110,10 @@ async function getTeacherScheduleService(
 
     const classesData =
         allClassIds.size > 0
-            ? await db.query.classes.findMany({
-                where: inArray(schema.classes.id, Array.from(allClassIds)),
-            })
+            ? await db
+                .select()
+                .from(schema.classes)
+                .where(inArray(schema.classes.id, Array.from(allClassIds)))
             : [];
 
     const classesMap = new Map(classesData.map((c: any) => [c.id, c]));
@@ -117,16 +167,30 @@ async function getTeacherScheduleService(
     const hours = dailySchedules.map((ds: any) => ds.hour);
     let chainSchedules: any[] = [];
     if (hours.length > 0) {
-        chainSchedules = await db.query.dailySchedule.findMany({
-            where: and(
+        const rows = await db
+            .select({
+                id: schema.dailySchedule.id,
+                date: schema.dailySchedule.date,
+                day: schema.dailySchedule.day,
+                hour: schema.dailySchedule.hour,
+                originalTeacherId: schema.dailySchedule.originalTeacherId,
+                subTeacherId: schema.dailySchedule.subTeacherId,
+                originalTeacher: originalTeacher,
+                subTeacher: subTeacher,
+            })
+            .from(schema.dailySchedule)
+            .leftJoin(originalTeacher, eq(schema.dailySchedule.originalTeacherId, originalTeacher.id))
+            .leftJoin(subTeacher, eq(schema.dailySchedule.subTeacherId, subTeacher.id))
+            .where(and(
                 eq(schema.dailySchedule.date, date),
                 inArray(schema.dailySchedule.hour, hours),
-            ),
-            with: {
-                originalTeacher: true,
-                subTeacher: true,
-            },
-        });
+            ));
+
+        chainSchedules = rows.map((r: any) => ({
+            ...r,
+            originalTeacher: r.originalTeacher && r.originalTeacher.id ? r.originalTeacher : null,
+            subTeacher: r.subTeacher && r.subTeacher.id ? r.subTeacher : null,
+        }));
     }
 
     dailySchedules.forEach((ds: any) => {

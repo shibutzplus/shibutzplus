@@ -17,17 +17,25 @@ export async function getTeacherAltSchedule(
     const dateObj = new Date(year, month - 1, day, 12, 0, 0); // Noon local time to avoid shifts
     const dayOfWeek = dateObj.getDay() + 1; // 1=Sunday ... 7=Saturday
 
-    const altSchedules = await db.query.annualScheduleAlt.findMany({
-        where: and(
+    const altSchedules = await db
+        .select({
+            id: schema.annualScheduleAlt.id,
+            day: schema.annualScheduleAlt.day,
+            hour: schema.annualScheduleAlt.hour,
+            createdAt: schema.annualScheduleAlt.createdAt,
+            updatedAt: schema.annualScheduleAlt.updatedAt,
+            school: schema.schools,
+            class: schema.classes,
+            subject: schema.subjects,
+        })
+        .from(schema.annualScheduleAlt)
+        .leftJoin(schema.schools, eq(schema.annualScheduleAlt.schoolId, schema.schools.id))
+        .leftJoin(schema.classes, eq(schema.annualScheduleAlt.classId, schema.classes.id))
+        .leftJoin(schema.subjects, eq(schema.annualScheduleAlt.subjectId, schema.subjects.id))
+        .where(and(
             eq(schema.annualScheduleAlt.teacherId, teacherId),
             eq(schema.annualScheduleAlt.day, dayOfWeek),
-        ),
-        with: {
-            subject: true,
-            class: true,
-            school: true,
-        },
-    });
+        ));
 
     const results: DailyScheduleType[] = altSchedules.map((entry: any) => {
         // Parse as local midnight (not UTC midnight) to avoid timezone shift

@@ -14,9 +14,10 @@ export async function getCachedAnnualSchedule(schoolId: string): Promise<AnnualS
     const cachedFn = unstable_cache(
         async () => {
             return await executeQuery(async () => {
-                const schedules = await db.query.annualSchedule.findMany({
-                    where: eq(schema.annualSchedule.schoolId, schoolId),
-                });
+                const schedules = await db
+                    .select()
+                    .from(schema.annualSchedule)
+                    .where(eq(schema.annualSchedule.schoolId, schoolId));
 
                 return schedules.map(
                     (schedule: any) =>

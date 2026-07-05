@@ -11,12 +11,13 @@ export async function getCachedDailySchedule(
 ): Promise<DailyScheduleType[]> {
     const cachedFn = unstable_cache(
         async () => {
-            const schedules = await db.query.dailySchedule.findMany({
-                where: and(
+            const schedules = await db
+                .select()
+                .from(schema.dailySchedule)
+                .where(and(
                     eq(schema.dailySchedule.schoolId, schoolId),
                     eq(schema.dailySchedule.date, date),
-                ),
-            });
+                ));
 
             return schedules.map(
                 (schedule: any) =>

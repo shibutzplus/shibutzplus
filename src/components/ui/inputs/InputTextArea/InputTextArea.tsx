@@ -31,7 +31,7 @@ const InputTextArea: React.FC<InputTextAreaProps> = ({
     if (autoGrow) resize(ref.current);
   }, [value, autoGrow]);
 
-  const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleInput = (e: any) => {
     if (autoGrow) resize(e.currentTarget);
     onInput?.(e);
   };

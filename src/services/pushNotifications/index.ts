@@ -4,34 +4,51 @@
  * Handles the server-side logic for sending web push notifications using the VAPID protocol.
  * Notify users (teachers in public portal) about important updates, even when not actively using the app.
  */
-import webpush from "web-push";
 import { db } from "@/db";
 import { dbLog } from "@/services/loggerService";
 import { pushSubscriptions } from "@/db/schema/push-subscriptions";
 import { teachers } from "@/db/schema/teachers";
 import { dailySchedule } from "@/db/schema/daily-schedule";
 import { eq, and, inArray, isNotNull } from "drizzle-orm";
-import https from "https";
 
-// Create a custom agent to reuse connections and avoid "socket hang up"
-const agent = new https.Agent({
-    keepAlive: true,
-    keepAliveMsecs: 1000,
-    maxSockets: 50,
-});
+let agent: any = undefined;
 
-if (!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) {
-    const msg = "VAPID keys are missing. Push notifications will not work.";
-    console.warn(msg);
-    if (process.env.NODE_ENV === "production") {
-        void dbLog({ description: msg, schoolId: undefined });
+async function getHttpsAgent() {
+    if (agent !== undefined) return agent;
+    try {
+        const https = (await import("https")).default;
+        agent = new https.Agent({
+            keepAlive: true,
+            keepAliveMsecs: 1000,
+            maxSockets: 50,
+        });
+    } catch (e) {
+        agent = null;
     }
-} else {
-    webpush.setVapidDetails(
-        "mailto:contact@shibutzplus.com",
-        process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY.trim(),
-        process.env.VAPID_PRIVATE_KEY.trim()
-    );
+    return agent;
+}
+
+let isVapidInitialized = false;
+
+async function getWebPush() {
+    const webpush = (await import("web-push")).default;
+    if (!isVapidInitialized) {
+        if (!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) {
+            const msg = "VAPID keys are missing. Push notifications will not work.";
+            console.warn(msg);
+            if (process.env.NODE_ENV === "production") {
+                void dbLog({ description: msg, schoolId: undefined });
+            }
+        } else {
+            webpush.setVapidDetails(
+                "mailto:contact@shibutzplus.com",
+                process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY.trim(),
+                process.env.VAPID_PRIVATE_KEY.trim()
+            );
+        }
+        isVapidInitialized = true;
+    }
+    return webpush;
 }
 
 export async function sendNotification(
@@ -40,6 +57,9 @@ export async function sendNotification(
     schoolId?: string
 ) {
     const MAX_RETRIES = 3; // Increased from 1 to 3
+    const webpush = await getWebPush();
+
+    const agentInstance = await getHttpsAgent();
 
     for (let i = 0; i < MAX_RETRIES; i++) {
         try {
@@ -50,7 +70,7 @@ export async function sendNotification(
                 },
                 payload,
                 {
-                    agent, // Use the custom agent
+                    ...(agentInstance ? { agent: agentInstance } : {}),
                     timeout: 10000, // 10s timeout per request
                 }
             );
