@@ -11,7 +11,7 @@ import { cacheTags } from "@/lib/cacheTags";
 //
 // called from getCachedTeacherSchedule
 //
-async function getTeacherScheduleService(
+export async function getTeacherScheduleService(
     teacherId: string,
     date: string,
 ): Promise<DailyScheduleType[]> {
@@ -285,33 +285,33 @@ async function getTeacherScheduleService(
  * @param schoolId - The school ID (required for revalidation tag)
  * @returns Teacher's schedule for the specified date
  */
+const teacherScheduleCache = new Map<string, any>();
+
 export async function getCachedTeacherSchedule(
     teacherId: string,
     date: string,
     schoolId: string,
 ): Promise<DailyScheduleType[]> {
-    const cachedFn = unstable_cache(
-        async () => getTeacherScheduleService(teacherId, date),
-        // Cache keys - MUST include ALL parameters that affect the result
-        // This prevents Vercel from serving Teacher A's cache to Teacher B
-        ['getTeacherSchedule', teacherId, date],
-        {
-            // Tags for revalidation:
-            // 1. teacher-specific tag - for targeted invalidation of a single teacher
-            // 2. school-level tag - for invalidating ALL teachers when publishing
-            tags: [
-                cacheTags.teacherSchedule(teacherId),
-                cacheTags.schoolSchedule(schoolId)
-            ],
-            revalidate: 86400, // 24 hours
-        }
-    );
+    const cacheKey = `${teacherId}-${date}-${schoolId}`;
+    if (!teacherScheduleCache.has(cacheKey)) {
+        teacherScheduleCache.set(cacheKey, unstable_cache(
+            async () => getTeacherScheduleService(teacherId, date),
+            ['getTeacherSchedule', teacherId, date],
+            {
+                tags: [
+                    cacheTags.teacherSchedule(teacherId),
+                    cacheTags.schoolSchedule(schoolId)
+                ],
+                revalidate: 86400, // 24 hours
+            }
+        ));
+    }
 
-    const cachedResults = await cachedFn();
+    const cachedResults = await teacherScheduleCache.get(cacheKey)!();
 
     // IMPORTANT: unstable_cache serializes Date objects to strings
     // We need to convert them back to Date objects
-    return cachedResults.map(schedule => ({
+    return cachedResults.map((schedule: any) => ({
         ...schedule,
         date: typeof schedule.date === 'string' ? new Date(schedule.date) : schedule.date,
         createdAt: typeof schedule.createdAt === 'string' ? new Date(schedule.createdAt) : schedule.createdAt,

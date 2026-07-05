@@ -10,7 +10,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { pushSubscriptions } from "@/db/schema/push-subscriptions";
 import { createId } from "@paralleldrive/cuid2";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { dbLog } from "@/services/loggerService";
 
 export async function POST(req: NextRequest) {
@@ -28,12 +28,14 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Missing subscription or schoolId" }, { status: 400 });
         }
 
-        const existing = await db.query.pushSubscriptions.findFirst({
-            where: (table, { eq, and }) => and(
-                eq(table.endpoint, subscription.endpoint),
-                eq(table.schoolId, schoolId!)
-            ),
-        });
+        const [existing] = await db
+            .select()
+            .from(pushSubscriptions)
+            .where(and(
+                eq(pushSubscriptions.endpoint, subscription.endpoint),
+                eq(pushSubscriptions.schoolId, schoolId)
+            ))
+            .limit(1);
 
         if (existing) {
             // Update teacherId if provided, so we know the *last* teacher they visited

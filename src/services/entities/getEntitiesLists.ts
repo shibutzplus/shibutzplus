@@ -15,124 +15,126 @@ import { PortalType, PortalTypeVal } from "@/models/types";
  * @param options - Filter options
  * @returns Array of teachers
  */
+const teachersCache = new Map<string, any>();
+
 export async function getCachedTeachersList(
     schoolId: string,
     options?: { portalType?: PortalTypeVal; includeSubstitutes?: boolean }
 ): Promise<TeacherType[]> {
-    const cachedFn = unstable_cache(
-        async () => {
-            return await executeQuery(async () => {
-                const conditions = [eq(schema.teachers.schoolId, schoolId)];
+    const cacheKey = `${schoolId}-${JSON.stringify(options || {})}`;
+    if (!teachersCache.has(cacheKey)) {
+        teachersCache.set(cacheKey, unstable_cache(
+            async () => {
+                return await executeQuery(async () => {
+                    const conditions = [eq(schema.teachers.schoolId, schoolId)];
 
-                if (options?.portalType === PortalType.Teacher && options?.includeSubstitutes === false) {
-                    conditions.push(eq(schema.teachers.role, TeacherRoleValues.REGULAR));
-                }
+                    if (options?.portalType === PortalType.Teacher && options?.includeSubstitutes === false) {
+                        conditions.push(eq(schema.teachers.role, TeacherRoleValues.REGULAR));
+                    }
 
-                const teachers = await db
-                    .select()
-                    .from(schema.teachers)
-                    .where(and(...conditions))
-                    .orderBy(asc(schema.teachers.name));
+                    const teachers = await db
+                        .select()
+                        .from(schema.teachers)
+                        .where(and(...conditions))
+                        .orderBy(asc(schema.teachers.name));
 
-                return teachers as TeacherType[];
-            });
-        },
-        ['getTeachersList', schoolId, JSON.stringify(options || {})],
-        {
-            tags: [cacheTags.teachersList(schoolId)],
-            revalidate: 604800, // 7 days
-        }
-    );
+                    return teachers as TeacherType[];
+                });
+            },
+            ['getTeachersList', schoolId, JSON.stringify(options || {})],
+            {
+                tags: [cacheTags.teachersList(schoolId)],
+                revalidate: 604800, // 7 days
+            }
+        ));
+    }
 
-    return cachedFn();
+    return teachersCache.get(cacheKey)!();
 }
 
-/**
- * Cached service to fetch subjects list.
- * 
- * @param schoolId - The school ID
- * @param options - Filter options
- * @returns Array of subjects
- */
+const subjectsCache = new Map<string, any>();
+
 export async function getCachedSubjectsList(
     schoolId: string,
     options?: { portalType?: PortalTypeVal }
 ): Promise<SubjectType[]> {
-    const cachedFn = unstable_cache(
-        async () => {
-            return await executeQuery(async () => {
-                const subjects = await db
-                    .select()
-                    .from(schema.subjects)
-                    .where(eq(schema.subjects.schoolId, schoolId))
-                    .orderBy(asc(schema.subjects.name));
+    const cacheKey = `${schoolId}-${JSON.stringify(options || {})}`;
+    if (!subjectsCache.has(cacheKey)) {
+        subjectsCache.set(cacheKey, unstable_cache(
+            async () => {
+                return await executeQuery(async () => {
+                    const subjects = await db
+                        .select()
+                        .from(schema.subjects)
+                        .where(eq(schema.subjects.schoolId, schoolId))
+                        .orderBy(asc(schema.subjects.name));
 
-                return subjects as SubjectType[];
-            });
-        },
-        ['getSubjectsList', schoolId, JSON.stringify(options || {})],
-        {
-            tags: [cacheTags.subjectsList(schoolId)],
-            revalidate: 604800, // 7 days
-        }
-    );
+                    return subjects as SubjectType[];
+                });
+            },
+            ['getSubjectsList', schoolId, JSON.stringify(options || {})],
+            {
+                tags: [cacheTags.subjectsList(schoolId)],
+                revalidate: 604800, // 7 days
+            }
+        ));
+    }
 
-    return cachedFn();
+    return subjectsCache.get(cacheKey)!();
 }
 
-/**
- * Cached service to fetch classes list.
- * 
- * @param schoolId - The school ID
- * @param options - Filter options
- * @returns Array of classes
- */
+const classesCache = new Map<string, any>();
+
 export async function getCachedClassesList(
     schoolId: string,
     options?: { portalType?: PortalTypeVal }
 ): Promise<ClassType[]> {
-    const cachedFn = unstable_cache(
-        async () => {
-            return await executeQuery(async () => {
-                const classes = await db
-                    .select()
-                    .from(schema.classes)
-                    .where(eq(schema.classes.schoolId, schoolId))
-                    .orderBy(asc(schema.classes.activity), asc(schema.classes.name));
+    const cacheKey = `${schoolId}-${JSON.stringify(options || {})}`;
+    if (!classesCache.has(cacheKey)) {
+        classesCache.set(cacheKey, unstable_cache(
+            async () => {
+                return await executeQuery(async () => {
+                    const classes = await db
+                        .select()
+                        .from(schema.classes)
+                        .where(eq(schema.classes.schoolId, schoolId))
+                        .orderBy(asc(schema.classes.activity), asc(schema.classes.name));
 
-                return classes as ClassType[];
-            });
-        },
-        ['getClassesList', schoolId, JSON.stringify(options || {})],
-        {
-            tags: [cacheTags.classesList(schoolId)],
-            revalidate: 604800, // 7 days
-        }
-    );
+                    return classes as ClassType[];
+                });
+            },
+            ['getClassesList', schoolId, JSON.stringify(options || {})],
+            {
+                tags: [cacheTags.classesList(schoolId)],
+                revalidate: 604800, // 7 days
+            }
+        ));
+    }
 
-    return cachedFn();
+    return classesCache.get(cacheKey)!();
 }
 
-/**
- * Fetches a school by ID, using the Next.js cache.
- */
-export const getCachedSchool = async (schoolId: string) => {
-    const getSchool = unstable_cache(
-        async () => {
-            return db
-                .select()
-                .from(schema.schools)
-                .where(eq(schema.schools.id, schoolId))
-                .then((res) => res[0]);
-        },
-        [cacheTags.school(schoolId)], // Key parts
-        {
-            tags: [cacheTags.school(schoolId)],
-            revalidate: 3600, // 1 hour
-        }
-    );
+const schoolCache = new Map<string, any>();
 
-    return getSchool();
+export const getCachedSchool = async (schoolId: string) => {
+    if (!schoolCache.has(schoolId)) {
+        schoolCache.set(schoolId, unstable_cache(
+            async () => {
+                return db
+                    .select()
+                    .from(schema.schools)
+                    .where(eq(schema.schools.id, schoolId))
+                    .then((res) => res[0]);
+            },
+            [cacheTags.school(schoolId)], // Key parts
+            {
+                tags: [cacheTags.school(schoolId)],
+                revalidate: 3600, // 1 hour
+            }
+        ));
+    }
+
+    return schoolCache.get(schoolId)!();
 };
 
 /**

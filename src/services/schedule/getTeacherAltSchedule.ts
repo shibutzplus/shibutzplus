@@ -67,26 +67,31 @@ export async function getTeacherAltSchedule(
  * Cached version of getTeacherAltSchedule.
  * Uses unstable_cache with proper cache keys and school-level revalidation tag.
  */
+const teacherAltScheduleCache = new Map<string, any>();
+
 export async function getCachedTeacherAltSchedule(
     schoolId: string,
     teacherId: string,
     date: string,
 ): Promise<DailyScheduleType[]> {
-    const cachedFn = unstable_cache(
-        async () => {
-            return await getTeacherAltSchedule(teacherId, date);
-        },
-        [`alt-schedule-${schoolId}-${teacherId}-${date}`], // Unique key array
-        {
-            tags: [
-                cacheTags.annualAltSchedule(schoolId),
-                cacheTags.teacherScheduleByDate(teacherId, date),
-            ],
-            revalidate: 86400, // 24 hours
-        }
-    );
+    const cacheKey = `${schoolId}-${teacherId}-${date}`;
+    if (!teacherAltScheduleCache.has(cacheKey)) {
+        teacherAltScheduleCache.set(cacheKey, unstable_cache(
+            async () => {
+                return await getTeacherAltSchedule(teacherId, date);
+            },
+            [`alt-schedule-${schoolId}-${teacherId}-${date}`], // Unique key array
+            {
+                tags: [
+                    cacheTags.annualAltSchedule(schoolId),
+                    cacheTags.teacherScheduleByDate(teacherId, date),
+                ],
+                revalidate: 86400, // 24 hours
+            }
+        ));
+    }
 
-    const data = await cachedFn();
+    const data = await teacherAltScheduleCache.get(cacheKey)!();
 
     // IMPORTANT: unstable_cache serializes Date objects to strings
     // We must parse them back to Date objects before returning to UI

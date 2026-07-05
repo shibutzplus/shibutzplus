@@ -5,51 +5,61 @@ import { and, eq } from "drizzle-orm";
 import { cacheTags } from "@/lib/cacheTags";
 import { DailyScheduleType } from "@/models/types/dailySchedule";
 
+export async function getDailyScheduleService(
+    schoolId: string,
+    date: string
+): Promise<DailyScheduleType[]> {
+    const schedules = await db
+        .select()
+        .from(schema.dailySchedule)
+        .where(and(
+            eq(schema.dailySchedule.schoolId, schoolId),
+            eq(schema.dailySchedule.date, date),
+        ));
+
+    return schedules.map(
+        (schedule: any) =>
+            ({
+                id: schedule.id,
+                date: schedule.date,
+                day: schedule.day,
+                hour: schedule.hour,
+                columnId: schedule.columnId,
+                eventTitle: schedule.eventTitle,
+                event: schedule.event,
+                schoolId: schedule.schoolId,
+                classIds: schedule.classIds,
+                subjectId: schedule.subjectId,
+                originalTeacherId: schedule.originalTeacherId,
+                columnType: schedule.columnType,
+                subTeacherId: schedule.subTeacherId,
+                instructions: schedule.instructions,
+                comment: schedule.comment,
+                reason: schedule.reason,
+                position: schedule.position,
+                createdAt: schedule.createdAt,
+                updatedAt: schedule.updatedAt,
+            }) as unknown as DailyScheduleType,
+    );
+}
+
+const cachedDailyScheduleMap = new Map<string, any>();
+
 export async function getCachedDailySchedule(
     schoolId: string,
     date: string
 ): Promise<DailyScheduleType[]> {
-    const cachedFn = unstable_cache(
-        async () => {
-            const schedules = await db
-                .select()
-                .from(schema.dailySchedule)
-                .where(and(
-                    eq(schema.dailySchedule.schoolId, schoolId),
-                    eq(schema.dailySchedule.date, date),
-                ));
+    const cacheKey = `${schoolId}-${date}`;
+    if (!cachedDailyScheduleMap.has(cacheKey)) {
+        cachedDailyScheduleMap.set(cacheKey, unstable_cache(
+            async () => getDailyScheduleService(schoolId, date),
+            ['getDailySchedule', schoolId, date],
+            {
+                tags: [cacheTags.dailySchedule(schoolId, date), cacheTags.dailyScheduleSchool(schoolId)],
+                revalidate: 86400, // 24 hours
+            }
+        ));
+    }
 
-            return schedules.map(
-                (schedule: any) =>
-                    ({
-                        id: schedule.id,
-                        date: schedule.date,
-                        day: schedule.day,
-                        hour: schedule.hour,
-                        columnId: schedule.columnId,
-                        eventTitle: schedule.eventTitle,
-                        event: schedule.event,
-                        schoolId: schedule.schoolId,
-                        classIds: schedule.classIds,
-                        subjectId: schedule.subjectId,
-                        originalTeacherId: schedule.originalTeacherId,
-                        columnType: schedule.columnType,
-                        subTeacherId: schedule.subTeacherId,
-                        instructions: schedule.instructions,
-                        comment: schedule.comment,
-                        reason: schedule.reason,
-                        position: schedule.position,
-                        createdAt: schedule.createdAt,
-                        updatedAt: schedule.updatedAt,
-                    }) as unknown as DailyScheduleType,
-            );
-        },
-        ['getDailySchedule', schoolId, date],
-        {
-            tags: [cacheTags.dailySchedule(schoolId, date), cacheTags.dailyScheduleSchool(schoolId)],
-            revalidate: 86400, // 24 hours
-        }
-    );
-
-    return cachedFn();
+    return cachedDailyScheduleMap.get(cacheKey)!();
 }

@@ -101,78 +101,88 @@ function mapHistoryToSchedule(record: HistoryRecord, schoolId: string): DailySch
 /**
  * Cached service to fetch history schedule for a specific date.
  */
+const historyScheduleCache = new Map<string, any>();
+
 export async function getCachedHistorySchedule(
     schoolId: string,
     date: string
 ): Promise<DailyScheduleType[]> {
-    const cachedFn = unstable_cache(
-        async () => {
-            return await executeQuery(async () => {
-                const historyRecords = await db
-                    .select()
-                    .from(history)
-                    .where(
-                        and(
-                            eq(history.schoolId, schoolId),
-                            eq(history.date, date)
-                        )
-                    );
+    const cacheKey = `${schoolId}-${date}`;
+    if (!historyScheduleCache.has(cacheKey)) {
+        historyScheduleCache.set(cacheKey, unstable_cache(
+            async () => {
+                return await executeQuery(async () => {
+                    const historyRecords = await db
+                        .select()
+                        .from(history)
+                        .where(
+                            and(
+                                eq(history.schoolId, schoolId),
+                                eq(history.date, date)
+                            )
+                        );
 
-                if (!historyRecords) return [];
+                    if (!historyRecords) return [];
 
-                return historyRecords.map(record => mapHistoryToSchedule(record as unknown as HistoryRecord, schoolId));
-            });
-        },
-        ['getHistorySchedule', schoolId, date],
-        {
-            tags: [cacheTags.historyByDate(schoolId, date), cacheTags.history(schoolId)],
-            revalidate: 604800, // 7 days (history shouldn't change often)
-        }
-    );
+                    return historyRecords.map(record => mapHistoryToSchedule(record as unknown as HistoryRecord, schoolId));
+                });
+            },
+            ['getHistorySchedule', schoolId, date],
+            {
+                tags: [cacheTags.historyByDate(schoolId, date), cacheTags.history(schoolId)],
+                revalidate: 604800, // 7 days (history shouldn't change often)
+            }
+        ));
+    }
 
-    return cachedFn();
+    return historyScheduleCache.get(cacheKey)!();
 }
 
 /**
  * Cached service to fetch teacher history schedule for a specific date.
  */
+const teacherHistoryScheduleCache = new Map<string, any>();
+
 export async function getCachedTeacherHistorySchedule(
     schoolId: string,
     date: string,
     teacherName: string
 ): Promise<DailyScheduleType[]> {
-    const cachedFn = unstable_cache(
-        async () => {
-            return await executeQuery(async () => {
-                const historyRecords = await db
-                    .select()
-                    .from(history)
-                    .where(
-                        and(
-                            eq(history.schoolId, schoolId),
-                            eq(history.date, date),
-                            or(
-                                eq(history.originalTeacher, teacherName),
-                                eq(history.subTeacher, teacherName)
+    const cacheKey = `${schoolId}-${date}-${teacherName}`;
+    if (!teacherHistoryScheduleCache.has(cacheKey)) {
+        teacherHistoryScheduleCache.set(cacheKey, unstable_cache(
+            async () => {
+                return await executeQuery(async () => {
+                    const historyRecords = await db
+                        .select()
+                        .from(history)
+                        .where(
+                            and(
+                                eq(history.schoolId, schoolId),
+                                eq(history.date, date),
+                                or(
+                                    eq(history.originalTeacher, teacherName),
+                                    eq(history.subTeacher, teacherName)
+                                )
                             )
-                        )
-                    );
+                        );
 
-                if (!historyRecords) return [];
+                    if (!historyRecords) return [];
 
-                return historyRecords.map(record => mapHistoryToSchedule(record as unknown as HistoryRecord, schoolId))
-                    .sort((a, b) => a.hour - b.hour);
-            });
-        },
-        ['getTeacherHistorySchedule', schoolId, date, teacherName],
-        {
-            tags: [
-                cacheTags.historyByDate(schoolId, date),
-                cacheTags.history(schoolId),
-            ],
-            revalidate: 604800, // 7 days
-        }
-    );
+                    return historyRecords.map(record => mapHistoryToSchedule(record as unknown as HistoryRecord, schoolId))
+                        .sort((a, b) => a.hour - b.hour);
+                });
+            },
+            ['getTeacherHistorySchedule', schoolId, date, teacherName],
+            {
+                tags: [
+                    cacheTags.historyByDate(schoolId, date),
+                    cacheTags.history(schoolId),
+                ],
+                revalidate: 604800, // 7 days
+            }
+        ));
+    }
 
-    return cachedFn();
+    return teacherHistoryScheduleCache.get(cacheKey)!();
 }

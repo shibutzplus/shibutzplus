@@ -8,16 +8,13 @@ import { USER_ROLES } from "@/models/constant/auth";
 
 // Returns [{ id, name, city, deputyName }]
 export async function getSchoolsMinAction(): Promise<Array<{ id: string; name: string; city: string; deputyName: string | null }>> {
+
   const session = await auth();
 
-  console.log("[SCHOOL_SELECT_DEBUG] Session in server action:", JSON.stringify(session));
-
   if (!session || (session.user as any)?.role !== USER_ROLES.ADMIN) {
-    console.error("[SCHOOL_SELECT_DEBUG] Unauthorized access attempt. Session User:", session?.user);
     throw new Error("Unauthorized: Only administrators can access school list");
   }
 
-  console.log("[SCHOOL_SELECT_DEBUG] Authorized. Running DB query...");
   let rows: any[] = [];
   try {
     rows = await executeQuery(async () => {
@@ -38,9 +35,7 @@ export async function getSchoolsMinAction(): Promise<Array<{ id: string; name: s
         )
         .orderBy(asc(schema.schools.name));
     });
-    console.log("[SCHOOL_SELECT_DEBUG] DB query returned rows count:", rows.length);
   } catch (err) {
-    console.error("[SCHOOL_SELECT_DEBUG] DB query failed with error:", err);
     throw err;
   }
 

@@ -15,15 +15,14 @@ export async function checkTeacherHasScheduleAction(
 ): Promise<boolean> {
     try {
         // First, get the teacher ID by name and schoolId
-        const teacher = await db.query.teachers.findFirst({
-            where: and(
+        const [teacher] = await db
+            .select({ id: teachers.id })
+            .from(teachers)
+            .where(and(
                 eq(teachers.name, teacherName),
                 eq(teachers.schoolId, schoolId)
-            ),
-            columns: {
-                id: true
-            }
-        });
+            ))
+            .limit(1);
 
         if (!teacher) {
             // Teacher doesn't exist in DB, so no schedule

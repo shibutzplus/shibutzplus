@@ -26,7 +26,6 @@ export const { handlers, auth, signIn: authSignIn, signOut: authSignOut } = Next
                 isDemo: { label: "Is Demo", type: "text" },
             },
             async authorize(credentials) {
-                console.log("[AUTH_DEBUG] Authorize triggered with credentials:", credentials?.email);
                 try {
                     if (credentials?.isDemo === "true") {
                         const [user] = await executeQuery(async () => {
@@ -65,7 +64,6 @@ export const { handlers, auth, signIn: authSignIn, signOut: authSignOut } = Next
                     let isValid = false;
                     try {
                         isValid = await compare(credentials.password as string, user.password);
-                        console.log("[AUTH_DEBUG] bcrypt compare succeeded. isValid:", isValid);
                     } catch (compareErr) {
                         console.error("[AUTH_DEBUG] bcrypt compare FAILED (Edge incompatibility?):", compareErr);
                         throw compareErr;
@@ -94,7 +92,6 @@ export const { handlers, auth, signIn: authSignIn, signOut: authSignOut } = Next
     },
     callbacks: {
         async signIn({ account, profile }) {
-            console.log("[AUTH_DEBUG] SignIn callback triggered for provider:", account?.provider);
             try {
                 if (account?.provider === AUTH_TYPE.CREDENTIALS) return true;
 
@@ -139,7 +136,6 @@ export const { handlers, auth, signIn: authSignIn, signOut: authSignOut } = Next
             }
         },
         async jwt({ token, user, account, profile }) {
-            console.log("[AUTH_DEBUG] JWT callback triggered. Token email:", token?.email);
             try {
                 if (account?.provider === AUTH_TYPE.CREDENTIALS && user) {
                     token.id = user.id;

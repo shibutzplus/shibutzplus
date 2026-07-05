@@ -6,6 +6,7 @@ import { checkAuthAndParams } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { and, eq, isNull, inArray } from "drizzle-orm";
+import { alias } from "drizzle-orm/pg-core";
 import { dbLog } from "@/services/loggerService";
 
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
@@ -47,33 +48,61 @@ export async function deleteDailyColumnAction(
 
             deletedColumnTypes = [...new Set(deletedRows.map(r => r.columnType).filter((t): t is number => t !== null && t !== undefined))];
 
-            const s = await db.query.dailySchedule.findMany({
-                where: and(
-                    eq(schema.dailySchedule.schoolId, schoolId),
-                    eq(schema.dailySchedule.date, date),
-                ),
-                with: {
-                    school: true,
-                    subject: true,
-                    originalTeacher: true,
-                    subTeacher: true,
-                },
-            });
+            const originalTeacher = alias(schema.teachers, "originalTeacher");
+            const subTeacher = alias(schema.teachers, "subTeacher");
+
+            const rows = await db
+                .select({
+                    id: schema.dailySchedule.id,
+                    date: schema.dailySchedule.date,
+                    day: schema.dailySchedule.day,
+                    hour: schema.dailySchedule.hour,
+                    columnId: schema.dailySchedule.columnId,
+                    position: schema.dailySchedule.position,
+                    columnType: schema.dailySchedule.columnType,
+                    classIds: schema.dailySchedule.classIds,
+                    createdAt: schema.dailySchedule.createdAt,
+                    updatedAt: schema.dailySchedule.updatedAt,
+                    school: schema.schools,
+                    subject: schema.subjects,
+                    originalTeacher: originalTeacher,
+                    subTeacher: subTeacher,
+                })
+                .from(schema.dailySchedule)
+                .leftJoin(schema.schools, eq(schema.dailySchedule.schoolId, schema.schools.id))
+                .leftJoin(schema.subjects, eq(schema.dailySchedule.subjectId, schema.subjects.id))
+                .leftJoin(originalTeacher, eq(schema.dailySchedule.originalTeacherId, originalTeacher.id))
+                .leftJoin(subTeacher, eq(schema.dailySchedule.subTeacherId, subTeacher.id))
+                .where(
+                    and(
+                        eq(schema.dailySchedule.schoolId, schoolId),
+                        eq(schema.dailySchedule.date, date),
+                    )
+                );
+
+            const s = rows.map((r: any) => ({
+                ...r,
+                school: r.school && r.school.id ? r.school : null,
+                subject: r.subject && r.subject.id ? r.subject : null,
+                originalTeacher: r.originalTeacher && r.originalTeacher.id ? r.originalTeacher : null,
+                subTeacher: r.subTeacher && r.subTeacher.id ? r.subTeacher : null,
+            }));
 
             const uniqueClassIds = [...new Set(s.flatMap((item) => item.classIds || []))];
 
             const classesData =
                 uniqueClassIds.length > 0
-                    ? await db.query.classes.findMany({
-                        where: inArray(schema.classes.id, uniqueClassIds),
-                    })
+                    ? await db
+                        .select()
+                        .from(schema.classes)
+                        .where(inArray(schema.classes.id, uniqueClassIds))
                     : [];
 
             const classesMap = new Map(classesData.map((c) => [c.id, c]));
 
             return s.map((schedule) => ({
                 ...schedule,
-                classes: (schedule.classIds || []).map((id) => classesMap.get(id)).filter(Boolean),
+                classes: (schedule.classIds || []).map((id: string) => classesMap.get(id)).filter(Boolean),
             }));
         });
 
