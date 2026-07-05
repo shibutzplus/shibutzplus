@@ -55,24 +55,24 @@
         "recharts": "^3.6.0",
         "web-push": "^3.6.7",
         "xlsx": "^0.18.5",
-        "zod": "^4.0.17"
-    },
-    "devDependencies": {
-        "@cloudflare/next-on-pages": "^1.13.16",
-        "@eslint/eslintrc": "^3",
+        "zod": "^4.0.17",
         "@types/dompurify": "^3.0.5",
         "@types/node": "^20",
         "@types/react": "^19",
         "@types/react-dom": "^19",
         "@types/web-push": "^3.6.4",
+        "typescript": "^5"
+    },
+    "devDependencies": {
+        "@cloudflare/next-on-pages": "^1.13.16",
+        "@eslint/eslintrc": "^3",
         "drizzle-kit": "^0.31.8",
         "eslint": "^9",
         "eslint-config-next": "15.3.3",
         "eslint-config-prettier": "^10.1.5",
         "prettier": "^3.5.3",
         "ts-node": "^10.9.2",
-        "tsx": "^4.20.3",
-        "typescript": "^5"
+        "tsx": "^4.20.3"
     },
     "overrides": {
         "isomorphic-dompurify": {
