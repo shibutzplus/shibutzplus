@@ -35,7 +35,26 @@ export async function middleware(req: NextRequest) {
         return NextResponse.next();
     }
 
-    const isLoggedIn = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    // --- DEBUG PLUG ---
+    console.log("[MIDDLEWARE_DEBUG] Checking NextAuth Secret existence:", !!process.env.NEXTAUTH_SECRET);
+    const allCookies = req.cookies.getAll().map(c => c.name);
+    console.log("[MIDDLEWARE_DEBUG] Incoming cookies names:", allCookies);
+    // -------------------
+
+    let isLoggedIn = null;
+    try {
+        isLoggedIn = await getToken({ 
+            req, 
+            secret: process.env.NEXTAUTH_SECRET,
+            secureCookie: process.env.NODE_ENV === "production",
+        });
+        console.log("[MIDDLEWARE_DEBUG] getToken resolved successfully. LoggedIn:", !!isLoggedIn);
+    } catch (err: any) {
+        console.error("[MIDDLEWARE_AUTH_ERROR] Failed to fetch token in Edge Runtime!");
+        console.error("[MIDDLEWARE_AUTH_ERROR] Error message:", err?.message || err);
+        console.error("[MIDDLEWARE_AUTH_ERROR] Error stack:", err?.stack || "No stack trace");
+        isLoggedIn = null;
+    }
 
     if (isLoggedIn) {
         // Normalize role from token (can be at root or under user property)
