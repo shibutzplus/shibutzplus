@@ -308,7 +308,7 @@ export default function LandingPage() {
                                 className={styles.mobileVideo}
                                 width="100%"
                                 height="100%"
-                                src="https://www.youtube.com/embed/lAQN61gnVz8"
+                                src="https://www.youtube.com/embed/EIDRuPzvKuE"
                                 title="שיבוץ+ - סרטון הסבר"
                                 frameBorder="0"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
