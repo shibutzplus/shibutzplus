@@ -281,10 +281,6 @@ export default function LandingPage() {
                                     <strong>פשטות ונגישות:</strong> מערכת ידידותית וקלה לתפעול,
                                     זמינה מכל מחשב או טלפון נייד ללא צורך בהתקנה.
                                 </motion.li>
-                                <motion.li variants={fadeInUp}>
-                                    <strong>עלות:</strong> המערכת כרגע בהרצה ולכן השימוש בה בשלב זה
-                                    הוא ללא עלות.
-                                </motion.li>
                             </motion.ul>
                         </motion.div>
 
