@@ -41,7 +41,7 @@
     }
 
     .actions {
-        flex-direction: column;
+        display: none;
     }
 
     .desktopText {
@@ -52,4 +52,18 @@
         display: block;
         line-height: 1.5;
     }
+}
+
+.plusIconWrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    border: var(--border-primary);
+    background-color: var(--top-color);
+    margin: 0 4px;
+    vertical-align: middle;
+    color: var(--dark-text-color);
 }

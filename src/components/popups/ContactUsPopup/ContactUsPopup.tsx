@@ -36,7 +36,7 @@ const ContactUsPopup: React.FC<ContactUsPopupProps> = ({ onClose }) => {
             <h2 className={styles.title}>רוצים להתקדם לשיבוץ+</h2>
 
             <div className={styles.bodyText}>
-                לקבלת פרטים נוספים או הצטרפות לתוכנית ההרצה, כתבו לנו כאן ונחזור אליכם מיד.
+                לקבלת פרטים נוספים, כתבו לנו כאן ונחזור אליכם מיד.
             </div>
 
             <div className={styles.contactForm}>
@@ -49,10 +49,6 @@ const ContactUsPopup: React.FC<ContactUsPopupProps> = ({ onClose }) => {
                     className=""
                 />
             </div>
-
-            <button className={styles.closeButton} onClick={handleClose}>
-                סגור
-            </button>
         </div>
     );
 };

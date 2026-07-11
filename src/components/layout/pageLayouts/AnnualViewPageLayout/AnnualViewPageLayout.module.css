@@ -64,9 +64,14 @@
     white-space: nowrap;
 }
 
-.dropdownTrigger:hover {
+.dropdownTrigger:not(:disabled):hover {
     background-color: var(--tab-color-hover);
     border-color: var(--dark-border-color);
+}
+
+.dropdownTrigger:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
 }
 
 .chevron {

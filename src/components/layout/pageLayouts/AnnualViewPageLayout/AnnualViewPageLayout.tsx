@@ -11,6 +11,7 @@ import AnnualSchedulePdf from "@/components/pdf/AnnualSchedulePdf";
 import { useMainContext } from "@/context/MainContext";
 import Icons from "@/style/icons";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 type AnnualViewPageLayoutProps = {
     children: React.ReactNode;
@@ -22,6 +23,8 @@ const ChangeScheduleDropdown: React.FC = () => {
     const nav = useRouter();
     const searchParams = useSearchParams();
     const { selectedClassId, selectedTeacherId } = useAnnualView();
+    const { data: session } = useSession();
+    const isDemo = session?.user?.isDemo;
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -46,6 +49,7 @@ const ChangeScheduleDropdown: React.FC = () => {
                 type="button"
                 className={styles.dropdownTrigger}
                 onClick={() => setIsOpen(!isOpen)}
+                disabled={isDemo}
             >
                 <span className={styles.textLong}>שינוי המערכת</span>
                 <span className={styles.textShort}>שינוי</span>

@@ -40,8 +40,7 @@ const GuestModePopup: React.FC<GuestModePopupProps> = ({ onClose }) => {
                     onSend={handleSend}
                     onSuccess={handleClose}
                     submitText="שליחה"
-                    placeholder={`כיתבו לנו,
-כולל מספר טלפון לקשר מהיר בווטסאפ...`}
+                    placeholder="ספרו לנו בכמה מילים על בית הספר..."
                     buttonVariant="filled"
                     className=""
                 />

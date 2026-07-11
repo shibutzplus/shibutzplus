@@ -17,13 +17,13 @@ interface ContactUsFormProps {
 const ContactUsForm: React.FC<ContactUsFormProps> = ({
     onSend,
     onSuccess,
-    placeholder = `כתבו כאן את ההודעה שלכם
-כולל מספר טלפון לקשר מהיר בווטסאפ או כתובת מייל`,
+    placeholder = "כתבו כאן את ההודעה שלכם",
     submitText = "שליחה",
     buttonVariant = "outline",
     className = "",
 }) => {
     const [message, setMessage] = useState("");
+    const [phone, setPhone] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async () => {
@@ -31,9 +31,13 @@ const ContactUsForm: React.FC<ContactUsFormProps> = ({
 
         setIsLoading(true);
         try {
-            await onSend(message);
+            const finalMessage = phone.trim()
+                ? `${message}\n\nמספר טלפון: ${phone}`
+                : message;
+            await onSend(finalMessage);
             successToast("ההודעה נשלחה בהצלחה. ניצור איתכם קשר בהקדם ✨", Infinity);
             setMessage(""); // Clear content
+            setPhone("");   // Clear phone content
             if (onSuccess) onSuccess();
         } catch (error: any) {
             const raw = error?.text || error?.message || error?.toString() || "";
@@ -57,11 +61,19 @@ const ContactUsForm: React.FC<ContactUsFormProps> = ({
                 onChange={(e) => setMessage(e.target.value)}
                 dir="rtl"
             />
+            <input
+                type="text"
+                className={styles.input}
+                placeholder="מספר טלפון"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                dir="rtl"
+            />
             <button
                 className={`${styles.submitButton} ${buttonVariant === "filled" ? styles.filled : ""
                     }`}
                 onClick={handleSubmit}
-                disabled={isLoading || !message.trim()}
+                disabled={isLoading || !message.trim() || !phone.trim()}
             >
                 {isLoading ? <Loading size="S" /> : submitText}
             </button>

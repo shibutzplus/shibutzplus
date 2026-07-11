@@ -69,3 +69,21 @@
     color: #666666;
     opacity: 1;
 }
+
+.input {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+    background-color: #fff;
+    color: #333;
+    font-size: 15px;
+    font-family: inherit;
+    box-sizing: border-box;
+    height: 44px;
+}
+
+.input:focus {
+    outline: 1px solid #e0e0e0;
+    border-color: #b57edc;
+}
