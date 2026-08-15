@@ -9,10 +9,12 @@ export const classes = pgTable('classes', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
   activity: boolean('activity').default(false).notNull(),
+  isActive: boolean('is_active').default(true).notNull(),
 }, (table) => {
   return {
     schoolIdNameIdx: uniqueIndex('idx_classes_school_id_name').on(table.schoolId, table.name),
     schoolIdActivityNameIdx: index('idx_classes_school_id_activity_name').on(table.schoolId, table.activity, table.name),
+    schoolIdIsActiveNameIdx: index('idx_classes_school_id_is_active_name').on(table.schoolId, table.isActive, table.name),
   };
 });
 

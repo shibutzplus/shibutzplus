@@ -2,13 +2,13 @@
 
 import { auth } from "@/auth";
 import { db, schema } from "@/db";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { dbLog } from "@/services/loggerService";
 
 const fetchSchoolEntities = async (schoolId: string) => {
     const [dbTeachers, dbClasses, dbSubjects] = await Promise.all([
         db.query.teachers.findMany({
-            where: eq(schema.teachers.schoolId, schoolId),
+            where: and(eq(schema.teachers.schoolId, schoolId), eq(schema.teachers.role, 'regular')),
             columns: { name: true }
         }),
         db.query.classes.findMany({

@@ -176,20 +176,32 @@ const AnnualImportContent = () => {
                     dbTeacherMap.forEach(item => mergedTeachers.push({ ...item, source: 'db', exists: true }));
                     teachers = mergedTeachers.sort((a, b) => a.name.localeCompare(b.name, 'he'));
 
+                    // Helper to clean/normalize class name for matching (e.g. "א'1", "כיתה א1", "א 1" -> "א1")
+                    const cleanForMatch = (s: string) => s.replace(/^(כיתה|כיתת|שכבת)\s+/g, "").replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019\s]/g, "").trim();
+
+                    // Format raw name into standard "כיתה X" (e.g. "א1" / "א'1" -> "כיתה א1")
+                    const formatStandardClassName = (raw: string) => {
+                        const cleaned = raw.replace(/^(כיתה|כיתת|שכבת)\s+/g, "").replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019]/g, "").replace(/\s+/g, " ").trim();
+                        return `כיתה ${cleaned}`;
+                    };
+
                     // Merge classes from Word with DB classes
                     const mergedClasses: typeof classes = [];
                     const seenClasses = new Set<string>();
 
                     wordRes.data.classes.forEach(name => {
-                        if (seenClasses.has(name)) return;
-                        seenClasses.add(name);
+                        const stdName = formatStandardClassName(name);
+                        if (seenClasses.has(stdName)) return;
+                        seenClasses.add(stdName);
+
+                        const matchKey = cleanForMatch(name);
 
                         let dbMatch: string | undefined;
-                        if (dbClassMap.has(name)) {
-                            dbMatch = name;
+                        if (dbClassMap.has(stdName)) {
+                            dbMatch = stdName;
                         } else {
                             for (const [dbName] of dbClassMap) {
-                                if (dbName.includes(name) || name.includes(dbName)) {
+                                if (cleanForMatch(dbName) === matchKey) {
                                     dbMatch = dbName;
                                     break;
                                 }
@@ -200,7 +212,7 @@ const AnnualImportContent = () => {
                             dbClassMap.delete(dbMatch);
                             mergedClasses.push({ name: dbMatch, source: 'both', exists: true });
                         } else {
-                            mergedClasses.push({ name, source: 'file', exists: false });
+                            mergedClasses.push({ name: stdName, source: 'file', exists: false });
                         }
                     });
 
@@ -365,21 +377,30 @@ const AnnualImportContent = () => {
                     if (dbRes.success && dbRes.data) {
                         if (step === 2) {
                             // Extract and merge classes (Step 3 target)
+                            const cleanForMatch = (s: string) => s.replace(/^(כיתה|כיתת|שכבת)\s+/g, "").replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019\s]/g, "").trim();
+                            const formatStandardClassName = (raw: string) => {
+                                const cleaned = raw.replace(/^(כיתה|כיתת|שכבת)\s+/g, "").replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019]/g, "").replace(/\s+/g, " ").trim();
+                                return `כיתה ${cleaned}`;
+                            };
+
                             const dbClasses = dbRes.data.classes.map(c => ({ ...c, source: 'db' as ListItem['source'] }));
                             const dbClassMap = new Map(dbClasses.map(c => [c.name, c]));
                             const mergedClasses: ListItem[] = [];
                             const seenClasses = new Set<string>();
 
                             wordRes.data.classes.forEach(name => {
-                                if (seenClasses.has(name)) return;
-                                seenClasses.add(name);
+                                const stdName = formatStandardClassName(name);
+                                if (seenClasses.has(stdName)) return;
+                                seenClasses.add(stdName);
+
+                                const matchKey = cleanForMatch(name);
 
                                 let dbMatch: string | undefined;
-                                if (dbClassMap.has(name)) {
-                                    dbMatch = name;
+                                if (dbClassMap.has(stdName)) {
+                                    dbMatch = stdName;
                                 } else {
                                     for (const [dbName] of dbClassMap) {
-                                        if (dbName.includes(name) || name.includes(dbName)) {
+                                        if (cleanForMatch(dbName) === matchKey) {
                                             dbMatch = dbName;
                                             break;
                                         }
@@ -390,7 +411,7 @@ const AnnualImportContent = () => {
                                     dbClassMap.delete(dbMatch);
                                     mergedClasses.push({ name: dbMatch, source: 'both', exists: true });
                                 } else {
-                                    mergedClasses.push({ name, source: 'file', exists: false });
+                                    mergedClasses.push({ name: stdName, source: 'file', exists: false });
                                 }
                             });
 
@@ -569,10 +590,12 @@ const AnnualImportContent = () => {
     const handleSaveToDB = async (entityType: 'teachers' | 'classes' | 'subjects' | 'workGroups') => {
         setIsSaving(true);
         try {
-            // Get current list from state
-            const items = analyzedData[entityType].map(i => i.name);
+            // Get active items for the new year (exclude DB-only items that were not found in the new file)
+            const activeItems = analyzedData[entityType]
+                .filter(i => i.source !== 'db')
+                .map(i => i.name);
 
-            const res = await syncAllEntityValuesAction(schoolId || undefined, entityType, items);
+            const res = await syncAllEntityValuesAction(schoolId || undefined, entityType, activeItems);
 
             if (res.success) {
                 popupMsg("הנתונים נשמרו בהצלחה!");
@@ -580,8 +603,8 @@ const AnnualImportContent = () => {
                     ...prev,
                     [entityType]: prev[entityType].map(item => ({
                         ...item,
-                        exists: true,
-                        source: 'db' // Update icon to DB icon
+                        exists: item.source !== 'db',
+                        source: item.source === 'db' ? 'db' : 'both'
                     }))
                 }));
 

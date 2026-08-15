@@ -32,6 +32,8 @@ const nextConfig: NextConfig = {
             dns: false,
             readline: false,
             vm: false,
+            worker_threads: false,
+            async_hooks: false,
             "node:fs": false,
             "node:path": false,
             "node:child_process": false,
@@ -48,6 +50,8 @@ const nextConfig: NextConfig = {
             "node:dns": false,
             "node:readline": false,
             "node:vm": false,
+            "node:worker_threads": false,
+            "node:async_hooks": false,
         };
         config.plugins = config.plugins || [];
         config.plugins.push(

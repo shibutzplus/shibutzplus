@@ -26,7 +26,10 @@ export async function getCachedTeachersList(
         teachersCache.set(cacheKey, unstable_cache(
             async () => {
                 return await executeQuery(async () => {
-                    const conditions = [eq(schema.teachers.schoolId, schoolId)];
+                    const conditions = [
+                        eq(schema.teachers.schoolId, schoolId),
+                        eq(schema.teachers.isActive, true)
+                    ];
 
                     if (options?.portalType === PortalType.Teacher && options?.includeSubstitutes === false) {
                         conditions.push(eq(schema.teachers.role, TeacherRoleValues.REGULAR));
@@ -97,7 +100,7 @@ export async function getCachedClassesList(
                     const classes = await db
                         .select()
                         .from(schema.classes)
-                        .where(eq(schema.classes.schoolId, schoolId))
+                        .where(and(eq(schema.classes.schoolId, schoolId), eq(schema.classes.isActive, true)))
                         .orderBy(asc(schema.classes.activity), asc(schema.classes.name));
 
                     return classes as ClassType[];
