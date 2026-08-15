@@ -49,34 +49,35 @@ function extractParagraphsFromDocx(buffer: Buffer): string[] {
     return paragraphs;
 }
 
-/**
- * Parses paragraphs from a teacher DOCX to extract teacher names.
- */
 function extractTeachersFromText(paragraphs: string[]): string[] {
     const teachers = new Set<string>();
     paragraphs.forEach(line => {
-        if (line.includes("מערכת שעות מורה")) {
-            const name = line.replace(/מערכת שעות\s+מורה\s+/, "").trim();
-            const cleaned = cleanEntityName(name);
-            if (cleaned && cleaned.length >= 2) {
-                teachers.add(cleaned);
+        if (line.includes("מערכת שעות")) {
+            const match = line.match(/מערכת שעות\s+(?:ל?מורה|מורה:?)\s+(.+)/);
+            if (match && match[1]) {
+                const cleaned = cleanEntityName(match[1]);
+                if (cleaned && cleaned.length >= 2) {
+                    teachers.add(cleaned);
+                }
             }
         }
     });
     return Array.from(teachers).sort();
 }
 
-/**
- * Parses paragraphs from a class DOCX to extract class names.
- */
 function extractClassesFromText(paragraphs: string[]): string[] {
     const classes = new Set<string>();
+    // Regex matching class grade and number (e.g. א1, א'1, ז3, יא2, י"א 2)
+    const CLASS_CODE_REGEX = /([א-י][׳']?[\s-]?[1-9][0-9]?|[א-י]["״][א-י][\s-]?[1-9][0-9]?)/;
+
     paragraphs.forEach(line => {
-        if (line.includes("מערכת שעות כיתה")) {
-            const name = line.replace(/מערכת שעות\s+כיתה\s+/, "").trim();
-            const cleaned = cleanEntityName(name);
-            if (cleaned && cleaned.length >= 2) {
-                classes.add(cleaned);
+        if (line.includes("מערכת שעות")) {
+            const match = line.match(CLASS_CODE_REGEX);
+            if (match && match[1]) {
+                const rawCode = match[1].replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019]/g, "").replace(/\s+/g, "").trim();
+                if (rawCode) {
+                    classes.add(`כיתה ${rawCode}`);
+                }
             }
         }
     });

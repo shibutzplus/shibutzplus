@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import MngrMissingReportCell from "../MngrMissingReportCell/MngrMissingReportCell";
 import styles from "./MngrMissingReportTable.module.css";
-import { SCHOOL_MONTHS, daysInMonth, getCurrentYear, getDayLetterByMonthAndDay } from "@/utils/time";
+import { SCHOOL_MONTHS, daysInMonth, getCurrentSchoolYearRange, getDayLetterByMonthAndDay } from "@/utils/time";
 import { TeacherType } from "@/models/types/teachers";
 import { MissingReportDictionary } from "@/app/(private)/missing-report/page";
 import { ColumnTypeValues } from "@/models/types/dailySchedule";
@@ -53,7 +53,10 @@ const MngrMissingReportTable: React.FC<MngrMissingReportTableProps> = ({
             const monthIndex = SCHOOL_MONTHS.indexOf(month);
             if (monthIndex !== -1) {
                 const actualMonth = (monthIndex + 8) % 12;
-                const maxDays = daysInMonth(getCurrentYear(), actualMonth + 1);
+                const { start } = getCurrentSchoolYearRange();
+                const startYear = new Date(start).getFullYear();
+                const year = actualMonth >= 8 ? startYear : startYear + 1;
+                const maxDays = daysInMonth(year, actualMonth + 1);
                 baseDays = Array.from({ length: maxDays }, (_, i) => i + 1);
             }
         }

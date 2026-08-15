@@ -1,4 +1,24 @@
-# שיבוץ+ (ShibutzPlus)
+## Run/Compile Commands
+npm run dev
+npm run lint
+
+## Github - How to?
+git checkout -b NewName     /* Develop in branch */
+git checkout main           /* pull the main branch after deploy on Cloudflare */
+git pull origin main
+
+## Deploy on Cloudflare (via GitHub Merging)
+1. Go to GitHub: https://github.com/shibutzplus/shibutzplus/pulls
+2. Click on "New pull request" (from your feature branch to main)
+3. Click on "Create pull request"
+4. Click on "Merge pull request"
+5. This will automatically trigger the Cloudflare Build & Deploy pipeline to update production.
+
+## Preview Admin
+https://shibutzplus-git-ABCDE-shibutz-plus-projects.vercel.app/admin/sign-in
+shibutzplus@gmail.com
+123456
+
 
 ## Tech Stack
 Shibutz Plus built with Next.js 15.3.3.
@@ -38,26 +58,9 @@ https://dash.cloudflare.com/09e65e9e58fb283402e234e907e36587/r2/default/buckets/
 https://console.neon.tech/app/projects/curly-feather-89043363
 npx drizzle-kit push
 
-## Env Commands
-npm run dev
-npm run lint
-
-## Preview Admin
-https://shibutzplus-git-ABCDE-shibutz-plus-projects.vercel.app/admin/sign-in
-shibutzplus@gmail.com
-123456
-
 ## Trello
 https://trello.com/b/SrahpnDm/%D7%A9%D7%99%D7%91%D7%95%D7%A5
 
-## Github - How to?
-git checkout -b NewName     /* Develop in branch */
-git checkout main           /* pull the main branch after deploy on Cloudflare */
-git pull origin main
-
-## Deploy on Cloudflare (via GitHub Merging)
-1. Go to GitHub: https://github.com/shibutzplus/shibutzplus/pulls
-2. Click on "New pull request" (from your feature branch to main)
-3. Click on "Create pull request"
-4. Click on "Merge pull request"
-5. This will automatically trigger the Cloudflare Build & Deploy pipeline to update production.
+## New Year Process
+- TRUNCATE TABLE annual_schedule_alt;   /* Delete all data from alt schedule table if existed */
+- substitute teachers we dont touch. Sganiot wil change if the want

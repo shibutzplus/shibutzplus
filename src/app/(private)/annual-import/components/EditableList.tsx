@@ -1,6 +1,5 @@
 import React from 'react';
 import styles from '../page.module.css';
-import { FaCheck, FaMagic, FaDatabase, FaSearch, FaFileAlt } from 'react-icons/fa';
 
 export interface ListItem {
     name: string;
@@ -16,7 +15,7 @@ interface EditableListProps {
     fromAI?: boolean;
 }
 
-const EditableList: React.FC<EditableListProps> = ({ title, items, onSave, onAddAndSave, fromAI = true }) => {
+const EditableList: React.FC<EditableListProps> = ({ title, items, onSave, onAddAndSave }) => {
     const [newItem, setNewItem] = React.useState("");
     const [isAdding, setIsAdding] = React.useState(false);
 
@@ -88,18 +87,22 @@ const EditableList: React.FC<EditableListProps> = ({ title, items, onSave, onAdd
                             <span
                                 className={styles.editableText}
                             >
-                                {/* Icon Logic */}
-                                <span className={styles.iconContainer}>
-                                    {item.source === 'both' && <FaCheck className={styles.iconBoth} title="קיים ב-DB ונמצא גם בקובץ" />}
-                                    {item.source === 'ai' && <FaMagic className={styles.iconAi} title="זוהה על ידי AI ולא קיים עוד ב-DB" />}
-                                    {item.source === 'file' && <FaFileAlt className={styles.iconFile} title="נמצא בקובץ הייבוא ולא קיים עוד ב-DB" />}
-                                    {item.source === 'manual' && <FaSearch className={styles.iconManual} title="נמצא בחיפוש בקוד שלנו" />}
-                                    {item.source === 'db' && <FaDatabase className={styles.iconDb} title="קיים ב-DB" />}
-
-                                    {/* Fallback for old "exists" logic if source is missing */}
-                                    {!item.source && item.exists && fromAI && <span style={{ fontSize: '0.8em', marginRight: '5px' }}>(קיים)</span>}
-                                </span>
                                 {item.name}
+                                {item.source === 'file' && (
+                                    <span style={{ fontSize: '0.85em', color: '#d97706', marginRight: '8px', fontWeight: 500 }}>
+                                        (חדש)
+                                    </span>
+                                )}
+                                {item.source === 'both' && (
+                                    <span style={{ fontSize: '0.85em', color: '#16a34a', marginRight: '8px', fontWeight: 500 }}>
+                                        (ממשיך)
+                                    </span>
+                                )}
+                                {item.source === 'db' && (
+                                    <span style={{ fontSize: '0.85em', color: '#6b7280', marginRight: '8px', fontStyle: 'italic' }}>
+                                        (לא ממשיך)
+                                    </span>
+                                )}
                             </span>
                             {onSave && (
                                 <button

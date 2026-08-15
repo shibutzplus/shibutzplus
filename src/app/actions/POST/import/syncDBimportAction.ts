@@ -3,7 +3,7 @@
 import { auth } from "@/auth";
 import { db } from "@/db";
 import { teachers, classes, subjects, annualSchedule, type NewAnnualScheduleSchema } from "@/db/schema";
-import { eq, and, notInArray, inArray } from "drizzle-orm";
+import { eq, and, inArray } from "drizzle-orm";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { cacheTags } from "@/lib/cacheTags";
 import { dbLog } from "@/services/loggerService";
@@ -154,24 +154,35 @@ export const syncAllEntityValuesAction = async (
             const existingMap = new Map(existingItems.map((item: any) => [item.name, item]));
             const existingNames = new Set(existingItems.map((item: any) => item.name));
 
-            // 2. Determine what to insert, update, and delete
+            // 2. Determine what to insert, update (isActive=true), and deactivate (isActive=false)
             const toInsert: any[] = [];
-            const toUpdate: any[] = [];
+            const toUpdateActive: any[] = [];
+            const toDeactivate: any[] = [];
 
             for (const name of validItems) {
                 if (!existingNames.has(name)) {
-                    // New item - prepare for bulk insert
-                    toInsert.push({ name, schoolId: targetSchoolId, ...extraInsertFields });
-                } else if (Object.keys(extraInsertFields).length > 0) {
-                    // Existing item - check if needs update
+                    // New item - prepare for bulk insert with isActive: true
+                    toInsert.push({ name, schoolId: targetSchoolId, isActive: true, ...extraInsertFields });
+                } else {
                     const existing = existingMap.get(name) as any;
-
-                    // Optimization: Only update if fields actually differ
-                    const needsUpdate = Object.entries(extraInsertFields).some(([key, val]) => existing[key] !== val);
+                    // Existing item - ensure isActive is true and extra fields match
+                    const needsUpdate = !existing.isActive || Object.entries(extraInsertFields).some(([key, val]) => existing[key] !== val);
 
                     if (needsUpdate) {
-                        toUpdate.push({ id: existing.id, ...extraInsertFields });
+                        toUpdateActive.push({ id: existing.id, isActive: true, ...extraInsertFields });
                     }
+                }
+            }
+
+            // Find items that exist in DB but are not in the new validItems list -> set isActive = false
+            for (const [name, existing] of existingMap.entries()) {
+                // If entity is teachers, do NOT deactivate substitutes or staff (only deactivate regular teachers not in new list)
+                if (tableObj === teachers && (existing.role === 'substitute' || existing.role === 'staff')) {
+                    continue;
+                }
+
+                if (!validItems.includes(name) && existing.isActive) {
+                    toDeactivate.push(existing.id);
                 }
             }
 
@@ -180,31 +191,23 @@ export const syncAllEntityValuesAction = async (
                 await db.insert(tableObj).values(toInsert);
             }
 
-            // 4. Bulk UPDATE
-            if (toUpdate.length > 0) {
-                for (const update of toUpdate) {
+            // 4. Bulk UPDATE to active
+            if (toUpdateActive.length > 0) {
+                for (const update of toUpdateActive) {
                     const { id, ...fields } = update;
                     await db.update(tableObj).set(fields).where(eq(tableObj.id, id));
                 }
             }
 
-            // 5. DELETE items not in the new list
-            if (validItems.length > 0) {
-                await db.delete(tableObj).where(
-                    and(
-                        eq(tableObj.schoolId, targetSchoolId),
-                        ...matchConditions,
-                        notInArray(tableObj.name, validItems)
-                    )
-                );
-            } else {
-                // If no valid items, delete all for this school with match conditions
-                await db.delete(tableObj).where(and(eq(tableObj.schoolId, targetSchoolId), ...matchConditions));
+            // 5. DEACTIVATE items not in the new list (set isActive = false instead of hard delete)
+            if (toDeactivate.length > 0) {
+                await db.update(tableObj).set({ isActive: false }).where(inArray(tableObj.id, toDeactivate));
             }
         };
 
         if (entityType === 'teachers') {
-            await syncTable(teachers, { role: 'regular' });
+            // Load ALL teachers for this school without filtering by role, so substitutes in file get upgraded to regular
+            await syncTable(teachers, { role: 'regular' }, []);
             revalidateTag(cacheTags.teachersList(targetSchoolId));
         } else if (entityType === 'classes') {
             await syncTable(classes, { activity: false }, [eq(classes.activity, false)]);
