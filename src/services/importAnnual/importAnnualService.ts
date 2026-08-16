@@ -1,6 +1,10 @@
 import { geminiService } from "@/services/geminiService";
-import * as XLSX from 'xlsx';
 import { dbLog } from "@/services/loggerService";
+
+async function getXLSX() {
+    const libName = "xlsx";
+    return await import(libName);
+}
 
 export const importAnnualService = {
 
@@ -17,8 +21,8 @@ export const importAnnualService = {
         schoolId?: string
     ): Promise<{ success: boolean; data?: { name: string, source: 'ai' | 'manual' }[]; message?: string }> => {
         try {
-            let teacherCSV = bufferToCsv(teacherBuffer);
-            let classCSV = bufferToCsv(classBuffer);
+            let teacherCSV = await bufferToCsv(teacherBuffer);
+            let classCSV = await bufferToCsv(classBuffer);
 
             // --- CLEANING FUNCTION ---
             const performCleaning = (text: string) => {
@@ -127,6 +131,7 @@ export const importAnnualService = {
                 if (entityType === 'workGroups') buffersToScan.push(teacherBuffer);
                 else buffersToScan.push(teacherBuffer, classBuffer); // subjects
 
+                const XLSX = await getXLSX();
                 buffersToScan.forEach(buffer => {
                     const workbook = XLSX.read(buffer, { type: 'buffer' });
                     const sheet = workbook.Sheets[workbook.SheetNames[0]];
@@ -297,18 +302,19 @@ export const importAnnualService = {
 //
 // --- Helpers ---
 //
-function bufferToCsv(buffer: Buffer): string {
+async function bufferToCsv(buffer: Buffer): Promise<string> {
+    const XLSX = await getXLSX();
     const workbook = XLSX.read(buffer, { type: 'buffer' });
     let combinedCsv = "";
 
-    workbook.SheetNames.forEach(sheetName => {
+    workbook.SheetNames.forEach((sheetName: string) => {
         const sheet = workbook.Sheets[sheetName];
         const csv = XLSX.utils.sheet_to_csv(sheet);
 
         const cleanedSheetCsv = csv
             .split('\n')
-            .map(line => line.trim())
-            .filter(line => {
+            .map((line: string) => line.trim())
+            .filter((line: string) => {
                 // 1. Remove empty lines
                 if (!line) return false;
 

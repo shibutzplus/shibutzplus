@@ -2,13 +2,15 @@
 
 import { auth } from "@/auth";
 import { db } from "@/db";
-import { teachers, classes, subjects, annualSchedule, type NewAnnualScheduleSchema } from "@/db/schema";
+import { teachers, classes, subjects, annualSchedule, annualScheduleAlt, type NewAnnualScheduleSchema } from "@/db/schema";
 import { eq, and, inArray } from "drizzle-orm";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { cacheTags } from "@/lib/cacheTags";
 import { dbLog } from "@/services/loggerService";
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
 import { ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
+import { normalizeClassCode } from "@/services/importAnnual/docxUtils";
+import { clearAnnualScheduleCache } from "@/services/schedule/getAnnualSchedule";
 
 /**
  * Step 2-5: Per-entity list - Add a single entity item to DB
@@ -61,14 +63,16 @@ export const addSingleEntityAction = async (
             });
 
         } else if (entityType === 'subjects') {
-            const exists = await checkExists(subjects, [eq(subjects.activity, false)]);
+            // Check for existing subject by name regardless of activity flag
+            // (a subject might already exist as a workGroup with activity=true)
+            const exists = await checkExists(subjects);
             if (exists) return { success: true, message: "Subject already exists", alreadyExists: true };
 
             await db.insert(subjects).values({
                 name,
                 schoolId: targetSchoolId,
                 activity: false
-            });
+            }).onConflictDoNothing();
 
         } else if (entityType === 'workGroups') {
             // WorkGroups must be added to BOTH 'classes' and 'subjects' with activity=true
@@ -154,41 +158,57 @@ export const syncAllEntityValuesAction = async (
             const existingMap = new Map(existingItems.map((item: any) => [item.name, item]));
             const existingNames = new Set(existingItems.map((item: any) => item.name));
 
-            // 2. Determine what to insert, update (isActive=true), and deactivate (isActive=false)
+            // 2. Determine what to insert, update (isActive=true), deactivate (isActive=false), or delete (for subjects)
             const toInsert: any[] = [];
             const toUpdateActive: any[] = [];
             const toDeactivate: any[] = [];
+            const toDelete: string[] = [];
 
             for (const name of validItems) {
                 if (!existingNames.has(name)) {
-                    // New item - prepare for bulk insert with isActive: true
-                    toInsert.push({ name, schoolId: targetSchoolId, isActive: true, ...extraInsertFields });
+                    // New item - prepare for bulk insert
+                    toInsert.push({
+                        name,
+                        schoolId: targetSchoolId,
+                        ...(tableObj !== subjects ? { isActive: true } : {}),
+                        ...extraInsertFields,
+                    });
                 } else {
                     const existing = existingMap.get(name) as any;
-                    // Existing item - ensure isActive is true and extra fields match
-                    const needsUpdate = !existing.isActive || Object.entries(extraInsertFields).some(([key, val]) => existing[key] !== val);
+                    // Existing item - ensure active and extra fields match
+                    const needsUpdate = (tableObj !== subjects && !existing.isActive) ||
+                        Object.entries(extraInsertFields).some(([key, val]) => existing[key] !== val);
 
                     if (needsUpdate) {
-                        toUpdateActive.push({ id: existing.id, isActive: true, ...extraInsertFields });
+                        toUpdateActive.push({
+                            id: existing.id,
+                            ...(tableObj !== subjects ? { isActive: true } : {}),
+                            ...extraInsertFields,
+                        });
                     }
                 }
             }
 
-            // Find items that exist in DB but are not in the new validItems list -> set isActive = false
+            // Find items that exist in DB but are not in the new validItems list
             for (const [name, existing] of existingMap.entries()) {
                 // If entity is teachers, do NOT deactivate substitutes or staff (only deactivate regular teachers not in new list)
                 if (tableObj === teachers && (existing.role === 'substitute' || existing.role === 'staff')) {
                     continue;
                 }
 
-                if (!validItems.includes(name) && existing.isActive) {
-                    toDeactivate.push(existing.id);
+                if (!validItems.includes(name)) {
+                    if (tableObj === subjects) {
+                        toDelete.push(existing.id);
+                    } else if (existing.isActive) {
+                        toDeactivate.push(existing.id);
+                    }
                 }
             }
 
-            // 3. Bulk INSERT
+            // 3. Bulk INSERT (onConflictDoNothing handles cases where the same name exists
+            //    with a different activity value, e.g. a workGroup that is also a subject)
             if (toInsert.length > 0) {
-                await db.insert(tableObj).values(toInsert);
+                await db.insert(tableObj).values(toInsert).onConflictDoNothing();
             }
 
             // 4. Bulk UPDATE to active
@@ -199,9 +219,14 @@ export const syncAllEntityValuesAction = async (
                 }
             }
 
-            // 5. DEACTIVATE items not in the new list (set isActive = false instead of hard delete)
+            // 5. DEACTIVATE items not in the new list (for teachers/classes with isActive)
             if (toDeactivate.length > 0) {
                 await db.update(tableObj).set({ isActive: false }).where(inArray(tableObj.id, toDeactivate));
+            }
+
+            // 6. DELETE items not in the new list (for subjects)
+            if (toDelete.length > 0) {
+                await db.delete(tableObj).where(inArray(tableObj.id, toDelete));
             }
         };
 
@@ -272,6 +297,7 @@ export async function saveTeacherScheduleAction(
             where: eq(classes.schoolId, targetSchoolId)
         });
         const classMap = new Map(allClassList.map(c => [c.name, c.id]));
+        const classCodeMap = new Map(allClassList.map(c => [normalizeClassCode(c.name), c.id]));
 
         const allSubjectList = await db.query.subjects.findMany({
             where: eq(subjects.schoolId, targetSchoolId)
@@ -288,37 +314,62 @@ export async function saveTeacherScheduleAction(
                 continue; // This is an empty cell, skip it
             }
 
-            // For work groups, className is "קבוצה" (placeholder)
-            // The actual work group name is in subjectName
-            // Work groups have BOTH class and subject entries with the same name and activity=true
             const isWorkGroup = item.className === "קבוצה";
 
-            // For work groups: look up class by subject name (the work group name)
-            // For regular classes: look up class by class name
-            const classLookupName = isWorkGroup ? item.subjectName : item.className;
-            const classId = classMap.get(classLookupName);
-            const subjectId = subjectMap.get(item.subjectName);
+            if (isWorkGroup) {
+                const classId = classMap.get(item.subjectName);
+                const subjectId = subjectMap.get(item.subjectName);
 
-            // Validate class (only if not "ללא כיתה")
-            if (!classId && item.className !== "ללא כיתה") {
-                const missingName = isWorkGroup ? item.subjectName : item.className;
-                if (!missingClasses.includes(missingName)) missingClasses.push(missingName);
-            }
+                if (!classId) {
+                    if (!missingClasses.includes(item.subjectName)) missingClasses.push(item.subjectName);
+                }
+                if (!subjectId && item.subjectName !== "ללא מקצוע") {
+                    if (!missingSubjects.includes(item.subjectName)) missingSubjects.push(item.subjectName);
+                }
 
-            // Validate subject/work group (only if not "ללא מקצוע")
-            if (!subjectId && item.subjectName !== "ללא מקצוע") {
-                if (!missingSubjects.includes(item.subjectName)) missingSubjects.push(item.subjectName);
-            }
+                if (classId && subjectId) {
+                    toInsert.push({
+                        schoolId: targetSchoolId,
+                        teacherId: teacher.id,
+                        day: item.day,
+                        hour: item.hour,
+                        classId: classId,
+                        subjectId: subjectId,
+                    });
+                }
+            } else {
+                // Support multiple classes (e.g. "כיתה ג1, כיתה ג2, כיתה ג3")
+                const classNames = item.className.split(",").map(c => c.trim()).filter(Boolean);
+                const subjectId = subjectMap.get(item.subjectName);
 
-            if (classId && subjectId) {
-                toInsert.push({
-                    schoolId: targetSchoolId,
-                    teacherId: teacher.id,
-                    day: item.day,
-                    hour: item.hour,
-                    classId: classId,
-                    subjectId: subjectId,
-                });
+                if (!subjectId && item.subjectName !== "ללא מקצוע") {
+                    if (!missingSubjects.includes(item.subjectName)) missingSubjects.push(item.subjectName);
+                }
+
+                for (const singleClassName of classNames) {
+                    let classId = classMap.get(singleClassName);
+                    if (!classId && singleClassName !== "ללא כיתה") {
+                        const code = normalizeClassCode(singleClassName);
+                        if (code) {
+                            classId = classCodeMap.get(code);
+                        }
+                    }
+
+                    if (!classId && singleClassName !== "ללא כיתה") {
+                        if (!missingClasses.includes(singleClassName)) missingClasses.push(singleClassName);
+                    }
+
+                    if (classId && subjectId) {
+                        toInsert.push({
+                            schoolId: targetSchoolId,
+                            teacherId: teacher.id,
+                            day: item.day,
+                            hour: item.hour,
+                            classId: classId,
+                            subjectId: subjectId,
+                        });
+                    }
+                }
             }
         }
 
@@ -352,8 +403,7 @@ export async function saveTeacherScheduleAction(
         revalidatePath('/annual-view');
 
         // Invalidate annual schedule cache
-        const { revalidateTag } = await import('next/cache');
-        const { cacheTags } = await import('@/lib/cacheTags');
+        clearAnnualScheduleCache(targetSchoolId);
         revalidateTag(cacheTags.schoolSchedule(targetSchoolId));
         void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: targetSchoolId });
 
@@ -396,6 +446,7 @@ export async function saveAllTeachersSchedulesAction(
             where: eq(classes.schoolId, targetSchoolId)
         });
         const classMap = new Map(allClassList.map(c => [c.name, c.id]));
+        const classCodeMap = new Map(allClassList.map(c => [normalizeClassCode(c.name), c.id]));
 
         const allSubjectList = await db.query.subjects.findMany({
             where: eq(subjects.schoolId, targetSchoolId)
@@ -426,29 +477,61 @@ export async function saveAllTeachersSchedulesAction(
                 }
 
                 const isWorkGroup = item.className === "קבוצה";
-                const classLookupName = isWorkGroup ? item.subjectName : item.className;
-                
-                const classId = classMap.get(classLookupName);
-                const subjectId = subjectMap.get(item.subjectName);
 
-                if (!classId && item.className !== "ללא כיתה") {
-                    const missingName = isWorkGroup ? item.subjectName : item.className;
-                    if (!missingClasses.includes(missingName)) missingClasses.push(missingName);
-                }
+                if (isWorkGroup) {
+                    const classId = classMap.get(item.subjectName);
+                    const subjectId = subjectMap.get(item.subjectName);
 
-                if (!subjectId && item.subjectName !== "ללא מקצוע") {
-                    if (!missingSubjects.includes(item.subjectName)) missingSubjects.push(item.subjectName);
-                }
+                    if (!classId) {
+                        if (!missingClasses.includes(item.subjectName)) missingClasses.push(item.subjectName);
+                    }
+                    if (!subjectId && item.subjectName !== "ללא מקצוע") {
+                        if (!missingSubjects.includes(item.subjectName)) missingSubjects.push(item.subjectName);
+                    }
 
-                if (classId && subjectId) {
-                    toInsert.push({
-                        schoolId: targetSchoolId,
-                        teacherId: teacherId,
-                        day: item.day,
-                        hour: item.hour,
-                        classId: classId,
-                        subjectId: subjectId,
-                    });
+                    if (classId && subjectId) {
+                        toInsert.push({
+                            schoolId: targetSchoolId,
+                            teacherId: teacherId,
+                            day: item.day,
+                            hour: item.hour,
+                            classId: classId,
+                            subjectId: subjectId,
+                        });
+                    }
+                } else {
+                    // Support multiple classes (e.g. "כיתה ג1, כיתה ג2, כיתה ג3")
+                    const classNames = item.className.split(",").map(c => c.trim()).filter(Boolean);
+                    const subjectId = subjectMap.get(item.subjectName);
+
+                    if (!subjectId && item.subjectName !== "ללא מקצוע") {
+                        if (!missingSubjects.includes(item.subjectName)) missingSubjects.push(item.subjectName);
+                    }
+
+                    for (const singleClassName of classNames) {
+                        let classId = classMap.get(singleClassName);
+                        if (!classId && singleClassName !== "ללא כיתה") {
+                            const code = normalizeClassCode(singleClassName);
+                            if (code) {
+                                classId = classCodeMap.get(code);
+                            }
+                        }
+
+                        if (!classId && singleClassName !== "ללא כיתה") {
+                            if (!missingClasses.includes(singleClassName)) missingClasses.push(singleClassName);
+                        }
+
+                        if (classId && subjectId) {
+                            toInsert.push({
+                                schoolId: targetSchoolId,
+                                teacherId: teacherId,
+                                day: item.day,
+                                hour: item.hour,
+                                classId: classId,
+                                subjectId: subjectId,
+                            });
+                        }
+                    }
                 }
             }
         }
@@ -462,15 +545,9 @@ export async function saveAllTeachersSchedulesAction(
             return { success: false, message: errorMsg };
         }
 
-        // Clear schedules of teachers that are in the import file
-        const teacherIdArray = Array.from(teacherIdsToClear);
-        if (teacherIdArray.length > 0) {
-            await db.delete(annualSchedule)
-                .where(and(
-                    eq(annualSchedule.schoolId, targetSchoolId),
-                    inArray(annualSchedule.teacherId, teacherIdArray)
-                ));
-        }
+        // Reset and clear all previous annual schedules for this school
+        await db.delete(annualSchedule).where(eq(annualSchedule.schoolId, targetSchoolId));
+        await db.delete(annualScheduleAlt).where(eq(annualScheduleAlt.schoolId, targetSchoolId));
 
         // Insert new schedule rows
         if (toInsert.length > 0) {
@@ -482,6 +559,7 @@ export async function saveAllTeachersSchedulesAction(
         revalidatePath('/annual-build-class');
         revalidatePath('/annual-view');
 
+        clearAnnualScheduleCache(targetSchoolId);
         revalidateTag(cacheTags.schoolSchedule(targetSchoolId));
         void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: targetSchoolId });
 

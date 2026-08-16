@@ -8,11 +8,18 @@ import { dbLog } from "@/services/loggerService";
 const fetchSchoolEntities = async (schoolId: string) => {
     const [dbTeachers, dbClasses, dbSubjects] = await Promise.all([
         db.query.teachers.findMany({
-            where: and(eq(schema.teachers.schoolId, schoolId), eq(schema.teachers.role, 'regular')),
+            where: and(
+                eq(schema.teachers.schoolId, schoolId),
+                eq(schema.teachers.role, 'regular'),
+                eq(schema.teachers.isActive, true)
+            ),
             columns: { name: true }
         }),
         db.query.classes.findMany({
-            where: eq(schema.classes.schoolId, schoolId),
+            where: and(
+                eq(schema.classes.schoolId, schoolId),
+                eq(schema.classes.isActive, true)
+            ),
             columns: { name: true, activity: true }
         }),
         db.query.subjects.findMany({
