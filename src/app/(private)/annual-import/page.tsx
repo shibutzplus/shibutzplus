@@ -22,6 +22,7 @@ import EditCellPopup from "./components/EditCellPopup";
 import Preloader from "@/components/ui/Preloader/Preloader";
 import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 import { checkTeacherHasScheduleAction } from "@/app/actions/GET/checkTeacherHasScheduleAction";
+import { useOptionalMainContext } from "@/context/MainContext";
 
 interface ScheduleItem {
     teacher: string;
@@ -74,6 +75,7 @@ const AnnualImportContent = () => {
     const [isSaving, setIsSaving] = useState(false);
     const [isSavingAll, setIsSavingAll] = useState(false);
     const { openPopup } = usePopup();
+    const mainContext = useOptionalMainContext();
 
     const popupMsg = (message: string) => {
         openPopup("msgPopup", "S", <MsgPopup message={message} />);
@@ -220,21 +222,25 @@ const AnnualImportContent = () => {
                     dbClassMap.forEach(item => mergedClasses.push({ ...item, source: 'db', exists: true }));
                     classes = mergedClasses.sort((a, b) => a.name.localeCompare(b.name, 'he'));
 
+                    // Helper to clean quotes and whitespace for exact matching
+                    const cleanForEntity = (s: string) => s.replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019]/g, "").replace(/\s+/g, " ").trim();
+
                     // Merge subjects from Word with DB subjects
                     const mergedSubjects: typeof subjects = [];
                     const seenSubjects = new Set<string>();
                     const dbSubjectMap = new Map(subjects.map(s => [s.name, s]));
 
                     wordRes.data.subjects.forEach(name => {
-                        if (seenSubjects.has(name)) return;
-                        seenSubjects.add(name);
+                        const cleanName = cleanForEntity(name);
+                        if (seenSubjects.has(cleanName)) return;
+                        seenSubjects.add(cleanName);
 
                         let dbMatch: string | undefined;
                         if (dbSubjectMap.has(name)) {
                             dbMatch = name;
                         } else {
                             for (const [dbName] of dbSubjectMap) {
-                                if (dbName.includes(name) || name.includes(dbName)) {
+                                if (cleanForEntity(dbName) === cleanName) {
                                     dbMatch = dbName;
                                     break;
                                 }
@@ -258,15 +264,16 @@ const AnnualImportContent = () => {
                     const dbWorkGroupMap = new Map(workGroups.map(w => [w.name, w]));
 
                     wordRes.data.workGroups.forEach(name => {
-                        if (seenWorkGroups.has(name)) return;
-                        seenWorkGroups.add(name);
+                        const cleanName = cleanForEntity(name);
+                        if (seenWorkGroups.has(cleanName)) return;
+                        seenWorkGroups.add(cleanName);
 
                         let dbMatch: string | undefined;
                         if (dbWorkGroupMap.has(name)) {
                             dbMatch = name;
                         } else {
                             for (const [dbName] of dbWorkGroupMap) {
-                                if (dbName.includes(name) || name.includes(dbName)) {
+                                if (cleanForEntity(dbName) === cleanName) {
                                     dbMatch = dbName;
                                     break;
                                 }
@@ -339,8 +346,13 @@ const AnnualImportContent = () => {
                     schedule: res.data!.schedule,
                     unmapped: res.data!.unmapped
                 }));
-                // Auto-select first teacher if available
-                if (analyzedData.teachers.length > 0) {
+                // Auto-select first teacher who actually has a schedule
+                const activeTeachers = analyzedData.teachers.filter(t => 
+                    res.data!.schedule.some(s => s.teacher === t.name)
+                );
+                if (activeTeachers.length > 0) {
+                    setSelectedTeacherId(activeTeachers[0].name);
+                } else if (analyzedData.teachers.length > 0) {
                     setSelectedTeacherId(analyzedData.teachers[0].name);
                 }
                 setStep(6); // Go to Preview
@@ -420,57 +432,24 @@ const AnnualImportContent = () => {
 
                             setAnalyzedData(prev => ({ ...prev, classes: sortedClasses }));
                         } else if (step === 3) {
-                            // Extract and merge subjects (Step 4 target)
-                            const dbSubjects = dbRes.data.subjects.map(s => ({ ...s, source: 'db' as ListItem['source'] }));
-                            const dbSubjectMap = new Map(dbSubjects.map(s => [s.name, s]));
-                            const mergedSubjects: ListItem[] = [];
-                            const seenSubjects = new Set<string>();
-
-                            wordRes.data.subjects.forEach(name => {
-                                if (seenSubjects.has(name)) return;
-                                seenSubjects.add(name);
-
-                                let dbMatch: string | undefined;
-                                if (dbSubjectMap.has(name)) {
-                                    dbMatch = name;
-                                } else {
-                                    for (const [dbName] of dbSubjectMap) {
-                                        if (dbName.includes(name) || name.includes(dbName)) {
-                                            dbMatch = dbName;
-                                            break;
-                                        }
-                                    }
-                                }
-
-                                if (dbMatch) {
-                                    dbSubjectMap.delete(dbMatch);
-                                    mergedSubjects.push({ name: dbMatch, source: 'both', exists: true });
-                                } else {
-                                    mergedSubjects.push({ name, source: 'file', exists: false });
-                                }
-                            });
-
-                            dbSubjectMap.forEach(item => mergedSubjects.push({ ...item, source: 'db', exists: true }));
-                            const sortedSubjects = mergedSubjects.sort((a, b) => a.name.localeCompare(b.name, 'he'));
-
-                            setAnalyzedData(prev => ({ ...prev, subjects: sortedSubjects }));
-                        } else if (step === 4) {
-                            // Extract and merge workGroups (Step 5 target)
+                            // Step 3 (Classes) -> moving to Step 4 (WorkGroups target)
+                            const cleanForEntity = (s: string) => s.replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019]/g, "").replace(/\s+/g, " ").trim();
                             const dbWorkGroups = dbRes.data.workGroups.map(w => ({ ...w, source: 'db' as ListItem['source'] }));
                             const dbWorkGroupMap = new Map(dbWorkGroups.map(w => [w.name, w]));
                             const mergedWorkGroups: ListItem[] = [];
                             const seenWorkGroups = new Set<string>();
 
                             wordRes.data.workGroups.forEach(name => {
-                                if (seenWorkGroups.has(name)) return;
-                                seenWorkGroups.add(name);
+                                const cleanName = cleanForEntity(name);
+                                if (seenWorkGroups.has(cleanName)) return;
+                                seenWorkGroups.add(cleanName);
 
                                 let dbMatch: string | undefined;
                                 if (dbWorkGroupMap.has(name)) {
                                     dbMatch = name;
                                 } else {
                                     for (const [dbName] of dbWorkGroupMap) {
-                                        if (dbName.includes(name) || name.includes(dbName)) {
+                                        if (cleanForEntity(dbName) === cleanName) {
                                             dbMatch = dbName;
                                             break;
                                         }
@@ -489,6 +468,43 @@ const AnnualImportContent = () => {
                             const sortedWorkGroups = mergedWorkGroups.sort((a, b) => a.name.localeCompare(b.name, 'he'));
 
                             setAnalyzedData(prev => ({ ...prev, workGroups: sortedWorkGroups }));
+                        } else if (step === 4) {
+                            // Step 4 (WorkGroups) -> moving to Step 5 (Subjects target)
+                            const cleanForEntity = (s: string) => s.replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019]/g, "").replace(/\s+/g, " ").trim();
+                            const dbSubjects = dbRes.data.subjects.map(s => ({ ...s, source: 'db' as ListItem['source'] }));
+                            const dbSubjectMap = new Map(dbSubjects.map(s => [s.name, s]));
+                            const mergedSubjects: ListItem[] = [];
+                            const seenSubjects = new Set<string>();
+
+                            wordRes.data.subjects.forEach(name => {
+                                const cleanName = cleanForEntity(name);
+                                if (seenSubjects.has(cleanName)) return;
+                                seenSubjects.add(cleanName);
+
+                                let dbMatch: string | undefined;
+                                if (dbSubjectMap.has(name)) {
+                                    dbMatch = name;
+                                } else {
+                                    for (const [dbName] of dbSubjectMap) {
+                                        if (cleanForEntity(dbName) === cleanName) {
+                                            dbMatch = dbName;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                if (dbMatch) {
+                                    dbSubjectMap.delete(dbMatch);
+                                    mergedSubjects.push({ name: dbMatch, source: 'both', exists: true });
+                                } else {
+                                    mergedSubjects.push({ name, source: 'file', exists: false });
+                                }
+                            });
+
+                            dbSubjectMap.forEach(item => mergedSubjects.push({ ...item, source: 'db', exists: true }));
+                            const sortedSubjects = mergedSubjects.sort((a, b) => a.name.localeCompare(b.name, 'he'));
+
+                            setAnalyzedData(prev => ({ ...prev, subjects: sortedSubjects }));
                         }
                     }
                 }
@@ -1049,6 +1065,9 @@ const AnnualImportContent = () => {
                                                         scheduleItems
                                                     );
                                                     popupMsg(res.message);
+                                                    if (res.success) {
+                                                        mainContext?.setAnnualScheduleTable(undefined);
+                                                    }
                                                     
                                                     const hasSchedule = await checkTeacherHasScheduleAction(selectedTeacherId, schoolId || '');
                                                     setTeacherHasExistingSchedule(hasSchedule);
@@ -1093,6 +1112,9 @@ const AnnualImportContent = () => {
                                                     bulkSchedules
                                                 );
                                                 popupMsg(res.message);
+                                                if (res.success) {
+                                                    mainContext?.setAnnualScheduleTable(undefined);
+                                                }
                                             } catch (err) {
                                                 console.error("Error saving all schedules:", err);
                                                 popupMsg("שגיאה בשמירת כל המערכות");

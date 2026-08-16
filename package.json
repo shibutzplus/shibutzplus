@@ -44,6 +44,7 @@
         "dotenv": "^16.5.0",
         "drizzle-orm": "^0.44.2",
         "emailjs-com": "^3.2.0",
+        "fflate": "0.8.3",
         "isomorphic-dompurify": "^2.26.0",
         "js-cookie": "^3.0.5",
         "jsdom": "^21.1.0",

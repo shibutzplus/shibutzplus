@@ -12,6 +12,10 @@ import { AnnualScheduleType } from "@/models/types/annualSchedule";
  */
 const annualScheduleCache = new Map<string, any>();
 
+export function clearAnnualScheduleCache(schoolId: string) {
+    annualScheduleCache.delete(schoolId);
+}
+
 export async function getCachedAnnualSchedule(schoolId: string): Promise<AnnualScheduleType[]> {
     if (!annualScheduleCache.has(schoolId)) {
         annualScheduleCache.set(schoolId, unstable_cache(

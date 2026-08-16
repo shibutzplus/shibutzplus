@@ -2,7 +2,7 @@
 
 import { auth } from "@/auth";
 import { dbLog } from "@/services/loggerService";
-import AdmZip from "adm-zip";
+import { extractParagraphsFromDocx, normalizeClassCode } from "@/services/importAnnual/docxUtils";
 
 // --- Types ---
 export interface WordExtractResult {
@@ -10,43 +10,6 @@ export interface WordExtractResult {
     classes: string[];
     subjects: string[];
     workGroups: string[];
-}
-
-/**
- * Extracts paragraphs from a DOCX file buffer.
- * DOCX is a ZIP archive containing word/document.xml.
- * Uses adm-zip for reliable ZIP parsing.
- */
-function extractParagraphsFromDocx(buffer: Buffer): string[] {
-    const zip = new AdmZip(buffer);
-    const entry = zip.getEntry("word/document.xml");
-
-    if (!entry) {
-        throw new Error("word/document.xml not found in DOCX file");
-    }
-
-    const xmlContent = entry.getData().toString("utf8");
-
-    const paragraphs: string[] = [];
-    // Match each <w:p> element
-    const wpRegex = /<w:p(?:\s[^>]*)?>([\s\S]*?)<\/w:p>/g;
-    let wpMatch;
-    while ((wpMatch = wpRegex.exec(xmlContent)) !== null) {
-        const pContent = wpMatch[1];
-        // In each paragraph, match all <w:t> elements
-        const wtRegex = /<w:t(?:\s[^>]*)?>([^<]*)<\/w:t>/g;
-        let wtMatch;
-        const textParts: string[] = [];
-        while ((wtMatch = wtRegex.exec(pContent)) !== null) {
-            textParts.push(wtMatch[1]);
-        }
-        const pText = textParts.join("").trim();
-        if (pText) {
-            paragraphs.push(pText);
-        }
-    }
-
-    return paragraphs;
 }
 
 function extractTeachersFromText(paragraphs: string[]): string[] {
@@ -84,52 +47,74 @@ function extractClassesFromText(paragraphs: string[]): string[] {
     return Array.from(classes).sort();
 }
 
+const WORKGROUP_KEYWORDS = ["שהייה", "פרטני", "צוות", "ישיב", "ריכוז", "השתלמות", "ניהול", "תפקיד", "חלון", "הדרכה"];
+
 /**
- * Extracts subjects only from the class schedule file.
+ * Extracts subjects and workGroups from both class and teacher schedule files.
+ * - Lessons with real classes (e.g. "ב1", "ד3") or "הוראה" are categorized as subjects.
+ * - Lessons marked with "קבוצה" or containing presence/staff keywords (שהייה, פרטני, צוות...) are categorized as workGroups.
  */
-function extractSubjectsFromText(
-    classParagraphs: string[]
-): string[] {
+function extractSubjectsAndWorkGroups(
+    classParagraphs: string[],
+    teacherParagraphs: string[]
+): { subjects: string[]; workGroups: string[] } {
     const subjects = new Set<string>();
-
-    classParagraphs.forEach(line => {
-        const parts = line.split(",").map(p => p.trim());
-        if (parts.length >= 2) {
-            const candidate = parts[0];
-            if (!candidate || candidate.trim().length < 2) return;
-
-            subjects.add(candidate);
-        }
-    });
-
-    return Array.from(subjects).sort();
-}
-
-/**
- * Extracts workGroups only from teachers file.
- */
-function extractWorkGroupsFromText(
-    teacherParagraphs: string[],
-    teachers: string[],
-    classes: string[],
-    identifiedSubjects: Set<string>
-): string[] {
     const workGroups = new Set<string>();
 
-    teacherParagraphs.forEach(line => {
+    // 1. From Class File: parts[0] are subjects
+    classParagraphs.forEach(line => {
+        if (line.includes("מערכת שעות")) return;
         const parts = line.split(",").map(p => p.trim());
         if (parts.length >= 2) {
-            const candidate = parts[0];
-            if (!candidate || candidate.trim().length < 2) return;
-
-            // If it's not in the identified subjects list, it's a workGroup
-            if (!identifiedSubjects.has(candidate)) {
-                workGroups.add(candidate);
+            const rawCandidate = parts[0];
+            if (!rawCandidate || rawCandidate.length < 2) return;
+            if (rawCandidate.startsWith("יום ") || rawCandidate.startsWith("שעה ")) return;
+            const candidate = rawCandidate.replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019]/g, "").replace(/\s+/g, " ").trim();
+            if (candidate.length >= 2) {
+                subjects.add(candidate);
             }
         }
     });
 
-    return Array.from(workGroups).sort();
+    // 2. From Teacher File:
+    teacherParagraphs.forEach(line => {
+        if (line.includes("מערכת שעות")) return;
+        const parts = line.split(",").map(p => p.trim());
+        if (parts.length >= 2) {
+            const rawCandidate = parts[0];
+            if (!rawCandidate || rawCandidate.length < 2) return;
+            if (rawCandidate.startsWith("יום ") || rawCandidate.startsWith("שעה ")) return;
+            const candidate = rawCandidate.replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019]/g, "").replace(/\s+/g, " ").trim();
+            if (candidate.length < 2) return;
+
+            const secondPart = parts[1] || "";
+            const hasClassCode = !!normalizeClassCode(secondPart);
+            const isExplicitWorkGroup = secondPart === "קבוצה" || WORKGROUP_KEYWORDS.some(kw => candidate.includes(kw) || line.includes(kw));
+
+            if (hasClassCode && !isExplicitWorkGroup) {
+                // Real subject taught in class (e.g. "שבילי מורשת, ב1 שירה צדוק, הוראה")
+                subjects.add(candidate);
+            } else if (isExplicitWorkGroup || secondPart === "קבוצה" || !hasClassCode) {
+                if (!subjects.has(candidate)) {
+                    workGroups.add(candidate);
+                }
+            } else {
+                if (!subjects.has(candidate)) {
+                    workGroups.add(candidate);
+                }
+            }
+        } else if (parts.length === 1) {
+            const single = parts[0].replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019]/g, "").replace(/\s+/g, " ").trim();
+            if (WORKGROUP_KEYWORDS.some(kw => single.includes(kw))) {
+                workGroups.add(single);
+            }
+        }
+    });
+
+    return {
+        subjects: Array.from(subjects).sort(),
+        workGroups: Array.from(workGroups).sort(),
+    };
 }
 
 /**
@@ -223,15 +208,10 @@ export const extractEntitiesFromWordAction = async (
             schoolId
         });
 
-        // Extract subjects and workGroups using separate functions
-        const subjects = extractSubjectsFromText(
-            classParagraphs
-        );
-        const workGroups = extractWorkGroupsFromText(
-            teacherParagraphs,
-            teachers,
-            classes,
-            new Set(subjects)
+        // Extract subjects and workGroups from both files
+        const { subjects, workGroups } = extractSubjectsAndWorkGroups(
+            classParagraphs,
+            teacherParagraphs
         );
 
         dbLog({

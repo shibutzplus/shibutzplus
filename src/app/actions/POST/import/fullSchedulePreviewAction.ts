@@ -1,8 +1,12 @@
 "use server";
 
-import * as XLSX from 'xlsx';
 import { dbLog } from "@/services/loggerService";
-import AdmZip from "adm-zip";
+import { extractParagraphsFromDocx, normalizeClassCode } from "@/services/importAnnual/docxUtils";
+
+async function getXLSX() {
+    const libName = "xlsx";
+    return await import(libName);
+}
 
 // Types
 interface ScheduleItem {
@@ -40,34 +44,6 @@ function cleanCSVValue(val: string): string {
     return clean.trim();
 }
 
-/**
- * Extracts paragraphs from a DOCX file buffer.
- */
-function extractParagraphsFromDocx(buffer: Buffer): string[] {
-    const zip = new AdmZip(buffer);
-    const entry = zip.getEntry("word/document.xml");
-    if (!entry) throw new Error("word/document.xml not found");
-    const xmlContent = entry.getData().toString("utf8");
-
-    const paragraphs: string[] = [];
-    const wpRegex = /<w:p(?:\s[^>]*)?>([\s\S]*?)<\/w:p>/g;
-    let wpMatch;
-    while ((wpMatch = wpRegex.exec(xmlContent)) !== null) {
-        const pContent = wpMatch[1];
-        const wtRegex = /<w:t(?:\s[^>]*)?>([^<]*)<\/w:t>/g;
-        let wtMatch;
-        const textParts: string[] = [];
-        while ((wtMatch = wtRegex.exec(pContent)) !== null) {
-            textParts.push(wtMatch[1]);
-        }
-        const pText = textParts.join("").trim();
-        if (pText) {
-            paragraphs.push(pText);
-        }
-    }
-    return paragraphs;
-}
-
 export const fullSchedulePreviewAction = async (
     formData: FormData,
     entities: { teachers: string[], classes: string[], subjects: string[], workGroups: string[] }
@@ -91,7 +67,11 @@ export const fullSchedulePreviewAction = async (
         // Normalized lookups
         const normalizedTeachers = entities.teachers.map(t => ({ original: t, clean: cleanCSVValue(t) }));
         const normalizedSubjects = entities.subjects.map(s => ({ original: s, clean: cleanCSVValue(s) }));
-        const normalizedClasses = entities.classes.map(c => ({ original: c, clean: cleanCSVValue(c) }));
+        const normalizedClasses = entities.classes.map(c => ({
+            original: c,
+            clean: cleanCSVValue(c),
+            code: normalizeClassCode(c),
+        }));
         const normalizedWorkGroups = entities.workGroups.map(w => ({ original: w, clean: cleanCSVValue(w) }));
 
         // ------------------ WORD (DOCX) FLOW ------------------
@@ -138,7 +118,7 @@ export const fullSchedulePreviewAction = async (
                     if (foundDay) continue;
 
                     const parts = cleanLine.split(",").map(p => p.trim());
-                    if (parts.length >= 2 && currentTeacherDay) {
+                    if (parts.length >= 1 && currentTeacherDay) {
                         const nextLine = i + 1 < teacherParagraphs.length ? cleanCSVValue(teacherParagraphs[i + 1]) : "";
                         const hourMatch = nextLine.match(/שעה\s+(\d+)/);
                         if (hourMatch) {
@@ -147,25 +127,67 @@ export const fullSchedulePreviewAction = async (
                             let finalSub = "";
                             let finalCls = "";
 
-                            const candidateSub = parts[0];
-                            const candidateCls = parts[1];
+                            if (parts.length >= 2) {
+                                const candidateSub = parts[0];
+                                const cleanCandidateSub = stripQuotes(candidateSub);
+                                const otherParts = parts.slice(1);
 
-                            const cleanCandidateSub = stripQuotes(candidateSub);
-                            const cleanCandidateCls = stripQuotes(candidateCls);
+                                // For Word mode, we match names (work groups or subjects)
+                                const exactWg = normalizedWorkGroups.find(w => stripQuotes(w.clean) === cleanCandidateSub || w.clean === cleanCandidateSub);
+                                if (exactWg) {
+                                    finalSub = exactWg.original;
+                                    finalCls = "קבוצה";
+                                } else {
+                                    const exactSub = normalizedSubjects.find(s => stripQuotes(s.clean) === cleanCandidateSub || s.clean === cleanCandidateSub);
+                                    if (exactSub) {
+                                        finalSub = exactSub.original;
+                                    }
 
-                            // For Word mode, we match names exactly (ignoring quotes)
-                            const exactWg = normalizedWorkGroups.find(w => stripQuotes(w.clean) === cleanCandidateSub);
-                            if (exactWg) {
-                                finalSub = exactWg.original;
-                                finalCls = "קבוצה";
-                            } else {
-                                const exactSub = normalizedSubjects.find(s => stripQuotes(s.clean) === cleanCandidateSub);
-                                if (exactSub) {
-                                    finalSub = exactSub.original;
+                                    // Check if any of otherParts explicitly mentions the current teacher
+                                    const cleanCurrentTeacher = stripQuotes(currentTeacher);
+                                    const teacherSpecificParts = otherParts.filter(p => {
+                                        const cleanP = stripQuotes(p);
+                                        if (cleanP.includes(cleanCurrentTeacher) || cleanCurrentTeacher.includes(cleanP)) return true;
+                                        // Match if teacher first/last name parts are contained
+                                        const teacherWords = cleanCurrentTeacher.split(" ").filter(w => w.length >= 2);
+                                        return teacherWords.length >= 2 && teacherWords.every(w => cleanP.includes(w));
+                                    });
+
+                                    const targetParts = teacherSpecificParts.length > 0 ? teacherSpecificParts : otherParts;
+                                    const matchedClassesSet = new Set<string>();
+
+                                    for (const part of targetParts) {
+                                        const candClsCode = normalizeClassCode(part);
+                                        const cleanPart = stripQuotes(part);
+                                        const exactCls = normalizedClasses.find(c =>
+                                            (candClsCode && c.code && c.code === candClsCode) ||
+                                            stripQuotes(c.clean) === cleanPart ||
+                                            c.clean === cleanPart ||
+                                            c.original === part
+                                        );
+                                        if (exactCls) {
+                                            matchedClassesSet.add(exactCls.original);
+                                        }
+                                    }
+
+                                    if (matchedClassesSet.size > 0) {
+                                        finalCls = Array.from(matchedClassesSet).join(", ");
+                                    }
                                 }
+                            } else {
+                                // Single part on line (e.g. "מתמטיקה א1")
+                                const singleText = parts[0];
+                                const singleCode = normalizeClassCode(singleText);
 
-                                if (candidateCls) {
-                                    const exactCls = normalizedClasses.find(c => stripQuotes(c.clean) === cleanCandidateCls);
+                                const exactWg = normalizedWorkGroups.find(w => singleText.includes(w.clean));
+                                if (exactWg) {
+                                    finalSub = exactWg.original;
+                                    finalCls = "קבוצה";
+                                } else {
+                                    const exactSub = normalizedSubjects.find(s => singleText.includes(s.clean));
+                                    if (exactSub) finalSub = exactSub.original;
+
+                                    const exactCls = normalizedClasses.find(c => (singleCode && c.code && c.code === singleCode) || singleText.includes(c.clean));
                                     if (exactCls) finalCls = exactCls.original;
                                 }
                             }
@@ -213,8 +235,9 @@ export const fullSchedulePreviewAction = async (
         const classOriginalTextMap = new Map<string, string>();
 
         try {
+            const XLSX = await getXLSX();
             const classWorkbook = XLSX.read(classBuffer, { type: 'buffer' });
-            classWorkbook.SheetNames.forEach(sheetName => {
+            classWorkbook.SheetNames.forEach((sheetName: string) => {
                 const classSheet = classWorkbook.Sheets[sheetName];
                 const classRows: any[][] = XLSX.utils.sheet_to_json(classSheet, { header: 1, defval: null });
 
@@ -345,13 +368,14 @@ export const fullSchedulePreviewAction = async (
         }
 
         // Parse Teacher CSV
+        const XLSX = await getXLSX();
         const workbook = XLSX.read(teacherBuffer, { type: 'buffer' });
         const scheduleItems: ScheduleItem[] = [];
 
         // Regex helpers
         const TEACHER_TITLE_REGEX = /מערכת שעות למורה|למורה/i;
 
-        workbook.SheetNames.forEach(sheetName => {
+        workbook.SheetNames.forEach((sheetName: string) => {
             const worksheet = workbook.Sheets[sheetName];
             const rows: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: null });
 
@@ -481,7 +505,12 @@ export const fullSchedulePreviewAction = async (
                                 if (subMatch) finalSub = subMatch.original;
 
                                 const clsMatch = normalizedClasses
-                                    .filter(c => cleanContent.includes(c.clean))
+                                    .filter(c => {
+                                        if (cleanContent.includes(c.clean)) return true;
+                                        if (c.code && normalizeClassCode(cleanContent) === c.code) return true;
+                                        if (c.code && cleanContent.includes(c.code)) return true;
+                                        return false;
+                                    })
                                     .sort((a, b) => b.clean.length - a.clean.length)[0];
 
                                 if (clsMatch) finalCls = clsMatch.original;
