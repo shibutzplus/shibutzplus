@@ -71,6 +71,11 @@ const PublishedPortalPage: NextPage = () => {
         return "מערכת בית ספרית יומית לא פורסמה";
     };
 
+    // Lior Debug
+    const scheduleForSelectedDate = mainPublishTable[selectedDate];
+    const columnsCount = scheduleForSelectedDate ? Object.keys(scheduleForSelectedDate).length : 0;
+    console.log(`[Lior Debug School-Changes] render state: selectedDate=${selectedDate}, teacherId=${teacher?.id} (${teacher?.name}), schoolId=${schoolId}, hasFetched=${hasFetched}, isDatesLoading=${isDatesLoading}, isPublishLoading=${isPublishLoading}, datesOptions=${JSON.stringify(datesOptions.map(d=>d.value))}, columnsCount=${columnsCount}`);
+
     return (
         <section className={styles.container}>
             <CommonDailySchoolTable

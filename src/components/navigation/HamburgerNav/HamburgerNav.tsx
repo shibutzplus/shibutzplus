@@ -59,6 +59,8 @@ const LinkComponent: React.FC<LinkComponentProps> = ({ link, onClose, currentPat
                 href={shouldShowGuestPopup ? "#" : finalHref}
                 className={`${styles.navLink} ${isActive ? styles.active : ""}`}
                 onClick={async (e) => {
+                    // Lior Debug
+                    console.log(`[Lior Debug Hamburger] Clicked link: name=${link.name}, href=${finalHref}, currentPath=${currentPath}`);
                     if (shouldShowGuestPopup) {
                         e.preventDefault();
                         handleOpenGuestPopup();
