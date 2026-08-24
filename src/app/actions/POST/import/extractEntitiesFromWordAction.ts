@@ -47,7 +47,9 @@ function extractClassesFromText(paragraphs: string[]): string[] {
     return Array.from(classes).sort();
 }
 
-const WORKGROUP_KEYWORDS = ["שהייה", "פרטני", "צוות", "ישיב", "ריכוז", "השתלמות", "ניהול", "תפקיד", "חלון", "הדרכה"];
+const WORKGROUP_KEYWORDS = [
+    "שילוב", "שהייה", "פרטני", "צוות", "ישיב", "ריכוז", "השתלמות", "ניהול", "תפקיד", "חלון", "הדרכה", "הכלה", "הוראה מותאמת", "מתיא", "מתי״א", "(ש)", "(פ)"
+];
 
 /**
  * Extracts subjects and workGroups from both class and teacher schedule files.
@@ -194,30 +196,15 @@ export const extractEntitiesFromWordAction = async (
         const teacherParagraphs = extractParagraphsFromDocx(teacherBuffer);
         const classParagraphs = extractParagraphsFromDocx(classBuffer);
 
-        dbLog({
-            description: `[DEBUG WORD IMPORT] classParagraphs length: ${classParagraphs.length}, first 30: ${JSON.stringify(classParagraphs.slice(0, 30))}`,
-            schoolId
-        });
-
         // Extract teachers and classes first
         const teachers = extractTeachersFromText(teacherParagraphs);
         const classes = extractClassesFromText(classParagraphs);
-
-        dbLog({
-            description: `[DEBUG WORD IMPORT] extracted teachers: ${teachers.length}, classes: ${classes.length}`,
-            schoolId
-        });
 
         // Extract subjects and workGroups from both files
         const { subjects, workGroups } = extractSubjectsAndWorkGroups(
             classParagraphs,
             teacherParagraphs
         );
-
-        dbLog({
-            description: `[extractEntitiesFromWordAction] Extracted ${teachers.length} teachers, ${classes.length} classes, ${subjects.length} subjects, ${workGroups.length} workGroups`,
-            schoolId,
-        });
 
         return {
             success: true,

@@ -305,8 +305,6 @@ export async function saveTeacherScheduleAction(
         const subjectMap = new Map(allSubjectList.map(s => [s.name, s.id]));
 
         const toInsert: NewAnnualScheduleSchema[] = [];
-        const missingClasses: string[] = [];
-        const missingSubjects: string[] = [];
 
         for (const item of scheduleItems) {
             // Skip empty cells (no subject and no class)
@@ -317,14 +315,30 @@ export async function saveTeacherScheduleAction(
             const isWorkGroup = item.className === "קבוצה";
 
             if (isWorkGroup) {
-                const classId = classMap.get(item.subjectName);
-                const subjectId = subjectMap.get(item.subjectName);
+                let classId = classMap.get(item.subjectName);
+                let subjectId = subjectMap.get(item.subjectName);
 
                 if (!classId) {
-                    if (!missingClasses.includes(item.subjectName)) missingClasses.push(item.subjectName);
+                    const [inserted] = await db.insert(classes).values({
+                        name: item.subjectName,
+                        schoolId: targetSchoolId,
+                        activity: true
+                    }).returning({ id: classes.id });
+                    if (inserted) {
+                        classId = inserted.id;
+                        classMap.set(item.subjectName, classId);
+                    }
                 }
                 if (!subjectId && item.subjectName !== "ללא מקצוע") {
-                    if (!missingSubjects.includes(item.subjectName)) missingSubjects.push(item.subjectName);
+                    const [inserted] = await db.insert(subjects).values({
+                        name: item.subjectName,
+                        schoolId: targetSchoolId,
+                        activity: true
+                    }).returning({ id: subjects.id });
+                    if (inserted) {
+                        subjectId = inserted.id;
+                        subjectMap.set(item.subjectName, subjectId);
+                    }
                 }
 
                 if (classId && subjectId) {
@@ -340,10 +354,18 @@ export async function saveTeacherScheduleAction(
             } else {
                 // Support multiple classes (e.g. "כיתה ג1, כיתה ג2, כיתה ג3")
                 const classNames = item.className.split(",").map(c => c.trim()).filter(Boolean);
-                const subjectId = subjectMap.get(item.subjectName);
+                let subjectId = subjectMap.get(item.subjectName);
 
-                if (!subjectId && item.subjectName !== "ללא מקצוע") {
-                    if (!missingSubjects.includes(item.subjectName)) missingSubjects.push(item.subjectName);
+                if (!subjectId && item.subjectName && item.subjectName !== "ללא מקצוע") {
+                    const [inserted] = await db.insert(subjects).values({
+                        name: item.subjectName,
+                        schoolId: targetSchoolId,
+                        activity: false
+                    }).returning({ id: subjects.id });
+                    if (inserted) {
+                        subjectId = inserted.id;
+                        subjectMap.set(item.subjectName, subjectId);
+                    }
                 }
 
                 for (const singleClassName of classNames) {
@@ -356,7 +378,15 @@ export async function saveTeacherScheduleAction(
                     }
 
                     if (!classId && singleClassName !== "ללא כיתה") {
-                        if (!missingClasses.includes(singleClassName)) missingClasses.push(singleClassName);
+                        const [inserted] = await db.insert(classes).values({
+                            name: singleClassName,
+                            schoolId: targetSchoolId,
+                            activity: false
+                        }).returning({ id: classes.id });
+                        if (inserted) {
+                            classId = inserted.id;
+                            classMap.set(singleClassName, classId);
+                        }
                     }
 
                     if (classId && subjectId) {
@@ -373,20 +403,7 @@ export async function saveTeacherScheduleAction(
             }
         }
 
-        // Strict Mode: If any missing, abort!
-        if (missingClasses.length > 0 || missingSubjects.length > 0) {
-            let errorMsg = "לא ניתן לשמור את המערכת כי חסרים נתונים במאגר:\n";
-            if (missingClasses.length > 0) errorMsg += `כיתות חסרות: ${missingClasses.join(", ")}\n`;
-            if (missingSubjects.length > 0) errorMsg += `מקצועות חסרים: ${missingSubjects.join(", ")}\n`;
-            errorMsg += "יש לשמור את הפריטים הללו בשלבים הקודמים לפני שמירת המערכת.";
-
-            return { success: false, message: errorMsg };
-        }
-
-        // If we got here, everything is valid. Proceed to save.
-
         // 2. Clear existing annual schedule for this teacher
-        // (Moved here to avoid deleting if validation fails)
         await db.delete(annualSchedule)
             .where(and(
                 eq(annualSchedule.schoolId, targetSchoolId),
@@ -453,12 +470,85 @@ export async function saveAllTeachersSchedulesAction(
         });
         const subjectMap = new Map(allSubjectList.map(s => [s.name, s.id]));
 
+        // 2. Pre-create any missing subjects, classes, and workGroups
+        const neededWorkGroups = new Set<string>();
+        const neededSubjects = new Set<string>();
+        const neededClasses = new Set<string>();
+
+        for (const sched of schedules) {
+            for (const item of sched.scheduleItems) {
+                if (item.className === "ללא כיתה" && item.subjectName === "ללא מקצוע") continue;
+                if (item.className === "קבוצה") {
+                    if (item.subjectName && item.subjectName !== "ללא מקצוע") {
+                        neededWorkGroups.add(item.subjectName);
+                    }
+                } else {
+                    if (item.subjectName && item.subjectName !== "ללא מקצוע") {
+                        neededSubjects.add(item.subjectName);
+                    }
+                    const classNames = item.className.split(",").map(c => c.trim()).filter(Boolean);
+                    classNames.forEach(c => {
+                        if (c !== "ללא כיתה") neededClasses.add(c);
+                    });
+                }
+            }
+        }
+
+        // Auto-provision missing workGroups
+        for (const wgName of neededWorkGroups) {
+            if (!classMap.has(wgName)) {
+                const [inserted] = await db.insert(classes).values({
+                    name: wgName,
+                    schoolId: targetSchoolId,
+                    activity: true
+                }).returning({ id: classes.id });
+                if (inserted) classMap.set(wgName, inserted.id);
+            }
+            if (!subjectMap.has(wgName)) {
+                const [inserted] = await db.insert(subjects).values({
+                    name: wgName,
+                    schoolId: targetSchoolId,
+                    activity: true
+                }).returning({ id: subjects.id });
+                if (inserted) subjectMap.set(wgName, inserted.id);
+            }
+        }
+
+        // Auto-provision missing regular subjects
+        for (const subName of neededSubjects) {
+            if (!subjectMap.has(subName)) {
+                const [inserted] = await db.insert(subjects).values({
+                    name: subName,
+                    schoolId: targetSchoolId,
+                    activity: false
+                }).returning({ id: subjects.id });
+                if (inserted) subjectMap.set(subName, inserted.id);
+            }
+        }
+
+        // Auto-provision missing regular classes
+        for (const clsName of neededClasses) {
+            let classId = classMap.get(clsName);
+            if (!classId) {
+                const code = normalizeClassCode(clsName);
+                if (code) classId = classCodeMap.get(code);
+            }
+            if (!classId) {
+                const [inserted] = await db.insert(classes).values({
+                    name: clsName,
+                    schoolId: targetSchoolId,
+                    activity: false
+                }).returning({ id: classes.id });
+                if (inserted) {
+                    classMap.set(clsName, inserted.id);
+                    const code = normalizeClassCode(clsName);
+                    if (code) classCodeMap.set(code, inserted.id);
+                }
+            }
+        }
+
         const toInsert: NewAnnualScheduleSchema[] = [];
         const missingTeachers: string[] = [];
-        const missingClasses: string[] = [];
-        const missingSubjects: string[] = [];
-
-        const teacherIdsToClear = new Set<string>();
 
         for (const teacherSched of schedules) {
             const { teacherName, scheduleItems } = teacherSched;
@@ -468,8 +558,6 @@ export async function saveAllTeachersSchedulesAction(
                 if (!missingTeachers.includes(teacherName)) missingTeachers.push(teacherName);
                 continue;
             }
-
-            teacherIdsToClear.add(teacherId);
 
             for (const item of scheduleItems) {
                 if (item.className === "ללא כיתה" && item.subjectName === "ללא מקצוע") {
@@ -482,13 +570,6 @@ export async function saveAllTeachersSchedulesAction(
                     const classId = classMap.get(item.subjectName);
                     const subjectId = subjectMap.get(item.subjectName);
 
-                    if (!classId) {
-                        if (!missingClasses.includes(item.subjectName)) missingClasses.push(item.subjectName);
-                    }
-                    if (!subjectId && item.subjectName !== "ללא מקצוע") {
-                        if (!missingSubjects.includes(item.subjectName)) missingSubjects.push(item.subjectName);
-                    }
-
                     if (classId && subjectId) {
                         toInsert.push({
                             schoolId: targetSchoolId,
@@ -500,13 +581,8 @@ export async function saveAllTeachersSchedulesAction(
                         });
                     }
                 } else {
-                    // Support multiple classes (e.g. "כיתה ג1, כיתה ג2, כיתה ג3")
                     const classNames = item.className.split(",").map(c => c.trim()).filter(Boolean);
                     const subjectId = subjectMap.get(item.subjectName);
-
-                    if (!subjectId && item.subjectName !== "ללא מקצוע") {
-                        if (!missingSubjects.includes(item.subjectName)) missingSubjects.push(item.subjectName);
-                    }
 
                     for (const singleClassName of classNames) {
                         let classId = classMap.get(singleClassName);
@@ -515,10 +591,6 @@ export async function saveAllTeachersSchedulesAction(
                             if (code) {
                                 classId = classCodeMap.get(code);
                             }
-                        }
-
-                        if (!classId && singleClassName !== "ללא כיתה") {
-                            if (!missingClasses.includes(singleClassName)) missingClasses.push(singleClassName);
                         }
 
                         if (classId && subjectId) {
@@ -534,15 +606,6 @@ export async function saveAllTeachersSchedulesAction(
                     }
                 }
             }
-        }
-
-        // Validate
-        if (missingClasses.length > 0 || missingSubjects.length > 0) {
-            let errorMsg = "לא ניתן לשמור את המערכת כי חסרים נתונים במאגר:\n";
-            if (missingClasses.length > 0) errorMsg += `כיתות חסרות: ${missingClasses.join(", ")}\n`;
-            if (missingSubjects.length > 0) errorMsg += `מקצועות חסרים: ${missingSubjects.join(", ")}\n`;
-            errorMsg += "יש לשמור את הפריטים הללו בשלבים הקודמים.";
-            return { success: false, message: errorMsg };
         }
 
         // Reset and clear all previous annual schedules for this school
