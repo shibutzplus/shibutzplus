@@ -20,6 +20,16 @@ const SchoolSelectPage = () => {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        if (session?.user) {
+            const role = (session.user as any)?.role;
+            if (role && role !== USER_ROLES.ADMIN) {
+                router.replace(DEFAULT_REDIRECT);
+                return;
+            }
+        }
+    }, [session, router]);
+
+    useEffect(() => {
         (async () => {
             try {
                 const list = await getSchoolsMinAction();

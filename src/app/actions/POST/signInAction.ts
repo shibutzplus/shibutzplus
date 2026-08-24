@@ -3,10 +3,12 @@
 import { signIn } from "next-auth/react";
 import msg from "@/resources/messages";
 import { AUTH_TYPE } from "@/models/constant/auth";
+import routes from "@/routes";
 
-export const signInWithGoogle = async () => {
+export const signInWithGoogle = async (callbackUrl: string = "/") => {
     try {
         const res = await signIn(AUTH_TYPE.GOOGLE, {
+            callbackUrl,
             redirect: false,
         });
 

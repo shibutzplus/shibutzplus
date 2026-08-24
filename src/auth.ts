@@ -6,7 +6,7 @@ import { SCHOOL_STATUS } from "@/models/constant/school";
 import { getSessionMaxAge, TWENTY_FOUR_HOURS } from "@/utils/time";
 import type { UserRole, UserGender } from "@/models/types/auth";
 import { db, schema, executeQuery } from "@/db";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { compare, hash } from "bcrypt-ts";
 
 const nowInSec = () => Math.floor(Date.now() / 1000);
@@ -96,15 +96,16 @@ export const { handlers, auth, signIn: authSignIn, signOut: authSignOut } = Next
                 if (account?.provider === AUTH_TYPE.CREDENTIALS) return true;
 
                 if (account?.provider === AUTH_TYPE.GOOGLE) {
-                    const email = typeof profile?.email === "string" ? profile.email : undefined;
+                    const rawEmail = typeof profile?.email === "string" ? profile.email : undefined;
                     const name = typeof profile?.name === "string" ? profile.name : undefined;
-                    if (!email || !name) return false;
+                    if (!rawEmail || !name) return false;
+                    const email = rawEmail.trim().toLowerCase();
                     try {
                         const [existing] = await executeQuery(async () => {
                             return await db
                                 .select()
                                 .from(schema.users)
-                                .where(eq(schema.users.email, email))
+                                .where(sql`lower(${schema.users.email}) = ${email}`)
                                 .limit(1);
                         });
 
@@ -139,7 +140,7 @@ export const { handlers, auth, signIn: authSignIn, signOut: authSignOut } = Next
             try {
                 if (account?.provider === AUTH_TYPE.CREDENTIALS && user) {
                     token.id = user.id;
-                    token.email = user.email ?? undefined;
+                    token.email = user.email ? user.email.trim().toLowerCase() : undefined;
                     token.name = user.name ?? undefined;
                     token.role = (user as any).role;
                     token.gender = (user as any).gender;
@@ -148,8 +149,13 @@ export const { handlers, auth, signIn: authSignIn, signOut: authSignOut } = Next
                     token.maxAge = getSessionMaxAge(true);
                     token.exp = nowInSec() + Number(token.maxAge);
                     token.isDemo = (user as any).isDemo ?? false;
-                } else if ((account?.provider === AUTH_TYPE.GOOGLE && profile?.email) || (user && user.email)) {
-                    const email = (user?.email || profile?.email) as string;
+                } else if (
+                    (account?.provider === AUTH_TYPE.GOOGLE && profile?.email) ||
+                    (user && user.email) ||
+                    (!token.role && token.email)
+                ) {
+                    const rawEmail = (user?.email || profile?.email || token.email) as string;
+                    const email = rawEmail.trim().toLowerCase();
                     try {
                         const [row] = await executeQuery(async () => {
                             return await db
@@ -163,7 +169,7 @@ export const { handlers, auth, signIn: authSignIn, signOut: authSignOut } = Next
                                 })
                                 .from(schema.users)
                                 .leftJoin(schema.schools, eq(schema.schools.id, schema.users.schoolId))
-                                .where(eq(schema.users.email, email))
+                                .where(sql`lower(${schema.users.email}) = ${email}`)
                                 .limit(1);
                         });
 
@@ -180,7 +186,7 @@ export const { handlers, auth, signIn: authSignIn, signOut: authSignOut } = Next
                         throw err;
                     }
                     token.email = email;
-                    token.name = (user?.name || profile?.name) ?? undefined;
+                    token.name = (user?.name || profile?.name || token.name) ?? undefined;
                     token.maxAge = getSessionMaxAge(true);
                     token.exp = nowInSec() + Number(token.maxAge);
                 }

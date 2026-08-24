@@ -41,6 +41,7 @@
         "adm-zip": "^0.5.17",
         "bcrypt-ts": "^8.0.1",
         "bcryptjs": "^3.0.2",
+        "dompurify": "^3.2.4",
         "dotenv": "^16.5.0",
         "drizzle-orm": "^0.44.2",
         "emailjs-com": "^3.2.0",

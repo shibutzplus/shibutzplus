@@ -19,19 +19,6 @@ https://shibutzplus-git-ABCDE-shibutz-plus-projects.vercel.app/admin/sign-in
 shibutzplus@gmail.com
 123456
 
-
-## Tech Stack
-Shibutz Plus built with Next.js 15.3.3.
-
-- **Next.js 15.3.3** with App Router
-- **TypeScript** for type safety
-- **CSS Modules** for component-scoped styling
-- **Next-Auth** for authentication
-- **Neon** for PostgreSQL database
-- **Drizzle ORM** for database schema and migrations
-- **Nodemailer** for email sending
-- **React Email** for email templates
-
 ## Login / Authentication with Next-Auth
 The application uses Next-Auth for authentication. 
 
@@ -57,6 +44,9 @@ https://dash.cloudflare.com/09e65e9e58fb283402e234e907e36587/r2/default/buckets/
 # Make sure to update DB for production and staging (defined in env.local)
 https://console.neon.tech/app/projects/curly-feather-89043363
 npx drizzle-kit push
+
+## How to stop query debug logs in terminal ?
+src\db\index.ts
 
 ## Trello
 https://trello.com/b/SrahpnDm/%D7%A9%D7%99%D7%91%D7%95%D7%A5
