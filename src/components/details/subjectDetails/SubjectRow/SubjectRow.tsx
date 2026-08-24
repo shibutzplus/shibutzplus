@@ -7,13 +7,15 @@ import useConfirmPopup from "@/hooks/useConfirmPopup";
 import useSubmit from "@/hooks/useSubmit";
 import messages from "@/resources/messages";
 import { PopupAction } from "@/context/PopupContext";
+import DeleteWarningContent from "@/components/popups/DeleteWarningContent/DeleteWarningContent";
+import { countSubjectUsage } from "@/utils/entityUsage";
 
 type SubjectRowProps = {
     subject: SubjectType;
 };
 
 const SubjectRow: React.FC<SubjectRowProps> = ({ subject }) => {
-    const { deleteSubject, school, updateSubject } = useMainContext();
+    const { deleteSubject, school, updateSubject, annualScheduleTable } = useMainContext();
     const { handleOpenPopup } = useConfirmPopup();
 
     const { handleSubmitDelete } = useSubmit(
@@ -29,11 +31,28 @@ const SubjectRow: React.FC<SubjectRowProps> = ({ subject }) => {
     };
 
     const handleDeleteSubject = (subject: SubjectType) => {
-        handleOpenPopup(
-            PopupAction.deleteSubject,
-            `האם למחוק את המקצוע ${subject.name}`,
-            () => handleDeleteSubjectFromState(subject.id),
-        );
+        const usageCount = countSubjectUsage(subject.id, annualScheduleTable);
+
+        if (usageCount > 0) {
+            handleOpenPopup(
+                PopupAction.deleteSubject,
+                <DeleteWarningContent
+                    title={`האם למחוק את המקצוע "${subject.name}"?`}
+                    warningText={`המקצוע משובץ ב-${usageCount} שיעורים במערכת השנתית.`}
+                    usageCount={usageCount}
+                />,
+                () => handleDeleteSubjectFromState(subject.id),
+                "מחק בכל זאת",
+                "ביטול",
+                "no",
+            );
+        } else {
+            handleOpenPopup(
+                PopupAction.deleteSubject,
+                `האם למחוק את המקצוע ${subject.name}?`,
+                () => handleDeleteSubjectFromState(subject.id),
+            );
+        }
     };
 
     return (

@@ -648,11 +648,13 @@ const AnnualImportContent = () => {
             if (res.success) {
                 setAnalyzedData(prev => ({
                     ...prev,
-                    [entityType]: prev[entityType].map(item => ({
-                        ...item,
-                        exists: item.source !== 'db',
-                        source: item.source === 'db' ? 'db' : 'both'
-                    }))
+                    [entityType]: prev[entityType]
+                        .filter(item => item.source !== 'db')
+                        .map(item => ({
+                            ...item,
+                            exists: true,
+                            source: 'both' as ListItem['source']
+                        }))
                 }));
             } else {
                 popupMsg(`שגיאה בשמירה: ${res.message}`);
@@ -922,7 +924,7 @@ const AnnualImportContent = () => {
                             {/* Unmapped Items Warning */}
                             {analyzedData.unmapped && analyzedData.unmapped.length > 0 && (
                                 <div className={styles.warningBox}>
-                                    <strong>שים לב:</strong> {analyzedData.unmapped.length} שורות בקובץ לא זוהו כחלק מהמערכת (בדוק לוגים לפרטים).
+                                    <strong>שימו לב:</strong> {analyzedData.unmapped.length} שורות בקובץ לא זוהו כחלק מהמערכת (בדוק לוגים לפרטים).
                                 </div>
                             )}
 
