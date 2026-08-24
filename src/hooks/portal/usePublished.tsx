@@ -71,15 +71,7 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
         const effectiveTeacher = overrideTeacher || teacher;
         const effectiveDate = overrideDate || selectedDate;
 
-        // Lior Debug
-        console.log(`[Lior Debug Client] fetchPublishScheduleData called with: effectiveSchoolId=${effectiveSchoolId}, effectiveTeacher=${effectiveTeacher?.id} (${effectiveTeacher?.name}), effectiveDate=${effectiveDate}`);
         if (!effectiveSchoolId || !effectiveTeacher || !effectiveDate) {
-            console.warn(`[Lior Debug Client] Missing required parameter: schoolId=${effectiveSchoolId}, teacher=${effectiveTeacher?.id}, date=${effectiveDate}`);
-            void logErrorAction({
-                schoolId: effectiveSchoolId,
-                description: `[Lior Debug Client] fetchPublishScheduleData missing param: schoolId=${effectiveSchoolId}, teacherId=${effectiveTeacher?.id}, date=${effectiveDate}`,
-                user: effectiveTeacher?.name
-            });
             setMainPublishTable({});
             setHasFetched(true);
             return { success: true, data: null } as any;
@@ -90,15 +82,6 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
 
             // Use cached server action instead of direct DB query
             const response = await getCachedDailyScheduleAction(effectiveSchoolId, effectiveDate);
-
-            // Lior Debug
-            console.log(`[Lior Debug Client] getCachedDailyScheduleAction response:`, response);
-            void logErrorAction({
-                schoolId: effectiveSchoolId,
-                description: `[Lior Debug Client] getCachedDailyScheduleAction returned success=${response?.success}, rowCount=${response?.data?.length}, message=${response?.message}`,
-                user: effectiveTeacher?.name,
-                metadata: { success: response?.success, message: response?.message, rowCount: response?.data?.length }
-            });
 
             // Ensure entities are loaded before populating
             let currentTeachers = overrideLists?.teachers || allTeachers || [];
@@ -125,31 +108,14 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
                     currentClasses,
                     currentSubjects
                 );
-                // Lior Debug
-                const colCount = newSchedule ? Object.keys(newSchedule[effectiveDate] || {}).length : 0;
-                console.log(`[Lior Debug Client] populateDailyScheduleTable created ${colCount} columns for date ${effectiveDate}`);
-                void logErrorAction({
-                    schoolId: effectiveSchoolId,
-                    description: `[Lior Debug Client] populateDailyScheduleTable result: ${colCount} columns for date ${effectiveDate}`,
-                    user: effectiveTeacher?.name
-                });
                 if (newSchedule) setMainPublishTable(newSchedule);
             } else {
-                // Lior Debug
-                console.warn(`[Lior Debug Client] Setting mainPublishTable to {} because response was not successful or data empty`);
-                void logErrorAction({
-                    schoolId: effectiveSchoolId,
-                    description: `[Lior Debug Client] Setting mainPublishTable to {} (success=${response?.success}, hasData=${!!response?.data})`,
-                    user: effectiveTeacher?.name
-                });
                 setMainPublishTable({});
                 return response;
             }
             return response;
         } catch (error) {
-            // Lior Debug
-            console.error(`[Lior Debug Client] Error in fetchPublishScheduleData:`, error);
-            logErrorAction({ description: `[Lior Debug Error] Error fetching daily schedule data(public): ${error instanceof Error ? error.message : String(error)} ` });
+            logErrorAction({ description: `Error fetching daily schedule data(public): ${error instanceof Error ? error.message : String(error)} ` });
             return null;
         } finally {
             if (!isBackground) setIsPublishLoading(false);

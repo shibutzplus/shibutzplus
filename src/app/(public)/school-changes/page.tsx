@@ -11,6 +11,9 @@ import ContactAdminError from "@/components/auth/ContactAdminError/ContactAdminE
 import { getDayNumberByDateString } from "@/utils/time";
 import { getStorageTeacher } from "@/lib/localStorage";
 
+export const runtime = 'edge';
+export const dynamic = 'force-dynamic';
+
 const PublishedPortalPage: NextPage = () => {
     const {
         selectedDate,
@@ -70,11 +73,6 @@ const PublishedPortalPage: NextPage = () => {
         if (isPublished) return "אין שינויים במערכת";
         return "מערכת בית ספרית יומית לא פורסמה";
     };
-
-    // Lior Debug
-    const scheduleForSelectedDate = mainPublishTable[selectedDate];
-    const columnsCount = scheduleForSelectedDate ? Object.keys(scheduleForSelectedDate).length : 0;
-    console.log(`[Lior Debug School-Changes] render state: selectedDate=${selectedDate}, teacherId=${teacher?.id} (${teacher?.name}), schoolId=${schoolId}, hasFetched=${hasFetched}, isDatesLoading=${isDatesLoading}, isPublishLoading=${isPublishLoading}, datesOptions=${JSON.stringify(datesOptions.map(d=>d.value))}, columnsCount=${columnsCount}`);
 
     return (
         <section className={styles.container}>

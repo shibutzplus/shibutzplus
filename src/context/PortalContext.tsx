@@ -245,9 +245,6 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
     const isValidPublishDate = datesOptions.some((d) => d.value === selectedDate);
     const dateToFetch = isValidPublishDate ? selectedDate : "";
 
-    // Lior Debug
-    console.log(`[Lior Debug PortalContext] selectedDate=${selectedDate}, isValidPublishDate=${isValidPublishDate}, dateToFetch=${dateToFetch}, teacherId=${teacher?.id} (${teacher?.name}), schoolId=${schoolId}`);
-
     const { fetchPublishScheduleData, refreshDailyScheduleTeacherPortal, mainPublishTable, isPublishLoading, hasFetched, hydrateLists, refreshEntities, teachers: portalTeachers, subjects: portalSubjects, classes: portalClasses } =
         usePublished(schoolId, dateToFetch, teacher);
 
@@ -261,14 +258,6 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
         newSubjects: SubjectType[] = [],
         newClasses: ClassType[] = []
     ) => {
-        // Lior Debug
-        console.log(`[Lior Debug PortalContext] hydratePortalData called with: teacherId=${newTeacher?.id} (${newTeacher?.name}), schoolId=${newSchoolId}, selectedDate=${newSelectedDate}, datesOptions=${JSON.stringify(newDatesOptions.map(d=>d.value))}`);
-        void logErrorAction({
-            schoolId: newSchoolId,
-            description: `[Lior Debug Client] hydratePortalData called: teacherId=${newTeacher?.id} (${newTeacher?.name}), schoolId=${newSchoolId}, selectedDate=${newSelectedDate}, datesOptions=${JSON.stringify(newDatesOptions.map(d=>d.value))}`,
-            user: newTeacher?.name
-        });
-
         // Update all states silently or explicitly
         setTeacher(newTeacher);
         setSchoolId(newSchoolId);

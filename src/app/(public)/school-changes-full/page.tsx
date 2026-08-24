@@ -11,6 +11,9 @@ import ContactAdminError from "@/components/auth/ContactAdminError/ContactAdminE
 import { getDayNumberByDateString } from "@/utils/time";
 import { getStorageTeacher } from "@/lib/localStorage";
 
+export const runtime = 'edge';
+export const dynamic = 'force-dynamic';
+
 const FullScheduleViewPage: NextPage = () => {
     const {
         selectedDate,
