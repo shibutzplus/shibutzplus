@@ -3,11 +3,13 @@
 * For Admin usage only 
 */
 import { ActionResponse } from "@/models/types/actions";
-import { revalidateTag } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { cacheTags } from "@/lib/cacheTags";
 import { dbLog } from "@/services/loggerService";
 import messages from "@/resources/messages";
 import { checkAuthAndParams } from "@/utils/authUtils";
+import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
+import { DAILY_PUBLISH_DATA_CHANGED, ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
 
 export async function clearSchoolCacheAction(schoolId: string): Promise<ActionResponse> {
     try {
@@ -23,6 +25,17 @@ export async function clearSchoolCacheAction(schoolId: string): Promise<ActionRe
         revalidateTag(cacheTags.classesList(schoolId));
         revalidateTag(cacheTags.history(schoolId));
         revalidateTag(cacheTags.annualAltSchedule(schoolId));
+
+        // Revalidate public teacher routes
+        revalidatePath("/(public)/school-changes", "page");
+        revalidatePath("/(public)/school-changes-full", "page");
+        revalidatePath("/(public)/school-changes-alt", "page");
+        revalidatePath(`/(public)/teacher-changes/${schoolId}`, "layout");
+        revalidatePath(`/(public)/teacher-changes-alt/${schoolId}`, "layout");
+
+        // Broadcast sync to all active clients (teachers and managers)
+        void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId });
+        void pushSyncUpdateServer(DAILY_PUBLISH_DATA_CHANGED, { schoolId });
 
         return { success: true, message: "המטמון נוקה בהצלחה" };
     } catch (error) {
