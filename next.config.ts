@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import path from "path";
 
 const nextConfig: NextConfig = {
     typescript: {
@@ -8,6 +7,7 @@ const nextConfig: NextConfig = {
     eslint: {
         ignoreDuringBuilds: true,
     },
+    productionBrowserSourceMaps: false,
     experimental: {
         optimizePackageImports: [
             "recharts",
@@ -19,59 +19,12 @@ const nextConfig: NextConfig = {
             "xlsx",
         ],
     },
-    webpack: (config, { webpack }) => {
-        config.resolve = config.resolve || {};
-        config.resolve.alias = {
-            ...(config.resolve.alias || {}),
-            "@": path.resolve(__dirname, "src"),
-        };
-        config.resolve.fallback = {
-            ...(config.resolve.fallback || {}),
-            fs: false,
-            path: false,
-            child_process: false,
-            net: false,
-            tls: false,
-            crypto: false,
-            http: false,
-            https: false,
-            stream: false,
-            zlib: false,
-            os: false,
-            url: false,
-            querystring: false,
-            dns: false,
-            readline: false,
-            vm: false,
-            worker_threads: false,
-            async_hooks: false,
-            "node:fs": false,
-            "node:path": false,
-            "node:child_process": false,
-            "node:net": false,
-            "node:tls": false,
-            "node:crypto": false,
-            "node:http": false,
-            "node:https": false,
-            "node:stream": false,
-            "node:zlib": false,
-            "node:os": false,
-            "node:url": false,
-            "node:querystring": false,
-            "node:dns": false,
-            "node:readline": false,
-            "node:vm": false,
-            "node:worker_threads": false,
-            "node:async_hooks": false,
-        };
-        config.plugins = config.plugins || [];
-        config.plugins.push(
-            new webpack.NormalModuleReplacementPlugin(/^node:/, (resource: any) => {
-                resource.request = resource.request.replace(/^node:/, "");
-            })
-        );
+    webpack: (config) => {
+        config.module = config.module || {};
+        config.module.exprContextCritical = false;
         return config;
     },
 };
 
 export default nextConfig;
+
