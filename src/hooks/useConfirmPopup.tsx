@@ -7,7 +7,7 @@ const useConfirmPopup = () => {
 
     const handleOpenPopup = (
         type: PopupType,
-        text: string,
+        text: string | React.ReactNode,
         onDeleteAction: () => Promise<void>,
         yesText?: string,
         noText?: string,

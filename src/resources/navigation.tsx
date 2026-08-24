@@ -120,15 +120,15 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
                 isGuestBlocked: true,
             },
             {
-                name: routePath.subjects.menuTitle ?? routePath.subjects.title,
-                p: routePath.subjects.p,
-                Icon: <Icons.book size={24} />,
-                isGuestBlocked: true,
-            },
-            {
                 name: routePath.classes.menuTitle ?? routePath.classes.title,
                 p: routePath.classes.p,
                 Icon: <Icons.chair size={24} />,
+                isGuestBlocked: true,
+            },
+            {
+                name: routePath.subjects.menuTitle ?? routePath.subjects.title,
+                p: routePath.subjects.p,
+                Icon: <Icons.book size={24} />,
                 isGuestBlocked: true,
             },
             {

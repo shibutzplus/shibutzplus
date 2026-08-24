@@ -7,13 +7,15 @@ import useConfirmPopup from "@/hooks/useConfirmPopup";
 import useSubmit from "@/hooks/useSubmit";
 import messages from "@/resources/messages";
 import { PopupAction } from "@/context/PopupContext";
+import DeleteWarningContent from "@/components/popups/DeleteWarningContent/DeleteWarningContent";
+import { countClassUsage } from "@/utils/entityUsage";
 
 type ClassRowProps = {
     classItem: ClassType;
 };
 
 const ClassRow: React.FC<ClassRowProps> = ({ classItem }) => {
-    const { updateClass, school, deleteClass } = useMainContext();
+    const { updateClass, school, deleteClass, annualScheduleTable } = useMainContext();
     const { handleOpenPopup } = useConfirmPopup();
 
     const { handleSubmitDelete } = useSubmit(
@@ -31,12 +33,29 @@ const ClassRow: React.FC<ClassRowProps> = ({ classItem }) => {
     };
 
     const handleDeleteClass = (classItem: ClassType) => {
-        const entityName = classItem.activity ? "הקבוצה" : "הכיתה";
-        handleOpenPopup(
-            PopupAction.deleteClass,
-            `האם למחוק את ${entityName} ${classItem.name}`,
-            () => handleDeleteClassFromState(classItem.id),
-        );
+        const entityName = classItem.activity ? "קבוצת העבודה" : "הכיתה";
+        const usageCount = countClassUsage(classItem.id, annualScheduleTable);
+
+        if (usageCount > 0) {
+            handleOpenPopup(
+                PopupAction.deleteClass,
+                <DeleteWarningContent
+                    title={`האם למחוק את ${entityName} "${classItem.name}"?`}
+                    warningText={`${entityName} משובצת ב-${usageCount} שיעורים במערכת השנתית.`}
+                    usageCount={usageCount}
+                />,
+                () => handleDeleteClassFromState(classItem.id),
+                "מחק בכל זאת",
+                "ביטול",
+                "no",
+            );
+        } else {
+            handleOpenPopup(
+                PopupAction.deleteClass,
+                `האם למחוק את ${entityName} ${classItem.name}?`,
+                () => handleDeleteClassFromState(classItem.id),
+            );
+        }
     };
 
     return (

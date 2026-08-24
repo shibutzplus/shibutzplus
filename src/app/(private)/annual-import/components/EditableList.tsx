@@ -34,23 +34,38 @@ export function areSimilarEntities(a: string, b: string): boolean {
     if (!cleanA || !cleanB) return false;
     if (cleanA === cleanB) return true;
 
-    // Direct prefix match of at least 4 chars
-    if ((cleanA.startsWith(cleanB) && cleanB.length >= 4) || (cleanB.startsWith(cleanA) && cleanA.length >= 4)) {
-        return true;
-    }
-
     const wordsA = cleanA.split(" ").filter(Boolean);
     const wordsB = cleanB.split(" ").filter(Boolean);
 
-    // Multi-word stem match (e.g. "כישור חיים" vs "כישורי חיי", "מוביל בתנוע" vs "מובילים בת")
+    // Single-word comparison (e.g. "מתמטיק" vs "מתמטיקה", "אסטרטגיה" vs "אסטרטגיות")
+    if (wordsA.length === 1 && wordsB.length === 1) {
+        const wA = wordsA[0];
+        const wB = wordsB[0];
+        const stemA = normalizeWordStem(wA);
+        const stemB = normalizeWordStem(wB);
+        if (stemA && stemB) {
+            if (stemA === stemB) return true;
+            if ((stemA.startsWith(stemB) || stemB.startsWith(stemA)) && Math.min(stemA.length, stemB.length) >= 3 && Math.abs(stemA.length - stemB.length) <= 2) return true;
+        }
+        if ((wA.startsWith(wB) || wB.startsWith(wA)) && Math.min(wA.length, wB.length) >= 4 && Math.abs(wA.length - wB.length) <= 2) {
+            return true;
+        }
+        return false;
+    }
+
+    // Multi-word comparison with same word count (e.g. "כישור חיים" vs "כישורי חיי", "מוביל בתנוע" vs "מובילים בתנועה")
     if (wordsA.length === wordsB.length && wordsA.length >= 2) {
         const match = wordsA.every((wA, idx) => {
             const wB = wordsB[idx];
             if (wA === wB) return true;
-            if (wA.startsWith(wB) || wB.startsWith(wA)) return true;
             const stemA = normalizeWordStem(wA);
             const stemB = normalizeWordStem(wB);
-            return stemA === stemB || stemA.startsWith(stemB) || stemB.startsWith(stemA);
+            if (stemA && stemB) {
+                if (stemA === stemB) return true;
+                if ((stemA.startsWith(stemB) || stemB.startsWith(stemA)) && Math.min(stemA.length, stemB.length) >= 3 && Math.abs(stemA.length - stemB.length) <= 2) return true;
+            }
+            if ((wA.startsWith(wB) || wB.startsWith(wA)) && Math.min(wA.length, wB.length) >= 3 && Math.abs(wA.length - wB.length) <= 2) return true;
+            return false;
         });
         if (match) return true;
     }

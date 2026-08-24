@@ -9,6 +9,8 @@ import useSubmit from "@/hooks/useSubmit";
 import messages from "@/resources/messages";
 import { PopupAction } from "@/context/PopupContext";
 import { generateSchoolUrl } from "@/utils";
+import DeleteWarningContent from "@/components/popups/DeleteWarningContent/DeleteWarningContent";
+import { countTeacherUsage } from "@/utils/entityUsage";
 
 type TeacherRowProps = {
     teacher: TeacherType;
@@ -16,7 +18,7 @@ type TeacherRowProps = {
 
 const TeacherRow: React.FC<TeacherRowProps> = ({ teacher }) => {
     const { handleOpenPopup } = useConfirmPopup();
-    const { deleteTeacher, school, updateTeacher } = useMainContext();
+    const { deleteTeacher, school, updateTeacher, annualScheduleTable } = useMainContext();
 
     const { handleSubmitDelete } = useSubmit(
         () => { },
@@ -31,11 +33,28 @@ const TeacherRow: React.FC<TeacherRowProps> = ({ teacher }) => {
     };
 
     const handleDeleteTeacher = (teacher: TeacherType) => {
-        handleOpenPopup(
-            PopupAction.deleteTeacher,
-            `האם למחוק את המורה ${teacher.name}`,
-            () => handleDeleteTeacherFromState(teacher.id),
-        );
+        const usageCount = countTeacherUsage(teacher.id, annualScheduleTable);
+
+        if (usageCount > 0) {
+            handleOpenPopup(
+                PopupAction.deleteTeacher,
+                <DeleteWarningContent
+                    title={`האם למחוק את המורה "${teacher.name}"?`}
+                    warningText={`המורה משובץ/ת ב-${usageCount} שיעורים במערכת השנתית.`}
+                    usageCount={usageCount}
+                />,
+                () => handleDeleteTeacherFromState(teacher.id),
+                "מחק בכל זאת",
+                "ביטול",
+                "no",
+            );
+        } else {
+            handleOpenPopup(
+                PopupAction.deleteTeacher,
+                `האם למחוק את המורה ${teacher.name}?`,
+                () => handleDeleteTeacherFromState(teacher.id),
+            );
+        }
     };
 
     return (
