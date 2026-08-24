@@ -52,9 +52,9 @@ const CommonDailySchoolTable: React.FC<CommonDailySchoolTableProps> = ({
             const columnData = schedule[colId];
             if (!columnData) return;
 
-            const colFirstObj =
-                columnData["1"] ||
-                Object.values(columnData).find((cell) => cell?.headerCol?.type !== undefined);
+            const colFirstObj = Object.values(columnData).find(
+                (cell) => cell?.headerCol?.type !== undefined
+            );
 
             types[colId] = colFirstObj?.headerCol?.type ?? ColumnTypeValues.event;
         });

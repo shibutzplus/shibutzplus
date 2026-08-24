@@ -65,7 +65,8 @@ const TeacherHeaderBase: React.FC<TeacherHeaderBaseProps> = ({
 const CommonDailySchoolTeacherHeaderPublic: React.FC<
     Omit<CommonDailySchoolTeacherHeaderProps, "appType">
 > = ({ type, column }) => {
-    const selectedTeacherName = column?.["1"]?.headerCol?.headerTeacher?.name ?? "";
+    const headerCell = Object.values(column || {}).find(c => c?.headerCol?.headerTeacher);
+    const selectedTeacherName = headerCell?.headerCol?.headerTeacher?.name ?? "";
     const headerRef = React.useRef<HTMLDivElement>(null);
     useStickyHeader(headerRef);
 
@@ -91,7 +92,8 @@ const CommonDailySchoolTeacherHeaderPrivate: React.FC<
     const { openPopup, closePopup } = usePopup();
     const { setMainDailyTable } = useHistoryTable();
 
-    const selectedTeacherData = column?.["1"]?.headerCol?.headerTeacher;
+    const headerCell = Object.values(column || {}).find(c => c?.headerCol?.headerTeacher);
+    const selectedTeacherData = headerCell?.headerCol?.headerTeacher;
     const selectedTeacherName = selectedTeacherData?.name ?? "";
     const isClickable = !!selectedTeacherData?.name;
     const headerRef = React.useRef<HTMLDivElement>(null);

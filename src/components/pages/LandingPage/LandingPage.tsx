@@ -12,12 +12,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 import useContactUsPopup from "@/hooks/useContactUsPopup";
 import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
-import { signInWithGoogle } from "@/app/actions/POST/signInAction";
 import { useSession, signIn } from "next-auth/react";
 import { STATUS_LOADING, STATUS_UNAUTH } from "@/models/constant/session";
+import { USER_ROLES, AUTH_TYPE } from "@/models/constant/auth";
+import routes from "@/routes";
+import { DEFAULT_REDIRECT } from "@/routes/protectedAuth";
 
 const HeroSignInButton = (props: { title: string; className?: string }) => {
-    const { status } = useSession();
+    const { data: session, status } = useSession();
     const [isLoading, setIsLoading] = useState(false);
     const searchParams = useSearchParams();
     const googleError = searchParams.get("error");
@@ -35,19 +37,29 @@ const HeroSignInButton = (props: { title: string; className?: string }) => {
     }, [status]);
 
     useEffect(() => {
-        if (status === STATUS_UNAUTH || status === "authenticated") {
+        if (status === STATUS_UNAUTH) {
             setIsLoading(false);
         }
     }, [status]);
 
+    useEffect(() => {
+        if (status === "authenticated" && session?.user) {
+            const role = (session.user as any)?.role;
+            if (role === USER_ROLES.ADMIN) {
+                router.push(routes.schoolSelect.p);
+            } else {
+                router.push(DEFAULT_REDIRECT);
+            }
+        }
+    }, [status, session, router]);
+
     const handleGoogleSignIn = async () => {
         setIsLoading(true);
-        const res = await signInWithGoogle();
-        if (!res.success) {
-            errorToast(res.message);
+        try {
+            await signIn(AUTH_TYPE.GOOGLE);
+        } catch {
+            errorToast(messages.auth.login.failed);
             setIsLoading(false);
-        } else if (res.url) {
-            router.push(res.url);
         }
     };
 

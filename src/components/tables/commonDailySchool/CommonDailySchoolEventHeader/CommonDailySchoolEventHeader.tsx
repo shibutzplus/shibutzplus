@@ -21,7 +21,8 @@ const CommonDailySchoolEventMenu: React.FC<{
     column: { [hour: string]: DailyScheduleCell };
 }> = ({ type, column }) => {
     const { copyColumn } = useColumnClipboard();
-    const selectedEventData = column?.["1"]?.headerCol?.headerEvent;
+    const headerCell = Object.values(column || {}).find(c => c?.headerCol?.headerEvent);
+    const selectedEventData = headerCell?.headerCol?.headerEvent;
 
     const handleCopy = () => {
         copyColumn(type, column);
@@ -40,7 +41,8 @@ const CommonDailySchoolEventMenu: React.FC<{
 };
 
 const CommonDailySchoolEventHeader: React.FC<CommonDailySchoolEventHeaderProps> = ({ type, column, appType }) => {
-    const selectedEventData = column?.["1"]?.headerCol?.headerEvent;
+    const headerCell = Object.values(column || {}).find(c => c?.headerCol?.headerEvent);
+    const selectedEventData = headerCell?.headerCol?.headerEvent;
     const headerRef = React.useRef<HTMLDivElement>(null);
     useStickyHeader(headerRef);
 

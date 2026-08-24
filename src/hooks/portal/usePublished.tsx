@@ -149,12 +149,16 @@ export const usePublished = (schoolId?: string, selectedDate?: string, teacher?:
         teachers: TeacherType[],
         subjects: SubjectType[],
         classes: ClassType[],
-        hydratedSchoolId: string
+        hydratedSchoolId: string,
+        newFromHour?: number,
+        newToHour?: number
     ) => {
         setAllTeachers(teachers);
         setAllSubjects(subjects);
         setAllClasses(classes);
         setListSchoolId(hydratedSchoolId);
+        if (newFromHour !== undefined) setFromHour(newFromHour);
+        if (newToHour !== undefined) setToHour(newToHour);
     };
 
     return {

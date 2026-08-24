@@ -268,7 +268,7 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
         setSelectedDate(newSelectedDate);
 
         // Hydrate lists in usePublished
-        hydrateLists(newTeachers, newSubjects, newClasses, newSchoolId);
+        hydrateLists(newTeachers, newSubjects, newClasses, newSchoolId, newSettings?.fromHour, newSettings?.toHour);
 
         // Prevent the effect from re-fetching dates
         blockRef.current = false;

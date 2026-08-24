@@ -1,8 +1,10 @@
-import createDOMPurify from "isomorphic-dompurify";
+import DOMPurify from "dompurify";
 
-const DOMPurify = createDOMPurify();
-
-export function sanitizeHtml(dirty: string) {
+export function sanitizeHtml(dirty: string): string {
+    if (!dirty) return "";
+    if (typeof window === "undefined") {
+        return dirty;
+    }
     return DOMPurify.sanitize(dirty, {
         ALLOWED_TAGS: ["p", "br", "a", "strong", "em", "u"],
         ALLOWED_ATTR: ["href", "target", "rel"],
