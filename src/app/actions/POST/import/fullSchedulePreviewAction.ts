@@ -31,16 +31,22 @@ interface ServiceResponse {
     message?: string;
 }
 
-function cleanCSVValue(val: string): string {
+function cleanCellValue(val: string): string {
     let clean = val.trim();
     if (clean.startsWith('"') && clean.endsWith('"') && clean.length > 2) {
         clean = clean.slice(1, -1);
     }
     clean = clean.replace(/""/g, '"');
+    // Remove (ש) or (פ) or [ש] annotations
+    clean = clean.replace(/\s*[\(\[]\s*[שפ]\s*[\)\]]/g, "");
     // Normalize Hebrew/Smart quotes to standard single quote
     clean = clean.replace(/[\u2018\u2019\u05F3\u00B4`]/g, "'");
+    // Replace dots with spaces (e.g. "ארוחת.צהרים" -> "ארוחת צהרים")
+    clean = clean.replace(/\./g, ' ');
     // Replace line breaks with spaces to handle merged cells
     clean = clean.replace(/[\r\n]+/g, ' ');
+    // Collapse multiple spaces
+    clean = clean.replace(/\s+/g, ' ');
     return clean.trim();
 }
 
@@ -56,23 +62,33 @@ export const fullSchedulePreviewAction = async (
         const classFile = formData.get("classFile") as File | null;
         const teacherWordFile = formData.get("teacherWordFile") as File | null;
 
+        const aliasesStr = formData.get("aliases") as string | null;
+        const aliases: Record<string, string> = aliasesStr ? JSON.parse(aliasesStr) : {};
+
         const isWordMode = !!teacherWordFile;
 
         if (!isWordMode && (!teacherFile || !classFile)) {
             return { success: false, message: "Missing files" };
         }
 
-        const DAY_HEADERS: Record<string, number> = { "ראשון": 1, "שני": 2, "שלישי": 3, "רביעי": 4, "חמישי": 5, "שישי": 6 };
+        const DAY_HEADERS: Record<string, number> = {
+            "ראשון": 1, "שני": 2, "שלישי": 3, "רביעי": 4, "חמישי": 5, "שישי": 6,
+            "יום ראשון": 1, "יום שני": 2, "יום שלישי": 3, "יום רביעי": 4, "יום חמישי": 5, "יום שישי": 6,
+            "יום א": 1, "יום ב": 2, "יום ג": 3, "יום ד": 4, "יום ה": 5, "יום ו": 6,
+            "יום א'": 1, "יום ב'": 2, "יום ג'": 3, "יום ד'": 4, "יום ה'": 5, "יום ו'": 6,
+            "א": 1, "ב": 2, "ג": 3, "ד": 4, "ה": 5, "ו": 6,
+            "א'": 1, "ב'": 2, "ג'": 3, "ד'": 4, "ה'": 5, "ו'": 6,
+        };
 
         // Normalized lookups
-        const normalizedTeachers = entities.teachers.map(t => ({ original: t, clean: cleanCSVValue(t) }));
-        const normalizedSubjects = entities.subjects.map(s => ({ original: s, clean: cleanCSVValue(s) }));
+        const normalizedTeachers = entities.teachers.map(t => ({ original: t, clean: cleanCellValue(t) }));
+        const normalizedSubjects = entities.subjects.map(s => ({ original: s, clean: cleanCellValue(s) }));
         const normalizedClasses = entities.classes.map(c => ({
             original: c,
-            clean: cleanCSVValue(c),
+            clean: cleanCellValue(c),
             code: normalizeClassCode(c),
         }));
-        const normalizedWorkGroups = entities.workGroups.map(w => ({ original: w, clean: cleanCSVValue(w) }));
+        const normalizedWorkGroups = entities.workGroups.map(w => ({ original: w, clean: cleanCellValue(w) }));
 
         // ------------------ WORD (DOCX) FLOW ------------------
         if (isWordMode) {
@@ -86,13 +102,34 @@ export const fullSchedulePreviewAction = async (
             let currentTeacherDay: number | null = null;
 
             for (let i = 0; i < teacherParagraphs.length; i++) {
-                const cleanLine = cleanCSVValue(teacherParagraphs[i]);
+                const cleanLine = cleanCellValue(teacherParagraphs[i]);
 
-                if (cleanLine.includes("מערכת שעות מורה")) {
-                    const rawTeacherName = cleanLine.replace(/מערכת שעות\s+מורה\s+/, "").trim();
+                if (cleanLine.includes("מערכת שעות מורה") || cleanLine.includes("מערכת שעות למורה")) {
+                    const rawTeacherName = cleanLine.replace(/מערכת שעות\s+(?:ל?מורה|מורה:?)\s*/, "").trim();
                     const cleanRawTeacher = stripQuotes(rawTeacherName);
-                    
-                    let matchedTeacher = normalizedTeachers.find(t => stripQuotes(t.clean) === cleanRawTeacher);
+                    const aliased = aliases[cleanRawTeacher] || cleanRawTeacher;
+
+                    let matchedTeacher = normalizedTeachers.find(t => stripQuotes(t.clean) === aliased || stripQuotes(t.original) === aliased || stripQuotes(t.clean) === cleanRawTeacher || stripQuotes(t.original) === cleanRawTeacher);
+                    if (!matchedTeacher) {
+                        const rawWords = cleanRawTeacher.split(" ").filter(Boolean);
+                        matchedTeacher = normalizedTeachers.find(t => {
+                            const tWords = stripQuotes(t.clean).split(" ").filter(Boolean);
+                            if (rawWords.length >= 2 && tWords.length === rawWords.length) {
+                                return rawWords.slice().sort().join(" ") === tWords.slice().sort().join(" ");
+                            }
+                            return false;
+                        });
+                    }
+                    if (!matchedTeacher && aliased !== cleanRawTeacher) {
+                        const aliasedWords = aliased.split(" ").filter(Boolean);
+                        matchedTeacher = normalizedTeachers.find(t => {
+                            const tWords = stripQuotes(t.clean).split(" ").filter(Boolean);
+                            if (aliasedWords.length >= 2 && tWords.length === aliasedWords.length) {
+                                return aliasedWords.slice().sort().join(" ") === tWords.slice().sort().join(" ");
+                            }
+                            return false;
+                        });
+                    }
                     if (!matchedTeacher) {
                         matchedTeacher = normalizedTeachers
                             .filter(t => {
@@ -119,7 +156,7 @@ export const fullSchedulePreviewAction = async (
 
                     const parts = cleanLine.split(",").map(p => p.trim());
                     if (parts.length >= 1 && currentTeacherDay) {
-                        const nextLine = i + 1 < teacherParagraphs.length ? cleanCSVValue(teacherParagraphs[i + 1]) : "";
+                        const nextLine = i + 1 < teacherParagraphs.length ? cleanCellValue(teacherParagraphs[i + 1]) : "";
                         const hourMatch = nextLine.match(/שעה\s+(\d+)/);
                         if (hourMatch) {
                             const hour = parseInt(hourMatch[1]);
@@ -208,11 +245,6 @@ export const fullSchedulePreviewAction = async (
                 }
             }
 
-            dbLog({
-                description: `[fullSchedulePreviewAction] Generated Word schedule with ${scheduleItems.length} lessons`,
-                schoolId
-            });
-
             return {
                 success: true,
                 data: {
@@ -227,7 +259,7 @@ export const fullSchedulePreviewAction = async (
             };
         }
 
-        // ------------------ EXCEL/CSV FLOW ------------------
+        // ------------------ EXCEL FLOW ------------------
         const teacherBuffer = Buffer.from(await teacherFile!.arrayBuffer());
         const classBuffer = Buffer.from(await classFile!.arrayBuffer());
 
@@ -253,7 +285,7 @@ export const fullSchedulePreviewAction = async (
                     let foundClassHeader = false;
                     for (const cell of row) {
                         if (typeof cell === 'string') {
-                            const cleanCell = cleanCSVValue(cell);
+                            const cleanCell = cleanCellValue(cell);
                             const matchedCls = normalizedClasses
                                 .filter(c => cleanCell.includes(c.clean))
                                 .sort((a, b) => b.clean.length - a.clean.length)[0];
@@ -276,11 +308,11 @@ export const fullSchedulePreviewAction = async (
 
                         row.forEach((cell, colIdx) => {
                             if (typeof cell === 'string') {
-                                const clean = cleanCSVValue(cell);
+                                const clean = cleanCellValue(cell);
                                 if (DAY_HEADERS[clean]) {
                                     potentialDayMap[colIdx] = DAY_HEADERS[clean];
                                     foundDays++;
-                                } else if (clean.includes("שעה") || clean.includes("זמן")) {
+                                } else if (clean.includes("שעה") || clean.includes("שעור") || clean.includes("זמן")) {
                                     foundHourCol = colIdx;
                                 }
                             }
@@ -305,7 +337,7 @@ export const fullSchedulePreviewAction = async (
 
                         if (typeof hourCell === 'number') hour = hourCell;
                         else if (typeof hourCell === 'string') {
-                            const match = hourCell.match(/^(\d+)/);
+                            const match = hourCell.match(/(\d+)/);
                             if (match) hour = parseInt(match[1]);
                         }
 
@@ -320,7 +352,7 @@ export const fullSchedulePreviewAction = async (
                                 let hasNewHour = false;
                                 if (hourColIndex !== -1 && nextRow[hourColIndex]) {
                                     const nextHourCell = nextRow[hourColIndex];
-                                    if (typeof nextHourCell === 'number' || (typeof nextHourCell === 'string' && /^\d+/.test(nextHourCell))) {
+                                    if (typeof nextHourCell === 'number' || (typeof nextHourCell === 'string' && /\d+/.test(nextHourCell))) {
                                         hasNewHour = true;
                                     }
                                 }
@@ -328,7 +360,7 @@ export const fullSchedulePreviewAction = async (
                                 let isNextTitle = false;
                                 for (const cell of nextRow) {
                                     if (typeof cell === 'string') {
-                                        const clean = cleanCSVValue(cell);
+                                        const clean = cleanCellValue(cell);
                                         if (normalizedClasses.some(c => clean.includes(c.clean))) {
                                             isNextTitle = true;
                                             break;
@@ -352,7 +384,7 @@ export const fullSchedulePreviewAction = async (
                                     }
                                 }
 
-                                const cleanContent = cleanCSVValue(combinedText);
+                                const cleanContent = cleanCellValue(combinedText);
                                 if (cleanContent) {
                                     const key = `${currentClass}|${day}|${hour}`;
                                     classOriginalTextMap.set(key, cleanContent);
@@ -367,13 +399,13 @@ export const fullSchedulePreviewAction = async (
             dbLog({ description: `Error parsing class file: ${err instanceof Error ? err.message : String(err)}`, schoolId });
         }
 
-        // Parse Teacher CSV
+        // Parse Teacher Excel
         const XLSX = await getXLSX();
         const workbook = XLSX.read(teacherBuffer, { type: 'buffer' });
         const scheduleItems: ScheduleItem[] = [];
 
         // Regex helpers
-        const TEACHER_TITLE_REGEX = /מערכת שעות למורה|למורה/i;
+        const TEACHER_TITLE_REGEX = /מערכת שעות\s+(?:ל?מורה|מורה:?)\s*(.+)/i;
 
         workbook.SheetNames.forEach((sheetName: string) => {
             const worksheet = workbook.Sheets[sheetName];
@@ -389,19 +421,55 @@ export const fullSchedulePreviewAction = async (
                 if (!row || row.length === 0) continue;
 
                 // 1. Detect Teacher Block Start
-                const titleMatch = row.find(cell => typeof cell === 'string' && TEACHER_TITLE_REGEX.test(cell));
-                if (titleMatch) {
-                    const cleanTitle = cleanCSVValue(titleMatch.replace(TEACHER_TITLE_REGEX, ''));
+                const titleCell = row.find(cell => typeof cell === 'string' && (cell.includes("מערכת שעות") || cell.includes("מורה")));
+                if (titleCell && typeof titleCell === 'string') {
+                    let rawTeacherName = "";
+                    const match = titleCell.match(TEACHER_TITLE_REGEX);
+                    if (match && match[1]) {
+                        rawTeacherName = match[1];
+                    } else {
+                        rawTeacherName = titleCell.replace(/^(מערכת שעות למורה|מערכת שעות מורה|מערכת שעות|למורה|מורה:?)\s*:?/i, "");
+                    }
 
-                    // Reset internal block state
-                    currentTeacher = null;
-                    dayMap = null;
-                    hourColIndex = -1;
+                    const cleanTitle = cleanCellValue(rawTeacherName).replace(/[:\-,\.]/g, " ").replace(/\s+/g, " ").trim();
 
-                    const teacher = normalizedTeachers.find(t => cleanTitle.includes(t.clean) || t.clean.includes(cleanTitle));
-                    if (teacher) {
-                        currentTeacher = teacher.original;
-                        continue;
+                    if (cleanTitle && cleanTitle.length >= 2) {
+                        const aliased = aliases[cleanTitle] || cleanTitle;
+
+                        // 1a. Exact match
+                        let teacher = normalizedTeachers.find(t => t.clean === aliased || t.original === aliased || t.clean === cleanTitle || t.original === cleanTitle);
+
+                        // 1b. Unordered word match (e.g. "אורפלי קטי" <-> "קטי אורפלי")
+                        if (!teacher) {
+                            const titleWords = cleanTitle.split(" ").filter(Boolean);
+                            teacher = normalizedTeachers.find(t => {
+                                const tWords = t.clean.split(" ").filter(Boolean);
+                                if (titleWords.length >= 2 && tWords.length === titleWords.length) {
+                                    return titleWords.slice().sort().join(" ") === tWords.slice().sort().join(" ");
+                                }
+                                return false;
+                            });
+                        }
+
+                        // 1c. Aliased unordered word match
+                        if (!teacher && aliased !== cleanTitle) {
+                            const aliasedWords = aliased.split(" ").filter(Boolean);
+                            teacher = normalizedTeachers.find(t => {
+                                const tWords = t.clean.split(" ").filter(Boolean);
+                                if (aliasedWords.length >= 2 && tWords.length === aliasedWords.length) {
+                                    return aliasedWords.slice().sort().join(" ") === tWords.slice().sort().join(" ");
+                                }
+                                return false;
+                            });
+                        }
+
+                        if (teacher) {
+                            // Reset internal block state
+                            currentTeacher = teacher.original;
+                            dayMap = null;
+                            hourColIndex = -1;
+                            continue;
+                        }
                     }
                 }
 
@@ -413,11 +481,11 @@ export const fullSchedulePreviewAction = async (
 
                     row.forEach((cell, colIdx) => {
                         if (typeof cell === 'string') {
-                            const clean = cleanCSVValue(cell);
+                            const clean = cleanCellValue(cell);
                             if (DAY_HEADERS[clean]) {
                                 potentialDayMap[colIdx] = DAY_HEADERS[clean];
                                 foundDays++;
-                            } else if (clean.includes("שעה") || clean.includes("זמן")) {
+                            } else if (clean.includes("שעה") || clean.includes("שעור") || clean.includes("זמן")) {
                                 foundHourCol = colIdx;
                             }
                         }
@@ -444,7 +512,7 @@ export const fullSchedulePreviewAction = async (
 
                     if (typeof hourCell === 'number') hour = hourCell;
                     else if (typeof hourCell === 'string') {
-                        const match = hourCell.match(/^(\d+)/);
+                        const match = hourCell.match(/(\d+)/);
                         if (match) hour = parseInt(match[1]);
                     }
 
@@ -460,7 +528,7 @@ export const fullSchedulePreviewAction = async (
                             if (hourColIndex !== -1 && nextRow[hourColIndex]) {
                                 const nextHourCell = nextRow[hourColIndex];
                                 if (typeof nextHourCell === 'number' ||
-                                    (typeof nextHourCell === 'string' && /^\d+/.test(nextHourCell))) {
+                                    (typeof nextHourCell === 'string' && /\d+/.test(nextHourCell))) {
                                     hasNewHour = true;
                                 }
                             }
@@ -475,32 +543,56 @@ export const fullSchedulePreviewAction = async (
 
                         for (const [colIdxStr, day] of Object.entries(dayMap)) {
                             const colIdx = parseInt(colIdxStr);
-                            let combinedText = "";
+                            const cellLines: string[] = [];
                             for (const hourRow of hourRows) {
                                 const cell = hourRow[colIdx];
                                 if (cell && typeof cell === 'string' && cell.trim().length > 0) {
-                                    combinedText += " " + cell;
+                                    cellLines.push(...cell.split(/[\r\n]+/).map(cleanCellValue).filter(Boolean));
                                 }
                             }
 
-                            const trimmed = combinedText.trim();
-                            if (trimmed.length === 0 || /^[\s\u00A0]+$/.test(trimmed)) continue;
+                            if (cellLines.length === 0) continue;
 
-                            const cleanContent = cleanCSVValue(combinedText);
+                            const firstLine = cellLines[0];
+                            const cleanContent = cleanCellValue(cellLines.join(" "));
                             let finalSub = "";
                             let finalCls = "";
 
-                            const wgMatch = normalizedWorkGroups
-                                .filter(w => cleanContent.includes(w.clean))
-                                .sort((a, b) => b.clean.length - a.clean.length)[0];
+                            // 1. WorkGroups
+                            let wgMatch = normalizedWorkGroups.find(w => w.clean === firstLine);
+                            if (!wgMatch) {
+                                wgMatch = normalizedWorkGroups
+                                    .filter(w => {
+                                        const regex = new RegExp(`(^|\\s)${w.clean.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}(\\s|$)`);
+                                        return regex.test(cleanContent) || cleanContent.includes(w.clean);
+                                    })
+                                    .sort((a, b) => b.clean.length - a.clean.length)[0];
+                            }
 
                             if (wgMatch) {
                                 finalSub = wgMatch.original;
                                 finalCls = "קבוצה";
                             } else {
-                                const subMatch = normalizedSubjects
-                                    .filter(s => cleanContent.includes(s.clean))
-                                    .sort((a, b) => b.clean.length - a.clean.length)[0];
+                                // 2. Subjects
+                                // 2a. Exact match on first line (e.g. "שפה" === "שפה")
+                                let subMatch = normalizedSubjects.find(s => s.clean === firstLine);
+
+                                // 2b. Exact whole-word phrase in cell content
+                                if (!subMatch) {
+                                    const subMatches = normalizedSubjects.filter(s => {
+                                        const regex = new RegExp(`(^|\\s)${s.clean.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}(\\s|$)`);
+                                        return regex.test(cleanContent);
+                                    }).sort((a, b) => b.clean.length - a.clean.length);
+
+                                    if (subMatches.length > 0) {
+                                        subMatch = subMatches[0];
+                                    }
+                                }
+
+                                // 2c. Prefix match on first line (e.g. "חשיבה חיובי" -> "חשיבה חיובית", "בית ספר מנ" -> "בית ספר מנגן")
+                                if (!subMatch && firstLine.length >= 3) {
+                                    subMatch = normalizedSubjects.find(s => s.clean.startsWith(firstLine) || firstLine.startsWith(s.clean));
+                                }
 
                                 if (subMatch) finalSub = subMatch.original;
 
@@ -523,10 +615,14 @@ export const fullSchedulePreviewAction = async (
                                     classFileOriginalText = classOriginalTextMap.get(key) || "";
                                 }
 
+                                const resolvedTeacher = aliases[currentTeacher!] || currentTeacher!;
+                                const resolvedClass = aliases[finalCls] || finalCls || "ללא כיתה";
+                                const resolvedSub = aliases[finalSub] || finalSub || "ללא מקצוע";
+
                                 scheduleItems.push({
-                                    teacher: currentTeacher!,
-                                    class: finalCls || "ללא כיתה",
-                                    subject: finalSub || "ללא מקצוע",
+                                    teacher: resolvedTeacher,
+                                    class: resolvedClass,
+                                    subject: resolvedSub,
                                     day: Number(day),
                                     hour: hour,
                                     originalText: classFileOriginalText || cleanContent

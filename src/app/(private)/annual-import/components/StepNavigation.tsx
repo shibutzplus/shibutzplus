@@ -5,10 +5,8 @@ import Icons from '@/style/icons';
 interface StepNavigationProps {
     onNext?: () => void;
     onPrev?: () => void;
-    onRefresh?: () => void;
     isNextDisabled?: boolean;
     isPrevDisabled?: boolean;
-    isRefreshing?: boolean;
     isLoading?: boolean;
     nextLabel?: string;
     prevLabel?: string;
@@ -20,11 +18,9 @@ interface StepNavigationProps {
 const StepNavigation: React.FC<StepNavigationProps> = ({
     onNext,
     onPrev,
-    onRefresh,
     onSaveToDB,
     isNextDisabled = false,
     isPrevDisabled = false,
-    isRefreshing = false,
     isLoading = false,
     isSaving = false,
     nextLabel = "הבא",
@@ -32,43 +28,28 @@ const StepNavigation: React.FC<StepNavigationProps> = ({
     showPrev = true
 }) => {
     return (
-        <div className={styles.actions} style={{ justifyContent: 'space-between' }}>
-            {(onRefresh || onSaveToDB) && (
-                <div style={{ display: 'flex', gap: '10px' }}>
-                    {onRefresh && (
-                        <button
-                            type="button"
-                            onClick={onRefresh}
-                            disabled={isRefreshing}
-                            className={styles.btnRefresh}
-                            title="שלוף בעזרת AI"
-                        >
-                            {isRefreshing ? "⏳" : (
-                                <Icons.magic size={24} />
-                            )}
-                        </button>
-                    )}
-                    {onSaveToDB && (
-                        <button
-                            type="button"
-                            onClick={onSaveToDB}
-                            disabled={isSaving}
-                            className={styles.btnRefresh} // Reusing same style for icon button
-                            title="שמור ל DB"
-                        >
-                            {isSaving ? "⏳" : (
-                                <Icons.save size={24} />
-                            )}
-                        </button>
-                    )}
-                </div>
-            )}
-            <div style={{ display: 'flex', gap: '10px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginTop: '0.5rem' }}>
+            <div>
+                {onSaveToDB && (
+                    <button
+                        type="button"
+                        onClick={onSaveToDB}
+                        disabled={isSaving}
+                        className={styles.btnRefresh}
+                        title="שמור ל DB"
+                    >
+                        {isSaving ? "⏳" : (
+                            <Icons.save size={24} />
+                        )}
+                    </button>
+                )}
+            </div>
+            <div style={{ display: 'flex', gap: '10px', marginInlineStart: 'auto' }}>
                 {showPrev && onPrev && (
                     <button
                         type="button"
                         onClick={onPrev}
-                        disabled={isPrevDisabled || isRefreshing || isLoading}
+                        disabled={isPrevDisabled || isLoading}
                         className={styles.modalBtnNo}
                     >
                         {prevLabel}
@@ -78,7 +59,7 @@ const StepNavigation: React.FC<StepNavigationProps> = ({
                     <button
                         type="button"
                         onClick={onNext}
-                        disabled={isNextDisabled || isRefreshing || isLoading}
+                        disabled={isNextDisabled || isLoading}
                         className={styles.btnPrimary}
                     >
                         {isLoading ? "מעבד..." : nextLabel}
