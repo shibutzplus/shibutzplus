@@ -8,6 +8,17 @@ const nextConfig: NextConfig = {
     eslint: {
         ignoreDuringBuilds: true,
     },
+    experimental: {
+        optimizePackageImports: [
+            "recharts",
+            "react-icons",
+            "motion",
+            "@tiptap/react",
+            "@tiptap/starter-kit",
+            "@react-pdf/renderer",
+            "xlsx",
+        ],
+    },
     webpack: (config, { webpack }) => {
         config.resolve = config.resolve || {};
         config.resolve.alias = {
