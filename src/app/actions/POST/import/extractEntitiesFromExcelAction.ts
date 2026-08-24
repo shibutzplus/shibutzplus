@@ -2,11 +2,7 @@
 
 import { auth } from "@/auth";
 import { dbLog } from "@/services/loggerService";
-
-async function getXLSX() {
-    const libName = "xlsx";
-    return await import(libName);
-}
+import * as XLSX from "xlsx";
 
 export interface ExcelExtractResult {
     teachers: string[];
@@ -138,7 +134,6 @@ export const extractEntitiesFromExcelAction = async (
             classFile.arrayBuffer().then(ab => Buffer.from(ab)),
         ]);
 
-        const XLSX = await getXLSX();
         const teacherWb = XLSX.read(teacherBuffer, { type: "buffer" });
         const classWb = XLSX.read(classBuffer, { type: "buffer" });
 

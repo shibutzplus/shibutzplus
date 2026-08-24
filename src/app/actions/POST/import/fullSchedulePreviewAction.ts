@@ -2,11 +2,7 @@
 
 import { dbLog } from "@/services/loggerService";
 import { extractParagraphsFromDocx, normalizeClassCode } from "@/services/importAnnual/docxUtils";
-
-async function getXLSX() {
-    const libName = "xlsx";
-    return await import(libName);
-}
+import * as XLSX from "xlsx";
 
 // Types
 interface ScheduleItem {
@@ -267,7 +263,6 @@ export const fullSchedulePreviewAction = async (
         const classOriginalTextMap = new Map<string, string>();
 
         try {
-            const XLSX = await getXLSX();
             const classWorkbook = XLSX.read(classBuffer, { type: 'buffer' });
             classWorkbook.SheetNames.forEach((sheetName: string) => {
                 const classSheet = classWorkbook.Sheets[sheetName];
@@ -400,7 +395,6 @@ export const fullSchedulePreviewAction = async (
         }
 
         // Parse Teacher Excel
-        const XLSX = await getXLSX();
         const workbook = XLSX.read(teacherBuffer, { type: 'buffer' });
         const scheduleItems: ScheduleItem[] = [];
 

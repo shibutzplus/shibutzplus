@@ -18,7 +18,7 @@ interface EditableListProps {
     onSwapName?: (oldName: string, newName: string) => void;
 }
 
-function normalizeWordStem(word: string): string {
+export function normalizeWordStem(word: string): string {
     if (!word) return "";
     let w = word.replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019]/g, "").trim();
     // Strip trailing Hebrew grammatical endings: ים, ות, י, ת, ה
@@ -26,7 +26,7 @@ function normalizeWordStem(word: string): string {
     return w;
 }
 
-function areSimilarEntities(a: string, b: string): boolean {
+export function areSimilarEntities(a: string, b: string): boolean {
     if (a === b) return false;
     const cleanA = a.replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019]/g, "").replace(/\s+/g, " ").trim();
     const cleanB = b.replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019]/g, "").replace(/\s+/g, " ").trim();
@@ -123,6 +123,10 @@ const EditableList: React.FC<EditableListProps> = ({
                 const itemB = items[j];
                 const key = [itemA.name, itemB.name].sort().join("<->");
 
+                // If one of the items is already established in DB ('both' or 'db'), skip banner prompt
+                const hasDbItem = (itemA.source === 'both' || itemA.source === 'db') || (itemB.source === 'both' || itemB.source === 'db');
+                if (hasDbItem) continue;
+
                 if (!seen.has(key) && !dismissedPairs.has(key)) {
                     if (areSimilarEntities(itemA.name, itemB.name)) {
                         seen.add(key);
@@ -141,7 +145,7 @@ const EditableList: React.FC<EditableListProps> = ({
             }
         }
         return pairs;
-    }, [items, dismissedPairs]);
+    }, [items, dismissedPairs, allowMerge]);
 
     const executeMerge = (discardedName: string, keptName: string) => {
         const discardedItem = items.find(i => i.name === discardedName);

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import AnnualImportPageLayout from "@/components/layout/pageLayouts/AnnualImportPageLayout/AnnualImportPageLayout";
 import SubmitBtn from "@/components/ui/buttons/SubmitBtn/SubmitBtn";
-import EditableList, { ListItem } from "./components/EditableList";
+import EditableList, { ListItem, areSimilarEntities } from "./components/EditableList";
 import StepNavigation from "./components/StepNavigation";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import { extractEntitiesFromExcelAction } from "@/app/actions/POST/import/extractEntitiesFromExcelAction";
@@ -236,7 +236,6 @@ const AnnualImportContent = () => {
                 // Helper to match subject or workgroup names between file and DB
                 const findEntityDbMatch = (cleanName: string, dbMap: Map<string, any>) => {
                     if (dbMap.has(cleanName)) return cleanName;
-                    const candWords = cleanName.split(" ").filter(Boolean);
 
                     // 1. Exact cleaned match
                     for (const [dbName] of dbMap) {
@@ -244,29 +243,22 @@ const AnnualImportContent = () => {
                         if (cleanDb === cleanName) return dbName;
                     }
 
-                    // 2. Prefix / Stem match (e.g. "חשיבה חיובי" <-> "חשיבה חיובית", "ארוחת צהרי" <-> "ארוחת צהרים")
+                    // 2. Similar entity / prefix / stem match
                     for (const [dbName] of dbMap) {
                         const cleanDb = cleanForEntity(dbName);
                         if (
                             (cleanDb.startsWith(cleanName) && cleanName.length >= 4) ||
-                            (cleanName.startsWith(cleanDb) && cleanDb.length >= 4)
+                            (cleanName.startsWith(cleanDb) && cleanDb.length >= 4) ||
+                            areSimilarEntities(cleanName, cleanDb)
                         ) {
                             return dbName;
-                        }
-
-                        // Word-level prefix match (e.g. "חשיבה חיובי" vs "חשיבה חיובית")
-                        const dbWords = cleanDb.split(" ").filter(Boolean);
-                        if (candWords.length === dbWords.length && candWords.length >= 2) {
-                            const isMatch = candWords.every((w, idx) => {
-                                const dbW = dbWords[idx];
-                                return w === dbW || dbW.startsWith(w) || w.startsWith(dbW);
-                            });
-                            if (isMatch) return dbName;
                         }
                     }
 
                     return undefined;
                 };
+
+                const newAliases: Record<string, string> = {};
 
                 // Merge subjects from file with DB subjects
                 const mergedSubjects: typeof subjects = [];
@@ -276,19 +268,32 @@ const AnnualImportContent = () => {
                 extracted.subjects.forEach(name => {
                     const cleanName = cleanForEntity(name);
                     if (seenSubjects.has(cleanName)) return;
-                    seenSubjects.add(cleanName);
 
                     const dbMatch = findEntityDbMatch(cleanName, dbSubjectMap);
 
                     if (dbMatch) {
+                        seenSubjects.add(cleanName);
                         dbSubjectMap.delete(dbMatch);
                         const hasQuotes = name.includes('"') || name.includes("'");
                         const dbHasQuotes = dbMatch.includes('"') || dbMatch.includes("'");
                         const finalName = (hasQuotes && !dbHasQuotes) ? name : dbMatch;
                         mergedSubjects.push({ name: finalName, source: 'both', exists: true });
-                    } else {
-                        mergedSubjects.push({ name, source: 'file', exists: false });
+                        if (name !== finalName) {
+                            newAliases[name] = finalName;
+                        }
+                        return;
                     }
+
+                    // If it matches an already merged subject (e.g. truncated version "כישורי חיי" when "כישור חיים" is already merged)
+                    const alreadyMerged = mergedSubjects.find(s => s.name === name || areSimilarEntities(s.name, name));
+                    if (alreadyMerged) {
+                        seenSubjects.add(cleanName);
+                        newAliases[name] = alreadyMerged.name;
+                        return;
+                    }
+
+                    seenSubjects.add(cleanName);
+                    mergedSubjects.push({ name, source: 'file', exists: false });
                 });
 
                 dbSubjectMap.forEach(item => mergedSubjects.push({ ...item, source: 'db', exists: true }));
@@ -302,20 +307,33 @@ const AnnualImportContent = () => {
                 extracted.workGroups.forEach(name => {
                     const cleanName = cleanForEntity(name);
                     if (seenWorkGroups.has(cleanName)) return;
-                    seenWorkGroups.add(cleanName);
 
                     const dbMatch = findEntityDbMatch(cleanName, dbWorkGroupMap);
 
                     if (dbMatch) {
+                        seenWorkGroups.add(cleanName);
                         dbWorkGroupMap.delete(dbMatch);
                         const cleanDbMatch = dbMatch.replace(/\s*[\(\[]\s*[שפ]\s*[\)\]]/g, "").trim();
                         const hasQuotes = name.includes('"') || name.includes("'");
                         const dbHasQuotes = cleanDbMatch.includes('"') || cleanDbMatch.includes("'");
                         const finalName = (hasQuotes && !dbHasQuotes) ? name : cleanDbMatch;
                         mergedWorkGroups.push({ name: finalName, source: 'both', exists: true });
-                    } else {
-                        mergedWorkGroups.push({ name, source: 'file', exists: false });
+                        if (name !== finalName) {
+                            newAliases[name] = finalName;
+                        }
+                        return;
                     }
+
+                    // If it matches an already merged workGroup
+                    const alreadyMerged = mergedWorkGroups.find(w => w.name === name || areSimilarEntities(w.name, name));
+                    if (alreadyMerged) {
+                        seenWorkGroups.add(cleanName);
+                        newAliases[name] = alreadyMerged.name;
+                        return;
+                    }
+
+                    seenWorkGroups.add(cleanName);
+                    mergedWorkGroups.push({ name, source: 'file', exists: false });
                 });
 
                 dbWorkGroupMap.forEach(item => {
@@ -323,6 +341,10 @@ const AnnualImportContent = () => {
                     mergedWorkGroups.push({ ...item, name: cleanName, source: 'db', exists: true });
                 });
                 workGroups = mergedWorkGroups.sort((a, b) => a.name.localeCompare(b.name, 'he'));
+
+                if (Object.keys(newAliases).length > 0) {
+                    setMergeAliases(prev => ({ ...prev, ...newAliases }));
+                }
             };
 
             // --- Excel mode: extract from Excel files and merge ---
@@ -507,44 +529,7 @@ const AnnualImportContent = () => {
 
                             setAnalyzedData(prev => ({ ...prev, classes: sortedClasses }));
                         } else if (step === 3) {
-                            // Step 3 (Classes) -> moving to Step 4 (WorkGroups target)
-                            const cleanForEntity = (s: string) => s.replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019]/g, "").replace(/\s+/g, " ").trim();
-                            const dbWorkGroups = dbRes.data.workGroups.map(w => ({ ...w, source: 'db' as ListItem['source'] }));
-                            const dbWorkGroupMap = new Map(dbWorkGroups.map(w => [w.name, w]));
-                            const mergedWorkGroups: ListItem[] = [];
-                            const seenWorkGroups = new Set<string>();
-
-                            wordRes.data.workGroups.forEach(name => {
-                                const cleanName = cleanForEntity(name);
-                                if (seenWorkGroups.has(cleanName)) return;
-                                seenWorkGroups.add(cleanName);
-
-                                let dbMatch: string | undefined;
-                                if (dbWorkGroupMap.has(name)) {
-                                    dbMatch = name;
-                                } else {
-                                    for (const [dbName] of dbWorkGroupMap) {
-                                        if (cleanForEntity(dbName) === cleanName) {
-                                            dbMatch = dbName;
-                                            break;
-                                        }
-                                    }
-                                }
-
-                                if (dbMatch) {
-                                    dbWorkGroupMap.delete(dbMatch);
-                                    mergedWorkGroups.push({ name: dbMatch, source: 'both', exists: true });
-                                } else {
-                                    mergedWorkGroups.push({ name, source: 'file', exists: false });
-                                }
-                            });
-
-                            dbWorkGroupMap.forEach(item => mergedWorkGroups.push({ ...item, source: 'db', exists: true }));
-                            const sortedWorkGroups = mergedWorkGroups.sort((a, b) => a.name.localeCompare(b.name, 'he'));
-
-                            setAnalyzedData(prev => ({ ...prev, workGroups: sortedWorkGroups }));
-                        } else if (step === 4) {
-                            // Step 4 (WorkGroups) -> moving to Step 5 (Subjects target)
+                            // Step 3 (Classes) -> moving to Step 4 (Subjects target)
                             const cleanForEntity = (s: string) => s.replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019]/g, "").replace(/\s+/g, " ").trim();
                             const dbSubjects = dbRes.data.subjects.map(s => ({ ...s, source: 'db' as ListItem['source'] }));
                             const dbSubjectMap = new Map(dbSubjects.map(s => [s.name, s]));
@@ -554,14 +539,14 @@ const AnnualImportContent = () => {
                             wordRes.data.subjects.forEach(name => {
                                 const cleanName = cleanForEntity(name);
                                 if (seenSubjects.has(cleanName)) return;
-                                seenSubjects.add(cleanName);
 
                                 let dbMatch: string | undefined;
                                 if (dbSubjectMap.has(name)) {
                                     dbMatch = name;
                                 } else {
                                     for (const [dbName] of dbSubjectMap) {
-                                        if (cleanForEntity(dbName) === cleanName) {
+                                        const cleanDb = cleanForEntity(dbName);
+                                        if (cleanDb === cleanName || areSimilarEntities(cleanName, cleanDb)) {
                                             dbMatch = dbName;
                                             break;
                                         }
@@ -569,17 +554,72 @@ const AnnualImportContent = () => {
                                 }
 
                                 if (dbMatch) {
+                                    seenSubjects.add(cleanName);
                                     dbSubjectMap.delete(dbMatch);
                                     mergedSubjects.push({ name: dbMatch, source: 'both', exists: true });
-                                } else {
-                                    mergedSubjects.push({ name, source: 'file', exists: false });
+                                    return;
                                 }
+
+                                const alreadyMerged = mergedSubjects.find(s => s.name === name || areSimilarEntities(s.name, name));
+                                if (alreadyMerged) {
+                                    seenSubjects.add(cleanName);
+                                    return;
+                                }
+
+                                seenSubjects.add(cleanName);
+                                mergedSubjects.push({ name, source: 'file', exists: false });
                             });
 
                             dbSubjectMap.forEach(item => mergedSubjects.push({ ...item, source: 'db', exists: true }));
                             const sortedSubjects = mergedSubjects.sort((a, b) => a.name.localeCompare(b.name, 'he'));
 
                             setAnalyzedData(prev => ({ ...prev, subjects: sortedSubjects }));
+                        } else if (step === 4) {
+                            // Step 4 (Subjects) -> moving to Step 5 (WorkGroups target)
+                            const cleanForEntity = (s: string) => s.replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019]/g, "").replace(/\s+/g, " ").trim();
+                            const dbWorkGroups = dbRes.data.workGroups.map(w => ({ ...w, source: 'db' as ListItem['source'] }));
+                            const dbWorkGroupMap = new Map(dbWorkGroups.map(w => [w.name, w]));
+                            const mergedWorkGroups: ListItem[] = [];
+                            const seenWorkGroups = new Set<string>();
+
+                            wordRes.data.workGroups.forEach(name => {
+                                const cleanName = cleanForEntity(name);
+                                if (seenWorkGroups.has(cleanName)) return;
+
+                                let dbMatch: string | undefined;
+                                if (dbWorkGroupMap.has(name)) {
+                                    dbMatch = name;
+                                } else {
+                                    for (const [dbName] of dbWorkGroupMap) {
+                                        const cleanDb = cleanForEntity(dbName);
+                                        if (cleanDb === cleanName || areSimilarEntities(cleanName, cleanDb)) {
+                                            dbMatch = dbName;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                if (dbMatch) {
+                                    seenWorkGroups.add(cleanName);
+                                    dbWorkGroupMap.delete(dbMatch);
+                                    mergedWorkGroups.push({ name: dbMatch, source: 'both', exists: true });
+                                    return;
+                                }
+
+                                const alreadyMerged = mergedWorkGroups.find(w => w.name === name || areSimilarEntities(w.name, name));
+                                if (alreadyMerged) {
+                                    seenWorkGroups.add(cleanName);
+                                    return;
+                                }
+
+                                seenWorkGroups.add(cleanName);
+                                mergedWorkGroups.push({ name, source: 'file', exists: false });
+                            });
+
+                            dbWorkGroupMap.forEach(item => mergedWorkGroups.push({ ...item, source: 'db', exists: true }));
+                            const sortedWorkGroups = mergedWorkGroups.sort((a, b) => a.name.localeCompare(b.name, 'he'));
+
+                            setAnalyzedData(prev => ({ ...prev, workGroups: sortedWorkGroups }));
                         }
                     }
                 }
@@ -687,7 +727,7 @@ const AnnualImportContent = () => {
                         {fileMode === 'excel' && (
                             <div className={styles.uploadContainer}>
                                 <div>
-                                    <h3 className={styles.subTitle}>קובץ מערכת לפי כיתות (.xlsx)</h3>
+                                    <h3 className={styles.subTitle}>קובץ מערכת לפי כיתות (xlsx)</h3>
                                     <input
                                         type="file"
                                         id="class-excel-input"
@@ -696,10 +736,9 @@ const AnnualImportContent = () => {
                                         disabled={isLoading}
                                         className={styles.fileInput}
                                     />
-                                    {classFile && <span className={styles.fileSuccess}>נבחר: {classFile.name}</span>}
 
                                     <br /><br />
-                                    <h3 className={styles.subTitle}>קובץ מערכת לפי מורים (.xlsx)</h3>
+                                    <h3 className={styles.subTitle}>קובץ מערכת לפי מורים (xlsx)</h3>
                                     <input
                                         type="file"
                                         id="teacher-excel-input"
@@ -708,7 +747,6 @@ const AnnualImportContent = () => {
                                         disabled={isLoading}
                                         className={styles.fileInput}
                                     />
-                                    {teacherFile && <span className={styles.fileSuccess}>נבחר: {teacherFile.name}</span>}
                                 </div>
                             </div>
                         )}
@@ -717,7 +755,7 @@ const AnnualImportContent = () => {
                         {fileMode === 'word' && (
                             <div className={styles.uploadContainer}>
                                 <div>
-                                    <h3 className={styles.subTitle}>קובץ מערכת לפי כיתות (.docx)</h3>
+                                    <h3 className={styles.subTitle}>קובץ מערכת לפי כיתות (docx)</h3>
                                     <input
                                         type="file"
                                         id="class-word-input"
@@ -726,10 +764,9 @@ const AnnualImportContent = () => {
                                         disabled={isLoading}
                                         className={styles.fileInput}
                                     />
-                                    {classWordFile && <span className={styles.fileSuccess}>נבחר: {classWordFile.name}</span>}
 
                                     <br /><br />
-                                    <h3 className={styles.subTitle}>קובץ מערכת לפי מורים (.docx)</h3>
+                                    <h3 className={styles.subTitle}>קובץ מערכת לפי מורים (docx)</h3>
                                     <input
                                         type="file"
                                         id="teacher-word-input"
@@ -738,7 +775,6 @@ const AnnualImportContent = () => {
                                         disabled={isLoading}
                                         className={styles.fileInput}
                                     />
-                                    {teacherWordFile && <span className={styles.fileSuccess}>נבחר: {teacherWordFile.name}</span>}
                                 </div>
                             </div>
                         )}

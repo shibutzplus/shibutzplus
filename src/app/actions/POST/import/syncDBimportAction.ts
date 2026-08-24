@@ -548,14 +548,12 @@ export async function saveAllTeachersSchedulesAction(
         }
 
         const toInsert: NewAnnualScheduleSchema[] = [];
-        const missingTeachers: string[] = [];
 
         for (const teacherSched of schedules) {
             const { teacherName, scheduleItems } = teacherSched;
             const teacherId = teacherMap.get(teacherName);
 
             if (!teacherId) {
-                if (!missingTeachers.includes(teacherName)) missingTeachers.push(teacherName);
                 continue;
             }
 

@@ -44,12 +44,7 @@ const fetchSchoolEntities = async (schoolId: string) => {
         existingTeacherNames,
         existingClassNames,
         existingSubjectNames,
-        existingWorkGroupNames,
-        raw: {
-            teachers: dbTeachers,
-            classes: dbClasses,
-            subjects: dbSubjects
-        }
+        existingWorkGroupNames
     };
 };
 
