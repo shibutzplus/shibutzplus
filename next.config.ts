@@ -11,7 +11,6 @@ const nextConfig: NextConfig = {
     experimental: {
         optimizePackageImports: [
             "recharts",
-            "react-icons",
             "motion",
             "@tiptap/react",
             "@tiptap/starter-kit",

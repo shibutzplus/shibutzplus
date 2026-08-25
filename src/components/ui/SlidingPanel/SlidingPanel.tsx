@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
-import { IoCloseOutline } from "react-icons/io5";
+import React, { useRef, useState, useEffect } from "react";
+import Icons from "@/style/icons";
 import { useAccessibility } from "@/hooks/browser/useAccessibility";
 import styles from "./SlidingPanel.module.css";
 
@@ -73,7 +73,7 @@ const SlidingPanel: React.FC<SlidingPanelProps> = ({
                         className={styles.closeButton}
                         aria-label="Close panel"
                     >
-                        <IoCloseOutline className={styles.closeIcon} />
+                        <Icons.close className={styles.closeIcon} />
                     </button>
                 </header>
                 <div className={styles.content}>{children}</div>

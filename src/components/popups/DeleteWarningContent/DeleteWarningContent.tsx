@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./DeleteWarningContent.module.css";
-import { IoWarningOutline } from "react-icons/io5";
+import Icons from "@/style/icons";
 
 interface DeleteWarningContentProps {
     title: string;
@@ -19,7 +19,7 @@ export const DeleteWarningContent: React.FC<DeleteWarningContentProps> = ({
             {usageCount > 0 && (
                 <div className={styles.warningBox}>
                     <div className={styles.warningHeader}>
-                        <IoWarningOutline className={styles.warningIcon} size={20} />
+                        <Icons.warning className={styles.warningIcon} size={20} />
                         <span className={styles.warningTitle}>שימו לב: קיים שימוש במערכת</span>
                     </div>
                     <p className={styles.warningMessage}>

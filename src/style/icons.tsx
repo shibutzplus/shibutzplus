@@ -1,82 +1,338 @@
-import {
-    IoCalendarOutline, IoCalendarSharp, IoLogOutOutline, IoPeopleOutline,
-    IoMenuOutline, IoCloseOutline, IoBookOutline,
-    IoChevronDown, IoSettingsOutline, IoPersonOutline,
-    IoPersonRemoveOutline, IoPeopleSharp, IoArrowBack,
-    IoArrowForward, IoStatsChart, IoInformationCircleOutline, IoNotifications,
-} from "react-icons/io5";
-import { IoMdRefresh } from "react-icons/io";
-import { RiEdit2Fill, RiDeleteBin6Line } from "react-icons/ri";
-import { BsMegaphoneFill, BsCalendar4Event, BsThreeDotsVertical, BsFiletypePdf, BsTable, BsMagic } from "react-icons/bs";
-import { MdPersonAdd, MdPerson, MdSwapHoriz, MdOpenInNew, MdOutlineInstallMobile, MdOutlineInstallDesktop, MdMessage } from "react-icons/md";
-import { FaPlus, FaRegCopy, FaRegPaste } from "react-icons/fa6";
-import { FaSave, FaShareAlt, FaQuestion, FaLink, FaCaretLeft, FaCaretRight } from "react-icons/fa";
-import { PiChairLight, PiMonitor, PiMonitorFill, PiBriefcase, PiTableThin, PiCertificateLight } from "react-icons/pi";
-import { GoHistory } from "react-icons/go";
-import { LuEye } from "react-icons/lu";
-import { FiCheckCircle, FiMessageSquare } from "react-icons/fi";
-import { GrSchedule, GrDocumentUpload } from "react-icons/gr";
-import { FcGoogle } from "react-icons/fc";
-import { AiOutlineHourglass } from "react-icons/ai";
+"use client";
 
-const Icons = {
-    messageSquare: FiMessageSquare,
-    messageSquareSolid: MdMessage,
-    addTeacher: MdPersonAdd,
-    bell: IoNotifications,
-    arrowDown: IoChevronDown,
-    arrowRight: IoArrowForward,
-    arrowLeft: IoArrowBack,
-    caretLeft: FaCaretLeft,
-    caretRight: FaCaretRight,
-    book: IoBookOutline,
-    calendar: IoCalendarOutline,
-    dailyCalendar: GrSchedule,
-    calendarFill: IoCalendarSharp,
-    chair: PiChairLight,
-    close: IoCloseOutline,
-    delete: RiDeleteBin6Line,
-    edit: RiEdit2Fill,
-    event: BsCalendar4Event,
-    eye: LuEye,
-    faq: FaQuestion,
-    history: GoHistory,
-    logOut: IoLogOutOutline,
-    menu: IoMenuOutline,
-    newWindow: MdOpenInNew,
-    plus: FaPlus,
-    publish: BsMegaphoneFill,
-    save: FaSave,
-    share: FaShareAlt,
-    substituteTeacher: MdSwapHoriz,
-    teacher: IoPersonOutline,
-    missingTeacher: IoPersonRemoveOutline,
-    teacherSolid: MdPerson,
-    refresh: IoMdRefresh,
-    success: FiCheckCircle,
-    users: IoPeopleOutline,
-    settings: IoSettingsOutline,
-    upload: GrDocumentUpload,
-    groupSolid: IoPeopleSharp,
-    group: IoPeopleOutline,
-    menuVertical: BsThreeDotsVertical,
-    toPDF: BsFiletypePdf,
-    tv: PiMonitor,
-    tvSolid: PiMonitorFill,
-    table: BsTable,
-    stats: IoStatsChart,
-    google: FcGoogle,
-    info: IoInformationCircleOutline,
-    link: FaLink,
-    hourglass: AiOutlineHourglass,
-    magic: BsMagic,
-    copy: FaRegCopy,
-    paste: FaRegPaste,
-    installMobile: MdOutlineInstallMobile,
-    installDesktop: MdOutlineInstallDesktop,
-    staff: PiBriefcase,
-    report: PiTableThin,
-    certificate: PiCertificateLight,
+import React from "react";
+
+export type IconProps = React.SVGProps<SVGSVGElement> & {
+    size?: number | string;
+    color?: string;
+    title?: string;
+};
+
+function createIcon(
+    viewBox: string,
+    innerSvg: React.ReactNode,
+    defaultFill = "currentColor",
+    defaultStroke?: string,
+    defaultStrokeWidth?: string
+) {
+    const Component = React.forwardRef<SVGSVGElement, IconProps>(
+        ({ size = "1em", color, fill, stroke, strokeWidth, style, title, ...props }, ref) => (
+            <svg
+                ref={ref}
+                viewBox={viewBox}
+                width={size}
+                height={size}
+                fill={color || fill || defaultFill}
+                stroke={stroke || defaultStroke}
+                strokeWidth={strokeWidth || defaultStrokeWidth}
+                style={{ verticalAlign: "middle", ...style }}
+                {...props}
+            >
+                {title && <title>{title}</title>}
+                {innerSvg}
+            </svg>
+        )
+    );
+    Component.displayName = "Icon";
+    return Component;
+}
+
+export const Icons = {
+    messageSquare: createIcon("0 0 24 24", (
+        <>
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </>
+    ), "none", "currentColor", "2"),
+    messageSquareSolid: createIcon("0 0 24 24", (
+        <>
+            <path fill="none" d="M0 0h24v24H0z"></path><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2m-2 12H6v-2h12zm0-3H6V9h12zm0-3H6V6h12z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    addTeacher: createIcon("0 0 24 24", (
+        <>
+            <path fill="none" d="M0 0h24v24H0z"></path><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4m-9-2V7H4v3H1v2h3v3h2v-3h3v-2zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    bell: createIcon("0 0 512 512", (
+        <>
+            <path d="M440.08 341.31c-1.66-2-3.29-4-4.89-5.93-22-26.61-35.31-42.67-35.31-118 0-39-9.33-71-27.72-95-13.56-17.73-31.89-31.18-56.05-41.12a3 3 0 0 1-.82-.67C306.6 51.49 282.82 32 256 32s-50.59 19.49-59.28 48.56a3.1 3.1 0 0 1-.81.65c-56.38 23.21-83.78 67.74-83.78 136.14 0 75.36-13.29 91.42-35.31 118-1.6 1.93-3.23 3.89-4.89 5.93a35.16 35.16 0 0 0-4.65 37.62c6.17 13 19.32 21.07 34.33 21.07H410.5c14.94 0 28-8.06 34.19-21a35.17 35.17 0 0 0-4.61-37.66M256 480a80.06 80.06 0 0 0 70.44-42.13 4 4 0 0 0-3.54-5.87H189.12a4 4 0 0 0-3.55 5.87A80.06 80.06 0 0 0 256 480"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    arrowDown: createIcon("0 0 512 512", (
+        <>
+            <path fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="48" d="m112 184 144 144 144-144"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    arrowRight: createIcon("0 0 512 512", (
+        <>
+            <path fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="48" d="m268 112 144 144-144 144m124-144H100"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    arrowLeft: createIcon("0 0 512 512", (
+        <>
+            <path fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="48" d="M244 400 100 256l144-144M120 256h292"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    caretLeft: createIcon("0 0 192 512", (
+        <>
+            <path d="M192 127.338v257.324c0 17.818-21.543 26.741-34.142 14.142L29.196 270.142c-7.81-7.81-7.81-20.474 0-28.284l128.662-128.662c12.599-12.6 34.142-3.676 34.142 14.142z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    caretRight: createIcon("0 0 192 512", (
+        <>
+            <path d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    book: createIcon("0 0 512 512", (
+        <>
+            <path fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" d="M256 160c16-63.16 76.43-95.41 208-96a15.94 15.94 0 0 1 16 16v288a16 16 0 0 1-16 16c-128 0-177.45 25.81-208 64-30.37-38-80-64-208-64-9.88 0-16-8.05-16-17.93V80a15.94 15.94 0 0 1 16-16c131.57.59 192 32.84 208 96m0 0v288"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    calendar: createIcon("0 0 512 512", (
+        <>
+            <rect width="416" height="384" x="48" y="80" fill="none" strokeLinejoin="round" strokeWidth="32" rx="48"></rect><circle cx="296" cy="232" r="24"></circle><circle cx="376" cy="232" r="24"></circle><circle cx="296" cy="312" r="24"></circle><circle cx="376" cy="312" r="24"></circle><circle cx="136" cy="312" r="24"></circle><circle cx="216" cy="312" r="24"></circle><circle cx="136" cy="392" r="24"></circle><circle cx="216" cy="392" r="24"></circle><circle cx="296" cy="392" r="24"></circle><path fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" d="M128 48v32m256-32v32"></path><path fill="none" strokeLinejoin="round" strokeWidth="32" d="M464 160H48"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    dailyCalendar: createIcon("0 0 24 24", (
+        <>
+            <path fill="none" strokeWidth="2" d="M1,23 L23,23 L23,4 L1,4 L1,23 Z M18,4 L18,0 L18,4 Z M6,4 L6,0 L6,4 Z M1,8.5 L23,8.5 L1,8.5 Z M6,14 C6.55643465,12.6666667 7.38976798,12 8.5,12 C9.7998158,12 10.5,13 10.5,14 C10.5,15 9.5,16 8.5,17 C8.11410094,17.3858991 7.44743428,18.0525657 6.5,19 L6.5,19.5 L11.9045742,19.5 M16.984409,20.5 L17,12 L16.5,12 C16,13.5 14.5,14 13.7573,14"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    calendarFill: createIcon("0 0 512 512", (
+        <>
+            <path d="M32 456a24 24 0 0 0 24 24h400a24 24 0 0 0 24-24V176H32zm320-244a4 4 0 0 1 4-4h40a4 4 0 0 1 4 4v40a4 4 0 0 1-4 4h-40a4 4 0 0 1-4-4zm0 80a4 4 0 0 1 4-4h40a4 4 0 0 1 4 4v40a4 4 0 0 1-4 4h-40a4 4 0 0 1-4-4zm-80-80a4 4 0 0 1 4-4h40a4 4 0 0 1 4 4v40a4 4 0 0 1-4 4h-40a4 4 0 0 1-4-4zm0 80a4 4 0 0 1 4-4h40a4 4 0 0 1 4 4v40a4 4 0 0 1-4 4h-40a4 4 0 0 1-4-4zm0 80a4 4 0 0 1 4-4h40a4 4 0 0 1 4 4v40a4 4 0 0 1-4 4h-40a4 4 0 0 1-4-4zm-80-80a4 4 0 0 1 4-4h40a4 4 0 0 1 4 4v40a4 4 0 0 1-4 4h-40a4 4 0 0 1-4-4zm0 80a4 4 0 0 1 4-4h40a4 4 0 0 1 4 4v40a4 4 0 0 1-4 4h-40a4 4 0 0 1-4-4zm-80-80a4 4 0 0 1 4-4h40a4 4 0 0 1 4 4v40a4 4 0 0 1-4 4h-40a4 4 0 0 1-4-4zm0 80a4 4 0 0 1 4-4h40a4 4 0 0 1 4 4v40a4 4 0 0 1-4 4h-40a4 4 0 0 1-4-4zM456 64h-55.92V32h-48v32H159.92V32h-48v32H56a23.8 23.8 0 0 0-24 23.77V144h448V87.77A23.8 23.8 0 0 0 456 64"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    chair: createIcon("0 0 256 256", (
+        <>
+            <path d="M208,138H174V102h18a14,14,0,0,0,14-14V40a14,14,0,0,0-14-14H64A14,14,0,0,0,50,40V88a14,14,0,0,0,14,14H82v36H48a14,14,0,0,0-14,14v16a14,14,0,0,0,14,14H58v42a6,6,0,0,0,12,0V182H186v42a6,6,0,0,0,12,0V182h10a14,14,0,0,0,14-14V152A14,14,0,0,0,208,138ZM62,88V40a2,2,0,0,1,2-2H192a2,2,0,0,1,2,2V88a2,2,0,0,1-2,2H64A2,2,0,0,1,62,88Zm32,14h68v36H94Zm116,66a2,2,0,0,1-2,2H48a2,2,0,0,1-2-2V152a2,2,0,0,1,2-2H208a2,2,0,0,1,2,2Z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    close: createIcon("0 0 512 512", (
+        <>
+            <path fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" d="M368 368 144 144m224 0L144 368"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    delete: createIcon("0 0 24 24", (
+        <>
+            <path d="M7 4V2H17V4H22V6H20V21C20 21.5523 19.5523 22 19 22H5C4.44772 22 4 21.5523 4 21V6H2V4H7ZM6 6V20H18V6H6ZM9 9H11V17H9V9ZM13 9H15V17H13V9Z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    edit: createIcon("0 0 24 24", (
+        <>
+            <path d="M9.24264 18.9967H21V20.9967H3V16.754L12.8995 6.85453L17.1421 11.0972L9.24264 18.9967ZM14.3137 5.44032L16.435 3.319C16.8256 2.92848 17.4587 2.92848 17.8492 3.319L20.6777 6.14743C21.0682 6.53795 21.0682 7.17112 20.6777 7.56164L18.5563 9.68296L14.3137 5.44032Z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    event: createIcon("0 0 16 16", (
+        <>
+            <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1z"></path><path d="M11 7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    eye: createIcon("0 0 24 24", (
+        <>
+            <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path><circle cx="12" cy="12" r="3"></circle>
+        </>
+    ), "none", "currentColor", "2"),
+    faq: createIcon("0 0 384 512", (
+        <>
+            <path d="M202.021 0C122.202 0 70.503 32.703 29.914 91.026c-7.363 10.58-5.093 25.086 5.178 32.874l43.138 32.709c10.373 7.865 25.132 6.026 33.253-4.148 25.049-31.381 43.63-49.449 82.757-49.449 30.764 0 68.816 19.799 68.816 49.631 0 22.552-18.617 34.134-48.993 51.164-35.423 19.86-82.299 44.576-82.299 106.405V320c0 13.255 10.745 24 24 24h72.471c13.255 0 24-10.745 24-24v-5.773c0-42.86 125.268-44.645 125.268-160.627C377.504 66.256 286.902 0 202.021 0zM192 373.459c-38.196 0-69.271 31.075-69.271 69.271 0 38.195 31.075 69.27 69.271 69.27s69.271-31.075 69.271-69.271-31.075-69.27-69.271-69.27z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    history: createIcon("0 0 24 24", (
+        <>
+            <path d="M11.998 2.5A9.503 9.503 0 0 0 3.378 8H5.75a.75.75 0 0 1 0 1.5H2a1 1 0 0 1-1-1V4.75a.75.75 0 0 1 1.5 0v1.697A10.997 10.997 0 0 1 11.998 1C18.074 1 23 5.925 23 12s-4.926 11-11.002 11C6.014 23 1.146 18.223 1 12.275a.75.75 0 0 1 1.5-.037 9.5 9.5 0 0 0 9.498 9.262c5.248 0 9.502-4.253 9.502-9.5s-4.254-9.5-9.502-9.5Z"></path><path d="M12.5 7.25a.75.75 0 0 0-1.5 0v5.5c0 .27.144.518.378.651l3.5 2a.75.75 0 0 0 .744-1.302L12.5 12.315V7.25Z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    logOut: createIcon("0 0 512 512", (
+        <>
+            <path fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" d="M304 336v40a40 40 0 0 1-40 40H104a40 40 0 0 1-40-40V136a40 40 0 0 1 40-40h152c22.09 0 48 17.91 48 40v40m64 160 80-80-80-80m-192 80h256"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    menu: createIcon("0 0 512 512", (
+        <>
+            <path fill="none" strokeLinecap="round" strokeMiterlimit="10" strokeWidth="32" d="M80 160h352M80 256h352M80 352h352"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    newWindow: createIcon("0 0 24 24", (
+        <>
+            <path fill="none" d="M0 0h24v24H0z"></path><path d="M19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2v-7h-2zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    plus: createIcon("0 0 448 512", (
+        <>
+            <path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    publish: createIcon("0 0 16 16", (
+        <>
+            <path d="M13 2.5a1.5 1.5 0 0 1 3 0v11a1.5 1.5 0 0 1-3 0zm-1 .724c-2.067.95-4.539 1.481-7 1.656v6.237a25 25 0 0 1 1.088.085c2.053.204 4.038.668 5.912 1.56zm-8 7.841V4.934c-.68.027-1.399.043-2.008.053A2.02 2.02 0 0 0 0 7v2c0 1.106.896 1.996 1.994 2.009l.496.008a64 64 0 0 1 1.51.048m1.39 1.081q.428.032.85.078l.253 1.69a1 1 0 0 1-.983 1.187h-.548a1 1 0 0 1-.916-.599l-1.314-2.48a66 66 0 0 1 1.692.064q.491.026.966.06"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    save: createIcon("0 0 448 512", (
+        <>
+            <path d="M433.941 129.941l-83.882-83.882A48 48 0 0 0 316.118 32H48C21.49 32 0 53.49 0 80v352c0 26.51 21.49 48 48 48h352c26.51 0 48-21.49 48-48V163.882a48 48 0 0 0-14.059-33.941zM224 416c-35.346 0-64-28.654-64-64 0-35.346 28.654-64 64-64s64 28.654 64 64c0 35.346-28.654 64-64 64zm96-304.52V212c0 6.627-5.373 12-12 12H76c-6.627 0-12-5.373-12-12V108c0-6.627 5.373-12 12-12h228.52c3.183 0 6.235 1.264 8.485 3.515l3.48 3.48A11.996 11.996 0 0 1 320 111.48z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    share: createIcon("0 0 448 512", (
+        <>
+            <path d="M352 320c-22.608 0-43.387 7.819-59.79 20.895l-102.486-64.054a96.551 96.551 0 0 0 0-41.683l102.486-64.054C308.613 184.181 329.392 192 352 192c53.019 0 96-42.981 96-96S405.019 0 352 0s-96 42.981-96 96c0 7.158.79 14.13 2.276 20.841L155.79 180.895C139.387 167.819 118.608 160 96 160c-53.019 0-96 42.981-96 96s42.981 96 96 96c22.608 0 43.387-7.819 59.79-20.895l102.486 64.054A96.301 96.301 0 0 0 256 416c0 53.019 42.981 96 96 96s96-42.981 96-96-42.981-96-96-96z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    substituteTeacher: createIcon("0 0 24 24", (
+        <>
+            <path fill="none" d="M0 0h24v24H0z"></path><path d="M6.99 11 3 15l3.99 4v-3H14v-2H6.99zM21 9l-3.99-4v3H10v2h7.01v3z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    teacher: createIcon("0 0 512 512", (
+        <>
+            <path fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" d="M344 144c-3.92 52.87-44 96-88 96s-84.15-43.12-88-96c-4-55 35-96 88-96s92 42 88 96"></path><path fill="none" strokeMiterlimit="10" strokeWidth="32" d="M256 304c-87 0-175.3 48-191.64 138.6C62.39 453.52 68.57 464 80 464h352c11.44 0 17.62-10.48 15.65-21.4C431.3 352 343 304 256 304z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    missingTeacher: createIcon("0 0 512 512", (
+        <>
+            <path fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" d="M376 144c-3.92 52.87-44 96-88 96s-84.15-43.12-88-96c-4-55 35-96 88-96s92 42 88 96"></path><path fill="none" strokeMiterlimit="10" strokeWidth="32" d="M288 304c-87 0-175.3 48-191.64 138.6-2 10.92 4.21 21.4 15.65 21.4H464c11.44 0 17.62-10.48 15.65-21.4C463.3 352 375 304 288 304z"></path><path fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" d="M144 232H32"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    teacherSolid: createIcon("0 0 24 24", (
+        <>
+            <path fill="none" d="M0 0h24v24H0z"></path><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4m0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    refresh: createIcon("0 0 512 512", (
+        <>
+            <path d="M256 388c-72.597 0-132-59.405-132-132 0-72.601 59.403-132 132-132 36.3 0 69.299 15.4 92.406 39.601L278 234h154V80l-51.698 51.702C348.406 99.798 304.406 80 256 80c-96.797 0-176 79.203-176 176s78.094 176 176 176c81.045 0 148.287-54.134 169.401-128H378.85c-18.745 49.561-67.138 84-122.85 84z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    success: createIcon("0 0 24 24", (
+        <>
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </>
+    ), "none", "currentColor", "2"),
+    users: createIcon("0 0 512 512", (
+        <>
+            <path fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" d="M402 168c-2.93 40.67-33.1 72-66 72s-63.12-31.32-66-72c-3-42.31 26.37-72 66-72s69 30.46 66 72"></path><path fill="none" strokeMiterlimit="10" strokeWidth="32" d="M336 304c-65.17 0-127.84 32.37-143.54 95.41-2.08 8.34 3.15 16.59 11.72 16.59h263.65c8.57 0 13.77-8.25 11.72-16.59C463.85 335.36 401.18 304 336 304z"></path><path fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" d="M200 185.94c-2.34 32.48-26.72 58.06-53 58.06s-50.7-25.57-53-58.06C91.61 152.15 115.34 128 147 128s55.39 24.77 53 57.94"></path><path fill="none" strokeLinecap="round" strokeMiterlimit="10" strokeWidth="32" d="M206 306c-18.05-8.27-37.93-11.45-59-11.45-52 0-102.1 25.85-114.65 76.2-1.65 6.66 2.53 13.25 9.37 13.25H154"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    settings: createIcon("0 0 512 512", (
+        <>
+            <path fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" d="M262.29 192.31a64 64 0 1 0 57.4 57.4 64.13 64.13 0 0 0-57.4-57.4M416.39 256a154 154 0 0 1-1.53 20.79l45.21 35.46a10.81 10.81 0 0 1 2.45 13.75l-42.77 74a10.81 10.81 0 0 1-13.14 4.59l-44.9-18.08a16.11 16.11 0 0 0-15.17 1.75A164.5 164.5 0 0 1 325 400.8a15.94 15.94 0 0 0-8.82 12.14l-6.73 47.89a11.08 11.08 0 0 1-10.68 9.17h-85.54a11.11 11.11 0 0 1-10.69-8.87l-6.72-47.82a16.07 16.07 0 0 0-9-12.22 155 155 0 0 1-21.46-12.57 16 16 0 0 0-15.11-1.71l-44.89 18.07a10.81 10.81 0 0 1-13.14-4.58l-42.77-74a10.8 10.8 0 0 1 2.45-13.75l38.21-30a16.05 16.05 0 0 0 6-14.08c-.36-4.17-.58-8.33-.58-12.5s.21-8.27.58-12.35a16 16 0 0 0-6.07-13.94l-38.19-30A10.81 10.81 0 0 1 49.48 186l42.77-74a10.81 10.81 0 0 1 13.14-4.59l44.9 18.08a16.11 16.11 0 0 0 15.17-1.75A164.5 164.5 0 0 1 187 111.2a15.94 15.94 0 0 0 8.82-12.14l6.73-47.89A11.08 11.08 0 0 1 213.23 42h85.54a11.11 11.11 0 0 1 10.69 8.87l6.72 47.82a16.07 16.07 0 0 0 9 12.22 155 155 0 0 1 21.46 12.57 16 16 0 0 0 15.11 1.71l44.89-18.07a10.81 10.81 0 0 1 13.14 4.58l42.77 74a10.8 10.8 0 0 1-2.45 13.75l-38.21 30a16.05 16.05 0 0 0-6.05 14.08c.33 4.14.55 8.3.55 12.47"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    upload: createIcon("0 0 24 24", (
+        <>
+            <path fill="none" strokeWidth="2" d="M2.99787498,0.999999992 L17.4999998,0.999999992 L20.9999998,4.50000005 L21,23 L3,23 L2.99787498,0.999999992 Z M16,1 L16,6 L21,6 M12,20 L12,11 M8,14 L12,10 L16,14"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    groupSolid: createIcon("0 0 512 512", (
+        <>
+            <circle cx="152" cy="184" r="72"></circle><path d="M234 296c-28.16-14.3-59.24-20-82-20-44.58 0-136 27.34-136 82v42h150v-16.07c0-19 8-38.05 22-53.93 11.17-12.68 26.81-24.45 46-34"></path><path d="M340 288c-52.07 0-156 32.16-156 96v48h312v-48c0-63.84-103.93-96-156-96"></path><circle cx="340" cy="168" r="88"></circle>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    group: createIcon("0 0 512 512", (
+        <>
+            <path fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" d="M402 168c-2.93 40.67-33.1 72-66 72s-63.12-31.32-66-72c-3-42.31 26.37-72 66-72s69 30.46 66 72"></path><path fill="none" strokeMiterlimit="10" strokeWidth="32" d="M336 304c-65.17 0-127.84 32.37-143.54 95.41-2.08 8.34 3.15 16.59 11.72 16.59h263.65c8.57 0 13.77-8.25 11.72-16.59C463.85 335.36 401.18 304 336 304z"></path><path fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" d="M200 185.94c-2.34 32.48-26.72 58.06-53 58.06s-50.7-25.57-53-58.06C91.61 152.15 115.34 128 147 128s55.39 24.77 53 57.94"></path><path fill="none" strokeLinecap="round" strokeMiterlimit="10" strokeWidth="32" d="M206 306c-18.05-8.27-37.93-11.45-59-11.45-52 0-102.1 25.85-114.65 76.2-1.65 6.66 2.53 13.25 9.37 13.25H154"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    menuVertical: createIcon("0 0 16 16", (
+        <>
+            <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    toPDF: createIcon("0 0 16 16", (
+        <>
+            <path fillRule="evenodd" d="M14 4.5V14a2 2 0 0 1-2 2h-1v-1h1a1 1 0 0 0 1-1V4.5h-2A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v9H2V2a2 2 0 0 1 2-2h5.5zM1.6 11.85H0v3.999h.791v-1.342h.803q.43 0 .732-.173.305-.175.463-.474a1.4 1.4 0 0 0 .161-.677q0-.375-.158-.677a1.2 1.2 0 0 0-.46-.477q-.3-.18-.732-.179m.545 1.333a.8.8 0 0 1-.085.38.57.57 0 0 1-.238.241.8.8 0 0 1-.375.082H.788V12.48h.66q.327 0 .512.181.185.183.185.522m1.217-1.333v3.999h1.46q.602 0 .998-.237a1.45 1.45 0 0 0 .595-.689q.196-.45.196-1.084 0-.63-.196-1.075a1.43 1.43 0 0 0-.589-.68q-.396-.234-1.005-.234zm.791.645h.563q.371 0 .609.152a.9.9 0 0 1 .354.454q.118.302.118.753a2.3 2.3 0 0 1-.068.592 1.1 1.1 0 0 1-.196.422.8.8 0 0 1-.334.252 1.3 1.3 0 0 1-.483.082h-.563zm3.743 1.763v1.591h-.79V11.85h2.548v.653H7.896v1.117h1.606v.638z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    tv: createIcon("0 0 256 256", (
+        <>
+            <path d="M208,40H48A24,24,0,0,0,24,64V176a24,24,0,0,0,24,24H208a24,24,0,0,0,24-24V64A24,24,0,0,0,208,40Zm8,136a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V64a8,8,0,0,1,8-8H208a8,8,0,0,1,8,8Zm-48,48a8,8,0,0,1-8,8H96a8,8,0,0,1,0-16h64A8,8,0,0,1,168,224Z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    tvSolid: createIcon("0 0 256 256", (
+        <>
+            <path d="M232,64V176a24,24,0,0,1-24,24H48a24,24,0,0,1-24-24V64A24,24,0,0,1,48,40H208A24,24,0,0,1,232,64ZM160,216H96a8,8,0,0,0,0,16h64a8,8,0,0,0,0-16Z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    table: createIcon("0 0 16 16", (
+        <>
+            <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm15 2h-4v3h4zm0 4h-4v3h4zm0 4h-4v3h3a1 1 0 0 0 1-1zm-5 3v-3H6v3zm-5 0v-3H1v2a1 1 0 0 0 1 1zm-4-4h4V8H1zm0-4h4V4H1zm5-3v3h4V4zm4 4H6v3h4z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    stats: createIcon("0 0 512 512", (
+        <>
+            <path d="M104 496H72a24 24 0 0 1-24-24V328a24 24 0 0 1 24-24h32a24 24 0 0 1 24 24v144a24 24 0 0 1-24 24m224 0h-32a24 24 0 0 1-24-24V232a24 24 0 0 1 24-24h32a24 24 0 0 1 24 24v240a24 24 0 0 1-24 24m112 0h-32a24 24 0 0 1-24-24V120a24 24 0 0 1 24-24h32a24 24 0 0 1 24 24v352a24 24 0 0 1-24 24m-224 0h-32a24 24 0 0 1-24-24V40a24 24 0 0 1 24-24h32a24 24 0 0 1 24 24v432a24 24 0 0 1-24 24"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    google: createIcon("0 0 48 48", (
+        <>
+            <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12
+	c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24
+	c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657
+	C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36
+	c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571
+	c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    info: createIcon("0 0 512 512", (
+        <>
+            <path fill="none" strokeMiterlimit="10" strokeWidth="32" d="M248 64C146.39 64 64 146.39 64 248s82.39 184 184 184 184-82.39 184-184S349.61 64 248 64z"></path><path fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" d="M220 220h32v116"></path><path fill="none" strokeLinecap="round" strokeMiterlimit="10" strokeWidth="32" d="M208 340h88"></path><path d="M248 130a26 26 0 1 0 26 26 26 26 0 0 0-26-26"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    link: createIcon("0 0 512 512", (
+        <>
+            <path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    hourglass: createIcon("0 0 1024 1024", (
+        <>
+            <path d="M742 318V184h86c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H196c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h86v134c0 81.5 42.4 153.2 106.4 194-64 40.8-106.4 112.5-106.4 194v134h-86c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h632c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8h-86V706c0-81.5-42.4-153.2-106.4-194 64-40.8 106.4-112.5 106.4-194zm-72 388v134H354V706c0-42.2 16.4-81.9 46.3-111.7C430.1 564.4 469.8 548 512 548s81.9 16.4 111.7 46.3C653.6 624.1 670 663.8 670 706zm0-388c0 42.2-16.4 81.9-46.3 111.7C593.9 459.6 554.2 476 512 476s-81.9-16.4-111.7-46.3A156.63 156.63 0 0 1 354 318V184h316v134z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    magic: createIcon("0 0 16 16", (
+        <>
+            <path d="M9.5 2.672a.5.5 0 1 0 1 0V.843a.5.5 0 0 0-1 0zm4.5.035A.5.5 0 0 0 13.293 2L12 3.293a.5.5 0 1 0 .707.707zM7.293 4A.5.5 0 1 0 8 3.293L6.707 2A.5.5 0 0 0 6 2.707zm-.621 2.5a.5.5 0 1 0 0-1H4.843a.5.5 0 1 0 0 1zm8.485 0a.5.5 0 1 0 0-1h-1.829a.5.5 0 0 0 0 1zM13.293 10A.5.5 0 1 0 14 9.293L12.707 8a.5.5 0 1 0-.707.707zM9.5 11.157a.5.5 0 0 0 1 0V9.328a.5.5 0 0 0-1 0zm1.854-5.097a.5.5 0 0 0 0-.706l-.708-.708a.5.5 0 0 0-.707 0L8.646 5.94a.5.5 0 0 0 0 .707l.708.708a.5.5 0 0 0 .707 0l1.293-1.293Zm-3 3a.5.5 0 0 0 0-.706l-.708-.708a.5.5 0 0 0-.707 0L.646 13.94a.5.5 0 0 0 0 .707l.708.708a.5.5 0 0 0 .707 0z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    copy: createIcon("0 0 448 512", (
+        <>
+            <path d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    paste: createIcon("0 0 512 512", (
+        <>
+            <path d="M104.6 48L64 48C28.7 48 0 76.7 0 112L0 384c0 35.3 28.7 64 64 64l96 0 0-48-96 0c-8.8 0-16-7.2-16-16l0-272c0-8.8 7.2-16 16-16l16 0c0 17.7 14.3 32 32 32l72.4 0C202 108.4 227.6 96 256 96l62 0c-7.1-27.6-32.2-48-62-48l-40.6 0C211.6 20.9 188.2 0 160 0s-51.6 20.9-55.4 48zM144 56a16 16 0 1 1 32 0 16 16 0 1 1 -32 0zM448 464l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L464 243.9 464 448c0 8.8-7.2 16-16 16zM256 512l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9l-67.9-67.9c-9-9-21.2-14.1-33.9-14.1L256 128c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    installMobile: createIcon("0 0 24 24", (
+        <>
+            <path fill="none" d="M0 0h24v24H0z"></path><path d="M17 18H7V6h7V4H7V3h7V1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2v-5h-2zm0 3H7v-1h10z"></path><path d="m18 14 5-5-1.41-1.41L19 10.17V3h-2v7.17l-2.59-2.58L13 9z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    installDesktop: createIcon("0 0 24 24", (
+        <>
+            <path fill="none" d="M0 0h24v24H0z"></path><path d="M20 17H4V5h8V3H4c-1.11 0-2 .89-2 2v12a2 2 0 0 0 2 2h4v2h8v-2h4c1.1 0 2-.9 2-2v-3h-2z"></path><path d="m17 14 5-5-1.41-1.41L18 10.17V3h-2v7.17l-2.59-2.58L12 9z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    staff: createIcon("0 0 256 256", (
+        <>
+            <path d="M216,56H176V48a24,24,0,0,0-24-24H104A24,24,0,0,0,80,48v8H40A16,16,0,0,0,24,72V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V72A16,16,0,0,0,216,56ZM96,48a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96ZM216,72v41.61A184,184,0,0,1,128,136a184.07,184.07,0,0,1-88-22.38V72Zm0,128H40V131.64A200.19,200.19,0,0,0,128,152a200.25,200.25,0,0,0,88-20.37V200ZM104,112a8,8,0,0,1,8-8h32a8,8,0,0,1,0,16H112A8,8,0,0,1,104,112Z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    report: createIcon("0 0 256 256", (
+        <>
+            <path d="M224,52H32a4,4,0,0,0-4,4V192a12,12,0,0,0,12,12H216a12,12,0,0,0,12-12V56A4,4,0,0,0,224,52ZM36,108H84v40H36Zm56,0H220v40H92ZM220,60v40H36V60ZM36,192V156H84v40H40A4,4,0,0,1,36,192Zm180,4H92V156H220v36A4,4,0,0,1,216,196Z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    certificate: createIcon("0 0 256 256", (
+        <>
+            <path d="M126,136a6,6,0,0,1-6,6H72a6,6,0,0,1,0-12h48A6,6,0,0,1,126,136Zm-6-38H72a6,6,0,0,0,0,12h48a6,6,0,0,0,0-12Zm110,62.62V224a6,6,0,0,1-9,5.21l-25-14.3-25,14.3a6,6,0,0,1-9-5.21V198H40a14,14,0,0,1-14-14V56A14,14,0,0,1,40,42H216a14,14,0,0,1,14,14V87.38a49.91,49.91,0,0,1,0,73.24ZM196,86a38,38,0,1,0,38,38A38,38,0,0,0,196,86ZM162,186V160.62a50,50,0,0,1,56-81.51V56a2,2,0,0,0-2-2H40a2,2,0,0,0-2,2V184a2,2,0,0,0,2,2Zm56-17.11a49.91,49.91,0,0,1-44,0v44.77l19-10.87a6,6,0,0,1,6,0l19,10.87Z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    warning: createIcon("0 0 512 512", (
+        <>
+            <path fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" d="M85.57 446.25h340.86a32 32 0 0 0 28.17-47.17L284.18 82.58c-12.09-22.44-44.27-22.44-56.36 0L57.4 399.08a32 32 0 0 0 28.17 47.17"></path><path fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" d="m250.26 195.39 5.74 122 5.73-121.95a5.74 5.74 0 0 0-5.79-6h0a5.74 5.74 0 0 0-5.68 5.95"></path><path d="M256 397.25a20 20 0 1 1 20-20 20 20 0 0 1-20 20"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
 };
 
 export default Icons;
