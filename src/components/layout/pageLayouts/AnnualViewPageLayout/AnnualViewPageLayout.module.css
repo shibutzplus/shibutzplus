@@ -3,10 +3,46 @@
     white-space: nowrap;
 }
 
-.bar1Container {
-    width: 230px;
-    min-width: 230px;
-    max-width: 230px;
+.selectWithAction {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    width: 255px;
+    min-width: 255px;
+    max-width: 255px;
+}
+
+.selectWrapper {
+    flex: 1;
+    min-width: 0;
+}
+
+.editActionBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--border-radius-input, 6px);
+    color: var(--dark-text-color, #4b5563);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+
+.editActionBtn:not(:disabled):hover {
+    background-color: var(--tab-color-hover, #f3f4f6);
+    color: var(--primary-color, #2563eb);
+    border-color: var(--bright-border-color, #e5e7eb);
+    transform: translateY(-1px);
+}
+
+.editActionBtn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
 }
 
 .pdfContainer {
@@ -17,118 +53,20 @@
     display: none;
     margin-left: 10px;
     align-items: center;
-    gap: 10px;
 }
 
 .bar2Container {
-    width: 230px;
-    min-width: 230px;
-    max-width: 230px;
     display: none;
 }
 
-.bar2DropdownContainer {
-    display: none;
-}
-
-.desktopDropdownContainer {
-    display: block;
-}
-
-.textShort {
-    display: none;
-}
-
-/* Dropdown component styles */
-.dropdownContainer {
-    position: relative;
-    display: inline-block;
-}
-
-.dropdownTrigger {
+.bar2SelectWrapper {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
-    background-color: transparent;
-    border: none;
-    border-radius: var(--border-radius-input);
-    padding: 8px 16px;
-    font-size: 15px;
-    font-weight: bold;
-    color: var(--dark-text-color);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    height: 40px;
-    box-sizing: border-box;
-    white-space: nowrap;
-}
-
-.dropdownTrigger:not(:disabled):hover {
-    background-color: var(--tab-color-hover);
-    border-color: var(--dark-border-color);
-}
-
-.dropdownTrigger:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-}
-
-.chevron {
-    transition: transform 0.2s ease;
-    display: flex;
-    align-items: center;
-}
-
-.chevronOpen {
-    transform: rotate(180deg);
-}
-
-.dropdownMenu {
-    position: absolute;
-    top: calc(100% + 6px);
-    right: 0;
-    min-width: 150px;
-    background-color: var(--tab-color);
-    border: 1px solid var(--bright-border-color);
-    border-radius: var(--border-radius-input);
-    box-shadow: var(--box-shadow-primary);
-    z-index: 10000;
-    display: flex;
-    flex-direction: column;
-    padding: 4px;
-    animation: fadeInScale 0.15s ease-out;
-}
-
-@keyframes fadeInScale {
-    from {
-        opacity: 0;
-        transform: scale(0.95) translateY(-5px);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
-
-.dropdownItem {
+    gap: 4px;
     width: 100%;
-    text-align: right;
-    padding: 10px 14px;
-    background: transparent;
-    border: none;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--dark-text-color);
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background-color 0.15s ease, color 0.15s ease;
-}
-
-.dropdownItem:hover {
-    background-color: var(--tab-color-hover);
-    color: #000;
+    max-width: 255px;
+    flex: 1;
+    min-width: 0;
 }
 
 .pdfButton {
@@ -157,12 +95,7 @@
 
 /* <= 780px */
 @media (max-width: 780px) {
-
-    .bar1Container {
-        display: none;
-    }
-
-    .desktopDropdownContainer {
+    .selectWithAction {
         display: none;
     }
 
@@ -176,18 +109,8 @@
         padding: 10px 10px;
         width: 100%;
         max-width: 100%;
-        gap: 10px;
+        gap: 8px;
         align-items: center;
-    }
-
-    .bar2SelectContainer {
-        width: 100%;
-        max-width: 230px;
-        flex: 1;
-    }
-
-    .bar2DropdownContainer {
-        display: block;
     }
 }
 
@@ -200,21 +123,6 @@
     .bar2Container .pdfButton {
         display: none;
     }
-
-    .bar2DropdownContainer {
-        display: none;
-    }
-}
-
-/* <= 360px */
-@media (max-width: 360px) {
-    .textLong {
-        display: none;
-    }
-
-    .textShort {
-        display: inline;
-    }
 }
 
 /* <= 320px */
@@ -224,10 +132,9 @@
         margin-left: 0px;
     }
 
-    .dropdownTrigger {
-        padding: 1px 2px;
-        gap: 2px;
-        font-size: 14px;
-        height: 34px;
+    .editActionBtn {
+        width: 30px;
+        height: 30px;
+        min-width: 30px;
     }
 }

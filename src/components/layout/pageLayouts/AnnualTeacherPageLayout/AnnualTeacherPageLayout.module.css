@@ -1,8 +1,8 @@
 /* Desktop */
 .selectContainer {
-    width: 270px;
-    min-width: 270px;
-    max-width: 270px;
+    width: 310px;
+    min-width: 310px;
+    max-width: 310px;
     display: flex;
     align-items: center;
 }
@@ -27,6 +27,29 @@
 
 .nextButton:hover {
     color: #666;
+}
+
+.viewButton {
+    background: none;
+    border: 1px solid transparent;
+    border-radius: var(--border-radius-input, 6px);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    color: var(--dark-text-color, #555);
+    transition: all 0.2s ease;
+    height: 38px;
+    width: 38px;
+    margin-right: 2px;
+}
+
+.viewButton:hover {
+    color: var(--primary-color, #2563eb);
+    background-color: var(--tab-color-hover, #f3f4f6);
+    border-color: var(--bright-border-color, #e5e7eb);
+    transform: translateY(-1px);
 }
 
 .pageTitleLong {

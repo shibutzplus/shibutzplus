@@ -11,6 +11,7 @@ import { revalidateTag } from "next/cache";
 import { cacheTags } from "@/lib/cacheTags";
 import { NewAnnualScheduleSchema } from "@/db/schema";
 import { createTeacherSubjectPairs } from "@/services/annual/initialize";
+import { clearAnnualScheduleCache } from "@/services/schedule/getAnnualSchedule";
 
 export async function updateAnnualClassScheduleAction(
     day: number,
@@ -111,6 +112,10 @@ export async function updateAnnualClassScheduleAction(
             id: row.id,
             day: row.day,
             hour: row.hour,
+            schoolId: row.schoolId ?? row.school?.id,
+            classId: row.classId ?? row.class?.id,
+            teacherId: row.teacherId ?? row.teacher?.id,
+            subjectId: row.subjectId ?? row.subject?.id,
             school: row.school ?? null,
             class: row.class ?? null,
             teacher: row.teacher ?? null,
@@ -123,6 +128,10 @@ export async function updateAnnualClassScheduleAction(
             id: row.id,
             day: row.day,
             hour: row.hour,
+            schoolId: row.schoolId ?? row.school?.id,
+            classId: row.classId ?? row.class?.id,
+            teacherId: row.teacherId ?? row.teacher?.id,
+            subjectId: row.subjectId ?? row.subject?.id,
             school: row.school ?? null,
             class: row.class ?? null,
             teacher: row.teacher ?? null,
@@ -131,6 +140,7 @@ export async function updateAnnualClassScheduleAction(
             updatedAt: row.updatedAt,
         }));
 
+        clearAnnualScheduleCache(schoolId);
         revalidateTag(cacheTags.schoolSchedule(schoolId));
 
         return {

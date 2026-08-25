@@ -9,6 +9,7 @@ import { checkAuthAndParams, checkIsNotGuest } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { NewAnnualScheduleSchema } from "@/db/schema";
 import { dbLog } from "@/services/loggerService";
+import { clearAnnualScheduleCache } from "@/services/schedule/getAnnualSchedule";
 
 export async function addAnnualScheduleAction(
     scheduleData: AnnualScheduleRequest,
@@ -54,6 +55,7 @@ export async function addAnnualScheduleAction(
         }
 
         // Clear Cache for all teachers in this school - Annual schedule
+        clearAnnualScheduleCache(school.id);
         revalidateTag(cacheTags.schoolSchedule(school.id));
 
         return {

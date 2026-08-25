@@ -1,13 +1,13 @@
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { useMainContext } from "./MainContext";
 import { createSelectOptions } from "@/utils/format";
 import { compareHebrew, sortByName } from "@/utils/sort";
 import { ClassType } from "@/models/types/classes";
 import { TeacherType, TeacherRoleValues } from "@/models/types/teachers";
 import { AnnualScheduleType, WeeklySchedule } from "@/models/types/annualSchedule";
-import useInitAnnualData from "@/hooks/useInitAnnualData";
 import { populateAllClassesSchedule, populateAllTeachersSchedule } from "@/services/annual/populate";
 import { initializeEmptyAnnualSchedule } from "@/services/annual/initialize";
 
@@ -37,20 +37,32 @@ export const useAnnualView = () => {
 };
 
 export const AnnualViewProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const { classes, school, teachers } = useMainContext();
+    const { classes, school, teachers, annualScheduleTable } = useMainContext();
     const [selectedClassId, setSelectedClassId] = useState<string>("");
     const [selectedTeacherId, setSelectedTeacherId] = useState<string>("");
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [annualScheduleTable, setAnnualScheduleTable] = useState<
-        AnnualScheduleType[] | undefined
-    >(undefined);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [schedule, setSchedule] = useState<WeeklySchedule>({});
 
-    useInitAnnualData({
-        annualScheduleTable,
-        setAnnualScheduleTable,
-        schoolId: school?.id,
-    });
+    const searchParams = useSearchParams();
+
+    // Read initial selections from search parameters (e.g. ?classId=... or ?teacherId=...)
+    useEffect(() => {
+        const teacherId = searchParams.get("teacherId") || searchParams.get("id");
+        if (teacherId && teachers && teachers.length > 0) {
+            const regularTeachers = teachers.filter((t) => t.role === TeacherRoleValues.REGULAR);
+            const isValid = regularTeachers.some((t) => t.id === teacherId);
+            if (isValid) {
+                setSelectedTeacherId(teacherId);
+            }
+        }
+        const classId = searchParams.get("classId");
+        if (classId && classes && classes.length > 0) {
+            const isValid = classes.some((c) => c.id === classId);
+            if (isValid) {
+                setSelectedClassId(classId);
+            }
+        }
+    }, [searchParams, teachers, classes]);
 
     // Populate schedule based on selection
     useEffect(() => {
@@ -72,9 +84,7 @@ export const AnnualViewProvider: React.FC<{ children: ReactNode }> = ({ children
             newSchedule = initializeEmptyAnnualSchedule({}, selectedTeacherId, school?.fromHour ?? 1, school?.toHour ?? 10);
             newSchedule = populateAllTeachersSchedule(annualScheduleTable, newSchedule);
         } else if (selectedClassId && selectedTeacherId) {
-            // Both selected: We can use Class structure but filter by teacher in the cell,
-            // OR use Teacher structure and filter by class.
-            // Let's use Class structure as the base.
+            // Both selected: We use Class structure as the base and filter by teacher in the cell
             newSchedule = initializeEmptyAnnualSchedule({}, selectedClassId, school?.fromHour ?? 1, school?.toHour ?? 10);
             newSchedule = populateAllClassesSchedule(annualScheduleTable, newSchedule);
         }

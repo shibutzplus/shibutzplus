@@ -9,6 +9,7 @@ import { and, eq } from "drizzle-orm";
 import { dbLog } from "@/services/loggerService";
 import { revalidateTag } from "next/cache";
 import { cacheTags } from "@/lib/cacheTags";
+import { clearAnnualScheduleCache } from "@/services/schedule/getAnnualSchedule";
 
 export async function deleteAnnualByClassAction(
     day: number,
@@ -77,6 +78,10 @@ export async function deleteAnnualByClassAction(
             id: row.id,
             day: row.day,
             hour: row.hour,
+            schoolId: row.schoolId ?? row.school?.id,
+            classId: row.classId ?? row.class?.id,
+            teacherId: row.teacherId ?? row.teacher?.id,
+            subjectId: row.subjectId ?? row.subject?.id,
             school: row.school ?? null,
             class: row.class ?? null,
             teacher: row.teacher ?? null,
@@ -86,6 +91,7 @@ export async function deleteAnnualByClassAction(
         }));
 
         // Invalidate teacher schedule cache (annual + daily)
+        clearAnnualScheduleCache(schoolId);
         revalidateTag(cacheTags.schoolSchedule(schoolId));
 
         return {
