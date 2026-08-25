@@ -1,0 +1,74 @@
+================================================================================
+משימות לשיפור נוסף של זמני בילד וגודל ה-Bundle (Next.js / Cloudflare Pages)
+================================================================================
+תאריך יצירה: 25/08/2026
+
+הישגים קיימים עד כה:
+- זמן הבילד הכולל ירד מ-~5:32 דקות ל-~2:55 דקות! (ירידה של ~48%)
+- `next build` ירד מ-168 שניות ל-58 שניות (ירידה של ~110 שניות)
+- `npm install` ירד מ-35 שניות ל-23 שניות
+- הוסרה ספריית הענק `react-icons` (26.5MB) והוחלפה ב-SVG מקומיים קלים (30KB)
+- בוצע `dynamic import` לדף `statistics` ולדף `annual-import`
+
+להלן רשימת השיפורים שנותרו לביצוע בעתיד:
+
+--------------------------------------------------------------------------------
+1. אופטימיזציית @react-pdf/renderer בטעינת המערכת השנתית (חיסכון של ~3.7MB)
+--------------------------------------------------------------------------------
+בעיה:
+הקבצים הבאים מייבאים את מנוע ה-PDF ואת פונטי ה-Base64 ישירות ב-top-level:
+- `src/components/layout/pageLayouts/AnnualViewPageLayout/AnnualViewPageLayout.tsx`
+- `src/components/layout/pageLayouts/AnnualAltViewPageLayout/AnnualAltViewPageLayout.tsx`
+הם מייבאים את `PDFDownloadLink` מ-`@react-pdf/renderer` ואת `AnnualSchedulePdf` שמכיל את `fontData.ts` (557KB Base64).
+זה גורם למנוע ה-PDF כולו (~3.7MB) להיארז בתוך ה-Edge Functions של `annual-view.func.js` ו-`annual-alt-view.func.js`.
+
+פתרון מומלץ:
+א. ליצור קומפוננטת לקוח ייעודית: `src/components/pdf/AnnualSchedulePdfDownloadButton.tsx` שמכילה את ה-`PDFDownloadLink` ואת כפתור ההורדה.
+ב. ב-`AnnualViewPageLayout.tsx` וב-`AnnualAltViewPageLayout.tsx` לייבא את הכפתור באמצעות:
+   ```tsx
+   const AnnualSchedulePdfDownloadButton = dynamic(
+       () => import("@/components/pdf/AnnualSchedulePdfDownloadButton"),
+       { ssr: false }
+   );
+   ```
+ג. תוצאה צפויה: ה-Edge Functions של הדפים הללו ירדו מ-~120KB לכ-40KB, וזמן עיבוד ה-Worker יתקצר.
+
+--------------------------------------------------------------------------------
+2. טעינה דינמית של עורך הטקסט @tiptap (חיסכון של כ-800KB)
+--------------------------------------------------------------------------------
+בעיה:
+הקובץ `src/components/tables/teacherDailyChanges/TeacherDailyChangesInstructionsCell/TeacherDailyChangesInstructionsCell.tsx`
+מייבא ישירות את `InputRichText` (שטוען את `@tiptap/react`, `@tiptap/starter-kit`, `prosemirror-view` ו-`dompurify`).
+
+פתרון מומלץ:
+לטעון את `InputRichText` באמצעות `dynamic` עם `ssr: false`:
+```tsx
+const InputRichText = dynamic(
+    () => import("@/components/ui/inputs/InputRichText/InputRichText"),
+    { ssr: false }
+);
+```
+תוצאה צפויה: בידוד ספריית ה-Rich Text לצד לקוח בלבד, מניעת אריזתה ב-Edge Runtime של דפי שינויי מורים.
+
+--------------------------------------------------------------------------------
+3. אופטימיזציית גודל ה-Middleware (558 KiB)
+--------------------------------------------------------------------------------
+בעיה:
+הקובץ `src/middleware.ts` מייבא את פונקציית `auth` מ-`@/auth.ts`, מה שמכניס את כל מודול ה-`next-auth`, `@auth/core` ו-`jose` לתוך `middleware.func.js`.
+בנוסף, זה מייצר אזהרות בילד על `CompressionStream` ו-`DecompressionStream`.
+
+פתרון מומלץ (כאשר יהיה צורך):
+בדיקת אימות פשוטה יותר ב-Middleware על בסיס קריאת ה-Session Token / Cookie ישירות מתוך ה-Request Cookies בלי לארוז את כל ליבת NextAuth ב-Edge Middleware.
+
+--------------------------------------------------------------------------------
+4. שדרוג מתאם Cloudflare מ-next-on-pages ל-OpenNext (טווח ארוך)
+--------------------------------------------------------------------------------
+בעיה:
+`@cloudflare/next-on-pages` מוגדר כ-deprecated על ידי Cloudflare והם ממליצים על `@opennextjs/cloudflare`.
+שלב ה-`next-on-pages` לוקח כרגע כ-34 שניות בכל דיפלוי.
+
+פתרון מומלץ (פרויקט שדרוג נפרד):
+מעבר ל-`@opennextjs/cloudflare` לפי המדריך הרשמי שלהם:
+https://opennext.js.org/cloudflare
+זה ייעל את ה-build output ויבטיח תאימות מלאה לגרסאות Next.js מתקדמות.
+================================================================================

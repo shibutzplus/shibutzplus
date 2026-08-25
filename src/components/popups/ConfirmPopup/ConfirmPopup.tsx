@@ -40,14 +40,12 @@ const ConfirmPopup: React.FC<ConfirmPopupProps> = ({
         closePopup();
     };
 
-    const IconToRender = Icons.faq;
-
     return (
         <div className={styles.popupContent}>
-            {showIcon && IconToRender && (
+            {showIcon && (
                 <div className={styles.iconContainer}>
                     <div className={styles.iconBackground}>
-                        {typeof IconToRender === 'function' ? <IconToRender size={28} /> : IconToRender}
+                        <Icons.faq size={28} />
                     </div>
                 </div>
             )}
