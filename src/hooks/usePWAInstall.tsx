@@ -6,6 +6,7 @@ import React from 'react';
 const usePWAInstall = () => {
     const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
     const [isIOS, setIsIOS] = useState(false);
+    const [isIOSSafari, setIsIOSSafari] = useState(false);
     const [isStandalone, setIsStandalone] = useState(false);
     const { openPopup } = usePopup();
 
@@ -16,9 +17,14 @@ const usePWAInstall = () => {
             || false;
         setIsStandalone(standalone);
 
-        // Check if iOS
+        // Check if iOS and if it's native Safari
         const userAgent = window.navigator.userAgent.toLowerCase();
-        setIsIOS(/iphone|ipad|ipod/.test(userAgent));
+        const ios = /iphone|ipad|ipod/.test(userAgent);
+        setIsIOS(ios);
+
+        const isIOSOtherBrowser = /crios|fxios|edgios|opios|fban|fbav|instagram/.test(userAgent);
+        const iosSafari = ios && userAgent.includes('safari') && !isIOSOtherBrowser;
+        setIsIOSSafari(iosSafari);
 
         // Check for globally captured prompt
         if ((window as any).deferredPrompt) {
@@ -44,9 +50,9 @@ const usePWAInstall = () => {
             const instructions = (
                 <div>
                     <ol style={{ textAlign: 'right', paddingRight: '1rem', lineHeight: '1.6' }}>
-                        <li>ודאו שאתם בדפדפן ספארי.</li>
-                        <li>כנסו למשתמש שלכם בשיבוץ+ כרגיל.</li>
-                        <li>לחצו על כפתור השיתוף (למטה) ואז הוספה למסך הבית.</li>
+                        {!isIOSSafari && <li>חשוב! יש לפתוח את האתר בדפדפן ספארי.</li>}
+                        <li>כאשר אתם במערכת היומית שלכם.</li>
+                        <li>ועל כפתור השיתוף (למטה) לחצו הוספה למסך הבית.</li>
                     </ol>
                     <div style={{ textAlign: 'center', marginTop: '1rem' }}>
                         <a
