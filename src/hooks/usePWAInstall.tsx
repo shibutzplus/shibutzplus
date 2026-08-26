@@ -1,7 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { usePopup } from '@/context/PopupContext';
 import MsgPopup from '@/components/popups/MsgPopup/MsgPopup';
 import React from 'react';
+import Icons from '@/style/icons';
+import { successToast } from '@/lib/toast';
+import { getStorageTeacher } from '@/lib/localStorage';
+import { generateSchoolUrl } from '@/utils';
+import { usePathname } from 'next/navigation';
+import { protectedPaths } from '@/routes/protectedAuth';
 
 const usePWAInstall = () => {
     const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -9,24 +15,45 @@ const usePWAInstall = () => {
     const [isIOSSafari, setIsIOSSafari] = useState(false);
     const [isStandalone, setIsStandalone] = useState(false);
     const { openPopup } = usePopup();
+    const pathname = usePathname();
+
+    const handleCopyUrl = useCallback(async () => {
+        try {
+            const isManagerRoute = protectedPaths.some((p) => pathname === p || pathname?.startsWith(`${p}/`));
+            let url = "https://shibutzplus.com";
+
+            if (!isManagerRoute) {
+                const teacher = getStorageTeacher();
+                if (teacher?.id && teacher?.schoolId) {
+                    url = generateSchoolUrl(teacher.schoolId, teacher.id);
+                } else if (typeof window !== "undefined" && window.location.origin) {
+                    url = window.location.origin;
+                }
+            }
+
+            await navigator.clipboard.writeText(url);
+            successToast("הקישור הועתק ללוח!", 2500);
+        } catch {
+            // fallback
+        }
+    }, [pathname]);
 
     useEffect(() => {
-        // Check if app is already installed
+        // Check standalone mode
         const standalone = window.matchMedia("(display-mode: standalone)").matches
             || (window.navigator as any).standalone
             || false;
         setIsStandalone(standalone);
 
-        // Check if iOS and if it's native Safari
+        // Check iOS & Safari
         const userAgent = window.navigator.userAgent.toLowerCase();
         const ios = /iphone|ipad|ipod/.test(userAgent);
+        const isOtherBrowser = /crios|fxios|edgios|opios|fban|fbav|instagram/.test(userAgent);
+
         setIsIOS(ios);
+        setIsIOSSafari(ios && userAgent.includes('safari') && !isOtherBrowser);
 
-        const isIOSOtherBrowser = /crios|fxios|edgios|opios|fban|fbav|instagram/.test(userAgent);
-        const iosSafari = ios && userAgent.includes('safari') && !isIOSOtherBrowser;
-        setIsIOSSafari(iosSafari);
-
-        // Check for globally captured prompt
+        // Check globally captured prompt
         if ((window as any).deferredPrompt) {
             setDeferredPrompt((window as any).deferredPrompt);
         }
@@ -38,22 +65,38 @@ const usePWAInstall = () => {
         };
 
         window.addEventListener("beforeinstallprompt", handler);
-
-        return () => {
-            window.removeEventListener("beforeinstallprompt", handler);
-        };
+        return () => window.removeEventListener("beforeinstallprompt", handler);
     }, []);
 
-    const installPWA = async () => {
+    const installPWA = useCallback(async () => {
         if (isIOS) {
-            // Show iOS instructions in popup
             const instructions = (
                 <div>
-                    <ol style={{ textAlign: 'right', paddingRight: '1rem', lineHeight: '1.6' }}>
-                        {!isIOSSafari && <li>חשוב! יש לפתוח את האתר בדפדפן ספארי.</li>}
-                        <li>כאשר אתם במערכת היומית שלכם.</li>
-                        <li>ועל כפתור השיתוף (למטה) לחצו הוספה למסך הבית.</li>
-                    </ol>
+                    <div style={{ textAlign: 'right', lineHeight: '1.6' }}>
+                        {!isIOSSafari && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                <span>חשוב! יש לפתוח את האתר בדפדפן ספארי.</span>
+                                <button
+                                    type="button"
+                                    onClick={handleCopyUrl}
+                                    title="העתק קישור"
+                                    aria-label="העתק קישור"
+                                    style={{
+                                        background: 'none',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        padding: '2px',
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        color: 'inherit',
+                                    }}
+                                >
+                                    <Icons.copy size={15} />
+                                </button>
+                            </div>
+                        )}
+                        <div>להתקנה לחצו על כפתור השיתוף (למטה) ואז הוספה למסך הבית.</div>
+                    </div>
                     <div style={{ textAlign: 'center', marginTop: '1rem' }}>
                         <a
                             href="https://www.youtube.com/shorts/oWHuZoN571Y"
@@ -70,47 +113,19 @@ const usePWAInstall = () => {
                                 border: '1px solid rgba(0, 0, 0, 0.1)',
                             }}
                         >
-                            <span>▶ לצפייה בסרטון הדרכה קצר</span>
+                            <span>▶ צפייה בסרטון הדרכה קצר</span>
                         </a>
                     </div>
                 </div>
             );
 
-            openPopup(
-                "msgPopup",
-                "M",
-                <MsgPopup message={instructions} okText="הבנתי" />
-            );
-        } else if (deferredPrompt) {
-            // Android/Desktop with native prompt
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-
-            if (outcome === "accepted") {
-                setDeferredPrompt(null);
-            }
-        } else {
-            // Fallback instructions
-            const instructions = (
-                <div>
-                    <ol style={{ textAlign: 'right', paddingRight: '1rem', lineHeight: '1.5' }}>
-                        <li>לחצו על תפריט הדפדפן.</li>
-                        <li>בחרו &quot;הוסף אל..מסך הבית&quot;.</li>
-                    </ol>
-                </div>
-            );
-
-            openPopup(
-                "msgPopup",
-                "M",
-                <MsgPopup message={instructions} okText="הבנתי" />
-            );
-        }
-    };
+            openPopup("msgPopup", "M", <MsgPopup message={instructions} okText="הבנתי" />);
+        } else { }
+    }, [isIOS, isIOSSafari, handleCopyUrl, openPopup, deferredPrompt]);
 
     return {
         installPWA,
-        isInstalled: isStandalone
+        isInstalled: isStandalone,
     };
 };
 
