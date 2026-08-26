@@ -2,6 +2,11 @@
 npm run dev
 npm run lint
 
+## DB Neon (shibutzplus@gmail.com google login)
+# Make sure to update DB for production and staging (defined in env.local)
+https://console.neon.tech/app/projects/curly-feather-89043363
+npx drizzle-kit push
+
 ## Github - How to?
 git checkout -b NewName     /* Develop in branch */
 git checkout main           /* pull the main branch after deploy on Cloudflare */
@@ -39,11 +44,6 @@ https://console.upstash.com/redis/62bf20b4-e16e-45ae-8c38-6d673b6955ac?teamid=0
 
 ## File Storage Service (Cloudflare R2)
 https://dash.cloudflare.com/09e65e9e58fb283402e234e907e36587/r2/default/buckets/shibutz-plus-uploads
-
-## DB Neon (shibutzplus@gmail.com google login)
-# Make sure to update DB for production and staging (defined in env.local)
-https://console.neon.tech/app/projects/curly-feather-89043363
-npx drizzle-kit push
 
 ## How to stop query debug logs in terminal ?
 src\db\index.ts

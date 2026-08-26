@@ -44,10 +44,29 @@ const usePWAInstall = () => {
             const instructions = (
                 <div>
                     <ol style={{ textAlign: 'right', paddingRight: '1rem', lineHeight: '1.6' }}>
-                        <li>חשוב !!! ההתקנה באייפון היא רק דרך דפדפן ספארי 🤷.</li>
-                        <li>ודאו שאתם בדפדפן ספארי וכנסו למשתמש שלכם בשיבוץ+ כרגיל.</li>
+                        <li>ודאו שאתם בדפדפן ספארי.</li>
+                        <li>כנסו למשתמש שלכם בשיבוץ+ כרגיל.</li>
                         <li>לחצו על כפתור השיתוף (למטה) ואז הוספה למסך הבית.</li>
                     </ol>
+                    <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+                        <a
+                            href="https://www.youtube.com/shorts/oWHuZoN571Y"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                                textDecoration: 'none',
+                                fontWeight: 'bold',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.4rem',
+                                padding: '0.4rem 0.8rem',
+                                borderRadius: '8px',
+                                border: '1px solid rgba(0, 0, 0, 0.1)',
+                            }}
+                        >
+                            <span>▶ לצפייה בסרטון הדרכה קצר</span>
+                        </a>
+                    </div>
                 </div>
             );
 

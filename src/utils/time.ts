@@ -132,6 +132,31 @@ export const getCurrentYear = (): number => {
     return year;
 };
 
+// Returns the start date of the school year (September 1st) in YYYY-MM-DD format for a given date or current date
+export const getSchoolYearStartDate = (dateString?: string): string => {
+    let year: number;
+    let month: number; // 1-12
+
+    if (dateString && dateString.includes("-")) {
+        const parts = dateString.split("-");
+        year = parseInt(parts[0], 10);
+        month = parseInt(parts[1], 10);
+    } else {
+        const components = getIsraelDateComponents();
+        year = components.year;
+        month = components.month;
+    }
+
+    // September (month 9) to December (month 12) -> year
+    // January (month 1) to August (month 8) -> year - 1
+    const startYear = month >= 9 ? year : year - 1;
+    return `${startYear}-09-01`;
+};
+
+export const getCurrentSchoolYearStartDate = (): string => {
+    return getSchoolYearStartDate();
+};
+
 
 
 export const israelTimezoneDate = () => {

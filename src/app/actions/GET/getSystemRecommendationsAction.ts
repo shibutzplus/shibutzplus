@@ -18,13 +18,15 @@
 
 import { db } from "@/db";
 import { history } from "@/db/schema";
-import { and, eq, isNotNull, sql } from "drizzle-orm";
+import { and, eq, gte, isNotNull, sql } from "drizzle-orm";
+import { getSchoolYearStartDate } from "@/utils/time";
 
 const MIN_SUBSTITUTIONS_THRESHOLD = 1;
 
 export async function getSystemRecommendationsAction(
     schoolId: string,
     day: number,
+    targetDate?: string,
 ) {
     try {
         if (!schoolId) {
@@ -34,7 +36,9 @@ export async function getSystemRecommendationsAction(
             };
         }
 
-        // Query history to find frequent substitutes
+        const schoolYearStart = getSchoolYearStartDate(targetDate);
+
+        // Query history to find frequent substitutes in the current school year
         // Group by hour, originalTeacher, subTeacher
         // Count occurrences
         const results = await db
@@ -49,6 +53,7 @@ export async function getSystemRecommendationsAction(
                 and(
                     eq(history.schoolId, schoolId),
                     eq(history.day, day),
+                    gte(history.date, schoolYearStart),
                     isNotNull(history.originalTeacher),
                     isNotNull(history.subTeacher),
                 ),

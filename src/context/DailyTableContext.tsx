@@ -128,14 +128,13 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [mapAvailableTeachers, setMapAvailableTeachers] = useState<AvailableTeachers>({});
     const [teacherClassMap, setTeacherClassMap] = useState<TeacherClassMap>({});
-    const [recommendationsCache, setRecommendationsCache] = useState<Record<number, Record<string, Record<string, string[]>>>>({});
+    const [recommendationsCache, setRecommendationsCache] = useState<Record<string, Record<string, Record<string, string[]>>>>({});
     const refreshScheduleRef = useRef<((items: SyncItem[]) => Promise<void> | void) | null>(null);
     usePollingUpdates(refreshScheduleRef, SCHEDULE_CHANNELS);
     const [isPreviewMode, setIsPreviewMode] = useState(false);
     const togglePreviewMode = () => { setIsPreviewMode((prev) => !prev); };
     const { daysSelectOptions, selectedDate, handleDayChange } = useDailySelectedDate();
-    const currentDayIndex = selectedDate ? new Date(selectedDate).getDay() + 1 : 0;
-    const systemRecommendations = recommendationsCache[currentDayIndex] || {};
+    const systemRecommendations = selectedDate ? (recommendationsCache[selectedDate] || {}) : {};
 
     const clearColumn = (day: string, columnId: string) => {
         setMainDailyTable(prev => {
@@ -191,11 +190,11 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
 
             const day = new Date(selectedDate).getDay() + 1;
             try {
-                const recResponse = await getSystemRecommendationsAction(school.id, day);
+                const recResponse = await getSystemRecommendationsAction(school.id, day, selectedDate);
                 if (recResponse.success && recResponse.data) {
                     setRecommendationsCache(prev => ({
                         ...prev,
-                        [day]: recResponse.data
+                        [selectedDate]: recResponse.data
                     }));
                 }
             } catch (recError) {
