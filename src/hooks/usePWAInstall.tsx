@@ -73,9 +73,11 @@ const usePWAInstall = () => {
             const instructions = (
                 <div>
                     <div style={{ textAlign: 'right', lineHeight: '1.6' }}>
-                        {!isIOSSafari && (
+                        {isIOSSafari ? (
+                            <div>להתקנה לחצו על כפתור השיתוף ואז הוספה למסך הבית.</div>
+                        ) : (
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                <span>חשוב! יש לפתוח את האתר בדפדפן ספארי.</span>
+                                <span>כדי להתקין את האפליקציה יש לפתוח את האתר בדפדפן ספארי.</span>
                                 <button
                                     type="button"
                                     onClick={handleCopyUrl}
@@ -95,7 +97,6 @@ const usePWAInstall = () => {
                                 </button>
                             </div>
                         )}
-                        <div>להתקנה לחצו על כפתור השיתוף (למטה) ואז הוספה למסך הבית.</div>
                     </div>
                     <div style={{ textAlign: 'center', marginTop: '1rem' }}>
                         <a
@@ -120,7 +121,24 @@ const usePWAInstall = () => {
             );
 
             openPopup("msgPopup", "M", <MsgPopup message={instructions} okText="הבנתי" />);
-        } else { }
+        } else if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === "accepted") {
+                setDeferredPrompt(null);
+            }
+        } else {
+            const instructions = (
+                <div>
+                    <ol style={{ textAlign: 'right', paddingRight: '1rem', lineHeight: '1.5' }}>
+                        <li>לחצו על תפריט הדפדפן.</li>
+                        <li>בחרו &quot;הוסף אל..מסך הבית&quot;.</li>
+                    </ol>
+                </div>
+            );
+
+            openPopup("msgPopup", "M", <MsgPopup message={instructions} okText="הבנתי" />);
+        }
     }, [isIOS, isIOSSafari, handleCopyUrl, openPopup, deferredPrompt]);
 
     return {
