@@ -37,16 +37,18 @@ async function getWebPush() {
     if (!isVapidInitialized) {
         if (!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) {
             const msg = "VAPID keys are missing. Push notifications will not work.";
-            console.warn(msg);
-            if (process.env.NODE_ENV === "production") {
-                void dbLog({ description: msg, schoolId: undefined });
-            }
+            void dbLog({ description: msg, schoolId: undefined });
         } else {
-            webpush.setVapidDetails(
-                "mailto:contact@shibutzplus.com",
-                process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY.trim(),
-                process.env.VAPID_PRIVATE_KEY.trim()
-            );
+            try {
+                webpush.setVapidDetails(
+                    "https://shibutzplus.com",
+                    process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY.trim(),
+                    process.env.VAPID_PRIVATE_KEY.trim()
+                );
+            } catch (err) {
+                const errorMsg = `Failed to initialize VAPID details: ${err instanceof Error ? err.message : String(err)}`;
+                void dbLog({ description: errorMsg, schoolId: undefined });
+            }
         }
         isVapidInitialized = true;
     }
@@ -122,45 +124,9 @@ export async function sendNotification(
 }
 
 export async function sendPublishNotification(schoolId: string, payload: { title: string; body: string; url: string }, date: string) {
-    // 1. Get all Regular / Staff teachers
-    const regularTeachersSubscriptions = await db
-        .select({
-            id: pushSubscriptions.id,
-            endpoint: pushSubscriptions.endpoint,
-            p256dh: pushSubscriptions.p256dh,
-            auth: pushSubscriptions.auth,
-            teacherId: pushSubscriptions.teacherId,
-        })
-        .from(pushSubscriptions)
-        .innerJoin(teachers, eq(pushSubscriptions.teacherId, teachers.id))
-        .where(
-            and(
-                eq(pushSubscriptions.schoolId, schoolId),
-                inArray(teachers.role, ["regular", "staff"])
-            )
-        );
-
-    // 2. Get Substitute teachers who are working on this specific date
-    // First find the relevant substitute teacher IDs from the daily schedule
-    const activeSubstitutes = await db
-        .selectDistinct({ subTeacherId: dailySchedule.subTeacherId })
-        .from(dailySchedule)
-        .where(
-            and(
-                eq(dailySchedule.schoolId, schoolId),
-                eq(dailySchedule.date, date),
-                isNotNull(dailySchedule.subTeacherId)
-            )
-        );
-
-    const activeSubTeacherIds = activeSubstitutes
-        .map(s => s.subTeacherId)
-        .filter((id): id is string => id !== null);
-
-    let substituteSubscriptions: typeof regularTeachersSubscriptions = [];
-
-    if (activeSubTeacherIds.length > 0) {
-        substituteSubscriptions = await db
+    try {
+        // 1. Get all Regular / Staff teachers
+        const regularTeachersSubscriptions = await db
             .select({
                 id: pushSubscriptions.id,
                 endpoint: pushSubscriptions.endpoint,
@@ -173,81 +139,130 @@ export async function sendPublishNotification(schoolId: string, payload: { title
             .where(
                 and(
                     eq(pushSubscriptions.schoolId, schoolId),
-                    eq(teachers.role, "substitute"),
-                    inArray(pushSubscriptions.teacherId, activeSubTeacherIds)
+                    inArray(teachers.role, ["regular", "staff"])
                 )
             );
-    }
 
-    // 3. Combine and Deduplicate (by subscription ID)
-    const allSubscriptions = [...regularTeachersSubscriptions, ...substituteSubscriptions];
-    const unique = new Map<string, typeof regularTeachersSubscriptions[0]>();
-    allSubscriptions.forEach(sub => {
-        if (!unique.has(sub.id)) {
-            unique.set(sub.id, sub);
-        }
-    });
-
-    const subscriptions = Array.from(unique.values());
-
-    if (subscriptions.length === 0) {
-        return { success: true, count: 0 };
-    }
-
-    let successCount = 0;
-    let failCount = 0;
-
-    // Process in smaller batches to avoid "socket hang up" and other concurrency issues
-    const BATCH_SIZE = 50;
-
-    for (let i = 0; i < subscriptions.length; i += BATCH_SIZE) {
-        const batch = subscriptions.slice(i, i + BATCH_SIZE);
-
-        const promises = batch.map(async (sub) => {
-            let targetUrl = payload.url;
-            if (sub.teacherId) {
-                targetUrl = `${payload.url}/${sub.teacherId}`;
-            }
-
-            const notificationPayload = JSON.stringify({
-                ...payload,
-                url: targetUrl
-            });
-
-            const result = await sendNotification(
-                {
-                    endpoint: sub.endpoint,
-                    keys: {
-                        p256dh: sub.p256dh,
-                        auth: sub.auth,
-                    },
-                },
-                notificationPayload,
-                schoolId
+        // 2. Get Substitute teachers who are working on this specific date
+        // First find the relevant substitute teacher IDs from the daily schedule
+        const activeSubstitutes = await db
+            .selectDistinct({ subTeacherId: dailySchedule.subTeacherId })
+            .from(dailySchedule)
+            .where(
+                and(
+                    eq(dailySchedule.schoolId, schoolId),
+                    eq(dailySchedule.date, date),
+                    isNotNull(dailySchedule.subTeacherId)
+                )
             );
 
-            if (result.success) {
-                successCount++;
-            } else {
-                failCount++;
-                if (result.expired) {
-                    // Remove expired subscription
-                    try {
-                        await db.delete(pushSubscriptions).where(eq(pushSubscriptions.id, sub.id));
-                    } catch (e) {
-                        console.error("Failed to delete expired subscription", e);
-                    }
-                }
+        const activeSubTeacherIds = activeSubstitutes
+            .map(s => s.subTeacherId)
+            .filter((id): id is string => id !== null);
+
+        let substituteSubscriptions: typeof regularTeachersSubscriptions = [];
+
+        if (activeSubTeacherIds.length > 0) {
+            substituteSubscriptions = await db
+                .select({
+                    id: pushSubscriptions.id,
+                    endpoint: pushSubscriptions.endpoint,
+                    p256dh: pushSubscriptions.p256dh,
+                    auth: pushSubscriptions.auth,
+                    teacherId: pushSubscriptions.teacherId,
+                })
+                .from(pushSubscriptions)
+                .innerJoin(teachers, eq(pushSubscriptions.teacherId, teachers.id))
+                .where(
+                    and(
+                        eq(pushSubscriptions.schoolId, schoolId),
+                        eq(teachers.role, "substitute"),
+                        inArray(pushSubscriptions.teacherId, activeSubTeacherIds)
+                    )
+                );
+        }
+
+        // 3. Combine and Deduplicate (by subscription ID)
+        const allSubscriptions = [...regularTeachersSubscriptions, ...substituteSubscriptions];
+        const unique = new Map<string, typeof regularTeachersSubscriptions[0]>();
+        allSubscriptions.forEach(sub => {
+            if (!unique.has(sub.id)) {
+                unique.set(sub.id, sub);
             }
         });
 
-        await Promise.all(promises);
+        const subscriptions = Array.from(unique.values());
 
-        // Add a small delay between batches to allow sockets to recycle/cool down
-        if (i + BATCH_SIZE < subscriptions.length) {
-            await new Promise(resolve => setTimeout(resolve, 10));
+        if (subscriptions.length === 0) {
+            return { success: true, count: 0 };
         }
-    }
 
-    return { success: true, sent: successCount, failed: failCount };
+        let successCount = 0;
+        let failCount = 0;
+
+        // Process in smaller batches to avoid "socket hang up" and other concurrency issues
+        const BATCH_SIZE = 50;
+
+        for (let i = 0; i < subscriptions.length; i += BATCH_SIZE) {
+            const batch = subscriptions.slice(i, i + BATCH_SIZE);
+
+            const promises = batch.map(async (sub) => {
+                let targetUrl = payload.url;
+                if (sub.teacherId) {
+                    targetUrl = `${payload.url}/${sub.teacherId}`;
+                }
+
+                const notificationPayload = JSON.stringify({
+                    ...payload,
+                    url: targetUrl
+                });
+
+                const result = await sendNotification(
+                    {
+                        endpoint: sub.endpoint,
+                        keys: {
+                            p256dh: sub.p256dh,
+                            auth: sub.auth,
+                        },
+                    },
+                    notificationPayload,
+                    schoolId
+                );
+
+                if (result.success) {
+                    successCount++;
+                } else {
+                    failCount++;
+                    if (result.expired) {
+                        // Remove expired subscription
+                        try {
+                            await db.delete(pushSubscriptions).where(eq(pushSubscriptions.id, sub.id));
+                        } catch (e) {
+                            void dbLog({
+                                description: `Failed to delete expired push subscription ${sub.id}: ${e instanceof Error ? e.message : String(e)}`,
+                                schoolId
+                            });
+                        }
+                    }
+                }
+            });
+
+            await Promise.all(promises);
+
+            // Add a small delay between batches to allow sockets to recycle/cool down
+            if (i + BATCH_SIZE < subscriptions.length) {
+                await new Promise(resolve => setTimeout(resolve, 10));
+            }
+        }
+
+        return { success: true, sent: successCount, failed: failCount };
+    } catch (error) {
+        const errorMsg = `Error in sendPublishNotification: ${error instanceof Error ? error.message : String(error)}`;
+        await dbLog({
+            description: errorMsg,
+            schoolId,
+            metadata: { date }
+        });
+        return { success: false, error: errorMsg };
+    }
 }

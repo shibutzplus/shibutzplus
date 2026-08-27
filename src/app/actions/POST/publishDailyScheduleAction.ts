@@ -57,12 +57,20 @@ export async function publishDailyScheduleAction(
         // Update all users clients with new schedule (Upstash)
         void pushSyncUpdateServer(DAILY_PUBLISH_DATA_CHANGED, { schoolId, date });
 
-        // Trigger Web Push Notification
-        await sendPublishNotification(schoolId, {
-            title: "שיבוץ פלוס",
-            body: `המערכת פורסמה`,
-            url: `/teacher-changes/${schoolId}`
-        }, date);
+        // Trigger Web Push Notification (non-blocking for publish success)
+        try {
+            await sendPublishNotification(schoolId, {
+                title: "שיבוץ פלוס",
+                body: `המערכת פורסמה`,
+                url: `/teacher-changes/${schoolId}`
+            }, date);
+        } catch (pushErr) {
+            void dbLog({
+                description: `Push notification error in publishDailyScheduleAction: ${pushErr instanceof Error ? pushErr.message : String(pushErr)}`,
+                schoolId,
+                metadata: { date }
+            });
+        }
 
         return { success: true, message: messages.publish.success };
     } catch (error) {
