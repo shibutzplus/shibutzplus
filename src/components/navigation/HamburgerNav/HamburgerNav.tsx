@@ -14,6 +14,7 @@ import { usePopup, PopupAction } from "@/context/PopupContext";
 import { PushMsgContent, PUSH_MSG_MESSAGE } from "@/components/popups/PushMsg/PushMsg";
 import SettingsPopup from "@/components/popups/SettingsPopup/SettingsPopup";
 import { useOptionalMainContext } from "@/context/MainContext";
+import { useOptionalPortalContext } from "@/context/PortalContext";
 import { clearSessionStorage, getSessionStorage, SESSION_KEYS, setSessionStorage, } from "@/lib/sessionStorage";
 import { AppType } from "@/models/types";
 import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
@@ -103,6 +104,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
     const route = useRouter();
     const { openPopup } = usePopup();
     const context = useOptionalMainContext();
+    const portalContext = useOptionalPortalContext();
     const school = context?.school;
     const { data: session } = useSession();
     const userRole = (session?.user as any)?.role;
@@ -193,6 +195,22 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                             return {
                                 ...link,
                                 p: `${routePath.teacherChanges.p}/${teacher.schoolId}/${teacher.id}`,
+                            };
+                        }
+                    }
+                    if (link.p === routePath.teacherChangesUnpublished.p) {
+                        if (teacher?.role === TeacherRoleValues.STAFF) {
+                            return null;
+                        }
+                        // זמנית מנוטרל (הכנה לעתיד)
+                        const hasUnpublished = false && portalContext?.hasUnpublishedFutureAbsences;
+                        if (!hasUnpublished) {
+                            return null;
+                        }
+                        if (teacher) {
+                            return {
+                                ...link,
+                                p: `${routePath.teacherChangesUnpublished.p}/${teacher.schoolId}/${teacher.id}`,
                             };
                         }
                     }

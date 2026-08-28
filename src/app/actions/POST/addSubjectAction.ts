@@ -36,11 +36,16 @@ export async function addSubjectAction(
         });
         if (authError) return authError as ActionResponse;
 
+        const trimmedName = subjectData.name.trim();
+
         const newSubject = await executeQuery(async () => {
             return (
                 await db
                     .insert(schema.subjects)
-                    .values(subjectData as NewSubjectSchema)
+                    .values({
+                        ...(subjectData as NewSubjectSchema),
+                        name: trimmedName,
+                    })
                     .returning()
             )[0];
         });

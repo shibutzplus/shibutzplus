@@ -16,32 +16,38 @@ export function clearAnnualScheduleCache(schoolId: string) {
     annualScheduleCache.delete(schoolId);
 }
 
+export async function getFreshAnnualSchedule(schoolId: string): Promise<AnnualScheduleType[]> {
+    return await executeQuery(async () => {
+        const schedules = await db
+            .select()
+            .from(schema.annualSchedule)
+            .where(eq(schema.annualSchedule.schoolId, schoolId));
+
+        return schedules.map(
+            (schedule: any) =>
+                ({
+                    id: schedule.id,
+                    day: schedule.day,
+                    hour: schedule.hour,
+                    schoolId: schedule.schoolId,
+                    classId: schedule.classId,
+                    teacherId: schedule.teacherId,
+                    subjectId: schedule.subjectId,
+                    createdAt: schedule.createdAt,
+                    updatedAt: schedule.updatedAt,
+                }) as unknown as AnnualScheduleType,
+        );
+    });
+}
+
 export async function getCachedAnnualSchedule(schoolId: string): Promise<AnnualScheduleType[]> {
+    if (process.env.NODE_ENV === "development") {
+        return getFreshAnnualSchedule(schoolId);
+    }
+
     if (!annualScheduleCache.has(schoolId)) {
         annualScheduleCache.set(schoolId, unstable_cache(
-            async () => {
-                return await executeQuery(async () => {
-                    const schedules = await db
-                        .select()
-                        .from(schema.annualSchedule)
-                        .where(eq(schema.annualSchedule.schoolId, schoolId));
-
-                    return schedules.map(
-                        (schedule: any) =>
-                            ({
-                                id: schedule.id,
-                                day: schedule.day,
-                                hour: schedule.hour,
-                                schoolId: schedule.schoolId,
-                                classId: schedule.classId,
-                                teacherId: schedule.teacherId,
-                                subjectId: schedule.subjectId,
-                                createdAt: schedule.createdAt,
-                                updatedAt: schedule.updatedAt,
-                            }) as unknown as AnnualScheduleType,
-                    );
-                });
-            },
+            async () => getFreshAnnualSchedule(schoolId),
             ['getAnnualSchedule', schoolId],
             {
                 tags: [cacheTags.schoolSchedule(schoolId)],

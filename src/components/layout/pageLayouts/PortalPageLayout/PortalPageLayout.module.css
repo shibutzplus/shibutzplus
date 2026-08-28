@@ -1,9 +1,6 @@
 .greetingAndName {
     width: fit-content;
-    max-width: 180px;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .greetingWithNotification {
@@ -16,14 +13,13 @@
     justify-content: center;
     line-height: normal;
     gap: 5px;
+    position: relative;
 }
 
 .subTitle {
     font-size: 14px;
     font-weight: 400;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .headerRightContent {

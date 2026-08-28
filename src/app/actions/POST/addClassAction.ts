@@ -1,6 +1,7 @@
 "use server";
 
 import { db, schema, executeQuery } from "@/db";
+import { and, eq } from "drizzle-orm";
 import { ClassType, ClassRequest } from "@/models/types/classes";
 import { ActionResponse } from "@/models/types/actions";
 import { checkAuthAndParams, checkIsNotGuest } from "@/utils/authUtils";
@@ -35,9 +36,53 @@ export async function addClassAction(
         });
         if (authError) return authError as ActionResponse;
 
+        const trimmedName = classData.name.trim();
+
         const newClass = await executeQuery(async () => {
-            return (await db.insert(schema.classes).values(classData).returning())[0];
+            const existing = await db.query.classes.findFirst({
+                where: and(
+                    eq(schema.classes.schoolId, classData.schoolId),
+                    eq(schema.classes.name, trimmedName)
+                ),
+            });
+
+            if (existing) {
+                if (existing.isActive) {
+                    return null;
+                }
+                // Reactivate existing inactive record
+                const [reactivated] = await db
+                    .update(schema.classes)
+                    .set({
+                        name: trimmedName,
+                        activity: classData.activity ?? false,
+                        isActive: true,
+                        updatedAt: new Date(),
+                    })
+                    .where(eq(schema.classes.id, existing.id))
+                    .returning();
+                return reactivated;
+            }
+
+            return (
+                await db
+                    .insert(schema.classes)
+                    .values({
+                        ...classData,
+                        name: trimmedName,
+                        isActive: true,
+                    })
+                    .returning()
+            )[0];
         });
+
+        if (newClass === null) {
+            return {
+                success: false,
+                errorCode: "23505",
+                message: `"${classData.name}" כבר ברשימה.`,
+            };
+        }
 
         if (!newClass) {
             return { success: false, message: messages.classes.createError };

@@ -36,8 +36,9 @@ const router: Record<string, IRoute> = {
     // Teachers Portal
     teacherSignIn: { id: "teacherSignIn", p: "/teacher-sign-in", private: false, title: "כניסה למורים", },
     teacherChanges: { id: "teacherChanges", p: "/teacher-changes", private: false, title: "שינויים במערכת שלי", menuTitle: "המערכת שלי" },
+    teacherChangesUnpublished: { id: "teacherChangesUnpublished", p: "/teacher-changes-unpublished", private: false, title: "שינויים שלא פורסמו", menuTitle: "המערכת שלי (שינויים שלא פורסמו)" },
     schoolChanges: { id: "schoolChanges", p: "/school-changes", private: false, title: "מערכת יומית", menuTitle: "מערכת בית ספרית" },
-    schoolChangesFull: { id: "schoolChangesFull", p: "/school-changes-full", private: false, title: "מערכת במסך מלא", },
+    schoolChangesFull: { id: "schoolChangesFull", p: "/school-changes-full", private: false, title: "מערכת בית ספרית", },
     teacherChangesAlt: { id: "teacherChangesAlt", p: "/teacher-changes-alt", private: false, title: "מערכת בזמן חירום", menuTitle: "המערכת שלי" },
     schoolChangesAlt: { id: "schoolChangesAlt", p: "/school-changes-alt", private: false, title: "מערכת בית ספרית לזמן חירום", menuTitle: "מערכת בית ספרית" },
     faqManager: { id: "faqManager", p: "/faq-manager", private: true, title: "שאלות נפוצות" },

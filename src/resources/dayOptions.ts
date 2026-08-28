@@ -55,10 +55,15 @@ export function getIsraeliDateOptions(short: boolean = false): SelectOption[] {
 }
 
 export function getPublishedDatesOptions(dates: string[]): SelectOption[] {
-    const todayStr = getTodayDateString();
+    const { hour: currentHour, minute: currentMinute } = getIsraelDateComponents();
+    const [switchHour, switchMinute] = AUTO_SWITCH_TIME.split(":").map(Number);
+    const isAfterSwitch = currentHour > switchHour ||
+        (currentHour === switchHour && currentMinute >= switchMinute);
+
+    const minDateStr = isAfterSwitch ? getTomorrowDateString() : getTodayDateString();
 
     return dates
-        .filter(d => d >= todayStr)                 // keep today and future only
+        .filter(d => d >= minDateStr) // Before switch: today and future. After switch: tomorrow and future.
         .sort()
         .map(dateStr => {
             const formatted = formatTMDintoDMY(dateStr); // DD-MM-YYYY for display

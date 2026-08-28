@@ -6,7 +6,6 @@ import { getSchoolAction } from "@/app/actions/GET/getSchoolAction";
 import { getTeacherScheduleService } from "@/services/schedule/getTeacherSchedule";
 import { getPublishedDatesOptions } from "@/resources/dayOptions";
 import { chooseDefaultDate } from "@/utils/time";
-import { selectSelectedDate } from "@/services/portalTeacherService";
 import { SchoolSettingsType } from "@/models/types/settings";
 import { TeacherType } from "@/models/types/teachers";
 import { SubjectType } from "@/models/types/subjects";
@@ -18,6 +17,9 @@ import { getTeachersAction } from "@/app/actions/GET/getTeachersAction";
 import { getSubjectsAction } from "@/app/actions/GET/getSubjectsAction";
 import { getClassesAction } from "@/app/actions/GET/getClassesAction";
 import { PortalType } from "@/models/types";
+import { db, schema } from "@/db";
+import { and, eq, gte, or } from "drizzle-orm";
+import { getIsraelDateComponents, getTodayDateString, getTomorrowDateString, AUTO_SWITCH_TIME } from "@/utils/time";
 
 export interface TeacherPortalDataResponse {
     success: boolean;
@@ -30,11 +32,13 @@ export interface TeacherPortalDataResponse {
     allTeachers?: TeacherType[];
     allSubjects?: SubjectType[];
     allClasses?: ClassType[];
+    hasUnpublishedFutureAbsences?: boolean;
 }
 
 export const getTeacherPortalDataAction = async (
     schoolId: string,
     teacherId: string,
+    options?: { includeFutureAbsences?: boolean },
 ): Promise<TeacherPortalDataResponse> => {
     try {
         const authError = await publicAuthAndParams({ teacherId });
@@ -47,7 +51,7 @@ export const getTeacherPortalDataAction = async (
 
         // 1. Fetch School and Lists in parallel
         const [schoolRes, teachersListRes, subjectsListRes, classesListRes] = await Promise.all([
-            getSchoolAction(schoolId),
+            getSchoolAction(schoolId, { forceFresh: true }),
             getTeachersAction(schoolId, { portalType: PortalType.Teacher, includeSubstitutes: true }),
             getSubjectsAction(schoolId, { portalType: PortalType.Teacher }),
             getClassesAction(schoolId, { portalType: PortalType.Teacher }),
@@ -81,14 +85,43 @@ export const getTeacherPortalDataAction = async (
             displayAltSchedule,
         };
 
-        const datesOptions = getPublishedDatesOptions(schoolData.publishDates);
+        let allDates = schoolData.publishDates || [];
+
+        const { hour: currentHour, minute: currentMinute } = getIsraelDateComponents();
+        const [switchHour, switchMinute] = AUTO_SWITCH_TIME.split(":").map(Number);
+        const isAfterSwitch = currentHour > switchHour ||
+            (currentHour === switchHour && currentMinute >= switchMinute);
+
+        const minDateStr = isAfterSwitch ? getTomorrowDateString() : getTodayDateString();
+
+        const futureChangesDatesRows = await db
+            .selectDistinct({ date: schema.dailySchedule.date })
+            .from(schema.dailySchedule)
+            .where(and(
+                eq(schema.dailySchedule.schoolId, schoolId),
+                or(
+                    eq(schema.dailySchedule.originalTeacherId, teacherId),
+                    eq(schema.dailySchedule.subTeacherId, teacherId)
+                ),
+                gte(schema.dailySchedule.date, minDateStr)
+            ));
+
+        const futureChangesDates = futureChangesDatesRows.map(r => r.date);
+        const publishedSet = new Set(schoolData.publishDates || []);
+        const unpublishedFutureDates = futureChangesDates.filter(d => !publishedSet.has(d));
+        const hasUnpublishedFutureAbsences = unpublishedFutureDates.length > 0;
+
+        if (options?.includeFutureAbsences) {
+            allDates = unpublishedFutureDates;
+        }
+
+        const datesOptions = getPublishedDatesOptions(allDates);
         let selectedDate = "";
 
         if (datesOptions.length > 0) {
-            selectedDate =
-                chooseDefaultDate(datesOptions) ??
-                selectSelectedDate(datesOptions)?.value ??
-                datesOptions[0].value;
+            const timeBased = chooseDefaultDate();
+            const hasTimeBased = datesOptions.some(d => d.value === timeBased);
+            selectedDate = hasTimeBased ? timeBased : datesOptions[0].value;
         } else {
             selectedDate = chooseDefaultDate() || "";
         }
@@ -121,7 +154,8 @@ export const getTeacherPortalDataAction = async (
             scheduleData,
             allTeachers,
             allSubjects,
-            allClasses
+            allClasses,
+            hasUnpublishedFutureAbsences,
         };
 
     } catch (error) {

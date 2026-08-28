@@ -48,13 +48,20 @@ function extractClassesFromText(paragraphs: string[]): string[] {
 }
 
 const WORKGROUP_KEYWORDS = [
-    "שילוב", "שהייה", "פרטני", "צוות", "ישיב", "ריכוז", "השתלמות", "ניהול", "תפקיד", "חלון", "הדרכה", "הכלה", "הוראה מותאמת", "מתיא", "מתי״א", "(ש)", "(פ)"
+    "שילוב", "שהייה", "פרטני", "צוות", "ישיב", "ריכוז", "השתלמות", "ניהול", "תפקיד", "חלון",
+    "הדרכה", "הכלה", "הוראה מותאמת", "מתיא", "מתי״א", "(ש)", "(פ)",
+    "רוחב", "עולים", "העצמה", "כיתת אומן", "מצוינות", "ספריה", "ספרייה", "חבורת זמר", "סינקופה", "תיפוף", "קרן קרב", "-קרב"
 ];
+
+function isWorkGroupKeyword(text: string): boolean {
+    if (!text) return false;
+    return WORKGROUP_KEYWORDS.some(kw => text.includes(kw));
+}
 
 /**
  * Extracts subjects and workGroups from both class and teacher schedule files.
- * - Lessons with real classes (e.g. "ב1", "ד3") or "הוראה" are categorized as subjects.
- * - Lessons marked with "קבוצה" or containing presence/staff keywords (שהייה, פרטני, צוות...) are categorized as workGroups.
+ * - Lessons with real classes (e.g. "ב1", "ד3") are categorized as subjects.
+ * - Lessons marked with "קבוצה" or containing presence/staff/workgroup keywords (שהייה, פרטני, רוחב, עולים, ספריה, סינקופה...) are categorized as workGroups.
  */
 function extractSubjectsAndWorkGroups(
     classParagraphs: string[],
@@ -63,7 +70,7 @@ function extractSubjectsAndWorkGroups(
     const subjects = new Set<string>();
     const workGroups = new Set<string>();
 
-    // 1. From Class File: parts[0] are subjects
+    // 1. From Class File
     classParagraphs.forEach(line => {
         if (line.includes("מערכת שעות")) return;
         const parts = line.split(",").map(p => p.trim());
@@ -73,10 +80,15 @@ function extractSubjectsAndWorkGroups(
             if (rawCandidate.startsWith("יום ") || rawCandidate.startsWith("שעה ")) return;
             const candidate = rawCandidate.replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019]/g, "").replace(/\s+/g, " ").trim();
             if (candidate.length >= 2) {
-                subjects.add(candidate);
+                if (isWorkGroupKeyword(candidate)) {
+                    workGroups.add(candidate);
+                } else {
+                    subjects.add(candidate);
+                }
             }
         }
-    });
+    }
+);
 
     // 2. From Teacher File:
     teacherParagraphs.forEach(line => {
@@ -91,14 +103,14 @@ function extractSubjectsAndWorkGroups(
 
             const secondPart = parts[1] || "";
             const hasClassCode = !!normalizeClassCode(secondPart);
-            const isExplicitWorkGroup = secondPart === "קבוצה" || WORKGROUP_KEYWORDS.some(kw => candidate.includes(kw) || line.includes(kw));
+            const isExplicitWorkGroup = secondPart === "קבוצה" || isWorkGroupKeyword(candidate) || isWorkGroupKeyword(secondPart);
 
-            if (hasClassCode && !isExplicitWorkGroup) {
-                // Real subject taught in class (e.g. "שבילי מורשת, ב1 שירה צדוק, הוראה")
-                subjects.add(candidate);
-            } else if (isExplicitWorkGroup || secondPart === "קבוצה" || !hasClassCode) {
-                if (!subjects.has(candidate)) {
-                    workGroups.add(candidate);
+            if (isExplicitWorkGroup) {
+                workGroups.add(candidate);
+                subjects.delete(candidate);
+            } else if (hasClassCode) {
+                if (!workGroups.has(candidate)) {
+                    subjects.add(candidate);
                 }
             } else {
                 if (!subjects.has(candidate)) {
@@ -107,8 +119,9 @@ function extractSubjectsAndWorkGroups(
             }
         } else if (parts.length === 1) {
             const single = parts[0].replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019]/g, "").replace(/\s+/g, " ").trim();
-            if (WORKGROUP_KEYWORDS.some(kw => single.includes(kw))) {
+            if (isWorkGroupKeyword(single)) {
                 workGroups.add(single);
+                subjects.delete(single);
             }
         }
     });

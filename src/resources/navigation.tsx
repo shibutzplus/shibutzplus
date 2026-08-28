@@ -120,15 +120,15 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
                 isGuestBlocked: true,
             },
             {
-                name: routePath.classes.menuTitle ?? routePath.classes.title,
-                p: routePath.classes.p,
-                Icon: <Icons.chair size={24} />,
-                isGuestBlocked: true,
-            },
-            {
                 name: routePath.subjects.menuTitle ?? routePath.subjects.title,
                 p: routePath.subjects.p,
                 Icon: <Icons.book size={24} />,
+                isGuestBlocked: true,
+            },
+            {
+                name: routePath.classes.menuTitle ?? routePath.classes.title,
+                p: routePath.classes.p,
+                Icon: <Icons.chair size={24} />,
                 isGuestBlocked: true,
             },
             {
@@ -178,6 +178,16 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
             {
                 name: routePath.teacherChanges.menuTitle ?? routePath.teacherChanges.title,
                 p: routePath.teacherChanges.p,
+                Icon: <Icons.teacher size={22} />,
+            },
+            {
+                name: (
+                    <div style={{ display: "flex", flexDirection: "column", lineHeight: "1.2" }}>
+                        <span>המערכת שלי</span>
+                        <span style={{ fontSize: "0.85em", paddingTop: "5px" }}>(שינויים שלא פורסמו)</span>
+                    </div>
+                ),
+                p: routePath.teacherChangesUnpublished.p,
                 Icon: <Icons.teacher size={22} />,
             },
             {

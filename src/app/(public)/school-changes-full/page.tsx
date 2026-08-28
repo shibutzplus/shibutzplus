@@ -55,7 +55,7 @@ const FullScheduleViewPage: NextPage = () => {
     const getEmptyText = () => {
         if (isShabbat) return "סוף שבוע נעים";
         if (isPublished) return "אין שינויים במערכת";
-        return "מערכת בית ספרית יומית לא פורסמה";
+        return "המערכת הבית ספרית לא פורסמה";
     };
 
     if (!hasFetched || isDatesLoading || isPublishLoading) {

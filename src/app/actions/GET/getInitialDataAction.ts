@@ -19,7 +19,7 @@ export interface InitialDataResponse {
 
 export async function getInitialDataAction(schoolId: string): Promise<InitialDataResponse> {
     const [school, teachers, subjects, classes] = await Promise.all([
-        getSchoolAction(schoolId),
+        getSchoolAction(schoolId, { forceFresh: true }),
         getTeachersAction(schoolId, { portalType: PortalType.Manager, includeSubstitutes: true }),
         getSubjectsAction(schoolId),
         getClassesAction(schoolId),

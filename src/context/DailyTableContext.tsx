@@ -256,7 +256,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 try {
                     const { getSchoolAction } = await import("@/app/actions/GET/getSchoolAction");
                     if (school?.id) {
-                        const schoolRes = await getSchoolAction(school.id);
+                        const schoolRes = await getSchoolAction(school.id, { forceFresh: true });
                         if (schoolRes?.success && schoolRes?.data) {
                             setSchool(schoolRes.data);
                         }

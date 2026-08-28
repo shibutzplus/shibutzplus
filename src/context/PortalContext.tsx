@@ -1,15 +1,13 @@
 "use client";
 import { logErrorAction } from "@/app/actions/POST/logErrorAction";
-
 import React, { createContext, useContext, useState, ReactNode, useEffect, useRef } from "react";
 import { getSchoolAction } from "@/app/actions/GET/getSchoolAction";
 import { getTeacherByIdAction } from "@/app/actions/GET/getTeacherByIdAction";
 import { SelectOption } from "@/models/types";
 import { TeacherType } from "@/models/types/teachers";
-import { getPublishedDatesOptions as getPublishedDatesOptions } from "@/resources/dayOptions";
 import { SchoolSettingsType } from "@/models/types/settings";
 import { chooseDefaultDate } from "@/utils/time";
-import { selectSelectedDate } from "@/services/portalTeacherService";
+import { getPublishedDatesOptions } from "@/resources/dayOptions";
 import { getStorageTeacher } from "@/lib/localStorage";
 import { DailySchedule, GetDailyScheduleResponse } from "@/models/types/dailySchedule";
 import { SubjectType } from "@/models/types/subjects";
@@ -27,7 +25,7 @@ interface PortalContextType {
     handleDayChange: (value: string) => void;
     setTeacherAndSchool: (schoolId?: string, teacherId?: string) => Promise<boolean>;
     datesOptions: SelectOption[];
-    handleRefreshDates: () => Promise<{ success: boolean; error: string; selected: string; options: SelectOption[] }>;
+    handleRefreshDates: (refreshOptions?: { includeFutureAbsences?: boolean }) => Promise<{ success: boolean; error: string; selected: string; options: SelectOption[] }>;
 
     isPublishLoading: boolean;
     hasFetched: boolean;
@@ -54,10 +52,13 @@ interface PortalContextType {
         selectedDate: string,
         newTeachers?: TeacherType[],
         newSubjects?: SubjectType[],
-        newClasses?: ClassType[]
+        newClasses?: ClassType[],
+        newHasUnpublishedFutureAbsences?: boolean
     ) => void;
     refreshEntities: () => Promise<{ teachers?: TeacherType[], subjects?: SubjectType[], classes?: ClassType[] } | undefined>;
     handleIncomingSync: (items?: SyncItem[]) => Promise<{ hasRelevantUpdate: boolean; newLists?: { teachers?: TeacherType[], subjects?: SubjectType[], classes?: ClassType[] } }>;
+    hasUnpublishedFutureAbsences: boolean;
+    setHasUnpublishedFutureAbsences: React.Dispatch<React.SetStateAction<boolean>>;
     teachers?: TeacherType[];
     subjects?: SubjectType[];
     classes?: ClassType[];
@@ -73,6 +74,10 @@ export const usePortalContext = () => {
     return context;
 };
 
+export const useOptionalPortalContext = () => {
+    return useContext(PortalContext);
+};
+
 type PortalProviderProps = {
     children: ReactNode;
 };
@@ -81,6 +86,7 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
     const [teacher, setTeacher] = useState<TeacherType | undefined>();
     const [schoolId, setSchoolId] = useState<string | undefined>();
     const [settings, setSettings] = useState<SchoolSettingsType | undefined>();
+    const [hasUnpublishedFutureAbsences, setHasUnpublishedFutureAbsences] = useState<boolean>(false);
 
     const [selectedDate, setSelectedDate] = useState<string>("");
 
@@ -123,11 +129,12 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
     const blockRef = useRef<boolean>(true);
     useEffect(() => {
         const fetchPublishedDates = async () => {
+            if (!blockRef.current) return;
 
             if (teacher) {
                 setIsDatesLoading(true);
                 try {
-                    const response = await getSchoolAction(teacher.schoolId);
+                    const response = await getSchoolAction(teacher.schoolId, { forceFresh: true });
                     if (response?.success && response?.data) {
                         const { displaySchedule2Susb, fromHour, toHour, displayAltSchedule } = response.data;
                         setSettings({
@@ -145,11 +152,9 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
                             return;
                         }
                         setDatesOptions(res);
-                        handleDayChange(
-                            chooseDefaultDate(res) ??
-                            selectSelectedDate(res)?.value ??
-                            res[0].value,
-                        );
+                        const timeBased = chooseDefaultDate();
+                        const hasTimeBased = res.some((d: SelectOption) => d.value === timeBased);
+                        handleDayChange(hasTimeBased ? timeBased : res[0].value);
                         blockRef.current = false;
                     }
                 } catch (error) {
@@ -170,16 +175,15 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
 
     // Initialize selectedDate when datesOptions becomes available
     useEffect(() => {
-        if (datesOptions.length > 0 && !selectedDate) {
-            const initialDate =
-                chooseDefaultDate(datesOptions) ??
-                selectSelectedDate(datesOptions)?.value ??
-                datesOptions[0].value;
+        if (datesOptions.length > 0 && (!selectedDate || !datesOptions.some(o => o.value === selectedDate))) {
+            const timeBased = chooseDefaultDate();
+            const hasTimeBased = datesOptions.some(d => d.value === timeBased);
+            const initialDate = hasTimeBased ? timeBased : datesOptions[0].value;
             setSelectedDate(initialDate);
         }
     }, [datesOptions, selectedDate]);
 
-    const handleRefreshDates = async (): Promise<{
+    const handleRefreshDates = async (refreshOptions?: { includeFutureAbsences?: boolean }): Promise<{
         success: boolean;
         error: string;
         selected: string;
@@ -196,40 +200,31 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
             setIsDatesLoading(true);
         }
         try {
-            const response = await getSchoolAction(teacher.schoolId);
-            if (response?.success && response?.data) {
-                const { displaySchedule2Susb, fromHour, toHour, displayAltSchedule } = response.data;
-                setSettings({
-                    id: 0,
-                    schoolId: response.data.id,
-                    displaySchedule2Susb,
-                    displayAltSchedule,
-                    fromHour,
-                    toHour,
-                });
-                const options = getPublishedDatesOptions(response.data.publishDates);
+            const { getTeacherPortalDataAction } = await import("@/app/actions/GET/getTeacherPortalDataAction");
+            const data = await getTeacherPortalDataAction(teacher.schoolId, teacher.id, {
+                includeFutureAbsences: refreshOptions?.includeFutureAbsences ?? hasUnpublishedFutureAbsences
+            });
+
+            if (data?.success && data?.datesOptions) {
+                if (data.settings) setSettings(data.settings);
+                if (typeof data.hasUnpublishedFutureAbsences === "boolean") {
+                    setHasUnpublishedFutureAbsences(data.hasUnpublishedFutureAbsences);
+                }
+                const options = data.datesOptions;
                 setDatesOptions(options);
 
-                // Keep current if still valid; otherwise choose by time-based rule
-                // Prioritize time-based default (Today/Tomorrow) if available in options
-                // This ensures auto-refresh (and manual refresh) switches to the correct day when time passes.
-                const timeBasedDate = chooseDefaultDate(options);
-                const keepCurrent = !!selectedDate && options.some((o) => o.value === selectedDate);
-
-                const nextSelected = timeBasedDate
-                    ? timeBasedDate
-                    : keepCurrent
-                        ? selectedDate!
-                        : options.length > 0
-                            ? options[0].value
-                            : chooseDefaultDate();
+                // Priority: Keep current selected date if it's still in the options!
+                const keepCurrent = Boolean(selectedDate && options.some((o) => o.value === selectedDate));
+                const nextSelected = keepCurrent
+                    ? selectedDate
+                    : (chooseDefaultDate(options) ?? (options.length > 0 ? options[0].value : chooseDefaultDate()));
 
                 setSelectedDate(nextSelected);
                 return { success: true, error: "", selected: nextSelected, options };
             } else {
                 setDatesOptions([]);
                 setSelectedDate(chooseDefaultDate());
-                return { success: false, error: response?.message || "", selected: "", options: [] };
+                return { success: false, error: data?.message || "", selected: "", options: [] };
             }
         } catch (err) {
             // if error persist we might need to reconsider a fix. if not just remove the error for "Failed to fetch"
@@ -256,7 +251,8 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
         newSelectedDate: string,
         newTeachers: TeacherType[] = [],
         newSubjects: SubjectType[] = [],
-        newClasses: ClassType[] = []
+        newClasses: ClassType[] = [],
+        newHasUnpublishedFutureAbsences: boolean = false
     ) => {
         // Update all states silently or explicitly
         setTeacher(newTeacher);
@@ -264,6 +260,7 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
         setSettings(newSettings);
         setDatesOptions(newDatesOptions);
         setSelectedDate(newSelectedDate);
+        setHasUnpublishedFutureAbsences(newHasUnpublishedFutureAbsences);
 
         // Hydrate lists in usePublished
         hydrateLists(newTeachers, newSubjects, newClasses, newSchoolId, newSettings?.fromHour, newSettings?.toHour);
@@ -297,16 +294,12 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
             });
         }
 
-        if (!hasRelevantUpdate && !hasEntitiesUpdate) {
-            return { hasRelevantUpdate: false };
-        }
-
-        let newLists;
         if (hasEntitiesUpdate) {
-            newLists = await refreshEntities();
+            const newLists = await refreshEntities();
+            return { hasRelevantUpdate, newLists };
         }
 
-        return { hasRelevantUpdate: hasRelevantUpdate || hasEntitiesUpdate, newLists };
+        return { hasRelevantUpdate };
     };
 
     const value: PortalContextType = {
@@ -327,6 +320,8 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
         hydratePortalData,
         refreshEntities,
         handleIncomingSync,
+        hasUnpublishedFutureAbsences,
+        setHasUnpublishedFutureAbsences,
         teachers: portalTeachers,
         subjects: portalSubjects,
         classes: portalClasses,

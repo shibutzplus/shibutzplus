@@ -52,7 +52,7 @@ export async function updateTeacherAction(
             return await db
                 .select()
                 .from(schema.teachers)
-                .where(eq(schema.teachers.schoolId, teacherData.schoolId))
+                .where(and(eq(schema.teachers.schoolId, teacherData.schoolId), eq(schema.teachers.isActive, true)))
                 .orderBy(schema.teachers.name);
         });
 
