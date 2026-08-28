@@ -13,11 +13,11 @@ import { getDayNumberByDateString } from "@/utils/time";
 import { getTeacherPortalDataAction } from "@/app/actions/GET/getTeacherPortalDataAction";
 import { populatePortalTable } from "@/services/portalTeacherService";
 import { setStorageTeacher } from "@/lib/localStorage";
-import styles from "./teacherPortal.module.css";
+import styles from "@/app/(public)/teacher-changes/[schoolId]/[teacherId]/teacherPortal.module.css";
 
 export const runtime = 'edge';
 
-const TeacherPortalPage: NextPage = () => {
+const TeacherChangesUnpublishedPage: NextPage = () => {
     const { selectedDate, teacher, datesOptions, settings, hydratePortalData } = usePortalContext();
     const { fetchTeacherScheduleDate, hydrateSchedule } = useTeacherTableContext();
     const params = useParams();
@@ -33,7 +33,7 @@ const TeacherPortalPage: NextPage = () => {
         const initPortal = async () => {
             initialized.current = true;
 
-            const data = await getTeacherPortalDataAction(schoolId, teacherId);
+            const data = await getTeacherPortalDataAction(schoolId, teacherId, { includeFutureAbsences: true });
 
             if (!data.success || !data.teacher || !data.settings || !data.datesOptions || !data.selectedDate) {
                 route.push(`${router.teacherSignIn.p}/${schoolId}`);
@@ -57,7 +57,6 @@ const TeacherPortalPage: NextPage = () => {
 
             // Persist teacher data to local storage for other pages (e.g. FAQ)
             setStorageTeacher(teacher);
-
 
             // 2. Hydrate Schedule Context if available
             if (scheduleData && scheduleData.success && scheduleData.data) {
@@ -116,4 +115,4 @@ const TeacherPortalPage: NextPage = () => {
     );
 };
 
-export default TeacherPortalPage;
+export default TeacherChangesUnpublishedPage;

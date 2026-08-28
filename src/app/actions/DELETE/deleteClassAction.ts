@@ -72,8 +72,8 @@ export async function deleteClassAction(
             const remainingClasses = await db
                 .select()
                 .from(schema.classes)
-                .where(eq(schema.classes.schoolId, schoolId))
-                .orderBy(asc(schema.classes.name));
+                .where(and(eq(schema.classes.schoolId, schoolId), eq(schema.classes.isActive, true)))
+                .orderBy(asc(schema.classes.activity), asc(schema.classes.name));
 
             return { annualSchedule, remainingClasses };
         });

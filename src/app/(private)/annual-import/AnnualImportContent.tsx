@@ -54,8 +54,8 @@ const AnnualImportContent = () => {
         schedule: []
     });
 
-    // File mode: Excel or Word
-    const [fileMode, setFileMode] = useState<'excel' | 'word'>('excel');
+    // File mode: Word or Excel (Word is default)
+    const [fileMode, setFileMode] = useState<'excel' | 'word'>('word');
 
     // Excel files
     const [teacherFile, setTeacherFile] = useState<File | null>(null);
@@ -275,10 +275,14 @@ const AnnualImportContent = () => {
                         dbSubjectMap.delete(dbMatch);
                         const hasQuotes = name.includes('"') || name.includes("'");
                         const dbHasQuotes = dbMatch.includes('"') || dbMatch.includes("'");
-                        const finalName = (hasQuotes && !dbHasQuotes) ? name : dbMatch;
+                        const isFileMoreComplete = name.length > dbMatch.length && (name.startsWith(dbMatch) || areSimilarEntities(name, dbMatch));
+                        const finalName = (hasQuotes && !dbHasQuotes) || isFileMoreComplete ? name : dbMatch;
                         mergedSubjects.push({ name: finalName, source: 'both', exists: true });
                         if (name !== finalName) {
                             newAliases[name] = finalName;
+                        }
+                        if (dbMatch !== finalName) {
+                            newAliases[dbMatch] = finalName;
                         }
                         return;
                     }
@@ -315,10 +319,14 @@ const AnnualImportContent = () => {
                         const cleanDbMatch = dbMatch.replace(/\s*[\(\[]\s*[שפ]\s*[\)\]]/g, "").trim();
                         const hasQuotes = name.includes('"') || name.includes("'");
                         const dbHasQuotes = cleanDbMatch.includes('"') || cleanDbMatch.includes("'");
-                        const finalName = (hasQuotes && !dbHasQuotes) ? name : cleanDbMatch;
+                        const isFileMoreComplete = name.length > cleanDbMatch.length && (name.startsWith(cleanDbMatch) || areSimilarEntities(name, cleanDbMatch));
+                        const finalName = (hasQuotes && !dbHasQuotes) || isFileMoreComplete ? name : cleanDbMatch;
                         mergedWorkGroups.push({ name: finalName, source: 'both', exists: true });
                         if (name !== finalName) {
                             newAliases[name] = finalName;
+                        }
+                        if (dbMatch !== finalName) {
+                            newAliases[dbMatch] = finalName;
                         }
                         return;
                     }
@@ -555,7 +563,9 @@ const AnnualImportContent = () => {
                                 if (dbMatch) {
                                     seenSubjects.add(cleanName);
                                     dbSubjectMap.delete(dbMatch);
-                                    mergedSubjects.push({ name: dbMatch, source: 'both', exists: true });
+                                    const isFileMoreComplete = name.length > dbMatch.length && (name.startsWith(dbMatch) || areSimilarEntities(name, dbMatch));
+                                    const finalName = isFileMoreComplete ? name : dbMatch;
+                                    mergedSubjects.push({ name: finalName, source: 'both', exists: true });
                                     return;
                                 }
 
@@ -601,7 +611,9 @@ const AnnualImportContent = () => {
                                 if (dbMatch) {
                                     seenWorkGroups.add(cleanName);
                                     dbWorkGroupMap.delete(dbMatch);
-                                    mergedWorkGroups.push({ name: dbMatch, source: 'both', exists: true });
+                                    const isFileMoreComplete = name.length > dbMatch.length && (name.startsWith(dbMatch) || areSimilarEntities(name, dbMatch));
+                                    const finalName = isFileMoreComplete ? name : dbMatch;
+                                    mergedWorkGroups.push({ name: finalName, source: 'both', exists: true });
                                     return;
                                 }
 
@@ -681,27 +693,6 @@ const AnnualImportContent = () => {
                             <label className={styles.fileModeLabel}>פורמט הקבצים לייבוא:</label>
                             <div className={styles.fileModeRadioGroup} role="radiogroup">
                                 <label
-                                    className={`${styles.fileModeRadioCard} ${fileMode === 'excel' ? styles.fileModeRadioCardActive : ''}`}
-                                    onClick={() => { if (!isLoading) { setFileMode('excel'); setTeacherWordFile(null); setClassWordFile(null); } }}
-                                >
-                                    <input
-                                        type="radio"
-                                        name="fileMode"
-                                        value="excel"
-                                        checked={fileMode === 'excel'}
-                                        onChange={() => { setFileMode('excel'); setTeacherWordFile(null); setClassWordFile(null); }}
-                                        className={styles.fileModeRadioInput}
-                                        disabled={isLoading}
-                                    />
-                                    <span className={styles.radioCustomCircle} />
-                                    <span className={styles.radioIcon}>📊</span>
-                                    <div className={styles.radioTextWrapper}>
-                                        <span className={styles.radioTitle}>Excel (.xlsx)</span>
-                                        <span className={styles.radioSubtitle}>קובצי אקסל של מורים וכיתות</span>
-                                    </div>
-                                </label>
-
-                                <label
                                     className={`${styles.fileModeRadioCard} ${fileMode === 'word' ? styles.fileModeRadioCardActive : ''}`}
                                     onClick={() => { if (!isLoading) { setFileMode('word'); setTeacherFile(null); setClassFile(null); } }}
                                 >
@@ -719,6 +710,27 @@ const AnnualImportContent = () => {
                                     <div className={styles.radioTextWrapper}>
                                         <span className={styles.radioTitle}>Word (.docx)</span>
                                         <span className={styles.radioSubtitle}>טבלאות שעות בקובצי וורד</span>
+                                    </div>
+                                </label>
+
+                                <label
+                                    className={`${styles.fileModeRadioCard} ${fileMode === 'excel' ? styles.fileModeRadioCardActive : ''}`}
+                                    onClick={() => { if (!isLoading) { setFileMode('excel'); setTeacherWordFile(null); setClassWordFile(null); } }}
+                                >
+                                    <input
+                                        type="radio"
+                                        name="fileMode"
+                                        value="excel"
+                                        checked={fileMode === 'excel'}
+                                        onChange={() => { setFileMode('excel'); setTeacherWordFile(null); setClassWordFile(null); }}
+                                        className={styles.fileModeRadioInput}
+                                        disabled={isLoading}
+                                    />
+                                    <span className={styles.radioCustomCircle} />
+                                    <span className={styles.radioIcon}>📊</span>
+                                    <div className={styles.radioTextWrapper}>
+                                        <span className={styles.radioTitle}>Excel (.xlsx)</span>
+                                        <span className={styles.radioSubtitle}>קובצי אקסל של מורים וכיתות</span>
                                     </div>
                                 </label>
                             </div>

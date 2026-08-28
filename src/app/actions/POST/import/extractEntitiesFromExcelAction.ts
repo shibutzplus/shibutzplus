@@ -11,6 +11,21 @@ export interface ExcelExtractResult {
     workGroups: string[];
 }
 
+
+/**
+ * Strips class-code suffixes from a teacher name.
+ * e.g. "אורטל בבואו 3x" → "אורטל בבואו"
+ *      "הדר יצחק 3I+2I" → "הדר יצחק"
+ *      "אלה רויטמן ג3"  → "אלה רויטמן"
+ */
+function stripClassCodesFromName(name: string): string {
+    // Only strip if the class-code appears after at least one Hebrew word (the actual name)
+    // We replace trailing class-code segments (with optional leading "כיתה")
+    return name
+        .replace(/\s+(?:כיתה\s+)?(?:[א-י][׳']?\s*\d{1,2}|[A-Za-z]+\s*\d{1,2})(?:\s*\+\s*(?:[א-י][׳']?\s*\d{1,2}|[A-Za-z]+\s*\d{1,2}))*\s*$/g, "")
+        .trim();
+}
+
 function cleanEntityName(raw: string): string {
     let name = raw || "";
     // Remove date/time patterns (e.g. "27/05/2026 10:19:24")
@@ -28,6 +43,9 @@ function cleanEntityName(raw: string): string {
             name = name.slice(0, idx).trim();
         }
     }
+
+    // Strip trailing class-code suffixes (e.g. "ג3", "3I", "2I+3I", "כיתה א1")
+    name = stripClassCodesFromName(name);
 
     return name.replace(/[,\.]+$/, "").trim();
 }
@@ -142,7 +160,11 @@ export const extractEntitiesFromExcelAction = async (
         const rawSubjects: string[] = [];
         const rawWorkGroups: string[] = [];
 
-        const TEACHER_TITLE_REGEX = /מערכת שעות\s+(?:ל?מורה|מורה:?)\s+(.+)/i;
+        // Matches both:
+        //   "מערכת שעות למורה אורטל באבו" (with the word מורה)
+        //   "מערכת שעות אור סמרה"          (without the word מורה)
+        // "לכיתה" is excluded so class-schedule headers are not mistaken for teachers.
+        const TEACHER_TITLE_REGEX = /מערכת שעות\s+(?:ל?מורה:?\s+)?(?!לכיתה|כיתה)(.+)/i;
         const CLASS_CODE_REGEX = /([א-י][׳']?[\s-]?[1-9][0-9]?|[א-י]["״][א-י][\s-]?[1-9][0-9]?)/;
         const WORKGROUP_KEYWORDS = [
             "שילוב",
@@ -162,7 +184,24 @@ export const extractEntitiesFromExcelAction = async (
             "מתי״א",
             "(ש)",
             "(פ)",
+            "רוחב",
+            "עולים",
+            "העצמה",
+            "כיתת אומן",
+            "מצוינות",
+            "ספריה",
+            "ספרייה",
+            "חבורת זמר",
+            "סינקופה",
+            "תיפוף",
+            "קרן קרב",
+            "-קרב",
         ];
+
+        const isWorkGroupKeyword = (text: string) => {
+            if (!text) return false;
+            return WORKGROUP_KEYWORDS.some(kw => text.includes(kw));
+        };
 
         // 1. Parse Teacher Sheets
         teacherWb.SheetNames.forEach((sheetName: string) => {
@@ -175,8 +214,10 @@ export const extractEntitiesFromExcelAction = async (
                     const trimmed = cell.trim();
                     if (!trimmed) return;
 
-                    // Match Teacher header (e.g. "מערכת שעות למורה אלזס בתיה")
-                    if (trimmed.includes("מערכת שעות")) {
+                    // Match Teacher header:
+                    //   "מערכת שעות למורה אלזס בתיה" OR "מערכת שעות אור סמרה"
+                    // Skip class-schedule headers ("לכיתה" / "כיתה")
+                    if (trimmed.includes("מערכת שעות") && !trimmed.includes("לכיתה") && !trimmed.match(/מערכת שעות\s+כיתה/)) {
                         const match = trimmed.match(TEACHER_TITLE_REGEX);
                         if (match && match[1]) {
                             const name = cleanEntityName(match[1]);
@@ -200,7 +241,7 @@ export const extractEntitiesFromExcelAction = async (
 
                         if (lines.length > 0) {
                             const firstLine = lines[0];
-                            const isWg = WORKGROUP_KEYWORDS.some(kw => trimmed.includes(kw));
+                            const isWg = isWorkGroupKeyword(firstLine) || (lines.length === 1 && isWorkGroupKeyword(trimmed));
 
                             if (isWg) {
                                 rawWorkGroups.push(firstLine);

@@ -197,7 +197,14 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         if (response.success && response.data) {
             setSubjects((prev) => {
                 if (!response.data) return prev;
-                const updatedSubjects = prev ? [...prev, response.data] : [response.data];
+                const existingIndex = prev?.findIndex((s) => s.id === response.data!.id) ?? -1;
+                let updatedSubjects: SubjectType[];
+                if (existingIndex >= 0 && prev) {
+                    updatedSubjects = [...prev];
+                    updatedSubjects[existingIndex] = response.data!;
+                } else {
+                    updatedSubjects = prev ? [...prev, response.data!] : [response.data!];
+                }
                 updatedSubjects.sort(sortByName);
                 return updatedSubjects;
             });
@@ -235,7 +242,14 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         if (response.success && response.data) {
             setClasses((prev) => {
                 if (!response.data) return prev;
-                const updatedClasses = prev ? [...prev, response.data] : [response.data];
+                const existingIndex = prev?.findIndex((c) => c.id === response.data!.id) ?? -1;
+                let updatedClasses: ClassType[];
+                if (existingIndex >= 0 && prev) {
+                    updatedClasses = [...prev];
+                    updatedClasses[existingIndex] = response.data!;
+                } else {
+                    updatedClasses = prev ? [...prev, response.data!] : [response.data!];
+                }
                 updatedClasses.sort((a, b) => {
                     if (a.activity !== b.activity) return a.activity ? 1 : -1;
                     return compareHebrew(a.name, b.name);
@@ -317,7 +331,14 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         if (response.success && response.data) {
             setTeachers((prev) => {
                 if (!response.data) return prev;
-                const updatedTeachers = prev ? [...prev, response.data] : [response.data];
+                const existingIndex = prev?.findIndex((t) => t.id === response.data!.id) ?? -1;
+                let updatedTeachers: TeacherType[];
+                if (existingIndex >= 0 && prev) {
+                    updatedTeachers = [...prev];
+                    updatedTeachers[existingIndex] = response.data!;
+                } else {
+                    updatedTeachers = prev ? [...prev, response.data!] : [response.data!];
+                }
                 updatedTeachers.sort(sortByName);
 
                 return updatedTeachers;

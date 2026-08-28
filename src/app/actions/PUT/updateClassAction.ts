@@ -5,7 +5,7 @@ import { ActionResponse } from "@/models/types/actions";
 import { checkAuthAndParams, checkIsNotGuest } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
-import { eq, asc } from "drizzle-orm";
+import { eq, and, asc } from "drizzle-orm";
 import { dbLog } from "@/services/loggerService";
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
 import { ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
@@ -76,7 +76,7 @@ export async function updateClassAction(
             return await db
                 .select()
                 .from(schema.classes)
-                .where(eq(schema.classes.schoolId, classData.schoolId))
+                .where(and(eq(schema.classes.schoolId, classData.schoolId), eq(schema.classes.isActive, true)))
                 .orderBy(asc(schema.classes.activity), asc(schema.classes.name));
         });
 

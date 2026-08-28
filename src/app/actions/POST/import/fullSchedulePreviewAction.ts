@@ -169,43 +169,49 @@ export const fullSchedulePreviewAction = async (
                                 const exactWg = normalizedWorkGroups.find(w => stripQuotes(w.clean) === cleanCandidateSub || w.clean === cleanCandidateSub);
                                 if (exactWg) {
                                     finalSub = exactWg.original;
-                                    finalCls = "קבוצה";
                                 } else {
                                     const exactSub = normalizedSubjects.find(s => stripQuotes(s.clean) === cleanCandidateSub || s.clean === cleanCandidateSub);
                                     if (exactSub) {
                                         finalSub = exactSub.original;
+                                    } else {
+                                        finalSub = candidateSub;
                                     }
+                                }
 
-                                    // Check if any of otherParts explicitly mentions the current teacher
-                                    const cleanCurrentTeacher = stripQuotes(currentTeacher);
-                                    const teacherSpecificParts = otherParts.filter(p => {
-                                        const cleanP = stripQuotes(p);
-                                        if (cleanP.includes(cleanCurrentTeacher) || cleanCurrentTeacher.includes(cleanP)) return true;
-                                        // Match if teacher first/last name parts are contained
-                                        const teacherWords = cleanCurrentTeacher.split(" ").filter(w => w.length >= 2);
-                                        return teacherWords.length >= 2 && teacherWords.every(w => cleanP.includes(w));
-                                    });
+                                // Check if any of otherParts explicitly mentions the current teacher
+                                const cleanCurrentTeacher = stripQuotes(currentTeacher);
+                                const teacherSpecificParts = otherParts.filter(p => {
+                                    const cleanP = stripQuotes(p);
+                                    if (cleanP.includes(cleanCurrentTeacher) || cleanCurrentTeacher.includes(cleanP)) return true;
+                                    // Match if teacher first/last name parts are contained
+                                    const teacherWords = cleanCurrentTeacher.split(" ").filter(w => w.length >= 2);
+                                    return teacherWords.length >= 2 && teacherWords.every(w => cleanP.includes(w));
+                                });
 
-                                    const targetParts = teacherSpecificParts.length > 0 ? teacherSpecificParts : otherParts;
-                                    const matchedClassesSet = new Set<string>();
+                                const targetParts = teacherSpecificParts.length > 0 ? teacherSpecificParts : otherParts;
+                                const matchedClassesSet = new Set<string>();
 
-                                    for (const part of targetParts) {
-                                        const candClsCode = normalizeClassCode(part);
-                                        const cleanPart = stripQuotes(part);
+                                for (const part of targetParts) {
+                                    const subParts = part.split(/[,/]+/).map(p => p.trim()).filter(Boolean);
+                                    for (const subPart of subParts) {
+                                        const candClsCode = normalizeClassCode(subPart);
+                                        const cleanPart = stripQuotes(subPart);
                                         const exactCls = normalizedClasses.find(c =>
                                             (candClsCode && c.code && c.code === candClsCode) ||
                                             stripQuotes(c.clean) === cleanPart ||
                                             c.clean === cleanPart ||
-                                            c.original === part
+                                            c.original === subPart
                                         );
                                         if (exactCls) {
                                             matchedClassesSet.add(exactCls.original);
                                         }
                                     }
+                                }
 
-                                    if (matchedClassesSet.size > 0) {
-                                        finalCls = Array.from(matchedClassesSet).join(", ");
-                                    }
+                                if (matchedClassesSet.size > 0) {
+                                    finalCls = Array.from(matchedClassesSet).join(", ");
+                                } else if (exactWg) {
+                                    finalCls = "קבוצה";
                                 }
                             } else {
                                 // Single part on line (e.g. "מתמטיקה א1")
@@ -215,13 +221,16 @@ export const fullSchedulePreviewAction = async (
                                 const exactWg = normalizedWorkGroups.find(w => singleText.includes(w.clean));
                                 if (exactWg) {
                                     finalSub = exactWg.original;
-                                    finalCls = "קבוצה";
                                 } else {
                                     const exactSub = normalizedSubjects.find(s => singleText.includes(s.clean));
                                     if (exactSub) finalSub = exactSub.original;
+                                }
 
-                                    const exactCls = normalizedClasses.find(c => (singleCode && c.code && c.code === singleCode) || singleText.includes(c.clean));
-                                    if (exactCls) finalCls = exactCls.original;
+                                const exactCls = normalizedClasses.find(c => (singleCode && c.code && c.code === singleCode) || singleText.includes(c.clean));
+                                if (exactCls) {
+                                    finalCls = exactCls.original;
+                                } else if (exactWg) {
+                                    finalCls = "קבוצה";
                                 }
                             }
 
@@ -565,7 +574,6 @@ export const fullSchedulePreviewAction = async (
 
                             if (wgMatch) {
                                 finalSub = wgMatch.original;
-                                finalCls = "קבוצה";
                             } else {
                                 // 2. Subjects
                                 // 2a. Exact match on first line (e.g. "שפה" === "שפה")
@@ -589,17 +597,21 @@ export const fullSchedulePreviewAction = async (
                                 }
 
                                 if (subMatch) finalSub = subMatch.original;
+                            }
 
-                                const clsMatch = normalizedClasses
-                                    .filter(c => {
-                                        if (cleanContent.includes(c.clean)) return true;
-                                        if (c.code && normalizeClassCode(cleanContent) === c.code) return true;
-                                        if (c.code && cleanContent.includes(c.code)) return true;
-                                        return false;
-                                    })
-                                    .sort((a, b) => b.clean.length - a.clean.length)[0];
+                            const clsMatch = normalizedClasses
+                                .filter(c => {
+                                    if (cleanContent.includes(c.clean)) return true;
+                                    if (c.code && normalizeClassCode(cleanContent) === c.code) return true;
+                                    if (c.code && cleanContent.includes(c.code)) return true;
+                                    return false;
+                                })
+                                .sort((a, b) => b.clean.length - a.clean.length)[0];
 
-                                if (clsMatch) finalCls = clsMatch.original;
+                            if (clsMatch) {
+                                finalCls = clsMatch.original;
+                            } else if (wgMatch) {
+                                finalCls = "קבוצה";
                             }
 
                             if (finalSub || finalCls) {

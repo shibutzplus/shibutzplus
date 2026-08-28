@@ -66,7 +66,7 @@ export async function deleteTeacherAction(
             const remainingTeachers = await db
                 .select()
                 .from(schema.teachers)
-                .where(eq(schema.teachers.schoolId, schoolId))
+                .where(and(eq(schema.teachers.schoolId, schoolId), eq(schema.teachers.isActive, true)))
                 .orderBy(asc(schema.teachers.name));
 
             return { annualSchedule, remainingTeachers };

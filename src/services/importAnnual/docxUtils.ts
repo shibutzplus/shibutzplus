@@ -49,6 +49,8 @@ export function extractParagraphsFromDocx(buffer: Uint8Array | Buffer): string[]
 
 export const CLASS_CODE_REGEX = /([א-י][׳']?[\s-]?[1-9][0-9]?|[א-י]["״][א-י][\s-]?[1-9][0-9]?)/;
 
+const NON_CLASS_WORDS = ["הוראה", "שהייה", "פרטני", "תפקיד", "קבוצה", "חלון", "ספרנית", "מורה"];
+
 /**
  * Normalizes any class string into its core grade+number code (e.g. "א1", "יא2", "ז3"):
  * "כיתה א1" -> "א1"
@@ -60,19 +62,27 @@ export const CLASS_CODE_REGEX = /([א-י][׳']?[\s-]?[1-9][0-9]?|[א-י]["״][א
  * "כיתה י"א 2" -> "יא2"
  * "יא2" -> "יא2"
  * "ז 3" -> "ז3"
+ * Returns "" if the string is not a class.
  */
 export function normalizeClassCode(raw: string): string {
     if (!raw) return "";
-    const match = raw.match(CLASS_CODE_REGEX);
+    const cleanRaw = raw.trim();
+    if (NON_CLASS_WORDS.some(w => cleanRaw.includes(w))) {
+        return "";
+    }
+    const match = cleanRaw.match(CLASS_CODE_REGEX);
     if (match && match[1]) {
         return match[1]
             .replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019`\-]/g, "")
             .replace(/\s+/g, "")
             .trim();
     }
-    return raw
-        .replace(/^(?:כיתה|כתה|class)\s*/i, "")
-        .replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019`\-]/g, "")
-        .replace(/\s+/g, "")
-        .trim();
+    const classPrefixMatch = cleanRaw.match(/^(?:כיתה|כתה|class)\s+([א-י]["״׳']?[א-י]?)/i);
+    if (classPrefixMatch && classPrefixMatch[1]) {
+        return classPrefixMatch[1]
+            .replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019`\-]/g, "")
+            .replace(/\s+/g, "")
+            .trim();
+    }
+    return "";
 }

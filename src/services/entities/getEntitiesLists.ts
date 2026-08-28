@@ -17,33 +17,42 @@ import { PortalType, PortalTypeVal } from "@/models/types";
  */
 const teachersCache = new Map<string, any>();
 
+async function fetchFreshTeachersList(
+    schoolId: string,
+    options?: { portalType?: PortalTypeVal; includeSubstitutes?: boolean }
+): Promise<TeacherType[]> {
+    return await executeQuery(async () => {
+        const conditions = [
+            eq(schema.teachers.schoolId, schoolId),
+            eq(schema.teachers.isActive, true)
+        ];
+
+        if (options?.portalType === PortalType.Teacher && options?.includeSubstitutes === false) {
+            conditions.push(eq(schema.teachers.role, TeacherRoleValues.REGULAR));
+        }
+
+        const teachers = await db
+            .select()
+            .from(schema.teachers)
+            .where(and(...conditions))
+            .orderBy(asc(schema.teachers.name));
+
+        return teachers as TeacherType[];
+    });
+}
+
 export async function getCachedTeachersList(
     schoolId: string,
     options?: { portalType?: PortalTypeVal; includeSubstitutes?: boolean }
 ): Promise<TeacherType[]> {
+    if (process.env.NODE_ENV === "development") {
+        return fetchFreshTeachersList(schoolId, options);
+    }
+
     const cacheKey = `${schoolId}-${JSON.stringify(options || {})}`;
     if (!teachersCache.has(cacheKey)) {
         teachersCache.set(cacheKey, unstable_cache(
-            async () => {
-                return await executeQuery(async () => {
-                    const conditions = [
-                        eq(schema.teachers.schoolId, schoolId),
-                        eq(schema.teachers.isActive, true)
-                    ];
-
-                    if (options?.portalType === PortalType.Teacher && options?.includeSubstitutes === false) {
-                        conditions.push(eq(schema.teachers.role, TeacherRoleValues.REGULAR));
-                    }
-
-                    const teachers = await db
-                        .select()
-                        .from(schema.teachers)
-                        .where(and(...conditions))
-                        .orderBy(asc(schema.teachers.name));
-
-                    return teachers as TeacherType[];
-                });
-            },
+            async () => fetchFreshTeachersList(schoolId, options),
             ['getTeachersList', schoolId, JSON.stringify(options || {})],
             {
                 tags: [cacheTags.teachersList(schoolId)],
@@ -57,24 +66,33 @@ export async function getCachedTeachersList(
 
 const subjectsCache = new Map<string, any>();
 
+async function fetchFreshSubjectsList(
+    schoolId: string,
+    _options?: { portalType?: PortalTypeVal }
+): Promise<SubjectType[]> {
+    return await executeQuery(async () => {
+        const subjects = await db
+            .select()
+            .from(schema.subjects)
+            .where(eq(schema.subjects.schoolId, schoolId))
+            .orderBy(asc(schema.subjects.name));
+
+        return subjects as SubjectType[];
+    });
+}
+
 export async function getCachedSubjectsList(
     schoolId: string,
     options?: { portalType?: PortalTypeVal }
 ): Promise<SubjectType[]> {
+    if (process.env.NODE_ENV === "development") {
+        return fetchFreshSubjectsList(schoolId, options);
+    }
+
     const cacheKey = `${schoolId}-${JSON.stringify(options || {})}`;
     if (!subjectsCache.has(cacheKey)) {
         subjectsCache.set(cacheKey, unstable_cache(
-            async () => {
-                return await executeQuery(async () => {
-                    const subjects = await db
-                        .select()
-                        .from(schema.subjects)
-                        .where(eq(schema.subjects.schoolId, schoolId))
-                        .orderBy(asc(schema.subjects.name));
-
-                    return subjects as SubjectType[];
-                });
-            },
+            async () => fetchFreshSubjectsList(schoolId, options),
             ['getSubjectsList', schoolId, JSON.stringify(options || {})],
             {
                 tags: [cacheTags.subjectsList(schoolId)],
@@ -88,24 +106,33 @@ export async function getCachedSubjectsList(
 
 const classesCache = new Map<string, any>();
 
+async function fetchFreshClassesList(
+    schoolId: string,
+    _options?: { portalType?: PortalTypeVal }
+): Promise<ClassType[]> {
+    return await executeQuery(async () => {
+        const classes = await db
+            .select()
+            .from(schema.classes)
+            .where(and(eq(schema.classes.schoolId, schoolId), eq(schema.classes.isActive, true)))
+            .orderBy(asc(schema.classes.activity), asc(schema.classes.name));
+
+        return classes as ClassType[];
+    });
+}
+
 export async function getCachedClassesList(
     schoolId: string,
     options?: { portalType?: PortalTypeVal }
 ): Promise<ClassType[]> {
+    if (process.env.NODE_ENV === "development") {
+        return fetchFreshClassesList(schoolId, options);
+    }
+
     const cacheKey = `${schoolId}-${JSON.stringify(options || {})}`;
     if (!classesCache.has(cacheKey)) {
         classesCache.set(cacheKey, unstable_cache(
-            async () => {
-                return await executeQuery(async () => {
-                    const classes = await db
-                        .select()
-                        .from(schema.classes)
-                        .where(and(eq(schema.classes.schoolId, schoolId), eq(schema.classes.isActive, true)))
-                        .orderBy(asc(schema.classes.activity), asc(schema.classes.name));
-
-                    return classes as ClassType[];
-                });
-            },
+            async () => fetchFreshClassesList(schoolId, options),
             ['getClassesList', schoolId, JSON.stringify(options || {})],
             {
                 tags: [cacheTags.classesList(schoolId)],

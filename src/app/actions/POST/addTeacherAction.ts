@@ -40,14 +40,53 @@ export async function addTeacherAction(
             return authError as ActionResponse;
         }
 
+        const trimmedName = teacherData.name.trim();
+
         const newTeacher = await executeQuery(async () => {
+            const existing = await db.query.teachers.findFirst({
+                where: and(
+                    eq(schema.teachers.schoolId, teacherData.schoolId),
+                    eq(schema.teachers.name, trimmedName)
+                ),
+            });
+
+            if (existing) {
+                if (existing.isActive) {
+                    return null;
+                }
+                // Reactivate existing inactive record
+                const [reactivated] = await db
+                    .update(schema.teachers)
+                    .set({
+                        name: trimmedName,
+                        role: teacherData.role,
+                        isActive: true,
+                        updatedAt: new Date(),
+                    })
+                    .where(eq(schema.teachers.id, existing.id))
+                    .returning();
+                return reactivated;
+            }
+
             return (
                 await db
                     .insert(schema.teachers)
-                    .values(teacherData as NewTeacherSchema)
+                    .values({
+                        ...(teacherData as NewTeacherSchema),
+                        name: trimmedName,
+                        isActive: true,
+                    })
                     .returning()
             )[0];
         });
+
+        if (newTeacher === null) {
+            return {
+                success: false,
+                errorCode: "23505",
+                message: `"${teacherData.name}" כבר ברשימה.`,
+            };
+        }
 
         if (!newTeacher) {
             return {

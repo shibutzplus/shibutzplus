@@ -14,6 +14,7 @@ import { useTeacherTableContext } from "@/context/TeacherTableContext";
 import PageLayout from "../../PageLayout/PageLayout";
 import { SyncItem } from "@/services/sync/clientSyncService";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
+import CleanDropdownSelect from "@/components/ui/select/CleanDropdownSelect/CleanDropdownSelect";
 
 type PortalPageLayoutProps = {
     children: React.ReactNode;
@@ -21,7 +22,7 @@ type PortalPageLayoutProps = {
 
 export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
     const pathname = usePathname();
-    const { teacher, selectedDate, handleRefreshDates, refreshDailyScheduleTeacherPortal, settings, handleIncomingSync } = usePortalContext();
+    const { teacher, selectedDate, handleRefreshDates, refreshDailyScheduleTeacherPortal, settings, handleIncomingSync, datesOptions, handleDayChange } = usePortalContext();
     const { refreshMaterialTeacherPortal, mainPortalTable } = useTeacherTableContext();
     const refreshRef = React.useRef<((items: SyncItem[]) => Promise<void> | void) | null>(null);
     const { resetUpdate } = usePollingUpdates(refreshRef);
@@ -46,12 +47,13 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
         const { hasRelevantUpdate, newLists } = await handleIncomingSync(items);
 
         if (hasRelevantUpdate) {
-            const res = await handleRefreshDates();
+            const isUnpublishedPortal = pathname.includes(router.teacherChangesUnpublished.p);
+            const res = await handleRefreshDates({ includeFutureAbsences: isUnpublishedPortal });
             const effectiveDate = res.selected;
             const freshOptions = res.options || [];
             const isValidDate = freshOptions.some(d => d.value === effectiveDate);
 
-            if (pathname.includes(router.teacherChanges.p)) {
+            if (pathname.includes(router.teacherChanges.p) || pathname.includes(router.teacherChangesUnpublished.p)) {
                 if (isValidDate) await refreshMaterialTeacherPortal(teacher, effectiveDate);
             } else if (
                 pathname.includes(router.schoolChanges.p) ||
@@ -97,26 +99,47 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
     }, [teacher]);
 
     // -- Title Logic -- //
-    const getTitle = () => {
-        const isToday = selectedDate === getTodayDateString();
-        const isTomorrow = selectedDate === getTomorrowDateString();
-        const [y, m, d] = selectedDate.split("-");
-        const hasDate = Boolean(y && m && d);
+    const formatDateDisplay = (dateStr: string) => {
+        const [y, m, d] = dateStr.split("-");
+        if (y && m && d) return `${d}/${m}/${y}`;
+        return dateStr;
+    };
 
-        let when = "";
-        if (isToday) when = "להיום";
-        else if (isTomorrow) when = "למחר";
-        else if (hasDate) {
-            const isRegularPortal = pathname.includes(router.teacherChanges.p) && teacher?.role === TeacherRoleValues.REGULAR;
-            when = isRegularPortal ? `ל${d}/${m}` : `${d}/${m}`;
+    const formatOptionLabel = (dateStr: string) => {
+        const isToday = dateStr === getTodayDateString();
+        const isTomorrow = dateStr === getTomorrowDateString();
+        if (isToday) return "שינויים במערכת להיום";
+        if (isTomorrow) return "שינויים במערכת למחר";
+        return formatDateDisplay(dateStr);
+    };
+
+    const getTitle = () => {
+        const rawDates = (datesOptions && datesOptions.length > 0)
+            ? datesOptions.map((opt) => opt.value)
+            : selectedDate
+                ? [selectedDate]
+                : [];
+
+        if (selectedDate && !rawDates.includes(selectedDate)) {
+            rawDates.unshift(selectedDate);
         }
 
-        const title = `שינויים במערכת ${when}`;
+        const optionsList = rawDates.map((dateValue) => ({
+            value: dateValue,
+            label: formatOptionLabel(dateValue),
+        }));
 
         return (
             <div className={styles.titleContainer}>
                 <div>{greetingTeacher(teacher)}</div>
-                <div className={styles.subTitle}>{title}</div>
+                <CleanDropdownSelect
+                    value={selectedDate}
+                    options={optionsList}
+                    onChange={(val) => {
+                        handleDayChange(val);
+                    }}
+                    className={styles.subTitle}
+                />
             </div>
         );
     };
@@ -138,9 +161,10 @@ export default function PortalPageLayout({ children }: PortalPageLayoutProps) {
                 !teacher ||
                     isRegularTeacher ||
                     (teacher?.role === TeacherRoleValues.SUBSTITUTE && settings?.displaySchedule2Susb) ? (
+                    !pathname.includes(router.teacherChangesUnpublished.p) &&
                     pathname.includes(router.teacherChanges.p) &&
-                        mainPortalTable[selectedDate] &&
-                        Object.values(mainPortalTable[selectedDate]).some((row) => !row.isRegular) ? (
+                    mainPortalTable[selectedDate] &&
+                    Object.values(mainPortalTable[selectedDate]).some((row) => !row.isRegular) ? (
                         <div className={styles.navContainer}>
                             <PortalNav />
                         </div>
