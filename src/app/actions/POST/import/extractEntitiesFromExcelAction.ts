@@ -192,6 +192,8 @@ export const extractEntitiesFromExcelAction = async (
             "ספריה",
             "ספרייה",
             "חבורת זמר",
+            "מקהלה",
+            "תגבור",
             "סינקופה",
             "תיפוף",
             "קרן קרב",
