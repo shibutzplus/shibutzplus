@@ -126,15 +126,15 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
                 isGuestBlocked: true,
             },
             {
-                name: routePath.classes.menuTitle ?? routePath.classes.title,
-                p: routePath.classes.p,
-                Icon: <Icons.chair size={24} />,
-                isGuestBlocked: true,
-            },
-            {
                 name: routePath.groups.menuTitle ?? routePath.groups.title,
                 p: routePath.groups.p,
                 Icon: <Icons.users size={24} />,
+                isGuestBlocked: true,
+            },
+            {
+                name: routePath.classes.menuTitle ?? routePath.classes.title,
+                p: routePath.classes.p,
+                Icon: <Icons.chair size={24} />,
                 isGuestBlocked: true,
             },
         ],
@@ -146,6 +146,12 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
         type: "private",
         isCollapse: true,
         links: [
+            {
+                name: routePath.queries.menuTitle ?? routePath.queries.title,
+                p: routePath.queries.p,
+                Icon: <Icons.table size={24} />,
+                isGuestBlocked: true,
+            },
             {
                 name: routePath.signUp.menuTitle ?? routePath.signUp.title,
                 p: routePath.signUp.p,
@@ -165,7 +171,6 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
                 Icon: <Icons.refresh size={24} />,
                 isGuestBlocked: true,
             },
-
         ],
     },
     {

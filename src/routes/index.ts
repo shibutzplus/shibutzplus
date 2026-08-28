@@ -13,6 +13,7 @@ const router: Record<string, IRoute> = {
     adminSignIn: { id: "adminSignIn", p: "/admin/sign-in", private: false, title: "כניסת מנהל" },
     signUp: { id: "signUp", p: "/sign-up", private: true, title: "בית ספר/מנהל חדש", menuTitle: "הוספת בית ספר/מנהל" },
     schoolSelect: { id: "schoolSelect", p: "/school-select", private: true, title: "בחירת בית ספר", },
+    queries: { id: "queries", p: "/queries", private: true, title: "שאילתות", menuTitle: "שאילתות" },
 
     // Manager Portal
     signIn: { id: "signIn", p: "/", private: false, title: "כניסה" },

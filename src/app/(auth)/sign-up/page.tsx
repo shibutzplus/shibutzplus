@@ -122,7 +122,7 @@ const SignUpPage: NextPage = () => {
                 />
 
                 <InputText
-                    label="שם מלא"
+                    label="שם מנהל"
                     id="name"
                     name="name"
                     value={formData.name}
