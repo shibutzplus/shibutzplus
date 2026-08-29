@@ -52,5 +52,18 @@ export async function getSchoolsMinAction(): Promise<Array<{ id: string; name: s
     }
   });
 
-  return Array.from(schoolMap.values());
+  const schoolList = Array.from(schoolMap.values());
+
+  schoolList.sort((a, b) => {
+    const isDemoA = a.name.includes("הדגמה");
+    const isDemoB = b.name.includes("הדגמה");
+    if (isDemoA && !isDemoB) return -1;
+    if (!isDemoA && isDemoB) return 1;
+
+    const cityCompare = (a.city || "").localeCompare(b.city || "", "he");
+    if (cityCompare !== 0) return cityCompare;
+    return (a.name || "").localeCompare(b.name || "", "he");
+  });
+
+  return schoolList;
 }
