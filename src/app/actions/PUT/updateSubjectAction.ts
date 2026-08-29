@@ -5,7 +5,7 @@ import { ActionResponse } from "@/models/types/actions";
 import { checkAuthAndParams, checkIsNotGuest } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
-import { eq, asc } from "drizzle-orm";
+import { eq, and, asc } from "drizzle-orm";
 import { dbLog } from "@/services/loggerService";
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
 import { ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
@@ -32,6 +32,19 @@ export async function updateSubjectAction(
             return guestError as ActionResponse;
         }
 
+        const existingSubject = await executeQuery(async () => {
+            return (
+                await db
+                    .select({ name: schema.subjects.name })
+                    .from(schema.subjects)
+                    .where(eq(schema.subjects.id, subjectId))
+                    .limit(1)
+            )[0];
+        });
+
+        const oldName = existingSubject?.name;
+        const isNameChanged = !!oldName && oldName !== subjectData.name;
+
         const updatedSubject = await executeQuery(async () => {
             return (
                 await db
@@ -50,6 +63,26 @@ export async function updateSubjectAction(
                 success: false,
                 message: messages.subjects.updateError,
             };
+        }
+
+        // If subject name was changed, cascade update to history table for data continuity
+        if (isNameChanged && oldName) {
+            await executeQuery(async () => {
+                await db
+                    .update(schema.history)
+                    .set({
+                        subject: subjectData.name,
+                        updatedAt: new Date(),
+                    })
+                    .where(
+                        and(
+                            eq(schema.history.schoolId, subjectData.schoolId),
+                            eq(schema.history.subject, oldName)
+                        )
+                    );
+            });
+
+            revalidateTag(cacheTags.history(subjectData.schoolId));
         }
 
         // Fetch all subjects for the updated subject's school directly to bypass cache for the immediate response

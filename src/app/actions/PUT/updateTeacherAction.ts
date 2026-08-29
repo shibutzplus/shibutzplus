@@ -30,6 +30,19 @@ export async function updateTeacherAction(
             return guestError as ActionResponse;
         }
 
+        const existingTeacher = await executeQuery(async () => {
+            return (
+                await db
+                    .select({ name: schema.teachers.name })
+                    .from(schema.teachers)
+                    .where(eq(schema.teachers.id, teacherId))
+                    .limit(1)
+            )[0];
+        });
+
+        const oldName = existingTeacher?.name;
+        const isNameChanged = !!oldName && oldName !== teacherData.name;
+
         const updatedTeacher = await executeQuery(async () => {
             return (
                 await db
@@ -46,6 +59,39 @@ export async function updateTeacherAction(
 
         if (!updatedTeacher) {
             return { success: false, message: messages.teachers.updateError };
+        }
+
+        // If teacher name was changed, cascade update to history table for data continuity
+        if (isNameChanged && oldName) {
+            await executeQuery(async () => {
+                await db
+                    .update(schema.history)
+                    .set({
+                        originalTeacher: teacherData.name,
+                        updatedAt: new Date(),
+                    })
+                    .where(
+                        and(
+                            eq(schema.history.schoolId, teacherData.schoolId),
+                            eq(schema.history.originalTeacher, oldName)
+                        )
+                    );
+
+                await db
+                    .update(schema.history)
+                    .set({
+                        subTeacher: teacherData.name,
+                        updatedAt: new Date(),
+                    })
+                    .where(
+                        and(
+                            eq(schema.history.schoolId, teacherData.schoolId),
+                            eq(schema.history.subTeacher, oldName)
+                        )
+                    );
+            });
+
+            revalidateTag(cacheTags.history(teacherData.schoolId));
         }
 
         const allTeachersResp = await executeQuery(async () => {

@@ -5,7 +5,7 @@ import { ActionResponse } from "@/models/types/actions";
 import { checkAuthAndParams, checkIsNotGuest } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
-import { eq, and, asc } from "drizzle-orm";
+import { eq, and, asc, sql } from "drizzle-orm";
 import { dbLog } from "@/services/loggerService";
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
 import { ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
@@ -51,6 +51,19 @@ export async function updateClassAction(
             };
         }
 
+        const currentClass = await executeQuery(async () => {
+            return (
+                await db
+                    .select({ name: schema.classes.name })
+                    .from(schema.classes)
+                    .where(eq(schema.classes.id, classId))
+                    .limit(1)
+            )[0];
+        });
+
+        const oldName = currentClass?.name;
+        const isNameChanged = !!oldName && oldName !== classData.name;
+
         const updatedClass = await executeQuery(async () => {
             return (
                 await db
@@ -69,6 +82,25 @@ export async function updateClassAction(
                 success: false,
                 message: messages.classes.updateError,
             };
+        }
+
+        // If class name was changed, cascade update to history table for data continuity
+        if (isNameChanged && oldName) {
+            await executeQuery(async () => {
+                await db.execute(sql`
+                    UPDATE ${schema.history}
+                    SET ${schema.history.classes} = (
+                        SELECT string_agg(CASE WHEN elem = ${oldName} THEN ${classData.name} ELSE elem END, ', ')
+                        FROM unnest(string_to_array(${schema.history.classes}, ', ')) AS elem
+                    ),
+                    ${schema.history.updatedAt} = NOW()
+                    WHERE ${schema.history.schoolId} = ${classData.schoolId}
+                      AND ${schema.history.classes} IS NOT NULL
+                      AND ${oldName} = ANY(string_to_array(${schema.history.classes}, ', '))
+                `);
+            });
+
+            revalidateTag(cacheTags.history(classData.schoolId));
         }
 
         // Fetch all classes for the updated class's school directly to bypass cache for the immediate response
