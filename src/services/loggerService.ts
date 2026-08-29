@@ -1,5 +1,4 @@
 import { db, schema, executeQuery } from "@/db";
-import { israelTimezoneDate } from "@/utils/time";
 
 export interface LogParams {
     schoolId?: string;
@@ -26,7 +25,7 @@ export async function dbLog(params: LogParams) {
 
         const resolvedUser = params.user || (session?.user as any)?.name || 'Unknown User';
         const resolvedSchoolId = params.schoolId || (session?.user as any)?.schoolId;
-        const timeStamp = israelTimezoneDate();
+        const timeStamp = new Date();
 
         // Ensure metadata is safe to serialize
         let safeMetadata = params.metadata || {};

@@ -2,6 +2,7 @@
  * Push Notification Service
  *
  * Handles the server-side logic for sending web push notifications using the VAPID protocol.
+ * Edge and Cloudflare Workers compatible (uses Web Crypto + standard fetch).
  * Notify users (teachers in public portal) about important updates, even when not actively using the app.
  */
 import { db } from "@/db";
@@ -10,112 +11,114 @@ import { pushSubscriptions } from "@/db/schema/push-subscriptions";
 import { teachers } from "@/db/schema/teachers";
 import { dailySchedule } from "@/db/schema/daily-schedule";
 import { eq, and, inArray, isNotNull } from "drizzle-orm";
-
-let agent: import("https").Agent | null | undefined = undefined;
-
-async function getHttpsAgent() {
-    if (agent !== undefined) return agent;
-    try {
-        const libName = "https";
-        const https = (await import(libName)).default;
-        agent = new https.Agent({
-            keepAlive: true,
-            keepAliveMsecs: 1000,
-            maxSockets: 50,
-        });
-    } catch (_e) {
-        agent = null;
-    }
-    return agent;
-}
-
-let isVapidInitialized = false;
-
-async function getWebPush() {
-    const libName = "web-push";
-    const webpush = (await import(libName)).default;
-    if (!isVapidInitialized) {
-        if (!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) {
-            const msg = "VAPID keys are missing. Push notifications will not work.";
-            void dbLog({ description: msg, schoolId: undefined });
-        } else {
-            try {
-                webpush.setVapidDetails(
-                    "https://shibutzplus.com",
-                    process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY.trim(),
-                    process.env.VAPID_PRIVATE_KEY.trim()
-                );
-            } catch (err) {
-                const errorMsg = `Failed to initialize VAPID details: ${err instanceof Error ? err.message : String(err)}`;
-                void dbLog({ description: errorMsg, schoolId: undefined });
-            }
-        }
-        isVapidInitialized = true;
-    }
-    return webpush;
-}
+import { buildPushPayload } from "@block65/webcrypto-web-push";
 
 export async function sendNotification(
     subscription: { endpoint: string; keys: { p256dh: string; auth: string } },
     payload: string,
     schoolId?: string
 ) {
-    const MAX_RETRIES = 3; // Increased from 1 to 3
-    const webpush = await getWebPush();
+    const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY?.trim();
+    const privateKey = process.env.VAPID_PRIVATE_KEY?.trim();
 
-    const agentInstance = await getHttpsAgent();
+    if (!publicKey || !privateKey) {
+        const msg = "VAPID keys are missing. Push notifications will not work.";
+        void dbLog({ description: msg, schoolId: undefined });
+        return { success: false, error: msg };
+    }
+
+    const vapid = {
+        subject: "https://shibutzplus.com",
+        publicKey,
+        privateKey,
+    };
+
+    const pushSubscription = {
+        endpoint: subscription.endpoint,
+        expirationTime: null,
+        keys: subscription.keys,
+    };
+
+    const MAX_RETRIES = 3;
+
+    let pushPayload: Awaited<ReturnType<typeof buildPushPayload>>;
+    try {
+        pushPayload = await buildPushPayload(
+            { data: payload, options: { ttl: 86400, urgency: "high" } },
+            pushSubscription,
+            vapid
+        );
+    } catch (err: any) {
+        const msg = `Failed to build push payload: ${err instanceof Error ? err.message : String(err)}`;
+        await dbLog({ description: msg, schoolId, metadata: { name: err?.name } });
+        return { success: false, error: msg };
+    }
 
     for (let i = 0; i < MAX_RETRIES; i++) {
         try {
-            await webpush.sendNotification(
-                {
-                    endpoint: subscription.endpoint,
-                    keys: subscription.keys,
-                },
-                payload,
-                {
-                    ...(agentInstance ? { agent: agentInstance } : {}),
-                    timeout: 10000, // 10s timeout per request
-                }
-            );
-            return { success: true };
-        } catch (error: any) {
-            const statusCode = error?.statusCode;
-            // Check for transient network errors or rate limits
-            const isTransientError =
-                error?.code === 'ECONNRESET' ||
-                error?.message?.includes('socket hang up') ||
-                statusCode === 429 ||
-                (statusCode >= 500 && statusCode < 600);
+            const res = await fetch(subscription.endpoint, {
+                method: pushPayload.method,
+                headers: pushPayload.headers,
+                body: pushPayload.body as unknown as BodyInit,
+                signal: AbortSignal.timeout(10000),
+            });
 
-            if (isTransientError && i < MAX_RETRIES - 1) {
-                // Wait a bit before retrying (exponential backoff: 500ms, 1000ms, 2000ms)
-                const delay = 500 * Math.pow(2, i);
-                await new Promise(resolve => setTimeout(resolve, delay));
-                continue;
+            if (res.ok) {
+                return { success: true };
             }
 
-            // Log detailed error info only on final failure or non-transient error
-            const errorDetails = {
-                message: error instanceof Error ? error.message : String(error),
-                statusCode: statusCode,
-                body: error?.body,
-                headers: error?.headers
-            };
-
-            // Don't log 410/404 as errors, they are expected cleanup
-            if (statusCode !== 410 && statusCode !== 404) {
-                await dbLog({
-                    description: `Error sending push notification (attempt ${i + 1}/${MAX_RETRIES}): ${errorDetails.message}`,
-                    schoolId,
-                    metadata: errorDetails
-                });
-            }
+            const statusCode = res.status;
 
             if (statusCode === 410 || statusCode === 404) {
                 // Subscription expired or gone
                 return { success: false, expired: true };
             }
+
+            const isTransientError = statusCode === 429 || (statusCode >= 500 && statusCode < 600);
+
+            if (isTransientError && i < MAX_RETRIES - 1) {
+                const delay = 500 * Math.pow(2, i);
+                await new Promise((resolve) => setTimeout(resolve, delay));
+                continue;
+            }
+
+            const errorBody = await res.text().catch(() => "");
+            const errorDetails = {
+                message: `Push service HTTP ${statusCode}: ${res.statusText}`,
+                statusCode,
+                body: errorBody,
+            };
+
+            await dbLog({
+                description: `Error sending push notification (attempt ${i + 1}/${MAX_RETRIES}): ${errorDetails.message}`,
+                schoolId,
+                metadata: errorDetails,
+            });
+
+            return { success: false, error: errorDetails };
+        } catch (error: any) {
+            const isTransientError =
+                error?.name === "TimeoutError" ||
+                error?.name === "AbortError" ||
+                error?.code === "ECONNRESET";
+
+            if (isTransientError && i < MAX_RETRIES - 1) {
+                const delay = 500 * Math.pow(2, i);
+                await new Promise((resolve) => setTimeout(resolve, delay));
+                continue;
+            }
+
+            const errorDetails = {
+                message: error instanceof Error ? error.message : String(error),
+                name: error?.name,
+                code: error?.code,
+            };
+
+            await dbLog({
+                description: `Error sending push notification (attempt ${i + 1}/${MAX_RETRIES}): ${errorDetails.message}`,
+                schoolId,
+                metadata: errorDetails,
+            });
 
             return { success: false, error: errorDetails };
         }

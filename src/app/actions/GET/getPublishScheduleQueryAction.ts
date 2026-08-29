@@ -8,6 +8,9 @@ import { USER_ROLES } from "@/models/constant/auth";
 export interface PublishScheduleQueryResult {
     id: string;
     name: string;
+    city: string | null;
+    fromHour: number;
+    toHour: number;
     publishDates: string[];
     lastPublishDate: string | null;
     totalPublishedDays: number;
@@ -33,6 +36,9 @@ export async function getPublishScheduleQueryAction(): Promise<{
                 .select({
                     id: schema.schools.id,
                     name: schema.schools.name,
+                    city: schema.schools.city,
+                    fromHour: schema.schools.fromHour,
+                    toHour: schema.schools.toHour,
                     publishDates: schema.schools.publishDates,
                 })
                 .from(schema.schools)
@@ -45,6 +51,9 @@ export async function getPublishScheduleQueryAction(): Promise<{
             return {
                 id: r.id,
                 name: r.name,
+                city: r.city || null,
+                fromHour: r.fromHour ?? 1,
+                toHour: r.toHour ?? 10,
                 publishDates: dates,
                 lastPublishDate: dates.length > 0 ? dates[dates.length - 1] : null,
                 totalPublishedDays: dates.length,

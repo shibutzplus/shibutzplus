@@ -11,8 +11,10 @@ import routePath from "@/routes";
 import { getLogsQueryAction, LogQueryResult } from "@/app/actions/GET/getLogsQueryAction";
 import { getPublishScheduleQueryAction, PublishScheduleQueryResult } from "@/app/actions/GET/getPublishScheduleQueryAction";
 import { getUsersQueryAction, UserQueryResult } from "@/app/actions/GET/getUsersQueryAction";
+import { getPushSubscribersQueryAction, PushSubscriberQueryResult } from "@/app/actions/GET/getPushSubscribersQueryAction";
 import { deleteLogsAction } from "@/app/actions/DELETE/deleteLogsAction";
 import { deleteUsersAction } from "@/app/actions/DELETE/deleteUsersAction";
+import { deletePushSubscriptionsAction } from "@/app/actions/DELETE/deletePushSubscriptionsAction";
 import { successToast, errorToast } from "@/lib/toast";
 import { formatTMDintoDMY } from "@/utils/time";
 import styles from "./page.module.css";
@@ -27,6 +29,7 @@ const QUERY_OPTIONS: QueryOption[] = [
     { value: "logs", label: "לוגים", allowDelete: true },
     { value: "schools", label: "בתי ספר", allowDelete: false },
     { value: "users", label: "מנהלים", allowDelete: true },
+    { value: "push_subscribers", label: "משתמשים רשומים לנוטיפיקציה", allowDelete: true },
 ];
 
 const ROLE_TRANSLATIONS: Record<string, string> = {
@@ -53,6 +56,7 @@ export default function QueriesContent() {
     const [logsData, setLogsData] = useState<LogQueryResult[]>([]);
     const [publishData, setPublishData] = useState<PublishScheduleQueryResult[]>([]);
     const [usersData, setUsersData] = useState<UserQueryResult[]>([]);
+    const [pushSubscribersData, setPushSubscribersData] = useState<PushSubscriberQueryResult[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isDeleting, setIsDeleting] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
@@ -112,6 +116,13 @@ export default function QueriesContent() {
                 } else {
                     setError(res.error || "שגיאה בטעינת הנתונים");
                 }
+            } else if (selectedQuery === "push_subscribers") {
+                const res = await getPushSubscribersQueryAction();
+                if (res.success && res.data) {
+                    setPushSubscribersData(res.data);
+                } else {
+                    setError(res.error || "שגיאה בטעינת הנתונים");
+                }
             }
         } catch (err: any) {
             setError(err?.message || "שגיאה בחיבור לשרת");
@@ -165,10 +176,11 @@ export default function QueriesContent() {
         return publishData.filter((item) => {
             const nameMatch = item.name?.toLowerCase().includes(q);
             const idMatch = item.id?.toLowerCase().includes(q);
+            const cityMatch = item.city?.toLowerCase().includes(q);
             const dateMatch = item.publishDates?.some(
                 (d) => d.toLowerCase().includes(q) || formatTMDintoDMY(d).toLowerCase().includes(q)
             );
-            return nameMatch || idMatch || dateMatch;
+            return nameMatch || idMatch || cityMatch || dateMatch;
         });
     }, [publishData, searchFilter]);
 
@@ -224,12 +236,47 @@ export default function QueriesContent() {
         });
     }, [filteredUsersData, sortConfig]);
 
+    // Filter push subscribers data based on search query
+    const filteredPushSubscribers = useMemo(() => {
+        if (!searchFilter.trim()) return pushSubscribersData;
+        const q = searchFilter.toLowerCase();
+        return pushSubscribersData.filter((item) => {
+            const schoolMatch = item.schoolName?.toLowerCase().includes(q);
+            const teacherIdMatch = item.teacherId?.toLowerCase().includes(q);
+            const teacherNameMatch = item.teacherName?.toLowerCase().includes(q);
+            return schoolMatch || teacherIdMatch || teacherNameMatch;
+        });
+    }, [pushSubscribersData, searchFilter]);
+
+    // Sort push subscribers data
+    const sortedPushSubscribers = useMemo(() => {
+        if (!sortConfig) return filteredPushSubscribers;
+        const { key, direction } = sortConfig;
+        return [...filteredPushSubscribers].sort((a: any, b: any) => {
+            if (key === "subscriptionCount") {
+                const diff = (a.subscriptionCount || 0) - (b.subscriptionCount || 0);
+                return direction === "asc" ? diff : -diff;
+            }
+            if (key === "createdAt") {
+                const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+                const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+                return direction === "asc" ? dateA - dateB : dateB - dateA;
+            }
+            const valA = a[key] ?? "";
+            const valB = b[key] ?? "";
+            const cmp = String(valA).localeCompare(String(valB), "he", { numeric: true, sensitivity: "base" });
+            return direction === "asc" ? cmp : -cmp;
+        });
+    }, [filteredPushSubscribers, sortConfig]);
+
     const visibleItems =
         selectedQuery === "logs"
             ? sortedLogs
             : selectedQuery === "schools"
             ? sortedPublishData
-            : sortedUsersData;
+            : selectedQuery === "users"
+            ? sortedUsersData
+            : sortedPushSubscribers;
     const totalCount = visibleItems.length;
 
     // Checkbox selection helpers (only relevant if allowDelete is true)
@@ -278,6 +325,16 @@ export default function QueriesContent() {
                 } else {
                     errorToast(res.error || "שגיאה במחיקת המשתמשים");
                 }
+            } else if (selectedQuery === "push_subscribers") {
+                const res = await deletePushSubscriptionsAction(selectedIds);
+                if (res.success) {
+                    successToast(`נמחקו מנויי נוטיפיקציה עבור ${selectedIds.length} מורים בהצלחה`);
+                    setSelectedIds([]);
+                    setIsConfirmOpen(false);
+                    await fetchQueryData();
+                } else {
+                    errorToast(res.error || "שגיאה במחיקת מנויי הנוטיפיקציה");
+                }
             }
         } catch (err: any) {
             errorToast(err?.message || "שגיאה בביצוע המחיקה");
@@ -292,24 +349,12 @@ export default function QueriesContent() {
             const date = new Date(isoString);
             if (isNaN(date.getTime())) return isoString;
             return new Intl.DateTimeFormat("he-IL", {
+                timeZone: "Asia/Jerusalem",
                 dateStyle: "short",
                 timeStyle: "medium",
             }).format(date);
         } catch {
             return isoString;
-        }
-    };
-
-    const formatDateOnly = (dateString?: string | null) => {
-        if (!dateString) return "-";
-        try {
-            const date = new Date(dateString);
-            if (isNaN(date.getTime())) return dateString;
-            return new Intl.DateTimeFormat("he-IL", {
-                dateStyle: "short",
-            }).format(date);
-        } catch {
-            return dateString;
         }
     };
 
@@ -530,7 +575,9 @@ export default function QueriesContent() {
                                             )}
                                             {renderSortHeader("מזהה בית ספר", "id", "160px")}
                                             {renderSortHeader("שם בית ספר", "name", "160px")}
-                                            {renderSortHeader("כמות ימים", "totalPublishedDays", "100px")}
+                                            {renderSortHeader("עיר", "city", "130px")}
+                                            {renderSortHeader("שעות (מ-עד)", "fromHour", "110px")}
+                                            {renderSortHeader("מספר ימים", "totalPublishedDays", "105px")}
                                             {renderSortHeader("תאריכים שפורסמו", "publishDates")}
                                         </tr>
                                     </thead>
@@ -554,6 +601,16 @@ export default function QueriesContent() {
                                                     </td>
                                                     <td style={{ fontWeight: 600, color: "#1e293b" }}>
                                                         {item.name}
+                                                    </td>
+                                                    <td>
+                                                        {item.city ? (
+                                                            <span style={{ color: "#334155" }}>{item.city}</span>
+                                                        ) : (
+                                                            <span style={{ color: "#94a3b8" }}>—</span>
+                                                        )}
+                                                    </td>
+                                                    <td style={{ textAlign: "center", color: "#475569", fontWeight: 500, direction: "ltr" }}>
+                                                        {item.fromHour} - {item.toHour}
                                                     </td>
                                                     <td style={{ textAlign: "center" }}>
                                                         <span className={styles.dateCountBadge}>
@@ -652,6 +709,76 @@ export default function QueriesContent() {
                                                         <span className={styles.roleBadge}>
                                                             {ROLE_TRANSLATIONS[user.role] || user.role}
                                                         </span>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )
+                    ) : selectedQuery === "push_subscribers" ? (
+                        filteredPushSubscribers.length === 0 ? (
+                            <div className={styles.stateContainer}>
+                                <span className={styles.emptyText}>אין נתונים להצגה</span>
+                            </div>
+                        ) : (
+                            <div className={styles.tableWrapper}>
+                                <table className={styles.table}>
+                                    <thead>
+                                        <tr>
+                                            {allowDelete && (
+                                                <th style={{ width: "36px", textAlign: "center" }}>
+                                                    <input
+                                                        type="checkbox"
+                                                        className={styles.checkbox}
+                                                        checked={isAllSelected}
+                                                        ref={(el) => {
+                                                            if (el) el.indeterminate = isSomeSelected;
+                                                        }}
+                                                        onChange={handleToggleSelectAll}
+                                                        title="בחר / בטל הכל"
+                                                    />
+                                                </th>
+                                            )}
+                                            {renderSortHeader("שם בית ספר", "schoolName", "180px")}
+                                            {renderSortHeader("קוד מורה", "teacherId", "160px")}
+                                            {renderSortHeader("שם מורה", "teacherName", "160px")}
+                                            {renderSortHeader("כמה פעמים נרשם", "subscriptionCount", "140px")}
+                                            {renderSortHeader("תאריך הרשמה", "createdAt", "170px")}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {sortedPushSubscribers.map((item) => {
+                                            const isChecked = selectedIds.includes(item.id);
+                                            return (
+                                                <tr key={item.teacherId} style={{ backgroundColor: isChecked ? "#f0f7ff" : undefined }}>
+                                                    {allowDelete && (
+                                                        <td style={{ textAlign: "center" }}>
+                                                            <input
+                                                                type="checkbox"
+                                                                className={styles.checkbox}
+                                                                checked={isChecked}
+                                                                onChange={() => handleToggleSelectItem(item.id)}
+                                                            />
+                                                        </td>
+                                                    )}
+                                                    <td style={{ fontWeight: 600, color: "#1e293b" }}>
+                                                        {item.schoolName}
+                                                    </td>
+                                                    <td style={{ fontFamily: "monospace", fontSize: "0.8rem", color: "#475569", direction: "ltr", textAlign: "right" }}>
+                                                        {item.teacherId}
+                                                    </td>
+                                                    <td style={{ fontWeight: 600, color: "#334155" }}>
+                                                        {item.teacherName}
+                                                    </td>
+                                                    <td style={{ textAlign: "center" }}>
+                                                        <span className={styles.dateCountBadge}>
+                                                            {item.subscriptionCount}
+                                                        </span>
+                                                    </td>
+                                                    <td style={{ fontFamily: "monospace", fontSize: "0.8rem", color: "#475569", direction: "ltr", textAlign: "right" }}>
+                                                        {item.createdAt ? formatDateTime(item.createdAt) : "—"}
                                                     </td>
                                                 </tr>
                                             );
