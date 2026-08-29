@@ -7,8 +7,6 @@ import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { and, eq, inArray } from "drizzle-orm";
 import { dbLog } from "@/services/loggerService";
-import { revalidateTag } from "next/cache";
-import { cacheTags } from "@/lib/cacheTags";
 import { NewAnnualScheduleSchema } from "@/db/schema";
 import { createClassSubjectPairs } from "@/services/annual/initialize";
 import { clearAnnualScheduleCache } from "@/services/schedule/getAnnualSchedule";
@@ -141,7 +139,6 @@ export async function updateAnnualTeacherScheduleAction(
         }));
 
         clearAnnualScheduleCache(schoolId);
-        revalidateTag(cacheTags.schoolSchedule(schoolId));
 
         return {
             success: true,

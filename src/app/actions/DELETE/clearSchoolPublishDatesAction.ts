@@ -4,6 +4,10 @@ import { db, schema, executeQuery } from "@/db";
 import { inArray } from "drizzle-orm";
 import { auth } from "@/auth";
 import { USER_ROLES } from "@/models/constant/auth";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { cacheTags } from "@/lib/cacheTags";
+import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
+import { DAILY_PUBLISH_DATA_CHANGED } from "@/models/constant/sync";
 
 export async function clearSchoolPublishDatesAction(schoolIds: string[]): Promise<{
     success: boolean;
@@ -29,6 +33,16 @@ export async function clearSchoolPublishDatesAction(schoolIds: string[]): Promis
                 .set({ publishDates: [] })
                 .where(inArray(schema.schools.id, schoolIds));
         });
+
+        for (const schoolId of schoolIds) {
+            revalidateTag(cacheTags.school(schoolId));
+            revalidateTag(cacheTags.schoolSchedule(schoolId));
+            revalidatePath(`/(public)/teacher-changes/${schoolId}`, "page");
+            void pushSyncUpdateServer(DAILY_PUBLISH_DATA_CHANGED, { schoolId });
+        }
+
+        revalidatePath("/(public)/school-changes", "page");
+        revalidatePath("/(public)/school-changes-full", "page");
 
         return { success: true };
     } catch (err: any) {

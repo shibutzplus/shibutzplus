@@ -421,7 +421,6 @@ export async function saveTeacherScheduleAction(
 
         // Invalidate annual schedule cache
         clearAnnualScheduleCache(targetSchoolId);
-        revalidateTag(cacheTags.schoolSchedule(targetSchoolId));
         void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: targetSchoolId });
 
         return { success: true, message: `המערכת נשמרה בהצלחה!` };
@@ -621,7 +620,6 @@ export async function saveAllTeachersSchedulesAction(
         revalidatePath('/annual-view');
 
         clearAnnualScheduleCache(targetSchoolId);
-        revalidateTag(cacheTags.schoolSchedule(targetSchoolId));
         void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: targetSchoolId });
 
         return { success: true, message: `כל המערכות נשמרו בהצלחה!` };

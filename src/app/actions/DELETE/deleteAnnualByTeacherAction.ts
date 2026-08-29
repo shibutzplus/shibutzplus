@@ -7,8 +7,6 @@ import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { and, eq } from "drizzle-orm";
 import { dbLog } from "@/services/loggerService";
-import { revalidateTag } from "next/cache";
-import { cacheTags } from "@/lib/cacheTags";
 import { clearAnnualScheduleCache } from "@/services/schedule/getAnnualSchedule";
 
 export async function deleteAnnualByTeacherAction(
@@ -92,7 +90,6 @@ export async function deleteAnnualByTeacherAction(
 
         // Invalidate teacher schedule cache (annual + daily)
         clearAnnualScheduleCache(schoolId);
-        revalidateTag(cacheTags.schoolSchedule(schoolId));
 
         return {
             success: true,

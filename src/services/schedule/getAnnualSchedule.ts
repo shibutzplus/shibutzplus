@@ -1,6 +1,6 @@
 import { db, schema, executeQuery } from "@/db";
 import { eq } from "drizzle-orm";
-import { unstable_cache } from "next/cache";
+import { revalidateTag, unstable_cache } from "next/cache";
 import { cacheTags } from "@/lib/cacheTags";
 import { AnnualScheduleType } from "@/models/types/annualSchedule";
 
@@ -14,6 +14,7 @@ const annualScheduleCache = new Map<string, any>();
 
 export function clearAnnualScheduleCache(schoolId: string) {
     annualScheduleCache.delete(schoolId);
+    revalidateTag(cacheTags.schoolSchedule(schoolId));
 }
 
 export async function getFreshAnnualSchedule(schoolId: string): Promise<AnnualScheduleType[]> {

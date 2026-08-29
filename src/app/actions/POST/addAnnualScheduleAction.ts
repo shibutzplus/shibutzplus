@@ -3,8 +3,6 @@
 import { db, schema, executeQuery } from "@/db";
 import { AnnualScheduleType, AnnualScheduleRequest } from "@/models/types/annualSchedule";
 import { ActionResponse } from "@/models/types/actions";
-import { revalidateTag } from "next/cache";
-import { cacheTags } from "@/lib/cacheTags";
 import { checkAuthAndParams, checkIsNotGuest } from "@/utils/authUtils";
 import messages from "@/resources/messages";
 import { NewAnnualScheduleSchema } from "@/db/schema";
@@ -56,7 +54,6 @@ export async function addAnnualScheduleAction(
 
         // Clear Cache for all teachers in this school - Annual schedule
         clearAnnualScheduleCache(school.id);
-        revalidateTag(cacheTags.schoolSchedule(school.id));
 
         return {
             success: true,

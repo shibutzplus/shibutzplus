@@ -147,6 +147,10 @@ export async function getCachedClassesList(
 const schoolCache = new Map<string, any>();
 
 export const getCachedSchool = async (schoolId: string) => {
+    if (process.env.NODE_ENV === "development") {
+        return getFreshSchool(schoolId);
+    }
+
     if (!schoolCache.has(schoolId)) {
         schoolCache.set(schoolId, unstable_cache(
             async () => {
@@ -156,7 +160,7 @@ export const getCachedSchool = async (schoolId: string) => {
                     .where(eq(schema.schools.id, schoolId))
                     .then((res) => res[0]);
             },
-            [cacheTags.school(schoolId)], // Key parts
+            ['getSchool', schoolId], // Key parts
             {
                 tags: [cacheTags.school(schoolId)],
                 revalidate: 3600, // 1 hour

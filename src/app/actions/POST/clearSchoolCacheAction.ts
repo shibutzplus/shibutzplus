@@ -10,11 +10,15 @@ import messages from "@/resources/messages";
 import { checkAuthAndParams } from "@/utils/authUtils";
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
 import { DAILY_PUBLISH_DATA_CHANGED, ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
+import { clearAnnualScheduleCache } from "@/services/schedule/getAnnualSchedule";
 
 export async function clearSchoolCacheAction(schoolId: string): Promise<ActionResponse> {
     try {
         const authError = await checkAuthAndParams({ schoolId });
         if (authError) return authError;
+
+        // Clear in-memory maps & Next.js cache
+        clearAnnualScheduleCache(schoolId);
 
         // Clear all relevant caches for the school
         revalidateTag(cacheTags.school(schoolId));

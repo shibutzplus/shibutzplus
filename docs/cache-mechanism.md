@@ -5,26 +5,34 @@ Shibutz Plus uses a multi-layered caching strategy to ensure high performance fo
 
 ## Architecture
 
-### 1. Data Caching (`unstable_cache`)
+### 1. Data Caching (`unstable_cache` + In-Memory Map)
 We use Next.js `unstable_cache` to cache the results of expensive database queries.
 - **Location:** Wrapper functions in `src/services/` (e.g., `getCachedDailySchedule`, `getCachedTeachersList`).
-- **TTL (Time To Live):** Default is set to **24 hours (86400 seconds)**. 
-- **TTL for classes and subjects:** Default is set to **7 days (604800 seconds)**. 
-This acts as a fallback if manual invalidation fails.
-- **Serialization Handling:** Note that `unstable_cache` serializes data to JSON. Our service wrappers automatically reconstruct `Date` objects from strings after fetching from cache.
+- **Pattern:** Each service file maintains a `Map<string, Function>` that stores the wrapped `unstable_cache` function per cache key. This avoids recreating the wrapper on every call while keeping the actual caching inside Next.js's cache layer.
+- **TTL (Time To Live):**
+  - **Daily Schedule, History:** 24 hours (86400 seconds).
+  - **Teachers, Classes, Subjects, Annual Schedule, Annual Alt Schedule:** 7 days (604800 seconds).
+  - **School Settings:** 1 hour (3600 seconds).
+  - TTLs act as a fallback only — all invalidation is done explicitly via `revalidateTag`.
+- **Serialization Note:** `unstable_cache` serializes data to JSON internally. Date fields arrive from cache as strings. Callers should handle date reconstruction where needed (e.g., `new Date(record.date)` in history mapping).
 
 ### 2. Cache Tags (`src/lib/cacheTags.ts`)
 To avoid inconsistent cache states, we use a centralized tagging system. Tags are scoped to specific entities or schools:
-- `schoolSchedule(schoolId)`: All schedule data for a school.
+- `dailySchedule(schoolId, date)`: Daily schedule for a specific school and date.
+- `dailyScheduleSchool(schoolId)`: All daily schedules across all dates for a school.
+- `schoolSchedule(schoolId)`: All teacher/personalized schedules for a school. Also used for Annual Schedule.
 - `teachersList(schoolId)`: The list of teachers.
 - `teacher(teacherId)`: Specific teacher profile.
 - `classesList(schoolId)` / `subjectsList(schoolId)`: Entity lists.
+- `history(schoolId)` / `historyByDate(schoolId, date)`: History records.
+- `school(schoolId)`: School settings and metadata.
 - `annualAltSchedule(schoolId)`: The annual alternative (emergency) schedule.
 
 ### 3. On-Demand Invalidation (`revalidateTag`)
 When data is modified via a **Server Action**, the system immediately invalidates the relevant tags.
-- **Flow:** `Action` -> `DB Update` -> `revalidateTag(tag)`.
+- **Flow:** `Action` -> `DB Update` -> `revalidateTag(tag)` -> `pushSyncUpdateServer`.
 - This ensures that the very next request from any user will fetch fresh data from the database.
+- **Important:** `clearAnnualScheduleCache(schoolId)` clears the in-memory Map **and** calls `revalidateTag(cacheTags.schoolSchedule(schoolId))` internally. It is fully self-contained — no separate `revalidateTag` is needed in the calling Action.
 
 ### 4. Router Revalidation (`revalidatePath`)
 For critical public pages (like the published daily schedule), we use `revalidatePath` to ensure the static page cache is also refreshed.
@@ -42,13 +50,19 @@ To guarantee data consistency, especially for the **Manager Public Portal** and 
 
 ## Summary Table
 
-| Data Type | Cache Method | Invalidation Trigger | Sync Strategy |
-| :--- | :--- | :--- | :--- |
-| Daily Schedule | `unstable_cache` | `publishDailyScheduleAction` | Polling (Teacher/Event cols) |
-| Teacher List | `unstable_cache` | `add/update/deleteTeacherAction` | Polling (Entities) + Server Relations |
-| Personalized Schedule | `unstable_cache` | Any schedule modification | Polling (Teacher col) |
-| Alternative Schedule | `unstable_cache` | `addAnnualAltAction`, `deleteAnnualAltByDayClassAction` | Polling (Teacher col) |
-| School Settings | `unstable_cache` | `updateSettingsAction` | Re-fetch |
+| Data Type | TTL | Cache Method | Invalidation Trigger | Sync Strategy |
+| :--- | :--- | :--- | :--- | :--- |
+| Daily Schedule | 24h | `unstable_cache` | Any schedule modification action | Polling (Teacher/Event cols) |
+| Teacher List | 7d | `unstable_cache` | `add/update/deleteTeacherAction` | Polling (Entities) + Server Relations |
+| Class List | 7d | `unstable_cache` | `add/update/deleteClassAction` | Polling (Entities) |
+| Subject List | 7d | `unstable_cache` | `add/update/deleteSubjectAction` | Polling (Entities) |
+| Annual Schedule | 7d | `unstable_cache` | `add/update/deleteAnnual*Action`, entity deletion | Client state reset (`setAnnualScheduleTable(undefined)`) |
+| Alternative Schedule | 7d | `unstable_cache` | `addAnnualAltAction`, `deleteAnnualAltByDayClassAction` | Polling (Teacher col) |
+| History | 7d | `unstable_cache` | Daily cron (`updateHistory`) | Re-fetch on date change |
+| Personalized Teacher Schedule | 24h | `unstable_cache` | Any schedule modification | Polling (Teacher col) |
+| School Settings | 1h | `unstable_cache` | `updateSettingsAction` | Direct response (no client re-fetch triggered) |
+
+> **Note on Development vs Production:** In development mode (`NODE_ENV === "development"`), services bypass `unstable_cache` and fetch directly from the DB. In production, caching is fully active with automatic invalidation via `revalidateTag`.
 
 ## FAQ (שאלות ותשובות)
 
@@ -65,6 +79,9 @@ To guarantee data consistency, especially for the **Manager Public Portal** and 
 ### איך הפורטל הציבורי מתעדכן?
 הפורטל הציבורי (Manager Public Portal) משתמש באותו מנגנון של `getCachedDailySchedule`. בזכות שליפת המידע המלא מהשרת (ולא רק IDs), כל שינוי בשם מורה/מקצוע משתקף בו מיד עם רענון או שינוי תאריך, ללא תלות בקאש מקומי של הדפדפן.
 
+### מה ההבדל בין `clearAnnualScheduleCache` ל-`revalidateTag`?
+`clearAnnualScheduleCache` מוחק את ה-wrapper מה-Map הפנימי בזיכרון **וגם** קורא ל-`revalidateTag(cacheTags.schoolSchedule(schoolId))` בתוכה. הפונקציה **self-contained** – אין צורך לקרוא ל-`revalidateTag` נפרד לאחריה ב-Action.
+
 ---
 
 ## Best Practices
@@ -72,3 +89,4 @@ To guarantee data consistency, especially for the **Manager Public Portal** and 
 - **Granular Invalidation:** Revalidate ONLY what changed (e.g., revalidate a specific teacher, not the whole school, unless necessary).
 - **Service Wrappers:** Keep the caching logic inside the service files, not in the UI components or Server Actions.
 - **Sync Timestamps:** Do not reset sync timestamps on navigation; allow the client to catch up on missed events.
+- **`clearAnnualScheduleCache` is self-contained:** It clears the in-memory Map and calls `revalidateTag` internally. No additional `revalidateTag(cacheTags.schoolSchedule(schoolId))` is needed in the calling Action.
