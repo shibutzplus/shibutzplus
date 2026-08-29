@@ -11,7 +11,7 @@ import { pushSubscriptions } from "@/db/schema/push-subscriptions";
 import { teachers } from "@/db/schema/teachers";
 import { dailySchedule } from "@/db/schema/daily-schedule";
 import { eq, and, inArray, isNotNull } from "drizzle-orm";
-import { buildPushPayload } from "@block65/webcrypto-web-push";
+import { buildPushPayload } from "./webPushCrypto";
 
 export async function sendNotification(
     subscription: { endpoint: string; keys: { p256dh: string; auth: string } },
