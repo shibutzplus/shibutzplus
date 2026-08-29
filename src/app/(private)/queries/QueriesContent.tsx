@@ -28,7 +28,8 @@ interface QueryOption {
 const QUERY_OPTIONS: QueryOption[] = [
     { value: "logs", label: "לוגים", allowDelete: true },
     { value: "schools", label: "בתי ספר", allowDelete: false },
-    { value: "users", label: "מנהלים", allowDelete: true },
+    { value: "users", label: "מנהלים פעילים", allowDelete: true },
+    { value: "inactive_users", label: "מנהלים לא פעילים", allowDelete: true },
     { value: "push_subscribers", label: "משתמשים רשומים לנוטיפיקציה", allowDelete: true },
 ];
 
@@ -110,7 +111,14 @@ export default function QueriesContent() {
                     setError(res.error || "שגיאה בטעינת הנתונים");
                 }
             } else if (selectedQuery === "users") {
-                const res = await getUsersQueryAction();
+                const res = await getUsersQueryAction(true);
+                if (res.success && res.data) {
+                    setUsersData(res.data);
+                } else {
+                    setError(res.error || "שגיאה בטעינת הנתונים");
+                }
+            } else if (selectedQuery === "inactive_users") {
+                const res = await getUsersQueryAction(false);
                 if (res.success && res.data) {
                     setUsersData(res.data);
                 } else {
@@ -274,7 +282,7 @@ export default function QueriesContent() {
             ? sortedLogs
             : selectedQuery === "schools"
             ? sortedPublishData
-            : selectedQuery === "users"
+            : selectedQuery === "users" || selectedQuery === "inactive_users"
             ? sortedUsersData
             : sortedPushSubscribers;
     const totalCount = visibleItems.length;
@@ -315,7 +323,7 @@ export default function QueriesContent() {
                 } else {
                     errorToast(res.error || "שגיאה במחיקת הרשומות");
                 }
-            } else if (selectedQuery === "users") {
+            } else if (selectedQuery === "users" || selectedQuery === "inactive_users") {
                 const res = await deleteUsersAction(selectedIds);
                 if (res.success) {
                     successToast(`נמחקו ${selectedIds.length} מנהלים/משתמשים בהצלחה`);
@@ -637,7 +645,7 @@ export default function QueriesContent() {
                                 </table>
                             </div>
                         )
-                    ) : selectedQuery === "users" ? (
+                    ) : selectedQuery === "users" || selectedQuery === "inactive_users" ? (
                         filteredUsersData.length === 0 ? (
                             <div className={styles.stateContainer}>
                                 <span className={styles.emptyText}>אין נתונים להצגה</span>

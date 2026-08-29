@@ -10,7 +10,7 @@ import { sendPublishNotification } from "@/services/pushNotifications";
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
 import { DAILY_PUBLISH_DATA_CHANGED } from "@/models/constant/sync";
 import { cacheTags } from "@/lib/cacheTags";
-import { getTodayDateString } from "@/utils/time";
+import { getTodayDateString, formatTMDintoDMY, DAYS_OF_WEEK_FORMAT } from "@/utils/time";
 
 export async function publishDailyScheduleAction(
     schoolId: string,
@@ -60,9 +60,13 @@ export async function publishDailyScheduleAction(
 
         // Trigger Web Push Notification (non-blocking for publish success)
         try {
+            const formattedDate = formatTMDintoDMY(date);
+            const dayOfWeek = DAYS_OF_WEEK_FORMAT[new Date(date).getDay()];
+            const dateText = dayOfWeek ? `${dayOfWeek} (${formattedDate})` : formattedDate;
+
             await sendPublishNotification(schoolId, {
                 title: "שיבוץ פלוס",
-                body: `המערכת פורסמה`,
+                body: `המערכת פורסמה\n${dateText}`,
                 url: `/teacher-changes/${schoolId}`
             }, date);
         } catch (pushErr) {

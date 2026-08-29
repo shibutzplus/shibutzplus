@@ -14,7 +14,7 @@ export interface UserQueryResult {
     schoolName: string | null;
 }
 
-export async function getUsersQueryAction(): Promise<{
+export async function getUsersQueryAction(isActive = true): Promise<{
     success: boolean;
     data?: UserQueryResult[];
     error?: string;
@@ -41,7 +41,7 @@ export async function getUsersQueryAction(): Promise<{
                 })
                 .from(schema.users)
                 .leftJoin(schema.schools, eq(schema.users.schoolId, schema.schools.id))
-                .where(eq(schema.users.isActive, true))
+                .where(eq(schema.users.isActive, isActive))
                 .orderBy(asc(schema.users.name));
         });
 

@@ -63,39 +63,6 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
         ],
     },
     {
-        id: "statistics",
-        title: "דוחות",
-        type: "private",
-        isCollapse: true,
-        links: [
-            {
-                name: routePath.missingReport.menuTitle ?? routePath.missingReport.title,
-                p: routePath.missingReport.p,
-                Icon: <Icons.report size={24} />,
-                isGuestBlocked: true,
-            },
-            {
-                name: routePath.replaceReport.menuTitle ?? routePath.replaceReport.title,
-                p: routePath.replaceReport.p,
-                Icon: <Icons.report size={24} />,
-                isGuestBlocked: true,
-            },
-            {
-                name: routePath.history.menuTitle ?? routePath.history.title,
-                p: routePath.history.p,
-                Icon: <Icons.history size={24} />,
-                isGuestBlocked: true,
-            },
-            {
-                name: routePath.statistics.menuTitle ?? routePath.statistics.title,
-                p: routePath.statistics.p,
-                Icon: <Icons.stats size={24} />,
-                isGuestBlocked: true,
-            },
-        ],
-    },
-
-    {
         id: "school_settings",
         title: "ניהול משאבים",
         type: "private",
@@ -135,6 +102,39 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
                 name: routePath.classes.menuTitle ?? routePath.classes.title,
                 p: routePath.classes.p,
                 Icon: <Icons.chair size={24} />,
+                isGuestBlocked: true,
+            },
+        ],
+    },
+
+    {
+        id: "statistics",
+        title: "דוחות",
+        type: "private",
+        isCollapse: true,
+        links: [
+            {
+                name: routePath.missingReport.menuTitle ?? routePath.missingReport.title,
+                p: routePath.missingReport.p,
+                Icon: <Icons.report size={24} />,
+                isGuestBlocked: true,
+            },
+            {
+                name: routePath.replaceReport.menuTitle ?? routePath.replaceReport.title,
+                p: routePath.replaceReport.p,
+                Icon: <Icons.report size={24} />,
+                isGuestBlocked: true,
+            },
+            {
+                name: routePath.history.menuTitle ?? routePath.history.title,
+                p: routePath.history.p,
+                Icon: <Icons.history size={24} />,
+                isGuestBlocked: true,
+            },
+            {
+                name: routePath.statistics.menuTitle ?? routePath.statistics.title,
+                p: routePath.statistics.p,
+                Icon: <Icons.stats size={24} />,
                 isGuestBlocked: true,
             },
         ],
