@@ -1,4 +1,4 @@
-import { pgTable, text, varchar, timestamp, index } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, timestamp, index, boolean } from "drizzle-orm/pg-core";
 import { createId } from "@paralleldrive/cuid2";
 import { AuthType, UserGender, UserRole } from "@/models/types/auth";
 import { AUTH_TYPE, USER_GENDER, USER_ROLES } from "@/models/constant/auth";
@@ -14,6 +14,7 @@ export const users = pgTable("users", {
     gender: varchar("gender", { length: 20 }).notNull().$type<UserGender>().default(USER_GENDER.FEMALE),
     authType: varchar("auth_type", { length: 20 }).notNull().$type<AuthType>().default(AUTH_TYPE.GOOGLE),
     schoolId: text("school_id"),
+    isActive: boolean("is_active").default(true).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => {

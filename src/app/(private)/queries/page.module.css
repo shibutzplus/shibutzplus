@@ -255,6 +255,34 @@
     z-index: 1;
 }
 
+.sortableHeader {
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.15s;
+}
+
+.sortableHeader:hover {
+    background-color: #e2e8f0;
+}
+
+.headerContent {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.sortIcon {
+    font-size: 0.75rem;
+    color: #64748b;
+    display: inline-flex;
+    align-items: center;
+}
+
+.sortIconActive {
+    color: #0284c7;
+    font-weight: bold;
+}
+
 .table td {
     padding: 0.3rem 0.5rem;
     border-bottom: 1px solid #f1f5f9;
@@ -417,3 +445,57 @@
     word-break: break-all;
     margin: 0;
 }
+
+.roleBadge {
+    display: inline-block;
+    padding: 0.15rem 0.45rem;
+    background: #e0f2fe;
+    color: #0369a1;
+    border-radius: 3px;
+    font-size: 0.78rem;
+    font-weight: 500;
+}
+
+.emailCell {
+    color: #475569;
+    font-size: 0.82rem;
+    direction: ltr;
+    text-align: right;
+}
+
+.dateChipList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    align-items: center;
+    padding: 0.15rem 0;
+}
+
+.dateChip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.15rem 0.45rem;
+    background-color: #f0fdf4;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+    border-radius: 4px;
+    font-size: 0.76rem;
+    font-family: monospace;
+    direction: ltr;
+    white-space: nowrap;
+}
+
+.dateCountBadge {
+    display: inline-block;
+    padding: 0.15rem 0.45rem;
+    background-color: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-align: center;
+    white-space: nowrap;
+}
+
+

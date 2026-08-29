@@ -14,6 +14,7 @@ export const schools = pgTable('schools', {
   displaySchedule2Susb: boolean('display_schedule2susb').default(false).notNull(),
   displayAltSchedule: boolean('display_alt_schedule').default(false).notNull(),
   publishDates: text('publish_dates').array().default([]).notNull(),
+  isActive: boolean('is_active').default(true).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });

@@ -28,6 +28,7 @@ export async function getUserByEmailAction(
                     gender: schema.users.gender,
                     authType: schema.users.authType,
                     schoolId: schema.users.schoolId,
+                    isActive: schema.users.isActive,
                     createdAt: schema.users.createdAt,
                     updatedAt: schema.users.updatedAt,
                     status: schema.schools.status,
@@ -50,6 +51,7 @@ export async function getUserByEmailAction(
             gender: row.gender,
             authType: row.authType,
             schoolId: row.schoolId,
+            isActive: row.isActive,
             createdAt: row.createdAt,
             updatedAt: row.updatedAt,
         };

@@ -10,8 +10,11 @@ import { USER_ROLES } from "@/models/constant/auth";
 import routePath from "@/routes";
 import { getLogsQueryAction, LogQueryResult } from "@/app/actions/GET/getLogsQueryAction";
 import { getPublishScheduleQueryAction, PublishScheduleQueryResult } from "@/app/actions/GET/getPublishScheduleQueryAction";
+import { getUsersQueryAction, UserQueryResult } from "@/app/actions/GET/getUsersQueryAction";
 import { deleteLogsAction } from "@/app/actions/DELETE/deleteLogsAction";
+import { deleteUsersAction } from "@/app/actions/DELETE/deleteUsersAction";
 import { successToast, errorToast } from "@/lib/toast";
+import { formatTMDintoDMY } from "@/utils/time";
 import styles from "./page.module.css";
 
 interface QueryOption {
@@ -22,8 +25,24 @@ interface QueryOption {
 
 const QUERY_OPTIONS: QueryOption[] = [
     { value: "logs", label: "לוגים", allowDelete: true },
-    { value: "publish_schedules", label: "פרסום מערכות", allowDelete: false },
+    { value: "schools", label: "בתי ספר", allowDelete: false },
+    { value: "users", label: "מנהלים", allowDelete: true },
 ];
+
+const ROLE_TRANSLATIONS: Record<string, string> = {
+    [USER_ROLES.ADMIN]: "מנהל מערכת",
+    [USER_ROLES.PRINCIPAL]: "מנהל/ת",
+    [USER_ROLES.DEPUTY_PRINCIPAL]: "סגן/ית",
+    [USER_ROLES.TEACHER]: "מורה",
+    [USER_ROLES.GUEST]: "אורח",
+};
+
+type SortDirection = "asc" | "desc";
+
+interface SortConfig {
+    key: string;
+    direction: SortDirection;
+}
 
 export default function QueriesContent() {
     const { data: session, status } = useSession();
@@ -33,16 +52,30 @@ export default function QueriesContent() {
     const [selectedQuery, setSelectedQuery] = useState<string>("logs");
     const [logsData, setLogsData] = useState<LogQueryResult[]>([]);
     const [publishData, setPublishData] = useState<PublishScheduleQueryResult[]>([]);
+    const [usersData, setUsersData] = useState<UserQueryResult[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isDeleting, setIsDeleting] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [searchFilter, setSearchFilter] = useState<string>("");
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
+    const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
     const [isConfirmOpen, setIsConfirmOpen] = useState<boolean>(false);
     const [selectedMetadata, setSelectedMetadata] = useState<{ id: string; metadata: any } | null>(null);
 
     const currentQueryConfig = QUERY_OPTIONS.find((q) => q.value === selectedQuery);
     const allowDelete = Boolean(currentQueryConfig?.allowDelete);
+
+    const handleSort = (key: string) => {
+        setSortConfig((prev) => {
+            if (prev?.key === key) {
+                if (prev.direction === "asc") {
+                    return { key, direction: "desc" };
+                }
+                return null;
+            }
+            return { key, direction: "asc" };
+        });
+    };
 
     // Ensure non-admin users cannot view this page
     useEffect(() => {
@@ -65,10 +98,17 @@ export default function QueriesContent() {
                 } else {
                     setError(res.error || "שגיאה בטעינת הנתונים");
                 }
-            } else if (selectedQuery === "publish_schedules") {
+            } else if (selectedQuery === "schools") {
                 const res = await getPublishScheduleQueryAction();
                 if (res.success && res.data) {
                     setPublishData(res.data);
+                } else {
+                    setError(res.error || "שגיאה בטעינת הנתונים");
+                }
+            } else if (selectedQuery === "users") {
+                const res = await getUsersQueryAction();
+                if (res.success && res.data) {
+                    setUsersData(res.data);
                 } else {
                     setError(res.error || "שגיאה בטעינת הנתונים");
                 }
@@ -102,6 +142,22 @@ export default function QueriesContent() {
         });
     }, [logsData, searchFilter]);
 
+    // Sort logs
+    const sortedLogs = useMemo(() => {
+        if (!sortConfig) return filteredLogs;
+        const { key, direction } = sortConfig;
+        return [...filteredLogs].sort((a: any, b: any) => {
+            let valA = a[key] ?? "";
+            let valB = b[key] ?? "";
+            if (key === "timeStamp") {
+                valA = a.timeStamp || a.createdAt || "";
+                valB = b.timeStamp || b.createdAt || "";
+            }
+            const cmp = String(valA).localeCompare(String(valB), "he", { numeric: true, sensitivity: "base" });
+            return direction === "asc" ? cmp : -cmp;
+        });
+    }, [filteredLogs, sortConfig]);
+
     // Filter publish data based on search query
     const filteredPublishData = useMemo(() => {
         if (!searchFilter.trim()) return publishData;
@@ -109,12 +165,71 @@ export default function QueriesContent() {
         return publishData.filter((item) => {
             const nameMatch = item.name?.toLowerCase().includes(q);
             const idMatch = item.id?.toLowerCase().includes(q);
-            const dateMatch = item.lastPublishDate?.toLowerCase().includes(q);
+            const dateMatch = item.publishDates?.some(
+                (d) => d.toLowerCase().includes(q) || formatTMDintoDMY(d).toLowerCase().includes(q)
+            );
             return nameMatch || idMatch || dateMatch;
         });
     }, [publishData, searchFilter]);
 
-    const visibleItems = selectedQuery === "logs" ? filteredLogs : filteredPublishData;
+    // Sort publish data
+    const sortedPublishData = useMemo(() => {
+        if (!sortConfig) return filteredPublishData;
+        const { key, direction } = sortConfig;
+        return [...filteredPublishData].sort((a: any, b: any) => {
+            let valA = a[key] ?? "";
+            let valB = b[key] ?? "";
+            if (key === "totalPublishedDays") {
+                const diff = (a.totalPublishedDays || a.publishDates?.length || 0) - (b.totalPublishedDays || b.publishDates?.length || 0);
+                return direction === "asc" ? diff : -diff;
+            }
+            if (key === "publishDates") {
+                valA = a.publishDates?.join(",") ?? "";
+                valB = b.publishDates?.join(",") ?? "";
+            }
+            const cmp = String(valA).localeCompare(String(valB), "he", { numeric: true, sensitivity: "base" });
+            return direction === "asc" ? cmp : -cmp;
+        });
+    }, [filteredPublishData, sortConfig]);
+
+    // Filter users data based on search query
+    const filteredUsersData = useMemo(() => {
+        if (!searchFilter.trim()) return usersData;
+        const q = searchFilter.toLowerCase();
+        return usersData.filter((item) => {
+            const nameMatch = item.name?.toLowerCase().includes(q);
+            const emailMatch = item.email?.toLowerCase().includes(q);
+            const idMatch = item.id?.toLowerCase().includes(q);
+            const roleText = ROLE_TRANSLATIONS[item.role] || "";
+            const roleMatch = item.role?.toLowerCase().includes(q) || roleText.toLowerCase().includes(q);
+            const schoolIdMatch = item.schoolId?.toLowerCase().includes(q);
+            const schoolNameMatch = item.schoolName?.toLowerCase().includes(q);
+            return nameMatch || emailMatch || idMatch || roleMatch || schoolIdMatch || schoolNameMatch;
+        });
+    }, [usersData, searchFilter]);
+
+    // Sort users data
+    const sortedUsersData = useMemo(() => {
+        if (!sortConfig) return filteredUsersData;
+        const { key, direction } = sortConfig;
+        return [...filteredUsersData].sort((a: any, b: any) => {
+            let valA = a[key] ?? "";
+            let valB = b[key] ?? "";
+            if (key === "role") {
+                valA = ROLE_TRANSLATIONS[valA] || valA;
+                valB = ROLE_TRANSLATIONS[valB] || valB;
+            }
+            const cmp = String(valA).localeCompare(String(valB), "he", { numeric: true, sensitivity: "base" });
+            return direction === "asc" ? cmp : -cmp;
+        });
+    }, [filteredUsersData, sortConfig]);
+
+    const visibleItems =
+        selectedQuery === "logs"
+            ? sortedLogs
+            : selectedQuery === "schools"
+            ? sortedPublishData
+            : sortedUsersData;
     const totalCount = visibleItems.length;
 
     // Checkbox selection helpers (only relevant if allowDelete is true)
@@ -153,6 +268,16 @@ export default function QueriesContent() {
                 } else {
                     errorToast(res.error || "שגיאה במחיקת הרשומות");
                 }
+            } else if (selectedQuery === "users") {
+                const res = await deleteUsersAction(selectedIds);
+                if (res.success) {
+                    successToast(`נמחקו ${selectedIds.length} מנהלים/משתמשים בהצלחה`);
+                    setSelectedIds([]);
+                    setIsConfirmOpen(false);
+                    await fetchQueryData();
+                } else {
+                    errorToast(res.error || "שגיאה במחיקת המשתמשים");
+                }
             }
         } catch (err: any) {
             errorToast(err?.message || "שגיאה בביצוע המחיקה");
@@ -188,6 +313,26 @@ export default function QueriesContent() {
         }
     };
 
+    const renderSortHeader = (label: string, sortKey: string, width?: string) => {
+        const isSorted = sortConfig?.key === sortKey;
+        const dir = isSorted ? sortConfig.direction : null;
+        return (
+            <th
+                style={{ width }}
+                className={styles.sortableHeader}
+                onClick={() => handleSort(sortKey)}
+                title={`לחץ למיון לפי ${label}`}
+            >
+                <div className={styles.headerContent}>
+                    <span>{label}</span>
+                    <span className={`${styles.sortIcon} ${isSorted ? styles.sortIconActive : ""}`}>
+                        {dir === "asc" ? "▲" : dir === "desc" ? "▼" : "⇅"}
+                    </span>
+                </div>
+            </th>
+        );
+    };
+
     return (
         <PageLayout
             appType="private"
@@ -205,6 +350,7 @@ export default function QueriesContent() {
                             onChange={(e) => {
                                 setSelectedQuery(e.target.value);
                                 setSelectedIds([]);
+                                setSortConfig(null);
                             }}
                         >
                             {QUERY_OPTIONS.map((opt) => (
@@ -293,16 +439,16 @@ export default function QueriesContent() {
                                                     />
                                                 </th>
                                             )}
-                                            <th style={{ width: "135px" }}>תאריך ושעה</th>
-                                            <th style={{ width: "140px" }}>שם בית ספר</th>
-                                            <th style={{ width: "130px" }}>מזהה מורה</th>
-                                            <th style={{ width: "120px" }}>שם מורה</th>
-                                            <th>תיאור</th>
+                                            {renderSortHeader("תאריך ושעה", "timeStamp", "145px")}
+                                            {renderSortHeader("שם בית ספר", "schoolName", "150px")}
+                                            {renderSortHeader("מזהה מורה", "teacherId", "130px")}
+                                            {renderSortHeader("שם מורה", "teacherName", "130px")}
+                                            {renderSortHeader("תיאור", "description")}
                                             <th style={{ width: "85px" }}>Metadata</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {filteredLogs.map((log) => {
+                                        {sortedLogs.map((log) => {
                                             const hasMetadata = log.metadata && Object.keys(log.metadata).length > 0;
                                             const isChecked = selectedIds.includes(log.id);
                                             return (
@@ -358,7 +504,7 @@ export default function QueriesContent() {
                                 </table>
                             </div>
                         )
-                    ) : selectedQuery === "publish_schedules" ? (
+                    ) : selectedQuery === "schools" ? (
                         filteredPublishData.length === 0 ? (
                             <div className={styles.stateContainer}>
                                 <span className={styles.emptyText}>אין נתונים להצגה</span>
@@ -382,13 +528,14 @@ export default function QueriesContent() {
                                                     />
                                                 </th>
                                             )}
-                                            <th style={{ width: "180px" }}>מזהה בית ספר</th>
-                                            <th>שם בית ספר</th>
-                                            <th style={{ width: "160px" }}>תאריך פרסום אחרון</th>
+                                            {renderSortHeader("מזהה בית ספר", "id", "160px")}
+                                            {renderSortHeader("שם בית ספר", "name", "160px")}
+                                            {renderSortHeader("כמות ימים", "totalPublishedDays", "100px")}
+                                            {renderSortHeader("תאריכים שפורסמו", "publishDates")}
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {filteredPublishData.map((item) => {
+                                        {sortedPublishData.map((item) => {
                                             const isChecked = selectedIds.includes(item.id);
                                             return (
                                                 <tr key={item.id} style={{ backgroundColor: isChecked ? "#f0f7ff" : undefined }}>
@@ -408,8 +555,103 @@ export default function QueriesContent() {
                                                     <td style={{ fontWeight: 600, color: "#1e293b" }}>
                                                         {item.name}
                                                     </td>
-                                                    <td className={styles.timeCell}>
-                                                        {formatDateOnly(item.lastPublishDate)}
+                                                    <td style={{ textAlign: "center" }}>
+                                                        <span className={styles.dateCountBadge}>
+                                                            {item.totalPublishedDays || item.publishDates?.length || 0}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <div className={styles.dateChipList}>
+                                                            {item.publishDates && item.publishDates.length > 0 ? (
+                                                                item.publishDates.map((dateStr) => (
+                                                                    <span key={dateStr} className={styles.dateChip} title={dateStr}>
+                                                                        {formatTMDintoDMY(dateStr)}
+                                                                    </span>
+                                                                ))
+                                                            ) : (
+                                                                <span style={{ color: "#94a3b8" }}>—</span>
+                                                            )}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )
+                    ) : selectedQuery === "users" ? (
+                        filteredUsersData.length === 0 ? (
+                            <div className={styles.stateContainer}>
+                                <span className={styles.emptyText}>אין נתונים להצגה</span>
+                            </div>
+                        ) : (
+                            <div className={styles.tableWrapper}>
+                                <table className={styles.table}>
+                                    <thead>
+                                        <tr>
+                                            {allowDelete && (
+                                                <th style={{ width: "36px", textAlign: "center" }}>
+                                                    <input
+                                                        type="checkbox"
+                                                        className={styles.checkbox}
+                                                        checked={isAllSelected}
+                                                        ref={(el) => {
+                                                            if (el) el.indeterminate = isSomeSelected;
+                                                        }}
+                                                        onChange={handleToggleSelectAll}
+                                                        title="בחר / בטל הכל"
+                                                    />
+                                                </th>
+                                            )}
+                                            {renderSortHeader("קוד בית ספר", "schoolId", "140px")}
+                                            {renderSortHeader("שם בית ספר", "schoolName", "160px")}
+                                            {renderSortHeader("מזהה משתמש", "id", "160px")}
+                                            {renderSortHeader("שם", "name", "150px")}
+                                            {renderSortHeader("אימייל", "email", "200px")}
+                                            {renderSortHeader("תפקיד", "role")}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {sortedUsersData.map((user) => {
+                                            const isChecked = selectedIds.includes(user.id);
+                                            return (
+                                                <tr key={user.id} style={{ backgroundColor: isChecked ? "#f0f7ff" : undefined }}>
+                                                    {allowDelete && (
+                                                        <td style={{ textAlign: "center" }}>
+                                                            <input
+                                                                type="checkbox"
+                                                                className={styles.checkbox}
+                                                                checked={isChecked}
+                                                                onChange={() => handleToggleSelectItem(user.id)}
+                                                            />
+                                                        </td>
+                                                    )}
+                                                    <td style={{ fontFamily: "monospace", fontSize: "0.8rem", color: "#475569", direction: "ltr", textAlign: "right" }}>
+                                                        {user.schoolId || <span style={{ color: "#94a3b8" }}>—</span>}
+                                                    </td>
+                                                    <td>
+                                                        {user.schoolName ? (
+                                                            <span className={styles.schoolBadge}>
+                                                                {user.schoolName}
+                                                            </span>
+                                                        ) : (
+                                                            <span style={{ color: "#94a3b8" }}>—</span>
+                                                        )}
+                                                    </td>
+                                                    <td style={{ fontFamily: "monospace", fontSize: "0.8rem", color: "#475569", direction: "ltr", textAlign: "right" }}>
+                                                        {user.id}
+                                                    </td>
+                                                    <td style={{ fontWeight: 600, color: "#1e293b" }}>
+                                                        {user.name}
+                                                    </td>
+                                                    <td className={styles.emailCell}>
+                                                        {user.email}
+                                                    </td>
+                                                    <td>
+                                                        <span className={styles.roleBadge}>
+                                                            {ROLE_TRANSLATIONS[user.role] || user.role}
+                                                        </span>
                                                     </td>
                                                 </tr>
                                             );

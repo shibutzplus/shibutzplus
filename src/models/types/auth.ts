@@ -15,6 +15,7 @@ export type UserType = {
     role: UserRole;
     gender?: string;
     schoolId?: string;
+    isActive?: boolean;
     createdAt?: Date;
     updatedAt?: Date;
 };

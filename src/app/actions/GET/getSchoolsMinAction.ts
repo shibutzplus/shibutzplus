@@ -33,6 +33,7 @@ export async function getSchoolsMinAction(): Promise<Array<{ id: string; name: s
             eq(schema.users.role, USER_ROLES.DEPUTY_PRINCIPAL)
           )
         )
+        .where(eq(schema.schools.isActive, true))
         .orderBy(asc(schema.schools.name));
     });
   } catch (err) {
@@ -60,8 +61,6 @@ export async function getSchoolsMinAction(): Promise<Array<{ id: string; name: s
     if (isDemoA && !isDemoB) return -1;
     if (!isDemoA && isDemoB) return 1;
 
-    const cityCompare = (a.city || "").localeCompare(b.city || "", "he");
-    if (cityCompare !== 0) return cityCompare;
     return (a.name || "").localeCompare(b.name || "", "he");
   });
 

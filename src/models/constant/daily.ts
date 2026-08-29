@@ -2,8 +2,6 @@ import { EventColor, ExistingTeacherColor, MissingTeacherColor } from "@/style/r
 
 export const EmptyValue = "empty";
 
-export const PublishLimitNumber = 6;
-
 export const DailyTableLimitNumber = 14;
 
 export const COLOR_BY_TYPE = {

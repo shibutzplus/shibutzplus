@@ -9,8 +9,8 @@ import { dbLog } from "@/services/loggerService";
 import { sendPublishNotification } from "@/services/pushNotifications";
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
 import { DAILY_PUBLISH_DATA_CHANGED } from "@/models/constant/sync";
-import { PublishLimitNumber } from "@/models/constant/daily";
 import { cacheTags } from "@/lib/cacheTags";
+import { getTodayDateString } from "@/utils/time";
 
 export async function publishDailyScheduleAction(
     schoolId: string,
@@ -31,11 +31,12 @@ export async function publishDailyScheduleAction(
             return { success: true };
         }
 
-        // queue (FIFO) maintain maximum 6 elements
-        let updatedDates = [...publishDates, date];
-        if (updatedDates.length > PublishLimitNumber) {
-            updatedDates = updatedDates.slice(1);
-        }
+        // Keep all future/current dates and clean up historical past dates
+        const todayStr = getTodayDateString();
+        const allDates = Array.from(new Set([...publishDates, date]));
+        const updatedDates = allDates
+            .filter((d) => d >= todayStr || d === date)
+            .sort();
         await executeQuery(async () => {
             return (
                 await db

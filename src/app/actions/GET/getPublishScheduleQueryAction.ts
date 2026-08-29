@@ -1,15 +1,16 @@
 "use server";
 
 import { db, schema, executeQuery } from "@/db";
-import { sql } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { auth } from "@/auth";
 import { USER_ROLES } from "@/models/constant/auth";
-import { getCurrentSchoolYearRange } from "@/utils/time";
 
 export interface PublishScheduleQueryResult {
     id: string;
     name: string;
+    publishDates: string[];
     lastPublishDate: string | null;
+    totalPublishedDays: number;
 }
 
 export async function getPublishScheduleQueryAction(): Promise<{
@@ -27,29 +28,28 @@ export async function getPublishScheduleQueryAction(): Promise<{
     }
 
     try {
-        const { start } = getCurrentSchoolYearRange();
-
         const rows = await executeQuery(async () => {
             return await db
                 .select({
                     id: schema.schools.id,
                     name: schema.schools.name,
-                    lastPublishDate: sql<string>`${schema.schools.publishDates}[array_upper(${schema.schools.publishDates}, 1)]`,
+                    publishDates: schema.schools.publishDates,
                 })
                 .from(schema.schools)
-                .where(
-                    sql`${schema.schools.publishDates} IS NOT NULL 
-                    AND ${schema.schools.publishDates} <> '{}' 
-                    AND ${schema.schools.publishDates}[array_upper(${schema.schools.publishDates}, 1)]::DATE >= ${start}::DATE`
-                )
-                .orderBy(sql`${schema.schools.publishDates}[array_upper(${schema.schools.publishDates}, 1)]::DATE DESC`);
+                .where(eq(schema.schools.isActive, true))
+                .orderBy(asc(schema.schools.name));
         });
 
-        const formatted: PublishScheduleQueryResult[] = rows.map((r) => ({
-            id: r.id,
-            name: r.name,
-            lastPublishDate: r.lastPublishDate || null,
-        }));
+        const formatted: PublishScheduleQueryResult[] = rows.map((r) => {
+            const dates = Array.isArray(r.publishDates) ? [...r.publishDates].sort() : [];
+            return {
+                id: r.id,
+                name: r.name,
+                publishDates: dates,
+                lastPublishDate: dates.length > 0 ? dates[dates.length - 1] : null,
+                totalPublishedDays: dates.length,
+            };
+        });
 
         return {
             success: true,

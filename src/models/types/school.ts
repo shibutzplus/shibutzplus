@@ -18,6 +18,7 @@ export type SchoolType = {
     toHour: number;
     displaySchedule2Susb: boolean;
     displayAltSchedule: boolean;
+    isActive?: boolean;
     settings?: SchoolSettingsType;
 };
 
