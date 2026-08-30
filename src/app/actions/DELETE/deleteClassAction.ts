@@ -13,11 +13,13 @@ import { ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
 import { revalidateTag } from "next/cache";
 import { cacheTags } from "@/lib/cacheTags";
 import { clearAnnualScheduleCache } from "@/services/schedule/getAnnualSchedule";
+import { getClassUsageCount } from "@/services/entities/entityUsageService";
 
 export async function deleteClassAction(
     schoolId: string,
     classId: string,
-): Promise<ActionResponse & { classes?: ClassType[]; annualSchedules?: AnnualScheduleType[] }> {
+    force: boolean = false,
+): Promise<ActionResponse & { classes?: ClassType[]; annualSchedules?: AnnualScheduleType[]; usageCount?: number }> {
     try {
         const authError = await checkAuthAndParams({ schoolId, classId });
         if (authError) {
@@ -27,6 +29,15 @@ export async function deleteClassAction(
         const guestError = await checkIsNotGuest();
         if (guestError) {
             return guestError as ActionResponse;
+        }
+
+        const usage = await getClassUsageCount(schoolId, classId);
+        if (usage.totalCount > 0 && !force) {
+            return {
+                success: false,
+                message: `הכיתה משובצת ב-${usage.totalCount} שיעורים במערכת.`,
+                usageCount: usage.totalCount,
+            };
         }
 
         const { annualSchedule, remainingClasses } = await executeQuery(async () => {

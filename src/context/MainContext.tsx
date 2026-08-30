@@ -39,19 +39,19 @@ interface MainContextType {
     annualAfterDelete: AnnualScheduleType[] | undefined;
     addNewClass: (newClass: ClassRequest) => Promise<ClassType | undefined>;
     updateClass: (classId: string, classData: ClassRequest) => Promise<ClassType[] | undefined>;
-    deleteClass: (schoolId: string, classId: string) => Promise<boolean>;
+    deleteClass: (schoolId: string, classId: string, force?: boolean) => Promise<boolean>;
     addNewTeacher: (newTeacher: TeacherRequest) => Promise<TeacherType | undefined>;
     updateTeacher: (
         teacherId: string,
         teacherData: TeacherRequest,
     ) => Promise<TeacherType[] | undefined>;
-    deleteTeacher: (schoolId: string, teacherId: string) => Promise<boolean>;
+    deleteTeacher: (schoolId: string, teacherId: string, force?: boolean) => Promise<boolean>;
     addNewSubject: (newSubject: SubjectRequest) => Promise<SubjectType | undefined>;
     updateSubject: (
         subjectId: string,
         subjectData: SubjectRequest,
     ) => Promise<SubjectType[] | undefined>;
-    deleteSubject: (schoolId: string, subjectId: string) => Promise<boolean>;
+    deleteSubject: (schoolId: string, subjectId: string, force?: boolean) => Promise<boolean>;
     addNewAnnualScheduleItem: (newScheduleItem: AnnualScheduleRequest) => Promise<AnnualScheduleType | undefined>;
     removeItemsFromAnnualScheduleTable: (deletedIds: string[]) => void;
     applyBatchAnnualScheduleUpdates: (deletedIds: string[], addedItems: AnnualScheduleType[]) => void;
@@ -226,13 +226,16 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         return undefined;
     };
 
-    const deleteSubject = async (schoolId: string, subjectId: string) => {
-        const response = await deleteSubjectAction(schoolId, subjectId);
+    const deleteSubject = async (schoolId: string, subjectId: string, force?: boolean) => {
+        const response = await deleteSubjectAction(schoolId, subjectId, force);
         if (response.success && response.subjects && response.annualSchedules) {
             setSubjects(response.subjects);
             setAnnualScheduleTable(response.annualSchedules);
             setAnnualAfterDelete(response.annualSchedules);
             return true;
+        }
+        if (!response.success && response.message) {
+            errorToast(response.message);
         }
         return false;
     };
@@ -301,10 +304,10 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         return undefined;
     };
 
-    const deleteClass = async (schoolId: string, classId: string) => {
+    const deleteClass = async (schoolId: string, classId: string, force?: boolean) => {
         const classToDelete = classes?.find((c) => c.id === classId);
 
-        const response = await deleteClassAction(schoolId, classId);
+        const response = await deleteClassAction(schoolId, classId, force);
         if (response.success && response.classes && response.annualSchedules) {
             setClasses(response.classes);
 
@@ -317,11 +320,14 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
                 );
 
                 if (subjectToDelete) {
-                    await deleteSubject(schoolId, subjectToDelete.id);
+                    await deleteSubject(schoolId, subjectToDelete.id, force);
                 }
             }
 
             return true;
+        }
+        if (!response.success && response.message) {
+            errorToast(response.message);
         }
         return false;
     };
@@ -370,14 +376,17 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         return undefined;
     };
 
-    const deleteTeacher = async (schoolId: string, teacherId: string) => {
-        const response = await deleteTeacherAction(schoolId, teacherId);
+    const deleteTeacher = async (schoolId: string, teacherId: string, force?: boolean) => {
+        const response = await deleteTeacherAction(schoolId, teacherId, force);
         if (response.success && response.teachers && response.annualSchedules) {
             setTeachers(response.teachers);
 
             setAnnualScheduleTable(response.annualSchedules);
             setAnnualAfterDelete(response.annualSchedules);
             return true;
+        }
+        if (!response.success && response.message) {
+            errorToast(response.message);
         }
         return false;
     };

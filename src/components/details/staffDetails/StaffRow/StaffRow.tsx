@@ -27,9 +27,9 @@ const StaffRow: React.FC<StaffRowProps> = ({ teacher }) => {
         messages.teachers.invalid,
     );
 
-    const handleDeleteTeacherFromState = async (teacherId: string) => {
+    const handleDeleteTeacherFromState = async (teacherId: string, force: boolean = false) => {
         if (!school?.id) return;
-        await handleSubmitDelete(school.id, teacherId, deleteTeacher);
+        await handleSubmitDelete(school.id, teacherId, deleteTeacher, force);
     };
 
     const handleDeleteTeacher = (teacher: TeacherType) => {
@@ -43,7 +43,7 @@ const StaffRow: React.FC<StaffRowProps> = ({ teacher }) => {
                     warningText={`משובץ/ת ב-${usageCount} שיעורים במערכת השנתית.`}
                     usageCount={usageCount}
                 />,
-                () => handleDeleteTeacherFromState(teacher.id),
+                () => handleDeleteTeacherFromState(teacher.id, true),
                 "מחק בכל זאת",
                 "ביטול",
                 "no",
@@ -52,7 +52,7 @@ const StaffRow: React.FC<StaffRowProps> = ({ teacher }) => {
             handleOpenPopup(
                 PopupAction.deleteTeacher,
                 `האם למחוק את ${teacher.name}?`,
-                () => handleDeleteTeacherFromState(teacher.id),
+                () => handleDeleteTeacherFromState(teacher.id, false),
             );
         }
     };

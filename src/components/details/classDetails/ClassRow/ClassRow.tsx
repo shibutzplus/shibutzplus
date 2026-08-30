@@ -27,9 +27,9 @@ const ClassRow: React.FC<ClassRowProps> = ({ classItem }) => {
         messages.classes.invalid,
     );
 
-    const handleDeleteClassFromState = async (classId: string) => {
+    const handleDeleteClassFromState = async (classId: string, force: boolean = false) => {
         if (!school?.id) return;
-        await handleSubmitDelete(school.id, classId, deleteClass);
+        await handleSubmitDelete(school.id, classId, deleteClass, force);
     };
 
     const handleDeleteClass = (classItem: ClassType) => {
@@ -44,7 +44,7 @@ const ClassRow: React.FC<ClassRowProps> = ({ classItem }) => {
                     warningText={`${entityName} משובצת ב-${usageCount} שיעורים במערכת השנתית.`}
                     usageCount={usageCount}
                 />,
-                () => handleDeleteClassFromState(classItem.id),
+                () => handleDeleteClassFromState(classItem.id, true),
                 "מחק בכל זאת",
                 "ביטול",
                 "no",
@@ -53,7 +53,7 @@ const ClassRow: React.FC<ClassRowProps> = ({ classItem }) => {
             handleOpenPopup(
                 PopupAction.deleteClass,
                 `האם למחוק את ${entityName} ${classItem.name}?`,
-                () => handleDeleteClassFromState(classItem.id),
+                () => handleDeleteClassFromState(classItem.id, false),
             );
         }
     };

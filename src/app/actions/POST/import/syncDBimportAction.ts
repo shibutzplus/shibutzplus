@@ -2,7 +2,7 @@
 
 import { auth } from "@/auth";
 import { db } from "@/db";
-import { teachers, classes, subjects, annualSchedule, annualScheduleAlt, type NewAnnualScheduleSchema } from "@/db/schema";
+import { teachers, classes, subjects, annualSchedule, annualScheduleAlt, dailySchedule, type NewAnnualScheduleSchema } from "@/db/schema";
 import { eq, and, inArray } from "drizzle-orm";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { cacheTags } from "@/lib/cacheTags";
@@ -111,9 +111,28 @@ export const syncAllEntityValuesAction = async (
                 await db.update(tableObj).set({ isActive: false }).where(inArray(tableObj.id, toDeactivate));
             }
 
-            // 6. DELETE items not in the new list (for subjects)
+            // 6. DELETE items not in the new list (for subjects only if NOT used in any schedule)
             if (toDelete.length > 0) {
-                await db.delete(tableObj).where(inArray(tableObj.id, toDelete));
+                const usedAnnual = await db.select({ subjectId: annualSchedule.subjectId })
+                    .from(annualSchedule)
+                    .where(and(eq(annualSchedule.schoolId, targetSchoolId), inArray(annualSchedule.subjectId, toDelete)));
+                const usedAnnualAlt = await db.select({ subjectId: annualScheduleAlt.subjectId })
+                    .from(annualScheduleAlt)
+                    .where(and(eq(annualScheduleAlt.schoolId, targetSchoolId), inArray(annualScheduleAlt.subjectId, toDelete)));
+                const usedDaily = await db.select({ subjectId: dailySchedule.subjectId })
+                    .from(dailySchedule)
+                    .where(and(eq(dailySchedule.schoolId, targetSchoolId), inArray(dailySchedule.subjectId, toDelete)));
+
+                const usedSubjectIds = new Set([
+                    ...usedAnnual.map((u) => u.subjectId),
+                    ...usedAnnualAlt.map((u) => u.subjectId),
+                    ...usedDaily.map((u) => u.subjectId).filter(Boolean),
+                ]);
+
+                const safeToDelete = toDelete.filter((id) => !usedSubjectIds.has(id));
+                if (safeToDelete.length > 0) {
+                    await db.delete(tableObj).where(inArray(tableObj.id, safeToDelete));
+                }
             }
         };
 

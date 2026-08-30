@@ -50,7 +50,8 @@ function useSubmit<T extends { schoolId: string }>(
     const handleSubmitDelete = async (
         schoolId: string,
         idToDelete: string,
-        deleteFunction: (schoolId: string, idToDelete: string) => Promise<boolean>,
+        deleteFunction: (schoolId: string, idToDelete: string, force?: boolean) => Promise<boolean>,
+        force: boolean = false,
     ) => {
         setIsLoading(true);
         setError("");
@@ -62,8 +63,10 @@ function useSubmit<T extends { schoolId: string }>(
                 return;
             }
 
-            const res = await deleteFunction(schoolId, idToDelete);
-            successToast(res ? successMessage : errorMessage, 3000);
+            const res = await deleteFunction(schoolId, idToDelete, force);
+            if (res) {
+                successToast(successMessage, 3000);
+            }
         } catch (error) {
             logErrorAction({ description: `Submit error (delete): ${error instanceof Error ? error.message : String(error)}` });
             errorToast(errorMessage);

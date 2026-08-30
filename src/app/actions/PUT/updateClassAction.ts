@@ -32,34 +32,6 @@ export async function updateClassAction(
             return guestError as ActionResponse;
         }
 
-        // Check if a class/group with the same name already exists (excluding the current one)
-        const existingClass = await executeQuery(async () => {
-            return await db.query.classes.findFirst({
-                where: (classes, { and, eq, ne }) =>
-                    and(
-                        eq(classes.schoolId, classData.schoolId),
-                        eq(classes.name, classData.name),
-                        ne(classes.id, classId)
-                    ),
-            });
-        });
-
-        if (existingClass) {
-            if (existingClass.isActive) {
-                // Actively existing record → reject
-                return {
-                    success: false,
-                    message: "שם זה כבר קיים במערכת",
-                };
-            }
-
-            // Inactive record with same name → delete the obsolete inactive record so current class can take the name
-            await executeQuery(async () => {
-                await db.delete(schema.classes)
-                    .where(eq(schema.classes.id, existingClass.id));
-            });
-        }
-
         const currentClass = await executeQuery(async () => {
             return (
                 await db
@@ -73,24 +45,88 @@ export async function updateClassAction(
         const oldName = currentClass?.name;
         const isNameChanged = !!oldName && oldName !== classData.name;
 
-        const updatedClass = await executeQuery(async () => {
-            return (
-                await db
-                    .update(schema.classes)
-                    .set({
-                        name: classData.name,
-                        updatedAt: new Date(),
-                    })
-                    .where(eq(schema.classes.id, classId))
-                    .returning()
-            )[0];
-        });
+        let targetClassId = classId;
 
-        if (!updatedClass) {
-            return {
-                success: false,
-                message: messages.classes.updateError,
-            };
+        // Check if a class/group with the same name already exists (excluding the current one)
+        if (isNameChanged) {
+            const existingClass = await executeQuery(async () => {
+                return await db.query.classes.findFirst({
+                    where: (classes, { and, eq, ne }) =>
+                        and(
+                            eq(classes.schoolId, classData.schoolId),
+                            eq(classes.name, classData.name),
+                            ne(classes.id, classId)
+                        ),
+                });
+            });
+
+            if (existingClass) {
+                if (existingClass.isActive) {
+                    // Actively existing record → reject
+                    return {
+                        success: false,
+                        message: "שם זה כבר קיים במערכת",
+                    };
+                }
+
+                // Inactive record with target name exists → merge into existingClass and reactivate it
+                await executeQuery(async () => {
+                    // 1. Move all schedule references from current classId to existingClass.id
+                    await db.update(schema.annualSchedule)
+                        .set({ classId: existingClass.id })
+                        .where(eq(schema.annualSchedule.classId, classId));
+
+                    await db.update(schema.annualScheduleAlt)
+                        .set({ classId: existingClass.id })
+                        .where(eq(schema.annualScheduleAlt.classId, classId));
+
+                    await db.update(schema.dailySchedule)
+                        .set({
+                            classIds: sql`array_replace(${schema.dailySchedule.classIds}, ${classId}, ${existingClass.id})`
+                        })
+                        .where(and(
+                            eq(schema.dailySchedule.schoolId, classData.schoolId),
+                            sql`${classId} = ANY(${schema.dailySchedule.classIds})`
+                        ));
+
+                    // 2. Reactivate existingClass
+                    await db.update(schema.classes)
+                        .set({
+                            activity: classData.activity ?? false,
+                            isActive: true,
+                            updatedAt: new Date(),
+                        })
+                        .where(eq(schema.classes.id, existingClass.id));
+
+                    // 3. Delete the temporary/current record (which now has no references)
+                    await db.delete(schema.classes)
+                        .where(eq(schema.classes.id, classId));
+                });
+
+                targetClassId = existingClass.id;
+            }
+        }
+
+        if (targetClassId === classId) {
+            const updatedClass = await executeQuery(async () => {
+                return (
+                    await db
+                        .update(schema.classes)
+                        .set({
+                            name: classData.name,
+                            updatedAt: new Date(),
+                        })
+                        .where(eq(schema.classes.id, classId))
+                        .returning()
+                )[0];
+            });
+
+            if (!updatedClass) {
+                return {
+                    success: false,
+                    message: messages.classes.updateError,
+                };
+            }
         }
 
         // If class name was changed, cascade update to history table for data continuity

@@ -25,9 +25,9 @@ const SubjectRow: React.FC<SubjectRowProps> = ({ subject }) => {
         messages.subjects.invalid,
     );
 
-    const handleDeleteSubjectFromState = async (subjectId: string) => {
+    const handleDeleteSubjectFromState = async (subjectId: string, force: boolean = false) => {
         if (!school?.id) return;
-        await handleSubmitDelete(school.id, subjectId, deleteSubject);
+        await handleSubmitDelete(school.id, subjectId, deleteSubject, force);
     };
 
     const handleDeleteSubject = (subject: SubjectType) => {
@@ -41,7 +41,7 @@ const SubjectRow: React.FC<SubjectRowProps> = ({ subject }) => {
                     warningText={`המקצוע משובץ ב-${usageCount} שיעורים במערכת השנתית.`}
                     usageCount={usageCount}
                 />,
-                () => handleDeleteSubjectFromState(subject.id),
+                () => handleDeleteSubjectFromState(subject.id, true),
                 "מחק בכל זאת",
                 "ביטול",
                 "no",
@@ -50,7 +50,7 @@ const SubjectRow: React.FC<SubjectRowProps> = ({ subject }) => {
             handleOpenPopup(
                 PopupAction.deleteSubject,
                 `האם למחוק את המקצוע ${subject.name}?`,
-                () => handleDeleteSubjectFromState(subject.id),
+                () => handleDeleteSubjectFromState(subject.id, false),
             );
         }
     };

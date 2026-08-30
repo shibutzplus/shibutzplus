@@ -43,6 +43,8 @@ export async function updateTeacherAction(
         const oldName = existingTeacher?.name;
         const isNameChanged = !!oldName && oldName !== teacherData.name;
 
+        let targetTeacherId = teacherId;
+
         // Check if a teacher with the target name already exists (excluding current)
         if (isNameChanged) {
             const conflicting = await executeQuery(async () => {
@@ -61,30 +63,61 @@ export async function updateTeacherAction(
                     return { success: false, message: "שם זה כבר קיים במערכת" };
                 }
 
-                // Inactive duplicate → delete the obsolete inactive record so current teacher can take the name
+                // Inactive record with target name exists → merge into conflicting record and reactivate it
                 await executeQuery(async () => {
-                    await db.delete(schema.teachers)
+                    // 1. Move all schedule references from current teacherId to conflicting.id
+                    await db.update(schema.annualSchedule)
+                        .set({ teacherId: conflicting.id })
+                        .where(eq(schema.annualSchedule.teacherId, teacherId));
+
+                    await db.update(schema.annualScheduleAlt)
+                        .set({ teacherId: conflicting.id })
+                        .where(eq(schema.annualScheduleAlt.teacherId, teacherId));
+
+                    await db.update(schema.dailySchedule)
+                        .set({ originalTeacherId: conflicting.id })
+                        .where(eq(schema.dailySchedule.originalTeacherId, teacherId));
+
+                    await db.update(schema.dailySchedule)
+                        .set({ subTeacherId: conflicting.id })
+                        .where(eq(schema.dailySchedule.subTeacherId, teacherId));
+
+                    // 2. Reactivate and update role on the conflicting record
+                    await db.update(schema.teachers)
+                        .set({
+                            role: teacherData.role,
+                            isActive: true,
+                            updatedAt: new Date(),
+                        })
                         .where(eq(schema.teachers.id, conflicting.id));
+
+                    // 3. Delete the temporary/current record (which now has no references)
+                    await db.delete(schema.teachers)
+                        .where(eq(schema.teachers.id, teacherId));
                 });
+
+                targetTeacherId = conflicting.id;
             }
         }
 
-        const updatedTeacher = await executeQuery(async () => {
-            return (
-                await db
-                    .update(schema.teachers)
-                    .set({
-                        name: teacherData.name,
-                        role: teacherData.role,
-                        updatedAt: new Date(),
-                    })
-                    .where(eq(schema.teachers.id, teacherId))
-                    .returning()
-            )[0];
-        });
+        if (targetTeacherId === teacherId) {
+            const updatedTeacher = await executeQuery(async () => {
+                return (
+                    await db
+                        .update(schema.teachers)
+                        .set({
+                            name: teacherData.name,
+                            role: teacherData.role,
+                            updatedAt: new Date(),
+                        })
+                        .where(eq(schema.teachers.id, teacherId))
+                        .returning()
+                )[0];
+            });
 
-        if (!updatedTeacher) {
-            return { success: false, message: messages.teachers.updateError };
+            if (!updatedTeacher) {
+                return { success: false, message: messages.teachers.updateError };
+            }
         }
 
         // If teacher name was changed, cascade update to history table for data continuity

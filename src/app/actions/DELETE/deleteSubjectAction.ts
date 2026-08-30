@@ -13,11 +13,13 @@ import { ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
 import { revalidateTag } from "next/cache";
 import { cacheTags } from "@/lib/cacheTags";
 import { clearAnnualScheduleCache } from "@/services/schedule/getAnnualSchedule";
+import { getSubjectUsageCount } from "@/services/entities/entityUsageService";
 
 export async function deleteSubjectAction(
     schoolId: string,
     subjectId: string,
-): Promise<ActionResponse & { annualSchedules?: AnnualScheduleType[]; subjects?: SubjectType[] }> {
+    force: boolean = false,
+): Promise<ActionResponse & { annualSchedules?: AnnualScheduleType[]; subjects?: SubjectType[]; usageCount?: number }> {
     try {
         const authError = await checkAuthAndParams({ schoolId, subjectId });
         if (authError) {
@@ -27,6 +29,15 @@ export async function deleteSubjectAction(
         const guestError = await checkIsNotGuest();
         if (guestError) {
             return guestError as ActionResponse;
+        }
+
+        const usage = await getSubjectUsageCount(schoolId, subjectId);
+        if (usage.totalCount > 0 && !force) {
+            return {
+                success: false,
+                message: `המקצוע משובץ ב-${usage.totalCount} שיעורים במערכת.`,
+                usageCount: usage.totalCount,
+            };
         }
 
         const { annualSchedule, remainingSubjects } = await executeQuery(async () => {
