@@ -47,6 +47,11 @@ export async function updateDailyTeacherCellAction(
             subjectId: subject?.id,
         });
         if (authError || !subject) {
+            dbLog({
+                description: `updateDailyTeacherCellAction validation failed: ${authError ? (authError as ActionResponse).message : 'subject is missing'}`,
+                schoolId: school.id,
+                metadata: { id, date, day, hour, columnId }
+            });
             return authError as ActionResponse;
         }
 
@@ -82,6 +87,11 @@ export async function updateDailyTeacherCellAction(
         });
 
         if (!updatedEntry[0]) {
+            dbLog({
+                description: `updateDailyTeacherCellAction: row with id ${id} not found in DB`,
+                schoolId: school.id,
+                metadata: { id, date, day, hour, columnId }
+            });
             return {
                 success: false,
                 message: messages.dailySchedule.updateError,

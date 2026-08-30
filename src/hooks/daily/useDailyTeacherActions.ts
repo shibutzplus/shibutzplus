@@ -213,7 +213,34 @@ const useDailyTeacherActions = (
                 );
                 setMainDailyTable(updatedSchedule);
                 return response.data;
+            } else {
+                logErrorAction({
+                    description: `Failed to update daily teacher cell: ${response?.message || 'Server action returned false'}`,
+                    schoolId: school?.id,
+                    metadata: {
+                        dailyScheduleId,
+                        selectedDate,
+                        columnId,
+                        teacher: data.subTeacher?.name || data.event,
+                        hour: cellData.hour,
+                    }
+                });
             }
+        } else {
+            logErrorAction({
+                description: `addNewTeacherValueCell returned undefined in updateTeacherCell`,
+                schoolId: school?.id,
+                metadata: {
+                    dailyScheduleId,
+                    selectedDate,
+                    columnId,
+                    hour: cellData.hour,
+                    hasSchool: !!school,
+                    hasClasses: !!cellData.classes,
+                    hasSubject: !!cellData.subject,
+                    hasHeaderTeacher: !!cellData.headerCol?.headerTeacher,
+                }
+            });
         }
         return undefined;
     };
@@ -251,7 +278,19 @@ const useDailyTeacherActions = (
                 );
                 setMainDailyTable(updatedSchedule);
                 return response.data;
+            } else {
+                logErrorAction({
+                    description: `Failed to clear daily teacher cell: ${response?.message || 'Server action returned false'}`,
+                    schoolId: school?.id,
+                    metadata: { dailyScheduleId, selectedDate, columnId, hour: cellData.hour }
+                });
             }
+        } else {
+            logErrorAction({
+                description: `addNewTeacherValueCell returned undefined in clearTeacherCell`,
+                schoolId: school?.id,
+                metadata: { dailyScheduleId, selectedDate, columnId, hour: cellData.hour }
+            });
         }
         return undefined;
     };

@@ -11,6 +11,7 @@ import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { sortDailyTeachers } from "@/utils/sort";
 import Icons from "@/style/icons";
+import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
 import EmptyCell from "@/components/ui/table/EmptyCell/EmptyCell";
 
@@ -174,7 +175,19 @@ const MngrDailyBldTeacherCell: React.FC<MngrDailyBldTeacherCellProps> = ({ colum
                 );
                 if (!response) throw new Error();
             }
-        } catch {
+        } catch (err) {
+            logErrorAction({
+                description: `Exception in handleTeacherChange: ${err instanceof Error ? err.message : String(err)}`,
+                schoolId: school?.id,
+                metadata: {
+                    hour,
+                    columnId,
+                    selectedDate,
+                    methodType,
+                    value,
+                    existingDailyId: mainDailyTable[selectedDate]?.[columnId]?.[hour]?.DBid,
+                }
+            });
             errorToast(messages.dailySchedule.createError);
             setSelectedSubTeacher("");
         } finally {

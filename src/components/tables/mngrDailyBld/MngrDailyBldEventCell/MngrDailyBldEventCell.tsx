@@ -6,6 +6,7 @@ import { errorToast } from "@/lib/toast";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import { ColumnTypeValues, DailyScheduleCell } from "@/models/types/dailySchedule";
 import { formatTMDintoDMY } from "@/utils/time";
+import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
 type MngrDailyBldEventCellProps = { columnId: string; cell: DailyScheduleCell };
 
@@ -74,6 +75,10 @@ const MngrDailyBldEventCell: React.FC<MngrDailyBldEventCellProps> = ({ columnId,
             }
 
             if (!response) {
+                logErrorAction({
+                    description: `Failed to save event cell: response returned falsy`,
+                    metadata: { columnId, hour, selectedDate, event }
+                });
                 errorToast(
                     eventData
                         ? messages.dailySchedule.updateError
@@ -81,7 +86,11 @@ const MngrDailyBldEventCell: React.FC<MngrDailyBldEventCellProps> = ({ columnId,
                 );
                 setInfo("");
             }
-        } catch {
+        } catch (err) {
+            logErrorAction({
+                description: `Exception in MngrDailyBldEventCell handleChange: ${err instanceof Error ? err.message : String(err)}`,
+                metadata: { columnId, hour, selectedDate, event }
+            });
             errorToast(
                 eventData ? messages.dailySchedule.updateError : messages.dailySchedule.createError,
             );
