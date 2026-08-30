@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import router from "@/routes";
 import { checkForUpdates, getChannelsForPath, SyncItem, SyncChannel } from "@/services/sync/clientSyncService";
 import { POLL_INTERVAL_MS, ADMIN_BROADCAST_MESSAGE } from "@/models/constant/sync";
@@ -28,7 +28,6 @@ export const usePollingUpdates = (
     channels?: SyncChannel[]
 ): UsePollingUpdatesReturn => {
     const pathname = usePathname();
-    const searchParams = useSearchParams();
     const { data: session } = useSession();
 
     // Alert state for incoming updates
@@ -85,8 +84,9 @@ export const usePollingUpdates = (
                             (targetAudience === "managers" && isPrivateScreen) ||
                             (targetAudience === "teachers" && isTeacherScreen);
 
+                        const querySchoolId = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("schoolId") : null;
                         const currentSchoolId =
-                            searchParams?.get("schoolId") ||
+                            querySchoolId ||
                             (session?.user as any)?.schoolId ||
                             getStorageTeacher()?.schoolId ||
                             pathname.split("/")[2];
