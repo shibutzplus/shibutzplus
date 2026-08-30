@@ -45,6 +45,26 @@ export async function updateSubjectAction(
         const oldName = existingSubject?.name;
         const isNameChanged = !!oldName && oldName !== subjectData.name;
 
+        if (isNameChanged) {
+            const conflicting = await executeQuery(async () => {
+                return await db.query.subjects.findFirst({
+                    where: (s, { and, eq, ne }) =>
+                        and(
+                            eq(s.schoolId, subjectData.schoolId),
+                            eq(s.name, subjectData.name),
+                            ne(s.id, subjectId)
+                        ),
+                });
+            });
+
+            if (conflicting) {
+                return {
+                    success: false,
+                    message: "שם זה כבר קיים במערכת",
+                };
+            }
+        }
+
         const updatedSubject = await executeQuery(async () => {
             return (
                 await db

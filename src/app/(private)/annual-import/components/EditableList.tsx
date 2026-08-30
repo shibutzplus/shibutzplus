@@ -4,14 +4,13 @@ import styles from '../page.module.css';
 export interface ListItem {
     name: string;
     exists?: boolean;
-    source?: 'db' | 'ai' | 'both' | 'manual' | 'file';
+    source?: 'db' | 'both' | 'file';
 }
 
 interface EditableListProps {
     title: string;
     items: ListItem[];
     onSave?: (items: ListItem[]) => void;
-    onAddAndSave?: (newItemName: string) => Promise<void>;
     onMerge?: (discardedName: string, keptName: string) => void;
     allowMerge?: boolean;
     allowSwap?: boolean;
@@ -77,14 +76,12 @@ const EditableList: React.FC<EditableListProps> = ({
     title,
     items,
     onSave,
-    onAddAndSave,
     onMerge,
     allowMerge = false,
     allowSwap = false,
     onSwapName
 }) => {
     const [newItem, setNewItem] = useState("");
-    const [isAdding, setIsAdding] = useState(false);
     const [dismissedPairs, setDismissedPairs] = useState<Set<string>>(new Set());
     const [activeMergeIndex, setActiveMergeIndex] = useState<number | null>(null);
     const [selectedTargetName, setSelectedTargetName] = useState<string>("");
@@ -185,21 +182,12 @@ const EditableList: React.FC<EditableListProps> = ({
         setSelectedTargetName("");
     };
 
-    const handleAdd = async () => {
+    const handleAdd = () => {
         if (newItem.trim()) {
             const trimmedItem = newItem.trim();
             const updated = [...items, { name: trimmedItem, exists: false, source: 'file' as const }];
             if (onSave) onSave(updated);
             setNewItem("");
-
-            if (onAddAndSave) {
-                setIsAdding(true);
-                try {
-                    await onAddAndSave(trimmedItem);
-                } finally {
-                    setIsAdding(false);
-                }
-            }
         }
     };
 
@@ -235,9 +223,9 @@ const EditableList: React.FC<EditableListProps> = ({
                         onClick={handleAdd}
                         type="button"
                         className={styles.addBtn}
-                        disabled={!newItem.trim() || isAdding}
+                        disabled={!newItem.trim()}
                     >
-                        {isAdding ? "⏳" : "+"}
+                        +
                     </button>
                 </div>
             </div>

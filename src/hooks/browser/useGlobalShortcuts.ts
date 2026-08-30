@@ -17,7 +17,7 @@ export const useGlobalShortcuts = () => {
             const isCtrlOrMeta = event.ctrlKey || event.metaKey;
             const isKeyM =
                 event.code === "KeyM" ||
-                event.key.toLowerCase() === "m" ||
+                (event.key != null && event.key.toLowerCase() === "m") ||
                 event.key === "צ";
 
             if (isCtrlOrMeta && isKeyM && !event.altKey && !event.shiftKey) {

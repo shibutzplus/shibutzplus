@@ -142,12 +142,6 @@
     color: #ef4444;
 }
 
-.originalTextHint {
-    color: #393d43;
-    font-size: 0.7rem;
-    font-style: italic;
-    margin-top: 2px;
-}
 
 .emptyStatePreview {
     display: flex;
@@ -167,153 +161,15 @@
     border-top: 1px solid #e5e7eb;
 }
 
-.btnSingleUpdate {
-    background-color: #4b5563;
-    color: white;
-    padding: 0 1rem;
-    height: 40px;
-    border-radius: 0.5rem;
-}
-
-.btnSingleUpdate:hover {
-    background-color: #374151;
-}
-
 .stepTitle {
     margin-bottom: 0.5rem;
 }
-
-.iconContainer {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-left: 0.5rem;
-    vertical-align: middle;
-}
-
-.iconBoth {
-    color: #10b981;
-}
-
-.iconAi {
-    color: #8b5cf6;
-}
-
-.iconDb {
-    color: #64748b;
-}
-
-.iconManual {
-    color: #0070f3;
-}
-
-.iconFile {
-    color: #f59e0b;
-}
-
 .uploadContainer {
     display: flex;
     flex-direction: column;
     gap: 2rem;
     width: 100%;
     margin-top: 1rem;
-}
-
-/* File mode radio selection (Excel vs Word) */
-.fileModeSection {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
-}
-
-.fileModeLabel {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #334155;
-}
-
-.fileModeRadioGroup {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-.fileModeRadioCard {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1.25rem;
-    border-radius: 0.75rem;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-    user-select: none;
-    min-width: 200px;
-}
-
-.fileModeRadioCard:hover {
-    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.12);
-}
-
-.fileModeRadioCardActive {
-    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.12);
-}
-
-.fileModeRadioInput {
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.radioCustomCircle {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    border: 2px solid #94a3b8;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: all 0.2s;
-}
-
-.fileModeRadioCardActive .radioCustomCircle {
-    border-color: #2563eb;
-}
-
-.fileModeRadioCardActive .radioCustomCircle::after {
-    content: '';
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background-color: #2563eb;
-}
-
-.radioIcon {
-    font-size: 1.4rem;
-    line-height: 1;
-}
-
-.radioTextWrapper {
-    display: flex;
-    flex-direction: column;
-}
-
-.radioTitle {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: #1e293b;
-}
-
-.fileModeRadioCardActive .radioTitle {
-    color: #1d4ed8;
-}
-
-.radioSubtitle {
-    font-size: 0.75rem;
-    color: #64748b;
 }
 
 .subTitle {

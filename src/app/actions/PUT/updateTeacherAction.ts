@@ -43,6 +43,55 @@ export async function updateTeacherAction(
         const oldName = existingTeacher?.name;
         const isNameChanged = !!oldName && oldName !== teacherData.name;
 
+        // Check if a teacher with the target name already exists (excluding current)
+        if (isNameChanged) {
+            const conflicting = await executeQuery(async () => {
+                return await db.query.teachers.findFirst({
+                    where: (t, { and, eq, ne }) =>
+                        and(
+                            eq(t.schoolId, teacherData.schoolId),
+                            eq(t.name, teacherData.name),
+                            ne(t.id, teacherId)
+                        ),
+                });
+            });
+
+            if (conflicting) {
+                if (conflicting.isActive) {
+                    return { success: false, message: "שם זה כבר קיים במערכת" };
+                }
+
+                // Inactive duplicate → reactivate it and delete the current one
+                await executeQuery(async () => {
+                    await db.update(schema.teachers)
+                        .set({ isActive: true, updatedAt: new Date() })
+                        .where(eq(schema.teachers.id, conflicting.id));
+
+                    await db.delete(schema.teachers)
+                        .where(eq(schema.teachers.id, teacherId));
+                });
+
+                const allTeachersResp = await executeQuery(async () => {
+                    return await db
+                        .select()
+                        .from(schema.teachers)
+                        .where(and(eq(schema.teachers.schoolId, teacherData.schoolId), eq(schema.teachers.isActive, true)))
+                        .orderBy(schema.teachers.name);
+                });
+
+                revalidateTag(cacheTags.teachersList(teacherData.schoolId));
+                revalidateTag(cacheTags.schoolSchedule(teacherData.schoolId));
+                void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: teacherData.schoolId });
+
+                return {
+                    success: true,
+                    message: messages.teachers.updateSuccess,
+                    data: allTeachersResp || [],
+                    hasMatchingDailyText: false,
+                };
+            }
+        }
+
         const updatedTeacher = await executeQuery(async () => {
             return (
                 await db

@@ -45,9 +45,40 @@ export async function updateClassAction(
         });
 
         if (existingClass) {
+            if (existingClass.isActive) {
+                // Actively existing record → reject
+                return {
+                    success: false,
+                    message: "שם זה כבר קיים במערכת",
+                };
+            }
+
+            // Inactive record with same name → reactivate it and delete the current one
+            await executeQuery(async () => {
+                await db.update(schema.classes)
+                    .set({ isActive: true, updatedAt: new Date() })
+                    .where(eq(schema.classes.id, existingClass.id));
+
+                await db.delete(schema.classes)
+                    .where(eq(schema.classes.id, classId));
+            });
+
+            const allClasses = await executeQuery(async () => {
+                return await db
+                    .select()
+                    .from(schema.classes)
+                    .where(and(eq(schema.classes.schoolId, classData.schoolId), eq(schema.classes.isActive, true)))
+                    .orderBy(asc(schema.classes.activity), asc(schema.classes.name));
+            });
+
+            revalidateTag(cacheTags.classesList(classData.schoolId));
+            revalidateTag(cacheTags.schoolSchedule(classData.schoolId));
+            void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: classData.schoolId });
+
             return {
-                success: false,
-                message: "שם זה כבר קיים במערכת",
+                success: true,
+                message: messages.classes.updateClassSuccess,
+                data: (allClasses as ClassType[]) || [],
             };
         }
 
@@ -89,11 +120,11 @@ export async function updateClassAction(
             await executeQuery(async () => {
                 await db.execute(sql`
                     UPDATE ${schema.history}
-                    SET ${schema.history.classes} = (
+                    SET "classes" = (
                         SELECT string_agg(CASE WHEN elem = ${oldName} THEN ${classData.name} ELSE elem END, ', ')
                         FROM unnest(string_to_array(${schema.history.classes}, ', ')) AS elem
                     ),
-                    ${schema.history.updatedAt} = NOW()
+                    "updated_at" = NOW()
                     WHERE ${schema.history.schoolId} = ${classData.schoolId}
                       AND ${schema.history.classes} IS NOT NULL
                       AND ${oldName} = ANY(string_to_array(${schema.history.classes}, ', '))
