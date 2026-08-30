@@ -817,6 +817,9 @@ const AnnualImportContent = () => {
                                                 popupMsg(res.message);
                                                 if (res.success) {
                                                     mainContext?.setAnnualScheduleTable(undefined);
+                                                    setTimeout(() => {
+                                                        window.location.href = '/';
+                                                    }, 1500);
                                                 }
                                             } catch (err) {
                                                 console.error("Error saving all schedules:", err);

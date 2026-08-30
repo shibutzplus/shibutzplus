@@ -28,9 +28,74 @@ WORKGROUP_KEYWORDS = [
     "שילוב", "שהייה", "פרטני", "צוות", "ישיב", "ריכוז", "השתלמות", "ניהול", "תפקיד", "חלון", "הדרכה", "הכלה", "מליאה"
 ]
 
+# מיפוי שמות פרטיים לשמות מלאים של ויצמן מתוך ה-DB
+TEACHER_NAME_CANONICAL = {
+    "אור": "אור סמרה",
+    "אור סמרה": "אור סמרה",
+    "אורטל": "אורטל באבו",
+    "אורטל באבו": "אורטל באבו",
+    "אורטל סבן": "אורטל סבן",
+    "אורית": "אורית לנדאו",
+    "אורית לנדאו": "אורית לנדאו",
+    "אורנה": "אורנה מרקוביץ'",
+    "אייל": "אייל חסידי",
+    "אלה": "אלה רויטמן",
+    "אנה": "אנה אשכנזי",
+    "דיתי": "דיתי כהן",
+    "דנית": "דנית אלבז",
+    "הגר": "הגר עטר",
+    "הדר": "הדר יצחק",
+    "ורד": "ורד גולן",
+    "זיו": "זיו ורבין",
+    "חביבה": "חביבה רוזן",
+    "טל": "טל רם",
+    "טל רם": "טל רם",
+    "טלי": "טלי טסלר",
+    "טלי טסלר": "טלי טסלר",
+    "טלי בצון": "טלי בצון",
+    "יעל": "יעל בן סירה",
+    "יעל בן סירה": "יעל בן סירה",
+    "יעל חלבי": "יעל חלבי",
+    "יפעת": "יפעת תומר",
+    "יפעת תומר": "יפעת תומר",
+    "יפעת יהודה": "יפעת יהודה",
+    "כרמן": "כרמן ציטרון",
+    "לאה": "לאה דיין",
+    "מאי": "מאי מוליסיאן",
+    "מאיה": "מאיה לוי",
+    "מוריה": "מוריה גבאי",
+    "מירי": "מירי טימסיט",
+    "מלי": "מלי קרונקופ",
+    "מעיין": "מעיין כהן",
+    "מריאן": "מריאן זוהר",
+    "מריאן זוהר": "מריאן זוהר",
+    "נופר": "נופר מזרחי",
+    "נחשון": "נחשון",
+    "נטלי": "נטלי חג יחיא",
+    "נעמה": "נעמה ביטון",
+    "ספיר": "ספיר כהן אלשטיין",
+    "ספיר כהן": "ספיר כהן אלשטיין",
+    "סתיו": "סתיו גבאי",
+    "עינב": "עינב ברי",
+    "ענת": "ענת רימון",
+    "פורל": "פורל רוט",
+    "ציפי": "ציפי ארונפויד",
+    "רויטל": "רויטל הראל",
+    "רותי": "רותי זכריה",
+    "רותי זכריה": "רותי זכריה",
+    "רותם": "רותם אזולאי",
+    "רחל": "רחל נמטלוב",
+    "ריבה": "ריבה הראל",
+    "ריזי": "ריזי יועצת",
+    "שירה": "שירה ליברמן",
+    "שירל": "שירל רוט",
+    "שירלי": "שירלי ליאור",
+    "שרון": "שרון דורנר גרינשטיין",
+    "שריי": "שריי אוחנה",
+}
+
 
 def set_cell_margins(cell, top=5, bottom=5, left=50, right=50):
-    """הגדרת שוליים לתא בטבלה"""
     tcPr = cell._element.get_or_add_tcPr()
     tcMar = OxmlElement('w:tcMar')
     for m, val in [('top', top), ('bottom', bottom), ('left', left), ('right', right)]:
@@ -42,30 +107,47 @@ def set_cell_margins(cell, top=5, bottom=5, left=50, right=50):
 
 
 def set_cell_shading(cell, color_hex):
-    """הגדרת צבע רקע לתא"""
     shd = parse_xml(f'<w:shd {nsdecls("w")} w:fill="{color_hex}"/>')
     cell._element.get_or_add_tcPr().append(shd)
 
 
 def set_rtl(paragraph_or_cell):
-    """הגדרת כיווניות RTL"""
     pPr = paragraph_or_cell._element.get_or_add_pPr() if hasattr(paragraph_or_cell, '_element') else paragraph_or_cell
     if pPr.find(qn('w:bidi')) is None:
         pPr.append(OxmlElement('w:bidi'))
 
 
+def clean_teacher_name_title(raw_title):
+    clean = str(raw_title).strip()
+    clean = re.sub(r'^מערכת שעות\s+(?:ל?מורה|מורה:?)\s*', '', clean)
+    clean = re.sub(r'^מערכת שעות\s*', '', clean)
+    
+    # הסרת סיומת של כיתות כגון 'ו2+ו3', 'א3', 'מחנכת' וכו'
+    clean = re.sub(r'\s+[א-ח][1-9](?:[\+,/][א-ח][1-9])*$', '', clean)
+    clean = re.sub(r'\s+מחנכ(?:ת)?.*$', '', clean)
+    clean = clean.strip()
+    
+    full_name = TEACHER_NAME_CANONICAL.get(clean, clean)
+    return f"מערכת שעות מורה {full_name}"
+
+
+def clean_class_name_title(raw_title):
+    clean = str(raw_title).strip()
+    clean = re.sub(r'^מערכת שעות\s+(?:ל?כיתה|כיתה:?)\s*', '', clean)
+    clean = re.sub(r'^מערכת שעות\s*', '', clean)
+    clean = clean.strip()
+    if not clean.startswith("כיתה"):
+        clean = f"כיתה {clean}"
+    return f"מערכת שעות {clean}"
+
+
 def format_hour_label(raw_hour):
-    """עיצוב תווית השעה בפורמט קורצאק"""
     if not raw_hour:
         return ""
-    
     text = str(raw_hour).strip()
-    
-    # בדיקת שעות מיוחדות כמו "בוקר מה נשמע"
     if "בוקר" in text or "08:00-08:15" in text:
         return "שעה 0 (08:00-08:15)"
     
-    # בדיקת תבנית שעה + טווח שעות (למשל: "1\n08:15-09:00" או "1")
     lines = [l.strip() for l in text.split('\n') if l.strip()]
     if len(lines) >= 2 and re.match(r'^\d+$', lines[0]) and '-' in lines[1]:
         return f"שעה {lines[0]} ({lines[1]})"
@@ -74,7 +156,6 @@ def format_hour_label(raw_hour):
     if match:
         return f"שעה {match.group(1)} ({match.group(2)})"
     
-    # שעה שהיא מספר בודד
     if text.isdigit():
         return f"שעה {text}"
     
@@ -82,54 +163,148 @@ def format_hour_label(raw_hour):
 
 
 def format_class_lesson_cell(cell_value):
-    """עיצוב תא שיעור במערכת כיתות"""
     if not cell_value:
         return ""
-    
     text = str(cell_value).strip()
+    text = re.sub(r'\bאמנות\b', 'אומנות', text)
+    
     lines = [l.strip() for l in text.split('\n') if l.strip()]
     if not lines:
         return ""
     
-    # אם כבר מופרד בפסיקים
     if len(lines) == 1:
         val = lines[0]
         if any(kw in val for kw in WORKGROUP_KEYWORDS):
             return val
+        
+        # בדיקה אם יש שילוב מורים עם פלוס כגון 'אורית+ אורטל' או 'ספיר+ורד'
+        if '+' in val:
+            parts = [p.strip() for p in val.split('+')]
+            if all(p in TEACHER_NAME_CANONICAL for p in parts):
+                full_names = " / ".join(TEACHER_NAME_CANONICAL[p] for p in parts)
+                return f"חינוך, {full_names}, הוראה"
+        
+        # אם יש ארוחת צהריים עם שם כגון 'נופר- ארוחת צהריים'
+        if 'ארוחת צהריים' in val or 'ארוחת.צהריים' in val or 'ארוחת-צהריים' in val:
+            for t_short, t_full in TEACHER_NAME_CANONICAL.items():
+                if t_short in val:
+                    return f"ארוחת צהריים, {t_full}, שהייה"
+            return "ארוחת צהריים, שהייה"
+        
+        # אם יש 'אנגלית רחל' או 'ספיר אנגלית'
+        if 'אנגלית' in val and any(t in val for t in TEACHER_NAME_CANONICAL):
+            for t_short, t_full in TEACHER_NAME_CANONICAL.items():
+                if t_short in val and t_short != "אנגלית":
+                    return f"אנגלית, {t_full}, הוראה"
+            return "אנגלית, הוראה"
+        
+        # אם זה רק שם מורה יחיד (כגון 'אורטל סבן', 'רותי', 'נעמה', 'אורית')
+        if val in TEACHER_NAME_CANONICAL:
+            full_teacher = TEACHER_NAME_CANONICAL[val]
+            return f"חינוך, {full_teacher}, הוראה"
+        
         return f"{val}, הוראה" if "הוראה" not in val else val
     
-    # במידה ויש שורה 1 מקצוע ושורה 2 מורה
-    # למשל: חשבון \n מריאן זוהר -> חשבון, מריאן זוהר, הוראה
-    joined = ', '.join(lines)
+    # 2 שורות ומעלה (מקצוע + מורה)
+    subject_part = lines[0]
+    subject_part = re.sub(r'\bאמנות\b', 'אומנות', subject_part)
+    teacher_part = lines[1]
+    
+    # הסרת סיומת כיתה משם המורה (כגון 'אלה רויטמן ג3' -> 'אלה רויטמן')
+    teacher_part = re.sub(r'\s+[א-ח][1-9](?:[\+,/][א-ח][1-9])*$', '', teacher_part).strip()
+    
+    # ניקוי והשלמת שם מורה מלא
+    if teacher_part in TEACHER_NAME_CANONICAL:
+        teacher_part = TEACHER_NAME_CANONICAL[teacher_part]
+    elif '+' in teacher_part:
+        parts = [p.strip() for p in teacher_part.split('+')]
+        if all(p in TEACHER_NAME_CANONICAL for p in parts):
+            teacher_part = " / ".join(TEACHER_NAME_CANONICAL[p] for p in parts)
+        
+    joined = f"{subject_part}, {teacher_part}"
     if not any(kw in joined for kw in WORKGROUP_KEYWORDS) and "הוראה" not in joined:
         joined += ", הוראה"
     return joined
 
 
 def format_teacher_lesson_cell(cell_value):
-    """עיצוב תא שיעור במערכת מורים"""
     if not cell_value:
         return ""
-    
     text = str(cell_value).strip()
+    text = re.sub(r'\bאמנות\b', 'אומנות', text)
+    
+    # תיקון שגיאות הקלדה ידועות
+    text = text.replace('ג1י', 'ג1')
+    text = text.replace('צוות שפה/,צוות סגני', 'צוות שפה / סגנים').replace('צוות שפה/', 'צוות שפה')
+    
+    # טיפול בהוראה מותאמת עם תלמיד וכיתה (כגון 'הוראה מותאמת- אור ליטבק ח2')
+    match_horaa = re.match(r'הוראה מותאמת(?:-\s*.*?)?\s+([א-ח][1-9])$', text)
+    if match_horaa:
+        cls = match_horaa.group(1)
+        return f"הוראה מותאמת, {cls}, הוראה"
+    
+    # טיפול ב'ישיבת צוות כיתה' כגון 'ישיבת צוות ב1'
+    if re.match(r'ישיבת צוות\s+[א-ח][1-9]', text):
+        return "ישיבת צוות, שהייה"
+        
     lines = [l.strip() for l in text.split('\n') if l.strip()]
     if not lines:
         return ""
     
-    joined = ', '.join(lines)
+    # אם זה תא של שורה 1
+    if len(lines) == 1:
+        val = lines[0]
+        
+        # קבוצות עבודה מפורשות
+        if any(kw in val for kw in WORKGROUP_KEYWORDS):
+            if "שהייה" not in val and "פרטני" not in val and "תפקיד" not in val and "השתלמות" not in val:
+                return f"{val}, שהייה"
+            return val
+        
+        # אם יש 'ב1 מדעים' או 'ב1 מולדת' או 'ג1 +ספיר'
+        match_cls_sub = re.match(r'^([א-ח][1-9])\s*(.*)$', val)
+        if match_cls_sub:
+            cls = match_cls_sub.group(1)
+            sub = match_cls_sub.group(2).strip()
+            if not sub or sub.startswith('+') or any(t in sub for t in TEACHER_NAME_CANONICAL):
+                return f"חינוך, {cls}, הוראה"
+            return f"{sub}, {cls}, הוראה"
+        
+        # כיתה בלבד (כגון 'ח1')
+        if re.match(r'^[א-ח][1-9]', val):
+            cls_part = re.match(r'^([א-ח][1-9])', val).group(1)
+            return f"חינוך, {cls_part}, הוראה"
+        
+        return f"{val}, הוראה" if "הוראה" not in val else val
     
-    # אם מכיל שהייה, פרטני, ישיבה וכו'
+    # 2 שורות ומעלה
+    # בדיקה אם השורה הראשונה היא כיתה והשנייה מקצוע (הפוך! כגון 'ב1 \n מדעים')
+    if re.match(r'^[א-ח][1-9]$', lines[0]) and not re.match(r'^[א-ח][1-9]$', lines[1]):
+        cls_part = lines[0]
+        sub_part = lines[1]
+        return f"{sub_part}, {cls_part}, הוראה"
+        
+    # אם שורה שנייה היא שהייה/תפקיד/מליאה/פרטני
+    if any(kw in lines[1] for kw in WORKGROUP_KEYWORDS):
+        return f"{lines[0]}, {lines[1]}"
+        
+    # מקצוע + כיתה
+    sub_part = lines[0]
+    cls_part = lines[1]
+    
+    # ניקוי אם בשורה השנייה יש סיומת כגון 'הוראה'
+    cls_match = re.search(r'([א-ח][1-9](?:\s*,\s*[א-ח][1-9])*)', cls_part)
+    if cls_match:
+        cls_part = cls_match.group(1)
+        return f"{sub_part}, {cls_part}, הוראה"
+        
+    joined = f"{sub_part}, {cls_part}"
     if any(kw in joined for kw in WORKGROUP_KEYWORDS):
         return joined
-    
-    # אם זה שיעור רגיל (מקצוע + כיתה)
-    if "הוראה" not in joined:
-        joined += ", הוראה"
-    return joined
+    return f"{joined}, הוראה"
 
 
 def parse_excel_schedules(excel_path, is_teacher_file=False):
-    """חילוץ כל מערכות השעות מקובץ אקסל (כיתות או מורים)"""
     wb = openpyxl.load_workbook(excel_path)
     ws = wb.active
     
@@ -138,13 +313,15 @@ def parse_excel_schedules(excel_path, is_teacher_file=False):
     
     while r <= ws.max_row:
         first_cell = ws.cell(row=r, column=1).value
-        
-        # חיפוש תחילת מערכת שעות חדשה
         if first_cell and str(first_cell).strip().startswith("מערכת שעות"):
-            title_text = str(first_cell).strip()
-            r += 1
+            raw_title = str(first_cell).strip()
             
-            # שורת כותרות הימים
+            if is_teacher_file:
+                title_text = clean_teacher_name_title(raw_title)
+            else:
+                title_text = clean_class_name_title(raw_title)
+                
+            r += 1
             header_row_vals = [ws.cell(row=r, column=c).value for c in range(1, 8)]
             day_col_map = {}
             for c_idx, val in enumerate(header_row_vals, start=1):
@@ -157,16 +334,13 @@ def parse_excel_schedules(excel_path, is_teacher_file=False):
             r += 1
             day_schedule = {day_key: [] for day_key, _ in DAYS_ORDER}
             
-            # קריאת שורות השעות
             while r <= ws.max_row:
                 hour_cell = ws.cell(row=r, column=1).value
-                # אם הגענו לכותרת חדשה הבאה או שורה ריקה לחלוטין שמסמנת סיום
                 if hour_cell and str(hour_cell).strip().startswith("מערכת שעות"):
                     break
                 
                 row_vals = [ws.cell(row=r, column=c).value for c in range(1, 8)]
                 if not any(v is not None for v in row_vals):
-                    # בדיקה אם השורה הבאה היא כותרת
                     next_first = ws.cell(row=r+1, column=1).value if r+1 <= ws.max_row else None
                     if next_first and str(next_first).strip().startswith("מערכת שעות"):
                         r += 1
@@ -201,10 +375,8 @@ def parse_excel_schedules(excel_path, is_teacher_file=False):
 
 
 def create_docx_from_schedules(output_docx_path, schedules, school_name="ויצמן"):
-    """יצירת קובץ DOCX בפורמט רשימות קורצאק"""
     out_doc = Document()
 
-    # הגדרת שוליים
     for section in out_doc.sections:
         section.top_margin = Pt(11)
         section.bottom_margin = Pt(22)
@@ -214,7 +386,6 @@ def create_docx_from_schedules(output_docx_path, schedules, school_name="ויצ�
     now_str = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
     for idx, item in enumerate(schedules):
-        # 1. טבלת מטא (תאריך ושם בית ספר)
         meta_table = out_doc.add_table(rows=1, cols=2)
         meta_table.alignment = WD_TABLE_ALIGNMENT.CENTER
         
@@ -232,7 +403,6 @@ def create_docx_from_schedules(output_docx_path, schedules, school_name="ויצ�
         p1.runs[0].font.name = 'Arial'
         p1.runs[0].font.size = Pt(10)
 
-        # 2. כותרת המערכת (ממורכזת, מודגשת, 14pt)
         title_p = out_doc.add_paragraph()
         title_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
         t_run = title_p.add_run(item['title_text'])
@@ -242,7 +412,6 @@ def create_docx_from_schedules(output_docx_path, schedules, school_name="ויצ�
         t_run.font.color.rgb = RGBColor(0, 0, 0)
         set_rtl(title_p)
 
-        # 3. טבלת רשימת השיעורים (2 עמודות)
         day_schedule = item['schedule']
         total_rows = 0
         active_days = []
@@ -261,7 +430,6 @@ def create_docx_from_schedules(output_docx_path, schedules, school_name="ויצ�
 
             curr_row_idx = 0
             for day_title, lessons in active_days:
-                # שורת כותרת יום (רקע כחול כהה #28486B, טקסט לבן מודגש)
                 day_row = list_table.rows[curr_row_idx]
                 
                 c_left = day_row.cells[0]
@@ -283,11 +451,9 @@ def create_docx_from_schedules(output_docx_path, schedules, school_name="ויצ�
                 
                 curr_row_idx += 1
 
-                # שורות השיעורים
                 for hour_label, lesson_content in lessons:
                     lesson_row = list_table.rows[curr_row_idx]
                     
-                    # תא שמאל - פרטי השיעור
                     c_lesson = lesson_row.cells[0]
                     set_cell_shading(c_lesson, 'FFFFFF')
                     set_cell_margins(c_lesson)
@@ -299,7 +465,6 @@ def create_docx_from_schedules(output_docx_path, schedules, school_name="ויצ�
                     r_les.font.color.rgb = RGBColor(0, 0, 0)
                     set_rtl(p_les)
 
-                    # תא ימין - שעה
                     c_hour = lesson_row.cells[1]
                     set_cell_shading(c_hour, 'FFFFFF')
                     set_cell_margins(c_hour)
@@ -313,7 +478,6 @@ def create_docx_from_schedules(output_docx_path, schedules, school_name="ויצ�
 
                     curr_row_idx += 1
 
-        # מעבר עמוד בין מערכות
         if idx < len(schedules) - 1:
             p_break = out_doc.add_paragraph()
             p_break.add_run().add_break(WD_BREAK.PAGE)
@@ -325,7 +489,6 @@ def create_docx_from_schedules(output_docx_path, schedules, school_name="ויצ�
 def main():
     base_dir = os.path.dirname(os.path.abspath(__file__))
     
-    # 1. המרת כיתות.xlsx -> כיתות.docx
     classes_excel = os.path.join(base_dir, "כיתות.xlsx")
     classes_docx = os.path.join(base_dir, "כיתות.docx")
     if os.path.exists(classes_excel):
@@ -334,7 +497,6 @@ def main():
         print(f"נמצאו {len(classes_schedules)} מערכות שעות של כיתות.")
         create_docx_from_schedules(classes_docx, classes_schedules, school_name="ויצמן")
     
-    # 2. המרת מורים.xlsx -> מורים.docx
     teachers_excel = os.path.join(base_dir, "מורים.xlsx")
     teachers_docx = os.path.join(base_dir, "מורים.docx")
     if os.path.exists(teachers_excel):
