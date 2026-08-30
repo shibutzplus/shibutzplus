@@ -3,7 +3,14 @@
  * Handles poll (client side) for updates from the sync API
  * Push is handled only by the server (serverSyncService)
  */
-import { DAILY_TEACHER_COL_DATA_CHANGED, DAILY_EVENT_COL_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED, MATERIAL_CHANGED, ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
+import {
+  DAILY_TEACHER_COL_DATA_CHANGED,
+  DAILY_EVENT_COL_DATA_CHANGED,
+  DAILY_PUBLISH_DATA_CHANGED,
+  MATERIAL_CHANGED,
+  ENTITIES_DATA_CHANGED,
+  ADMIN_BROADCAST_MESSAGE
+} from "@/models/constant/sync";
 import { SyncChannel, SyncPayload, SyncItem } from "@/models/types/sync";
 import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
@@ -94,9 +101,9 @@ export const getChannelsForPath = (
   teacherMaterialPortalPath: string
 ): SyncChannel[] => {
   if (pathname.includes(teacherMaterialPortalPath)) {
-    return [DAILY_TEACHER_COL_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED, MATERIAL_CHANGED, ENTITIES_DATA_CHANGED];
+    return [DAILY_TEACHER_COL_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED, MATERIAL_CHANGED, ENTITIES_DATA_CHANGED, ADMIN_BROADCAST_MESSAGE];
   }
-  return [DAILY_TEACHER_COL_DATA_CHANGED, DAILY_EVENT_COL_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED, ENTITIES_DATA_CHANGED];
+  return [DAILY_TEACHER_COL_DATA_CHANGED, DAILY_EVENT_COL_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED, ENTITIES_DATA_CHANGED, ADMIN_BROADCAST_MESSAGE];
 };
 
 

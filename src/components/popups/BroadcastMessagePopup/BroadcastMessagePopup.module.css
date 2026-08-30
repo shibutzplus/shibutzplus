@@ -1,0 +1,140 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 440px;
+    padding: 0.5rem 0.5rem 0.25rem 0.5rem;
+    position: relative;
+    direction: rtl;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--bright-border-color, #e5e7eb);
+}
+
+.title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--dark-text-color, #1f2937);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    width: 100%;
+}
+
+.label {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--dark-text-color, #374151);
+}
+
+.selectInput {
+    width: 100%;
+    height: 40px;
+    border: 1px solid var(--bright-border-color, #d1d5db);
+    border-radius: 6px;
+    padding: 0 10px 0 32px;
+    font-size: 14.5px;
+    color: var(--dark-text-color, #1f2937);
+    background-color: #ffffff;
+    cursor: pointer;
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23494949' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: left 10px center;
+    background-size: 16px;
+    text-align: right;
+    direction: rtl;
+    transition: border-color 0.2s ease;
+}
+
+.selectInput:focus {
+    border-color: #8572CE;
+}
+
+.textarea {
+    width: 100%;
+    min-height: 110px;
+    border: 1px solid var(--bright-border-color, #d1d5db);
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 14.5px;
+    font-family: inherit;
+    color: var(--dark-text-color, #1f2937);
+    background-color: #ffffff;
+    outline: none;
+    resize: vertical;
+    direction: rtl;
+    transition: border-color 0.2s ease;
+}
+
+.textarea:focus {
+    border-color: #8572CE;
+}
+
+.charCount {
+    font-size: 12px;
+    color: var(--dark-text-color2, #9ca3af);
+    text-align: left;
+    margin-top: 2px;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 0.5rem;
+}
+
+.sendButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 24px;
+    height: 42px;
+    border: none;
+    border-radius: 6px;
+    background-color: #8572CE;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(133, 114, 206, 0.35);
+}
+
+.sendButton:hover:not(:disabled) {
+    background-color: #7460C4;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(133, 114, 206, 0.45);
+}
+
+.sendButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+}

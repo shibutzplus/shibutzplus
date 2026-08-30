@@ -165,6 +165,13 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
                 isGuestBlocked: true,
             },
             {
+                name: "שליחת הודעה למשתמשים",
+                p: "#",
+                action: "broadcast_message",
+                Icon: <Icons.send size={24} />,
+                isGuestBlocked: true,
+            },
+            {
                 name: "ניקוי קאש",
                 p: "#",
                 action: "clear_cache",

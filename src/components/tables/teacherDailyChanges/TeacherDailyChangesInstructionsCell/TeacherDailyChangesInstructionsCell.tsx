@@ -43,7 +43,7 @@ const TeacherDailyChangesInstructionsCell: React.FC<TeacherDailyChangesInstructi
     const placeholderInfo = getInstructionPlaceholder(row, teacher);
     const isDoubleChain = !!(row?.isChainOriginalReplacing && row?.isChainSubReplaced);
     const warningText = (row?.isChainSubReplaced && !isDoubleChain)
-        ? `שימו לב ש${row.chainTeacherName || "המורה"} מחליף/ה אותך בשיעור זה. עקב שרשרת ההחלפות, יש לתאם את חומר הלימוד ישירות מולו/ה.`
+        ? `יש לשים לב ש${row.chainTeacherName || "המורה"} מחליף/ה אותך בשיעור זה. עקב שרשרת ההחלפות, נדרש לתאם את חומר הלימוד ישירות מולו/ה.`
         : null;
 
     return (

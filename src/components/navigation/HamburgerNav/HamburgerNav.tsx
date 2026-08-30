@@ -13,6 +13,7 @@ import { clearStorage, getStorageTeacher } from "@/lib/localStorage";
 import { usePopup, PopupAction } from "@/context/PopupContext";
 import { PushMsgContent, PUSH_MSG_MESSAGE } from "@/components/popups/PushMsg/PushMsg";
 import SettingsPopup from "@/components/popups/SettingsPopup/SettingsPopup";
+import BroadcastMessagePopup from "@/components/popups/BroadcastMessagePopup/BroadcastMessagePopup";
 import { useOptionalMainContext } from "@/context/MainContext";
 import { useOptionalPortalContext } from "@/context/PortalContext";
 import { clearSessionStorage, getSessionStorage, SESSION_KEYS, setSessionStorage, } from "@/lib/sessionStorage";
@@ -274,6 +275,14 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
     };
 
     const handleAction = async (action: string) => {
+        if (action === "broadcast_message") {
+            onClose();
+            openPopup(
+                "broadcast_message",
+                "M",
+                <BroadcastMessagePopup />
+            );
+        }
         if (action === "clear_cache") {
             if (!school?.id) return;
             const res = await clearSchoolCacheAction(school.id);

@@ -19,5 +19,9 @@ export const DAILY_PUBLISH_DATA_CHANGED = "publish";
 // CONSUMER: Teacher Portal -> Triggers refresh of material text
 export const MATERIAL_CHANGED = "material";
 
+// TRIGGERED WHEN: Admin broadcasts a live message to users
+// CONSUMER: All active client screens
+export const ADMIN_BROADCAST_MESSAGE = "broadcastMessage";
+
 // Polling configuration
 export const POLL_INTERVAL_MS = 60000; // 60 seconds
