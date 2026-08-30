@@ -17,30 +17,26 @@
     min-width: 0;
 }
 
-.editActionBtn {
+.nextButton {
+    background: none;
+    border: none;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
-    min-width: 36px;
-    background-color: transparent;
-    border: 1px solid transparent;
-    border-radius: var(--border-radius-input, 6px);
-    color: var(--dark-text-color, #4b5563);
-    cursor: pointer;
+    padding: 4px;
+    color: #888;
     transition: all 0.2s ease;
-    padding: 0;
+    height: 36px;
+    width: 32px;
+    min-width: 32px;
 }
 
-.editActionBtn:not(:disabled):hover {
-    background-color: var(--tab-color-hover, #f3f4f6);
-    color: var(--primary-color, #2563eb);
-    border-color: var(--bright-border-color, #e5e7eb);
-    transform: translateY(-1px);
+.nextButton:hover:not(:disabled) {
+    color: #444;
 }
 
-.editActionBtn:disabled {
+.nextButton:disabled {
     opacity: 0.3;
     cursor: not-allowed;
 }
@@ -64,7 +60,7 @@
     align-items: center;
     gap: 4px;
     width: 100%;
-    max-width: 255px;
+    max-width: 280px;
     flex: 1;
     min-width: 0;
 }
@@ -114,8 +110,8 @@
     }
 }
 
-/* < 440px */
-@media (max-width: 440px) {
+/* <= 660px */
+@media (max-width: 660px) {
     .pdfLeftContainer {
         display: flex;
     }
@@ -125,16 +121,14 @@
     }
 }
 
-/* <= 320px */
-@media (max-width: 320px) {
-    .pdfLeftContainer {
-        gap: 2px;
-        margin-left: 0px;
+/* <= 460px */
+@media (max-width: 460px) {
+    .nextButton {
+        display: none;
     }
 
-    .editActionBtn {
-        width: 30px;
-        height: 30px;
-        min-width: 30px;
+    .bar2Container {
+        gap: 10px;
+        padding: 6px 8px;
     }
 }

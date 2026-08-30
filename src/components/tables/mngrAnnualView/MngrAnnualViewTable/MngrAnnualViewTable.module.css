@@ -71,6 +71,94 @@
     max-width: var(--table-hours-col-width);
     background-color: var(--table-gray-color);
     box-shadow: 0 4px 0 var(--table-gray-color), 0 2px 5px rgba(0, 0, 0, 0.1);
+    position: relative;
+    padding: 0 !important;
+}
+
+.editWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.tableEditBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 29px;
+    height: 36px;
+    margin-top: 3px;
+    background-color: #8572CE;
+    border: 1.5px solid #8572CE;
+    border-radius: 18px;
+    color: #ffffff;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(133, 114, 206, 0.35);
+    transition: all 0.2s ease;
+    padding: 0;
+}
+
+.tableEditBtn:hover:not(:disabled) {
+    background-color: #7460C4;
+    color: #ffffff;
+    border-color: #7460C4;
+    transform: scale(1.05) translateY(-1px);
+    box-shadow: 0 4px 12px rgba(116, 96, 196, 0.45);
+}
+
+.tableEditBtn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.tableEditBtn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    border-color: var(--bright-border-color, #e5e7eb);
+    background-color: #e5e7eb;
+    color: var(--dark-text-color, #9ca3af);
+    box-shadow: none;
+}
+
+.editDropdownMenu {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    background-color: #ffffff;
+    border: 1px solid var(--bright-border-color, #e5e7eb);
+    border-radius: 8px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+    z-index: 100;
+    min-width: 160px;
+    display: flex;
+    flex-direction: column;
+    padding: 4px;
+    gap: 2px;
+    white-space: nowrap;
+}
+
+.editDropdownItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border: none;
+    background: transparent;
+    border-radius: 5px;
+    color: var(--dark-text-color, #374151);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    text-align: right;
+    width: 100%;
+}
+
+.editDropdownItem:hover {
+    background-color: var(--tab-color-hover, #f3f4f6);
+    color: #8572CE;
 }
 
 .hoursColumn {

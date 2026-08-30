@@ -11,7 +11,6 @@ import { usePopup, PopupAction } from "@/context/PopupContext";
 import ConfirmPopup from "@/components/popups/ConfirmPopup/ConfirmPopup";
 import { removeIncompleteCells } from "@/utils/scheduleValidation";
 import Icons from "@/style/icons";
-import { useRouter, useSearchParams } from "next/navigation";
 
 type AnnualTeacherPageLayoutProps = {
     children: React.ReactNode;
@@ -22,8 +21,6 @@ export default function AnnualTeacherPageLayout({ children }: AnnualTeacherPageL
         useAnnualByTeacher();
     const { validate } = useValidation();
     const { openPopup } = usePopup();
-    const nav = useRouter();
-    const searchParams = useSearchParams();
 
     const handleTeacherChange = (val: string) => {
         handleBeforeMenuOpen().then((shouldProceed) => {
@@ -53,19 +50,6 @@ export default function AnnualTeacherPageLayout({ children }: AnnualTeacherPageL
         const prevTeacherId = options[prevIndex].value;
 
         handleTeacherChange(prevTeacherId);
-    };
-
-    const handleNavigateToView = () => {
-        handleBeforeMenuOpen().then((shouldProceed) => {
-            if (shouldProceed) {
-                const schoolId = searchParams.get("schoolId");
-                const params = new URLSearchParams();
-                if (selectedTeacherId) params.set("teacherId", selectedTeacherId);
-                if (schoolId) params.set("schoolId", schoolId);
-                const qs = params.toString();
-                nav.push(`/annual-view${qs ? `?${qs}` : ""}`);
-            }
-        });
     };
 
     const handleBeforeMenuOpen = (): Promise<boolean> => {
@@ -132,14 +116,6 @@ export default function AnnualTeacherPageLayout({ children }: AnnualTeacherPageL
                             type="button"
                         >
                             <Icons.caretLeft size={24} />
-                        </button>
-                        <button
-                            className={styles.viewButton}
-                            onClick={handleNavigateToView}
-                            title="חזרה למצב צפייה במערכת"
-                            type="button"
-                        >
-                            <Icons.eye size={22} />
                         </button>
                     </div>
                 </>

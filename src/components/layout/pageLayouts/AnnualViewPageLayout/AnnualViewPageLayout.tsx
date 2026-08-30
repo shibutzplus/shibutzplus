@@ -10,8 +10,6 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 import AnnualSchedulePdf from "@/components/pdf/AnnualSchedulePdf";
 import { useMainContext } from "@/context/MainContext";
 import Icons from "@/style/icons";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useSession } from "next-auth/react";
 
 type AnnualViewPageLayoutProps = {
     children: React.ReactNode;
@@ -30,27 +28,49 @@ export default function AnnualViewPageLayout({ children }: AnnualViewPageLayoutP
     } = useAnnualView();
 
     const { classes, teachers, subjects, settings } = useMainContext();
-    const nav = useRouter();
-    const searchParams = useSearchParams();
-    const { data: session } = useSession();
-    const isDemo = session?.user?.isDemo;
 
-    const handleEditClassSchedule = () => {
-        const schoolId = searchParams.get("schoolId");
-        const params = new URLSearchParams();
-        if (selectedClassId) params.set("classId", selectedClassId);
-        if (schoolId) params.set("schoolId", schoolId);
-        const qs = params.toString();
-        nav.push(`/annual-build-class${qs ? `?${qs}` : ""}`);
+    const handleNextClass = () => {
+        const options = classesSelectOptions();
+        if (options.length === 0) return;
+
+        const currentIndex = options.findIndex((opt) => opt.value === selectedClassId);
+        const nextIndex = (currentIndex + 1) % options.length;
+        const nextClassId = options[nextIndex].value;
+
+        handleClassChange(nextClassId);
     };
 
-    const handleEditTeacherSchedule = () => {
-        const schoolId = searchParams.get("schoolId");
-        const params = new URLSearchParams();
-        if (selectedTeacherId) params.set("teacherId", selectedTeacherId);
-        if (schoolId) params.set("schoolId", schoolId);
-        const qs = params.toString();
-        nav.push(`/annual-build-teacher${qs ? `?${qs}` : ""}`);
+    const handlePrevClass = () => {
+        const options = classesSelectOptions();
+        if (options.length === 0) return;
+
+        const currentIndex = options.findIndex((opt) => opt.value === selectedClassId);
+        const prevIndex = (currentIndex - 1 + options.length) % options.length;
+        const prevClassId = options[prevIndex].value;
+
+        handleClassChange(prevClassId);
+    };
+
+    const handleNextTeacher = () => {
+        const options = teachersSelectOptions();
+        if (options.length === 0) return;
+
+        const currentIndex = options.findIndex((opt) => opt.value === selectedTeacherId);
+        const nextIndex = (currentIndex + 1) % options.length;
+        const nextTeacherId = options[nextIndex].value;
+
+        handleTeacherChange(nextTeacherId);
+    };
+
+    const handlePrevTeacher = () => {
+        const options = teachersSelectOptions();
+        if (options.length === 0) return;
+
+        const currentIndex = options.findIndex((opt) => opt.value === selectedTeacherId);
+        const prevIndex = (currentIndex - 1 + options.length) % options.length;
+        const prevTeacherId = options[prevIndex].value;
+
+        handleTeacherChange(prevTeacherId);
     };
 
     const hasSelection = selectedClassId || selectedTeacherId;
@@ -97,13 +117,23 @@ export default function AnnualViewPageLayout({ children }: AnnualViewPageLayoutP
                         </div>
                         <button
                             type="button"
-                            className={styles.editActionBtn}
-                            onClick={handleEditClassSchedule}
-                            disabled={isDemo}
-                            title="עריכת מערכת כיתה"
-                            aria-label="עריכת מערכת כיתה"
+                            className={styles.nextButton}
+                            onClick={handlePrevClass}
+                            disabled={isLoading || classesSelectOptions().length === 0}
+                            title="כיתה קודמת"
+                            aria-label="כיתה קודמת"
                         >
-                            <Icons.edit size={18} />
+                            <Icons.caretRight size={24} />
+                        </button>
+                        <button
+                            type="button"
+                            className={styles.nextButton}
+                            onClick={handleNextClass}
+                            disabled={isLoading || classesSelectOptions().length === 0}
+                            title="כיתה הבאה"
+                            aria-label="כיתה הבאה"
+                        >
+                            <Icons.caretLeft size={24} />
                         </button>
                     </div>
                     <div className={styles.selectWithAction}>
@@ -121,13 +151,23 @@ export default function AnnualViewPageLayout({ children }: AnnualViewPageLayoutP
                         </div>
                         <button
                             type="button"
-                            className={styles.editActionBtn}
-                            onClick={handleEditTeacherSchedule}
-                            disabled={isDemo}
-                            title="עריכת מערכת מורה"
-                            aria-label="עריכת מערכת מורה"
+                            className={styles.nextButton}
+                            onClick={handlePrevTeacher}
+                            disabled={isLoading || teachersSelectOptions().length === 0}
+                            title="מורה קודם"
+                            aria-label="מורה קודם"
                         >
-                            <Icons.edit size={18} />
+                            <Icons.caretRight size={24} />
+                        </button>
+                        <button
+                            type="button"
+                            className={styles.nextButton}
+                            onClick={handleNextTeacher}
+                            disabled={isLoading || teachersSelectOptions().length === 0}
+                            title="מורה הבא"
+                            aria-label="מורה הבא"
+                        >
+                            <Icons.caretLeft size={24} />
                         </button>
                     </div>
                     <div className={styles.pdfContainer}>
@@ -152,13 +192,23 @@ export default function AnnualViewPageLayout({ children }: AnnualViewPageLayoutP
                         </div>
                         <button
                             type="button"
-                            className={styles.editActionBtn}
-                            onClick={handleEditClassSchedule}
-                            disabled={isDemo}
-                            title="עריכת מערכת כיתה"
-                            aria-label="עריכת מערכת כיתה"
+                            className={styles.nextButton}
+                            onClick={handlePrevClass}
+                            disabled={isLoading || classesSelectOptions().length === 0}
+                            title="כיתה קודמת"
+                            aria-label="כיתה קודמת"
                         >
-                            <Icons.edit size={18} />
+                            <Icons.caretRight size={24} />
+                        </button>
+                        <button
+                            type="button"
+                            className={styles.nextButton}
+                            onClick={handleNextClass}
+                            disabled={isLoading || classesSelectOptions().length === 0}
+                            title="כיתה הבאה"
+                            aria-label="כיתה הבאה"
+                        >
+                            <Icons.caretLeft size={24} />
                         </button>
                     </div>
                     <div className={styles.bar2SelectWrapper}>
@@ -176,13 +226,23 @@ export default function AnnualViewPageLayout({ children }: AnnualViewPageLayoutP
                         </div>
                         <button
                             type="button"
-                            className={styles.editActionBtn}
-                            onClick={handleEditTeacherSchedule}
-                            disabled={isDemo}
-                            title="עריכת מערכת מורה"
-                            aria-label="עריכת מערכת מורה"
+                            className={styles.nextButton}
+                            onClick={handlePrevTeacher}
+                            disabled={isLoading || teachersSelectOptions().length === 0}
+                            title="מורה קודם"
+                            aria-label="מורה קודם"
                         >
-                            <Icons.edit size={18} />
+                            <Icons.caretRight size={24} />
+                        </button>
+                        <button
+                            type="button"
+                            className={styles.nextButton}
+                            onClick={handleNextTeacher}
+                            disabled={isLoading || teachersSelectOptions().length === 0}
+                            title="מורה הבא"
+                            aria-label="מורה הבא"
+                        >
+                            <Icons.caretLeft size={24} />
                         </button>
                     </div>
                     {pdfDownloadButton}

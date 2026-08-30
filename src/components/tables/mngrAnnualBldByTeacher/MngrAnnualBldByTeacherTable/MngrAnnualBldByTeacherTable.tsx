@@ -11,6 +11,13 @@ import styles from "./MngrAnnualBldByTeacherTable.module.css";
 import { AnnualInputCellType } from "@/models/types/annualSchedule";
 import { SelectMethod } from "@/models/types/actions";
 import { useMainContext } from "@/context/MainContext";
+import Icons from "@/style/icons";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useValidation } from "@/context/ValidationContext";
+import { usePopup, PopupAction } from "@/context/PopupContext";
+import ConfirmPopup from "@/components/popups/ConfirmPopup/ConfirmPopup";
+import { removeIncompleteCells } from "@/utils/scheduleValidation";
+import { useAnnualByTeacher } from "@/context/AnnualByTeacherContext";
 
 type MngrAnnualBldByTeacherTableProps = {
     schedule: WeeklySchedule;
@@ -41,11 +48,58 @@ const MngrAnnualBldByTeacherTable: React.FC<MngrAnnualBldByTeacherTableProps> = 
     handleScheduleUpdate,
 }) => {
     const { school } = useMainContext();
+    const { setSchedule } = useAnnualByTeacher();
+    const { validate } = useValidation();
+    const { openPopup } = usePopup();
+    const nav = useRouter();
+    const searchParams = useSearchParams();
+
     const isDisabled = isSaving || !schedule || !subjects || !classes;
 
     useEffect(() => {
         setIsLoading(!schedule || !subjects || !classes);
     }, [!!schedule, !!subjects, !!classes]);
+
+    const handleBeforeMenuOpen = (): Promise<boolean> => {
+        return new Promise((resolve) => {
+            if (validate()) {
+                resolve(true);
+            } else {
+                openPopup(
+                    PopupAction.msgPopup,
+                    "S",
+                    <ConfirmPopup
+                        text="שימו ❤️: שעות ללא שיוך מלא (מקצוע + כיתה) לא יישמרו."
+                        showIcon={false}
+                        yesText="להישאר במסך ולתקן"
+                        noText="להמשיך ללא שמירה"
+                        onYes={async () => {
+                            resolve(false);
+                        }}
+                        onNo={() => {
+                            const cleanedSchedule = removeIncompleteCells(schedule, "teacher");
+                            setSchedule(cleanedSchedule);
+                            resolve(true);
+                        }}
+                        defaultAnswer="yes"
+                    />
+                );
+            }
+        });
+    };
+
+    const handleNavigateToView = () => {
+        handleBeforeMenuOpen().then((shouldProceed) => {
+            if (shouldProceed) {
+                const schoolId = searchParams.get("schoolId");
+                const params = new URLSearchParams();
+                if (selectedTeacherId) params.set("teacherId", selectedTeacherId);
+                if (schoolId) params.set("schoolId", schoolId);
+                const qs = params.toString();
+                nav.push(`/annual-view${qs ? `?${qs}` : ""}`);
+            }
+        });
+    };
 
     return (
         <div className={styles.tableContainer}>
@@ -53,7 +107,17 @@ const MngrAnnualBldByTeacherTable: React.FC<MngrAnnualBldByTeacherTableProps> = 
                 <thead>
                     <tr>
                         <th className={`${styles.headerCell} ${styles.hoursColumn}`}>
-                            <div className={`${styles.headerInner} ${styles.hoursHeader}`}></div>
+                            <div className={`${styles.headerInner} ${styles.hoursHeader}`}>
+                                <button
+                                    type="button"
+                                    className={styles.tableViewBtn}
+                                    onClick={handleNavigateToView}
+                                    title="חזרה למצב צפייה במערכת"
+                                    aria-label="חזרה למצב צפייה במערכת"
+                                >
+                                    <Icons.eye size={18} />
+                                </button>
+                            </div>
                         </th>
                         <th className={styles.emptyColSeparator}></th>
                         {DAYS_OF_WORK_WEEK.map((day) => (

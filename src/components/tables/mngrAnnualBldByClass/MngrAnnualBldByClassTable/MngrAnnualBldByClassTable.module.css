@@ -70,6 +70,46 @@
     max-width: var(--table-hours-col-width);
     background-color: var(--table-gray-color);
     box-shadow: 0 4px 0 var(--table-gray-color), 0 2px 5px rgba(0, 0, 0, 0.1);
+    position: relative;
+    padding: 0 !important;
+}
+
+.tableViewBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 29px;
+    height: 36px;
+    margin-top: 3px;
+    background-color: #8572CE;
+    border: 1.5px solid #8572CE;
+    border-radius: 18px;
+    color: #ffffff;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(133, 114, 206, 0.35);
+    transition: all 0.2s ease;
+    padding: 0;
+}
+
+.tableViewBtn:hover:not(:disabled) {
+    background-color: #7460C4;
+    color: #ffffff;
+    border-color: #7460C4;
+    transform: scale(1.05) translateY(-1px);
+    box-shadow: 0 4px 12px rgba(116, 96, 196, 0.45);
+}
+
+.tableViewBtn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.tableViewBtn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    border-color: var(--bright-border-color, #e5e7eb);
+    background-color: #e5e7eb;
+    color: var(--dark-text-color, #9ca3af);
+    box-shadow: none;
 }
 
 .hoursColumn {

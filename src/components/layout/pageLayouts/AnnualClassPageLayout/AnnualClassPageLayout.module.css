@@ -29,29 +29,6 @@
     color: #666;
 }
 
-.viewButton {
-    background: none;
-    border: 1px solid transparent;
-    border-radius: var(--border-radius-input, 6px);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 6px;
-    color: var(--dark-text-color, #555);
-    transition: all 0.2s ease;
-    height: 38px;
-    width: 38px;
-    margin-right: 2px;
-}
-
-.viewButton:hover {
-    color: var(--primary-color, #2563eb);
-    background-color: var(--tab-color-hover, #f3f4f6);
-    border-color: var(--bright-border-color, #e5e7eb);
-    transform: translateY(-1px);
-}
-
 .pageTitleLong {
     white-space: nowrap;
     display: block;
@@ -77,5 +54,12 @@
         min-width: 150px;
         max-width: 100%;
         flex: 1;
+    }
+}
+
+/* <= 440px */
+@media (max-width: 440px) {
+    .nextButton {
+        display: none;
     }
 }
