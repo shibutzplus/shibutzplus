@@ -5,7 +5,7 @@ export const runtime = 'edge';
 //
 import { NextRequest } from "next/server";
 import { redis } from "@/lib/redis"
-import { DAILY_TEACHER_COL_DATA_CHANGED, DAILY_EVENT_COL_DATA_CHANGED, ENTITIES_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED, MATERIAL_CHANGED } from "@/models/constant/sync";
+import { DAILY_TEACHER_COL_DATA_CHANGED, DAILY_EVENT_COL_DATA_CHANGED, ENTITIES_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED, MATERIAL_CHANGED, ADMIN_BROADCAST_MESSAGE } from "@/models/constant/sync";
 import { dbLog } from "@/services/loggerService";
 export async function GET(req: NextRequest) {
 
@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
 
     const url = new URL(req.url)
     const since = Number(url.searchParams.get("since") || 0)
-    const allow = (url.searchParams.get("channels") || [DAILY_TEACHER_COL_DATA_CHANGED, DAILY_EVENT_COL_DATA_CHANGED, ENTITIES_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED, MATERIAL_CHANGED].join(",")).split(",")
+    const allow = (url.searchParams.get("channels") || [DAILY_TEACHER_COL_DATA_CHANGED, DAILY_EVENT_COL_DATA_CHANGED, ENTITIES_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED, MATERIAL_CHANGED, ADMIN_BROADCAST_MESSAGE].join(",")).split(",")
 
     // Fetch latest items from Upstash Redis (newest first due to LPUSH)
     const raw = await redis.lrange<string>("sync_items", 0, 499)

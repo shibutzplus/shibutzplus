@@ -4,13 +4,19 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import router from "@/routes";
 import { checkForUpdates, getChannelsForPath, SyncItem, SyncChannel } from "@/services/sync/clientSyncService";
-import { POLL_INTERVAL_MS } from "@/models/constant/sync";
+import { POLL_INTERVAL_MS, ADMIN_BROADCAST_MESSAGE } from "@/models/constant/sync";
+import { useSession } from "next-auth/react";
+import { getStorageTeacher } from "@/lib/localStorage";
+import { broadcastToast } from "@/lib/toast";
 
 type UsePollingUpdatesReturn = {
     hasUpdate: boolean;
     resetUpdate: () => void;
     setLastTs: (ts: number) => void;
 };
+
+// Global set to ensure broadcast messages are shown exactly once per client session
+const displayedBroadcasts = new Set<number>();
 
 /**
  * Custom hook for polling server updates and managing update notifications
@@ -22,6 +28,7 @@ export const usePollingUpdates = (
     channels?: SyncChannel[]
 ): UsePollingUpdatesReturn => {
     const pathname = usePathname();
+    const { data: session } = useSession();
 
     // Alert state for incoming updates
     const [hasUpdate, setHasUpdate] = useState(false);
@@ -50,19 +57,58 @@ export const usePollingUpdates = (
 
         // on teacher screen, listen to teacher columns events only
         // on schedule screen, listen to both teacher and events columns changes
-        // Use provided channels or fallback to default logic
-        const channelsToPoll = channels || getChannelsForPath(pathname, router.teacherChanges.p);
+        // Use provided channels or fallback to default logic, always ensuring ADMIN_BROADCAST_MESSAGE is polled
+        const baseChannels: SyncChannel[] = channels || getChannelsForPath(pathname, router.teacherChanges.p);
+        const channelsToPoll: SyncChannel[] = baseChannels.includes(ADMIN_BROADCAST_MESSAGE)
+            ? baseChannels
+            : [...baseChannels, ADMIN_BROADCAST_MESSAGE];
 
         const checkUpdates = async () => {
             const since = lastTsRef.current;
             const { hasUpdates, latestTs, items } = await checkForUpdates({ since, channels: channelsToPoll });
 
             if (mounted && hasUpdates) {
-                setHasUpdate(true);
+                // Check for live broadcast messages
+                for (const item of items) {
+                    if (item.channel === ADMIN_BROADCAST_MESSAGE && item.payload?.message && !displayedBroadcasts.has(item.ts)) {
+                        displayedBroadcasts.add(item.ts);
+                        const { targetSchoolId, targetAudience = "all", message, senderName } = item.payload;
+
+                        const isPrivateScreen = Object.values(router).some(
+                            (r) => r.private && r.p !== "/" && (pathname === r.p || pathname.startsWith(r.p + "/"))
+                        );
+                        const isTeacherScreen = !isPrivateScreen;
+
+                        const matchesAudience =
+                            targetAudience === "all" ||
+                            (targetAudience === "managers" && isPrivateScreen) ||
+                            (targetAudience === "teachers" && isTeacherScreen);
+
+                        const querySchoolId = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("schoolId") : null;
+                        const currentSchoolId =
+                            querySchoolId ||
+                            (session?.user as any)?.schoolId ||
+                            getStorageTeacher()?.schoolId ||
+                            pathname.split("/")[2];
+
+                        const matchesSchool = !targetSchoolId || currentSchoolId === targetSchoolId;
+
+                        if (matchesAudience && matchesSchool) {
+                            broadcastToast(message, senderName);
+                        }
+                    }
+                }
+
+                // Only set general schedule hasUpdate for non-broadcast channels
+                const nonBroadcastItems = items.filter(item => item.channel !== ADMIN_BROADCAST_MESSAGE);
+                if (nonBroadcastItems.length > 0) {
+                    setHasUpdate(true);
+                }
+
                 setLastTs(latestTs);
 
                 // Trigger auto-refresh if callback provided
-                if (onRefreshRef?.current) {
+                if (onRefreshRef?.current && nonBroadcastItems.length > 0) {
                     onRefreshRef.current(items);
                 }
             }

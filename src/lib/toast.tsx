@@ -1,5 +1,6 @@
 import { toast } from "react-hot-toast"
 import { ClosableToast } from "@/components/ui/toasts/ClosableToast"
+import { BroadcastToast } from "@/components/ui/toasts/BroadcastToast"
 
 export const successToast = (message: string, duration = 5000) =>
     toast((t) => <ClosableToast t={t} message={message} variant="default" />, {
@@ -35,3 +36,14 @@ export const cellToast = (message: string, duration = 5000) =>
             boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.5)",
         },
     })
+
+export const broadcastToast = (message: string, senderName?: string, duration = Infinity) =>
+    toast((t) => <BroadcastToast t={t} message={message} senderName={senderName} />, {
+        duration,
+        style: {
+            background: "#FFFFFF",
+            border: "2px solid #8572CE",
+            boxShadow: "0px 12px 36px rgba(0, 0, 0, 0.28), 0px 4px 18px rgba(133, 114, 206, 0.45)",
+        },
+    })
+
