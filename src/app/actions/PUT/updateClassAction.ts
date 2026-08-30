@@ -53,33 +53,11 @@ export async function updateClassAction(
                 };
             }
 
-            // Inactive record with same name → reactivate it and delete the current one
+            // Inactive record with same name → delete the obsolete inactive record so current class can take the name
             await executeQuery(async () => {
-                await db.update(schema.classes)
-                    .set({ isActive: true, updatedAt: new Date() })
-                    .where(eq(schema.classes.id, existingClass.id));
-
                 await db.delete(schema.classes)
-                    .where(eq(schema.classes.id, classId));
+                    .where(eq(schema.classes.id, existingClass.id));
             });
-
-            const allClasses = await executeQuery(async () => {
-                return await db
-                    .select()
-                    .from(schema.classes)
-                    .where(and(eq(schema.classes.schoolId, classData.schoolId), eq(schema.classes.isActive, true)))
-                    .orderBy(asc(schema.classes.activity), asc(schema.classes.name));
-            });
-
-            revalidateTag(cacheTags.classesList(classData.schoolId));
-            revalidateTag(cacheTags.schoolSchedule(classData.schoolId));
-            void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: classData.schoolId });
-
-            return {
-                success: true,
-                message: messages.classes.updateClassSuccess,
-                data: (allClasses as ClassType[]) || [],
-            };
         }
 
         const currentClass = await executeQuery(async () => {

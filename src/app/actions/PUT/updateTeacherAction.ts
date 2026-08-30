@@ -61,34 +61,11 @@ export async function updateTeacherAction(
                     return { success: false, message: "שם זה כבר קיים במערכת" };
                 }
 
-                // Inactive duplicate → reactivate it and delete the current one
+                // Inactive duplicate → delete the obsolete inactive record so current teacher can take the name
                 await executeQuery(async () => {
-                    await db.update(schema.teachers)
-                        .set({ isActive: true, updatedAt: new Date() })
-                        .where(eq(schema.teachers.id, conflicting.id));
-
                     await db.delete(schema.teachers)
-                        .where(eq(schema.teachers.id, teacherId));
+                        .where(eq(schema.teachers.id, conflicting.id));
                 });
-
-                const allTeachersResp = await executeQuery(async () => {
-                    return await db
-                        .select()
-                        .from(schema.teachers)
-                        .where(and(eq(schema.teachers.schoolId, teacherData.schoolId), eq(schema.teachers.isActive, true)))
-                        .orderBy(schema.teachers.name);
-                });
-
-                revalidateTag(cacheTags.teachersList(teacherData.schoolId));
-                revalidateTag(cacheTags.schoolSchedule(teacherData.schoolId));
-                void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: teacherData.schoolId });
-
-                return {
-                    success: true,
-                    message: messages.teachers.updateSuccess,
-                    data: allTeachersResp || [],
-                    hasMatchingDailyText: false,
-                };
             }
         }
 
