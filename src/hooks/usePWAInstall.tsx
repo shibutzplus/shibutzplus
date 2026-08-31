@@ -134,6 +134,9 @@ const usePWAInstall = () => {
                         <li>לחצו על תפריט הדפדפן.</li>
                         <li>בחרו &quot;הוסף אל..מסך הבית&quot;.</li>
                     </ol>
+                    <div style={{ marginTop: '0.8rem', textAlign: 'right' }}>
+                        להסברים נוספים פתחו את השאלות הנפוצות בתפריט
+                    </div>
                 </div>
             );
 

@@ -20,7 +20,7 @@ export const PUSH_MSG_MESSAGE = (
     <div className={styles.container}>
         <div className={styles.greeting}>היי,</div>
         <div style={{ height: "10px" }} />
-        <div>חשוב לנו לשמוע אתכם! נשמח לכל תובנה, מחשבה או הצעה בנוגע לשימוש שלכם במערכת.</div>
+        <div>חשוב לנו לשמוע אתכם! נשמח לכל תובנה, מחשבה, הצעה או שאלה בנוגע לשימוש שלכם במערכת.</div>
     </div>
 );
 
