@@ -63,14 +63,14 @@ const MngrAnnualViewCell: React.FC<MngrAnnualViewCellProps> = ({
 
     const content = (
         <>
-            {subjectsText && (
-                <div className={styles.subject} style={isBothSelected ? { fontWeight: "normal" } : {}}>
-                    {subjectsText}
-                </div>
-            )}
             {secondaryText && (
                 <div className={selectedTeacherId ? styles.class : styles.teacher}>
                     {secondaryText}
+                </div>
+            )}
+            {subjectsText && (
+                <div className={styles.subject}>
+                    {subjectsText}
                 </div>
             )}
         </>

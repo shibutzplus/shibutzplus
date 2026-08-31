@@ -4,6 +4,8 @@ import { AppType } from "@/models/types";
 
 export interface CellDisplayData {
     text: string;
+    classNameText?: string;
+    subjectText?: string;
     subTeacherName: string | null;
     isMissing: boolean;
     isEmpty: boolean;
@@ -19,7 +21,7 @@ export const getCellDisplayData = (
     appType: AppType = "private"
 ): CellDisplayData => {
     if (!cell) {
-        return { text: '', subTeacherName: null, isMissing: false, isEmpty: true, isActivity: false };
+        return { text: '', classNameText: '', subjectText: '', subTeacherName: null, isMissing: false, isEmpty: true, isActivity: false };
     }
 
     const classesData = cell.classes;
@@ -34,18 +36,26 @@ export const getCellDisplayData = (
 
     // 1. Text Content Calculation
     let text = "";
+    let classNameText = "";
+    let subjectText = "";
     if (classesData?.length) {
         const classNames = classesData.map((cls) => cls.name).join(", ");
         const subjectName = subjectData?.name || "";
         const sameAsSubject = subjectName && classNames === subjectName;
-        text = classNames + (!isActivity && subjectData && !sameAsSubject ? ` (${subjectData.name})` : "");
+        classNameText = classNames;
+        if (!isActivity && subjectData && !sameAsSubject) {
+            subjectText = `(${subjectData.name})`;
+            text = `${classNames} (${subjectData.name})`;
+        } else {
+            text = classNames;
+        }
     }
 
     // 2. Logic for when to hide the cell entirely (Empty)
 
     // Case A: Public view + Activity -> Hide (Unless there is a sub teacher or event text)
     if (appType === "public" && isActivity && !subTeacherData && !teacherText) {
-        return { text, subTeacherName: null, isMissing: false, isEmpty: true, isActivity };
+        return { text, classNameText, subjectText, subTeacherName: null, isMissing: false, isEmpty: true, isActivity };
     }
 
     // Case B: Existing Teachers (Blue) -> ONLY show if there's a substitute or event text (Change).
@@ -55,7 +65,7 @@ export const getCellDisplayData = (
         !subTeacherData &&
         !teacherText
     ) {
-        return { text, subTeacherName: null, isMissing: false, isEmpty: true, isActivity };
+        return { text, classNameText, subjectText, subTeacherName: null, isMissing: false, isEmpty: true, isActivity };
     }
 
     // Case C: Standard "Empty" check from PreviewTeacherCell
@@ -65,12 +75,14 @@ export const getCellDisplayData = (
         !teacherText &&
         (!isMissingTeacher || (!classesData?.length && !subjectData))
     ) {
-        return { text, subTeacherName: null, isMissing: false, isEmpty: true, isActivity };
+        return { text, classNameText, subjectText, subTeacherName: null, isMissing: false, isEmpty: true, isActivity };
     }
 
     // 3. Return valid data
     return {
         text,
+        classNameText,
+        subjectText,
         subTeacherName: subTeacherData?.name || teacherText || null, // teacherText is treated as subTeacher name in display if present
         isMissing: isMissingTeacher && !subTeacherData && !teacherText && !isActivity,
         isEmpty: false,

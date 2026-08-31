@@ -88,10 +88,12 @@ const styles = StyleSheet.create({
         direction: 'rtl',
     },
     subjectText: {
-        fontFamily: 'RubikMedium',
+        fontFamily: 'Rubik',
+        color: '#444',
     },
     teacherText: {
-        color: '#444',
+        fontFamily: 'RubikMedium',
+        color: '#000',
     },
 });
 
@@ -158,8 +160,8 @@ const AnnualSchedulePdf: React.FC<AnnualSchedulePdfProps> = ({
 
         return (
             <View>
-                {subjectsText ? <Text style={[styles.cellText, styles.subjectText]}>{subjectsText}</Text> : null}
                 {secondaryText ? <Text style={[styles.cellText, styles.teacherText]}>{secondaryText}</Text> : null}
+                {subjectsText ? <Text style={[styles.cellText, styles.subjectText]}>{subjectsText}</Text> : null}
             </View>
         );
     };

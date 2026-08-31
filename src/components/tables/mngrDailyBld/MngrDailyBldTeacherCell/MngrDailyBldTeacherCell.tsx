@@ -108,7 +108,7 @@ const MngrDailyBldTeacherCell: React.FC<MngrDailyBldTeacherCellProps> = ({ colum
         ],
     );
 
-    const { text: displayText, isActivity } = useMemo(() => {
+    const { text: displayText, classNameText, subjectText, isActivity } = useMemo(() => {
         return getCellDisplayData(
             {
                 ...cell,
@@ -212,7 +212,16 @@ const MngrDailyBldTeacherCell: React.FC<MngrDailyBldTeacherCellProps> = ({ colum
                                 className={`${styles.classAndSubject} ${isActivity ? styles.activityText : ""
                                     }`}
                             >
-                                {getDisplayText()}
+                                {classNameText ? (
+                                    <>
+                                        <span>{classNameText}</span>
+                                        {subjectText && (
+                                            <span className={styles.subjectText}> {subjectText}</span>
+                                        )}
+                                    </>
+                                ) : (
+                                    getDisplayText()
+                                )}
                             </div>
                             {cell?.comment && (
                                 <span
