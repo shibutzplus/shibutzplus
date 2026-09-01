@@ -13,8 +13,7 @@ export const genderOptions: SelectOption<UserGender>[] = [
 export const roleOptions: SelectOption<UserRole>[] = [
     { value: USER_ROLES.PRINCIPAL, label: "מנהל/ת" },
     { value: USER_ROLES.DEPUTY_PRINCIPAL, label: "סגנ/ית" },
-    { value: USER_ROLES.TEACHER, label: "מורה" },
-    { value: USER_ROLES.TEACHER, label: "אחר" },
+    { value: USER_ROLES.SECRETARY, label: "מזכיר/ה" },
 ];
 
 export const schoolLevelOptions: SelectOption<SchoolLevel>[] = [

@@ -78,8 +78,9 @@ const useDailyTeacherActions = (
             if (deleteResponse) {
                 if (!deleteResponse.success || !deleteResponse.dailySchedules) {
                     logErrorAction({
-                        description: `Failed to delete teacher daily column: ${deleteResponse.message}`,
-                        schoolId: school?.id
+                        description: `populateTeacherColumn: deleteDailyColumnAction failed. message=${deleteResponse.message}`,
+                        schoolId: school?.id,
+                        metadata: { step: 'delete', columnId, selectedDate, teacherId, type, hasSavedData, responseMessage: deleteResponse.message }
                     });
                 }
             }
@@ -118,7 +119,30 @@ const useDailyTeacherActions = (
                             undefined,
                             currentPosition
                         );
-                        if (newDailyRow) pendingInserts.push({ request: newDailyRow, dailyCell });
+                        if (newDailyRow) {
+                            pendingInserts.push({ request: newDailyRow, dailyCell });
+                        } else {
+                            logErrorAction({
+                                description: `populateTeacherColumn: addNewTeacherValueCell returned undefined for hour ${dailyCell.hour}. Likely missing subject, classes, or headerTeacher.`,
+                                schoolId: school?.id,
+                                metadata: {
+                                    step: 'build_cell',
+                                    columnId, selectedDate, teacherId, type,
+                                    hour: dailyCell.hour,
+                                    hasSubject: !!dailyCell.subject,
+                                    classCount: dailyCell.classes?.length ?? 0,
+                                    hasHeaderTeacher: !!dailyCell.headerCol?.headerTeacher,
+                                }
+                            });
+                        }
+                    }
+
+                    if (pendingInserts.length === 0) {
+                        logErrorAction({
+                            description: `populateTeacherColumn: no valid rows to insert for teacher ${teacherId} on ${selectedDate}. annualScheduleRows=${response.data.length}`,
+                            schoolId: school?.id,
+                            metadata: { step: 'no_inserts', columnId, selectedDate, teacherId, type, annualRowCount: response.data.length }
+                        });
                     }
 
                     if (pendingInserts.length > 0) {
@@ -142,6 +166,12 @@ const useDailyTeacherActions = (
                                     }
                                 },
                             );
+                        } else {
+                            logErrorAction({
+                                description: `populateTeacherColumn: addDailyTeacherCellsAction failed. message=${batchResponse.message}`,
+                                schoolId: school?.id,
+                                metadata: { step: 'batch_insert', columnId, selectedDate, teacherId, type, insertCount: pendingInserts.length, responseMessage: batchResponse.message }
+                            });
                         }
                     }
 
@@ -172,9 +202,19 @@ const useDailyTeacherActions = (
                 }
                 return response.data;
             }
+            // fetchResponse returned success:false or missing data
+            logErrorAction({
+                description: `populateTeacherColumn: getTeacherScheduleByDayAction returned success=false. message=${(response as any)?.message}`,
+                schoolId: school?.id,
+                metadata: { step: 'fetch', columnId, selectedDate, teacherId, dayNumber, type, responseMessage: (response as any)?.message, responseSuccess: response.success }
+            });
             return undefined;
         } catch (error) {
-            logErrorAction({ description: `Error fetching teacher schedule: ${error instanceof Error ? error.message : String(error)}`, schoolId: school?.id });
+            logErrorAction({
+                description: `populateTeacherColumn: unexpected exception. ${error instanceof Error ? error.message : String(error)}`,
+                schoolId: school?.id,
+                metadata: { step: 'catch', columnId, selectedDate, teacherId, dayNumber, type, errorType: error instanceof Error ? error.constructor.name : typeof error }
+            });
             return undefined;
         }
     };

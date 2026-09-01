@@ -38,7 +38,7 @@ export const FAQ_TEACHERS_ITEMS = (teacherLink: string, onCopyLink: () => void):
                 אם אתם גולשים מאייפון או מדפדפן אחר באנדרואיד, ההודעה לא תופיע מעצמה – פשוט פותחים את תפריט הדפדפן, לוחצים על &quot;הוסף למסך הבית&quot; ומאשרים.
                 <br />
                 <br />
-                <strong>סרטוני הדרכה מהירים:</strong>
+                <strong>סרטוני הדרכה קצרים:</strong>
                 <br />
                 <a href="https://www.youtube.com/shorts/oWHuZoN571Y" target="_blank" rel="noopener noreferrer">
                     סרטון עזרה להתקנה באייפון
@@ -196,4 +196,32 @@ export const FAQ_MANAGER_ITEMS: FaqItemResource[] = [
             </>
         ),
     },
+    {
+        question: "כיצד מתקינים את שיבוץ+ כאפליקציה?",
+        answer: () => (
+            <>
+                התקנה כאפליקציה מאפשרת גישה מהירה ונוחה ישירות ממסך הבית, ללא צורך בהורדה מחנויות האפליקציות.
+                עשינו הכל כדי שתהליך ההתקנה יהיה פשוט ומהיר, אך הוא משתנה מעט לפי סוג המכשיר והדפדפן שבו אתם משתמשים:
+                <br />
+                במחשב ובטלפונים מבוססי אנדרואיד (בדפדפן כרום), לרוב תקפוץ הודעה אוטומטית עם כפתור &quot;התקנה&quot;.
+                <br />
+                אם אתם גולשים מאייפון או מדפדפן אחר באנדרואיד, ההודעה לא תופיע מעצמה – פשוט פותחים את תפריט הדפדפן, לוחצים על &quot;הוסף למסך הבית&quot; ומאשרים.
+                <br />
+                <br />
+                <strong>סרטוני הדרכה קצרים:</strong>
+                <br />
+                <a href="https://www.youtube.com/shorts/oWHuZoN571Y" target="_blank" rel="noopener noreferrer">
+                    סרטון עזרה להתקנה באייפון
+                </a>
+                <br />
+                <a href="https://www.youtube.com/shorts/1TkmsiS1ELg" target="_blank" rel="noopener noreferrer">
+                    סרטון עזרה להתקנה באנדרואיד
+                </a>
+                <br />
+                <br />
+                <strong>שימו לב:</strong> גם אם המכשיר שלכם מתנהג מעט אחרת, בכל דפדפן תוכלו למצוא בתפריט הראשי אפשרות להתקין את האתר או להוסיף אותו למסך הבית.
+            </>
+        ),
+    },
 ];
+

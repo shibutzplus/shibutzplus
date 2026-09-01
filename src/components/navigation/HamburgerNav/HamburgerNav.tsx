@@ -500,17 +500,27 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                                             <span>הגדרות שיבוץ+</span>
                                         </div>
                                     )}
-                                    {!isSubstituteTeacher && (
-                                        <Link
-                                            href={isPrivate ? routePath.faqManager.p : routePath.faqTeachers.p}
-                                            className={styles.navLink}
-                                            onClick={onClose}
-                                            aria-label="שאלות נפוצות"
-                                        >
-                                            <Icons.faq size={24} />
-                                            <span>שאלות נפוצות</span>
-                                        </Link>
-                                    )}
+                                    {!isSubstituteTeacher && (() => {
+                                        let faqHref = isPrivate ? routePath.faqManager.p : routePath.faqTeachers.p;
+                                        if (userRole === USER_ROLES.ADMIN && typeof window !== "undefined") {
+                                            const urlParams = new URLSearchParams(window.location.search);
+                                            const schoolIdParam = urlParams.get("schoolId");
+                                            if (schoolIdParam) {
+                                                faqHref = `${faqHref}?schoolId=${encodeURIComponent(schoolIdParam)}`;
+                                            }
+                                        }
+                                        return (
+                                            <Link
+                                                href={faqHref}
+                                                className={styles.navLink}
+                                                onClick={onClose}
+                                                aria-label="שאלות נפוצות"
+                                            >
+                                                <Icons.faq size={24} />
+                                                <span>שאלות נפוצות</span>
+                                            </Link>
+                                        );
+                                    })()}
                                 </>
                             )}
 

@@ -2,6 +2,7 @@ export const USER_ROLES = {
     ADMIN: "admin",
     PRINCIPAL: "principal",
     DEPUTY_PRINCIPAL: "deputy_principal",
+    SECRETARY: "secretary",
     TEACHER: "teacher",
     GUEST: "guest",
 } as const;

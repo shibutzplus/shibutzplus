@@ -3,6 +3,7 @@
     justify-content: center;
     align-items: center;
     cursor: default;
+    position: relative;
 }
 
 .sizeXS {
@@ -24,4 +25,61 @@
     object-fit: contain;
     max-width: 100%;
     max-height: 100%;
+    width: 100%;
+    height: 100%;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+/* 3D Flip Container & Animation */
+.flipContainer {
+    perspective: 1000px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+}
+
+.flipContainer:hover {
+    z-index: 10;
+}
+
+.flipInner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+}
+
+.flipContainer:hover .flipInner {
+    transform: rotateY(180deg) scale(1.3);
+}
+
+.flipFront,
+.flipBack {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.flipFront {
+    transform: rotateY(0deg);
+}
+
+.flipBack {
+    transform: rotateY(180deg);
+}
+
+.flipBack .logo {
+    filter: contrast(1.06) saturate(1.05);
 }

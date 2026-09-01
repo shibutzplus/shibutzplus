@@ -40,6 +40,7 @@ const ROLE_TRANSLATIONS: Record<string, string> = {
     [USER_ROLES.ADMIN]: "מנהל מערכת",
     [USER_ROLES.PRINCIPAL]: "מנהל/ת",
     [USER_ROLES.DEPUTY_PRINCIPAL]: "סגן/ית",
+    [USER_ROLES.SECRETARY]: "מזכיר/ה",
     [USER_ROLES.TEACHER]: "מורה",
     [USER_ROLES.GUEST]: "אורח",
 };

@@ -818,7 +818,7 @@ const AnnualImportContent = () => {
                                                 if (res.success) {
                                                     mainContext?.setAnnualScheduleTable(undefined);
                                                     setTimeout(() => {
-                                                        window.location.href = '/';
+                                                        window.location.href = schoolId ? `/?schoolId=${encodeURIComponent(schoolId)}` : '/';
                                                     }, 1500);
                                                 }
                                             } catch (err) {
@@ -839,7 +839,9 @@ const AnnualImportContent = () => {
                                     <button type="button" onClick={handlePrev} className={styles.modalBtnNo}>הקודם</button>
                                     <button
                                         type="button"
-                                        onClick={() => window.location.href = '/'}
+                                        onClick={() => {
+                                            window.location.href = schoolId ? `/?schoolId=${encodeURIComponent(schoolId)}` : '/';
+                                        }}
                                         className={styles.btnPrimary}
                                     >
                                         סיום

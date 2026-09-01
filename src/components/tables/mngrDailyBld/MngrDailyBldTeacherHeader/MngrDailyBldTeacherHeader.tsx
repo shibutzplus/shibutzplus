@@ -8,6 +8,7 @@ import { getDayNumberByDateString } from "@/utils/time";
 import { useMainContext } from "@/context/MainContext";
 import { errorToast, successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
+import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 import { BrightTextColor, BrightTextColorHover } from "@/style/root";
 import styles from "../MngrDailyBldTable/MngrDailyBldTable.module.css";
 import useConfirmPopup from "@/hooks/useConfirmPopup";
@@ -67,6 +68,17 @@ const MngrDailyBldTeacherHeader: React.FC<MngrDailyBldTeacherHeaderProps> = ({
                 successToast(messages.dailySchedule.noScheduleFound);
             }
         } else {
+            logErrorAction({
+                description: `handleTeacherChange: populateTeacherColumn returned undefined (no data saved).`,
+                metadata: {
+                    step: 'header_change',
+                    teacherId,
+                    teacherName: filteredTeacherOptions.find(o => o.value === value)?.label ?? value,
+                    selectedDate,
+                    columnId,
+                    columnType: type,
+                }
+            });
             errorToast(messages.dailySchedule.error);
         }
         setIsLoading(false);

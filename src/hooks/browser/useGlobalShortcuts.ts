@@ -22,7 +22,12 @@ export const useGlobalShortcuts = () => {
 
             if (isCtrlOrMeta && isKeyM && !event.altKey && !event.shiftKey) {
                 event.preventDefault();
-                router.push(routerConfig.annualView.p);
+                const urlParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+                const schoolIdParam = urlParams?.get("schoolId");
+                const target = schoolIdParam
+                    ? `${routerConfig.annualView.p}?schoolId=${encodeURIComponent(schoolIdParam)}`
+                    : routerConfig.annualView.p;
+                router.push(target);
             }
         };
 

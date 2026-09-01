@@ -31,7 +31,6 @@ const MngrAnnualViewCell: React.FC<MngrAnnualViewCellProps> = ({
     // If Class is selected, we use Class ID.
     // If only Teacher is selected, we use Teacher ID.
     const lookupId = selectedClassId || selectedTeacherId;
-    const isBothSelected = !!(selectedClassId && selectedTeacherId);
 
     if (!lookupId || !schedule[lookupId] || !schedule[lookupId][day] || !schedule[lookupId][day][hour]) {
         return (

@@ -9,6 +9,7 @@ export type SchoolLevel = typeof SCHOOL_LEVEL[keyof typeof SCHOOL_LEVEL];
 export type SchoolType = {
     id: string;
     name: string;
+    city?: string | null;
     type: SchoolLevel;
     status: SchoolStatus;
     publishDates: string[];
