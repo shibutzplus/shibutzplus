@@ -99,10 +99,12 @@
 
     .pageLayout {
         height: auto;
+        padding-top: 0 !important;
     }
 
     .mainContent {
         overflow: visible;
         height: auto;
+        padding-top: 0 !important;
     }
 }

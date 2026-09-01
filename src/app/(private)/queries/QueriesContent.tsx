@@ -12,6 +12,8 @@ import { getLogsQueryAction, LogQueryResult } from "@/app/actions/GET/getLogsQue
 import { getPublishScheduleQueryAction, PublishScheduleQueryResult } from "@/app/actions/GET/getPublishScheduleQueryAction";
 import { getUsersQueryAction, UserQueryResult } from "@/app/actions/GET/getUsersQueryAction";
 import { getPushSubscribersQueryAction, PushSubscriberQueryResult } from "@/app/actions/GET/getPushSubscribersQueryAction";
+import { getTeachersQueryAction, TeacherQueryResult } from "@/app/actions/GET/getTeachersQueryAction";
+import { TeacherRoleValues } from "@/models/types/teachers";
 import { deleteLogsAction } from "@/app/actions/DELETE/deleteLogsAction";
 import { deleteUsersAction } from "@/app/actions/DELETE/deleteUsersAction";
 import { deletePushSubscriptionsAction } from "@/app/actions/DELETE/deletePushSubscriptionsAction";
@@ -28,9 +30,10 @@ interface QueryOption {
 const QUERY_OPTIONS: QueryOption[] = [
     { value: "logs", label: "לוגים", allowDelete: true },
     { value: "schools", label: "בתי ספר", allowDelete: false },
-    { value: "users", label: "מנהלים פעילים", allowDelete: true },
+    { value: "users", label: "מנהלים פעילים", allowDelete: false },
     { value: "inactive_users", label: "מנהלים לא פעילים", allowDelete: true },
-    { value: "push_subscribers", label: "משתמשים רשומים לנוטיפיקציה", allowDelete: true },
+    { value: "teachers", label: "מורים", allowDelete: false },
+    { value: "push_subscribers", label: "רשומים לנוטיפיקציה", allowDelete: true },
 ];
 
 const ROLE_TRANSLATIONS: Record<string, string> = {
@@ -39,6 +42,12 @@ const ROLE_TRANSLATIONS: Record<string, string> = {
     [USER_ROLES.DEPUTY_PRINCIPAL]: "סגן/ית",
     [USER_ROLES.TEACHER]: "מורה",
     [USER_ROLES.GUEST]: "אורח",
+};
+
+const TEACHER_ROLE_TRANSLATIONS: Record<string, string> = {
+    [TeacherRoleValues.REGULAR]: "מורה",
+    [TeacherRoleValues.SUBSTITUTE]: "מורה מחליף",
+    [TeacherRoleValues.STAFF]: "איש צוות",
 };
 
 type SortDirection = "asc" | "desc";
@@ -57,6 +66,7 @@ export default function QueriesContent() {
     const [logsData, setLogsData] = useState<LogQueryResult[]>([]);
     const [publishData, setPublishData] = useState<PublishScheduleQueryResult[]>([]);
     const [usersData, setUsersData] = useState<UserQueryResult[]>([]);
+    const [teachersData, setTeachersData] = useState<TeacherQueryResult[]>([]);
     const [pushSubscribersData, setPushSubscribersData] = useState<PushSubscriberQueryResult[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isDeleting, setIsDeleting] = useState<boolean>(false);
@@ -121,6 +131,13 @@ export default function QueriesContent() {
                 const res = await getUsersQueryAction(false);
                 if (res.success && res.data) {
                     setUsersData(res.data);
+                } else {
+                    setError(res.error || "שגיאה בטעינת הנתונים");
+                }
+            } else if (selectedQuery === "teachers") {
+                const res = await getTeachersQueryAction();
+                if (res.success && res.data) {
+                    setTeachersData(res.data);
                 } else {
                     setError(res.error || "שגיאה בטעינת הנתונים");
                 }
@@ -258,7 +275,13 @@ export default function QueriesContent() {
 
     // Sort push subscribers data
     const sortedPushSubscribers = useMemo(() => {
-        if (!sortConfig) return filteredPushSubscribers;
+        if (!sortConfig) {
+            return [...filteredPushSubscribers].sort((a: any, b: any) => {
+                const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+                const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+                return dateB - dateA;
+            });
+        }
         const { key, direction } = sortConfig;
         return [...filteredPushSubscribers].sort((a: any, b: any) => {
             if (key === "subscriptionCount") {
@@ -277,14 +300,46 @@ export default function QueriesContent() {
         });
     }, [filteredPushSubscribers, sortConfig]);
 
+    // Filter teachers data based on search query
+    const filteredTeachersData = useMemo(() => {
+        if (!searchFilter.trim()) return teachersData;
+        const q = searchFilter.toLowerCase();
+        return teachersData.filter((item) => {
+            const schoolNameMatch = item.schoolName?.toLowerCase().includes(q);
+            const idMatch = item.id?.toLowerCase().includes(q);
+            const nameMatch = item.name?.toLowerCase().includes(q);
+            const roleText = TEACHER_ROLE_TRANSLATIONS[item.role] || "";
+            const roleMatch = item.role?.toLowerCase().includes(q) || roleText.toLowerCase().includes(q);
+            return schoolNameMatch || idMatch || nameMatch || roleMatch;
+        });
+    }, [teachersData, searchFilter]);
+
+    // Sort teachers data
+    const sortedTeachersData = useMemo(() => {
+        if (!sortConfig) return filteredTeachersData;
+        const { key, direction } = sortConfig;
+        return [...filteredTeachersData].sort((a: any, b: any) => {
+            let valA = a[key] ?? "";
+            let valB = b[key] ?? "";
+            if (key === "role") {
+                valA = TEACHER_ROLE_TRANSLATIONS[valA] || valA;
+                valB = TEACHER_ROLE_TRANSLATIONS[valB] || valB;
+            }
+            const cmp = String(valA).localeCompare(String(valB), "he", { numeric: true, sensitivity: "base" });
+            return direction === "asc" ? cmp : -cmp;
+        });
+    }, [filteredTeachersData, sortConfig]);
+
     const visibleItems =
         selectedQuery === "logs"
             ? sortedLogs
             : selectedQuery === "schools"
-            ? sortedPublishData
-            : selectedQuery === "users" || selectedQuery === "inactive_users"
-            ? sortedUsersData
-            : sortedPushSubscribers;
+                ? sortedPublishData
+                : selectedQuery === "users" || selectedQuery === "inactive_users"
+                    ? sortedUsersData
+                    : selectedQuery === "teachers"
+                        ? sortedTeachersData
+                        : sortedPushSubscribers;
     const totalCount = visibleItems.length;
 
     // Checkbox selection helpers (only relevant if allowDelete is true)
@@ -390,69 +445,52 @@ export default function QueriesContent() {
         <PageLayout
             appType="private"
             HeaderRightActions={
-                <h3 className={styles.pageTitle}>שאילתות</h3>
+                <div className={styles.headerToolbar}>
+                    <h3 className={styles.pageTitle}>שאילתות</h3>
+
+                    <select
+                        className={styles.selectInput}
+                        value={selectedQuery}
+                        onChange={(e) => {
+                            setSelectedQuery(e.target.value);
+                            setSelectedIds([]);
+                            setSortConfig(null);
+                        }}
+                    >
+                        {QUERY_OPTIONS.map((opt) => (
+                            <option key={opt.value} value={opt.value}>
+                                {opt.label}
+                            </option>
+                        ))}
+                    </select>
+
+                    <input
+                        type="text"
+                        placeholder="חיפוש חופשי..."
+                        value={searchFilter}
+                        onChange={(e) => setSearchFilter(e.target.value)}
+                        className={styles.searchInput}
+                    />
+
+                    <span className={styles.countBadge}>
+                        {isLoading ? "טוען..." : `סה״כ: ${totalCount}`}
+                    </span>
+
+                    {allowDelete && (
+                        <button
+                            onClick={() => setIsConfirmOpen(true)}
+                            disabled={selectedIds.length === 0 || isLoading || isDeleting}
+                            className={styles.deleteButton}
+                            title="מחק שורות נבחרות"
+                        >
+                            <Icons.delete size={14} />
+                            <span>מחיקה {selectedIds.length > 0 && `(${selectedIds.length})`}</span>
+                        </button>
+                    )}
+                </div>
             }
         >
             <div className={styles.container}>
-                {/* Compact Top Toolbar */}
-                <div className={styles.topBar}>
-                    <div className={styles.controlsGroup}>
-                        <select
-                            className={styles.selectInput}
-                            value={selectedQuery}
-                            onChange={(e) => {
-                                setSelectedQuery(e.target.value);
-                                setSelectedIds([]);
-                                setSortConfig(null);
-                            }}
-                        >
-                            {QUERY_OPTIONS.map((opt) => (
-                                <option key={opt.value} value={opt.value}>
-                                    {opt.label}
-                                </option>
-                            ))}
-                        </select>
-
-                        <input
-                            type="text"
-                            placeholder="חיפוש חופשי..."
-                            value={searchFilter}
-                            onChange={(e) => setSearchFilter(e.target.value)}
-                            className={styles.searchInput}
-                        />
-                    </div>
-
-                    <div className={styles.actionsGroup}>
-                        <span className={styles.countBadge}>
-                            {isLoading ? "טוען..." : `סה״כ: ${totalCount}`}
-                        </span>
-
-                        {allowDelete && (
-                            <button
-                                onClick={() => setIsConfirmOpen(true)}
-                                disabled={selectedIds.length === 0 || isLoading || isDeleting}
-                                className={styles.deleteButton}
-                                title="מחק שורות נבחרות"
-                            >
-                                <Icons.delete size={14} />
-                                <span>מחיקה {selectedIds.length > 0 && `(${selectedIds.length})`}</span>
-                            </button>
-                        )}
-
-                        <button
-                            onClick={fetchQueryData}
-                            disabled={isLoading || isDeleting}
-                            className={styles.refreshButton}
-                            title="רענן"
-                        >
-                            <span className={isLoading ? styles.refreshIconRotating : ""}>
-                                <Icons.refresh size={14} />
-                            </span>
-                            <span>רענון</span>
-                        </button>
-                    </div>
-                </div>
-
                 {/* Dense Table Card */}
                 <div className={styles.tableCard}>
                     {isLoading ? (
@@ -464,7 +502,7 @@ export default function QueriesContent() {
                         <div className={styles.errorContainer}>
                             <Icons.warning size={24} />
                             <span>{error}</span>
-                            <button onClick={fetchQueryData} className={styles.refreshButton}>
+                            <button onClick={fetchQueryData} className={styles.retryButton}>
                                 נסה שוב
                             </button>
                         </div>
@@ -725,6 +763,78 @@ export default function QueriesContent() {
                                 </table>
                             </div>
                         )
+                    ) : selectedQuery === "teachers" ? (
+                        filteredTeachersData.length === 0 ? (
+                            <div className={styles.stateContainer}>
+                                <span className={styles.emptyText}>אין נתונים להצגה</span>
+                            </div>
+                        ) : (
+                            <div className={styles.tableWrapper}>
+                                <table className={styles.table}>
+                                    <thead>
+                                        <tr>
+                                            {allowDelete && (
+                                                <th style={{ width: "36px", textAlign: "center" }}>
+                                                    <input
+                                                        type="checkbox"
+                                                        className={styles.checkbox}
+                                                        checked={isAllSelected}
+                                                        ref={(el) => {
+                                                            if (el) el.indeterminate = isSomeSelected;
+                                                        }}
+                                                        onChange={handleToggleSelectAll}
+                                                        title="בחר / בטל הכל"
+                                                    />
+                                                </th>
+                                            )}
+                                            {renderSortHeader("שם בית ספר", "schoolName", "200px")}
+                                            {renderSortHeader("שם מורה", "name", "200px")}
+                                            {renderSortHeader("סוג מורה", "role", "140px")}
+                                            {renderSortHeader("קוד מורה", "id", "290px")}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {sortedTeachersData.map((teacher) => {
+                                            const isChecked = selectedIds.includes(teacher.id);
+                                            return (
+                                                <tr key={teacher.id} style={{ backgroundColor: isChecked ? "#f0f7ff" : undefined }}>
+                                                    {allowDelete && (
+                                                        <td style={{ textAlign: "center" }}>
+                                                            <input
+                                                                type="checkbox"
+                                                                className={styles.checkbox}
+                                                                checked={isChecked}
+                                                                onChange={() => handleToggleSelectItem(teacher.id)}
+                                                            />
+                                                        </td>
+                                                    )}
+                                                    <td>
+                                                        {teacher.schoolName ? (
+                                                            <span className={styles.schoolBadge}>
+                                                                {teacher.schoolName}
+                                                            </span>
+                                                        ) : (
+                                                            <span style={{ color: "#94a3b8" }}>—</span>
+                                                        )}
+                                                    </td>
+                                                    <td style={{ fontWeight: 600, color: "#1e293b" }}>
+                                                        {teacher.name}
+                                                    </td>
+                                                    <td>
+                                                        <span className={styles.roleBadge}>
+                                                            {TEACHER_ROLE_TRANSLATIONS[teacher.role] || teacher.role}
+                                                        </span>
+                                                    </td>
+                                                    <td style={{ fontFamily: "monospace", fontSize: "0.8rem", color: "#475569", direction: "ltr", textAlign: "right", whiteSpace: "nowrap" }}>
+                                                        {teacher.id}
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )
                     ) : selectedQuery === "push_subscribers" ? (
                         filteredPushSubscribers.length === 0 ? (
                             <div className={styles.stateContainer}>
@@ -750,7 +860,7 @@ export default function QueriesContent() {
                                                 </th>
                                             )}
                                             {renderSortHeader("שם בית ספר", "schoolName", "180px")}
-                                            {renderSortHeader("קוד מורה", "teacherId", "160px")}
+                                            {renderSortHeader("קוד מורה", "teacherId", "290px")}
                                             {renderSortHeader("שם מורה", "teacherName", "160px")}
                                             {renderSortHeader("כמה פעמים נרשם", "subscriptionCount", "140px")}
                                             {renderSortHeader("תאריך הרשמה", "createdAt", "170px")}
@@ -774,7 +884,7 @@ export default function QueriesContent() {
                                                     <td style={{ fontWeight: 600, color: "#1e293b" }}>
                                                         {item.schoolName}
                                                     </td>
-                                                    <td style={{ fontFamily: "monospace", fontSize: "0.8rem", color: "#475569", direction: "ltr", textAlign: "right" }}>
+                                                    <td style={{ fontFamily: "monospace", fontSize: "0.8rem", color: "#475569", direction: "ltr", textAlign: "right", whiteSpace: "nowrap" }}>
                                                         {item.teacherId}
                                                     </td>
                                                     <td style={{ fontWeight: 600, color: "#334155" }}>

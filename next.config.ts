@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
         ignoreDuringBuilds: true,
     },
     productionBrowserSourceMaps: false,
+    // Keep the deployment version into the client so it can detect
+    // when a new build is deployed and auto-reload on errors.
+    env: {
+        NEXT_PUBLIC_BUILD_ID: process.env.CF_PAGES_COMMIT_SHA,
+    },
     experimental: {
         optimizePackageImports: [
             "recharts",
@@ -26,4 +31,5 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
 

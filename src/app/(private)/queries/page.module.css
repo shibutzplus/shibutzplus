@@ -7,30 +7,20 @@
     direction: rtl;
 }
 
+.headerToolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+}
+
 .pageTitle {
     font-size: 1.1rem;
     font-weight: 700;
     color: var(--dark-text-color, #333);
     margin: 0;
-}
-
-/* Compact Top Toolbar */
-.topBar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-    padding: 0.25rem 0;
-    margin-bottom: 0.5rem;
-    flex-wrap: wrap;
-}
-
-.controlsGroup {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex: 1;
-    flex-wrap: wrap;
+    white-space: nowrap;
 }
 
 .selectInput {
@@ -67,24 +57,18 @@
     border-color: #4b97c2;
 }
 
-.actionsGroup {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
 .countBadge {
     font-size: 0.8rem;
     color: #666;
     white-space: nowrap;
 }
 
-.refreshButton {
+.retryButton {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
     height: 32px;
-    padding: 0 0.65rem;
+    padding: 0 0.75rem;
     background-color: #4b97c2;
     color: #ffffff;
     border: none;
@@ -94,27 +78,8 @@
     cursor: pointer;
 }
 
-.refreshButton:hover:not(:disabled) {
+.retryButton:hover {
     background-color: #3b82a6;
-}
-
-.refreshButton:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.refreshIconRotating {
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
 }
 
 .deleteButton {

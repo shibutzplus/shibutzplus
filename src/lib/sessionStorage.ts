@@ -1,6 +1,7 @@
 // Session keys
 export const SESSION_KEYS = {
     HAMBURGER_EXPANDED_GROUPS: "menu_expanded",
+    RELOADING_VERSION_TIMESTAMP: "reload_version_timestamp",
 };
 
 export const getSessionStorage = <T>(key: string) => {

@@ -1,7 +1,7 @@
 "use server";
 
 import { db, schema, executeQuery } from "@/db";
-import { asc, countDistinct, eq, max } from "drizzle-orm";
+import { countDistinct, desc, eq, max } from "drizzle-orm";
 import { auth } from "@/auth";
 import { USER_ROLES } from "@/models/constant/auth";
 
@@ -42,7 +42,7 @@ export async function getPushSubscribersQueryAction(): Promise<{
                 .innerJoin(schema.schools, eq(schema.teachers.schoolId, schema.schools.id))
                 .innerJoin(schema.pushSubscriptions, eq(schema.teachers.id, schema.pushSubscriptions.teacherId))
                 .groupBy(schema.teachers.id, schema.teachers.name, schema.schools.name)
-                .orderBy(asc(schema.schools.name), asc(schema.teachers.name));
+                .orderBy(desc(max(schema.pushSubscriptions.createdAt)));
         });
 
         const formatted: PushSubscriberQueryResult[] = rows.map((r) => ({

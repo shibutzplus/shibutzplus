@@ -133,3 +133,9 @@
     border: none !important;
     outline: none !important;
 }
+
+@media print {
+    .tableViewBtn {
+        display: none !important;
+    }
+}
