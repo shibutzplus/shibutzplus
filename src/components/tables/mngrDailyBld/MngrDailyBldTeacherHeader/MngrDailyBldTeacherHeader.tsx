@@ -263,6 +263,7 @@ const MngrDailyBldTeacherHeader: React.FC<MngrDailyBldTeacherHeaderProps> = ({
                         menuPortalTarget={null}
                         menuWidth="180px"
                         menuAlign="left"
+                        isCompact
                     />
                 </div>
             </div>

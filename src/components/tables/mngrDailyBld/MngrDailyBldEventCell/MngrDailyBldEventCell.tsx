@@ -7,12 +7,14 @@ import { useDailyTableContext } from "@/context/DailyTableContext";
 import { ColumnTypeValues, DailyScheduleCell } from "@/models/types/dailySchedule";
 import { formatTMDintoDMY } from "@/utils/time";
 import { logErrorAction } from "@/app/actions/POST/logErrorAction";
+import { usePopup } from "@/context/PopupContext";
+import RecurringChoicePopup, { RecurringChoiceMode } from "@/components/popups/RecurringChoicePopup/RecurringChoicePopup";
 
 type MngrDailyBldEventCellProps = { columnId: string; cell: DailyScheduleCell };
 
 const MngrDailyBldEventCell: React.FC<MngrDailyBldEventCellProps> = ({ columnId, cell }) => {
-    const { mainDailyTable, addEventCell, updateEventCell, deleteEventCell, selectedDate, populateEventColumn } =
-        useDailyTableContext();
+    const { mainDailyTable, addEventCell, updateEventCell, deleteEventCell, selectedDate, populateEventColumn, updateRecurringFromDate, detachRecurringColumn } = useDailyTableContext();
+    const { openPopup } = usePopup();
     const [isLoading, setIsLoading] = useState(false);
 
     const hour = cell?.hour;
@@ -21,6 +23,84 @@ const MngrDailyBldEventCell: React.FC<MngrDailyBldEventCellProps> = ({ columnId,
 
     const [info, setInfo] = useState<string>(eventData || "");
     const [prevInfo, setPrevInfo] = useState<string>(eventData || "");
+
+    // Detect if this column is part of a recurring series
+    const isRecurring = columnId.startsWith("rec_");
+
+    /**
+     * Core save logic: saves (add / update / delete) for a specific columnId and event value.
+     * Used for both regular and post-detach saves.
+     * Returns true if saved successfully, false otherwise.
+     */
+    const saveCellChange = async (
+        activeColumnId: string,
+        event: string,
+        currentHeaderTitle: string | undefined,
+    ): Promise<boolean> => {
+        try {
+            setIsLoading(true);
+            let cellData = mainDailyTable[selectedDate]?.[activeColumnId]?.[hour];
+            if (!cellData) return false;
+
+            // Patch cellData only if the header title was just auto-filled and not yet in store
+            if (!cellData.headerCol?.headerEvent && currentHeaderTitle) {
+                cellData = {
+                    ...cellData,
+                    headerCol: {
+                        ...(cellData.headerCol || { type: ColumnTypeValues.event }),
+                        headerEvent: currentHeaderTitle,
+                        type: cellData.headerCol?.type || ColumnTypeValues.event,
+                    },
+                };
+            }
+
+            const existingId = cellData?.DBid;
+            let response;
+            if (event === "") {
+                if (existingId) {
+                    response = await deleteEventCell(cellData, activeColumnId, existingId);
+                } else {
+                    // Nothing to delete from DB, treat as successful clear
+                    setInfo("");
+                    setPrevInfo("");
+                    return true;
+                }
+            } else if (existingId) {
+                response = await updateEventCell(cellData, activeColumnId, existingId, event);
+            } else {
+                response = await addEventCell(cellData, activeColumnId, { event });
+            }
+
+            if (response) {
+                setPrevInfo(event);
+                return true;
+            }
+
+            logErrorAction({
+                description: `Failed to save event cell: response returned falsy`,
+                metadata: { columnId: activeColumnId, hour, selectedDate, event }
+            });
+            errorToast(
+                eventData
+                    ? messages.dailySchedule.updateError
+                    : messages.dailySchedule.createError,
+            );
+            setInfo(prevInfo);
+            return false;
+        } catch (err) {
+            logErrorAction({
+                description: `Exception in MngrDailyBldEventCell handleChange: ${err instanceof Error ? err.message : String(err)}`,
+                metadata: { columnId: activeColumnId, hour, selectedDate, event }
+            });
+            errorToast(
+                eventData ? messages.dailySchedule.updateError : messages.dailySchedule.createError,
+            );
+            setInfo(prevInfo);
+            return false;
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const handleChange = async (value: string) => {
         if (hour === undefined || !columnId || !selectedDate) return;
@@ -40,63 +120,43 @@ const MngrDailyBldEventCell: React.FC<MngrDailyBldEventCellProps> = ({ columnId,
         }
 
         setInfo(event);
-        setPrevInfo(event);
 
-        try {
-            setIsLoading(true);
-            let cellData = mainDailyTable[selectedDate]?.[columnId]?.[hour];
-            if (!cellData) return;
-
-            // Patch cellData if we just auto-filled the header title locally
-            if (!cellData.headerCol?.headerEvent && currentHeaderTitle) {
-                cellData = {
-                    ...cellData,
-                    headerCol: {
-                        ...(cellData.headerCol || { type: ColumnTypeValues.event }),
-                        headerEvent: currentHeaderTitle,
-                        type: cellData.headerCol?.type || ColumnTypeValues.event,
-                    },
-                };
-            }
-
-            let response;
-            if (event === "") {
-                const existingId = cellData?.DBid;
-                if (existingId) {
-                    response = await deleteEventCell(cellData, columnId, existingId);
-                }
-            } else if (eventData) {
-                const existingId = cellData?.DBid;
-                if (existingId) {
-                    response = await updateEventCell(cellData, columnId, existingId, event);
-                }
-            } else {
-                response = await addEventCell(cellData, columnId, { event });
-            }
-
-            if (!response) {
-                logErrorAction({
-                    description: `Failed to save event cell: response returned falsy`,
-                    metadata: { columnId, hour, selectedDate, event }
-                });
-                errorToast(
-                    eventData
-                        ? messages.dailySchedule.updateError
-                        : messages.dailySchedule.createError,
-                );
-                setInfo("");
-            }
-        } catch (err) {
-            logErrorAction({
-                description: `Exception in MngrDailyBldEventCell handleChange: ${err instanceof Error ? err.message : String(err)}`,
-                metadata: { columnId, hour, selectedDate, event }
-            });
-            errorToast(
-                eventData ? messages.dailySchedule.updateError : messages.dailySchedule.createError,
+        if (isRecurring) {
+            const originalEvent = prevInfo;
+            // For recurring columns, ask the user about the scope
+            openPopup(
+                "recurringChoice",
+                "S",
+                <RecurringChoicePopup
+                    text="האם לשנות את תוכן האירוע?"
+                    singleLabel="רק עבור יום זה"
+                    futureLabel="מעכשיו ועד סוף השנה"
+                    onChoice={async (mode: RecurringChoiceMode) => {
+                        if (mode === "single") {
+                            // Detach this day from the series, then save normally
+                            const newColId = await detachRecurringColumn?.(columnId, selectedDate);
+                            if (newColId) {
+                                await saveCellChange(newColId, event, currentHeaderTitle);
+                            } else {
+                                await saveCellChange(columnId, event, currentHeaderTitle);
+                            }
+                        } else {
+                            // Update this cell and propagate to all future weeks
+                            const isSaved = await saveCellChange(columnId, event, currentHeaderTitle);
+                            if (isSaved) {
+                                // Propagate to future weeks using hourFilter (even if event is empty/cleared)
+                                await updateRecurringFromDate?.(columnId, selectedDate, { event }, hour);
+                            }
+                        }
+                    }}
+                    onCancel={() => {
+                        setInfo(originalEvent);
+                    }}
+                />,
             );
-            setInfo("");
-        } finally {
-            setIsLoading(false);
+        } else {
+            // Regular (non-recurring) column – save directly
+            await saveCellChange(columnId, event, currentHeaderTitle);
         }
     };
 

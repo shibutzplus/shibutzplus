@@ -283,6 +283,16 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                 <BroadcastMessagePopup />
             );
         }
+        if (action === "add_holidays_events") {
+            if (!school?.id) return;
+            const { addHolidaysEventsAction } = await import("@/app/actions/POST/addHolidaysEventsAction");
+            const res = await addHolidaysEventsAction(school.id);
+            if (res.success) {
+                successToast(res.message || "ימי החופשה נוספו בהצלחה", 3000);
+            } else {
+                errorToast(res.message || "שגיאה בהוספת ימי חופשה");
+            }
+        }
         if (action === "clear_cache") {
             if (!school?.id) return;
             const res = await clearSchoolCacheAction(school.id);

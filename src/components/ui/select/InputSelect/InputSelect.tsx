@@ -45,6 +45,7 @@ type InputSelectProps = {
     menuPortalTarget?: HTMLElement | null;
     menuWidth?: string;
     menuAlign?: "left" | "right";
+    isCompact?: boolean;
 };
 const InputSelect: React.FC<InputSelectProps> = ({
     label,
@@ -72,6 +73,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
     menuPortalTarget = (typeof document !== "undefined" ? document.body : null),
     menuWidth,
     menuAlign = "right",
+    isCompact = false,
 }) => {
     const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
     const [isMounted, setIsMounted] = useState(false);
@@ -145,6 +147,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
                     display: "grid",
                     gridTemplateColumns: "1fr auto",
                     minWidth: 0, // Allow shrinking below content size
+                    ...(isCompact ? { padding: "2px 2px 2px 0px" } : {}),
                 };
             },
             singleValue: (provided: any) => {
@@ -166,7 +169,17 @@ const InputSelect: React.FC<InputSelectProps> = ({
                     flexDirection: "row",
                     alignItems: "center",
                     justifyContent: isCentered ? "center" : "flex-start",
-                    padding: "0 5px",
+                    padding: isCompact ? "0 2px" : "0 5px",
+                };
+            },
+            dropdownIndicator: (provided: any) => {
+                const base =
+                    typeof baseStyles.dropdownIndicator === "function"
+                        ? baseStyles.dropdownIndicator(provided)
+                        : provided;
+                return {
+                    ...base,
+                    ...(isCompact ? { padding: "0 3px 0 6px" } : {}),
                 };
             },
             input: (provided: any) => ({
@@ -242,6 +255,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
         caretColor,
         menuWidth,
         menuAlign,
+        isCompact,
     ]);
     const CustomSingleValue = (props: SingleValueProps<SelectOption>) => {
         const [isHovered, setIsHovered] = useState(false);

@@ -13,7 +13,8 @@ type MngrDailyBldColMenuProps = {
     disableCopy?: boolean;
     isFirst?: boolean;
     isLast?: boolean;
-    children?: React.ReactNode | ((props: { closeMenu: () => void }) => React.ReactNode); // For custom menu items
+    children?: React.ReactNode | ((props: { closeMenu: () => void }) => React.ReactNode); // For custom menu items (after delete)
+    bottomChildren?: React.ReactNode | ((props: { closeMenu: () => void }) => React.ReactNode); // For custom menu items at the bottom (after paste)
 };
 
 const MngrDailyBldColMenu: React.FC<MngrDailyBldColMenuProps> = ({
@@ -27,6 +28,7 @@ const MngrDailyBldColMenu: React.FC<MngrDailyBldColMenuProps> = ({
     isFirst,
     isLast,
     children,
+    bottomChildren,
 }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
@@ -139,6 +141,16 @@ const MngrDailyBldColMenu: React.FC<MngrDailyBldColMenuProps> = ({
                             <Icons.paste size={14} />
                             <span>הדבק</span>
                         </div>
+                    )}
+
+                    {/* Bottom Custom Section (e.g. Recurrent) */}
+                    {bottomChildren && (
+                        <>
+                            <div className={styles.menuSeparator} />
+                            {typeof bottomChildren === "function"
+                                ? bottomChildren({ closeMenu: () => setIsMenuOpen(false) })
+                                : bottomChildren}
+                        </>
                     )}
                 </div>
             )}

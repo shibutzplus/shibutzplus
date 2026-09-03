@@ -14,11 +14,12 @@ export async function logErrorAction(params: LogParams) {
         lowercaseDescription.includes("network error");
 
     if (isNetworkError) {
-        // Still log network errors but tag them so they can be filtered in queries
+        /* // Log Network Error - This was comment out as we dont really need this log. Network errors sometimes can happen
         await dbLog({
-            ...params,
-            metadata: { ...(params.metadata ?? {}), errorType: "network" }
+             ...params,
+             metadata: { ...(params.metadata ?? {}), errorType: "network" }
         });
+        */
         return { success: true };
     }
     await dbLog(params);

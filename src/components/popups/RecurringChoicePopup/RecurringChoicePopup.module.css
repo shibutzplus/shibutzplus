@@ -1,0 +1,69 @@
+.popupContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 10px;
+}
+
+.title {
+    font-size: 20px;
+    font-weight: 500;
+    margin: 15px 0 25px 0;
+    color: #333;
+    width: 70%;
+    line-height: 28px;
+}
+
+.buttonContainer {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    gap: 10px;
+}
+
+/* Single date action: outline with delete color */
+.singleButton {
+    border-radius: 6px;
+    border: 1.5px solid #ff6b6b;
+    background-color: transparent;
+    color: #ff6b6b;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 35px;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.singleButton:hover:not(:disabled) {
+    background-color: #fff2f2;
+}
+
+/* Future weeks action: solid delete color (identical to ConfirmPopup delete button) */
+.futureButton {
+    border-radius: 6px;
+    border: none;
+    background-color: #ff6b6b;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 35px;
+    transition: background-color 0.2s;
+}
+
+.futureButton:hover:not(:disabled) {
+    background-color: #ff5252;
+}
+
+.singleButton:disabled,
+.futureButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
