@@ -88,13 +88,15 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
                 const newSchedule = populatePortalTable(response.data, mainPortalTable, selectedDate, teacher.id);
                 if (newSchedule) setMainPortalTable(newSchedule);
             } else {
-                // Log when the response is not successful so we can investigate future occurrences
-                logErrorAction({
-                    description: `fetchTeacherScheduleDate: response not successful. message=${response?.message ?? 'no response'}`,
-                    schoolId: teacher?.schoolId,
-                    user: teacher?.name,
-                    metadata: { step: 'fetch_teacher_schedule', selectedDate, teacherId: teacher?.id, responseSuccess: response?.success, responseMessage: response?.message }
-                });
+                // Log only if a server response was received but failed (skip transient network drops / aborts)
+                if (response) {
+                    logErrorAction({
+                        description: `fetchTeacherScheduleDate: response not successful. message=${response?.message ?? 'no response'}`,
+                        schoolId: teacher?.schoolId,
+                        user: teacher?.name,
+                        metadata: { step: 'fetch_teacher_schedule', selectedDate, teacherId: teacher?.id, responseSuccess: response?.success, responseMessage: response?.message }
+                    });
+                }
                 return false;
             }
             return true;

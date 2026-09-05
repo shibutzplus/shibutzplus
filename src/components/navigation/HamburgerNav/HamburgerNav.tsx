@@ -43,6 +43,7 @@ const LinkComponent: React.FC<LinkComponentProps> = ({ link, onClose, currentPat
     const userRole = (session?.user as any)?.role;
     const shouldShowGuestPopup = isGuestUser && link.isGuestBlocked;
     const { handleOpenGuestPopup } = useGuestModePopup();
+    const portalContext = useOptionalPortalContext();
 
     // Preserve ?schoolId for ADMIN users
     // This is important for debugging and testing as we loose schoolId when we navigate to a different page
@@ -65,6 +66,9 @@ const LinkComponent: React.FC<LinkComponentProps> = ({ link, onClose, currentPat
                         e.preventDefault();
                         handleOpenGuestPopup();
                         return;
+                    }
+                    if (link.p.includes(routePath.schoolChanges.p) || link.p.includes(routePath.schoolChangesFull.p)) {
+                        portalContext?.setViewType("teachers");
                     }
                     if (link.action && onAction) {
                         e.preventDefault();
@@ -282,6 +286,16 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                 "M",
                 <BroadcastMessagePopup />
             );
+        }
+        if (action === "add_holidays_events") {
+            if (!school?.id) return;
+            const { addHolidaysEventsAction } = await import("@/app/actions/POST/addHolidaysEventsAction");
+            const res = await addHolidaysEventsAction(school.id);
+            if (res.success) {
+                successToast(res.message || "ימי החופשה נוספו בהצלחה", 3000);
+            } else {
+                errorToast(res.message || "שגיאה בהוספת ימי חופשה");
+            }
         }
         if (action === "clear_cache") {
             if (!school?.id) return;

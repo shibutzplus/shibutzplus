@@ -113,6 +113,11 @@ export const Icons = {
             <path fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" d="M368 368 144 144m224 0L144 368"></path>
         </>
     ), "currentColor", "currentColor", "0"),
+    closeBold: createIcon("0 0 512 512", (
+        <>
+            <path fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="54" d="M368 368 144 144m224 0L144 368"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
     delete: createIcon("0 0 24 24", (
         <>
             <path d="M7 4V2H17V4H22V6H20V21C20 21.5523 19.5523 22 19 22H5C4.44772 22 4 21.5523 4 21V6H2V4H7ZM6 6V20H18V6H6ZM9 9H11V17H9V9ZM13 9H15V17H13V9Z"></path>
@@ -186,6 +191,12 @@ export const Icons = {
     substituteTeacher: createIcon("0 0 24 24", (
         <>
             <path fill="none" d="M0 0h24v24H0z"></path><path d="M6.99 11 3 15l3.99 4v-3H14v-2H6.99zM21 9l-3.99-4v3H10v2h7.01v3z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    switchBold: createIcon("0 0 24 24", (
+        <>
+            <path d="M20.5 7.5L15 3v3H3.5v3H15v3L20.5 7.5z" />
+            <path d="M3.5 16.5L9 21v-3h11.5v-3H9v-3L3.5 16.5z" />
         </>
     ), "currentColor", "currentColor", "0"),
     teacher: createIcon("0 0 512 512", (
@@ -338,6 +349,13 @@ export const Icons = {
             <path fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" d="M85.57 446.25h340.86a32 32 0 0 0 28.17-47.17L284.18 82.58c-12.09-22.44-44.27-22.44-56.36 0L57.4 399.08a32 32 0 0 0 28.17 47.17"></path><path fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" d="m250.26 195.39 5.74 122 5.73-121.95a5.74 5.74 0 0 0-5.79-6h0a5.74 5.74 0 0 0-5.68 5.95"></path><path d="M256 397.25a20 20 0 1 1 20-20 20 20 0 0 1-20 20"></path>
         </>
     ), "currentColor", "currentColor", "0"),
+    repeat: createIcon("0 0 512 512", (
+        <>
+            <path fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" d="M320 120l48 48-48 48"></path>
+            <path fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" d="M352 168H144a80.24 80.24 0 0 0-80 80v16M192 392l-48-48 48-48"></path>
+            <path fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" d="M160 344h208a80.24 80.24 0 0 0 80-80v-16"></path>
+        </>
+    ), "none", "currentColor", "0"),
 };
 
 export default Icons;

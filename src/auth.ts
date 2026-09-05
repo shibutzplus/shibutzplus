@@ -180,6 +180,7 @@ export const { handlers, auth, signIn: authSignIn, signOut: authSignOut } = Next
                             token.schoolId = row.schoolId ?? undefined;
                             token.status = row.status ?? SCHOOL_STATUS.ONBOARDING;
                             token.createdAt = row.createdAt;
+                            token.isDemo = row.role === USER_ROLES.GUEST;
                         }
                     } catch (err) {
                         console.error("[AUTH_DEBUG] JWT callback failed during DB call:", err);

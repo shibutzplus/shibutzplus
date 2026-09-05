@@ -53,7 +53,7 @@ const EmptyTable: React.FC<EmptyTableProps> = ({
                     />
                     <ActionBtn
                         Icon={<Icons.event size={16} />}
-                        label="שיבוץ ארוע"
+                        label="שיבוץ אירוע"
                         isDisabled={true}
                         style={{
                             borderColor: EventColor,

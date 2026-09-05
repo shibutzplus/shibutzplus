@@ -11,14 +11,19 @@ export async function logErrorAction(params: LogParams) {
     const isNetworkError =
         lowercaseDescription.includes("failed to fetch") ||
         lowercaseDescription.includes("load failed") ||
-        lowercaseDescription.includes("network error");
+        lowercaseDescription.includes("network error") ||
+        lowercaseDescription.includes("no response") ||
+        lowercaseDescription.includes("abort") ||
+        lowercaseDescription.includes("socket hang up") ||
+        lowercaseDescription.includes("connection closed");
 
     if (isNetworkError) {
-        // Still log network errors but tag them so they can be filtered in queries
+        /* // Log Network Error - This was comment out as we dont really need this log. Network errors sometimes can happen
         await dbLog({
-            ...params,
-            metadata: { ...(params.metadata ?? {}), errorType: "network" }
+             ...params,
+             metadata: { ...(params.metadata ?? {}), errorType: "network" }
         });
+        */
         return { success: true };
     }
     await dbLog(params);

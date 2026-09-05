@@ -42,7 +42,7 @@ const DailyPublishActionBtns: React.FC = () => {
             <span title={isEmpty ? "אין נתונים לתצוגה מקדימה" : "תצוגה מקדימה"}>
                 <IconBtn
                     Icon={<Icons.eye size={24} />}
-                    onClick={togglePreviewMode}
+                    onClick={() => togglePreviewMode("teachers")}
                     hasBorder
                     disabled={isEmpty}
                 />

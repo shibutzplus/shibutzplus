@@ -1,5 +1,10 @@
 "use client";
 
+//
+//  Used in Public Portal (school-changes-full), Manager daily-build preview, and History print.
+//  Displays the full-screen daily schedule organized by teachers and events.
+//
+
 import React from "react";
 import { DailySchedule, ColumnType, ColumnTypeValues } from "@/models/types/dailySchedule";
 import { sortDailyColumnIdsByPosition } from "@/utils/sort";
@@ -11,7 +16,6 @@ import { successToast } from "@/lib/toast";
 import CommonDailySchoolFullEventCell from "./CommonDailySchoolFullEventCell";
 import { getStorage, setStorage, STORAGE_KEYS } from "@/lib/localStorage";
 import { TeacherType } from "@/models/types/teachers";
-import Icons from "@/style/icons";
 import styles from "./CommonDailySchoolFullTable.module.css";
 
 type CommonDailySchoolFullTableProps = {
@@ -202,6 +206,7 @@ const CommonDailySchoolFullTable: React.FC<CommonDailySchoolFullTableProps> = ({
 
                             let cellDisplay = {
                                 main: "",
+                                detail: "",
                                 sub: "",
                                 isMissing: false,
                                 isEmpty: true,
@@ -213,11 +218,13 @@ const CommonDailySchoolFullTable: React.FC<CommonDailySchoolFullTableProps> = ({
                                 const eventText = cellData?.event;
                                 cellDisplay.isEmpty = !eventText;
                                 cellDisplay.main = eventText || "";
+                                cellDisplay.detail = "";
                                 cellDisplay.isEvent = true;
                             } else {
-                                const { text, subTeacherName, isMissing, isEmpty, isActivity } = getCellDisplayData(cellData, type, appType);
+                                const { text, classNameText, rawSubjectName, subTeacherName, isMissing, isEmpty, isActivity } = getCellDisplayData(cellData, type, appType);
                                 cellDisplay = {
-                                    main: text,
+                                    main: classNameText || text,
+                                    detail: rawSubjectName || "",
                                     sub: subTeacherName || "",
                                     isMissing,
                                     isEmpty,
@@ -228,30 +235,24 @@ const CommonDailySchoolFullTable: React.FC<CommonDailySchoolFullTableProps> = ({
 
                             return (
                                 <div key={`${colId}-${row}`} className={styles.cell}>
-                                    {cellData?.comment && (
-                                        <span
-                                            className={styles.commentIcon}
-                                            title={cellData.comment}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                successToast(cellData.comment!);
-                                            }}
-                                            style={{ cursor: "pointer" }}
-                                        >
-                                            <Icons.messageSquare size={15} />
-                                        </span>
-                                    )}
                                     {!cellDisplay.isEmpty && (
                                         <>
                                             {cellDisplay.isEvent ? (
                                                 <CommonDailySchoolFullEventCell eventText={cellDisplay.main} />
                                             ) : (
                                                 <div className={`${styles.cellContent} ${cellDisplay.isActivity ? styles.activity : ""}`}>
-                                                    <span className={styles.mainText}>
-                                                        {cellDisplay.main}
-                                                    </span>
                                                     {cellDisplay.sub && <span className={styles.subText}>{cellDisplay.sub}</span>}
                                                     {cellDisplay.isMissing && !cellDisplay.sub && <span className={styles.missingText}>אין ממלא מקום</span>}
+                                                    {cellDisplay.main && (
+                                                        <span className={styles.detailText}>
+                                                            {cellDisplay.main}
+                                                        </span>
+                                                    )}
+                                                    {cellDisplay.detail && (
+                                                        <span className={styles.detailText}>
+                                                            {cellDisplay.detail}
+                                                        </span>
+                                                    )}
                                                 </div>
                                             )}
                                         </>

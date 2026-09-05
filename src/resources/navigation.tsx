@@ -172,6 +172,13 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
                 isGuestBlocked: true,
             },
             {
+                name: "הוספת חגים",
+                p: "#",
+                action: "add_holidays_events",
+                Icon: <span style={{ fontSize: "20px", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>🗓️</span>,
+                isGuestBlocked: true,
+            },
+            {
                 name: "ניקוי קאש",
                 p: "#",
                 action: "clear_cache",
@@ -206,6 +213,7 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
                 name: routePath.schoolChanges.menuTitle ?? routePath.schoolChanges.title,
                 p: routePath.schoolChanges.p,
                 Icon: <Icons.calendar size={24} />,
+                hasDivider: true,
             },
             {
                 name: (

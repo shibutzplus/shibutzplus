@@ -74,7 +74,7 @@ const DailyActionBtns: React.FC<DailyActionBtnsProps> = ({ position, useShortLab
             <ActionBtn
                 type={ColumnTypeValues.event}
                 Icon={<Icons.event size={16} />}
-                label={useShortLabels ? "ארוע" : "שיבוץ ארוע"}
+                label={useShortLabels ? "אירוע" : "שיבוץ אירוע"}
                 isDisabled={isLoading}
                 style={getButtonStyle(EventColor)}
                 func={() => handleActionClick(() => addNewEmptyColumn(ColumnTypeValues.event))}

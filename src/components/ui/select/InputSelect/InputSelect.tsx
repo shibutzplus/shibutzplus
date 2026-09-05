@@ -45,6 +45,7 @@ type InputSelectProps = {
     menuPortalTarget?: HTMLElement | null;
     menuWidth?: string;
     menuAlign?: "left" | "right";
+    isCompact?: boolean;
 };
 const InputSelect: React.FC<InputSelectProps> = ({
     label,
@@ -72,6 +73,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
     menuPortalTarget = (typeof document !== "undefined" ? document.body : null),
     menuWidth,
     menuAlign = "right",
+    isCompact = false,
 }) => {
     const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
     const [isMounted, setIsMounted] = useState(false);
@@ -145,6 +147,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
                     display: "grid",
                     gridTemplateColumns: "1fr auto",
                     minWidth: 0, // Allow shrinking below content size
+                    ...(isCompact ? { padding: "2px 2px 2px 0px" } : {}),
                 };
             },
             singleValue: (provided: any) => {
@@ -166,9 +169,23 @@ const InputSelect: React.FC<InputSelectProps> = ({
                     flexDirection: "row",
                     alignItems: "center",
                     justifyContent: isCentered ? "center" : "flex-start",
-                    padding: "0 5px",
+                    padding: isCompact ? "0 2px" : "0 5px",
                 };
             },
+            dropdownIndicator: (provided: any) => {
+                const base =
+                    typeof baseStyles.dropdownIndicator === "function"
+                        ? baseStyles.dropdownIndicator(provided)
+                        : provided;
+                return {
+                    ...base,
+                    padding: isCompact ? "0 2px 0 4px" : "0 4px 0 6px",
+                };
+            },
+            indicatorsContainer: (provided: any) => ({
+                ...provided,
+                padding: 0,
+            }),
             input: (provided: any) => ({
                 ...provided,
                 fontSize: fontSize || provided.fontSize,
@@ -242,6 +259,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
         caretColor,
         menuWidth,
         menuAlign,
+        isCompact,
     ]);
     const CustomSingleValue = (props: SingleValueProps<SelectOption>) => {
         const [isHovered, setIsHovered] = useState(false);
@@ -274,12 +292,12 @@ const InputSelect: React.FC<InputSelectProps> = ({
                         onMouseEnter={() => setIsHovered(true)}
                         onMouseLeave={() => setIsHovered(false)}
                         style={{
-                            marginRight: "9px",
+                            marginRight: "2px",
                             cursor: "pointer",
                             display: "flex",
                             alignItems: "center",
                             color: isHovered ? "red" : InputColor,
-                            padding: "0 6px",
+                            padding: "0 2px",
                             zIndex: 5,
                             position: "relative",
                             pointerEvents: "auto",

@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import { NextPage } from "next";
 import styles from "./FullScheduleView.module.css";
 import CommonDailySchoolFullTable from "@/components/tables/commonDailySchoolFull/CommonDailySchoolFullTable";
+import CommonDailyClassesFullTable from "@/components/tables/commonDailyClassesFull/CommonDailyClassesFullTable";
 import { usePortalContext } from "@/context/PortalContext";
 import Preloader from "@/components/ui/Preloader/Preloader";
 import NotPublished from "@/components/empty/NotPublished/NotPublished";
@@ -21,11 +22,11 @@ const FullScheduleViewPage: NextPage = () => {
         schoolId,
         mainPublishTable,
         fetchPublishScheduleData,
-        isDatesLoading,
-        hasFetched,
         settings,
         datesOptions,
-        isPublishLoading,
+        isLoading,
+        viewType,
+        hasClassChanges,
     } = usePortalContext();
 
     const [showError, setShowError] = React.useState(false);
@@ -50,6 +51,8 @@ const FullScheduleViewPage: NextPage = () => {
         return <ContactAdminError />;
     }
 
+    const showClasses = viewType === "classes" && hasClassChanges;
+
     const isShabbat = selectedDate ? getDayNumberByDateString(selectedDate) === 7 : false;
     const isPublished = datesOptions.some((d) => d.value === selectedDate);
     const getEmptyText = () => {
@@ -58,7 +61,7 @@ const FullScheduleViewPage: NextPage = () => {
         return "המערכת הבית ספרית לא פורסמה";
     };
 
-    if (!hasFetched || isDatesLoading || isPublishLoading) {
+    if (isLoading) {
         return (
             <div style={{ position: "relative", width: "100%", height: "100vh" }}>
                 <Preloader
@@ -76,15 +79,27 @@ const FullScheduleViewPage: NextPage = () => {
 
     return (
         <section className={styles.container}>
-            <CommonDailySchoolFullTable
-                mainDailyTable={mainPublishTable}
-                selectedDate={selectedDate}
-                EmptyTable={NotPublished}
-                emptyText={getEmptyText()}
-                fromHour={settings?.fromHour}
-                toHour={settings?.toHour}
-                appType="public"
-            />
+            {showClasses ? (
+                <CommonDailyClassesFullTable
+                    mainDailyTable={mainPublishTable}
+                    selectedDate={selectedDate}
+                    EmptyTable={NotPublished}
+                    emptyText={getEmptyText()}
+                    fromHour={settings?.fromHour}
+                    toHour={settings?.toHour}
+                    appType="public"
+                />
+            ) : (
+                <CommonDailySchoolFullTable
+                    mainDailyTable={mainPublishTable}
+                    selectedDate={selectedDate}
+                    EmptyTable={NotPublished}
+                    emptyText={getEmptyText()}
+                    fromHour={settings?.fromHour}
+                    toHour={settings?.toHour}
+                    appType="public"
+                />
+            )}
         </section>
     );
 };

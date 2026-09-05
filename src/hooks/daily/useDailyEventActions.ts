@@ -122,7 +122,7 @@ const useDailyEventActions = (
         data: { event?: string; subTeacher?: TeacherType },
     ) => {
         if (!school) return;
-        const currentPosition = mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.position || 0;
+        const currentPosition = mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.position ?? cellData.headerCol?.position ?? 0;
         const eventTitle = data.event || eventPlaceholder;
         const dailyCellData = addNewEventCell(school, cellData, columnId, selectedDate, eventTitle, currentPosition);
         if (dailyCellData) {
@@ -155,7 +155,7 @@ const useDailyEventActions = (
         event?: string,
     ) => {
         if (!school || event === undefined) return;
-        const currentPosition = mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.position || 0;
+        const currentPosition = mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.position ?? cellData.headerCol?.position ?? 0;
         const dailyCellData = addNewEventCell(school, cellData, columnId, selectedDate, event, currentPosition);
         if (dailyCellData) {
             const response = await updateDailyEventCellAction(dailyScheduleId, dailyCellData);
@@ -212,7 +212,9 @@ const useDailyEventActions = (
         const schoolId = school?.id;
         if (!schoolId) return false;
 
-        const currentPosition = mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.position || 0;
+        const currentPosition = mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.position
+            ?? Object.values(mainDailyTable[selectedDate]?.[columnId] || {})[0]?.headerCol?.position
+            ?? 0;
         const eventTitle = pastedColumnData["1"]?.headerCol?.headerEvent || formatTMDintoDMY(selectedDate);
 
         try {
@@ -266,7 +268,7 @@ const useDailyEventActions = (
                 });
             }
 
-            // Paste other cells - Prepare promises
+            // Paste other cells - Prepare promises with target column's position
             const cellPromises = Object.keys(pastedColumnData).map((hourKey) => {
                 const hour = parseInt(hourKey);
                 if (isNaN(hour) || hour === -1) return null;
@@ -274,12 +276,24 @@ const useDailyEventActions = (
                 const sourceCell = pastedColumnData[hourKey];
                 if (sourceCell.event === undefined) return null;
 
-                const dailyCellData = addNewEventCell(school, sourceCell, columnId, selectedDate, sourceCell.event || "", currentPosition);
+                // Ensure the pasted cell keeps the target column's position, not the copied column's position
+                const cellWithTargetPos: DailyScheduleCell = {
+                    ...sourceCell,
+                    headerCol: {
+                        ...(sourceCell.headerCol || {}),
+                        headerEvent: eventTitle,
+                        type: ColumnTypeValues.event,
+                        position: currentPosition,
+                    },
+                };
+
+                const dailyCellData = addNewEventCell(school, cellWithTargetPos, columnId, selectedDate, sourceCell.event || "", currentPosition);
                 if (!dailyCellData) return null;
 
                 return {
                     promise: addDailyEventCellAction(dailyCellData),
-                    sourceCell
+                    cellWithTargetPos,
+                    event: sourceCell.event,
                 };
             }).filter((item): item is NonNullable<typeof item> => item !== null);
 
@@ -291,15 +305,15 @@ const useDailyEventActions = (
                 let updatedSchedule = { ...prev };
 
                 results.forEach((response, index) => {
-                    const { sourceCell } = cellPromises[index];
+                    const { cellWithTargetPos, event } = cellPromises[index];
                     if (response?.success && response.data) {
                         updatedSchedule = updateAddCell(
                             response.data!.id,
                             updatedSchedule,
                             selectedDate,
-                            sourceCell,
+                            cellWithTargetPos,
                             columnId,
-                            { event: sourceCell.event },
+                            { event },
                             eventTitle
                         );
                     }

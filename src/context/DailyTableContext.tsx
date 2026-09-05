@@ -15,6 +15,10 @@ import { getAnnualScheduleAction } from "@/app/actions/GET/getAnnualScheduleActi
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
 import { getSystemRecommendationsAction } from "@/app/actions/GET/getSystemRecommendationsAction";
 import { deleteDailyColumnAction } from "@/app/actions/DELETE/deleteDailyColumnAction";
+import { deleteRecurringFromDateAction } from "@/app/actions/DELETE/deleteRecurringFromDateAction";
+import { makeColumnRecurringAction } from "@/app/actions/POST/makeColumnRecurringAction";
+import { updateRecurringFromDateAction, RecurringUpdateFields } from "@/app/actions/PUT/updateRecurringFromDateAction";
+import { detachRecurringColumnAction } from "@/app/actions/PUT/detachRecurringColumnAction";
 import { SyncItem, SyncChannel } from "@/services/sync/clientSyncService";
 import { mapAnnualTeachers, populateDailyScheduleTable, mapAnnualTeacherClasses, } from "@/services/daily/populate";
 import { initializeEmptyColumn } from "@/services/daily/setEmpty";
@@ -45,6 +49,8 @@ interface DailyTableContextType {
     teacherClassMap: TeacherClassMap;
     isLoading: boolean;
     isPreviewMode: boolean;
+    previewType: "teachers" | "classes";
+    setPreviewType: (type: "teachers" | "classes") => void;
     selectedDate: string;
     systemRecommendations: Record<string, Record<string, string[]>>;
     addNewEmptyColumn: (colType: ColumnType) => void;
@@ -85,9 +91,13 @@ interface DailyTableContextType {
     pasteEventColumn: (columnId: string, pastedColumnData: { [hour: string]: DailyScheduleCell }) => Promise<boolean>;
     daysSelectOptions: (short?: boolean) => SelectOption[];
     handleDayChange: (value: string) => void;
-    togglePreviewMode: () => void;
+    togglePreviewMode: (type?: "teachers" | "classes") => void;
     moveColumn: (columnId: string, direction: "left" | "right") => Promise<void>;
     setMainDailyTable: React.Dispatch<React.SetStateAction<DailySchedule>>;
+    makeColumnRecurring?: (columnId: string) => Promise<void>;
+    deleteRecurringFromDate?: (columnId: string, fromDate: string) => Promise<void>;
+    updateRecurringFromDate?: (columnId: string, fromDate: string, fields: RecurringUpdateFields, hourFilter?: number) => Promise<void>;
+    detachRecurringColumn?: (columnId: string, date: string) => Promise<string | undefined>;
 }
 
 const updateColumnPositionInSchedule = (
@@ -132,7 +142,19 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     const refreshScheduleRef = useRef<((items: SyncItem[]) => Promise<void> | void) | null>(null);
     usePollingUpdates(refreshScheduleRef, SCHEDULE_CHANNELS);
     const [isPreviewMode, setIsPreviewMode] = useState(false);
-    const togglePreviewMode = () => { setIsPreviewMode((prev) => !prev); };
+    const [previewType, setPreviewType] = useState<"teachers" | "classes">("teachers");
+    const togglePreviewMode = (type?: "teachers" | "classes") => {
+        if (type !== "teachers" && type !== "classes") {
+            setIsPreviewMode((prev) => !prev);
+            return;
+        }
+        if (isPreviewMode && previewType === type) {
+            setIsPreviewMode(false);
+        } else {
+            setPreviewType(type);
+            setIsPreviewMode(true);
+        }
+    };
     const { daysSelectOptions, selectedDate, handleDayChange } = useDailySelectedDate();
     const systemRecommendations = selectedDate ? (recommendationsCache[selectedDate] || {}) : {};
 
@@ -228,7 +250,14 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                         return newSchedule || prevTable;
                     });
                 } else {
-                    if (!isBackground) errorToast("חלה שגיאה באימות המשתמש. נא להתנתק ולהתחבר מחדש.");
+                    if (!isBackground) {
+                        logErrorAction({
+                            description: "Auth or data error fetching daily schedule data",
+                            schoolId: school?.id,
+                            metadata: { selectedDate }
+                        });
+                        errorToast("חלה שגיאה באימות המשתמש. נא להתנתק ולהתחבר מחדש.");
+                    }
                 }
             } catch (error) {
                 const msg = error instanceof Error ? error.message : String(error);
@@ -525,6 +554,171 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         }
     };
 
+    // ── Recurring column helpers ──────────────────────────────────────────────
+
+    const makeColumnRecurring = async (columnId: string): Promise<void> => {
+        if (!school?.id) return;
+        try {
+            const response = await makeColumnRecurringAction(school.id, selectedDate, columnId);
+            if (response.success && response.recColumnId) {
+                const recColumnId = response.recColumnId;
+                // Rename the column in local state from old columnId → recColumnId
+                setMainDailyTable(prev => {
+                    const newSchedule = { ...prev };
+                    if (newSchedule[selectedDate]?.[columnId]) {
+                        newSchedule[selectedDate] = { ...newSchedule[selectedDate] };
+                        newSchedule[selectedDate][recColumnId] = newSchedule[selectedDate][columnId];
+                        delete newSchedule[selectedDate][columnId];
+                    }
+                    return newSchedule;
+                });
+            } else {
+                logErrorAction({
+                    description: `Failed to make column recurring: ${response.message || "Unknown error"}`,
+                    schoolId: school?.id,
+                    metadata: { columnId, selectedDate }
+                });
+                errorToast("שגיאה בהגדרת האירוע כחוזר");
+            }
+        } catch (error) {
+            logErrorAction({
+                description: `Exception in makeColumnRecurring: ${error instanceof Error ? error.message : String(error)}`,
+                schoolId: school?.id,
+                metadata: { columnId, selectedDate }
+            });
+            errorToast("שגיאה בהגדרת האירוע כחוזר");
+        }
+    };
+
+    const deleteRecurringFromDate = async (columnId: string, fromDate: string): Promise<void> => {
+        if (!school?.id) return;
+        try {
+            const response = await deleteRecurringFromDateAction(school.id, columnId, fromDate);
+            if (response.success) {
+                // Remove all future dates that carry this columnId from local state
+                setMainDailyTable(prev => {
+                    const newSchedule = { ...prev };
+                    for (const date of Object.keys(newSchedule)) {
+                        if (date >= fromDate && newSchedule[date]?.[columnId]) {
+                            newSchedule[date] = { ...newSchedule[date] };
+                            delete newSchedule[date][columnId];
+                        }
+                    }
+                    return newSchedule;
+                });
+            } else {
+                logErrorAction({
+                    description: `Failed to delete recurring column from date: ${response.message || "Unknown error"}`,
+                    schoolId: school?.id,
+                    metadata: { columnId, fromDate }
+                });
+                errorToast("שגיאה במחיקת האירוע החוזר");
+            }
+        } catch (error) {
+            logErrorAction({
+                description: `Exception in deleteRecurringFromDate: ${error instanceof Error ? error.message : String(error)}`,
+                schoolId: school?.id,
+                metadata: { columnId, fromDate }
+            });
+            errorToast("שגיאה במחיקת האירוע החוזר");
+        }
+    };
+
+    const updateRecurringFromDate = async (
+        columnId: string,
+        fromDate: string,
+        fields: RecurringUpdateFields,
+        hourFilter?: number,
+    ): Promise<void> => {
+        if (!school?.id) return;
+        try {
+            const response = await updateRecurringFromDateAction(school.id, columnId, fromDate, fields, hourFilter);
+            if (response.success) {
+                setMainDailyTable(prev => {
+                    const newSchedule = { ...prev };
+                    for (const date of Object.keys(newSchedule)) {
+                        if (date >= fromDate && newSchedule[date]?.[columnId]) {
+                            newSchedule[date] = { ...newSchedule[date] };
+                            const col = { ...newSchedule[date][columnId] };
+                            if (hourFilter !== undefined) {
+                                const hourStr = String(hourFilter);
+                                const existingCell = col[hourStr] || {
+                                    hour: hourFilter,
+                                    headerCol: col["-1"]?.headerCol || col["1"]?.headerCol,
+                                };
+                                col[hourStr] = {
+                                    ...existingCell,
+                                    event: fields.event || undefined,
+                                };
+                            } else if (fields.eventTitle !== undefined) {
+                                Object.keys(col).forEach(h => {
+                                    if (col[h]?.headerCol) {
+                                        col[h] = {
+                                            ...col[h],
+                                            headerCol: { ...col[h].headerCol!, headerEvent: fields.eventTitle },
+                                        };
+                                    }
+                                });
+                            }
+                            newSchedule[date][columnId] = col;
+                        }
+                    }
+                    return newSchedule;
+                });
+            } else {
+                logErrorAction({
+                    description: `Failed to update recurring column from date: ${response.message || "Unknown error"}`,
+                    schoolId: school?.id,
+                    metadata: { columnId, fromDate, fields, hourFilter }
+                });
+                errorToast("שגיאה בעדכון האירוע החוזר");
+            }
+        } catch (error) {
+            logErrorAction({
+                description: `Exception in updateRecurringFromDate: ${error instanceof Error ? error.message : String(error)}`,
+                schoolId: school?.id,
+                metadata: { columnId, fromDate, fields, hourFilter }
+            });
+            errorToast("שגיאה בעדכון האירוע החוזר");
+        }
+    };
+
+    const detachRecurringColumn = async (columnId: string, date: string): Promise<string | undefined> => {
+        if (!school?.id) return undefined;
+        try {
+            const response = await detachRecurringColumnAction(school.id, columnId, date);
+            if (response.success && response.newColumnId) {
+                const newColumnId = response.newColumnId;
+                // Rename this specific date's column from rec_... to col_...
+                setMainDailyTable(prev => {
+                    const newSchedule = { ...prev };
+                    if (newSchedule[date]?.[columnId]) {
+                        newSchedule[date] = { ...newSchedule[date] };
+                        newSchedule[date][newColumnId] = newSchedule[date][columnId];
+                        delete newSchedule[date][columnId];
+                    }
+                    return newSchedule;
+                });
+                return newColumnId;
+            }
+            logErrorAction({
+                description: `Failed to detach recurring column: ${response.message || "Unknown error"}`,
+                schoolId: school?.id,
+                metadata: { columnId, date }
+            });
+            errorToast("שגיאה בניתוק העמודה מהסדרה");
+            return undefined;
+        } catch (error) {
+            logErrorAction({
+                description: `Exception in detachRecurringColumn: ${error instanceof Error ? error.message : String(error)}`,
+                schoolId: school?.id,
+                metadata: { columnId, date }
+            });
+            errorToast("שגיאה בניתוק העמודה מהסדרה");
+            return undefined;
+        }
+    };
+
     return (
         <DailyTableContext.Provider
             value={{
@@ -546,11 +740,16 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 addEventCell,
                 updateEventCell,
                 deleteEventCell,
+                previewType,
+                setPreviewType,
                 togglePreviewMode,
                 moveColumn,
-
                 pasteEventColumn,
                 setMainDailyTable,
+                makeColumnRecurring,
+                deleteRecurringFromDate,
+                updateRecurringFromDate,
+                detachRecurringColumn,
             }}
         >
             {children}

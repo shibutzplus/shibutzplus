@@ -18,7 +18,7 @@ import { USER_ROLES, AUTH_TYPE } from "@/models/constant/auth";
 import routes from "@/routes";
 import { DEFAULT_REDIRECT } from "@/routes/protectedAuth";
 
-const HeroSignInButton = (props: { title: string; className?: string }) => {
+const HeroSignInButton = (props: { title: string; className?: string; showGoogleIcon?: boolean }) => {
     const { data: session, status } = useSession();
     const [isLoading, setIsLoading] = useState(false);
     const searchParams = useSearchParams();
@@ -76,52 +76,12 @@ const HeroSignInButton = (props: { title: string; className?: string }) => {
                 gap: "10px",
             }}
         >
-            {isLoading ? <Loading /> : <Icons.google size={22} />} {props.title}
-        </button>
-    );
-};
-
-const DemoSignInButton = (props: { title: string; className?: string }) => {
-    const [isLoading, setIsLoading] = useState(false);
-    const router = useRouter();
-
-    const handleDemoSignIn = async () => {
-        setIsLoading(true);
-        try {
-            const res = await signIn("credentials", {
-                isDemo: "true",
-                redirect: false,
-                callbackUrl: "/daily-build?schoolId=ebrb8pj1ofvug78ratnbyd4o",
-            });
-
-            if (res?.error) {
-                errorToast(messages.auth.login.failed);
-                setIsLoading(false);
-            } else if (res?.url) {
-                router.push(res.url);
-            } else {
-                router.push("/daily-build?schoolId=ebrb8pj1ofvug78ratnbyd4o");
-            }
-        } catch {
-            errorToast(messages.common.serverError);
-            setIsLoading(false);
-        }
-    };
-
-    return (
-        <button
-            type="button"
-            className={props.className || styles.btnHero}
-            onClick={handleDemoSignIn}
-            disabled={isLoading}
-            style={{
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-            }}
-        >
-            {isLoading && <Loading />} {props.title}
+            {isLoading ? (
+                <Loading />
+            ) : props.showGoogleIcon !== false ? (
+                <Icons.google size={22} />
+            ) : null}{" "}
+            {props.title}
         </button>
     );
 };
@@ -149,7 +109,11 @@ export default function LandingPage() {
                 <div className={styles.navContent}>
                     <div className={styles.navLinks}>
                         <Suspense fallback={<Loading />}>
-                            <DemoSignInButton title="התנסות במערכת" className={styles.navLogin} />
+                            <HeroSignInButton
+                                title="התנסות במערכת"
+                                className={styles.navLogin}
+                                showGoogleIcon={false}
+                            />
                         </Suspense>
                         <button
                             type="button"

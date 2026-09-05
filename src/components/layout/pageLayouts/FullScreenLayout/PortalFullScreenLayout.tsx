@@ -20,7 +20,7 @@ export default function PortalFullScreenLayout({ children }: PortalFullScreenLay
 
     const pathname = usePathname();
     const nav = useRouter();
-    const { teacher, handleRefreshDates, refreshDailyScheduleTeacherPortal, handleIncomingSync } = usePortalContext();
+    const { teacher, handleRefreshDates, refreshDailyScheduleTeacherPortal, handleIncomingSync, viewType, setViewType, hasClassChanges, isLoading, toggleViewType, } = usePortalContext();
     const refreshRef = React.useRef<((items: SyncItem[]) => Promise<void> | void) | null>(null);
     const { resetUpdate } = usePollingUpdates(refreshRef);
 
@@ -79,13 +79,19 @@ export default function PortalFullScreenLayout({ children }: PortalFullScreenLay
 
     // Render children wrapped in FullScreenContainer
     return (
-        <FullScreenContainer onExit={() => {
-            if (teacher) {
-                nav.push(`${router.teacherChanges.p}/${teacher.schoolId}/${teacher.id}`);
-            } else {
-                nav.push(router.schoolChanges.p);
-            }
-        }}>
+        <FullScreenContainer
+            onExit={() => {
+                setViewType("teachers");
+                if (teacher) {
+                    nav.push(`${router.teacherChanges.p}/${teacher.schoolId}/${teacher.id}`);
+                } else {
+                    nav.push(router.schoolChanges.p);
+                }
+            }}
+            onSwitch={hasClassChanges ? toggleViewType : undefined}
+            isSwitched={viewType === "classes" && hasClassChanges}
+            isLoading={isLoading}
+        >
             {children}
         </FullScreenContainer>
     );

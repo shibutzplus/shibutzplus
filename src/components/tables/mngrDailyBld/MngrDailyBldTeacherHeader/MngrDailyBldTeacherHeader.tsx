@@ -237,7 +237,7 @@ const MngrDailyBldTeacherHeader: React.FC<MngrDailyBldTeacherHeaderProps> = ({
                                     className={styles.menuItem}
                                 >
                                     <Icons.messageSquare size={14} />
-                                    <span>הודעות</span>
+                                    <span>הודעה למורה</span>
                                 </div>
                             </>
                         )
@@ -263,6 +263,7 @@ const MngrDailyBldTeacherHeader: React.FC<MngrDailyBldTeacherHeaderProps> = ({
                         menuPortalTarget={null}
                         menuWidth="180px"
                         menuAlign="left"
+                        isCompact
                     />
                 </div>
             </div>

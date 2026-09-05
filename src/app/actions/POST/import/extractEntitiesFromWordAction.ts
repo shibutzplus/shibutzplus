@@ -50,7 +50,7 @@ function extractClassesFromText(paragraphs: string[]): string[] {
 const WORKGROUP_KEYWORDS = [
     "שילוב", "שהייה", "פרטני", "צוות", "ישיב", "ריכוז", "השתלמות", "ניהול", "תפקיד", "חלון",
     "הדרכה", "הכלה", "הוראה מותאמת", "מתיא", "מתי״א", "(ש)", "(פ)",
-    "רוחב", "עולים", "העצמה", "כיתת אומן", "מצוינות", "ספריה", "ספרייה", "חבורת זמר", "מקהלה", "תגבור", "סינקופה", "תיפוף", "קרן קרב", "-קרב"
+    "רוחב", "עולים", "העצמה", "כיתת אומן", "מצוינות", "ספריה", "ספרייה", "חבורת זמר", "מקהלה", "תגבור", "תיפוף", "קרן קרב", "-קרב"
 ];
 
 function isWorkGroupKeyword(text: string): boolean {
@@ -61,7 +61,7 @@ function isWorkGroupKeyword(text: string): boolean {
 /**
  * Extracts subjects and workGroups from both class and teacher schedule files.
  * - Lessons with real classes (e.g. "ב1", "ד3") are categorized as subjects.
- * - Lessons marked with "קבוצה" or containing presence/staff/workgroup keywords (שהייה, פרטני, רוחב, עולים, ספריה, סינקופה...) are categorized as workGroups.
+ * - Lessons marked with "קבוצה" or containing presence/staff/workgroup keywords (שהייה, פרטני, רוחב, עולים, ספריה...) are categorized as workGroups.
  */
 function extractSubjectsAndWorkGroups(
     classParagraphs: string[],
@@ -70,7 +70,7 @@ function extractSubjectsAndWorkGroups(
     const subjects = new Set<string>();
     const workGroups = new Set<string>();
 
-    // 1. From Class File
+    // 1. From Class File - all lessons taught in a class schedule are subjects
     classParagraphs.forEach(line => {
         if (line.includes("מערכת שעות")) return;
         const parts = line.split(",").map(p => p.trim());
@@ -80,15 +80,11 @@ function extractSubjectsAndWorkGroups(
             if (rawCandidate.startsWith("יום ") || rawCandidate.startsWith("שעה ")) return;
             const candidate = rawCandidate.replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019]/g, "").replace(/\s+/g, " ").trim();
             if (candidate.length >= 2) {
-                if (isWorkGroupKeyword(candidate)) {
-                    workGroups.add(candidate);
-                } else {
-                    subjects.add(candidate);
-                }
+                subjects.add(candidate);
+                workGroups.delete(candidate);
             }
         }
-    }
-);
+    });
 
     // 2. From Teacher File:
     teacherParagraphs.forEach(line => {
@@ -103,15 +99,15 @@ function extractSubjectsAndWorkGroups(
 
             const secondPart = parts[1] || "";
             const hasClassCode = !!normalizeClassCode(secondPart);
-            const isExplicitWorkGroup = secondPart === "קבוצה" || isWorkGroupKeyword(candidate) || isWorkGroupKeyword(secondPart);
+            const isExplicitWorkGroup = secondPart === "קבוצה" || (!hasClassCode && isWorkGroupKeyword(candidate)) || isWorkGroupKeyword(secondPart);
 
-            if (isExplicitWorkGroup) {
+            if (hasClassCode && secondPart !== "קבוצה") {
+                // Lesson is taught to a real class -> regular subject
+                subjects.add(candidate);
+                workGroups.delete(candidate);
+            } else if (isExplicitWorkGroup) {
                 workGroups.add(candidate);
                 subjects.delete(candidate);
-            } else if (hasClassCode) {
-                if (!workGroups.has(candidate)) {
-                    subjects.add(candidate);
-                }
             } else {
                 if (!subjects.has(candidate)) {
                     workGroups.add(candidate);

@@ -220,12 +220,12 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
                         onMouseEnter={() => setIsHovered(true)}
                         onMouseLeave={() => setIsHovered(false)}
                         style={{
-                            marginRight: "9px",
+                            marginRight: "2px",
                             cursor: "pointer",
                             display: "flex",
                             alignItems: "center",
                             color: isHovered ? "red" : "var(--text-color)",
-                            padding: "0 6px",
+                            padding: "0 2px",
                             zIndex: 5,
                             position: "relative",
                             pointerEvents: "auto",
