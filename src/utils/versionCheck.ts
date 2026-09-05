@@ -24,7 +24,7 @@ function isReloadingForVersion(): boolean {
  * Returns false when: versions match, CLIENT_BUILD_ID is unavailable (local
  * dev), the network request fails, or a reload is already underway.
  */
-export async function checkVersionAndReload(reloadDelayMs = 7000): Promise<boolean> {
+export async function checkVersionAndReload(reloadDelayMs = 6500): Promise<boolean> {
     if (typeof window === "undefined") return false;
     if (isReloadingForVersion()) return true; // Already reloading
 

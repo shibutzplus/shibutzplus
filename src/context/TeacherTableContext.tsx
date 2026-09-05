@@ -158,7 +158,7 @@ export const TeacherTableProvider: React.FC<TeacherTableProviderProps> = ({ chil
                 }
                 setMainPortalTable(portalSchedule);
             } else {
-                errorToast(messages.dailySchedule.error);
+                errorToast(response?.message || messages.dailySchedule.updateError);
             }
         } catch (error) {
             logErrorAction({ description: `Error updating daily schedule entry: ${error instanceof Error ? error.message : String(error)}`, schoolId: schoolId || undefined });

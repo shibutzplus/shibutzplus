@@ -7,8 +7,8 @@ import { apiAuthPrefix, authRoutes, DEFAULT_REDIRECT, GUEST_REDIRECT, GUEST_UNAU
 export const middleware = auth(async (req) => {
     const { nextUrl: url } = req;
 
-    // Skip NextAuth and public API routes (manifest for PWA, sync polling, cron jobs)
-    const publicApiRoutes = [apiAuthPrefix, "/api/manifest", "/api/sync/poll", "/api/cron", "/api/push/subscribe"];
+    // Skip NextAuth and public API routes (manifest for PWA, sync polling, cron jobs, version check)
+    const publicApiRoutes = [apiAuthPrefix, "/api/manifest", "/api/sync/poll", "/api/cron", "/api/push/subscribe", "/api/version"];
     const isPublicApiRoute = publicApiRoutes.some((route) => url.pathname.startsWith(route));
     if (isPublicApiRoute) {
         return NextResponse.next();
@@ -90,6 +90,6 @@ export const config = {
     // - Next.js internals (_next/static, _next/image)
     // - Static files (images, CSS, JS, etc.)
     matcher: [
-        "/((?!_next/static|_next/image|favicon.ico|api/auth|api/manifest|api/push/subscribe|api/sync/poll|api/cron|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|woff|woff2|ttf|eot|webmanifest|json)).*)",
+        "/((?!_next/static|_next/image|favicon.ico|api/auth|api/version|api/manifest|api/push/subscribe|api/sync/poll|api/cron|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|woff|woff2|ttf|eot|webmanifest|json)).*)",
     ],
 };

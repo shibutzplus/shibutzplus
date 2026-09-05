@@ -266,7 +266,8 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
         setSchoolId(newSchoolId);
         setSettings(newSettings);
         setDatesOptions(newDatesOptions);
-        setSelectedDate(newSelectedDate);
+        // Priority: Keep current selected date if it's already set and still valid in new options!
+        setSelectedDate(prev => (prev && newDatesOptions.some(o => o.value === prev)) ? prev : newSelectedDate);
         setHasUnpublishedFutureAbsences(newHasUnpublishedFutureAbsences);
 
         // Hydrate lists in usePublished
