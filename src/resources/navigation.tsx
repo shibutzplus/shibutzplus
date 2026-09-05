@@ -213,6 +213,7 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
                 name: routePath.schoolChanges.menuTitle ?? routePath.schoolChanges.title,
                 p: routePath.schoolChanges.p,
                 Icon: <Icons.calendar size={24} />,
+                hasDivider: true,
             },
             {
                 name: (

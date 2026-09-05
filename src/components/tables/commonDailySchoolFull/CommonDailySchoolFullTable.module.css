@@ -123,10 +123,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     width: 100%;
     height: 100%;
-    padding: 0.3vh 0.3vw;
+    padding: 1.5vh 0.3vw 0.3vh;
+    gap: 0.5vh;
 }
 
 .mainText {
@@ -136,18 +137,27 @@
     line-height: 1.1;
 }
 
+.detailText {
+    font-size: calc(var(--font-size) - 0.3vw);
+    color: #707070;
+    font-weight: 500;
+    line-height: 1.15;
+}
+
 .subText {
     font-size: var(--font-size);
     font-weight: bold;
     color: #444;
-    margin-top: 0.5vh;
+    line-height: 1.1;
+    margin-bottom: 0.4vh;
 }
 
 .missingText {
     font-size: var(--font-size);
     color: var(--missing-teacher-text-color);
-    margin-top: 0.5vh;
     font-weight: bold;
+    line-height: 1.1;
+    margin-bottom: 0.4vh;
 }
 
 .eventText {
@@ -347,18 +357,4 @@
         print-color-adjust: exact;
     }
 
-    .commentIcon {
-        display: none !important;
-    }
-}
-
-.commentIcon {
-    position: absolute;
-    left: 4px;
-    top: 4px;
-    color: var(--disabled-text-color);
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    z-index: 10;
 }

@@ -15,12 +15,14 @@ import { ClassType } from "@/models/types/classes";
 import { usePublished } from "@/hooks/portal/usePublished";
 import { ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
 import { SyncItem } from "@/services/sync/clientSyncService";
+import { buildClassSchedule } from "@/utils/dailyClassSchedule";
 
 interface PortalContextType {
     teacher: TeacherType | undefined;
     schoolId: string | undefined;
     settings: SchoolSettingsType | undefined;
     selectedDate: string;
+    hasClassChanges: boolean;
     isDatesLoading: boolean;
     handleDayChange: (value: string) => void;
     setTeacherAndSchool: (schoolId?: string, teacherId?: string) => Promise<boolean>;
@@ -62,6 +64,10 @@ interface PortalContextType {
     teachers?: TeacherType[];
     subjects?: SubjectType[];
     classes?: ClassType[];
+    viewType: "teachers" | "classes";
+    setViewType: React.Dispatch<React.SetStateAction<"teachers" | "classes">>;
+    toggleViewType: () => void;
+    isLoading: boolean;
 }
 
 const PortalContext = createContext<PortalContextType | undefined>(undefined);
@@ -89,6 +95,7 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
     const [hasUnpublishedFutureAbsences, setHasUnpublishedFutureAbsences] = useState<boolean>(false);
 
     const [selectedDate, setSelectedDate] = useState<string>("");
+    const [viewType, setViewType] = useState<"teachers" | "classes">("teachers");
 
     const [datesOptions, setDatesOptions] = useState<SelectOption[]>([]);
     const [isDatesLoading, setIsDatesLoading] = useState(false);
@@ -302,11 +309,26 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
         return { hasRelevantUpdate };
     };
 
+    const schedule = mainPublishTable?.[selectedDate];
+    const hasClassChanges = React.useMemo(() => {
+        if (!schedule) return false;
+        const classSchedule = buildClassSchedule(schedule, portalClasses, "public");
+        return Object.keys(classSchedule).length > 0;
+    }, [schedule, portalClasses]);
+
+    const isLoading = !hasFetched || isDatesLoading || isPublishLoading;
+
+    const toggleViewType = React.useCallback(() => {
+        setViewType((prev) => (prev === "teachers" ? "classes" : "teachers"));
+    }, []);
+
     const value: PortalContextType = {
         teacher,
         schoolId,
         settings,
         selectedDate,
+        hasClassChanges,
+        isLoading,
         isDatesLoading,
         handleDayChange,
         setTeacherAndSchool,
@@ -325,6 +347,9 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
         teachers: portalTeachers,
         subjects: portalSubjects,
         classes: portalClasses,
+        viewType,
+        setViewType,
+        toggleViewType,
     };
 
     return <PortalContext.Provider value={value}>{children}</PortalContext.Provider>;

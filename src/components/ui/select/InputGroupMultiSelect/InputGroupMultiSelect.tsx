@@ -13,7 +13,8 @@ import { customStyles } from "@/style/selectStyle";
 import { BorderRadiusInput, DarkTextColor, FontSize, InputBackgroundColor, } from "@/style/root";
 
 /**
- * AnnualCell - Teacher
+ * Note: Currently unused across the system (previously used in AnnualCell).
+ * Kept as an infrastructure component for multi-select with grouping (Groups) if needed in the future.
  */
 export interface InputGroupMultiSelectProps {
     label?: string;

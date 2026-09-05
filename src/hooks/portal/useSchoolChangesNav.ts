@@ -6,13 +6,15 @@ import router from "@/routes";
 
 export const useSchoolChangesNav = () => {
     const route = useRouter();
-    const { mainPublishTable, selectedDate, hasFetched, fetchPublishScheduleData } = usePortalContext();
+    const { mainPublishTable, selectedDate, hasFetched, fetchPublishScheduleData, setViewType } = usePortalContext();
     const [isLoading, setIsLoading] = useState(false);
 
     const columnCount = Object.keys(mainPublishTable[selectedDate] || {}).length;
 
     const navigateToSchoolChanges = async () => {
         if (isLoading) return;
+        
+        setViewType("teachers");
         
         let currentColumnCount = columnCount;
 

@@ -13,7 +13,7 @@ type CommonDailySchoolTeacherCellProps = {
 };
 
 const CommonDailySchoolTeacherCell: React.FC<CommonDailySchoolTeacherCellProps> = ({ cell, type, appType = "private" }) => {
-    const { text, subTeacherName, isEmpty, isActivity } = getCellDisplayData(cell, type, appType);
+    const { classNameText, rawSubjectName, text, subTeacherName, isEmpty, isActivity, isMissing } = getCellDisplayData(cell, type, appType);
 
     if (isEmpty) {
         return (
@@ -23,17 +23,31 @@ const CommonDailySchoolTeacherCell: React.FC<CommonDailySchoolTeacherCellProps> 
         );
     }
 
+    const firstDetail = classNameText || text;
+    const secondDetail = rawSubjectName || "";
+
     return (
         <div className={styles.cellContent}>
-            <div className={styles.innerCellContent}>
-                <span
-                    className={`${styles.textContent} ${isActivity ? styles.activityText : ""}`}
-                >
-                    {text}
-                </span>
+            <div className={styles.innerCellContent} style={{ gap: "4px", justifyContent: "center" }}>
                 {subTeacherName ? (
                     <div className={styles.subTeacherName}>{subTeacherName}</div>
+                ) : isMissing ? (
+                    <div className={styles.missingSubTeacherName}>אין ממלא מקום</div>
                 ) : null}
+                {firstDetail && (
+                    <span
+                        className={`${styles.detailText} ${isActivity ? styles.activityText : ""}`}
+                    >
+                        {firstDetail}
+                    </span>
+                )}
+                {secondDetail && (
+                    <span
+                        className={`${styles.detailText} ${isActivity ? styles.activityText : ""}`}
+                    >
+                        {secondDetail}
+                    </span>
+                )}
             </div>
         </div>
     );

@@ -9,9 +9,11 @@ import Preloader from "@/components/ui/Preloader/Preloader";
 import SlidingPanel from "@/components/ui/SlidingPanel/SlidingPanel";
 import FullScreenContainer from "@/components/layout/pageLayouts/FullScreenLayout/FullScreenContainer";
 import CommonDailySchoolFullTable from "@/components/tables/commonDailySchoolFull/CommonDailySchoolFullTable";
+import CommonDailyClassesFullTable from "@/components/tables/commonDailyClassesFull/CommonDailyClassesFullTable";
 import MngrDailyBldTable from "@/components/tables/mngrDailyBld/MngrDailyBldTable/MngrDailyBldTable";
 import TeacherDailyChangesTable from "@/components/tables/teacherDailyChanges/TeacherDailyChangesTable/TeacherDailyChangesTable";
 import TeacherCommentsPanelContent, { CommentPanelData } from "@/components/tables/teacherDailyChanges/TeacherCommentsPanelContent/TeacherCommentsPanelContent";
+import { buildClassSchedule } from "@/utils/dailyClassSchedule";
 import styles from "./DailySchedule.module.css";
 import { TeacherType } from "@/models/types/teachers";
 import { useEffect } from "react";
@@ -21,9 +23,9 @@ import MsgPopup from "@/components/popups/MsgPopup/MsgPopup";
 import { PortalType } from "@/models/types";
 
 const DailyScheduleContent: React.FC = () => {
-    const { isLoading, selectedDate, mainDailyTable, isPreviewMode, togglePreviewMode } =
+    const { isLoading, selectedDate, mainDailyTable, isPreviewMode, previewType, setPreviewType, togglePreviewMode } =
         useDailyTableContext();
-    const { settings } = useMainContext();
+    const { settings, classes: mainClasses } = useMainContext();
     const { openPopup } = usePopup();
     const { fetchTeacherScheduleDate, resetSchedule } = useTeacherTableContext();
     const [isPanelOpen, setIsPanelOpen] = useState<boolean>(false);
@@ -81,6 +83,15 @@ const DailyScheduleContent: React.FC = () => {
         }
     }, [session, openPopup]);
 
+    const schedule = mainDailyTable?.[selectedDate];
+    const hasClassChanges = React.useMemo(() => {
+        if (!schedule) return false;
+        const classSchedule = buildClassSchedule(schedule, mainClasses, "private");
+        return Object.keys(classSchedule).length > 0;
+    }, [schedule, mainClasses]);
+
+    const showClasses = previewType === "classes" && hasClassChanges;
+
     if (isLoading)
         return (
             <div
@@ -95,18 +106,35 @@ const DailyScheduleContent: React.FC = () => {
             </div>
         );
 
-
     return (
         <section className={styles.container}>
             {isPreviewMode ? (
-                <FullScreenContainer onExit={togglePreviewMode}>
-                    <CommonDailySchoolFullTable
-                        mainDailyTable={mainDailyTable}
-                        selectedDate={selectedDate}
-                        fromHour={settings?.fromHour}
-                        toHour={settings?.toHour}
-                        onTeacherClick={handlePreviewTeacherClick}
-                    />
+                <FullScreenContainer
+                    onExit={() => togglePreviewMode()}
+                    onSwitch={
+                        hasClassChanges
+                            ? () => setPreviewType(previewType === "teachers" ? "classes" : "teachers")
+                            : undefined
+                    }
+                    isSwitched={showClasses}
+                    isLoading={isLoading}
+                >
+                    {showClasses ? (
+                        <CommonDailyClassesFullTable
+                            mainDailyTable={mainDailyTable}
+                            selectedDate={selectedDate}
+                            fromHour={settings?.fromHour}
+                            toHour={settings?.toHour}
+                        />
+                    ) : (
+                        <CommonDailySchoolFullTable
+                            mainDailyTable={mainDailyTable}
+                            selectedDate={selectedDate}
+                            fromHour={settings?.fromHour}
+                            toHour={settings?.toHour}
+                            onTeacherClick={handlePreviewTeacherClick}
+                        />
+                    )}
                 </FullScreenContainer>
             ) : (
                 <>
@@ -139,7 +167,7 @@ const DailyScheduleContent: React.FC = () => {
                 onClose={() => setIsPanelOpen(false)}
                 title={
                     panelMode === "comments" && commentPanelData
-                        ? `הודעות עבור ${commentPanelData.teacherName} והמורים המחליפים`
+                        ? `הודעות ל${commentPanelData.teacherName} והמורים המחליפים`
                         : `הנחיות של ${teacher?.name || ""} לממלא המקום`
                 }
                 subtitle={null}

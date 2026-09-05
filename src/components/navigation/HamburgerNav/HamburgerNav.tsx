@@ -43,6 +43,7 @@ const LinkComponent: React.FC<LinkComponentProps> = ({ link, onClose, currentPat
     const userRole = (session?.user as any)?.role;
     const shouldShowGuestPopup = isGuestUser && link.isGuestBlocked;
     const { handleOpenGuestPopup } = useGuestModePopup();
+    const portalContext = useOptionalPortalContext();
 
     // Preserve ?schoolId for ADMIN users
     // This is important for debugging and testing as we loose schoolId when we navigate to a different page
@@ -65,6 +66,9 @@ const LinkComponent: React.FC<LinkComponentProps> = ({ link, onClose, currentPat
                         e.preventDefault();
                         handleOpenGuestPopup();
                         return;
+                    }
+                    if (link.p.includes(routePath.schoolChanges.p) || link.p.includes(routePath.schoolChangesFull.p)) {
+                        portalContext?.setViewType("teachers");
                     }
                     if (link.action && onAction) {
                         e.preventDefault();

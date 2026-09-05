@@ -47,7 +47,9 @@ export async function getPublishScheduleQueryAction(): Promise<{
         });
 
         const formatted: PublishScheduleQueryResult[] = rows.map((r) => {
-            const dates = Array.isArray(r.publishDates) ? [...r.publishDates].sort() : [];
+            const dates = Array.isArray(r.publishDates)
+                ? [...r.publishDates].sort((a, b) => b.localeCompare(a))
+                : [];
             return {
                 id: r.id,
                 name: r.name,
@@ -55,7 +57,7 @@ export async function getPublishScheduleQueryAction(): Promise<{
                 fromHour: r.fromHour ?? 1,
                 toHour: r.toHour ?? 10,
                 publishDates: dates,
-                lastPublishDate: dates.length > 0 ? dates[dates.length - 1] : null,
+                lastPublishDate: dates.length > 0 ? dates[0] : null,
                 totalPublishedDays: dates.length,
             };
         });

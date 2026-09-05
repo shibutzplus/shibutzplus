@@ -49,6 +49,8 @@ interface DailyTableContextType {
     teacherClassMap: TeacherClassMap;
     isLoading: boolean;
     isPreviewMode: boolean;
+    previewType: "teachers" | "classes";
+    setPreviewType: (type: "teachers" | "classes") => void;
     selectedDate: string;
     systemRecommendations: Record<string, Record<string, string[]>>;
     addNewEmptyColumn: (colType: ColumnType) => void;
@@ -89,7 +91,7 @@ interface DailyTableContextType {
     pasteEventColumn: (columnId: string, pastedColumnData: { [hour: string]: DailyScheduleCell }) => Promise<boolean>;
     daysSelectOptions: (short?: boolean) => SelectOption[];
     handleDayChange: (value: string) => void;
-    togglePreviewMode: () => void;
+    togglePreviewMode: (type?: "teachers" | "classes") => void;
     moveColumn: (columnId: string, direction: "left" | "right") => Promise<void>;
     setMainDailyTable: React.Dispatch<React.SetStateAction<DailySchedule>>;
     makeColumnRecurring?: (columnId: string) => Promise<void>;
@@ -140,7 +142,19 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     const refreshScheduleRef = useRef<((items: SyncItem[]) => Promise<void> | void) | null>(null);
     usePollingUpdates(refreshScheduleRef, SCHEDULE_CHANNELS);
     const [isPreviewMode, setIsPreviewMode] = useState(false);
-    const togglePreviewMode = () => { setIsPreviewMode((prev) => !prev); };
+    const [previewType, setPreviewType] = useState<"teachers" | "classes">("teachers");
+    const togglePreviewMode = (type?: "teachers" | "classes") => {
+        if (type !== "teachers" && type !== "classes") {
+            setIsPreviewMode((prev) => !prev);
+            return;
+        }
+        if (isPreviewMode && previewType === type) {
+            setIsPreviewMode(false);
+        } else {
+            setPreviewType(type);
+            setIsPreviewMode(true);
+        }
+    };
     const { daysSelectOptions, selectedDate, handleDayChange } = useDailySelectedDate();
     const systemRecommendations = selectedDate ? (recommendationsCache[selectedDate] || {}) : {};
 
@@ -726,6 +740,8 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 addEventCell,
                 updateEventCell,
                 deleteEventCell,
+                previewType,
+                setPreviewType,
                 togglePreviewMode,
                 moveColumn,
                 pasteEventColumn,
