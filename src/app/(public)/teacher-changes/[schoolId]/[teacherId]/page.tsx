@@ -12,7 +12,7 @@ import NotPublished from "@/components/empty/NotPublished/NotPublished";
 import { getDayNumberByDateString } from "@/utils/time";
 import { getTeacherPortalDataAction } from "@/app/actions/GET/getTeacherPortalDataAction";
 import { populatePortalTable } from "@/services/portalTeacherService";
-import { setStorageTeacher } from "@/lib/localStorage";
+import { setStorageTeacher, removeStorageTeacher } from "@/lib/localStorage";
 import styles from "./teacherPortal.module.css";
 
 export const runtime = 'edge';
@@ -36,6 +36,7 @@ const TeacherPortalPage: NextPage = () => {
             const data = await getTeacherPortalDataAction(schoolId, teacherId);
 
             if (!data.success || !data.teacher || !data.settings || !data.datesOptions || !data.selectedDate) {
+                removeStorageTeacher();
                 route.push(`${router.teacherSignIn.p}/${schoolId}`);
                 return;
             }

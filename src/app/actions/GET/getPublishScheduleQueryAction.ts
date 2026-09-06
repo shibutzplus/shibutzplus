@@ -62,6 +62,17 @@ export async function getPublishScheduleQueryAction(): Promise<{
             };
         });
 
+        formatted.sort((a, b) => {
+            const dateA = a.lastPublishDate || "";
+            const dateB = b.lastPublishDate || "";
+            if (!dateA && !dateB) return a.name.localeCompare(b.name, "he");
+            if (!dateA) return 1;
+            if (!dateB) return -1;
+            const cmp = dateB.localeCompare(dateA);
+            if (cmp !== 0) return cmp;
+            return a.name.localeCompare(b.name, "he");
+        });
+
         return {
             success: true,
             data: formatted,

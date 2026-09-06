@@ -212,19 +212,35 @@ export default function QueriesContent() {
 
     // Sort publish data
     const sortedPublishData = useMemo(() => {
-        if (!sortConfig) return filteredPublishData;
+        if (!sortConfig) {
+            return [...filteredPublishData].sort((a, b) => {
+                const dateA = a.lastPublishDate || "";
+                const dateB = b.lastPublishDate || "";
+                if (!dateA && !dateB) return a.name.localeCompare(b.name, "he");
+                if (!dateA) return 1;
+                if (!dateB) return -1;
+                const cmp = dateB.localeCompare(dateA);
+                if (cmp !== 0) return cmp;
+                return a.name.localeCompare(b.name, "he");
+            });
+        }
         const { key, direction } = sortConfig;
         return [...filteredPublishData].sort((a: any, b: any) => {
-            let valA = a[key] ?? "";
-            let valB = b[key] ?? "";
             if (key === "totalPublishedDays") {
                 const diff = (a.totalPublishedDays || a.publishDates?.length || 0) - (b.totalPublishedDays || b.publishDates?.length || 0);
                 return direction === "asc" ? diff : -diff;
             }
             if (key === "publishDates") {
-                valA = a.publishDates?.join(",") ?? "";
-                valB = b.publishDates?.join(",") ?? "";
+                const dateA = a.lastPublishDate || "";
+                const dateB = b.lastPublishDate || "";
+                if (!dateA && !dateB) return 0;
+                if (!dateA) return 1;
+                if (!dateB) return -1;
+                const cmp = dateA.localeCompare(dateB);
+                return direction === "asc" ? cmp : -cmp;
             }
+            const valA = a[key] ?? "";
+            const valB = b[key] ?? "";
             const cmp = String(valA).localeCompare(String(valB), "he", { numeric: true, sensitivity: "base" });
             return direction === "asc" ? cmp : -cmp;
         });
@@ -454,6 +470,7 @@ export default function QueriesContent() {
                         value={selectedQuery}
                         onChange={(e) => {
                             setSelectedQuery(e.target.value);
+                            setSearchFilter("");
                             setSelectedIds([]);
                             setSortConfig(null);
                         }}
