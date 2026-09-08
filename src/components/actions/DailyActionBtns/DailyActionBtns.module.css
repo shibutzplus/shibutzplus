@@ -56,3 +56,27 @@
 .borderBottom {
     border-bottom: 10px solid var(--btn-color) !important;
 }
+
+.autoAssignIconBtn {
+    width: var(--input-height) !important;
+    height: var(--input-height) !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: none !important;
+    background-color: transparent !important;
+    cursor: pointer !important;
+    transition: transform 0.2s ease, opacity 0.2s ease !important;
+    opacity: 0.85;
+}
+
+.autoAssignIconBtn:not(:disabled):hover {
+    transform: scale(1.15) !important;
+    opacity: 1 !important;
+}
+
+.autoAssignIconBtn:disabled {
+    cursor: not-allowed !important;
+    opacity: 0.3 !important;
+}

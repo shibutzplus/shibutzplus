@@ -16,7 +16,8 @@ export type PopupType =
     | "editImportCell"
     | "reasonPopup"
     | "broadcast_message"
-    | "recurringChoice";
+    | "recurringChoice"
+    | "autoAssignPopup";
 
 export const PopupAction: Record<PopupType, PopupType> = {
     deleteTeacher: "deleteTeacher",
@@ -31,6 +32,7 @@ export const PopupAction: Record<PopupType, PopupType> = {
     reasonPopup: "reasonPopup",
     broadcast_message: "broadcast_message",
     recurringChoice: "recurringChoice",
+    autoAssignPopup: "autoAssignPopup",
 };
 
 interface PopupContextType {

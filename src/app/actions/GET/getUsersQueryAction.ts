@@ -1,7 +1,7 @@
 "use server";
 
 import { db, schema, executeQuery } from "@/db";
-import { asc, eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { auth } from "@/auth";
 import { USER_ROLES } from "@/models/constant/auth";
 
@@ -12,6 +12,7 @@ export interface UserQueryResult {
     role: string;
     schoolId: string | null;
     schoolName: string | null;
+    createdAt?: string | null;
 }
 
 export async function getUsersQueryAction(isActive = true): Promise<{
@@ -38,11 +39,12 @@ export async function getUsersQueryAction(isActive = true): Promise<{
                     role: schema.users.role,
                     schoolId: schema.users.schoolId,
                     schoolName: schema.schools.name,
+                    createdAt: schema.users.createdAt,
                 })
                 .from(schema.users)
                 .leftJoin(schema.schools, eq(schema.users.schoolId, schema.schools.id))
                 .where(eq(schema.users.isActive, isActive))
-                .orderBy(asc(schema.users.name));
+                .orderBy(desc(schema.users.createdAt));
         });
 
         const formatted: UserQueryResult[] = rows.map((r) => ({
@@ -52,6 +54,7 @@ export async function getUsersQueryAction(isActive = true): Promise<{
             role: r.role,
             schoolId: r.schoolId || null,
             schoolName: r.schoolName || null,
+            createdAt: r.createdAt ? new Date(r.createdAt).toISOString() : null,
         }));
 
         return {

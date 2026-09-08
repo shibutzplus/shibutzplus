@@ -65,7 +65,7 @@ export async function updateDailyTeacherCommentAction(
         revalidateTag(cacheTags.dailySchedule(schoolId, date));
         revalidateTag(cacheTags.schoolSchedule(schoolId));
 
-        void pushSyncUpdateServer(DAILY_TEACHER_COL_DATA_CHANGED, { schoolId, date });
+        await pushSyncUpdateServer(DAILY_TEACHER_COL_DATA_CHANGED, { schoolId, date });
 
         return { success: true, message: "הערה עודכנה בהצלחה" };
     } catch (error) {

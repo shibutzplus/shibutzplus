@@ -106,7 +106,7 @@ export async function updateDailyTeacherCellAction(
         revalidateTag(cacheTags.schoolSchedule(school.id));
         revalidateTag(cacheTags.dailySchedule(school.id, dateString));
 
-        void pushSyncUpdateServer(DAILY_TEACHER_COL_DATA_CHANGED, { schoolId: school.id, date: dateString });
+        await pushSyncUpdateServer(DAILY_TEACHER_COL_DATA_CHANGED, { schoolId: school.id, date: dateString });
 
         return {
             success: true,

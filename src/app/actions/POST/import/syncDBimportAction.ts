@@ -154,7 +154,7 @@ export const syncAllEntityValuesAction = async (
         }
         revalidateTag(cacheTags.schoolSchedule(targetSchoolId));
 
-        void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: targetSchoolId });
+        await pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: targetSchoolId });
         return { success: true, message: "Database updated successfully" };
     } catch (error: any) {
         dbLog({
@@ -327,7 +327,7 @@ export async function saveTeacherScheduleAction(
 
         // Invalidate annual schedule cache
         clearAnnualScheduleCache(targetSchoolId);
-        void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: targetSchoolId });
+        await pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: targetSchoolId });
 
         return { success: true, message: `המערכת נשמרה בהצלחה!` };
 
@@ -526,7 +526,7 @@ export async function saveAllTeachersSchedulesAction(
         revalidatePath('/annual-view');
 
         clearAnnualScheduleCache(targetSchoolId);
-        void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: targetSchoolId });
+        await pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: targetSchoolId });
 
         return { success: true, message: `כל המערכות נשמרו בהצלחה!` };
 

@@ -38,7 +38,7 @@ export async function clearSchoolPublishDatesAction(schoolIds: string[]): Promis
             revalidateTag(cacheTags.school(schoolId));
             revalidateTag(cacheTags.schoolSchedule(schoolId));
             revalidatePath(`/(public)/teacher-changes/${schoolId}`, "page");
-            void pushSyncUpdateServer(DAILY_PUBLISH_DATA_CHANGED, { schoolId });
+            await pushSyncUpdateServer(DAILY_PUBLISH_DATA_CHANGED, { schoolId });
         }
 
         revalidatePath("/(public)/school-changes", "page");

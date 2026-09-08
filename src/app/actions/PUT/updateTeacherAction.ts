@@ -165,7 +165,7 @@ export async function updateTeacherAction(
         revalidateTag(cacheTags.teachersList(teacherData.schoolId));
         revalidateTag(cacheTags.schoolSchedule(teacherData.schoolId));
 
-        void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: teacherData.schoolId });
+        await pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: teacherData.schoolId });
 
         // Check for matching free text in daily schedule (Performance optimized: indexed, limited, future-only)
         const today = new Date().toISOString().split('T')[0];

@@ -51,9 +51,9 @@ export async function deleteDailyCellAction(
                 revalidateTag(cacheTags.dailySchedule(schoolId, date));
 
                 if (deletedType === ColumnTypeValues.event) {
-                    void pushSyncUpdateServer(DAILY_EVENT_COL_DATA_CHANGED, { schoolId, date });
+                    await pushSyncUpdateServer(DAILY_EVENT_COL_DATA_CHANGED, { schoolId, date });
                 } else if (deletedType === ColumnTypeValues.missingTeacher || deletedType === ColumnTypeValues.existingTeacher) {
-                    void pushSyncUpdateServer(DAILY_TEACHER_COL_DATA_CHANGED, { schoolId, date });
+                    await pushSyncUpdateServer(DAILY_TEACHER_COL_DATA_CHANGED, { schoolId, date });
                 }
             }
 

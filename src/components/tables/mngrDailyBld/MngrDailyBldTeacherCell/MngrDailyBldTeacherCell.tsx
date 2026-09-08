@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { getDayNameByDateString } from "@/utils/time";
 import styles from "./MngrDailyBldTeacherCell.module.css";
 import { useMainContext } from "@/context/MainContext";
@@ -30,7 +30,6 @@ const MngrDailyBldTeacherCell: React.FC<MngrDailyBldTeacherCellProps> = ({ colum
         updateTeacherCell,
         clearTeacherCell,
         teacherClassMap,
-        systemRecommendations, // Get from context
     } = useDailyTableContext();
 
     const hour = cell?.hour;
@@ -44,6 +43,10 @@ const MngrDailyBldTeacherCell: React.FC<MngrDailyBldTeacherCellProps> = ({ colum
     const [selectedSubTeacher, setSelectedSubTeacher] = useState<string>(
         subTeacherData?.name || teacherText || "",
     );
+
+    useEffect(() => {
+        setSelectedSubTeacher(subTeacherData?.name || teacherText || "");
+    }, [subTeacherData?.name, teacherText]);
 
     const day = getDayNameByDateString(selectedDate);
 
@@ -60,20 +63,6 @@ const MngrDailyBldTeacherCell: React.FC<MngrDailyBldTeacherCellProps> = ({ colum
         [classes],
     );
 
-    // Calculate recommended IDs
-    const recommendedTeacherIds = useMemo(() => {
-        if (hour === undefined || !headerData?.headerTeacher?.name || !systemRecommendations) return [];
-        const hourStr = hour.toString();
-        const teacherName = headerData.headerTeacher.name;
-
-        const recommendedNames = systemRecommendations[hourStr]?.[teacherName] || [];
-        if (recommendedNames.length === 0) return [];
-
-        return recommendedNames
-            .map(name => teachers?.find(t => t.name === name)?.id)
-            .filter((id): id is string => !!id);
-    }, [hour, headerData?.headerTeacher?.name, systemRecommendations, teachers]);
-
     const sortedTeacherOptions = useMemo(
         () =>
             sortDailyTeachers(
@@ -86,14 +75,12 @@ const MngrDailyBldTeacherCell: React.FC<MngrDailyBldTeacherCellProps> = ({ colum
                 classNameById,
                 headerData?.headerTeacher?.id,
                 classActivityById,
-                recommendedTeacherIds,
+                [],
                 columnId,
             ),
         [
             teachers,
             mapAvailableTeachers,
-            mainDailyTable,
-            selectedDate,
             mainDailyTable,
             selectedDate,
             hour,
@@ -103,7 +90,6 @@ const MngrDailyBldTeacherCell: React.FC<MngrDailyBldTeacherCellProps> = ({ colum
             subTeacherData,
             teacherText,
             classActivityById,
-            recommendedTeacherIds,
             columnId,
         ],
     );

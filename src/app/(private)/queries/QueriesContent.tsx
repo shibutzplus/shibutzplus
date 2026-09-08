@@ -87,9 +87,9 @@ export default function QueriesContent() {
                 if (prev.direction === "asc") {
                     return { key, direction: "desc" };
                 }
-                return null;
+                return { key, direction: "asc" };
             }
-            return { key, direction: "asc" };
+            return { key, direction: key === "createdAt" || key === "timeStamp" ? "desc" : "asc" };
         });
     };
 
@@ -201,12 +201,13 @@ export default function QueriesContent() {
         const q = searchFilter.toLowerCase();
         return publishData.filter((item) => {
             const nameMatch = item.name?.toLowerCase().includes(q);
+            const deputyMatch = item.deputyName?.toLowerCase().includes(q);
             const idMatch = item.id?.toLowerCase().includes(q);
             const cityMatch = item.city?.toLowerCase().includes(q);
             const dateMatch = item.publishDates?.some(
                 (d) => d.toLowerCase().includes(q) || formatTMDintoDMY(d).toLowerCase().includes(q)
             );
-            return nameMatch || idMatch || cityMatch || dateMatch;
+            return nameMatch || deputyMatch || idMatch || cityMatch || dateMatch;
         });
     }, [publishData, searchFilter]);
 
@@ -258,15 +259,22 @@ export default function QueriesContent() {
             const roleMatch = item.role?.toLowerCase().includes(q) || roleText.toLowerCase().includes(q);
             const schoolIdMatch = item.schoolId?.toLowerCase().includes(q);
             const schoolNameMatch = item.schoolName?.toLowerCase().includes(q);
-            return nameMatch || emailMatch || idMatch || roleMatch || schoolIdMatch || schoolNameMatch;
+            const dateStr = item.createdAt ? formatDateTime(item.createdAt) : "";
+            const dateMatch = dateStr.toLowerCase().includes(q) || Boolean(item.createdAt?.toLowerCase().includes(q));
+            return nameMatch || emailMatch || idMatch || roleMatch || schoolIdMatch || schoolNameMatch || dateMatch;
         });
     }, [usersData, searchFilter]);
 
     // Sort users data
     const sortedUsersData = useMemo(() => {
-        if (!sortConfig) return filteredUsersData;
-        const { key, direction } = sortConfig;
+        const config = sortConfig || { key: "createdAt", direction: "desc" as SortDirection };
+        const { key, direction } = config;
         return [...filteredUsersData].sort((a: any, b: any) => {
+            if (key === "createdAt") {
+                const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+                const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+                return direction === "asc" ? dateA - dateB : dateB - dateA;
+            }
             let valA = a[key] ?? "";
             let valB = b[key] ?? "";
             if (key === "role") {
@@ -469,10 +477,15 @@ export default function QueriesContent() {
                         className={styles.selectInput}
                         value={selectedQuery}
                         onChange={(e) => {
-                            setSelectedQuery(e.target.value);
+                            const val = e.target.value;
+                            setSelectedQuery(val);
                             setSearchFilter("");
                             setSelectedIds([]);
-                            setSortConfig(null);
+                            if (val === "users" || val === "inactive_users") {
+                                setSortConfig({ key: "createdAt", direction: "desc" });
+                            } else {
+                                setSortConfig(null);
+                            }
                         }}
                     >
                         {QUERY_OPTIONS.map((opt) => (
@@ -639,9 +652,8 @@ export default function QueriesContent() {
                                             )}
                                             {renderSortHeader("מזהה בית ספר", "id", "160px")}
                                             {renderSortHeader("שם בית ספר", "name", "160px")}
+                                            {renderSortHeader("שם הסגנית", "deputyName", "150px")}
                                             {renderSortHeader("עיר", "city", "130px")}
-                                            {renderSortHeader("שעות (מ-עד)", "fromHour", "110px")}
-                                            {renderSortHeader("מספר ימים", "totalPublishedDays", "105px")}
                                             {renderSortHeader("תאריכים שפורסמו", "publishDates")}
                                         </tr>
                                     </thead>
@@ -667,19 +679,18 @@ export default function QueriesContent() {
                                                         {item.name}
                                                     </td>
                                                     <td>
+                                                        {item.deputyName ? (
+                                                            <span style={{ color: "#334155" }}>{item.deputyName}</span>
+                                                        ) : (
+                                                            <span style={{ color: "#94a3b8" }}>—</span>
+                                                        )}
+                                                    </td>
+                                                    <td>
                                                         {item.city ? (
                                                             <span style={{ color: "#334155" }}>{item.city}</span>
                                                         ) : (
                                                             <span style={{ color: "#94a3b8" }}>—</span>
                                                         )}
-                                                    </td>
-                                                    <td style={{ textAlign: "center", color: "#475569", fontWeight: 500, direction: "ltr" }}>
-                                                        {item.fromHour} - {item.toHour}
-                                                    </td>
-                                                    <td style={{ textAlign: "center" }}>
-                                                        <span className={styles.dateCountBadge}>
-                                                            {item.totalPublishedDays || item.publishDates?.length || 0}
-                                                        </span>
                                                     </td>
                                                     <td>
                                                         <div className={styles.dateChipList}>
@@ -725,6 +736,7 @@ export default function QueriesContent() {
                                                     />
                                                 </th>
                                             )}
+                                            {renderSortHeader("נרשם", "createdAt", "150px")}
                                             {renderSortHeader("קוד בית ספר", "schoolId", "140px")}
                                             {renderSortHeader("שם בית ספר", "schoolName", "160px")}
                                             {renderSortHeader("מזהה משתמש", "id", "160px")}
@@ -748,6 +760,9 @@ export default function QueriesContent() {
                                                             />
                                                         </td>
                                                     )}
+                                                    <td className={styles.timeCell}>
+                                                        {formatDateTime(user.createdAt)}
+                                                    </td>
                                                     <td style={{ fontFamily: "monospace", fontSize: "0.8rem", color: "#475569", direction: "ltr", textAlign: "right" }}>
                                                         {user.schoolId || <span style={{ color: "#94a3b8" }}>—</span>}
                                                     </td>

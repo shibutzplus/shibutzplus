@@ -61,7 +61,7 @@ export async function deleteRecurringFromDateAction(
         revalidateTag(cacheTags.schoolSchedule(schoolId));
         for (const date of affectedDates) {
             revalidateTag(cacheTags.dailySchedule(schoolId, date));
-            void pushSyncUpdateServer(DAILY_EVENT_COL_DATA_CHANGED, { schoolId, date });
+            await pushSyncUpdateServer(DAILY_EVENT_COL_DATA_CHANGED, { schoolId, date });
         }
 
         return { success: true, message: messages.dailySchedule.deleteSuccess };

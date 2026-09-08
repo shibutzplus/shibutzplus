@@ -6,7 +6,7 @@ import ContactUs from "../ContactUs/ContactUs";
 import styles from "./FaqContent.module.css";
 
 interface FaqItem {
-    question: string;
+    question: React.ReactNode;
     answer: React.ReactNode;
 }
 

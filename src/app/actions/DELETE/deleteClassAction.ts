@@ -93,8 +93,7 @@ export async function deleteClassAction(
         // Invalidate cache - class deletion affects schedules AND lists
         clearAnnualScheduleCache(schoolId);
         revalidateTag(cacheTags.classesList(schoolId));
-
-        void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId });
+        await pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId });
 
         return {
             success: true,

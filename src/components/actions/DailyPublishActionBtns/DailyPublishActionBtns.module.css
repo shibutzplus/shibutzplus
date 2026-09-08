@@ -1,8 +1,8 @@
 .topNavBtnContainer {
     display: flex;
     align-items: center;
-    gap: 25px;
-    --daily-btn-width: 60px;
+    gap: 16px;
+    --daily-btn-width: 44px;
 }
 
 .topNavBtnContainer button {

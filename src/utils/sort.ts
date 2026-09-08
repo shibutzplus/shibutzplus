@@ -85,26 +85,6 @@ export const sortDailyTeachers = (
     const dayKey = String(dayNum);
     const hourStr = hour.toString();
 
-    // Frequent replacements logic
-    const frequentReplacementIds = new Set<string>();
-    if (currentColumnId && dailyDay && dailyDay[currentColumnId]) {
-        const columnCells = Object.values(dailyDay[currentColumnId]);
-        const replacementCounts = new Map<string, number>();
-
-        columnCells.forEach(cell => {
-            if (cell.subTeacher?.id) {
-                const id = cell.subTeacher.id;
-                replacementCounts.set(id, (replacementCounts.get(id) || 0) + 1);
-            }
-        });
-
-        replacementCounts.forEach((count, id) => {
-            if (count > 1) {
-                frequentReplacementIds.add(id);
-            }
-        });
-    }
-
     // Annual availability lookups
     const scheduledTeacherIds = new Set(mapAvailableTeachers[dayNum]?.[hourStr] || []);
     const teachesOnDayIds = new Set<string>();
@@ -164,11 +144,6 @@ export const sortDailyTeachers = (
     const freeDayTeachers: TeacherType[] = []; // regular teachers not teaching on this day
     const notStartedTeachers: TeacherType[] = []; // teachers not started yet
     const finishedTeachers: TeacherType[] = []; // teachers already finished
-    const recommendedTeachers: { teacher: TeacherType; suffix: string }[] = []; // system recommended teachers (new)
-
-    // Helper map for sort order of recommendations
-    const recommendationOrder = new Map<string, number>();
-    recommendedTeacherIds.forEach((id, index) => recommendationOrder.set(id, index));
 
     for (const teacher of allTeachers) {
         if (missingTeacherIds.has(teacher.id)) continue;
@@ -182,36 +157,6 @@ export const sortDailyTeachers = (
         if (dailyAssignedTeacherIds.has(teacher.id)) {
             unavailableTeachers.push(teacher);
             continue;
-        }
-
-        // Check if recommended
-        if (recommendationOrder.has(teacher.id) || frequentReplacementIds.has(teacher.id)) {
-            let suffix = "";
-
-            if (teacher.role === TeacherRoleValues.SUBSTITUTE) {
-                suffix = "מילוי מקום";
-            } else if (scheduledTeacherIds.has(teacher.id)) {
-                // Check class name
-                const classId = teacherAtIndex?.[dayKey]?.[hourStr]?.[teacher.id];
-                const className = classId ? classNameById[classId] || classId : "שיעור אחר";
-                suffix = className;
-            } else if (teacher.role === TeacherRoleValues.REGULAR) {
-                const teachesToday = teachesOnDayIds.has(teacher.id);
-                if (teachesToday) {
-                    const bounds = teacherStartEndMap.get(teacher.id);
-                    if (bounds) {
-                        if (hour < bounds.min || hour > bounds.max) suffix = "לא נוכח";
-                        else suffix = "פנוי";
-                    } else {
-                        suffix = "פנוי";
-                    }
-                } else {
-                    if (annualTeacherIds.has(teacher.id)) suffix = "יום חופשי";
-                    else suffix = "ללא מערכת";
-                }
-            }
-
-            recommendedTeachers.push({ teacher, suffix });
         }
 
         if (teacher.role === TeacherRoleValues.SUBSTITUTE) {
@@ -246,12 +191,6 @@ export const sortDailyTeachers = (
         }
     }
 
-    // Sort recommended teachers by the order they came in (count desc)
-    recommendedTeachers.sort((a, b) => {
-        const orderA = recommendationOrder.get(a.teacher.id) ?? Infinity;
-        const orderB = recommendationOrder.get(b.teacher.id) ?? Infinity;
-        return orderA - orderB;
-    });
 
     // Regular teachers with zero annual hours
     const extraRegularTeachers = allTeachers.filter(
@@ -332,15 +271,6 @@ export const sortDailyTeachers = (
 
     // Groups
     const groups: GroupOption[] = [
-        ...(recommendedTeachers.length > 0 ? [{
-            label: "המלצת המערכת",
-            collapsed: true,
-            options: recommendedTeachers.map((t) => ({
-                value: t.teacher.id,
-                label: t.suffix ? `${t.teacher.name} (${t.suffix})` : t.teacher.name,
-            })),
-        }] : []),
-
         {
             label: "מורה נוסף בשיעור",
             collapsed: true,

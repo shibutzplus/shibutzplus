@@ -118,7 +118,7 @@ export async function updateSubjectAction(
         revalidateTag(cacheTags.subjectsList(subjectData.schoolId));
         revalidateTag(cacheTags.schoolSchedule(subjectData.schoolId));
 
-        void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: subjectData.schoolId });
+        await pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId: subjectData.schoolId });
 
         return {
             success: true,

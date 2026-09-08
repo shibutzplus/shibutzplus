@@ -152,7 +152,7 @@ const MngrDailyBldEventHeader: React.FC<MngrDailyBldEventHeaderProps> = ({ colum
         setIsMakingRecurring(true);
         try {
             await makeColumnRecurring?.(columnId);
-            successToast("האירוע שובץ באופן קבוע עד סוף השנה (לא כולל חופשות)", 5000);
+            successToast("האירוע שובץ באופן קבוע עד סוף השנה", 3000);
         } catch (error) {
             logErrorAction({
                 description: `Exception in handleMakeRecurring: ${error instanceof Error ? error.message : String(error)}`,

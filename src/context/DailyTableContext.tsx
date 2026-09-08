@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, ReactNode, useContext, useEffect, useState, useRef } from "react";
+import { createContext, ReactNode, useContext, useEffect, useState, useRef, useMemo } from "react";
 import { useMainContext } from "./MainContext";
 import { SelectOption } from "@/models/types";
 import { ColumnType, DailySchedule, DailyScheduleCell, DailyScheduleType, TeacherHourlyScheduleItem, ColumnTypeValues } from "@/models/types/dailySchedule";
@@ -13,7 +13,7 @@ import useDailyEventActions from "@/hooks/daily/useDailyEventActions";
 import { usePollingUpdates } from "@/hooks/usePollingUpdates";
 import { getAnnualScheduleAction } from "@/app/actions/GET/getAnnualScheduleAction";
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
-import { getSystemRecommendationsAction } from "@/app/actions/GET/getSystemRecommendationsAction";
+import { getSystemRecommendationsAction, SystemRecommendationsMap } from "@/app/actions/GET/getSystemRecommendationsAction";
 import { deleteDailyColumnAction } from "@/app/actions/DELETE/deleteDailyColumnAction";
 import { deleteRecurringFromDateAction } from "@/app/actions/DELETE/deleteRecurringFromDateAction";
 import { makeColumnRecurringAction } from "@/app/actions/POST/makeColumnRecurringAction";
@@ -26,8 +26,13 @@ import { generateId } from "@/utils";
 import { sortDailyColumnIdsByPosition } from "@/utils/sort";
 import { validateMaxColumns } from "@/utils/security";
 import { getTomorrowOption } from "@/resources/dayOptions";
-import { errorToast } from "@/lib/toast";
+import { errorToast, successToast } from "@/lib/toast";
+import messages from "@/resources/messages";
 import { logErrorAction } from "@/app/actions/POST/logErrorAction";
+import { autoAssignSubstitutes, getDayNumberFromDate } from "@/utils/autoSubstitution";
+import { updateDailyTeacherCellsBatchAction, BatchTeacherCellUpdate } from "@/app/actions/PUT/updateDailyTeacherCellsBatchAction";
+import { usePopup } from "./PopupContext";
+import AutoAssignPopup from "@/components/popups/AutoAssignPopup/AutoAssignPopup";
 
 const SCHEDULE_CHANNELS: SyncChannel[] = [
     DAILY_TEACHER_COL_DATA_CHANGED,
@@ -48,11 +53,13 @@ interface DailyTableContextType {
     mapAvailableTeachers: AvailableTeachers;
     teacherClassMap: TeacherClassMap;
     isLoading: boolean;
+    isAutoAssigning: boolean;
     isPreviewMode: boolean;
     previewType: "teachers" | "classes";
     setPreviewType: (type: "teachers" | "classes") => void;
     selectedDate: string;
-    systemRecommendations: Record<string, Record<string, string[]>>;
+    hasMissingTeacherColumn: boolean;
+    systemRecommendations: SystemRecommendationsMap;
     addNewEmptyColumn: (colType: ColumnType) => void;
     deleteColumn: (columnId: string) => Promise<boolean>;
     populateTeacherColumn: (selectedDate: string, columnId: string, dayNumber: number, teacherId: string, type: ColumnType,) => Promise<TeacherHourlyScheduleItem[] | undefined>;
@@ -98,6 +105,7 @@ interface DailyTableContextType {
     deleteRecurringFromDate?: (columnId: string, fromDate: string) => Promise<void>;
     updateRecurringFromDate?: (columnId: string, fromDate: string, fields: RecurringUpdateFields, hourFilter?: number) => Promise<void>;
     detachRecurringColumn?: (columnId: string, date: string) => Promise<string | undefined>;
+    autoAssignSchedule: (columnId?: string) => Promise<void> | void;
 }
 
 const updateColumnPositionInSchedule = (
@@ -134,11 +142,13 @@ interface DailyTableProviderProps {
 export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children }) => {
 
     const { school, setSchool, teachers, subjects, classes, settings } = useMainContext();
+    const { openPopup } = usePopup();
     const [mainDailyTable, setMainDailyTable] = useState<DailySchedule>({});
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [isAutoAssigning, setIsAutoAssigning] = useState<boolean>(false);
     const [mapAvailableTeachers, setMapAvailableTeachers] = useState<AvailableTeachers>({});
     const [teacherClassMap, setTeacherClassMap] = useState<TeacherClassMap>({});
-    const [recommendationsCache, setRecommendationsCache] = useState<Record<string, Record<string, Record<string, string[]>>>>({});
+    const [recommendationsCache, setRecommendationsCache] = useState<Record<string, SystemRecommendationsMap>>({});
     const refreshScheduleRef = useRef<((items: SyncItem[]) => Promise<void> | void) | null>(null);
     usePollingUpdates(refreshScheduleRef, SCHEDULE_CHANNELS);
     const [isPreviewMode, setIsPreviewMode] = useState(false);
@@ -155,7 +165,12 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
             setIsPreviewMode(true);
         }
     };
-    const { daysSelectOptions, selectedDate, handleDayChange } = useDailySelectedDate();
+
+    const { daysSelectOptions, selectedDate, handleDayChange: rawHandleDayChange } = useDailySelectedDate();
+    const handleDayChange = (value: string) => {
+        if (isAutoAssigning) return;
+        rawHandleDayChange(value);
+    };
     const systemRecommendations = selectedDate ? (recommendationsCache[selectedDate] || {}) : {};
 
     const clearColumn = (day: string, columnId: string) => {
@@ -210,7 +225,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         const fetchRecommendations = async () => {
             if (!school?.id || !selectedDate) return;
 
-            const day = new Date(selectedDate).getDay() + 1;
+            const day = getDayNumberFromDate(selectedDate);
             try {
                 const recResponse = await getSystemRecommendationsAction(school.id, day, selectedDate);
                 if (recResponse.success && recResponse.data) {
@@ -719,12 +734,136 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         }
     };
 
+    const hasMissingTeacherColumn = useMemo(() => {
+        const schedule = mainDailyTable[selectedDate];
+        if (!schedule) return false;
+
+        return Object.values(schedule).some((col) => {
+            if (!col) return false;
+            const headerCol = col["1"]?.headerCol || Object.values(col).find((cell) => cell?.headerCol?.type !== undefined)?.headerCol;
+            return headerCol?.type === ColumnTypeValues.missingTeacher;
+        });
+    }, [mainDailyTable, selectedDate]);
+
+    const autoAssignSchedule = async (columnId?: string) => {
+        if (!selectedDate || !teachers || !school?.id || isAutoAssigning) return;
+        if (!columnId && !hasMissingTeacherColumn) return;
+
+        try {
+            const fromH = settings?.fromHour ?? 1;
+            const toH = settings?.toHour ?? 10;
+
+            const { updatedSchedule, assignedCount, unassignedCount, assignments } = autoAssignSubstitutes({
+                dailySchedule: mainDailyTable,
+                selectedDate,
+                teachers,
+                classes,
+                mapAvailableTeachers,
+                teacherClassMap,
+                systemRecommendations,
+                targetColumnId: columnId,
+                fromHour: fromH,
+                toHour: toH,
+            });
+
+            // If there are no slots needing assignment at all, notify immediately without simulated delay
+            if (assignedCount === 0 && unassignedCount === 0) {
+                successToast(messages.dailySchedule.autoAssignNoSlots);
+                return;
+            }
+
+            // Identify all newly assigned cells for persistence
+            const updates: BatchTeacherCellUpdate[] = [];
+            const daySchedule = updatedSchedule[selectedDate] || {};
+            const oldDaySchedule = mainDailyTable[selectedDate] || {};
+
+            Object.entries(daySchedule).forEach(([colKey, col]) => {
+                if (columnId && colKey !== columnId) return;
+
+                Object.entries(col).forEach(([hourKey, cell]) => {
+                    const oldCell = oldDaySchedule[colKey]?.[hourKey];
+                    // Skip if slot was already assigned or had an event
+                    if (oldCell?.subTeacher?.id || oldCell?.event) return;
+
+                    // If slot now has an assignment and has a DBid, queue for batch update
+                    const isNowAssigned = !!cell.subTeacher?.id || !!cell.event;
+                    if (isNowAssigned && cell.DBid) {
+                        updates.push({
+                            id: cell.DBid,
+                            subTeacherId: cell.subTeacher?.id || null,
+                            event: cell.event || null,
+                        });
+                    }
+                });
+            });
+
+            setIsAutoAssigning(true);
+
+            const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+            openPopup(
+                "autoAssignPopup",
+                "M",
+                <AutoAssignPopup
+                    onExecute={async (setProgressText) => {
+                        // Step 1: Scan
+                        setProgressText(messages.dailySchedule.autoAssignStep1);
+                        await sleep(1400);
+
+                        // Step 2: Calculate & Rank
+                        setProgressText(messages.dailySchedule.autoAssignStep2);
+                        await sleep(1800);
+
+                        // Step 3: Optimal Placement & Server Persistence
+                        setProgressText(messages.dailySchedule.autoAssignStep3);
+                        const [batchRes] = await Promise.all([
+                            updates.length > 0
+                                ? updateDailyTeacherCellsBatchAction(school.id, selectedDate, updates)
+                                : Promise.resolve({ success: true }),
+                            sleep(1200),
+                        ]);
+
+                        // If persistence failed, abort without touching local state
+                        if (!batchRes?.success) {
+                            logErrorAction({
+                                description: `autoAssignSchedule: updateDailyTeacherCellsBatchAction failed. message=${(batchRes as any)?.message}`,
+                                schoolId: school.id,
+                                metadata: { count: updates.length, selectedDate, columnId }
+                            });
+                            throw new Error(messages.dailySchedule.updateError);
+                        }
+
+                        // Successfully persisted: update UI table state
+                        setMainDailyTable(updatedSchedule);
+
+                        return {
+                            assignedCount,
+                            unassignedCount,
+                            assignments,
+                        };
+                    }}
+                    onComplete={() => {
+                        setIsAutoAssigning(false);
+                    }}
+                />
+            );
+        } catch (err) {
+            logErrorAction({
+                description: `Error in autoAssignSchedule: ${err instanceof Error ? err.message : String(err)}`,
+                schoolId: school?.id,
+            });
+            setIsAutoAssigning(false);
+            successToast(messages.dailySchedule.autoAssignNoCandidates);
+        }
+    };
+
     return (
         <DailyTableContext.Provider
             value={{
                 selectedDate,
                 mainDailyTable,
                 isLoading,
+                isAutoAssigning,
                 isPreviewMode,
                 mapAvailableTeachers,
                 teacherClassMap,
@@ -750,6 +889,8 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 deleteRecurringFromDate,
                 updateRecurringFromDate,
                 detachRecurringColumn,
+                autoAssignSchedule,
+                hasMissingTeacherColumn,
             }}
         >
             {children}
