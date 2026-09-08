@@ -43,7 +43,7 @@ export async function detachRecurringColumnAction(
 
         revalidateTag(cacheTags.schoolSchedule(schoolId));
         revalidateTag(cacheTags.dailySchedule(schoolId, date));
-        void pushSyncUpdateServer(DAILY_EVENT_COL_DATA_CHANGED, { schoolId, date });
+        await pushSyncUpdateServer(DAILY_EVENT_COL_DATA_CHANGED, { schoolId, date });
 
         return {
             success: true,

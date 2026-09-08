@@ -152,7 +152,7 @@ export async function addHolidaysEventsAction(
         const allAffectedDates = [...addedDates, ...updatedDates];
         for (const date of allAffectedDates) {
             revalidateTag(cacheTags.dailySchedule(schoolId, date));
-            void pushSyncUpdateServer(DAILY_EVENT_COL_DATA_CHANGED, { schoolId, date });
+            await pushSyncUpdateServer(DAILY_EVENT_COL_DATA_CHANGED, { schoolId, date });
         }
 
         const msg = rowsToInsert.length > 0

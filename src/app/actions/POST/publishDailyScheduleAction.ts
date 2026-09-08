@@ -56,7 +56,7 @@ export async function publishDailyScheduleAction(
         revalidateTag(cacheTags.schoolSchedule(schoolId));
 
         // Update all users clients with new schedule (Upstash)
-        void pushSyncUpdateServer(DAILY_PUBLISH_DATA_CHANGED, { schoolId, date });
+        await pushSyncUpdateServer(DAILY_PUBLISH_DATA_CHANGED, { schoolId, date });
 
         // Trigger Web Push Notification (non-blocking for publish success)
         try {

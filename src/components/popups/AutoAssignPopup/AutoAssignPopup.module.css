@@ -1,0 +1,274 @@
+.popupContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 10px 5px;
+    direction: rtl;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 10px 0;
+    line-height: 1.4;
+}
+
+.subtitle {
+    font-size: 16px;
+    color: #4b5563;
+    margin: 0 0 24px 0;
+    line-height: 1.5;
+}
+
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px 14px 16px;
+    gap: 18px;
+}
+
+.loadingText {
+    font-size: 16px;
+    font-weight: 500;
+    color: #4b5563;
+    animation: fadeInOut 1.5s infinite ease-in-out;
+    min-height: 24px;
+    line-height: 1.8;
+    text-align: center;
+    max-width: 320px;
+}
+
+@keyframes fadeInOut {
+
+    0%,
+    100% {
+        opacity: 0.7;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+.buttonContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    max-width: 320px;
+    margin-top: 8px;
+}
+
+.primaryButton {
+    flex: 1;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    background-color: #3b82f6;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.primaryButton:hover {
+    background-color: #2563eb;
+}
+
+.primaryButton:active {
+    transform: scale(0.98);
+}
+
+.secondaryButton {
+    flex: 1;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    background-color: #ffffff;
+    color: #4b5563;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.secondaryButton:hover {
+    background-color: #f3f4f6;
+    color: #111827;
+}
+
+/* Explain View Styles */
+.explainContainer {
+    width: 100%;
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+}
+
+.explainHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+}
+
+.explainTitle {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+}
+
+.countText {
+    font-size: 14px;
+    font-weight: 400;
+    color: #64748b;
+}
+
+.assignmentsList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 360px;
+    overflow-y: auto;
+    padding-left: 6px;
+    padding-right: 2px;
+    margin-bottom: 12px;
+}
+
+.disclaimerText {
+    font-size: 12.5px;
+    color: #64748b;
+    text-align: center;
+    line-height: 1.5;
+    margin-bottom: 14px;
+    padding: 0 8px;
+    direction: rtl;
+}
+
+.assignmentsList::-webkit-scrollbar {
+    width: 6px;
+}
+
+.assignmentsList::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 3px;
+}
+
+.teacherCard {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: right;
+    direction: rtl;
+}
+
+.teacherCardHeader {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1e293b;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.hourList {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.hourItem {
+    font-size: 14px;
+    color: #334155;
+    line-height: 1.7;
+    position: relative;
+    padding-right: 14px;
+    text-align: right;
+}
+
+.hourItem::before {
+    content: "•";
+    position: absolute;
+    right: 0;
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.hourPrefix {
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.classLabel {
+    font-weight: 400;
+    color: #475569;
+}
+
+.subTeacher {
+    font-weight: 400;
+    color: #1e293b;
+}
+
+.releasedText {
+    font-weight: 400;
+    color: #475569;
+}
+
+.unassignedText {
+    font-weight: 400;
+    color: #475569;
+}
+
+.reasonText {
+    color: #475569;
+    font-size: 13.5px;
+}
+
+.explainActions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-top: 1px solid #e5e7eb;
+    padding-top: 14px;
+}
+
+.closeButtonFull {
+    padding: 8px 24px;
+    border-radius: 6px;
+    border: none;
+    background-color: #3b82f6;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.closeButtonFull:hover {
+    background-color: #2563eb;
+}

@@ -45,7 +45,7 @@ export async function updateDailyColumnPositionsAction(
         revalidateTag(cacheTags.dailySchedule(schoolId, date));
         revalidatePath("/daily-build");
 
-        void pushSyncUpdateServer(DAILY_EVENT_COL_DATA_CHANGED, { schoolId, date });
+        await pushSyncUpdateServer(DAILY_EVENT_COL_DATA_CHANGED, { schoolId, date });
 
         return { success: true, message: "Positions updated successfully" };
     } catch (error) {

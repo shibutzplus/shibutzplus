@@ -132,10 +132,10 @@ export async function deleteDailyColumnAction(
 
         // Push updates based on deleted types
         if (deletedColumnTypes.includes(ColumnTypeValues.missingTeacher) || deletedColumnTypes.includes(ColumnTypeValues.existingTeacher)) {
-            void pushSyncUpdateServer(DAILY_TEACHER_COL_DATA_CHANGED, { schoolId, date });
+            await pushSyncUpdateServer(DAILY_TEACHER_COL_DATA_CHANGED, { schoolId, date });
         }
         if (deletedColumnTypes.includes(ColumnTypeValues.event)) {
-            void pushSyncUpdateServer(DAILY_EVENT_COL_DATA_CHANGED, { schoolId, date });
+            await pushSyncUpdateServer(DAILY_EVENT_COL_DATA_CHANGED, { schoolId, date });
         }
 
         return {

@@ -50,7 +50,7 @@ export async function unpublishDailyScheduleAction(
         revalidateTag(cacheTags.school(schoolId));
         revalidateTag(cacheTags.schoolSchedule(schoolId));
 
-        void pushSyncUpdateServer(DAILY_PUBLISH_DATA_CHANGED, { schoolId, date });
+        await pushSyncUpdateServer(DAILY_PUBLISH_DATA_CHANGED, { schoolId, date });
 
         return { success: true, message: messages.publish.success };
     } catch (error) {

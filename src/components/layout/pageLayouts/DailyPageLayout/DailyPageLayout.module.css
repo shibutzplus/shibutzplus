@@ -90,26 +90,19 @@
 }
 
 
-/* <= 810px */
-@media (max-width: 810px) {
+/* <= 750px */
+@media (max-width: 750px) {
 
     .bar1DateContainer,
     .spacer {
         display: none;
     }
 
-    .bar2DateContainer {
-        display: block;
-    }
-
     .bar2DateSection {
 
         justify-content: space-between;
     }
-}
 
-/* <= 730px */
-@media (max-width: 730px) {
     .bar2DateContainer {
         display: none;
     }
@@ -123,8 +116,40 @@
     display: none;
 }
 
-/* <= 660px */
-@media (max-width: 660px) {
+.bar2DateWrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mobileMagicBtn {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: var(--input-height);
+    height: var(--input-height);
+    border: none;
+    background-color: transparent;
+    color: var(--dark-text-color);
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    opacity: 0.85;
+    flex-shrink: 0;
+    padding: 0;
+}
+
+.mobileMagicBtn:hover:not(:disabled) {
+    transform: scale(1.15);
+    opacity: 1;
+}
+
+.mobileMagicBtn:disabled {
+    cursor: not-allowed;
+    opacity: 0.3;
+}
+
+/* <= 710px */
+@media (max-width: 710px) {
     .secondRowActionBtns {
         display: none;
     }
@@ -133,6 +158,10 @@
         display: flex;
         justify-content: flex-end;
     }
+
+    .mobileMagicBtn {
+        display: flex;
+    }
 }
 
 /* <= 540px */
@@ -140,5 +169,14 @@
     .topBarActionBtns {
         border: none;
     }
+}
 
+.blockingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 5000;
+    cursor: wait;
 }

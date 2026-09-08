@@ -39,7 +39,9 @@ const MngrDailyBldEventCell: React.FC<MngrDailyBldEventCellProps> = ({ columnId,
     ): Promise<boolean> => {
         try {
             setIsLoading(true);
-            let cellData = mainDailyTable[selectedDate]?.[activeColumnId]?.[hour];
+            let cellData =
+                mainDailyTable[selectedDate]?.[activeColumnId]?.[hour] ||
+                mainDailyTable[selectedDate]?.[columnId]?.[hour];
             if (!cellData) return false;
 
             // Patch cellData only if the header title was just auto-filled and not yet in store

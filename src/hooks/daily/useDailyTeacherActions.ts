@@ -3,6 +3,7 @@ import { getTeacherScheduleByDayAction } from "@/app/actions/GET/getTeacherSched
 import { addDailyTeacherCellsAction } from "@/app/actions/POST/addDailyTeacherCellsAction";
 import { updateDailyTeacherCellAction } from "@/app/actions/PUT/updateDailyTeacherCellAction";
 import { useMainContext } from "@/context/MainContext";
+import { Dispatch, SetStateAction } from "react";
 import { ColumnType, DailySchedule, DailyScheduleCell, DailyScheduleType, TeacherHourlyScheduleItem } from "@/models/types/dailySchedule";
 import { TeacherType } from "@/models/types/teachers";
 import { addNewTeacherValueCell } from "@/services/daily/add";
@@ -13,9 +14,8 @@ import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
 const useDailyTeacherActions = (
     mainDailyTable: DailySchedule,
-    setMainDailyTable: (newSchedule: DailySchedule) => void,
+    setMainDailyTable: Dispatch<SetStateAction<DailySchedule>>,
     clearColumn: (day: string, columnId: string) => void,
-
 ) => {
     const { school, teachers, settings } = useMainContext();
 
@@ -93,14 +93,6 @@ const useDailyTeacherActions = (
                         dailyCell: DailyScheduleCell;
                     }[] = [];
 
-                    // We need to work on a fresh copy that doesn't have the "optimistic" empty cells
-                    // (or previous data) so updateAddCell will use the new cellData (with class/subject)
-                    let updatedSchedule: DailySchedule = { ...mainDailyTable };
-                    if (updatedSchedule[selectedDate]) {
-                        updatedSchedule[selectedDate] = { ...updatedSchedule[selectedDate] };
-                        updatedSchedule[selectedDate][columnId] = {};
-                    }
-
                     for (const row of response.data as TeacherHourlyScheduleItem[]) {
                         const dailyCell = {
                             hour: row.hour,
@@ -145,27 +137,13 @@ const useDailyTeacherActions = (
                         });
                     }
 
+                    let insertedData: DailyScheduleType[] = [];
                     if (pendingInserts.length > 0) {
                         const batchResponse = await addDailyTeacherCellsAction(
                             pendingInserts.map((p) => p.request!),
                         );
                         if (batchResponse.success && batchResponse.data) {
-                            batchResponse.data.forEach(
-                                (savedCell: DailyScheduleType, index: number) => {
-                                    const item = pendingInserts[index];
-                                    if (item) {
-                                        item.dailyCell.DBid = savedCell.id;
-                                        updatedSchedule = updateAddCell(
-                                            savedCell.id,
-                                            updatedSchedule,
-                                            selectedDate,
-                                            item.dailyCell,
-                                            columnId,
-                                            {},
-                                        );
-                                    }
-                                },
-                            );
+                            insertedData = batchResponse.data;
                         } else {
                             logErrorAction({
                                 description: `populateTeacherColumn: addDailyTeacherCellsAction failed. message=${batchResponse.message}`,
@@ -176,29 +154,58 @@ const useDailyTeacherActions = (
                     }
 
                     const headerTeacher = response.data[0].headerCol.headerTeacher;
-                    updatedSchedule = fillLeftRowsWithEmptyCells(
-                        updatedSchedule,
-                        selectedDate,
-                        columnId,
-                        { headerTeacher, type, position: currentPosition },
-                        settings?.fromHour ?? 1,
-                        settings?.toHour ?? 10,
-                    );
-                    setMainDailyTable(updatedSchedule);
+
+                    // Apply the final populated column to the latest fresh state
+                    setMainDailyTable((prev) => {
+                        let updatedSchedule: DailySchedule = {
+                            ...prev,
+                            [selectedDate]: {
+                                ...(prev[selectedDate] || {}),
+                                [columnId]: {},
+                            },
+                        };
+
+                        if (insertedData.length > 0) {
+                            insertedData.forEach((savedCell: DailyScheduleType, index: number) => {
+                                const item = pendingInserts[index];
+                                if (item) {
+                                    item.dailyCell.DBid = savedCell.id;
+                                    updatedSchedule = updateAddCell(
+                                        savedCell.id,
+                                        updatedSchedule,
+                                        selectedDate,
+                                        item.dailyCell,
+                                        columnId,
+                                        {},
+                                    );
+                                }
+                            });
+                        }
+
+                        return fillLeftRowsWithEmptyCells(
+                            updatedSchedule,
+                            selectedDate,
+                            columnId,
+                            { headerTeacher, type, position: currentPosition },
+                            settings?.fromHour ?? 1,
+                            settings?.toHour ?? 10,
+                        );
+                    });
                 } else {
                     // If the teacher does not teach on this day, create an empty column
                     // We re-affirm the empty column with the teacher header
                     const headerTeacher = teachers?.find((t) => t.id === teacherId);
                     if (!headerTeacher) return;
-                    const updatedSchedule = initializeEmptyColumn(
-                        { ...mainDailyTable },
-                        selectedDate,
-                        columnId,
-                        { type, position: currentPosition, headerTeacher },
-                        settings?.fromHour ?? 1,
-                        settings?.toHour ?? 10,
+                    setMainDailyTable((prev) =>
+                        initializeEmptyColumn(
+                            prev,
+                            selectedDate,
+                            columnId,
+                            { type, position: currentPosition, headerTeacher },
+                            settings?.fromHour ?? 1,
+                            settings?.toHour ?? 10,
+                        ),
                     );
-                    setMainDailyTable(updatedSchedule);
                 }
                 return response.data;
             }

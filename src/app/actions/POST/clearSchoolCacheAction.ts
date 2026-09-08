@@ -38,8 +38,8 @@ export async function clearSchoolCacheAction(schoolId: string): Promise<ActionRe
         revalidatePath(`/(public)/teacher-changes-alt/${schoolId}`, "layout");
 
         // Broadcast sync to all active clients (teachers and managers)
-        void pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId });
-        void pushSyncUpdateServer(DAILY_PUBLISH_DATA_CHANGED, { schoolId });
+        await pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId });
+        await pushSyncUpdateServer(DAILY_PUBLISH_DATA_CHANGED, { schoolId });
 
         return { success: true, message: "המטמון נוקה בהצלחה" };
     } catch (error) {

@@ -15,7 +15,7 @@ type DailyActionBtnsProps = {
 };
 
 const DailyActionBtns: React.FC<DailyActionBtnsProps> = ({ position, useShortLabels = false, useMobileMenu = false }) => {
-    const { addNewEmptyColumn, isLoading } = useDailyTableContext();
+    const { addNewEmptyColumn, autoAssignSchedule, isLoading, isAutoAssigning, hasMissingTeacherColumn } = useDailyTableContext();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const containerRef = React.useRef<HTMLDivElement>(null);
 
@@ -57,7 +57,7 @@ const DailyActionBtns: React.FC<DailyActionBtnsProps> = ({ position, useShortLab
                 type={ColumnTypeValues.missingTeacher}
                 Icon={<Icons.missingTeacher size={14} />}
                 label={useShortLabels ? "מורה חסר" : "שיבוץ למורה חסר"}
-                isDisabled={isLoading}
+                isDisabled={isLoading || isAutoAssigning}
                 style={getButtonStyle(MissingTeacherColor)}
                 func={() => handleActionClick(() => addNewEmptyColumn(ColumnTypeValues.missingTeacher))}
                 className={useMobileMenu ? styles.menuItemBtn : getButtonClass(position)}
@@ -66,7 +66,7 @@ const DailyActionBtns: React.FC<DailyActionBtnsProps> = ({ position, useShortLab
                 type={ColumnTypeValues.existingTeacher}
                 Icon={<Icons.teacher size={14} />}
                 label={useShortLabels ? "מורה נוכח" : "שיבוץ למורה נוכח"}
-                isDisabled={isLoading}
+                isDisabled={isLoading || isAutoAssigning}
                 style={getButtonStyle(ExistingTeacherColor)}
                 func={() => handleActionClick(() => addNewEmptyColumn(ColumnTypeValues.existingTeacher))}
                 className={useMobileMenu ? styles.menuItemBtn : getButtonClass(position)}
@@ -75,11 +75,22 @@ const DailyActionBtns: React.FC<DailyActionBtnsProps> = ({ position, useShortLab
                 type={ColumnTypeValues.event}
                 Icon={<Icons.event size={16} />}
                 label={useShortLabels ? "אירוע" : "שיבוץ אירוע"}
-                isDisabled={isLoading}
+                isDisabled={isLoading || isAutoAssigning}
                 style={getButtonStyle(EventColor)}
                 func={() => handleActionClick(() => addNewEmptyColumn(ColumnTypeValues.event))}
                 className={useMobileMenu ? styles.menuItemBtn : getButtonClass(position)}
             />
+            {!useMobileMenu && (
+                <ActionBtn
+                    type="auto-assign"
+                    Icon={<Icons.magic size={18} />}
+                    tooltip="שיבוץ אוטומטי למורים החסרים"
+                    isLoading={isAutoAssigning}
+                    isDisabled={isLoading || isAutoAssigning || !hasMissingTeacherColumn}
+                    func={() => handleActionClick(() => autoAssignSchedule())}
+                    className={styles.autoAssignIconBtn}
+                />
+            )}
         </>
     );
 
@@ -88,7 +99,7 @@ const DailyActionBtns: React.FC<DailyActionBtnsProps> = ({ position, useShortLab
             <div className={styles.mobileMenuContainer} ref={containerRef}>
                 <ActionBtn
                     Icon={<Icons.plus size={24} />}
-                    isDisabled={isLoading}
+                    isDisabled={isLoading || isAutoAssigning}
                     func={() => setIsMenuOpen((prev) => !prev)}
                     className={styles.mobileMenuTrigger}
                 />

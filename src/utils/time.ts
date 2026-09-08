@@ -139,8 +139,13 @@ export const getSchoolYearStartDate = (dateString?: string): string => {
 
     if (dateString && dateString.includes("-")) {
         const parts = dateString.split("-");
-        year = parseInt(parts[0], 10);
-        month = parseInt(parts[1], 10);
+        if (parts[0].length === 4) {
+            year = parseInt(parts[0], 10);
+            month = parseInt(parts[1], 10);
+        } else {
+            year = parseInt(parts[2], 10);
+            month = parseInt(parts[1], 10);
+        }
     } else {
         const components = getIsraelDateComponents();
         year = components.year;

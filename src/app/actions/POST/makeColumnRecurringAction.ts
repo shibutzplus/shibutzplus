@@ -131,7 +131,7 @@ export async function makeColumnRecurringAction(
             // Invalidate cache and notify clients
             for (const targetDate of futureDates) {
                 revalidateTag(cacheTags.dailySchedule(schoolId, targetDate));
-                void pushSyncUpdateServer(DAILY_EVENT_COL_DATA_CHANGED, { schoolId, date: targetDate });
+                await pushSyncUpdateServer(DAILY_EVENT_COL_DATA_CHANGED, { schoolId, date: targetDate });
             }
         }
 
@@ -139,7 +139,7 @@ export async function makeColumnRecurringAction(
         revalidateTag(cacheTags.dailyScheduleSchool(schoolId));
         revalidateTag(cacheTags.schoolSchedule(schoolId));
         revalidateTag(cacheTags.dailySchedule(schoolId, selectedDate));
-        void pushSyncUpdateServer(DAILY_EVENT_COL_DATA_CHANGED, { schoolId, date: selectedDate });
+        await pushSyncUpdateServer(DAILY_EVENT_COL_DATA_CHANGED, { schoolId, date: selectedDate });
 
         return {
             success: true,

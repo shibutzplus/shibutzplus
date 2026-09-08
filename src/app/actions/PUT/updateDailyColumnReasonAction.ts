@@ -38,7 +38,7 @@ export async function updateDailyColumnReasonAction(
         revalidateTag(cacheTags.schoolSchedule(schoolId));
         revalidateTag(cacheTags.dailySchedule(schoolId, date));
 
-        void pushSyncUpdateServer(DAILY_TEACHER_COL_DATA_CHANGED, { schoolId, date });
+        await pushSyncUpdateServer(DAILY_TEACHER_COL_DATA_CHANGED, { schoolId, date });
 
         return { success: true, message: "סיבה עודכנה בהצלחה" };
     } catch (error) {
