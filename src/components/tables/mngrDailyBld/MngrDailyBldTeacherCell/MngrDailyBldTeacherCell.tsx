@@ -75,8 +75,6 @@ const MngrDailyBldTeacherCell: React.FC<MngrDailyBldTeacherCellProps> = ({ colum
                 classNameById,
                 headerData?.headerTeacher?.id,
                 classActivityById,
-                [],
-                columnId,
             ),
         [
             teachers,
@@ -90,7 +88,6 @@ const MngrDailyBldTeacherCell: React.FC<MngrDailyBldTeacherCellProps> = ({ colum
             subTeacherData,
             teacherText,
             classActivityById,
-            columnId,
         ],
     );
 

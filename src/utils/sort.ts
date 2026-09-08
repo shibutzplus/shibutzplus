@@ -78,8 +78,6 @@ export const sortDailyTeachers = (
     classNameById: Record<string, string> = {},
     currentHeaderTeacherId?: string,
     classActivityById: Record<string, boolean> = {},
-    recommendedTeacherIds: string[] = [],
-    currentColumnId?: string,
 ) => {
     const dayNum = dayToNumber(day);
     const dayKey = String(dayNum);
