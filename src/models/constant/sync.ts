@@ -24,4 +24,4 @@ export const MATERIAL_CHANGED = "material";
 export const ADMIN_BROADCAST_MESSAGE = "broadcastMessage";
 
 // Polling configuration
-export const POLL_INTERVAL_MS = 50000; // 50 seconds
+export const POLL_INTERVAL_MS = 45000; // 45 seconds

@@ -77,7 +77,7 @@ const SCORE_WEIGHTS = {
     CLASS_FAMILIARITY: 30,
     AVAILABLE_WINDOW_HOUR: 25,
     DEDICATED_SUBSTITUTE: 20,
-    FULL_DAY_SUB_CALL_BONUS: 25,
+    FULL_DAY_SUB_CALL_BONUS: 45,
     MOBILIZED_SUB_BONUS: 20,
     DUAL_HOUR_AVAILABLE_BONUS: 20,
     DOUBLE_PERIOD_SAME_CLASS_BONUS: 35,
@@ -85,7 +85,10 @@ const SCORE_WEIGHTS = {
     BLOCKED_NEXT_HOUR_PENALTY: 80,
     ON_CAMPUS_WORKING_DAY: 40,
     DAILY_LOAD_PENALTY: 12,
-    ACTIVITY_GROUP_PENALTY: 5,
+    ACTIVITY_GROUP_PENALTY: 20,
+    MANAGEMENT_STAFF_PENALTY: 50,
+    COUNSELING_STAFF_PENALTY: 40,
+    SPECIAL_ROLE_STAFF_PENALTY: 35,
     UNCONFIRMED_SUB_CALL_PENALTY: 40,
     CONSECUTIVE_FATIGUE_PENALTY: 15,
     END_OF_DAY_PENALTY: 10,
@@ -137,6 +140,12 @@ function isActivityCell(
     return !!(isClassActivity || isSubjectActivity);
 }
 
+function isProtectedActivity(text?: string): boolean {
+    if (!text) return false;
+    const trimmed = text.trim();
+    return /ניהול|סגנ|הנהלה|יעוץ|ייעוץ|פסיכולוג|טיפול|הדרכ|שיח\s*רגשי/i.test(trimmed);
+}
+
 function getColumnHeader(col?: Record<string, DailyScheduleCell>) {
     if (!col) return undefined;
     return Object.values(col).find((c) => c?.headerCol?.type !== undefined)?.headerCol;
@@ -159,6 +168,9 @@ interface AutoAssignContext {
     teacherStartEndMap: Map<string, { min: number; max: number }>;
     annualTeacherIds: Set<string>;
     teachersWithOnlyActivities: Set<string>;
+    managementStaffIds: Set<string>;
+    counselingStaffIds: Set<string>;
+    specialRoleStaffIds: Set<string>;
     homeroomTeacherByClass: Map<string, string>;
     classNameMap: Map<string, string>;
 }
@@ -227,29 +239,72 @@ export function autoAssignSubstitutes({
         (classes || []).filter((c) => c.activity).map((c) => c.name?.trim()).filter((n): n is string => n !== undefined)
     );
 
+    const classNameMap = new Map<string, string>(
+        (classes || []).map((c) => [c.id, c.name?.trim() || ""])
+    );
+
     const missingTeacherIds = new Set<string>();
     const existingPresentTeacherIds = new Set<string>();
 
     const teachersWithOnlyActivities = new Set<string>();
+    const managementStaffIds = new Set<string>();
+    const counselingStaffIds = new Set<string>();
+    const specialRoleStaffIds = new Set<string>();
+
     teachers.forEach((t) => {
         if (t.role !== TeacherRoleValues.REGULAR) return;
-        let hasFrontalClass = false;
-        let hasAnyClass = false;
+        const name = t.name?.trim() || "";
+        if (/סגן|סגנית|מנהל|מנהלת/i.test(name)) managementStaffIds.add(t.id);
+        if (/יועצ|יועצת|יעוץ|ייעוץ|פסיכולוג/i.test(name)) counselingStaffIds.add(t.id);
+        if (/מדריכ|מדריך|סייע|משלב/i.test(name)) specialRoleStaffIds.add(t.id);
+
+        let totalScheduledHours = 0;
+        let activityHours = 0;
+        let frontalHours = 0;
+        let managementHours = 0;
+        let counselingHours = 0;
 
         Object.values(teacherClassMap || {}).forEach((dayMap) => {
             Object.values(dayMap || {}).forEach((hourMap) => {
                 const classId = hourMap[t.id];
                 if (classId) {
-                    hasAnyClass = true;
-                    if (!activityClassIds.has(classId)) {
-                        hasFrontalClass = true;
+                    totalScheduledHours++;
+                    const cName = classNameMap.get(classId) || "";
+                    const isAct = activityClassIds.has(classId);
+
+                    if (/ניהול|סגנ|הנהלה/i.test(cName)) {
+                        managementHours++;
+                    }
+                    if (/יעוץ|ייעוץ|פסיכולוג|טיפול/i.test(cName)) {
+                        counselingHours++;
+                    }
+
+                    if (isAct) {
+                        activityHours++;
+                    } else {
+                        frontalHours++;
                     }
                 }
             });
         });
 
-        if (hasAnyClass && !hasFrontalClass) {
+        if (managementHours >= 4) {
+            managementStaffIds.add(t.id);
+        }
+        if (counselingHours >= 4) {
+            counselingStaffIds.add(t.id);
+        }
+
+        if (totalScheduledHours > 0 && frontalHours === 0) {
             teachersWithOnlyActivities.add(t.id);
+        }
+
+        if (
+            managementStaffIds.has(t.id) ||
+            counselingStaffIds.has(t.id) ||
+            (totalScheduledHours > 0 && (activityHours / totalScheduledHours >= 0.65 || frontalHours <= 5))
+        ) {
+            specialRoleStaffIds.add(t.id);
         }
     });
 
@@ -339,10 +394,6 @@ export function autoAssignSubstitutes({
         return true;
     });
 
-    const classNameMap = new Map<string, string>(
-        (classes || []).map((c) => [c.id, c.name?.trim() || ""])
-    );
-
     const ctx: AutoAssignContext = {
         dayNumber,
         dayNumStr,
@@ -360,6 +411,9 @@ export function autoAssignSubstitutes({
         teacherStartEndMap,
         annualTeacherIds,
         teachersWithOnlyActivities,
+        managementStaffIds,
+        counselingStaffIds,
+        specialRoleStaffIds,
         homeroomTeacherByClass,
         classNameMap,
     };
@@ -632,6 +686,9 @@ function findBestCandidate(params: CandidateSearchParams): AutoSubstitutionCandi
         teacherStartEndMap,
         annualTeacherIds,
         teachersWithOnlyActivities,
+        managementStaffIds,
+        counselingStaffIds,
+        specialRoleStaffIds,
         homeroomTeacherByClass,
         classNameMap,
     } = ctx;
@@ -655,7 +712,10 @@ function findBestCandidate(params: CandidateSearchParams): AutoSubstitutionCandi
         ) {
             const isActivity = isActivityCell(cell, activityClassIds, activityClassNames);
             const isCoveredBySub = !!cell?.subTeacher?.id;
-            if (cell?.event || (!isActivity && !isCoveredBySub && cell?.classes && cell.classes.length > 0)) {
+            const cellClassNames = (cell?.classes || []).map((c) => c.name || "").join(" ");
+            const cellSubjectName = cell?.subject?.name || "";
+            const isProtected = isProtectedActivity(cellClassNames) || isProtectedActivity(cellSubjectName);
+            if (cell?.event || isProtected || (!isActivity && !isCoveredBySub && cell?.classes && cell.classes.length > 0)) {
                 dailyOccupiedTeacherIds.add(headerCol.headerTeacher.id);
             }
         }
@@ -746,6 +806,11 @@ function findBestCandidate(params: CandidateSearchParams): AutoSubstitutionCandi
         if (isScheduledThisHour && !isCoTeacherInLesson && !isContinuingDoublePeriod) {
             const isActivity = teachingClassId ? activityClassIds.has(teachingClassId) : false;
             if (!isActivity) {
+                continue;
+            }
+            const currentClassName = teachingClassId ? classNameMap.get(teachingClassId) || "" : "";
+            if (isProtectedActivity(currentClassName)) {
+                // Strictly protect management (ניהול/סגנות), counseling (ייעוץ), therapy (טיפול), and guidance (הדרכה)
                 continue;
             }
             teachingActivityGroup = true;
@@ -893,8 +958,8 @@ function findBestCandidate(params: CandidateSearchParams): AutoSubstitutionCandi
         if (isHomeroomOfTargetClass && !isOriginalTeacherTheHomeroom) {
             // Penalty: Protect homeroom teacher from burnout in own class during planning time
             score -= SCORE_WEIGHTS.HOMEROOM_TEACHER_BURNOUT_PENALTY;
-        } else if (teachesTargetClass) {
-            // Bonus: Teacher is familiar with this specific class
+        } else if (teachesTargetClass && !counselingStaffIds.has(teacher.id) && !managementStaffIds.has(teacher.id)) {
+            // Bonus: Teacher is familiar with this specific class (not applicable to counselors or management)
             score += SCORE_WEIGHTS.CLASS_FAMILIARITY;
         }
 
@@ -903,18 +968,27 @@ function findBestCandidate(params: CandidateSearchParams): AutoSubstitutionCandi
             score += SCORE_WEIGHTS.EXISTING_PRESENT_TEACHER;
         }
 
-        // Bonus: Teacher without fixed annual schedule or activity-only
+        // Teacher without fixed annual schedule or activity-only
         const isActivityOnlyTeacher = teachersWithOnlyActivities.has(teacher.id);
         const isNoScheduleTeacher =
             teacher.role === TeacherRoleValues.REGULAR &&
             !annualTeacherIds.has(teacher.id) &&
             !existingPresentTeacherIds.has(teacher.id);
 
-        if (isNoScheduleTeacher || isActivityOnlyTeacher) {
+        if (isNoScheduleTeacher) {
             score += SCORE_WEIGHTS.NO_SCHEDULE_TEACHER;
-            if (isNoScheduleTeacher) {
-                score += SCORE_WEIGHTS.AVAILABLE_WINDOW_HOUR;
-            }
+            score += SCORE_WEIGHTS.AVAILABLE_WINDOW_HOUR;
+        }
+
+        // Dedicated staff roles protection:
+        // School management (ניהול/סגנות) and counseling (יועצות/פסיכולוגים) have essential
+        // administrative and mental health responsibilities and must not be routinely used for classroom substitution.
+        if (managementStaffIds.has(teacher.id)) {
+            score -= SCORE_WEIGHTS.MANAGEMENT_STAFF_PENALTY;
+        } else if (counselingStaffIds.has(teacher.id)) {
+            score -= SCORE_WEIGHTS.COUNSELING_STAFF_PENALTY;
+        } else if (specialRoleStaffIds.has(teacher.id) || isActivityOnlyTeacher) {
+            score -= SCORE_WEIGHTS.SPECIAL_ROLE_STAFF_PENALTY;
         }
 
         const isCurrentlyActiveOnCampus =

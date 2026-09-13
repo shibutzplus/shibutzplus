@@ -66,34 +66,9 @@
     margin-top: 8px;
 }
 
-.primaryButton {
-    flex: 1;
-    padding: 10px 20px;
-    border-radius: 8px;
-    border: none;
-    background-color: #3b82f6;
-    color: #ffffff;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s, transform 0.1s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-}
-
-.primaryButton:hover {
-    background-color: #2563eb;
-}
-
-.primaryButton:active {
-    transform: scale(0.98);
-}
-
 .secondaryButton {
-    flex: 1;
-    padding: 10px 20px;
+    min-width: 120px;
+    padding: 10px 24px;
     border-radius: 8px;
     border: 1px solid #d1d5db;
     background-color: #ffffff;

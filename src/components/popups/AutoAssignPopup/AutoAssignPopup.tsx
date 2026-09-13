@@ -18,7 +18,7 @@ interface AutoAssignPopupProps {
     onComplete?: () => void;
 }
 
-type PopupView = "loading" | "success" | "partial" | "noCandidates" | "explain" | "error";
+type PopupView = "loading" | "explain" | "noCandidates" | "error";
 
 const AutoAssignPopup: React.FC<AutoAssignPopupProps> = ({ onExecute, onComplete }) => {
     const { closePopup } = usePopup();
@@ -37,10 +37,8 @@ const AutoAssignPopup: React.FC<AutoAssignPopupProps> = ({ onExecute, onComplete
                 const res = await onExecute((text) => setProgressText(text));
                 setResult(res);
 
-                if (res.assignedCount > 0 && res.unassignedCount === 0) {
-                    setView("success");
-                } else if (res.assignedCount > 0 && res.unassignedCount > 0) {
-                    setView("partial");
+                if (res.assignedCount > 0) {
+                    setView("explain");
                 } else {
                     setView("noCandidates");
                 }
@@ -190,36 +188,7 @@ const AutoAssignPopup: React.FC<AutoAssignPopupProps> = ({ onExecute, onComplete
         );
     }
 
-    // 5. Success or Partial Completion View
-    const isSuccess = view === "success";
-    const titleText = isSuccess
-        ? messages.dailySchedule.autoAssignSuccess
-        : messages.dailySchedule.autoAssignPartial;
-
-    return (
-        <div className={styles.popupContent}>
-            <h2 className={styles.title}>{titleText}</h2>
-            <p className={styles.subtitle}>האם להסביר את השיבוצים שבוצעו?</p>
-
-            <div className={styles.buttonContainer}>
-                <button
-                    type="button"
-                    className={styles.primaryButton}
-                    onClick={() => setView("explain")}
-                    autoFocus
-                >
-                    הסבר
-                </button>
-                <button
-                    type="button"
-                    className={styles.secondaryButton}
-                    onClick={handleClose}
-                >
-                    סגור
-                </button>
-            </div>
-        </div>
-    );
+    return null;
 };
 
 export default AutoAssignPopup;

@@ -806,16 +806,12 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 "M",
                 <AutoAssignPopup
                     onExecute={async (setProgressText) => {
-                        // Step 1: Scan
+                        // Step 1: Calculate & Rank
                         setProgressText(messages.dailySchedule.autoAssignStep1);
-                        await sleep(1400);
-
-                        // Step 2: Calculate & Rank
-                        setProgressText(messages.dailySchedule.autoAssignStep2);
                         await sleep(1800);
 
-                        // Step 3: Optimal Placement & Server Persistence
-                        setProgressText(messages.dailySchedule.autoAssignStep3);
+                        // Step 2: Optimal Placement & Server Persistence
+                        setProgressText(messages.dailySchedule.autoAssignStep2);
                         const [batchRes] = await Promise.all([
                             updates.length > 0
                                 ? updateDailyTeacherCellsBatchAction(school.id, selectedDate, updates)
