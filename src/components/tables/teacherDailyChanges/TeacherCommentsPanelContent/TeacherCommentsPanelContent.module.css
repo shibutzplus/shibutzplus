@@ -48,6 +48,22 @@
     overflow-y: auto;
 }
 
+@media (min-width: 600px) {
+    .instructionsCell {
+        height: 1px;
+    }
+
+    .commentCell {
+        height: 100%;
+    }
+
+    .textarea {
+        flex: 1;
+        min-height: calc(var(--table-teacher-cell-height) - 20px);
+        height: auto;
+    }
+}
+
 .textarea::placeholder {
     color: var(--placeholder-color);
     font-size: 13px;

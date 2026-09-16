@@ -1,10 +1,35 @@
-// Pure in-memory scoring engine for automatic substitute assignment ("Magic Assign").
-// Detailed algorithm documentation: docs/magic-assign.md
+// Pure in-memory engine for automatic substitute assignment ("Magic Assign").
+//
+// Algorithm: Tiered priority — hard exclusions first, then category tier, then tie-breakers within tier.
+//
+// PRIORITY TIERS (lower = wins):
+//   0 – CONTINUATION:    Continuing a double period in the same column, OR co-teacher in this exact lesson
+//   1 – FREE_WINDOW:     Regular teacher on campus with a free window this hour
+//   2 – ACTIVITY_GROUP:  Regular teacher on campus currently teaching a non-frontal activity/group
+//   3 – SUB_ON_CAMPUS:   Dedicated substitute already on campus
+//   4 – SUB_CALL_IN:     Dedicated substitute called in from home (full-day absence only)
+//   5 – PROTECTED_STAFF: Management / counseling — absolute last resort
+//
+// TIE-BREAKERS within a tier (higher = better):
+//   +3  Familiar with the target class
+//   +2  High historical recommendation (≥4 times)
+//   +1  Any historical recommendation
+//   +1  Adjacent sub continuity (same teacher subbed prev/next hour in same column)
+//   −1  Per substitution hour already assigned today (load balancing)
+//   −3  Homeroom teacher of target class (burnout protection)
+//
+// HARD EXCLUSIONS (never even scored):
+//   • Teacher is on a free day / hasn't started / already finished their day
+//   • Teacher is currently in a frontal lesson (unless co-teacher)
+//   • Teacher is already assigned as substitute elsewhere this hour
+//   • Regular teacher with annual schedule exceeded MAX_DAILY_SUB_HOURS today
+//   • Protected activity (management, counseling, therapy) — hard skip
 
 import { DailySchedule, DailyScheduleCell, ColumnTypeValues } from "@/models/types/dailySchedule";
 import { TeacherType, TeacherRoleValues } from "@/models/types/teachers";
 import { ClassType } from "@/models/types/classes";
 import { AvailableTeachers, TeacherClassMap } from "@/models/types/annualSchedule";
+import type { SystemRecommendationsMap } from "@/app/actions/GET/getSystemRecommendationsAction";
 
 export interface AutoSubstitutionCandidate {
     teacher: TeacherType;
@@ -32,7 +57,7 @@ export interface AutoAssignOptions {
     classes?: ClassType[];
     mapAvailableTeachers: AvailableTeachers;
     teacherClassMap: TeacherClassMap;
-    systemRecommendations?: Record<string, Record<string, any[]>>;
+    systemRecommendations?: SystemRecommendationsMap;
     targetColumnId?: string;
     fromHour?: number;
     toHour?: number;
@@ -64,41 +89,24 @@ export function getDayNumberFromDate(dateStr: string): number {
     return 1;
 }
 
-const SCORE_WEIGHTS = {
-    CO_TEACHER_IN_LESSON: 60,
-    HISTORICAL_RECOMMENDATION_HIGH: 40,
-    HISTORICAL_RECOMMENDATION_MED: 25,
-    HISTORICAL_RECOMMENDATION_LOW: 10,
-    NO_SCHEDULE_TEACHER: 35,
-    EXISTING_PRESENT_TEACHER: 25,
-    BLOCK_CONTINUITY_SAME_CLASS: 50,
-    BLOCK_CONTINUITY_SAME_COLUMN: 28,
-    BLOCK_CONTINUITY_DIFF_CLASS: 10,
-    CLASS_FAMILIARITY: 30,
-    AVAILABLE_WINDOW_HOUR: 25,
-    DEDICATED_SUBSTITUTE: 20,
-    FULL_DAY_SUB_CALL_BONUS: 45,
-    MOBILIZED_SUB_BONUS: 20,
-    DUAL_HOUR_AVAILABLE_BONUS: 20,
-    DOUBLE_PERIOD_SAME_CLASS_BONUS: 35,
-    DOUBLE_PERIOD_CONTINUITY_BONUS: 25,
-    BLOCKED_NEXT_HOUR_PENALTY: 80,
-    ON_CAMPUS_WORKING_DAY: 40,
-    DAILY_LOAD_PENALTY: 12,
-    ACTIVITY_GROUP_PENALTY: 20,
-    MANAGEMENT_STAFF_PENALTY: 50,
-    COUNSELING_STAFF_PENALTY: 40,
-    SPECIAL_ROLE_STAFF_PENALTY: 35,
-    UNCONFIRMED_SUB_CALL_PENALTY: 40,
-    CONSECUTIVE_FATIGUE_PENALTY: 15,
-    END_OF_DAY_PENALTY: 10,
-    HOMEROOM_TEACHER_BURNOUT_PENALTY: 20,
-    EARLY_ARRIVAL_FALLBACK_SCORE: 12,
-    MIN_SCORE_LATE_HOUR: 30,
-    MAX_DAILY_SUB_HOURS_REGULAR: 2,
-    MIN_HOMEROOM_WEEKLY_HOURS: 7,
-    MIN_EXTERNAL_VENDOR_WEEKLY_HOURS: 6,
-};
+// ─── Configuration ─────────────────────────────────────────────────────────────
+const MAX_DAILY_SUB_HOURS = 3;           // Max sub hours per day for regular scheduled teachers
+const MIN_HOMEROOM_WEEKLY_HOURS = 7;     // Min weekly frontal hours to qualify as homeroom teacher
+const MIN_EXTERNAL_VENDOR_WEEKLY_HOURS = 6; // Max total weekly hours for single-day external vendor detection
+
+// Tier constants — lower number = higher priority
+const TIER_CONTINUATION = 0;    // Double-period continuation or co-teacher in this lesson
+const TIER_FREE_WINDOW = 1;     // On campus, free this hour
+const TIER_ACTIVITY_GROUP = 2;  // On campus, teaching a non-frontal activity/group this hour
+const TIER_SUB_ON_CAMPUS = 3;   // Dedicated substitute already on campus
+const TIER_SUB_CALL_IN = 4;     // Dedicated substitute from home (full-day absence only)
+const TIER_PROTECTED_STAFF = 5; // Management / counseling — last resort only
+
+// Score encoding: (5 - tier) * 100 + tieBreaker
+// Tier 0 → ~500, Tier 1 → ~400, ..., Tier 5 → ~0
+// ──────────────────────────────────────────────────────────────────────────────
+
+// ─── Helper functions ──────────────────────────────────────────────────────────
 
 function getGradeLevel(classes?: Array<{ name?: string }>): number {
     if (!classes || classes.length === 0) return 99;
@@ -116,10 +124,6 @@ function getGradeLevel(classes?: Array<{ name?: string }>): number {
     return 99;
 }
 
-function isUpperGrade(classes?: Array<{ name?: string }>): boolean {
-    const level = getGradeLevel(classes);
-    return level >= 4 && level <= 8;
-}
 
 function isActivityCell(
     cell?: DailyScheduleCell,
@@ -142,14 +146,15 @@ function isActivityCell(
 
 function isProtectedActivity(text?: string): boolean {
     if (!text) return false;
-    const trimmed = text.trim();
-    return /ניהול|סגנ|הנהלה|יעוץ|ייעוץ|פסיכולוג|טיפול|הדרכ|שיח\s*רגשי/i.test(trimmed);
+    return /ניהול|סגנ|הנהלה|יעוץ|ייעוץ|פסיכולוג|טיפול|הדרכ|שיח\s*רגשי/i.test(text.trim());
 }
 
 function getColumnHeader(col?: Record<string, DailyScheduleCell>) {
     if (!col) return undefined;
     return Object.values(col).find((c) => c?.headerCol?.type !== undefined)?.headerCol;
 }
+
+// ──────────────────────────────────────────────────────────────────────────────
 
 interface AutoAssignContext {
     dayNumber: number;
@@ -163,14 +168,12 @@ interface AutoAssignContext {
     teacherClassMap: TeacherClassMap;
     activityClassIds: Set<string>;
     activityClassNames: Set<string>;
-    systemRecommendations: Record<string, Record<string, any[]>>;
+    systemRecommendations: SystemRecommendationsMap;
     dailySubLoad: Map<string, number>;
     teacherStartEndMap: Map<string, { min: number; max: number }>;
     annualTeacherIds: Set<string>;
-    teachersWithOnlyActivities: Set<string>;
     managementStaffIds: Set<string>;
     counselingStaffIds: Set<string>;
-    specialRoleStaffIds: Set<string>;
     homeroomTeacherByClass: Map<string, string>;
     classNameMap: Map<string, string>;
 }
@@ -187,7 +190,6 @@ export function autoAssignSubstitutes({
     fromHour = 1,
     toHour = 10,
 }: AutoAssignOptions): AutoAssignResult {
-    // Deep clone the day schedule to avoid mutating current state directly
     const daySchedule = dailySchedule[selectedDate];
     if (!daySchedule) {
         return { updatedSchedule: dailySchedule, assignedCount: 0, unassignedCount: 0, assignments: [] };
@@ -195,6 +197,7 @@ export function autoAssignSubstitutes({
 
     const assignments: AutoAssignSummaryItem[] = [];
 
+    // Deep clone the day schedule to avoid mutating current state
     const clonedDay: DailySchedule[string] = {};
     Object.keys(daySchedule).forEach((colId) => {
         clonedDay[colId] = {};
@@ -206,13 +209,13 @@ export function autoAssignSubstitutes({
     const dayNumber = getDayNumberFromDate(selectedDate);
     const dayNumStr = String(dayNumber);
 
+    // Build set of all teachers appearing in the annual schedule
     const annualTeacherIds = new Set<string>();
     Object.values(mapAvailableTeachers || {}).forEach((hoursMap) => {
-        Object.values(hoursMap || {}).forEach((ids) => {
-            ids.forEach((id) => annualTeacherIds.add(id));
-        });
+        Object.values(hoursMap || {}).forEach((ids) => ids.forEach((id) => annualTeacherIds.add(id)));
     });
 
+    // Build per-teacher workday start/end bounds for today
     const teacherStartEndMap = new Map<string, { min: number; max: number }>();
     const teachesOnThisDay = new Set<string>();
     const dayScheduleHours = mapAvailableTeachers[dayNumber] || mapAvailableTeachers[dayNumStr];
@@ -222,92 +225,50 @@ export function autoAssignSubstitutes({
             if (!isNaN(hNum)) {
                 tIds.forEach((id) => {
                     teachesOnThisDay.add(id);
-                    const current = teacherStartEndMap.get(id) || { min: 24, max: -1 };
-                    teacherStartEndMap.set(id, {
-                        min: Math.min(current.min, hNum),
-                        max: Math.max(current.max, hNum),
-                    });
+                    const cur = teacherStartEndMap.get(id) || { min: 24, max: -1 };
+                    teacherStartEndMap.set(id, { min: Math.min(cur.min, hNum), max: Math.max(cur.max, hNum) });
                 });
             }
         });
     }
 
-    const activityClassIds = new Set(
-        (classes || []).filter((c) => c.activity).map((c) => c.id)
-    );
+    const activityClassIds = new Set((classes || []).filter((c) => c.activity).map((c) => c.id));
     const activityClassNames = new Set<string>(
         (classes || []).filter((c) => c.activity).map((c) => c.name?.trim()).filter((n): n is string => n !== undefined)
     );
-
-    const classNameMap = new Map<string, string>(
-        (classes || []).map((c) => [c.id, c.name?.trim() || ""])
-    );
+    const classNameMap = new Map<string, string>((classes || []).map((c) => [c.id, c.name?.trim() || ""]));
 
     const missingTeacherIds = new Set<string>();
     const existingPresentTeacherIds = new Set<string>();
 
-    const teachersWithOnlyActivities = new Set<string>();
+    // Identify management and counseling staff by name
     const managementStaffIds = new Set<string>();
     const counselingStaffIds = new Set<string>();
-    const specialRoleStaffIds = new Set<string>();
-
     teachers.forEach((t) => {
         if (t.role !== TeacherRoleValues.REGULAR) return;
         const name = t.name?.trim() || "";
         if (/סגן|סגנית|מנהל|מנהלת/i.test(name)) managementStaffIds.add(t.id);
         if (/יועצ|יועצת|יעוץ|ייעוץ|פסיכולוג/i.test(name)) counselingStaffIds.add(t.id);
-        if (/מדריכ|מדריך|סייע|משלב/i.test(name)) specialRoleStaffIds.add(t.id);
-
-        let totalScheduledHours = 0;
-        let activityHours = 0;
-        let frontalHours = 0;
-        let managementHours = 0;
-        let counselingHours = 0;
-
+    });
+    // Also identify by schedule: ≥4 management or counseling lesson hours in the annual schedule
+    teachers.forEach((t) => {
+        if (t.role !== TeacherRoleValues.REGULAR) return;
+        let mgmtHours = 0;
+        let counselHours = 0;
         Object.values(teacherClassMap || {}).forEach((dayMap) => {
             Object.values(dayMap || {}).forEach((hourMap) => {
-                const classId = hourMap[t.id];
-                if (classId) {
-                    totalScheduledHours++;
-                    const cName = classNameMap.get(classId) || "";
-                    const isAct = activityClassIds.has(classId);
-
-                    if (/ניהול|סגנ|הנהלה/i.test(cName)) {
-                        managementHours++;
-                    }
-                    if (/יעוץ|ייעוץ|פסיכולוג|טיפול/i.test(cName)) {
-                        counselingHours++;
-                    }
-
-                    if (isAct) {
-                        activityHours++;
-                    } else {
-                        frontalHours++;
-                    }
-                }
+                const cId = hourMap[t.id];
+                if (!cId) return;
+                const cName = classNameMap.get(cId) || "";
+                if (/ניהול|סגנ|הנהלה/i.test(cName)) mgmtHours++;
+                if (/יעוץ|ייעוץ|פסיכולוג|טיפול/i.test(cName)) counselHours++;
             });
         });
-
-        if (managementHours >= 4) {
-            managementStaffIds.add(t.id);
-        }
-        if (counselingHours >= 4) {
-            counselingStaffIds.add(t.id);
-        }
-
-        if (totalScheduledHours > 0 && frontalHours === 0) {
-            teachersWithOnlyActivities.add(t.id);
-        }
-
-        if (
-            managementStaffIds.has(t.id) ||
-            counselingStaffIds.has(t.id) ||
-            (totalScheduledHours > 0 && (activityHours / totalScheduledHours >= 0.65 || frontalHours <= 5))
-        ) {
-            specialRoleStaffIds.add(t.id);
-        }
+        if (mgmtHours >= 4) managementStaffIds.add(t.id);
+        if (counselHours >= 4) counselingStaffIds.add(t.id);
     });
 
+    // Identify single-day external vendors (active only 1 day/week with few total hours)
     const teacherActiveDays = new Map<string, { days: Set<string>; totalHours: number }>();
     Object.entries(mapAvailableTeachers || {}).forEach(([dStr, hoursObj]) => {
         Object.values(hoursObj || {}).forEach((tIds) => {
@@ -319,62 +280,45 @@ export function autoAssignSubstitutes({
             });
         });
     });
-
     const externalVendorTeacherIds = new Set<string>();
     teachers.forEach((t) => {
         if (t.role !== TeacherRoleValues.REGULAR) return;
         const entry = teacherActiveDays.get(t.id);
-        const daysCount = entry?.days.size || 0;
-        const weeklyHours = entry?.totalHours || 0;
-        // External programs/vendors/enrichment (Tal'an, external music, external clubs):
-        // Active on only 1 single day of the week with <= MIN_EXTERNAL_VENDOR_WEEKLY_HOURS total weekly hours
-        if (daysCount === 1 && weeklyHours <= SCORE_WEIGHTS.MIN_EXTERNAL_VENDOR_WEEKLY_HOURS) {
+        if ((entry?.days.size || 0) === 1 && (entry?.totalHours || 0) <= MIN_EXTERNAL_VENDOR_WEEKLY_HOURS) {
             externalVendorTeacherIds.add(t.id);
         }
     });
 
-    // Calculate structural homeroom teacher per class:
-    // The regular teacher who teaches the most frontal (non-activity) hours to this class across the week (minimum 7 hours).
-    const classTeacherWeeklyFrontalHours = new Map<string, Map<string, number>>();
+    // Identify structural homeroom teacher per class:
+    // The regular teacher with the most frontal weekly hours for that class (minimum MIN_HOMEROOM_WEEKLY_HOURS).
+    const classTeacherFrontalHours = new Map<string, Map<string, number>>();
     Object.values(teacherClassMap || {}).forEach((dayMap) => {
         Object.values(dayMap || {}).forEach((hourMap) => {
             Object.entries(hourMap || {}).forEach(([tId, cId]) => {
                 if (!cId || activityClassIds.has(cId)) return;
-                if (!classTeacherWeeklyFrontalHours.has(cId)) {
-                    classTeacherWeeklyFrontalHours.set(cId, new Map());
-                }
-                const counts = classTeacherWeeklyFrontalHours.get(cId)!;
+                if (!classTeacherFrontalHours.has(cId)) classTeacherFrontalHours.set(cId, new Map());
+                const counts = classTeacherFrontalHours.get(cId)!;
                 counts.set(tId, (counts.get(tId) || 0) + 1);
             });
         });
     });
-
     const homeroomTeacherByClass = new Map<string, string>();
-    classTeacherWeeklyFrontalHours.forEach((teacherCounts, cId) => {
-        let maxHours = 0;
-        let bestTeacherId: string | null = null;
-        teacherCounts.forEach((hours, tId) => {
-            if (hours > maxHours) {
-                maxHours = hours;
-                bestTeacherId = tId;
-            }
-        });
-        if (bestTeacherId && maxHours >= SCORE_WEIGHTS.MIN_HOMEROOM_WEEKLY_HOURS) {
-            homeroomTeacherByClass.set(cId, bestTeacherId);
-        }
+    classTeacherFrontalHours.forEach((teacherCounts, cId) => {
+        let maxH = 0;
+        let bestId: string | null = null;
+        teacherCounts.forEach((h, tId) => { if (h > maxH) { maxH = h; bestId = tId; } });
+        if (bestId && maxH >= MIN_HOMEROOM_WEEKLY_HOURS) homeroomTeacherByClass.set(cId, bestId);
     });
 
+    // Collect missing and present teacher IDs from column headers
     Object.values(clonedDay).forEach((col) => {
-        const headerCol = getColumnHeader(col);
-        if (headerCol?.headerTeacher?.id) {
-            if (headerCol.type === ColumnTypeValues.missingTeacher) {
-                missingTeacherIds.add(headerCol.headerTeacher.id);
-            } else if (headerCol.type === ColumnTypeValues.existingTeacher) {
-                existingPresentTeacherIds.add(headerCol.headerTeacher.id);
-            }
-        }
+        const hdr = getColumnHeader(col);
+        if (!hdr?.headerTeacher?.id) return;
+        if (hdr.type === ColumnTypeValues.missingTeacher) missingTeacherIds.add(hdr.headerTeacher.id);
+        else if (hdr.type === ColumnTypeValues.existingTeacher) existingPresentTeacherIds.add(hdr.headerTeacher.id);
     });
 
+    // Track how many sub hours each teacher has been assigned today (updated after each assignment)
     const dailySubLoad = new Map<string, number>();
     Object.values(clonedDay).forEach((col) => {
         Object.values(col).forEach((cell) => {
@@ -384,48 +328,32 @@ export function autoAssignSubstitutes({
         });
     });
 
-    // Pre-filter candidate teachers once for the entire day (skip staff, aides, missing teachers, external vendors)
+    // Pre-filter: exclude staff aides, external vendors, and the missing teacher themselves
     const eligibleCandidateTeachers = teachers.filter((t) => {
         if (t.role === TeacherRoleValues.STAFF) return false;
-        const name = t.name?.trim() || "";
-        if (/משלב|סייע/i.test(name)) return false;
+        if (/משלב|סייע/i.test(t.name?.trim() || "")) return false;
         if (externalVendorTeacherIds.has(t.id)) return false;
         if (missingTeacherIds.has(t.id)) return false;
         return true;
     });
 
     const ctx: AutoAssignContext = {
-        dayNumber,
-        dayNumStr,
-        fromHour,
-        clonedDay,
-        eligibleCandidateTeachers,
-        existingPresentTeacherIds,
-        teachesOnThisDay,
-        mapAvailableTeachers,
-        teacherClassMap,
-        activityClassIds,
-        activityClassNames,
-        systemRecommendations,
-        dailySubLoad,
-        teacherStartEndMap,
-        annualTeacherIds,
-        teachersWithOnlyActivities,
-        managementStaffIds,
-        counselingStaffIds,
-        specialRoleStaffIds,
-        homeroomTeacherByClass,
-        classNameMap,
+        dayNumber, dayNumStr, fromHour, clonedDay,
+        eligibleCandidateTeachers, existingPresentTeacherIds, teachesOnThisDay,
+        mapAvailableTeachers, teacherClassMap, activityClassIds, activityClassNames,
+        systemRecommendations, dailySubLoad, teacherStartEndMap, annualTeacherIds,
+        managementStaffIds, counselingStaffIds, homeroomTeacherByClass, classNameMap,
     };
 
+    // Determine which columns to process
     const columnsToProcess = targetColumnId
         ? [targetColumnId]
         : Object.keys(clonedDay).filter((colId) => {
-            const headerCol = getColumnHeader(clonedDay[colId]);
-            return headerCol?.type === ColumnTypeValues.missingTeacher;
+            const hdr = getColumnHeader(clonedDay[colId]);
+            return hdr?.type === ColumnTypeValues.missingTeacher;
         });
 
-    // Prioritize columns that teach younger grades in early hours (Grade 1-3 before Grade 5-6)
+    // Prioritize columns with younger grades first (Grade 1-3 before Grade 4+)
     if (!targetColumnId && columnsToProcess.length > 1) {
         const getColumnUrgency = (colId: string): number => {
             const col = clonedDay[colId];
@@ -433,14 +361,10 @@ export function autoAssignSubstitutes({
             let minGrade = 99;
             for (let h = fromHour; h <= Math.min(toHour, fromHour + 3); h++) {
                 const cell = col[String(h)];
-                if (cell?.classes && cell.classes.length > 0) {
-                    const grade = getGradeLevel(cell.classes);
-                    if (grade < minGrade) minGrade = grade;
-                }
+                if (cell?.classes?.length) minGrade = Math.min(minGrade, getGradeLevel(cell.classes));
             }
             return minGrade;
         };
-
         columnsToProcess.sort((a, b) => getColumnUrgency(a) - getColumnUrgency(b));
     }
 
@@ -451,151 +375,89 @@ export function autoAssignSubstitutes({
         const col = clonedDay[colId];
         if (!col) return;
 
-        let missingLessonHoursInColumn = 0;
-        for (let checkH = fromHour; checkH <= toHour; checkH++) {
-            const checkCell = col[String(checkH)];
-            if (!checkCell) continue;
-            const isLesson = !!(checkCell.classes && checkCell.classes.length > 0);
-            if (isLesson && !checkCell.subTeacher?.id && !checkCell.event) {
-                missingLessonHoursInColumn++;
+        // Count missing lesson hours to determine if this is a full-day absence
+        let missingLessonHours = 0;
+        for (let h = fromHour; h <= toHour; h++) {
+            const checkCell = col[String(h)];
+            if (checkCell?.classes?.length && !checkCell.subTeacher?.id && !checkCell.event) {
+                missingLessonHours++;
             }
         }
-        const isFullDayAbsence = missingLessonHoursInColumn >= 4;
+        const isFullDayAbsence = missingLessonHours >= 4;
 
-        const headerCol = getColumnHeader(col);
-        const colPosition = headerCol?.position ?? 0;
-        const originalTeacherName = headerCol?.headerTeacher?.name?.trim() || "";
-        const originalTeacherId = headerCol?.headerTeacher?.id;
+        const hdr = getColumnHeader(col);
+        const colPosition = hdr?.position ?? 0;
+        const originalTeacherName = hdr?.headerTeacher?.name?.trim() || "";
+        const originalTeacherId = hdr?.headerTeacher?.id;
 
         for (let h = fromHour; h <= toHour; h++) {
             const hourStr = String(h);
             const cell = col[hourStr];
             if (!cell) continue;
-
-            const isLessonSlot = !!(cell.classes && cell.classes.length > 0);
-            if (!isLessonSlot) continue;
-            if (cell.subTeacher?.id || cell.event) continue;
-
-            const isActivity = isActivityCell(cell, activityClassIds, activityClassNames);
-            if (isActivity) continue;
+            if (!cell.classes?.length) continue;       // Not a lesson slot
+            if (cell.subTeacher?.id || cell.event) continue; // Already handled
+            if (isActivityCell(cell, activityClassIds, activityClassNames)) continue; // Activity slot — skip
 
             const classIds = (cell.classes || []).map((c) => c.id);
-            const isUpper = isUpperGrade(cell.classes);
             const gradeLevel = getGradeLevel(cell.classes);
 
-            // For hour 6 and above:
-            // Check if this lesson is part of a double period or agricultural farm (חווה חקלאית)
-            // where the first half (hour h - 1) is being taught.
-            // Rule: Never dismiss the second half alone without the first half!
+            // Detect double-period / agricultural farm continuity:
+            // If the previous hour was taught (sub or event), and it's the same class or a farm,
+            // the current hour must not be left alone.
             const prevCell = h > fromHour ? col[String(h - 1)] : undefined;
             const isPrevTaught =
-                !!prevCell &&
-                !!(prevCell.classes && prevCell.classes.length > 0) &&
+                !!prevCell?.classes?.length &&
                 (!!prevCell.subTeacher?.id || (!!prevCell.event && prevCell.event !== "משוחררים"));
-
             const isSameClassAsPrev = prevCell?.classes?.some((pc) => classIds.includes(pc.id));
             const isAgricultureFarm =
                 (cell.subject?.name && /חווה|חקלא/i.test(cell.subject.name)) ||
                 cell.classes?.some((c) => /חווה|חקלא/i.test(c.name || "")) ||
                 (prevCell?.subject?.name && /חווה|חקלא/i.test(prevCell.subject.name)) ||
                 prevCell?.classes?.some((c) => /חווה|חקלא/i.test(c.name || ""));
-
             const isDoublePeriodOrFarmWithPrev = !!(isPrevTaught && (isSameClassAsPrev || isAgricultureFarm));
 
-            // Find the best substitute candidate (returns null if below required score threshold)
             const candidate = findBestCandidate({
-                ctx,
-                hour: h,
-                columnId: colId,
-                originalTeacherName,
-                originalTeacherId,
-                classIds,
-                isUpperGrade: isUpper,
-                isFullDayAbsence,
-                isDoublePeriodOrFarmWithPrev,
+                ctx, hour: h, columnId: colId,
+                originalTeacherName, originalTeacherId,
+                classIds, isFullDayAbsence, isDoublePeriodOrFarmWithPrev,
             });
 
             const classNamesStr = (cell.classes || []).map((c) => c.name).filter(Boolean).join(", ");
             const subjectName = cell.subject?.name;
 
             if (h >= 6) {
+                // Late hour: only assign if lower grades OR double-period continuation
                 if (gradeLevel <= 3 || isDoublePeriodOrFarmWithPrev) {
-                    // Up to Grade 3, OR continuation of a double period / agricultural farm where the first half is taught:
-                    // Prefer assigning a substitute teacher
                     if (candidate) {
                         cell.subTeacher = candidate.teacher;
                         cell.event = undefined;
                         assignedCount++;
                         dailySubLoad.set(candidate.teacher.id, (dailySubLoad.get(candidate.teacher.id) || 0) + 1);
-                        assignments.push({
-                            hour: h,
-                            columnTeacherName: originalTeacherName,
-                            subTeacherName: candidate.teacher.name,
-                            className: classNamesStr,
-                            subjectName,
-                            reason: candidate.reason || "שיבוץ אופטימלי",
-                            columnPosition: colPosition,
-                        });
+                        assignments.push({ hour: h, columnTeacherName: originalTeacherName, subTeacherName: candidate.teacher.name, className: classNamesStr, subjectName, reason: candidate.reason || "שיבוץ אופטימלי", columnPosition: colPosition });
                     } else if (isDoublePeriodOrFarmWithPrev) {
-                        // Double period / farm cannot dismiss the 2nd half alone! Leave unassigned for principal review
+                        // Cannot dismiss the second half of a double period alone — leave for manual review
                         unassignedCount++;
-                        assignments.push({
-                            hour: h,
-                            columnTeacherName: originalTeacherName,
-                            subTeacherName: "לא נמצא שיבוץ מתאים",
-                            className: classNamesStr,
-                            subjectName,
-                            reason: "לא נמצא שיבוץ מתאים",
-                            isUnassigned: true,
-                            columnPosition: colPosition,
-                        });
+                        assignments.push({ hour: h, columnTeacherName: originalTeacherName, subTeacherName: "לא נמצא שיבוץ מתאים", className: classNamesStr, subjectName, reason: "לא נמצא שיבוץ מתאים", isUnassigned: true, columnPosition: colPosition });
                     } else {
-                        // Fallback to dismissal if no substitute can be found (for lower grades)
                         if (!cell.event) {
                             cell.event = "משוחררים";
                             assignedCount++;
-                            assignments.push({
-                                hour: h,
-                                columnTeacherName: originalTeacherName,
-                                subTeacherName: "משוחררים",
-                                className: classNamesStr,
-                                subjectName,
-                                reason: "שחרור כיתה (סוף יום)",
-                                isReleased: true,
-                                columnPosition: colPosition,
-                            });
+                            assignments.push({ hour: h, columnTeacherName: originalTeacherName, subTeacherName: "משוחררים", className: classNamesStr, subjectName, reason: "שחרור כיתה (סוף יום)", isReleased: true, columnPosition: colPosition });
                         }
                     }
                 } else {
-                    // Grade 4 and above standalone late hour: dismiss unless there is a co-teacher already in this lesson
+                    // Upper grade (4+) standalone late hour: dismiss unless a co-teacher can step in
                     if (candidate?.isCoTeacher) {
                         cell.subTeacher = candidate.teacher;
                         cell.event = undefined;
                         assignedCount++;
                         dailySubLoad.set(candidate.teacher.id, (dailySubLoad.get(candidate.teacher.id) || 0) + 1);
-                        assignments.push({
-                            hour: h,
-                            columnTeacherName: originalTeacherName,
-                            subTeacherName: candidate.teacher.name,
-                            className: classNamesStr,
-                            subjectName,
-                            reason: candidate.reason || "מורה נוסף/ת באותו שיעור",
-                            columnPosition: colPosition,
-                        });
+                        assignments.push({ hour: h, columnTeacherName: originalTeacherName, subTeacherName: candidate.teacher.name, className: classNamesStr, subjectName, reason: candidate.reason || "מורה נוסף/ת באותו שיעור", columnPosition: colPosition });
                     } else {
                         if (!cell.event) {
                             cell.event = "משוחררים";
                             assignedCount++;
-                            assignments.push({
-                                hour: h,
-                                columnTeacherName: originalTeacherName,
-                                subTeacherName: "משוחררים",
-                                className: classNamesStr,
-                                subjectName,
-                                reason: "שחרור כיתה (סוף יום)",
-                                isReleased: true,
-                                columnPosition: colPosition,
-                            });
+                            assignments.push({ hour: h, columnTeacherName: originalTeacherName, subTeacherName: "משוחררים", className: classNamesStr, subjectName, reason: "שחרור כיתה (סוף יום)", isReleased: true, columnPosition: colPosition });
                         }
                     }
                 }
@@ -605,27 +467,10 @@ export function autoAssignSubstitutes({
                     cell.event = undefined;
                     assignedCount++;
                     dailySubLoad.set(candidate.teacher.id, (dailySubLoad.get(candidate.teacher.id) || 0) + 1);
-                    assignments.push({
-                        hour: h,
-                        columnTeacherName: originalTeacherName,
-                        subTeacherName: candidate.teacher.name,
-                        className: classNamesStr,
-                        subjectName,
-                        reason: candidate.reason || "שיבוץ אופטימלי",
-                        columnPosition: colPosition,
-                    });
+                    assignments.push({ hour: h, columnTeacherName: originalTeacherName, subTeacherName: candidate.teacher.name, className: classNamesStr, subjectName, reason: candidate.reason || "שיבוץ אופטימלי", columnPosition: colPosition });
                 } else {
                     unassignedCount++;
-                    assignments.push({
-                        hour: h,
-                        columnTeacherName: originalTeacherName,
-                        subTeacherName: "לא נמצא שיבוץ מתאים",
-                        className: classNamesStr,
-                        subjectName,
-                        reason: "לא נמצא שיבוץ מתאים",
-                        isUnassigned: true,
-                        columnPosition: colPosition,
-                    });
+                    assignments.push({ hour: h, columnTeacherName: originalTeacherName, subTeacherName: "לא נמצא שיבוץ מתאים", className: classNamesStr, subjectName, reason: "לא נמצא שיבוץ מתאים", isUnassigned: true, columnPosition: colPosition });
                 }
             }
         }
@@ -634,15 +479,14 @@ export function autoAssignSubstitutes({
     assignments.sort((a, b) => (a.columnPosition ?? 0) - (b.columnPosition ?? 0) || a.hour - b.hour);
 
     return {
-        updatedSchedule: {
-            ...dailySchedule,
-            [selectedDate]: clonedDay,
-        },
+        updatedSchedule: { ...dailySchedule, [selectedDate]: clonedDay },
         assignedCount,
         unassignedCount,
         assignments,
     };
 }
+
+// ─── Candidate search ──────────────────────────────────────────────────────────
 
 interface CandidateSearchParams {
     ctx: AutoAssignContext;
@@ -651,94 +495,59 @@ interface CandidateSearchParams {
     originalTeacherName: string;
     originalTeacherId?: string;
     classIds: string[];
-    isUpperGrade: boolean;
     isFullDayAbsence: boolean;
     isDoublePeriodOrFarmWithPrev: boolean;
 }
 
 function findBestCandidate(params: CandidateSearchParams): AutoSubstitutionCandidate | null {
+    const { ctx, hour, columnId, originalTeacherName, originalTeacherId, classIds, isFullDayAbsence, isDoublePeriodOrFarmWithPrev } = params;
     const {
-        ctx,
-        hour,
-        columnId,
-        originalTeacherName,
-        originalTeacherId,
-        classIds,
-        isUpperGrade,
-        isFullDayAbsence,
-        isDoublePeriodOrFarmWithPrev,
-    } = params;
-
-    const {
-        dayNumber,
-        dayNumStr,
-        fromHour,
-        clonedDay,
-        eligibleCandidateTeachers,
-        existingPresentTeacherIds,
-        teachesOnThisDay,
-        mapAvailableTeachers,
-        teacherClassMap,
-        activityClassIds,
-        activityClassNames,
-        systemRecommendations,
-        dailySubLoad,
-        teacherStartEndMap,
-        annualTeacherIds,
-        teachersWithOnlyActivities,
-        managementStaffIds,
-        counselingStaffIds,
-        specialRoleStaffIds,
-        homeroomTeacherByClass,
-        classNameMap,
+        dayNumber, dayNumStr, clonedDay, eligibleCandidateTeachers,
+        existingPresentTeacherIds, teachesOnThisDay, mapAvailableTeachers, teacherClassMap,
+        activityClassIds, activityClassNames, systemRecommendations, dailySubLoad,
+        teacherStartEndMap, annualTeacherIds, managementStaffIds, counselingStaffIds,
+        homeroomTeacherByClass, classNameMap,
     } = ctx;
 
     const hourStr = String(hour);
+    const classIdsSet = new Set(classIds);
+
+    // Teachers with a scheduled annual lesson this hour
     const scheduledTeacherIds = new Set([
         ...(mapAvailableTeachers[dayNumber]?.[hourStr] || []),
         ...(mapAvailableTeachers[dayNumStr]?.[hourStr] || []),
     ]);
 
-    const dailyOccupiedTeacherIds = new Set<string>();
+    // Teachers blocked this hour: already a sub somewhere, or teaching a frontal class in blue column
+    const occupiedThisHour = new Set<string>();
     Object.values(clonedDay).forEach((col) => {
         const cell = col[hourStr];
-        if (cell?.subTeacher?.id) {
-            dailyOccupiedTeacherIds.add(cell.subTeacher.id);
-        }
-        const headerCol = getColumnHeader(col);
-        if (
-            headerCol?.type === ColumnTypeValues.existingTeacher &&
-            headerCol.headerTeacher?.id
-        ) {
-            const isActivity = isActivityCell(cell, activityClassIds, activityClassNames);
+        if (cell?.subTeacher?.id) occupiedThisHour.add(cell.subTeacher.id);
+        const hdr = getColumnHeader(col);
+        if (hdr?.type === ColumnTypeValues.existingTeacher && hdr.headerTeacher?.id) {
+            const isAct = isActivityCell(cell, activityClassIds, activityClassNames);
             const isCoveredBySub = !!cell?.subTeacher?.id;
-            const cellClassNames = (cell?.classes || []).map((c) => c.name || "").join(" ");
-            const cellSubjectName = cell?.subject?.name || "";
-            const isProtected = isProtectedActivity(cellClassNames) || isProtectedActivity(cellSubjectName);
-            if (cell?.event || isProtected || (!isActivity && !isCoveredBySub && cell?.classes && cell.classes.length > 0)) {
-                dailyOccupiedTeacherIds.add(headerCol.headerTeacher.id);
+            const isProtected =
+                isProtectedActivity((cell?.classes || []).map((c) => c.name || "").join(" ")) ||
+                isProtectedActivity(cell?.subject?.name);
+            if (cell?.event || isProtected || (!isAct && !isCoveredBySub && cell?.classes?.length)) {
+                occupiedThisHour.add(hdr.headerTeacher.id);
             }
         }
     });
 
-    const prevHourStr = String(hour - 1);
-    const nextHourStr = String(hour + 1);
-    const prevCell = clonedDay[columnId]?.[prevHourStr];
-    const nextCell = clonedDay[columnId]?.[nextHourStr];
-    const prevSubId = prevCell?.subTeacher?.id;
-    const nextSubId = nextCell?.subTeacher?.id;
+    const prevSubId = clonedDay[columnId]?.[String(hour - 1)]?.subTeacher?.id;
+    const nextSubId = clonedDay[columnId]?.[String(hour + 1)]?.subTeacher?.id;
 
+    // Build historical recommendation map for this hour/teacher
     const recMap = new Map<string, number>();
-    const recList = (systemRecommendations as any)?.[hourStr]?.[originalTeacherName] || [];
-    recList.forEach((item: any) => {
-        if (typeof item === "string") {
-            recMap.set(item.trim(), 1);
-        } else if (item && typeof item === "object" && item.name) {
-            recMap.set(item.name.trim(), item.count || 1);
-        }
+    const recList: Array<{ name?: string; count?: number } | string> =
+        systemRecommendations?.[hourStr]?.[originalTeacherName] || [];
+    recList.forEach((item) => {
+        if (typeof item === "string") recMap.set(item.trim(), 1);
+        else if (item?.name) recMap.set(item.name.trim(), item.count || 1);
     });
 
-    const classIdsSet = new Set(classIds);
     const isOriginalTeacherTheHomeroom = originalTeacherId
         ? Array.from(classIdsSet).some((cId) => homeroomTeacherByClass.get(cId) === originalTeacherId)
         : false;
@@ -747,372 +556,155 @@ function findBestCandidate(params: CandidateSearchParams): AutoSubstitutionCandi
 
     for (const teacher of eligibleCandidateTeachers) {
         if (originalTeacherId && teacher.id === originalTeacherId) continue;
-        if (dailyOccupiedTeacherIds.has(teacher.id)) continue;
+        if (occupiedThisHour.has(teacher.id)) continue;
 
         const teacherName = teacher.name?.trim() || "";
-        const isScheduledThisHour = scheduledTeacherIds.has(teacher.id);
         const teachesToday = teachesOnThisDay.has(teacher.id);
         const bounds = teacherStartEndMap.get(teacher.id);
         const isPresentInBlueColumn = existingPresentTeacherIds.has(teacher.id);
+        const isScheduledThisHour = scheduledTeacherIds.has(teacher.id);
 
-        // Hard constraints: Never summon teachers from home who are not currently active in school
-        if (teacher.role === TeacherRoleValues.REGULAR && !isPresentInBlueColumn) {
-            // Free day: Has lessons in annual schedule, but none today
-            if (!teachesToday && annualTeacherIds.has(teacher.id)) {
-                continue;
+        // ── HARD EXCLUSIONS ────────────────────────────────────────────────────
+        if (teacher.role === TeacherRoleValues.REGULAR) {
+            if (!isPresentInBlueColumn) {
+                // Free day: has annual schedule but none today
+                if (!teachesToday && annualTeacherIds.has(teacher.id)) continue;
+                // No annual schedule: only allow if historically recommended
+                if (!annualTeacherIds.has(teacher.id) && !recMap.has(teacherName)) continue;
+                // Before start / after end of workday
+                if (teachesToday && bounds && hour < bounds.min) continue;
+                if (teachesToday && bounds && hour > bounds.max) continue;
             }
-            // No annual schedule: Only allow dormant 0-hour records if recommended by history
-            if (!annualTeacherIds.has(teacher.id)) {
-                const hasRecommendation = teacherName ? recMap.has(teacherName) : false;
-                if (!hasRecommendation) {
-                    continue;
-                }
-            }
-            // Not started yet: hour is before their first lesson today (teacher is at home)
-            if (teachesToday && bounds && hour < bounds.min) {
-                // Allow arriving 1 hour early (hour === bounds.min - 1) as a penalized option, but strictly block 2+ hours early
-                if (hour < bounds.min - 1) {
-                    continue;
-                }
-            }
-            // Already finished: hour is after their last lesson today (teacher went home)
-            if (teachesToday && bounds && hour > bounds.max) {
-                continue;
-            }
+            // Universal bounds — even blue-column teachers shouldn't be extended beyond their day
+            if (bounds && teachesToday && hour > bounds.max) continue;
+            if (bounds && teachesToday && hour < bounds.min) continue;
         }
-
-        let teachingActivityGroup = false;
 
         const teachingClassId = teacherClassMap[dayNumStr]?.[hourStr]?.[teacher.id];
         const isCoTeacherInLesson = !!(teachingClassId && classIdsSet.has(teachingClassId));
-
-        // Allow continuing a double period / agricultural farm even if at 2 daily hours limit
-        const isContinuingDoublePeriod =
-            isDoublePeriodOrFarmWithPrev && prevSubId !== undefined && prevSubId === teacher.id;
-
-        // Hard constraint: Maximum 2 daily substitution hours for regular teachers with a schedule (prevent teacher fatigue)
+        const isContinuingDoublePeriod = isDoublePeriodOrFarmWithPrev && prevSubId !== undefined && prevSubId === teacher.id;
         const currentSubLoad = dailySubLoad.get(teacher.id) || 0;
-        const isRegularWithSchedule =
-            teacher.role === TeacherRoleValues.REGULAR && annualTeacherIds.has(teacher.id);
-        if (
-            isRegularWithSchedule &&
-            currentSubLoad >= SCORE_WEIGHTS.MAX_DAILY_SUB_HOURS_REGULAR &&
-            !isCoTeacherInLesson &&
-            !isContinuingDoublePeriod
-        ) {
-            continue;
-        }
+        const isRegularWithSchedule = teacher.role === TeacherRoleValues.REGULAR && annualTeacherIds.has(teacher.id);
 
-        if (isScheduledThisHour && !isCoTeacherInLesson && !isContinuingDoublePeriod) {
+        // Daily substitution limit for regular teachers (exempted for co-teacher and double-period continuation)
+        if (isRegularWithSchedule && currentSubLoad >= MAX_DAILY_SUB_HOURS && !isCoTeacherInLesson && !isContinuingDoublePeriod) continue;
+
+        // Never pull a teacher out of a frontal lesson (co-teacher exception already handled)
+        let teachingActivityGroup = false;
+        if (isScheduledThisHour && !isCoTeacherInLesson) {
             const isActivity = teachingClassId ? activityClassIds.has(teachingClassId) : false;
-            if (!isActivity) {
-                continue;
-            }
-            const currentClassName = teachingClassId ? classNameMap.get(teachingClassId) || "" : "";
-            if (isProtectedActivity(currentClassName)) {
-                // Strictly protect management (ניהול/סגנות), counseling (ייעוץ), therapy (טיפול), and guidance (הדרכה)
-                continue;
-            }
+            if (!isActivity) continue; // Hard block: frontal lesson
+            const className = teachingClassId ? classNameMap.get(teachingClassId) || "" : "";
+            if (isProtectedActivity(className)) continue; // Hard block: management/counseling activity
             teachingActivityGroup = true;
         }
+        // ── END HARD EXCLUSIONS ────────────────────────────────────────────────
 
-        let score = 0;
+        // ── TIER ASSIGNMENT ────────────────────────────────────────────────────
+        let tier: number;
 
-        // Bonus: Continuing double period / agricultural farm from previous hour
-        if (isContinuingDoublePeriod) {
-            score += SCORE_WEIGHTS.DOUBLE_PERIOD_SAME_CLASS_BONUS + SCORE_WEIGHTS.DOUBLE_PERIOD_CONTINUITY_BONUS;
-        }
-
-        // Bonus: Co-teacher already assigned to this lesson
-        if (isCoTeacherInLesson) {
-            score += SCORE_WEIGHTS.CO_TEACHER_IN_LESSON;
-        }
-
-        // Penalty: Currently teaching an activity / small group
-        if (teachingActivityGroup) {
-            score -= SCORE_WEIGHTS.ACTIVITY_GROUP_PENALTY;
-        }
-
-        // Fallback: Teacher has not started their workday yet (calling in early from home)
-        const isArrivingOneHourEarly =
-            teachesToday && bounds && hour === bounds.min - 1 && !isPresentInBlueColumn;
-        if (isArrivingOneHourEarly) {
-            score += SCORE_WEIGHTS.EARLY_ARRIVAL_FALLBACK_SCORE;
-        }
-
-        // Bonus: Historical substitution recommendation pattern
-        const histCount = teacherName ? recMap.get(teacherName) : undefined;
-        if (histCount !== undefined) {
-            if (histCount >= 4) {
-                score += SCORE_WEIGHTS.HISTORICAL_RECOMMENDATION_HIGH;
-            } else if (histCount >= 2) {
-                score += SCORE_WEIGHTS.HISTORICAL_RECOMMENDATION_MED;
+        if (isContinuingDoublePeriod || isCoTeacherInLesson) {
+            tier = TIER_CONTINUATION;
+        } else if (teachingActivityGroup) {
+            tier = TIER_ACTIVITY_GROUP;
+        } else if (teacher.role === TeacherRoleValues.SUBSTITUTE) {
+            const isOnCampus =
+                isPresentInBlueColumn ||
+                (teachesToday && bounds && hour >= bounds.min && hour <= bounds.max);
+            if (isOnCampus) {
+                tier = TIER_SUB_ON_CAMPUS;
+            } else if (isFullDayAbsence) {
+                tier = TIER_SUB_CALL_IN;
             } else {
-                score += SCORE_WEIGHTS.HISTORICAL_RECOMMENDATION_LOW;
+                continue; // Sub from home, not a full-day absence — skip
             }
+        } else {
+            // Regular teacher: on campus (passed all hard exclusions), free this hour
+            tier = TIER_FREE_WINDOW;
         }
 
-        // Consecutive lesson load fatigue penalty:
-        let priorConsecutiveHours = 0;
-        for (let prevH = hour - 1; prevH >= 1; prevH--) {
-            const classId = teacherClassMap[dayNumStr]?.[String(prevH)]?.[teacher.id];
-            const isScheduledFrontal = !!(classId && !activityClassIds.has(classId));
-            const isSubbingPrev = Object.values(clonedDay).some(
-                (c) => c[String(prevH)]?.subTeacher?.id === teacher.id
-            );
-            if (isScheduledFrontal || isSubbingPrev) {
-                priorConsecutiveHours++;
-            } else {
-                break;
-            }
+        // Management / counseling are always last resort (unless they are the co-teacher)
+        if (tier !== TIER_CONTINUATION && (managementStaffIds.has(teacher.id) || counselingStaffIds.has(teacher.id))) {
+            tier = TIER_PROTECTED_STAFF;
         }
+        // ── END TIER ASSIGNMENT ────────────────────────────────────────────────
 
-        if (priorConsecutiveHours >= 3) {
-            score -= SCORE_WEIGHTS.CONSECUTIVE_FATIGUE_PENALTY;
-        }
+        // ── TIE-BREAKER SCORE (within same tier) ──────────────────────────────
+        let tieBreaker = 0;
 
-        let consecutiveSubHours = 0;
-        for (let backH = hour - 1; backH >= fromHour; backH--) {
-            if (clonedDay[columnId]?.[String(backH)]?.subTeacher?.id === teacher.id) {
-                consecutiveSubHours++;
-            } else {
-                break;
-            }
-        }
-
-        // Bonus: Block continuity with previous or next substituted hour
-        const isAdjacentSub = (prevSubId && teacher.id === prevSubId) || (nextSubId && teacher.id === nextSubId);
-        if (isAdjacentSub) {
-            const isSameClassWithPrev = prevSubId && teacher.id === prevSubId && prevCell?.classes?.some((c) => classIdsSet.has(c.id));
-            const isSameClassWithNext = nextSubId && teacher.id === nextSubId && nextCell?.classes?.some((c) => classIdsSet.has(c.id));
-
-            if (consecutiveSubHours >= 2) {
-                score += SCORE_WEIGHTS.BLOCK_CONTINUITY_DIFF_CLASS;
-            } else if (isSameClassWithPrev || isSameClassWithNext) {
-                score += SCORE_WEIGHTS.BLOCK_CONTINUITY_SAME_CLASS;
-            } else {
-                score += SCORE_WEIGHTS.BLOCK_CONTINUITY_SAME_COLUMN;
-            }
-        }
-
-        // Multi-hour and double period lookahead:
-        // If the next hour in this column is also a lesson slot needing a substitute,
-        // evaluate whether this candidate can continue or will cause a disruption.
-        const isNextHourActivity = isActivityCell(nextCell, activityClassIds, activityClassNames);
-
-        const isNextHourLesson =
-            hour + 1 < 6 &&
-            !!nextCell &&
-            !!(nextCell.classes && nextCell.classes.length > 0) &&
-            !isNextHourActivity;
-        const isNextHourMissing = isNextHourLesson && !nextCell.subTeacher?.id && !nextCell.event;
-
-        if (isNextHourMissing && !isArrivingOneHourEarly) {
-            const nextCellHasSameClass = nextCell?.classes?.some((c) => classIdsSet.has(c.id));
-
-            // Check if teacher has a frontal (non-activity) annual schedule lesson in the next hour
-            const nextHourClassId = teacherClassMap[dayNumStr]?.[nextHourStr]?.[teacher.id];
-            const isScheduledFrontalNextHour = !!(nextHourClassId && !activityClassIds.has(nextHourClassId));
-
-            // Check if teacher is already assigned as a sub in another column in the next hour
-            const isNextHourOccupiedDaily = Object.values(clonedDay).some(
-                (c) => c[nextHourStr]?.subTeacher?.id === teacher.id
-            );
-
-            // Check if teacher would exceed daily limit in the next hour
-            const wouldBeCappedNextHour =
-                isRegularWithSchedule &&
-                currentSubLoad + 1 >= SCORE_WEIGHTS.MAX_DAILY_SUB_HOURS_REGULAR &&
-                !nextCellHasSameClass; // Allowed to extend for double period in same class
-
-            if (isScheduledFrontalNextHour || isNextHourOccupiedDaily || wouldBeCappedNextHour) {
-                // Penalty: Cannot continue into next hour (breaks double period or block continuity)
-                const penalty = nextCellHasSameClass ? SCORE_WEIGHTS.BLOCKED_NEXT_HOUR_PENALTY : 10;
-                score -= penalty;
-            } else {
-                // Bonus: Available for consecutive hours (double period or block)
-                if (nextCellHasSameClass) {
-                    score += SCORE_WEIGHTS.DOUBLE_PERIOD_SAME_CLASS_BONUS;
-                } else {
-                    score += SCORE_WEIGHTS.DUAL_HOUR_AVAILABLE_BONUS;
-                }
-            }
-        }
-
+        // +3: Teacher is familiar with the target class (teaches it somewhere in the week)
         let teachesTargetClass = false;
-        const classMapForDay = teacherClassMap[dayNumStr];
-        if (classMapForDay) {
-            Object.values(classMapForDay).forEach((hourMap) => {
-                if (hourMap[teacher.id] && classIdsSet.has(hourMap[teacher.id])) {
-                    teachesTargetClass = true;
-                }
+        if (teacherClassMap[dayNumStr]) {
+            Object.values(teacherClassMap[dayNumStr]).forEach((hourMap) => {
+                if (hourMap[teacher.id] && classIdsSet.has(hourMap[teacher.id])) teachesTargetClass = true;
             });
         }
+        if (teachesTargetClass) tieBreaker += 3;
 
-        // Structural homeroom teacher protection:
-        // Do not burnout homeroom teachers in their own homeroom class during their windows/planning
+        // +2 / +1: Historical substitution recommendation for this slot
+        const histCount = recMap.get(teacherName);
+        if (histCount !== undefined) tieBreaker += histCount >= 4 ? 2 : 1;
+
+        // +1: Same teacher is already subbing in adjacent hour of the same column
+        if ((prevSubId && teacher.id === prevSubId) || (nextSubId && teacher.id === nextSubId)) {
+            tieBreaker += 1;
+        }
+
+        // −1 per sub hour already assigned today
+        tieBreaker -= currentSubLoad;
+
+        // −3: Homeroom teacher of target class — protect from burnout in their own class window
         const isHomeroomOfTargetClass = Array.from(classIdsSet).some(
             (cId) => homeroomTeacherByClass.get(cId) === teacher.id
         );
+        if (isHomeroomOfTargetClass && !isOriginalTeacherTheHomeroom) tieBreaker -= 3;
+        // ── END TIE-BREAKER ────────────────────────────────────────────────────
 
-        if (isHomeroomOfTargetClass && !isOriginalTeacherTheHomeroom) {
-            // Penalty: Protect homeroom teacher from burnout in own class during planning time
-            score -= SCORE_WEIGHTS.HOMEROOM_TEACHER_BURNOUT_PENALTY;
-        } else if (teachesTargetClass && !counselingStaffIds.has(teacher.id) && !managementStaffIds.has(teacher.id)) {
-            // Bonus: Teacher is familiar with this specific class (not applicable to counselors or management)
-            score += SCORE_WEIGHTS.CLASS_FAMILIARITY;
-        }
+        // Encode score: lower tier wins; within tier, higher tieBreaker wins
+        const score = (5 - tier) * 100 + tieBreaker;
 
-        // Bonus: Teacher is already present today in the schedule (has a blue column)
-        if (existingPresentTeacherIds.has(teacher.id)) {
-            score += SCORE_WEIGHTS.EXISTING_PRESENT_TEACHER;
-        }
-
-        // Teacher without fixed annual schedule or activity-only
-        const isActivityOnlyTeacher = teachersWithOnlyActivities.has(teacher.id);
-        const isNoScheduleTeacher =
-            teacher.role === TeacherRoleValues.REGULAR &&
-            !annualTeacherIds.has(teacher.id) &&
-            !existingPresentTeacherIds.has(teacher.id);
-
-        if (isNoScheduleTeacher) {
-            score += SCORE_WEIGHTS.NO_SCHEDULE_TEACHER;
-            score += SCORE_WEIGHTS.AVAILABLE_WINDOW_HOUR;
-        }
-
-        // Dedicated staff roles protection:
-        // School management (ניהול/סגנות) and counseling (יועצות/פסיכולוגים) have essential
-        // administrative and mental health responsibilities and must not be routinely used for classroom substitution.
-        if (managementStaffIds.has(teacher.id)) {
-            score -= SCORE_WEIGHTS.MANAGEMENT_STAFF_PENALTY;
-        } else if (counselingStaffIds.has(teacher.id)) {
-            score -= SCORE_WEIGHTS.COUNSELING_STAFF_PENALTY;
-        } else if (specialRoleStaffIds.has(teacher.id) || isActivityOnlyTeacher) {
-            score -= SCORE_WEIGHTS.SPECIAL_ROLE_STAFF_PENALTY;
-        }
-
-        const isCurrentlyActiveOnCampus =
-            isPresentInBlueColumn ||
-            (teachesToday && bounds && hour >= bounds.min && hour <= bounds.max);
-
-        // Bonus: Regular teacher free during a window hour in their active workday
-        if (!isScheduledThisHour && isCurrentlyActiveOnCampus && teacher.role === TeacherRoleValues.REGULAR) {
-            score += SCORE_WEIGHTS.AVAILABLE_WINDOW_HOUR;
-        }
-
-        // Penalty: Teacher was about to finish their workday (prefer mid-day windows over delaying departure)
-        const isEndOfWorkday =
-            teachesToday && bounds && bounds.max > bounds.min && hour === bounds.max && (!isPresentInBlueColumn || isRegularWithSchedule);
-        if (isEndOfWorkday) {
-            score -= SCORE_WEIGHTS.END_OF_DAY_PENALTY;
-        }
-
-        // Dedicated substitute role scoring
-        if (teacher.role === TeacherRoleValues.SUBSTITUTE) {
-            if (isCurrentlyActiveOnCampus) {
-                // Bonus: Dedicated sub already on campus
-                score += SCORE_WEIGHTS.DEDICATED_SUBSTITUTE;
-            } else {
-                if (isFullDayAbsence) {
-                    // Bonus: Full-day absence justifies calling in external substitute pool
-                    score += SCORE_WEIGHTS.FULL_DAY_SUB_CALL_BONUS;
-                } else {
-                    // Penalty: Unconfirmed sub at home for single hour
-                    score -= SCORE_WEIGHTS.UNCONFIRMED_SUB_CALL_PENALTY;
-                }
-            }
-        }
-
-        // Bonus: Active on campus during today's working hours
-        if (isCurrentlyActiveOnCampus) {
-            score += SCORE_WEIGHTS.ON_CAMPUS_WORKING_DAY;
-        }
-
-        // Load balancing: Prefer mobilizing an already-active sub (up to 2 hrs) or penalize excessive daily load
-        const currentLoad = dailySubLoad.get(teacher.id) || 0;
-        if (currentLoad === 1 && isRegularWithSchedule) {
-            score += SCORE_WEIGHTS.MOBILIZED_SUB_BONUS;
-        } else if (currentLoad > 0) {
-            score -= currentLoad * SCORE_WEIGHTS.DAILY_LOAD_PENALTY;
-        }
-
-        let candidateReason = "זמינות במערכת והתאמה גבוהה";
-        if (isContinuingDoublePeriod) {
-            candidateReason = "המשכיות שיעור כפול";
-        } else if (isCoTeacherInLesson) {
-            candidateReason = "מורה נוסף/ת באותו שיעור";
-        } else if (isArrivingOneHourEarly) {
-            candidateReason = "הגעה מוקדמת מהבית בהיעדר מורה פנוי בביה\"ס";
-        } else if (isAdjacentSub) {
-            candidateReason = "רצף שעות ושמירה על יציבות הכיתה";
-        } else if (isPresentInBlueColumn) {
-            let blueColumnCell: DailyScheduleCell | undefined;
-            for (const col of Object.values(clonedDay)) {
-                const hCol = getColumnHeader(col);
-                if (
-                    hCol?.type === ColumnTypeValues.existingTeacher &&
-                    hCol.headerTeacher?.id === teacher.id
-                ) {
-                    blueColumnCell = col[hourStr];
-                    break;
-                }
-            }
-
-            const isActivityAtThisHour =
-                isActivityCell(blueColumnCell, activityClassIds, activityClassNames) ||
-                (teachingClassId ? activityClassIds.has(teachingClassId) : false) ||
-                teachingActivityGroup ||
-                isActivityOnlyTeacher;
-
-            let otherClassName = "";
-            if (blueColumnCell?.classes && blueColumnCell.classes.length > 0) {
-                otherClassName = blueColumnCell.classes
-                    .map((c) => c.name?.trim())
-                    .filter(Boolean)
-                    .join(", ");
-            } else if (teachingClassId) {
-                otherClassName = classNameMap.get(teachingClassId) || "";
-            }
-
-            if (isActivityAtThisHour) {
-                candidateReason = "מורה נוכח/ת בקבוצת לימוד/עבודה";
-            } else if (otherClassName) {
-                candidateReason = `מורה נוכח/ת בכיתה אחרת (${otherClassName})`;
-            } else if (!annualTeacherIds.has(teacher.id) || isNoScheduleTeacher) {
-                candidateReason = 'מורה נוכח/ת בביה"ס (ללא מערכת קבועה)';
-            } else {
-                candidateReason = "מורה נוכח/ת ופנוי/ה בשעה זו (חלון במערכת)";
-            }
-        } else if (!isScheduledThisHour && isCurrentlyActiveOnCampus && teacher.role === TeacherRoleValues.REGULAR) {
-            candidateReason = "ניצול חלון במערכת השעות";
-        } else if (isActivityOnlyTeacher || isNoScheduleTeacher) {
-            candidateReason = isActivityOnlyTeacher
-                ? "מורה נוכח/ת בקבוצת לימוד/עבודה"
-                : 'מורה נוכח/ת בביה"ס (ללא מערכת קבועה)';
+        // ── REASON TEXT ────────────────────────────────────────────────────────
+        let baseReason: string;
+        if (isCoTeacherInLesson) {
+            baseReason = "מורה נוסף/ת באותו שיעור";
+        } else if (teachingActivityGroup) {
+            baseReason = teachesTargetClass
+                ? "מורה בקבוצת עבודה/לימוד ומכיר/ה את הכיתה"
+                : "מורה בקבוצת עבודה/לימוד";
         } else if (teacher.role === TeacherRoleValues.SUBSTITUTE) {
-            candidateReason = "מורה מחליפ/ה";
-        } else if (teachesTargetClass) {
-            candidateReason = "מכיר/ה את הכיתה וזמינ/ה במערכת";
+            const isOnCampus =
+                isPresentInBlueColumn ||
+                (teachesToday && bounds && hour >= bounds.min && hour <= bounds.max);
+            baseReason = isOnCampus ? 'מורה מחליפ/ה נוכח/ת בביה"ס' : "מורה מחליפ/ה (קריאה)";
+        } else if (managementStaffIds.has(teacher.id) || counselingStaffIds.has(teacher.id)) {
+            baseReason = "צוות ניהול / ייעוץ";
+        } else if (!isScheduledThisHour) {
+            baseReason = teachesTargetClass
+                ? "מכיר/ה את הכיתה — חלון פנוי במערכת"
+                : "חלון פנוי במערכת";
+        } else {
+            baseReason = teachesTargetClass
+                ? "מכיר/ה את הכיתה וזמינות במערכת"
+                : "זמינות במערכת והתאמה גבוהה";
         }
 
-        candidates.push({
-            teacher,
-            score,
-            isCoTeacher: isCoTeacherInLesson,
-            reason: candidateReason,
-        });
+        let reason: string;
+        if (isContinuingDoublePeriod) {
+            if (baseReason && baseReason !== "זמינות במערכת והתאמה גבוהה") {
+                reason = `${baseReason}, המשכיות שיעור`;
+            } else {
+                reason = "המשכיות שיעור";
+            }
+        } else {
+            reason = baseReason;
+        }
+        // ── END REASON ─────────────────────────────────────────────────────────
+
+        candidates.push({ teacher, score, isCoTeacher: isCoTeacherInLesson, reason });
     }
 
     if (candidates.length === 0) return null;
 
     candidates.sort((a, b) => b.score - a.score);
-    const topCandidate = candidates[0];
-
-    const lateHourThreshold = isUpperGrade ? 6 : 7;
-    const minThreshold = hour >= lateHourThreshold ? SCORE_WEIGHTS.MIN_SCORE_LATE_HOUR : 0;
-    if (topCandidate.score < minThreshold) {
-        return null;
-    }
-
-    return topCandidate;
+    return candidates[0];
 }

@@ -102,6 +102,10 @@ const MngrDailyBldTeacherCell: React.FC<MngrDailyBldTeacherCellProps> = ({ colum
         );
     }, [cell, classesData, subjectData, headerData]);
 
+    const isActivityCell = useMemo(() => {
+        return isActivity || Boolean(classesData?.some((cls) => cls.activity || classActivityById[cls.id]));
+    }, [isActivity, classesData, classActivityById]);
+
     const getDisplayText = () => displayText;
 
     const handleTeacherChange = async (methodType: "update" | "create", value: string) => {
@@ -179,7 +183,7 @@ const MngrDailyBldTeacherCell: React.FC<MngrDailyBldTeacherCellProps> = ({ colum
     };
 
     const isMissingTeacher = headerData?.type === ColumnTypeValues.missingTeacher;
-    const shouldHighlightMissing = isPublished && isMissingTeacher && !subTeacherData && !teacherText && !isActivity;
+    const shouldHighlightMissing = isPublished && isMissingTeacher && !subTeacherData && !teacherText && !isActivityCell;
 
     return (
         <>
@@ -192,7 +196,7 @@ const MngrDailyBldTeacherCell: React.FC<MngrDailyBldTeacherCellProps> = ({ colum
                     <div className={styles.cellContent}>
                         <div className={styles.innerCellContent}>
                             <div
-                                className={`${styles.classAndSubject} ${isActivity ? styles.activityText : ""
+                                className={`${styles.classAndSubject} ${isActivityCell ? styles.activityText : ""
                                     }`}
                             >
                                 {classNameText ? (
@@ -219,30 +223,30 @@ const MngrDailyBldTeacherCell: React.FC<MngrDailyBldTeacherCellProps> = ({ colum
                                     <Icons.messageSquare size={15} />
                                 </span>
                             )}
-                            <div className={styles.teacherSelect}>
-                                <DynamicInputGroupSelect
-                                    options={sortedTeacherOptions}
-                                    value={selectedSubTeacher}
-                                    onChange={(value: string) => handleTeacherChange("update", value)}
-                                    placeholder="ממלא מקום"
-                                    isSearchable
-                                    isAllowAddNew
-                                    isClearable
-                                    isDisabled={isLoading}
-                                    hasBorder
-                                    backgroundColor="transparent"
-                                    onCreate={(value: string) => handleTeacherChange("create", value)}
-                                    menuWidth="220px"
-                                    color={
-                                        isActivity
-                                            ? "var(--disabled-text-color)"
-                                            : shouldHighlightMissing
+                            {!isActivityCell && (
+                                <div className={styles.teacherSelect}>
+                                    <DynamicInputGroupSelect
+                                        options={sortedTeacherOptions}
+                                        value={selectedSubTeacher}
+                                        onChange={(value: string) => handleTeacherChange("update", value)}
+                                        placeholder="ממלא מקום"
+                                        isSearchable
+                                        isAllowAddNew
+                                        isClearable
+                                        isDisabled={isLoading}
+                                        hasBorder
+                                        backgroundColor="transparent"
+                                        onCreate={(value: string) => handleTeacherChange("create", value)}
+                                        menuWidth="220px"
+                                        color={
+                                            shouldHighlightMissing
                                                 ? "var(--missing-teacher-text-color)"
                                                 : undefined
-                                    }
-                                    fontWeight={shouldHighlightMissing ? "bold" : undefined}
-                                />
-                            </div>
+                                        }
+                                        fontWeight={shouldHighlightMissing ? "bold" : undefined}
+                                    />
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}

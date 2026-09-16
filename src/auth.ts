@@ -121,7 +121,15 @@ export const { handlers, auth, signIn: authSignIn, signOut: authSignOut } = Next
                                     gender: USER_GENDER.FEMALE,
                                     authType: AUTH_TYPE.GOOGLE,
                                     schoolId,
+                                    isActive: false,
                                 });
+                            });
+                        } else if (existing.role === USER_ROLES.GUEST && existing.isActive) {
+                            await executeQuery(async () => {
+                                await db
+                                    .update(schema.users)
+                                    .set({ isActive: false })
+                                    .where(eq(schema.users.id, existing.id));
                             });
                         }
                     } catch (err) {
@@ -166,6 +174,7 @@ export const { handlers, auth, signIn: authSignIn, signOut: authSignOut } = Next
                                     schoolId: schema.users.schoolId,
                                     status: schema.schools.status,
                                     createdAt: schema.users.createdAt,
+                                    isActive: schema.users.isActive,
                                 })
                                 .from(schema.users)
                                 .leftJoin(schema.schools, eq(schema.schools.id, schema.users.schoolId))
@@ -174,6 +183,14 @@ export const { handlers, auth, signIn: authSignIn, signOut: authSignOut } = Next
                         });
 
                         if (row) {
+                            if (row.role === USER_ROLES.GUEST && row.isActive) {
+                                await executeQuery(async () => {
+                                    await db
+                                        .update(schema.users)
+                                        .set({ isActive: false })
+                                        .where(eq(schema.users.id, row.id));
+                                });
+                            }
                             token.id = row.id;
                             token.role = row.role;
                             token.gender = row.gender ?? undefined;

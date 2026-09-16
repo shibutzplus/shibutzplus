@@ -64,8 +64,10 @@ const TeacherDailyChangesDetailsCell: React.FC<TeacherDailyChangesDetailsCellPro
         return item?.text;
     };
 
-    const { text: initialText, isActivity } = getCellDisplayData(displayRow as any, ColumnTypeValues.missingTeacher /* FFU */);
+    const { text: initialText, classNameText: initialClassName, subjectText: initialSubject, isActivity } = getCellDisplayData(displayRow as any, ColumnTypeValues.missingTeacher /* FFU */);
     let displayText = initialText;
+    let classNameText = initialClassName;
+    let subjectText = initialSubject;
 
     // If this is a regular schedule item - not a change/substitution, display the class and subject in grayed color
     if (row?.isRegular) {
@@ -75,7 +77,9 @@ const TeacherDailyChangesDetailsCell: React.FC<TeacherDailyChangesDetailsCellPro
             const classNames = classesData.map((cls) => cls.name).join(", ");
             const subjectName = subjectData?.name || "";
             const sameAsSubject = subjectName && classNames === subjectName;
-            displayText = classNames + (subjectData && !sameAsSubject ? ` (${subjectData.name})` : "");
+            classNameText = classNames;
+            subjectText = subjectData && !sameAsSubject ? `(${subjectData.name})` : "";
+            displayText = classNames + (subjectText ? ` ${subjectText}` : "");
         }
     }
 
@@ -93,7 +97,8 @@ const TeacherDailyChangesDetailsCell: React.FC<TeacherDailyChangesDetailsCellPro
             )}
             <div className={styles.combinedContent}>
                 <span className={`${styles.classAndSubject} ${isActivity ? styles.activityText : ""} ${hasSub ? styles.hasSub : ""} ${row?.isRegular ? styles.regularText : ""}`}>
-                    {displayText}
+                    {classNameText || displayText}
+                    {subjectText && <span className={styles.subjectName}> {subjectText}</span>}
                 </span>
                 <span className={`${styles.subTeacher} ${isDouble ? styles.doubleRow : ""}`}>
                     {displayReplaceTeacher()}

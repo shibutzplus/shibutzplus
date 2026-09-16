@@ -85,21 +85,23 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
                                     isCentered
                                 />
                             </div>
+                        </div>
+                        <div className={styles.secondRowActionBtns}>
+                            <DailyActionBtns position="left" useShortLabels={true} />
+                        </div>
+                        <div className={styles.mobileActionGroup}>
                             <button
                                 type="button"
                                 className={styles.mobileMagicBtn}
                                 onClick={() => autoAssignSchedule()}
                                 disabled={isLoading || isAutoAssigning || !hasMissingTeacherColumn}
-                                title="שיבוץ אוטומטי למורים החסרים"
+                                title="הצעה לשיבוץ עבור מורים חסרים"
                             >
                                 {isAutoAssigning ? <Loading size="S" /> : <Icons.magic size={18} />}
                             </button>
-                        </div>
-                        <div className={styles.secondRowActionBtns}>
-                            <DailyActionBtns position="left" useShortLabels={true} />
-                        </div>
-                        <div className={styles.mobileActionMenu}>
-                            <DailyActionBtns position="left" useMobileMenu={true} useShortLabels={true} />
+                            <div className={styles.mobileActionMenu}>
+                                <DailyActionBtns position="left" useMobileMenu={true} useShortLabels={true} />
+                            </div>
                         </div>
                     </div>
                 }

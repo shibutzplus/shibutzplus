@@ -84,7 +84,7 @@ const DailyActionBtns: React.FC<DailyActionBtnsProps> = ({ position, useShortLab
                 <ActionBtn
                     type="auto-assign"
                     Icon={<Icons.magic size={18} />}
-                    tooltip="שיבוץ אוטומטי למורים החסרים"
+                    tooltip="הצעה לשיבוץ עבור מורים חסרים"
                     isLoading={isAutoAssigning}
                     isDisabled={isLoading || isAutoAssigning || !hasMissingTeacherColumn}
                     func={() => handleActionClick(() => autoAssignSchedule())}

@@ -16,16 +16,19 @@ export interface AutoAssignExecutionResult {
 interface AutoAssignPopupProps {
     onExecute: (setProgressText: (text: string) => void) => Promise<AutoAssignExecutionResult>;
     onComplete?: () => void;
+    onConfirm?: () => void;
+    onCancel?: () => Promise<void> | void;
 }
 
 type PopupView = "loading" | "explain" | "noCandidates" | "error";
 
-const AutoAssignPopup: React.FC<AutoAssignPopupProps> = ({ onExecute, onComplete }) => {
+const AutoAssignPopup: React.FC<AutoAssignPopupProps> = ({ onExecute, onComplete, onConfirm, onCancel }) => {
     const { closePopup } = usePopup();
     const [view, setView] = useState<PopupView>("loading");
     const [progressText, setProgressText] = useState<string>(messages.dailySchedule.autoAssignStep1);
     const [result, setResult] = useState<AutoAssignExecutionResult | null>(null);
     const [errorMessage, setErrorMessage] = useState<string>("");
+    const [isCancelling, setIsCancelling] = useState<boolean>(false);
     const executedRef = useRef(false);
 
     useEffect(() => {
@@ -56,6 +59,25 @@ const AutoAssignPopup: React.FC<AutoAssignPopupProps> = ({ onExecute, onComplete
 
     const handleClose = () => {
         closePopup();
+    };
+
+    const handleConfirm = () => {
+        if (onConfirm) onConfirm();
+        closePopup();
+    };
+
+    const handleCancel = async () => {
+        try {
+            setIsCancelling(true);
+            if (onCancel) {
+                await onCancel();
+            }
+        } catch (err) {
+            console.error("Error cancelling auto-assign:", err);
+        } finally {
+            setIsCancelling(false);
+            closePopup();
+        }
     };
 
     // 1. Loading View
@@ -148,11 +170,20 @@ const AutoAssignPopup: React.FC<AutoAssignPopupProps> = ({ onExecute, onComplete
                     <div className={styles.explainActions}>
                         <button
                             type="button"
-                            className={styles.closeButtonFull}
-                            onClick={handleClose}
+                            className={styles.confirmButton}
+                            onClick={handleConfirm}
+                            disabled={isCancelling}
                             autoFocus
                         >
-                            סגור
+                            אישור
+                        </button>
+                        <button
+                            type="button"
+                            className={styles.cancelButton}
+                            onClick={handleCancel}
+                            disabled={isCancelling}
+                        >
+                            {isCancelling ? "מבטל..." : "ביטול"}
                         </button>
                     </div>
                 </div>

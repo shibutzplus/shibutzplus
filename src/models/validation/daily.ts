@@ -4,7 +4,7 @@ export const dailyInstructionSchema = z.object({
     instructions: z
         .string()
         .trim()
-        .max(1000, "ההנחיות ארוכות מדי (מקסימום 1000 תווים)")
+        .max(1500, "ההנחיות ארוכות מדי (מקסימום 1500 תווים)")
         .optional()
         .nullable(),
 });

@@ -27,7 +27,13 @@ const useDailyTeacherActions = (
         type: ColumnType,
     ) => {
         const schoolId = school?.id;
-        if (!schoolId) return;
+        if (!schoolId) {
+            await logErrorAction({
+                description: `populateTeacherColumn: aborted because schoolId is missing in context.`,
+                metadata: { step: 'check_school', columnId, selectedDate, teacherId, type }
+            });
+            return;
+        }
 
         const currentPosition = mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.position || 0;
 
@@ -77,7 +83,7 @@ const useDailyTeacherActions = (
 
             if (deleteResponse) {
                 if (!deleteResponse.success || !deleteResponse.dailySchedules) {
-                    logErrorAction({
+                    await logErrorAction({
                         description: `populateTeacherColumn: deleteDailyColumnAction failed. message=${deleteResponse.message}`,
                         schoolId: school?.id,
                         metadata: { step: 'delete', columnId, selectedDate, teacherId, type, hasSavedData, responseMessage: deleteResponse.message }
@@ -114,7 +120,7 @@ const useDailyTeacherActions = (
                         if (newDailyRow) {
                             pendingInserts.push({ request: newDailyRow, dailyCell });
                         } else {
-                            logErrorAction({
+                            await logErrorAction({
                                 description: `populateTeacherColumn: addNewTeacherValueCell returned undefined for hour ${dailyCell.hour}. Likely missing subject, classes, or headerTeacher.`,
                                 schoolId: school?.id,
                                 metadata: {
@@ -130,7 +136,7 @@ const useDailyTeacherActions = (
                     }
 
                     if (pendingInserts.length === 0) {
-                        logErrorAction({
+                        await logErrorAction({
                             description: `populateTeacherColumn: no valid rows to insert for teacher ${teacherId} on ${selectedDate}. annualScheduleRows=${response.data.length}`,
                             schoolId: school?.id,
                             metadata: { step: 'no_inserts', columnId, selectedDate, teacherId, type, annualRowCount: response.data.length }
@@ -145,7 +151,7 @@ const useDailyTeacherActions = (
                         if (batchResponse.success && batchResponse.data) {
                             insertedData = batchResponse.data;
                         } else {
-                            logErrorAction({
+                            await logErrorAction({
                                 description: `populateTeacherColumn: addDailyTeacherCellsAction failed. message=${batchResponse.message}`,
                                 schoolId: school?.id,
                                 metadata: { step: 'batch_insert', columnId, selectedDate, teacherId, type, insertCount: pendingInserts.length, responseMessage: batchResponse.message }
@@ -195,7 +201,14 @@ const useDailyTeacherActions = (
                     // If the teacher does not teach on this day, create an empty column
                     // We re-affirm the empty column with the teacher header
                     const headerTeacher = teachers?.find((t) => t.id === teacherId);
-                    if (!headerTeacher) return;
+                    if (!headerTeacher) {
+                        await logErrorAction({
+                            description: `populateTeacherColumn: teacher ${teacherId} not found in teachers list during empty schedule population.`,
+                            schoolId: school?.id,
+                            metadata: { step: 'empty_schedule_missing_teacher', columnId, selectedDate, teacherId, type, teachersCount: teachers?.length ?? 0 }
+                        });
+                        return;
+                    }
                     setMainDailyTable((prev) =>
                         initializeEmptyColumn(
                             prev,
@@ -210,14 +223,14 @@ const useDailyTeacherActions = (
                 return response.data;
             }
             // fetchResponse returned success:false or missing data
-            logErrorAction({
+            await logErrorAction({
                 description: `populateTeacherColumn: getTeacherScheduleByDayAction returned success=false. message=${(response as any)?.message}`,
                 schoolId: school?.id,
                 metadata: { step: 'fetch', columnId, selectedDate, teacherId, dayNumber, type, responseMessage: (response as any)?.message, responseSuccess: response.success }
             });
             return undefined;
         } catch (error) {
-            logErrorAction({
+            await logErrorAction({
                 description: `populateTeacherColumn: unexpected exception. ${error instanceof Error ? error.message : String(error)}`,
                 schoolId: school?.id,
                 metadata: { step: 'catch', columnId, selectedDate, teacherId, dayNumber, type, errorType: error instanceof Error ? error.constructor.name : typeof error }
@@ -234,7 +247,13 @@ const useDailyTeacherActions = (
         dailyScheduleId: string,
         data: { event?: string; subTeacher?: TeacherType },
     ) => {
-        if (!school) return;
+        if (!school) {
+            await logErrorAction({
+                description: `updateTeacherCell: aborted because school is missing in context.`,
+                metadata: { step: 'check_school', dailyScheduleId, selectedDate, columnId, hour: cellData.hour, type }
+            });
+            return undefined;
+        }
         const currentPosition = mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.position || 0;
 
         const dailyCellData = addNewTeacherValueCell(
@@ -261,7 +280,7 @@ const useDailyTeacherActions = (
                 setMainDailyTable(updatedSchedule);
                 return response.data;
             } else {
-                logErrorAction({
+                await logErrorAction({
                     description: `Failed to update daily teacher cell: ${response?.message || 'Server action returned false'}`,
                     schoolId: school?.id,
                     metadata: {
@@ -274,7 +293,7 @@ const useDailyTeacherActions = (
                 });
             }
         } else {
-            logErrorAction({
+            await logErrorAction({
                 description: `addNewTeacherValueCell returned undefined in updateTeacherCell`,
                 schoolId: school?.id,
                 metadata: {
@@ -299,7 +318,13 @@ const useDailyTeacherActions = (
         columnId: string,
         dailyScheduleId: string,
     ) => {
-        if (!school) return;
+        if (!school) {
+            await logErrorAction({
+                description: `clearTeacherCell: aborted because school is missing in context.`,
+                metadata: { step: 'check_school', dailyScheduleId, selectedDate, columnId, hour: cellData.hour, type }
+            });
+            return undefined;
+        }
         const currentPosition = mainDailyTable[selectedDate]?.[columnId]?.["1"]?.headerCol?.position || 0;
         const dailyCellData = addNewTeacherValueCell(
             school,
@@ -326,14 +351,14 @@ const useDailyTeacherActions = (
                 setMainDailyTable(updatedSchedule);
                 return response.data;
             } else {
-                logErrorAction({
+                await logErrorAction({
                     description: `Failed to clear daily teacher cell: ${response?.message || 'Server action returned false'}`,
                     schoolId: school?.id,
                     metadata: { dailyScheduleId, selectedDate, columnId, hour: cellData.hour }
                 });
             }
         } else {
-            logErrorAction({
+            await logErrorAction({
                 description: `addNewTeacherValueCell returned undefined in clearTeacherCell`,
                 schoolId: school?.id,
                 metadata: { dailyScheduleId, selectedDate, columnId, hour: cellData.hour }

@@ -160,8 +160,8 @@ export default function LandingPage() {
                             variants={fadeInUp}
                             transition={{ duration: 0.6, delay: 0.1 }}
                         >
-                            <div>שיבוץ מורים מחליפים בקלות...</div>
-                            <div>חיסכון בזמן יקר לסגני מנהלים/רכזי מערכת/מורים.</div>
+                            <div>שיבוץ מורים מחליפים בקלות,</div>
+                            <div>חיסכון בזמן יקר למנהל ולמורים.</div>
                         </motion.div>
                         <motion.div
                             className={styles.heroBtnContainer}
@@ -234,12 +234,11 @@ export default function LandingPage() {
                             <h2>למה שיבוץ+ ?</h2>
                             <motion.ul className={styles.featuresList} variants={staggerContainer}>
                                 <motion.li variants={fadeInUp}>
-                                    <strong>חיסכון בזמן:</strong> איתור ממלאי מקום פנויים בעזרת
-                                    המלצות חכמות.
+                                    <strong>חיסכון בזמן:</strong> איתור ממלאי מקום פנויים בקלות ובמהירות.
                                 </motion.li>
                                 <motion.li variants={fadeInUp}>
                                     <strong>רצף פדגוגי:</strong> המורה החסר מעדכן את החומר הלימודי
-                                    למחר, והמחליף רואה אותו מיד.
+                                    וממלא המקום רואה הכל מיד.
                                 </motion.li>
                                 <motion.li variants={fadeInUp}>
                                     <strong>שקיפות / סנכרון:</strong> המנהל והמורים רואים את כל

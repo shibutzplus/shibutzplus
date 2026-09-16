@@ -135,10 +135,11 @@
     }
 
     .fabClose {
-        top: 3px;
+        top: 6px;
         left: 2px;
         width: 28px;
         height: 28px;
+        color: #ffffffce;
         opacity: 0.9;
         background-color: rgba(30, 41, 59, 0.6);
         border: 1.5px solid rgba(255, 255, 255, 0.6);
@@ -152,17 +153,6 @@
 }
 
 @media (max-width: 600px) {
-    .fabClose {
-        top: 3px;
-        left: 1px;
-        color: black;
-        background-color: transparent;
-        border: none;
-        box-shadow: none;
-        backdrop-filter: none;
-        -webkit-backdrop-filter: none;
-    }
-
     .fabSwitch {
         top: 4vh;
         right: calc(max(20px, 3vw) / 2);
@@ -184,6 +174,10 @@
 
     .fabSwitch:active {
         transform: translate(50%, -50%) scale(0.92);
+    }
+
+    .fabClose {
+        background-color: rgba(30, 41, 59, 0.45);
     }
 }
 

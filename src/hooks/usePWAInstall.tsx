@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { usePopup } from '@/context/PopupContext';
 import MsgPopup from '@/components/popups/MsgPopup/MsgPopup';
 import React from 'react';
@@ -15,6 +15,8 @@ const usePWAInstall = () => {
     const [isIOSSafari, setIsIOSSafari] = useState(false);
     const [isStandalone, setIsStandalone] = useState(false);
     const { openPopup } = usePopup();
+    const openPopupRef = useRef(openPopup);
+    openPopupRef.current = openPopup;
     const pathname = usePathname();
 
     const handleCopyUrl = useCallback(async () => {
@@ -26,8 +28,8 @@ const usePWAInstall = () => {
                 const teacher = getStorageTeacher();
                 if (teacher?.id && teacher?.schoolId) {
                     url = generateSchoolUrl(teacher.schoolId, teacher.id);
-                } else if (typeof window !== "undefined" && window.location.origin) {
-                    url = window.location.origin;
+                } else {
+                    url = window.location.href;
                 }
             }
 
@@ -48,24 +50,58 @@ const usePWAInstall = () => {
         // Check iOS & Safari
         const userAgent = window.navigator.userAgent.toLowerCase();
         const ios = /iphone|ipad|ipod/.test(userAgent);
-        const isOtherBrowser = /crios|fxios|edgios|opios|fban|fbav|instagram/.test(userAgent);
+        const isOtherBrowser = /crios|fxios|edgios|opios|fban|fbav|instagram|gsa|googleapp/.test(userAgent);
 
         setIsIOS(ios);
-        setIsIOSSafari(ios && userAgent.includes('safari') && !isOtherBrowser);
+        // Real Safari on iOS includes both 'safari' and 'version/' in the UA, unlike in-app browsers
+        setIsIOSSafari(ios && userAgent.includes('safari') && userAgent.includes('version/') && !isOtherBrowser);
+
+        const checkAutoInstall = (promptEvent: any) => {
+            const searchParams = new URLSearchParams(window.location.search);
+            if (searchParams.get('autoInstall') === 'true') {
+                const newUrl = new URL(window.location.href);
+                newUrl.searchParams.delete('autoInstall');
+                window.history.replaceState({}, '', newUrl.toString());
+
+                openPopupRef.current("msgPopup", "M", (
+                    <MsgPopup
+                        message="לחצו כאן כדי להוסיף את שיבוץ+ למסך הבית"
+                        okText="התקן עכשיו"
+                        onOk={() => {
+                            try {
+                                promptEvent?.prompt?.();
+                            } catch {}
+                            setDeferredPrompt(null);
+                        }}
+                    />
+                ));
+            }
+        };
 
         // Check globally captured prompt
         if ((window as any).deferredPrompt) {
             setDeferredPrompt((window as any).deferredPrompt);
+            checkAutoInstall((window as any).deferredPrompt);
         }
 
         const handler = (e: Event) => {
             e.preventDefault();
             setDeferredPrompt(e);
             (window as any).deferredPrompt = e;
+            checkAutoInstall(e);
+        };
+
+        const onInstalled = () => {
+            setIsStandalone(true);
+            setDeferredPrompt(null);
         };
 
         window.addEventListener("beforeinstallprompt", handler);
-        return () => window.removeEventListener("beforeinstallprompt", handler);
+        window.addEventListener("appinstalled", onInstalled);
+        return () => {
+            window.removeEventListener("beforeinstallprompt", handler);
+            window.removeEventListener("appinstalled", onInstalled);
+        };
     }, []);
 
     const installPWA = useCallback(async () => {
@@ -122,12 +158,22 @@ const usePWAInstall = () => {
 
             openPopup("msgPopup", "M", <MsgPopup message={instructions} okText="הבנתי" />);
         } else if (deferredPrompt) {
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            if (outcome === "accepted") {
-                setDeferredPrompt(null);
-            }
+            try {
+                await deferredPrompt.prompt();
+            } catch {}
+            setDeferredPrompt(null);
         } else {
+            const userAgent = window.navigator.userAgent.toLowerCase();
+            const isAndroidWebView = /android/.test(userAgent) && (/;\s*wv|whatsapp|fbav|fban|instagram/.test(userAgent) || /version\/.*chrome/.test(userAgent));
+
+            if (isAndroidWebView) {
+                const url = new URL(window.location.href);
+                url.searchParams.set('autoInstall', 'true');
+                const cleanUrl = url.toString().replace(/^https?:\/\//, '');
+                window.location.href = `intent://${cleanUrl}#Intent;scheme=https;package=com.android.chrome;end`;
+                return;
+            }
+
             const instructions = (
                 <div>
                     <ol style={{ textAlign: 'right', paddingRight: '1rem', lineHeight: '1.5' }}>

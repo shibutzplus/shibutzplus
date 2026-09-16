@@ -71,9 +71,6 @@ const DailyScheduleContent: React.FC = () => {
                                 <p style={{ marginBottom: "10px" }}>
                                     אתם נמצאים במצב &quot;התנסות&quot; בבית ספר לדוגמה.
                                 </p>
-                                <p style={{ marginBottom: "10px" }}>
-                                    מוזמנים להתנסות בשיבוץ המערכת היומית.
-                                </p>
                             </div>
                         }
                     />
@@ -167,7 +164,7 @@ const DailyScheduleContent: React.FC = () => {
                 onClose={() => setIsPanelOpen(false)}
                 title={
                     panelMode === "comments" && commentPanelData
-                        ? `הודעות ל${commentPanelData.teacherName} והמורים המחליפים`
+                        ? `הודעות ל${commentPanelData.teacherName} וממלאי המקום`
                         : `הנחיות של ${teacher?.name || ""} לממלא המקום`
                 }
                 subtitle={null}

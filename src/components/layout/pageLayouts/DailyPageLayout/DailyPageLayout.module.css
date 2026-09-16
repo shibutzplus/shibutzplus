@@ -62,8 +62,8 @@
     }
 }
 
-/* <= 1250px */
-@media (max-width: 1250px) {
+/* <= 1230px */
+@media (max-width: 1230px) {
     .topBarActionBtnsShort {
         display: none;
     }
@@ -112,6 +112,10 @@
     }
 }
 
+.mobileActionGroup {
+    display: none;
+}
+
 .mobileActionMenu {
     display: none;
 }
@@ -152,6 +156,12 @@
 @media (max-width: 710px) {
     .secondRowActionBtns {
         display: none;
+    }
+
+    .mobileActionGroup {
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
 
     .mobileActionMenu {

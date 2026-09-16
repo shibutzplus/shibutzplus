@@ -4,13 +4,19 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import tableStyles from "../TeacherDailyChangesTable/TeacherDailyChangesTable.module.css";
 import rowStyles from "../TeacherDailyChangesRow/TeacherDailyChangesRow.module.css";
 import cellStyles from "./TeacherCommentsPanelContent.module.css";
-import { DailyScheduleCell } from "@/models/types/dailySchedule";
+import detailsStyles from "../TeacherDailyChangesDetailsCell/TeacherDailyChangesDetailsCell.module.css";
+import { DailyScheduleCell, ColumnTypeValues } from "@/models/types/dailySchedule";
+import { getCellDisplayData } from "@/utils/dailyCellDisplay";
 import { updateDailyTeacherCommentAction } from "@/app/actions/PUT/updateDailyTeacherCommentAction";
 import { errorToast } from "@/lib/toast";
 
 type HourEntry = {
     hour: number;
-    label: string;
+    displayText: string;
+    classNameText: string;
+    subjectText: string;
+    subTeacherName: string;
+    isActivity: boolean;
     initialComment: string;
 };
 
@@ -40,11 +46,19 @@ const TeacherCommentsPanelContent: React.FC<TeacherCommentsPanelContentProps> = 
         .filter(([, cell]) => cell.classes?.length || cell.subject)
         .sort(([a], [b]) => Number(a) - Number(b))
         .map(([hourKey, cell]) => {
-            const hour = Number(hourKey);
-            const classNames = cell.classes?.map((c) => c.name).join(", ") || "";
-            const subjectName = cell.subject?.name || "";
-            const label = [classNames, subjectName].filter(Boolean).join(" • ");
-            return { hour, label, initialComment: cell.comment || "" };
+            const { text: displayText, classNameText, subjectText, isActivity, subTeacherName } = getCellDisplayData(
+                cell,
+                ColumnTypeValues.missingTeacher
+            );
+            return {
+                hour: Number(hourKey),
+                displayText,
+                classNameText: classNameText || displayText,
+                subjectText: subjectText || "",
+                subTeacherName: subTeacherName || "",
+                isActivity,
+                initialComment: cell.comment || "",
+            };
         });
 
     const [comments, setComments] = useState<Record<number, string>>(
@@ -110,6 +124,29 @@ const TeacherCommentsPanelContent: React.FC<TeacherCommentsPanelContentProps> = 
         );
     }
 
+    const renderLessonDetails = (entry: HourEntry) => (
+        <div className={detailsStyles.cellContent}>
+            <div className={detailsStyles.combinedContent}>
+                <span
+                    className={`${detailsStyles.classAndSubject} ${entry.isActivity ? detailsStyles.activityText : ""
+                        } ${entry.subTeacherName ? detailsStyles.hasSub : ""}`}
+                >
+                    {entry.classNameText || entry.displayText}
+                    {entry.subjectText && (
+                        <span className={detailsStyles.subjectName}> {entry.subjectText}</span>
+                    )}
+                </span>
+                {entry.subTeacherName && (
+                    <span className={detailsStyles.subTeacher}>
+                        <span className={detailsStyles.subName}>
+                            {entry.subTeacherName}
+                        </span>
+                    </span>
+                )}
+            </div>
+        </div>
+    );
+
     return (
         <div className={tableStyles.tableWrapper}>
             <div className={tableStyles.tableContainer}>
@@ -140,16 +177,14 @@ const TeacherCommentsPanelContent: React.FC<TeacherCommentsPanelContentProps> = 
 
                                 {/* Details cell - desktop */}
                                 <td className={`${rowStyles.scheduleDetailsCell} ${rowStyles.desktopOnly}`}>
-                                    <div className={cellStyles.detailsCell}>
-                                        {entry.label}
-                                    </div>
+                                    {renderLessonDetails(entry)}
                                 </td>
 
                                 {/* Comment cell */}
-                                <td className={rowStyles.scheduleInstructionsCell}>
+                                <td className={`${rowStyles.scheduleInstructionsCell} ${cellStyles.instructionsCell}`}>
                                     {/* Mobile: show label above textarea */}
                                     <div className={rowStyles.mobileDetails}>
-                                        <div className={cellStyles.detailsCell}>{entry.label}</div>
+                                        {renderLessonDetails(entry)}
                                     </div>
                                     <div className={cellStyles.commentCell}>
                                         <textarea
@@ -158,11 +193,10 @@ const TeacherCommentsPanelContent: React.FC<TeacherCommentsPanelContentProps> = 
                                             onChange={(e) =>
                                                 handleChange(entry.hour, e.target.value, entry.initialComment)
                                             }
-                                            placeholder={`הודעה למורה...`}
+                                            placeholder={`הודעה...`}
                                             maxLength={150}
                                             dir="rtl"
                                         />
-
                                     </div>
                                 </td>
                             </tr>

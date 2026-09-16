@@ -776,6 +776,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
             const updates: BatchTeacherCellUpdate[] = [];
             const daySchedule = updatedSchedule[selectedDate] || {};
             const oldDaySchedule = mainDailyTable[selectedDate] || {};
+            const previousMainDailyTable = mainDailyTable;
 
             Object.entries(daySchedule).forEach(([colKey, col]) => {
                 if (columnId && colKey !== columnId) return;
@@ -808,7 +809,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                     onExecute={async (setProgressText) => {
                         // Step 1: Calculate & Rank
                         setProgressText(messages.dailySchedule.autoAssignStep1);
-                        await sleep(1800);
+                        await sleep(1200);
 
                         // Step 2: Optimal Placement & Server Persistence
                         setProgressText(messages.dailySchedule.autoAssignStep2);
@@ -816,7 +817,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                             updates.length > 0
                                 ? updateDailyTeacherCellsBatchAction(school.id, selectedDate, updates)
                                 : Promise.resolve({ success: true }),
-                            sleep(1200),
+                            sleep(800),
                         ]);
 
                         // If persistence failed, abort without touching local state
@@ -837,6 +838,24 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                             unassignedCount,
                             assignments,
                         };
+                    }}
+                    onCancel={async () => {
+                        const rollbackUpdates: BatchTeacherCellUpdate[] = updates.map((u) => ({
+                            id: u.id,
+                            subTeacherId: null,
+                            event: null,
+                        }));
+                        if (rollbackUpdates.length > 0) {
+                            const res = await updateDailyTeacherCellsBatchAction(school.id, selectedDate, rollbackUpdates);
+                            if (!res?.success) {
+                                logErrorAction({
+                                    description: `autoAssignSchedule rollback failed. message=${(res as any)?.message}`,
+                                    schoolId: school.id,
+                                    metadata: { count: rollbackUpdates.length, selectedDate, columnId }
+                                });
+                            }
+                        }
+                        setMainDailyTable(previousMainDailyTable);
                     }}
                     onComplete={() => {
                         setIsAutoAssigning(false);

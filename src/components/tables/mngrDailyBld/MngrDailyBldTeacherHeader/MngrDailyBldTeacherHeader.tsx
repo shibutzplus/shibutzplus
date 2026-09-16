@@ -68,7 +68,7 @@ const MngrDailyBldTeacherHeader: React.FC<MngrDailyBldTeacherHeaderProps> = ({
                 successToast(messages.dailySchedule.noScheduleFound);
             }
         } else {
-            logErrorAction({
+            await logErrorAction({
                 description: `handleTeacherChange: populateTeacherColumn returned undefined (no data saved).`,
                 metadata: {
                     step: 'header_change',
@@ -237,7 +237,7 @@ const MngrDailyBldTeacherHeader: React.FC<MngrDailyBldTeacherHeaderProps> = ({
                                     className={styles.menuItem}
                                 >
                                     <Icons.messageSquare size={14} />
-                                    <span>הודעה למורה</span>
+                                    <span>הודעות</span>
                                 </div>
                             </>
                         )

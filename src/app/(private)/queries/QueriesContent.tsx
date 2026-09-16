@@ -58,6 +58,21 @@ interface SortConfig {
     direction: SortDirection;
 }
 
+function formatDateTime(isoString?: string | null) {
+    if (!isoString) return "-";
+    try {
+        const date = new Date(isoString);
+        if (isNaN(date.getTime())) return isoString;
+        return new Intl.DateTimeFormat("he-IL", {
+            timeZone: "Asia/Jerusalem",
+            dateStyle: "short",
+            timeStyle: "medium",
+        }).format(date);
+    } catch {
+        return isoString;
+    }
+}
+
 export default function QueriesContent() {
     const { data: session, status } = useSession();
     const router = useRouter();
@@ -428,21 +443,6 @@ export default function QueriesContent() {
             errorToast(err?.message || "שגיאה בביצוע המחיקה");
         } finally {
             setIsDeleting(false);
-        }
-    };
-
-    const formatDateTime = (isoString?: string | null) => {
-        if (!isoString) return "-";
-        try {
-            const date = new Date(isoString);
-            if (isNaN(date.getTime())) return isoString;
-            return new Intl.DateTimeFormat("he-IL", {
-                timeZone: "Asia/Jerusalem",
-                dateStyle: "short",
-                timeStyle: "medium",
-            }).format(date);
-        } catch {
-            return isoString;
         }
     };
 

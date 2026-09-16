@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import styles from "./Logo.module.css";
 import Image from "next/image";
 import { useOptionalMainContext } from "@/context/MainContext";
+import { useOptionalPortalContext } from "@/context/PortalContext";
 
 type LogoProps = {
     size?: "XS" | "S" | "L";
@@ -25,7 +26,12 @@ const Logo: React.FC<LogoProps> = ({
     disableFlip = false,
 }) => {
     const mainContext = useOptionalMainContext();
-    const effectiveSchoolId = propSchoolId || mainContext?.school?.id;
+    const portalContext = useOptionalPortalContext();
+    const effectiveSchoolId =
+        propSchoolId ||
+        mainContext?.school?.id ||
+        portalContext?.schoolId ||
+        portalContext?.teacher?.schoolId;
     const schoolName = propSchoolName || mainContext?.school?.name;
     const schoolCity = propSchoolCity || mainContext?.school?.city;
 

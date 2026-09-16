@@ -30,6 +30,15 @@ export async function registerNewGoogleUserAction({
         });
 
         if (existing) {
+            if (existing.role === USER_ROLES.GUEST && existing.isActive) {
+                await executeQuery(async () => {
+                    await db
+                        .update(schema.users)
+                        .set({ isActive: false })
+                        .where(eq(schema.users.id, existing.id));
+                });
+                existing.isActive = false;
+            }
             return {
                 success: true,
                 message: messages.auth.register.success,
@@ -53,6 +62,7 @@ export async function registerNewGoogleUserAction({
                     gender: USER_GENDER.FEMALE,
                     authType: AUTH_TYPE.GOOGLE,
                     schoolId: schoolId,
+                    isActive: false,
                 })
                 .returning();
             return createdUser;
