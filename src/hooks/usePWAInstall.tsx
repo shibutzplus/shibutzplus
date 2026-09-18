@@ -66,11 +66,11 @@ const usePWAInstall = () => {
                 openPopupRef.current("msgPopup", "M", (
                     <MsgPopup
                         message="לחצו כאן כדי להוסיף את שיבוץ+ למסך הבית"
-                        okText="התקן עכשיו"
+                        okText="אישור"
                         onOk={() => {
                             try {
                                 promptEvent?.prompt?.();
-                            } catch {}
+                            } catch { }
                             setDeferredPrompt(null);
                         }}
                     />
@@ -106,51 +106,51 @@ const usePWAInstall = () => {
 
     const installPWA = useCallback(async () => {
         if (isIOS) {
+            const secondaryBtnStyle: React.CSSProperties = {
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.5rem',
+                width: '100%',
+                padding: '0.65rem 1rem',
+                borderRadius: '6px',
+                border: '1px solid var(--bright-border-color, #e0e0e0)',
+                backgroundColor: 'var(--inner-background-color-bright, #f7f7f7)',
+                color: 'var(--dark-text-color, #333333)',
+                fontSize: '15px',
+                fontWeight: 500,
+                textDecoration: 'none',
+                cursor: 'pointer',
+                boxSizing: 'border-box',
+            };
+
             const instructions = (
                 <div>
-                    <div style={{ textAlign: 'right', lineHeight: '1.6' }}>
-                        {isIOSSafari ? (
-                            <div>להתקנה לחצו על כפתור השיתוף ואז הוספה למסך הבית.</div>
-                        ) : (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                <span>כדי להתקין את האפליקציה יש לפתוח את האתר בדפדפן ספארי.</span>
-                                <button
-                                    type="button"
-                                    onClick={handleCopyUrl}
-                                    title="העתק קישור"
-                                    aria-label="העתק קישור"
-                                    style={{
-                                        background: 'none',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        padding: '2px',
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        color: 'inherit',
-                                    }}
-                                >
-                                    <Icons.copy size={15} />
-                                </button>
-                            </div>
-                        )}
+                    <div style={{ fontSize: '17px', lineHeight: '1.5', textAlign: 'center', marginBottom: '1.2rem', color: 'var(--dark-text-color, #333)' }}>
+                        {isIOSSafari
+                            ? "להתקנה לחצו על כפתור השיתוף ואז הוספה למסך הבית."
+                            : "כדי להתקין את האפליקציה יש לפתוח את האתר בדפדפן ספארי."}
                     </div>
-                    <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', width: '100%' }}>
+                        {!isIOSSafari && (
+                            <button
+                                type="button"
+                                onClick={handleCopyUrl}
+                                style={secondaryBtnStyle}
+                            >
+                                <Icons.copy size={16} />
+                                <span>העתקת כתובת האתר</span>
+                            </button>
+                        )}
                         <a
                             href="https://www.youtube.com/shorts/oWHuZoN571Y"
                             target="_blank"
                             rel="noopener noreferrer"
-                            style={{
-                                textDecoration: 'none',
-                                fontWeight: 'bold',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '0.4rem',
-                                padding: '0.4rem 0.8rem',
-                                borderRadius: '8px',
-                                border: '1px solid rgba(0, 0, 0, 0.1)',
-                            }}
+                            style={secondaryBtnStyle}
                         >
-                            <span>▶ צפייה בסרטון הדרכה קצר</span>
+                            <span style={{ fontSize: '13px', display: 'inline-flex' }}>▶</span>
+                            <span>צפייה בסרטון הדרכה קצר</span>
                         </a>
                     </div>
                 </div>
@@ -160,7 +160,7 @@ const usePWAInstall = () => {
         } else if (deferredPrompt) {
             try {
                 await deferredPrompt.prompt();
-            } catch {}
+            } catch { }
             setDeferredPrompt(null);
         } else {
             const isAndroid = /android/i.test(window.navigator.userAgent);

@@ -11,9 +11,15 @@
     justify-content: center;
 }
 
-.btn:hover {
+.btn:not(:disabled):hover {
     cursor: pointer;
     background-color: var(--feature-icon-bg);
+    font-weight: bold;
+}
+
+.btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
 }
 
 .btnText {

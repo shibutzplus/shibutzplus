@@ -6,6 +6,7 @@ interface AddToListBtnProps {
     text: string;
     onClick?: (e: React.MouseEvent) => void;
     isLoading: boolean;
+    disabled?: boolean;
     Icon?: React.ReactNode;
     className?: string;
     style?: React.CSSProperties;
@@ -15,6 +16,7 @@ const AddToListBtn: React.FC<AddToListBtnProps> = ({
     text,
     onClick,
     isLoading,
+    disabled = false,
     Icon,
     className,
     style,
@@ -22,7 +24,7 @@ const AddToListBtn: React.FC<AddToListBtnProps> = ({
     return (
         <button
             onClick={onClick}
-            disabled={isLoading}
+            disabled={isLoading || disabled}
             aria-label={text}
             className={`${styles.btn}${className ? " " + className : ""}`}
             style={style}

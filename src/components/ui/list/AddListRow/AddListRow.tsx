@@ -23,6 +23,7 @@ export type AddListRowProps<T> = {
     onSuccess?: () => void;
     onInputChange?: (value: string) => void;
     suppressErrorToast?: boolean;
+    disabled?: boolean;
 };
 
 function AddListRow<T extends Record<string, any>>({
@@ -36,10 +37,13 @@ function AddListRow<T extends Record<string, any>>({
     onSuccess,
     onInputChange,
     suppressErrorToast = false,
+    disabled = false,
 }: AddListRowProps<T>) {
     const [values, setValues] = useState<T>(initialValues);
     const [isLoading, setIsLoading] = useState(false);
     const [validationErrors, setValidationErrors] = useState<{ [K in keyof T]?: string }>({});
+    const isInputEmpty = !values[field.key] || !String(values[field.key]).trim();
+    const isAddDisabled = Boolean(disabled) || isInputEmpty;
 
     const handleInputChange = (key: keyof T) => (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -52,6 +56,7 @@ function AddListRow<T extends Record<string, any>>({
 
     const handleSubmitAdd = async (e: React.MouseEvent) => {
         e.stopPropagation();
+        if (isAddDisabled || isLoading) return;
         setIsLoading(true);
         setValidationErrors({});
 
@@ -106,6 +111,7 @@ function AddListRow<T extends Record<string, any>>({
                     onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
                         if (e.key === "Enter") {
                             e.preventDefault();
+                            if (isAddDisabled || isLoading) return;
                             // Simulate a click event for the add button
                             handleSubmitAdd(e as any);
                         }
@@ -117,6 +123,7 @@ function AddListRow<T extends Record<string, any>>({
                     text={buttonLabel}
                     onClick={handleSubmitAdd}
                     isLoading={isLoading}
+                    disabled={isAddDisabled}
                     Icon={buttonIcon}
                     className={styles.smallBtn}
                 />

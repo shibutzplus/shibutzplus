@@ -50,17 +50,17 @@ export default function ReplaceReportPageLayout({
     const teachersSelectOptions = () => {
         const activeTeachers = teachers
             ? teachers.filter((t) => {
-                  const days = reportData[t.id];
-                  if (!days) return false;
-                  return Object.values(days).some((count) => count > 0);
-              })
+                const days = reportData[t.id];
+                if (!days) return false;
+                return Object.values(days).some((count) => count > 0);
+            })
             : [];
 
         const options = activeTeachers.map((teacher) => ({
             value: teacher.id,
             label: teacher.name,
         }));
-        return [{ value: "all", label: "כל המחליפים" }, ...options];
+        return [{ value: "all", label: "כל המורים" }, ...options];
     };
 
     const handleMonthChange = (value: string) => {
