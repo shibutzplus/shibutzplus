@@ -1,27 +1,20 @@
-.fabClose,
 .fabSwitch {
     position: fixed;
-    top: 12px;
-    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     z-index: 1000;
     outline: none;
-    transition: transform 0.2s, background-color 0.2s, color 0.2s, opacity 0.2s, border-color 0.2s;
-}
-
-.fabSwitch {
-    right: 0.5vw;
-    width: 40px;
-    height: 40px;
-    background-color: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    transition: transform 0.2s, opacity 0.2s;
+    top: 0;
+    right: 0;
+    width: max(20px, 3vw);
+    height: 9vh;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
     color: #4b5563;
-    border: 1px solid rgba(255, 255, 255, 0.7);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     opacity: 0.9;
     perspective: 800px;
 }
@@ -40,11 +33,8 @@
 }
 
 .fabSwitch:hover {
-    transform: scale(1.06);
+    transform: scale(1.12);
     opacity: 1;
-    background-color: #ffffff;
-    color: #111827;
-    border-color: #cbd5e1;
 }
 
 .fabSwitch:hover .switchIcon {
@@ -57,14 +47,23 @@
 
 .fabSwitch:active {
     transform: scale(0.94);
-    background-color: #f1f5f9;
 }
 
 .fabClose {
+    position: fixed;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1000;
+    outline: none;
+    transition: transform 0.2s, background-color 0.2s, color 0.2s, opacity 0.2s, border-color 0.2s;
+    top: 0.3vw;
     left: 0.5vw;
-    width: 35px;
-    height: 35px;
-    background-color: rgba(30, 41, 59, 0.65);
+    width: 38px;
+    height: 38px;
+    background-color: rgba(30, 41, 59, 0.5);
     backdrop-filter: blur(2px);
     -webkit-backdrop-filter: blur(2px);
     color: #ffffff;
@@ -93,57 +92,14 @@
     background-color: #334155;
 }
 
-@media (max-width: 1600px) {
-    .fabSwitch {
-        width: 35px;
-        height: 35px;
-    }
-}
-
 @media (max-width: 1200px) {
-    .fabSwitch {
-        top: 15px;
-    }
-}
-
-@media (max-width: 1000px) {
-
-    .fabSwitch {
-        right: calc(max(20px, 3vw) / 2);
-        top: 4vh;
-        transform: translate(50%, -50%);
-        width: 25px;
-        height: 25px;
-        background-color: transparent;
-        border: none;
-        box-shadow: none;
-        color: #475569;
-        opacity: 0.85;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0;
-    }
-
-    .fabSwitch:hover {
-        transform: translate(50%, -50%) scale(1.08);
-        opacity: 1;
-    }
-
-    .fabSwitch:active {
-        transform: translate(50%, -50%) scale(0.92);
-    }
 
     .fabClose {
-        top: 6px;
+        top: 5px;
         left: 2px;
-        width: 28px;
-        height: 28px;
+        width: 30px;
+        height: 30px;
         color: #ffffffce;
-        opacity: 0.9;
-        background-color: rgba(30, 41, 59, 0.6);
-        border: 1.5px solid rgba(255, 255, 255, 0.6);
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
     }
 
     .fabClose svg {
@@ -152,64 +108,18 @@
     }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 400px) {
     .fabSwitch {
-        top: 4vh;
-        right: calc(max(20px, 3vw) / 2);
-        transform: translate(50%, -50%);
-        width: 22px;
-        height: 22px;
-        background-color: transparent;
-        border: none;
-        box-shadow: none;
-        backdrop-filter: none;
-        -webkit-backdrop-filter: none;
-    }
-
-    .fabSwitch:hover {
-        transform: translate(50%, -50%) scale(1.08);
-        background-color: transparent;
-        border-color: transparent;
-    }
-
-    .fabSwitch:active {
-        transform: translate(50%, -50%) scale(0.92);
-    }
-
-    .fabClose {
-        background-color: rgba(30, 41, 59, 0.45);
+        height: 11vh;
     }
 }
 
 @media (max-height: 600px) {
-    .fabSwitch {
-        right: calc(max(20px, 3vw) / 2);
-        top: 4vh;
-        transform: translate(50%, -50%);
-        width: 22px;
-        height: 22px;
-        background-color: transparent;
-        border: none;
-        box-shadow: none;
-        backdrop-filter: none;
-        -webkit-backdrop-filter: none;
-    }
-
-    .fabSwitch:hover {
-        transform: translate(50%, -50%) scale(1.08);
-        background-color: transparent;
-        border-color: transparent;
-    }
-
-    .fabSwitch:active {
-        transform: translate(50%, -50%) scale(0.92);
-    }
-
     .fabClose {
         top: 3px;
         left: 2px;
-        width: 24px;
-        height: 24px;
+        width: 30px;
+        height: 30px;
     }
 }
 

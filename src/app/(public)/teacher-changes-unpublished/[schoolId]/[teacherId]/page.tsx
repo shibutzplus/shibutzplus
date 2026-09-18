@@ -101,7 +101,7 @@ const TeacherChangesUnpublishedPage: NextPage = () => {
     const isShabbat = selectedDate ? getDayNumberByDateString(selectedDate) === 7 : false;
 
     if (!isPublished) {
-        return <NotPublished date={selectedDate} text={isShabbat ? "סוף שבוע נעים" : "מערכת לא פורסמה"} displayButton={false} />;
+        return <NotPublished date={selectedDate} text={isShabbat ? "סוף שבוע נעים" : "אין עדכונים, מערכת לא פורסמה"} displayButton={false} />;
     }
 
     return (

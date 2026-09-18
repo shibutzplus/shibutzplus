@@ -3,6 +3,7 @@ import styles from "./CommonDailySchoolEventCell.module.css";
 import { DailyScheduleCell } from "@/models/types/dailySchedule";
 import EmptyCell from "@/components/ui/table/EmptyCell/EmptyCell";
 import { cellToast } from "@/lib/toast";
+import { formatBoldText } from "@/utils/formatBoldText";
 
 type CommonDailySchoolEventCellProps = {
     columnId: string;
@@ -34,7 +35,7 @@ const CommonDailySchoolEventCell: React.FC<CommonDailySchoolEventCellProps> = ({
                     ref={cellRef}
                     onClick={handleClick}
                 >
-                    <div className={styles.eventText}>{eventData}</div>
+                    <div className={styles.eventText}>{formatBoldText(eventData)}</div>
                     {hasScroll && <div className={styles.moreIndicator}>▼</div>}
                 </div>
             ) : (

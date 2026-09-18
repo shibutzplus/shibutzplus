@@ -132,7 +132,7 @@ export default function TeacherSignInClient({
             </div>
             <div className={styles.mainSection}>
                 <HeroSection
-                    title="מערכת השעות היומית שלכם"
+                    title="מערכת השעות היומית"
                     description={`בית ספר ${schoolName}`}
                 />
                 <div className={styles.formContainer}>

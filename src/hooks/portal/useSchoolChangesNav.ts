@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { usePortalContext } from "@/context/PortalContext";
-import { MAX_COLUMNS_FOR_FULL_SCREEN } from "@/models/constant/table";
+import { MAX_COLUMNS_FOR_FULL_SCREEN_DESKTOP, MAX_COLUMNS_FOR_FULL_SCREEN_MOBILE } from "@/models/constant/table";
 import router from "@/routes";
 
 export const useSchoolChangesNav = () => {
@@ -29,7 +29,10 @@ export const useSchoolChangesNav = () => {
             }
         }
 
-        if (currentColumnCount > MAX_COLUMNS_FOR_FULL_SCREEN) {
+        const isMobile = typeof window !== "undefined" && window.innerWidth < 600;
+        const maxColumns = isMobile ? MAX_COLUMNS_FOR_FULL_SCREEN_MOBILE : MAX_COLUMNS_FOR_FULL_SCREEN_DESKTOP;
+
+        if (currentColumnCount > maxColumns) {
             route.push(router.schoolChanges.p);
         } else {
             route.push(router.schoolChangesFull.p);

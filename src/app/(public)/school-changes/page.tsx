@@ -71,7 +71,7 @@ const PublishedPortalPage: NextPage = () => {
     const getEmptyText = () => {
         if (isShabbat) return "סוף שבוע נעים";
         if (isPublished) return "אין שינויים במערכת";
-        return "המערכת הבית ספרית לא פורסמה";
+        return "אין עדכונים, המערכת הבית ספרית לא פורסמה";
     };
 
     return (

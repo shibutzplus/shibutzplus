@@ -163,14 +163,13 @@ const usePWAInstall = () => {
             } catch {}
             setDeferredPrompt(null);
         } else {
-            const userAgent = window.navigator.userAgent.toLowerCase();
-            const isAndroidWebView = /android/.test(userAgent) && (/;\s*wv|whatsapp|fbav|fban|instagram/.test(userAgent) || /version\/.*chrome/.test(userAgent));
+            const isAndroid = /android/i.test(window.navigator.userAgent);
 
-            if (isAndroidWebView) {
+            if (isAndroid) {
                 const url = new URL(window.location.href);
                 url.searchParams.set('autoInstall', 'true');
-                const cleanUrl = url.toString().replace(/^https?:\/\//, '');
-                window.location.href = `intent://${cleanUrl}#Intent;scheme=https;package=com.android.chrome;end`;
+                const cleanUrl = url.toString().replace(/^https?:\/\//, '').replace(/#.*$/, '');
+                window.location.href = `intent://${cleanUrl}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(url.toString())};end`;
                 return;
             }
 

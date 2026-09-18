@@ -65,6 +65,7 @@ const TeacherDailyChangesInstructionsCell: React.FC<TeacherDailyChangesInstructi
                         placeholder={placeholderInfo.text}
                         placeholderColor={placeholderInfo.color}
                         minHeight={60}
+                        maxLength={1500}
                         readOnly={isReadOnly}
                         hideButtons={hideButtons}
                     />

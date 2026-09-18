@@ -1,7 +1,8 @@
 "use client"
 
-import React from "react"
+import React, { useEffect, useRef } from "react"
 import { toast, Toast } from "react-hot-toast"
+import { formatBoldText } from "@/utils/formatBoldText"
 
 type ClosableToastProps = {
     t: Toast
@@ -11,9 +12,29 @@ type ClosableToastProps = {
 
 export const ClosableToast: React.FC<ClosableToastProps> = ({ t, message, variant = "default" }) => {
     const isError = variant === "error"
+    const containerRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        const handlePointerDown = (e: PointerEvent) => {
+            const toastNode = containerRef.current?.parentElement || containerRef.current
+            if (toastNode && !toastNode.contains(e.target as Node)) {
+                toast.dismiss(t.id)
+            }
+        }
+
+        const timer = setTimeout(() => {
+            document.addEventListener("pointerdown", handlePointerDown)
+        }, 100)
+
+        return () => {
+            clearTimeout(timer)
+            document.removeEventListener("pointerdown", handlePointerDown)
+        }
+    }, [t.id])
 
     return (
         <div
+            ref={containerRef}
             style={{
                 position: "relative",
                 paddingTop: "28px",
@@ -38,7 +59,7 @@ export const ClosableToast: React.FC<ClosableToastProps> = ({ t, message, varian
             >
                 ×
             </button>
-            <div style={{ whiteSpace: "pre-wrap" }}>{message}</div>
+            <div style={{ whiteSpace: "pre-wrap" }}>{formatBoldText(message)}</div>
         </div>
     )
 }

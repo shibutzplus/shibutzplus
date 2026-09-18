@@ -5,7 +5,7 @@
   justify-content: center;
   width: 100%;
   min-height: var(--table-teacher-cell-height);
-  max-height: 300px;
+  max-height: 350px;
   background-color: var(--tab-color);
   border-radius: var(--border-radius-cell);
   padding: 5px 8px 0px 2px;

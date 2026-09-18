@@ -19,7 +19,7 @@ const NavButton: React.FC = () => {
             disabled={isLoading}
             style={{ opacity: isLoading ? 0.6 : 1, cursor: isLoading ? "wait" : "pointer" }}
         >
-            צפייה במערכת בית ספרית
+            צפייה במערכת הבית ספרית
         </button>
     );
 };

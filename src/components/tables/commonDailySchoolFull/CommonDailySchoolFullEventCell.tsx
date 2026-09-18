@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "./CommonDailySchoolFullTable.module.css";
 import { cellToast } from "@/lib/toast";
+import { formatBoldText } from "@/utils/formatBoldText";
 
 type CommonDailySchoolFullEventCellProps = {
     eventText: string;
@@ -43,7 +44,7 @@ const CommonDailySchoolFullEventCell: React.FC<CommonDailySchoolFullEventCellPro
             onClick={handleClick}
         >
             <span className={styles.eventText}>
-                {eventText}
+                {formatBoldText(eventText)}
             </span>
             {hasScroll && <div className={styles.moreIndicator}>▼</div>}
         </div>

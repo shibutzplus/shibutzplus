@@ -10,7 +10,7 @@
 
 .headerRow {
     display: grid;
-    height: 8vh;
+    height: 9vh;
     width: 100%;
     grid-template-columns: minmax(20px, 3vw) 2px repeat(var(--num-cols), var(--col-width));
 }
@@ -161,7 +161,7 @@
 }
 
 .eventText {
-    font-size: var(--font-size);
+    font-size: calc(var(--font-size) - 0.15vw);
     color: var(--dark-text-color);
     font-weight: 500;
     line-height: 1.2;
@@ -326,6 +326,8 @@
 
     .headerRow {
         grid-template-columns: minmax(20px, 3vw) 2px repeat(var(--num-cols), minmax(0, 1fr));
+        height: 11vh;
+
     }
 
     .row {

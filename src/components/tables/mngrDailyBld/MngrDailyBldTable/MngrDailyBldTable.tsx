@@ -110,16 +110,23 @@ const MngrDailyBldTable: React.FC<MngrDailyBldTableProps> = ({
     const prevSortedColumnsRef = React.useRef<string[]>([]);
 
     React.useEffect(() => {
-        const prev = prevSortedColumnsRef.current;
-        const addedColumns = sortedTableColumns.filter((colId: string) => !prev.includes(colId));
-        const removedColumns = prev.filter((colId: string) => !sortedTableColumns.includes(colId));
+        // Compare current columns with previous to find the new one
+        if (prevSortedColumnsRef.current.length < sortedTableColumns.length) {
+            const newColumns = sortedTableColumns.filter((colId: string) => !prevSortedColumnsRef.current.includes(colId));
 
-        // Scroll only on a genuine new column (not a rename/replacement like detach)
-        if (addedColumns.length === 1 && removedColumns.length === 0) {
-            const elementId = `col-${addedColumns[0]}`;
-            setTimeout(() => {
-                document.getElementById(elementId)?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-            }, 100);
+            // Only scroll if exactly one new column is added (avoids scrolling on initial load or bulk updates)
+            if (newColumns.length === 1) {
+                const newColId = newColumns[0];
+                const elementId = `col-${newColId}`;
+
+                // Small delay to ensure the DOM is updated
+                setTimeout(() => {
+                    const element = document.getElementById(elementId);
+                    if (element) {
+                        element.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+                    }
+                }, 100);
+            }
         }
 
         prevSortedColumnsRef.current = sortedTableColumns;

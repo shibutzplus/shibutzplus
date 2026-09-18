@@ -81,7 +81,8 @@
     --table-annual-col-width: 200px;
     --table-annual-col-width-mobile: 230px;
     --table-annual-header-height: 40px;
-    --table-annual-cell-height: 96px;
+    --table-annual-cell-height: 90px;
+    --table-annual-view-cell-height: 84px;
 
     --list-details-header-height: 50px;
     --list-details-row-padding: 7px 1rem;

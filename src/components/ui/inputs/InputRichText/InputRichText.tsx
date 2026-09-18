@@ -5,6 +5,7 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
+import CharacterCount from "@tiptap/extension-character-count";
 import { sanitizeHtml } from "@/utils/sanitize";
 import Icons from "@/style/icons";
 import styles from "./InputRichText.module.css";
@@ -14,6 +15,7 @@ import PopupModal from "@/components/popups/PopupModal/PopupModal";
 import LinkInputPopup from "@/components/popups/LinkInputPopup/LinkInputPopup";
 import { MAX_FILE_SIZE, UPLOAD_ERROR_MESSAGES } from "@/models/constant/upload";
 import { logErrorAction } from "@/app/actions/POST/logErrorAction";
+import { errorToast } from "@/lib/toast";
 
 type InputRichTextProps = {
     value: string;
@@ -23,6 +25,7 @@ type InputRichTextProps = {
     onBlurHTML?: (html: string) => void;
     minHeight?: number;
     maxLines?: number;
+    maxLength?: number;
     readOnly?: boolean;
     hideButtons?: boolean;
 };
@@ -42,6 +45,7 @@ const InputRichText: React.FC<InputRichTextProps> = ({
     onBlurHTML,
     minHeight = 40,
     maxLines,
+    maxLength,
     readOnly = false,
     hideButtons = false,
 }) => {
@@ -71,7 +75,8 @@ const InputRichText: React.FC<InputRichTextProps> = ({
             validate: (href) => /^(https?:\/\/|mailto:|tel:)/i.test(href || ""),
         }),
         Placeholder.configure({ placeholder: placeholder || "" }),
-    ], [placeholder]);
+        ...(maxLength ? [CharacterCount.configure({ limit: maxLength })] : []),
+    ], [placeholder, maxLength]);
 
     const countLines = (html: string): number => {
         const tempDiv = document.createElement("div");
@@ -95,6 +100,17 @@ const InputRichText: React.FC<InputRichTextProps> = ({
             onChangeHTML(normalize(html));
         },
         editorProps: {
+            handleKeyDown: (view, event) => {
+                if (maxLength && view.state.doc.textContent.length >= maxLength && event.key.length === 1 && !event.ctrlKey) {
+                    errorToast(`ההנחיות ארוכות מדי (מקסימום ${maxLength} תווים)`);
+                }
+            },
+            handlePaste: (view, event) => {
+                const text = event.clipboardData?.getData("text") || "";
+                if (maxLength && view.state.doc.textContent.length + text.length > maxLength) {
+                    errorToast(`ההנחיות ארוכות מדי (מקסימום ${maxLength} תווים)`);
+                }
+            },
             attributes: {
                 class: styles.editor,
                 "data-placeholder": placeholder || "",

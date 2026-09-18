@@ -80,15 +80,13 @@ export const useColumnAnimation = (sortedTableColumns: string[], selectedDate: s
 
         const prevCols = prevColumnsRef.current;
         const newCols = sortedTableColumns.filter(id => !prevCols.includes(id));
+        const removedCols = prevCols.filter(id => !sortedTableColumns.includes(id));
 
-        if (newCols.length > 0) {
-            // Only animate width if exactly one column is added (prevent bulk load animation)
-            // Removed prevCols.length > 0 check to allow animating the first column added
-            if (newCols.length === 1) {
-                newCols.forEach(colId => {
-                    handleColumnAnimation(colId, "add");
-                });
-            }
+        // Only animate width if genuinely one new column was added (not a detachment / replacement of an existing column)
+        if (newCols.length === 1 && removedCols.length === 0) {
+            newCols.forEach(colId => {
+                handleColumnAnimation(colId, "add");
+            });
         }
 
         // Update ref
