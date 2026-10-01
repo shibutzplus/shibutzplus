@@ -82,7 +82,6 @@ export function getSchoolHolidayName(date: Date): string | null {
         if (day === 14) return "ערב סוכות 🌴";
         if (day >= 15 && day <= 21) return "חופשת סוכות 🌴";
         if (day === 22) return "שמחת תורה 🌴";
-        if (day === 23) return "אסרו חג 🌴";
     }
     if (month === "Kislev" && day >= 25) return "חופשת חנוכה 🕎";
     if (month === "Tevet" && day <= 3) return "חופשת חנוכה 🕎";
@@ -90,9 +89,8 @@ export function getSchoolHolidayName(date: Date): string | null {
         if (day === 13) return "תענית אסתר 🎭";
         if (day === 14 || day === 15) return "חופשת פורים 🎭";
     }
-    if (month === "Nisan" && day >= 6 && day <= 22) {
+    if (month === "Nisan" && day >= 6 && day <= 21) {
         if (day === 14) return "ערב פסח 🍷";
-        if (day === 22) return "אסרו חג 🍷";
         return "חופשת פסח 🍷";
     }
     if (month === "Iyyar") {
@@ -103,7 +101,6 @@ export function getSchoolHolidayName(date: Date): string | null {
     if (month === "Sivan") {
         if (day === 5) return "ערב שבועות 🧀";
         if (day === 6) return "שבועות 🧀";
-        if (day === 7) return "אסרו חג 🧀";
     }
     return null;
 }
