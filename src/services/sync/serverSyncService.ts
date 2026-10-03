@@ -18,6 +18,14 @@ import { dbLog } from "@/services/loggerService";
  */
 export const pushSyncUpdateServer = async (type: SyncChannel, payload?: SyncPayload): Promise<number | null> => {
     try {
+        // Bezeq blocked Upstash in localhost. Currently disabled in localhost:
+        // 1. src/services/sync/clientSyncService.ts
+        // 2. src/app/api/sync/poll/route.ts
+        // 3. src/services/sync/serverSyncService.ts
+        if (process.env.NODE_ENV === "development") {
+            return Date.now();
+        }
+
         let channel: string;
         if (type === DAILY_TEACHER_COL_DATA_CHANGED) channel = DAILY_TEACHER_COL_DATA_CHANGED;
         else if (type === DAILY_EVENT_COL_DATA_CHANGED) channel = DAILY_EVENT_COL_DATA_CHANGED;

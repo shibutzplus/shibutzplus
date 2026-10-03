@@ -51,9 +51,12 @@ const MngrMissingReportCell: React.FC<MngrMissingReportCellProps> = ({
             });
 
         if (isMissingTeacher) {
+            const rawReason = primaryRecord.reason?.trim() || "";
+            const hasReason = rawReason !== "" && rawReason !== "ללא סיבה";
             return {
                 type: "missing" as const,
-                reason: primaryRecord.reason || "ללא סיבה",
+                reason: hasReason ? rawReason : "ללא סיבה",
+                hasReason,
                 substituteList
             };
         } else {
@@ -128,7 +131,9 @@ const MngrMissingReportCell: React.FC<MngrMissingReportCellProps> = ({
             <div className={styles.cellContent}>
                 {displayData && displayData.type === "missing" && (
                     <>
-                        <div className={`${styles.reasonText} ${styles.missingText}`}>{displayData.reason}</div>
+                        <div className={`${styles.reasonText} ${displayData.hasReason ? styles.reasonDefined : styles.missingText}`}>
+                            {displayData.reason}
+                        </div>
                         {renderSubstituteList(displayData.substituteList)}
                     </>
                 )}

@@ -34,10 +34,13 @@ export interface PollUpdatesParams {
  */
 const pollUpdates = async (params: PollUpdatesParams): Promise<SyncPollResponse | null> => {
   try {
-    // Skip polling when running in development
-    //if (process.env.NODE_ENV === "development") {
-    //  return null; // For debug comment out this block  
-    //}
+    // Bezeq blocked Upstash in localhost. Currently disabled in localhost:
+    // 1. src/services/sync/clientSyncService.ts
+    // 2. src/app/api/sync/poll/route.ts
+    // 3. src/services/sync/serverSyncService.ts
+    if (process.env.NODE_ENV === "development") {
+      return null;
+    }
 
     const { since, channels } = params;
     const channelsParam = channels.join(",");

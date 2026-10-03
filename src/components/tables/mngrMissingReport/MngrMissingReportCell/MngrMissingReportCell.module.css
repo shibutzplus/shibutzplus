@@ -39,11 +39,15 @@
 }
 
 .missingText {
-    color: #d32f2f !important; /* Red */
+    color: #d32f2f !important;
+}
+
+.reasonDefined {
+    color: #262626 !important;
 }
 
 .existingText {
-    color: #1976d2 !important; /* Blue */
+    color: #1976d2 !important;
 }
 
 .countText {

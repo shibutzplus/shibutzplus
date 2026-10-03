@@ -10,6 +10,17 @@ import { dbLog } from "@/services/loggerService";
 export async function GET(req: NextRequest) {
 
   try {
+    // Bezeq blocked Upstash in localhost. Currently disabled in localhost:
+    // 1. src/services/sync/clientSyncService.ts
+    // 2. src/app/api/sync/poll/route.ts
+    // 3. src/services/sync/serverSyncService.ts
+    if (process.env.NODE_ENV === "development") {
+      return Response.json({
+        latestTs: Date.now(),
+        count: 0,
+        items: [],
+      });
+    }
 
     const url = new URL(req.url)
     const since = Number(url.searchParams.get("since") || 0)
