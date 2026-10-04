@@ -107,7 +107,7 @@ function AddListRow<T extends Record<string, any>>({
                     error={validationErrors[field.key]}
                     type={field.inputType || "text"}
                     maxLength={field.maxLength}
-                    style={{ minWidth: 200, width: "100%" }}
+                    style={{ width: "100%" }}
                     onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
                         if (e.key === "Enter") {
                             e.preventDefault();

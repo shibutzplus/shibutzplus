@@ -118,6 +118,17 @@
     background-color: #fef2f2;
 }
 
+.changedCell {
+    background-color: #eff6ff;
+    border: 1px solid #bfdbfe;
+}
+
+.cancelledText {
+    color: #2563eb;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
 .cellContent {
     display: flex;
     flex-direction: column;

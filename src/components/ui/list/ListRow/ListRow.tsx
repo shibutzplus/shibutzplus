@@ -19,6 +19,7 @@ export type ListRowProps<T> = {
     getInitialValue: (item: T) => string;
     updateExtraFields?: (item: T) => Partial<T>;
     hasLink?: string;
+    extraActions?: React.ReactNode;
 };
 
 function ListRow<T extends Record<string, any>>({
@@ -31,6 +32,7 @@ function ListRow<T extends Record<string, any>>({
     getInitialValue,
     updateExtraFields,
     hasLink,
+    extraActions,
 }: ListRowProps<T>) {
     const [isEdit, setIsEdit] = useState(false);
     const [isEditLoading, setIsEditLoading] = useState(false);
@@ -132,6 +134,7 @@ function ListRow<T extends Record<string, any>>({
 
                 <IconBtn onClick={handleUpdate} isLoading={isEditLoading} Icon={isEdit ? <Icons.save /> : <Icons.edit />} />
                 <IconBtn onClick={() => onDelete(item)} isLoading={false} Icon={<Icons.delete />} />
+                {extraActions}
             </div>
         </div>
     );

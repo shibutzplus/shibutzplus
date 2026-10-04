@@ -18,6 +18,6 @@
   text-align: center;
 }
 
-.groupStyles:hover span:first-child {
-    font-weight: 600;
+.groupStyles span:first-child {
+  font-weight: 600;
 }

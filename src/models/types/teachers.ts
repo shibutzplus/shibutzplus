@@ -5,6 +5,8 @@ export type TeacherType = {
     name: string;
     role: TeacherRole;
     schoolId: string;
+    isActive?: boolean;
+    isPaused?: boolean;
 };
 
 export type TeacherRequest = {

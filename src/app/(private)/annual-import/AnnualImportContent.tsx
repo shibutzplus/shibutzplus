@@ -19,6 +19,7 @@ import MsgPopup from "@/components/popups/MsgPopup/MsgPopup";
 import EditCellPopup from "./components/EditCellPopup";
 import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 import { checkTeacherHasScheduleAction } from "@/app/actions/GET/checkTeacherHasScheduleAction";
+import { getTeacherExistingScheduleAction, getSchoolExistingSchedulesAction, TeacherExistingScheduleItem } from "@/app/actions/GET/getTeacherExistingScheduleAction";
 import { useOptionalMainContext } from "@/context/MainContext";
 
 interface ScheduleItem {
@@ -56,7 +57,8 @@ const AnnualImportContent = () => {
     const [teacherWordFile, setTeacherWordFile] = useState<File | null>(null);
     const [classWordFile, setClassWordFile] = useState<File | null>(null);
     const [selectedTeacherId, setSelectedTeacherId] = useState<string | null>(null);
-    const [teacherHasExistingSchedule, setTeacherHasExistingSchedule] = useState(false);
+    const [existingSchedules, setExistingSchedules] = useState<Record<string, TeacherExistingScheduleItem[]>>({});
+    const teacherHasExistingSchedule = Boolean(selectedTeacherId && (existingSchedules[selectedTeacherId]?.length || 0) > 0);
     const [isLoading, setIsLoading] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [mergeAliases, setMergeAliases] = useState<Record<string, string>>({});
@@ -75,20 +77,21 @@ const AnnualImportContent = () => {
         openPopup("msgPopup", "S", <MsgPopup message={message} />);
     };
 
-    // Check if selected teacher already has a schedule in DB
+    // Check if selected teacher already has a schedule in DB and fetch it if not already loaded
     useEffect(() => {
-        if (!selectedTeacherId || !schoolId) {
-            setTeacherHasExistingSchedule(false);
-            return;
-        }
+        if (!selectedTeacherId || !schoolId) return;
+        if (selectedTeacherId in existingSchedules) return;
 
-        const checkSchedule = async () => {
-            const hasSchedule = await checkTeacherHasScheduleAction(selectedTeacherId, schoolId);
-            setTeacherHasExistingSchedule(hasSchedule);
+        const fetchExisting = async () => {
+            const res = await getTeacherExistingScheduleAction(selectedTeacherId, schoolId);
+            setExistingSchedules(prev => ({
+                ...prev,
+                [selectedTeacherId]: res.schedule
+            }));
         };
 
-        checkSchedule();
-    }, [selectedTeacherId, schoolId]);
+        fetchExisting();
+    }, [selectedTeacherId, schoolId, existingSchedules]);
 
     const handleFileChange = (
         e: React.ChangeEvent<HTMLInputElement>,
@@ -397,7 +400,14 @@ const AnnualImportContent = () => {
                 subjects: analyzedData.subjects.filter(s => s.source !== 'db').map(s => s.name)
             };
 
-            const res = await fullSchedulePreviewAction(formData, entities);
+            const [res, schoolExistingSchedules] = await Promise.all([
+                fullSchedulePreviewAction(formData, entities),
+                schoolId ? getSchoolExistingSchedulesAction(schoolId) : Promise.resolve({})
+            ]);
+
+            if (schoolExistingSchedules && Object.keys(schoolExistingSchedules).length > 0) {
+                setExistingSchedules(schoolExistingSchedules);
+            }
 
             if (res.success && res.data) {
                 setAnalyzedData(prev => ({
@@ -650,11 +660,17 @@ const AnnualImportContent = () => {
                                 {selectedTeacherId ? (
                                     (() => {
                                         const teacherSchedule = analyzedData.schedule.filter(s => s.teacher === selectedTeacherId);
-                                        if (teacherSchedule.length === 0) {
+                                        const existingSchedule = (selectedTeacherId && existingSchedules[selectedTeacherId]) || [];
+
+                                        if (teacherSchedule.length === 0 && existingSchedule.length === 0) {
                                             return <div className={styles.emptyStatePreview}>אין שיעורים למורה זה</div>;
                                         }
 
-                                        const maxHour = Math.max(...teacherSchedule.map(s => s.hour), 8);
+                                        const maxHour = Math.max(
+                                            ...teacherSchedule.map(s => s.hour),
+                                            ...existingSchedule.map(s => s.hour),
+                                            8
+                                        );
 
                                         return (
                                             <table className={styles.previewTable}>
@@ -674,6 +690,8 @@ const AnnualImportContent = () => {
                                                                 <td className={styles.hourCell}>{hour}</td>
                                                                 {[1, 2, 3, 4, 5, 6].map(day => {
                                                                     const cell = teacherSchedule.find(s => s.day === day && s.hour === hour);
+                                                                    const existingCell = existingSchedule.find(s => s.day === day && s.hour === hour);
+
                                                                     const checkValidity = () => {
                                                                         if (!cell) return false;
                                                                         // Mark as invalid (Red) only if subject or class is missing
@@ -682,33 +700,82 @@ const AnnualImportContent = () => {
                                                                         return true;
                                                                     };
 
+                                                                    const checkChanged = () => {
+                                                                        if (!selectedTeacherId || !(selectedTeacherId in existingSchedules)) return false;
+                                                                        if (!teacherHasExistingSchedule) return false;
+                                                                        if (cell && !existingCell) return true;
+                                                                        if (!cell && existingCell) return true;
+                                                                        if (cell && existingCell) {
+                                                                            const norm = (s: string) => s.replace(/^(כיתה|כיתת|שכבת)\s+/g, "").replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019\s]/g, "").trim();
+                                                                            const sameSubject = cell.subject?.trim() === existingCell.subjectName?.trim();
+                                                                            const isWg = cell.class === "קבוצה" || cell.subject === cell.class || existingCell.className === existingCell.subjectName;
+                                                                            if (isWg) return !sameSubject;
+                                                                            const sameClass = norm(cell.class || "") === norm(existingCell.className || "");
+                                                                            return !sameSubject || !sameClass;
+                                                                        }
+                                                                        return false;
+                                                                    };
+
                                                                     const isValid = checkValidity();
-                                                                    const bgClass = cell && !isValid ? styles.invalidCell : '';
+                                                                    const isChanged = checkChanged();
+                                                                    const bgClass = cell && !isValid ? styles.invalidCell : isChanged ? styles.changedCell : '';
+
+                                                                    const tooltipText = isChanged
+                                                                        ? (cell
+                                                                            ? (existingCell ? `שונה מהמערכת (קודם: ${existingCell.subjectName}, ${existingCell.className})` : 'שיעור חדש במערכת')
+                                                                            : `שיעור שבוטל (קודם: ${existingCell?.subjectName}, ${existingCell?.className})`)
+                                                                        : undefined;
 
                                                                     const handleCellClick = () => {
-                                                                        if (!cell) return;
+                                                                        if (cell) {
+                                                                            const infoText = `${cell.teacher}, יום ${["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי"][cell.day - 1]}, שעה ${cell.hour}\n${cell.originalText || "ללא מידע מקורי"}`;
 
-                                                                        // Format info text
-                                                                        const infoText = `${cell.teacher}, יום ${["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי"][cell.day - 1]}, שעה ${cell.hour}\n${cell.originalText || "ללא מידע מקורי"}`;
+                                                                            openPopup("editImportCell", "S", (
+                                                                                <EditCellPopup
+                                                                                    infoText={infoText}
+                                                                                    initialSubject={cell.subject === "ללא מקצוע" ? "" : (cell.subject || "")}
+                                                                                    initialClass={cell.class === "ללא כיתה" ? "" : (cell.class || "")}
+                                                                                    onSave={(newSubject, newClass) => {
+                                                                                        setAnalyzedData(prev => ({
+                                                                                            ...prev,
+                                                                                            schedule: prev.schedule.map(s => {
+                                                                                                if (s.teacher === cell.teacher && s.day === cell.day && s.hour === cell.hour) {
+                                                                                                    return { ...s, subject: newSubject || "ללא מקצוע", class: newClass || "ללא כיתה" };
+                                                                                                }
+                                                                                                return s;
+                                                                                            })
+                                                                                        }));
+                                                                                    }}
+                                                                                />
+                                                                            ));
+                                                                        } else if (existingCell && selectedTeacherId) {
+                                                                            const infoText = `${selectedTeacherId}, יום ${["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי"][day - 1]}, שעה ${hour}\nבוטל (בעבר: ${existingCell.subjectName}, ${existingCell.className})`;
 
-                                                                        openPopup("editImportCell", "S", (
-                                                                            <EditCellPopup
-                                                                                infoText={infoText}
-                                                                                initialSubject={cell.subject === "ללא מקצוע" ? "" : (cell.subject || "")}
-                                                                                initialClass={cell.class === "ללא כיתה" ? "" : (cell.class || "")}
-                                                                                onSave={(newSubject, newClass) => {
-                                                                                    setAnalyzedData(prev => ({
-                                                                                        ...prev,
-                                                                                        schedule: prev.schedule.map(s => {
-                                                                                            if (s.teacher === cell.teacher && s.day === cell.day && s.hour === cell.hour) {
-                                                                                                return { ...s, subject: newSubject || "ללא מקצוע", class: newClass || "ללא כיתה" };
-                                                                                            }
-                                                                                            return s;
-                                                                                        })
-                                                                                    }));
-                                                                                }}
-                                                                            />
-                                                                        ));
+                                                                            openPopup("editImportCell", "S", (
+                                                                                <EditCellPopup
+                                                                                    infoText={infoText}
+                                                                                    initialSubject={existingCell.subjectName || ""}
+                                                                                    initialClass={existingCell.className || ""}
+                                                                                    onSave={(newSubject, newClass) => {
+                                                                                        if (newSubject || newClass) {
+                                                                                            setAnalyzedData(prev => ({
+                                                                                                ...prev,
+                                                                                                schedule: [
+                                                                                                    ...prev.schedule,
+                                                                                                    {
+                                                                                                        teacher: selectedTeacherId,
+                                                                                                        day,
+                                                                                                        hour,
+                                                                                                        subject: newSubject || "ללא מקצוע",
+                                                                                                        class: newClass || "ללא כיתה"
+                                                                                                    }
+                                                                                                ]
+                                                                                            }));
+                                                                                        }
+                                                                                    }}
+                                                                                />
+                                                                            ));
+                                                                        }
                                                                     };
 
                                                                     return (
@@ -716,7 +783,8 @@ const AnnualImportContent = () => {
                                                                             key={day}
                                                                             className={`${styles.dataCell} ${bgClass}`}
                                                                             onClick={handleCellClick}
-                                                                            style={{ cursor: cell ? 'pointer' : 'default' }}
+                                                                            style={{ cursor: cell || existingCell ? 'pointer' : 'default' }}
+                                                                            title={tooltipText}
                                                                         >
                                                                             {cell ? (
                                                                                 <div className={styles.cellContent}>
@@ -725,6 +793,13 @@ const AnnualImportContent = () => {
                                                                                     </span>
                                                                                     <span className={styles.classText}>
                                                                                         {cell.class?.replace("Unknown", "?") || "?"}
+                                                                                    </span>
+                                                                                </div>
+                                                                            ) : isChanged && existingCell ? (
+                                                                                <div className={styles.cellContent}>
+                                                                                    <span className={styles.cancelledText}>בוטל</span>
+                                                                                    <span className={styles.classText}>
+                                                                                        {existingCell.subjectName}
                                                                                     </span>
                                                                                 </div>
                                                                             ) : null}
@@ -745,7 +820,7 @@ const AnnualImportContent = () => {
                                 )}
                             </div>
 
-                            <div className={styles.previewActions} style={{ justifyContent: 'space-between' }}>
+                            <div className={styles.previewActions} style={{ justifyContent: 'space-between', alignItems: 'center' }}>
                                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                                     {selectedTeacherId && (
                                         <button
@@ -770,10 +845,16 @@ const AnnualImportContent = () => {
                                                     popupMsg(res.message);
                                                     if (res.success) {
                                                         mainContext?.setAnnualScheduleTable(undefined);
+                                                        setExistingSchedules(prev => ({
+                                                            ...prev,
+                                                            [selectedTeacherId]: scheduleItems.map(s => ({
+                                                                day: s.day,
+                                                                hour: s.hour,
+                                                                className: s.className,
+                                                                subjectName: s.subjectName
+                                                            }))
+                                                        }));
                                                     }
-
-                                                    const hasSchedule = await checkTeacherHasScheduleAction(selectedTeacherId, schoolId || '');
-                                                    setTeacherHasExistingSchedule(hasSchedule);
                                                 } catch (err) {
                                                     console.error("Error saving teacher schedule:", err);
                                                     popupMsg("שגיאה בשמירת מערכת המורה");
@@ -835,7 +916,19 @@ const AnnualImportContent = () => {
                                     </button>
                                 </div>
 
-                                <div style={{ display: 'flex', gap: '10px' }}>
+                                {/* Legend */}
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', fontSize: '0.8rem', color: '#64748b' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                        <span style={{ width: '14px', height: '14px', backgroundColor: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '3px', display: 'inline-block' }}></span>
+                                        <span>שינוי מהמערכת</span>
+                                    </div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                        <span style={{ width: '14px', height: '14px', backgroundColor: '#fef2f2', border: '1px solid #fecaca', borderRadius: '3px', display: 'inline-block' }}></span>
+                                        <span>נתון חסר</span>
+                                    </div>
+                                </div>
+
+                                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                                     <button type="button" onClick={handlePrev} className={styles.modalBtnNo}>הקודם</button>
                                     <button
                                         type="button"

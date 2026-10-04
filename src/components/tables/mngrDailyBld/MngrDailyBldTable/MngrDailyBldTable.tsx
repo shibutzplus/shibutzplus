@@ -182,7 +182,7 @@ const MngrDailyBldTable: React.FC<MngrDailyBldTableProps> = ({
     }
 
     return (
-        <div className={styles.tableContainer}>
+        <div className={styles.tableContainer} data-select-boundary="true">
             <table className={styles.table}>
                 <thead>
                     <tr>

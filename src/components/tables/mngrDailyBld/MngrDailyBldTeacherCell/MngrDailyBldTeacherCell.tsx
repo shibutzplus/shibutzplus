@@ -237,7 +237,7 @@ const MngrDailyBldTeacherCell: React.FC<MngrDailyBldTeacherCellProps> = ({ colum
                                         hasBorder
                                         backgroundColor="transparent"
                                         onCreate={(value: string) => handleTeacherChange("create", value)}
-                                        menuWidth="220px"
+                                        menuWidth="260px"
                                         color={
                                             shouldHighlightMissing
                                                 ? "var(--missing-teacher-text-color)"

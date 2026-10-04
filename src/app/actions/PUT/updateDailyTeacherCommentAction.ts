@@ -6,7 +6,6 @@ import { eq, and } from "drizzle-orm";
 import { dbLog } from "@/services/loggerService";
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
 import { DAILY_TEACHER_COL_DATA_CHANGED } from "@/models/constant/sync";
-import { revalidatePath } from "next/cache";
 import { revalidateTag } from "next/cache";
 import { teacherCommentSchema } from "@/models/validation/teacherComment";
 import { cacheTags } from "@/lib/cacheTags";
@@ -61,7 +60,6 @@ export async function updateDailyTeacherCommentAction(
             });
         }
 
-        revalidatePath("/daily-build");
         revalidateTag(cacheTags.dailySchedule(schoolId, date));
         revalidateTag(cacheTags.schoolSchedule(schoolId));
 

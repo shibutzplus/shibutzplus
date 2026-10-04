@@ -34,6 +34,82 @@ export interface InputGroupSelectProps {
     fontWeight?: string | number;
 }
 
+const useIsomorphicLayoutEffect =
+    typeof window !== "undefined" ? React.useLayoutEffect : React.useEffect;
+
+const CustomMenu = (props: any) => {
+    const [menuStyle, setMenuStyle] = useState<React.CSSProperties>({});
+    const menuRef = React.useRef<HTMLDivElement | null>(null);
+
+    useIsomorphicLayoutEffect(() => {
+        if (menuRef.current) {
+            const rect = menuRef.current.getBoundingClientRect();
+            const container = menuRef.current.closest("[data-select-boundary], [class*='tableContainer']");
+            const containerRect = container ? container.getBoundingClientRect() : null;
+
+            const minLeft = (containerRect ? Math.max(containerRect.left, 0) : 0) + 8;
+            const maxRight = (containerRect ? Math.min(containerRect.right, window.innerWidth) : window.innerWidth) - 8;
+            const availableWidth = Math.max(maxRight - minLeft, 100);
+
+            let shiftX = 0;
+            let maxWidthStyle: string | undefined;
+
+            if (rect.width > availableWidth) {
+                // If menu is strictly wider than the container/screen, clamp width and align to minLeft
+                shiftX = minLeft - rect.left;
+                maxWidthStyle = `${availableWidth}px`;
+            } else if (rect.left < minLeft) {
+                // Overflowing left -> shift right towards minLeft
+                shiftX = minLeft - rect.left;
+                if (rect.right + shiftX > maxRight) {
+                    shiftX = maxRight - rect.right;
+                }
+            } else if (rect.right > maxRight) {
+                // Overflowing right -> shift left towards maxRight
+                shiftX = maxRight - rect.right;
+                if (rect.left + shiftX < minLeft) {
+                    shiftX = minLeft - rect.left;
+                }
+            }
+
+            if (shiftX !== 0 || maxWidthStyle) {
+                setMenuStyle({
+                    ...(shiftX !== 0 ? { transform: `translateX(${shiftX}px)` } : {}),
+                    ...(maxWidthStyle ? { maxWidth: maxWidthStyle } : {}),
+                });
+            }
+        }
+    }, []);
+
+    const setRef = React.useCallback(
+        (element: HTMLDivElement | null) => {
+            menuRef.current = element;
+            if (typeof props.innerRef === "function") {
+                props.innerRef(element);
+            } else if (props.innerRef && typeof props.innerRef === "object") {
+                props.innerRef.current = element;
+            }
+        },
+        [props.innerRef],
+    );
+
+    return (
+        <components.Menu
+            {...props}
+            innerRef={setRef}
+            innerProps={{
+                ...props.innerProps,
+                style: {
+                    ...props.innerProps?.style,
+                    ...menuStyle,
+                },
+            }}
+        >
+            {props.children}
+        </components.Menu>
+    );
+};
+
 const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
     label,
     options,
@@ -139,6 +215,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
             paddingBottom: "8px",
             paddingRight: "5px",
             fontSize: "15px",
+            fontWeight: "600",
             backgroundColor: TabColor,
         }),
         placeholder: (prov: any) => {
@@ -248,6 +325,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
         );
     };
 
+
     return (
         <SelectLayout resolvedId={id || ""} error={error} label={label}>
             <Select<SelectOption, false, GroupOption>
@@ -272,6 +350,7 @@ const InputGroupSelect: React.FC<InputGroupSelectProps> = ({
                 onInputChange={(val) => setInputValue(val)}
                 components={{
                     Group,
+                    Menu: CustomMenu,
                     SingleValue: CustomSingleValue,
                     ClearIndicator: () => null,
                 }}

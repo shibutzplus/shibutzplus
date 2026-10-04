@@ -98,10 +98,10 @@ const TeacherCommentsPanelContent: React.FC<TeacherCommentsPanelContentProps> = 
                 if (result.success) {
                     onUpdate(hour, comment);
                 } else {
-                    errorToast("שגיאה בשמירת ההודעה");
+                    errorToast("בעיה רגעית בשמירת ההודעה");
                 }
             } catch {
-                errorToast("שגיאה בשמירת ההודעה");
+                errorToast("בעיה רגעית בשמירת ההודעה");
             }
         },
         [columnCells, columnId, schoolId, selectedDate, onUpdate]

@@ -15,6 +15,7 @@ import { addTeacherAction } from "@/app/actions/POST/addTeacherAction";
 import { updateClassAction } from "@/app/actions/PUT/updateClassAction";
 import { updateSubjectAction } from "@/app/actions/PUT/updateSubjectAction";
 import { updateTeacherAction } from "@/app/actions/PUT/updateTeacherAction";
+import { toggleTeacherPauseAction } from "@/app/actions/PUT/toggleTeacherPauseAction";
 import { deleteClassAction } from "@/app/actions/DELETE/deleteClassAction";
 import { deleteSubjectAction } from "@/app/actions/DELETE/deleteSubjectAction";
 import { deleteTeacherAction } from "@/app/actions/DELETE/deleteTeacherAction";
@@ -44,6 +45,11 @@ interface MainContextType {
     updateTeacher: (
         teacherId: string,
         teacherData: TeacherRequest,
+    ) => Promise<TeacherType[] | undefined>;
+    toggleTeacherPause: (
+        schoolId: string,
+        teacherId: string,
+        isPaused: boolean,
     ) => Promise<TeacherType[] | undefined>;
     deleteTeacher: (schoolId: string, teacherId: string, force?: boolean) => Promise<boolean>;
     addNewSubject: (newSubject: SubjectRequest) => Promise<SubjectType | undefined>;
@@ -376,6 +382,15 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         return undefined;
     };
 
+    const toggleTeacherPause = async (schoolId: string, teacherId: string, isPaused: boolean) => {
+        const response = await toggleTeacherPauseAction(schoolId, teacherId, isPaused);
+        if (response.success && response.data) {
+            setTeachers(response.data);
+            return response.data;
+        }
+        return undefined;
+    };
+
     const deleteTeacher = async (schoolId: string, teacherId: string, force?: boolean) => {
         const response = await deleteTeacherAction(schoolId, teacherId, force);
         if (response.success && response.teachers && response.annualSchedules) {
@@ -404,6 +419,7 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         deleteClass,
         addNewTeacher,
         updateTeacher,
+        toggleTeacherPause,
         deleteTeacher,
         addNewSubject,
         updateSubject,

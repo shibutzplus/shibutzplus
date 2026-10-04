@@ -356,6 +356,16 @@ export const Icons = {
             <path fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" d="M160 344h208a80.24 80.24 0 0 0 80-80v-16"></path>
         </>
     ), "none", "currentColor", "0"),
+    pause: createIcon("0 0 24 24", (
+        <>
+            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
+    play: createIcon("0 0 24 24", (
+        <>
+            <path d="M8 5v14l11-7z"></path>
+        </>
+    ), "currentColor", "currentColor", "0"),
 };
 
 export default Icons;

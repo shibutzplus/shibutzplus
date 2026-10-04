@@ -328,8 +328,9 @@ export function autoAssignSubstitutes({
         });
     });
 
-    // Pre-filter: exclude staff aides, external vendors, and the missing teacher themselves
+    // Pre-filter: exclude paused teachers, staff aides, external vendors, and the missing teacher themselves
     const eligibleCandidateTeachers = teachers.filter((t) => {
+        if (t.isPaused) return false;
         if (t.role === TeacherRoleValues.STAFF) return false;
         if (/משלב|סייע/i.test(t.name?.trim() || "")) return false;
         if (externalVendorTeacherIds.has(t.id)) return false;

@@ -143,7 +143,9 @@ export const sortDailyTeachers = (
     const notStartedTeachers: TeacherType[] = []; // teachers not started yet
     const finishedTeachers: TeacherType[] = []; // teachers already finished
 
-    for (const teacher of allTeachers) {
+    const activeTeachers = allTeachers.filter((t) => !t.isPaused);
+
+    for (const teacher of activeTeachers) {
         if (missingTeacherIds.has(teacher.id)) continue;
         // Staff members should not be selectable for substitution
         if (teacher.role === TeacherRoleValues.STAFF) continue;
@@ -191,7 +193,7 @@ export const sortDailyTeachers = (
 
 
     // Regular teachers with zero annual hours
-    const extraRegularTeachers = allTeachers.filter(
+    const extraRegularTeachers = activeTeachers.filter(
         (t) => t.role === TeacherRoleValues.REGULAR && !annualTeacherIds.has(t.id),
     );
 
@@ -216,7 +218,7 @@ export const sortDailyTeachers = (
 
         if (ids.length === 0) return [];
 
-        const byId = new Map(allTeachers.map((t) => [t.id, t]));
+        const byId = new Map(activeTeachers.map((t) => [t.id, t]));
         const unique: TeacherType[] = [];
         const seen = new Set<string>();
         for (const id of ids) {

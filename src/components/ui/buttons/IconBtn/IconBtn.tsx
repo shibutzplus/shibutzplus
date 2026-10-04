@@ -9,6 +9,8 @@ type IconBtnProps = {
     isLoading?: boolean;
     hasBorder?: boolean;
     title?: string;
+    style?: React.CSSProperties;
+    className?: string;
 };
 
 const IconBtn: React.FC<IconBtnProps> = ({
@@ -18,13 +20,16 @@ const IconBtn: React.FC<IconBtnProps> = ({
     isLoading,
     hasBorder = false,
     title,
+    style,
+    className,
 }) => {
     return (
         <button
-            className={styles.iconBtn + (hasBorder ? " " + styles.hasBorder : "")}
+            className={`${styles.iconBtn}${hasBorder ? " " + styles.hasBorder : ""}${className ? " " + className : ""}`}
             onClick={onClick}
             disabled={disabled}
             title={title}
+            style={style}
         >
             {isLoading ? <Loading size="S" /> : Icon}
         </button>

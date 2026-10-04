@@ -33,7 +33,7 @@ export async function updateTeacherAction(
         const existingTeacher = await executeQuery(async () => {
             return (
                 await db
-                    .select({ name: schema.teachers.name })
+                    .select({ name: schema.teachers.name, isPaused: schema.teachers.isPaused })
                     .from(schema.teachers)
                     .where(eq(schema.teachers.id, teacherId))
                     .limit(1)
@@ -87,6 +87,8 @@ export async function updateTeacherAction(
                         .set({
                             role: teacherData.role,
                             isActive: true,
+                            // Preserve the paused status of the record being renamed
+                            isPaused: existingTeacher?.isPaused ?? false,
                             updatedAt: new Date(),
                         })
                         .where(eq(schema.teachers.id, conflicting.id));

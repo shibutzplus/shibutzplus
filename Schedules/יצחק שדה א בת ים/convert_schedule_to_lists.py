@@ -3,10 +3,11 @@ Converter for "Yitzhak Sadeh A Bat Yam" School Schedules
 School ID: xu77qkr9250ki6g77c9k3iyd
 
 Converts:
-  1) מערכת שעות לכיתה - טבלה.pdf -> כיתות.docx
-  2) מערכת שעות למורה - טבלה.pdf -> מורים.docx
+  1) מערכת שעות לכיתה - טבלה.pdf (+ שינויים) -> כיתות.docx
+  2) מערכת שעות למורה - טבלה.pdf (+ שינויים) -> מורים.docx
 
 Formatted in the exact Korczak style for seamless import into ShibutzPlus.
+Automatically merges incremental changes from 'שינויים' directory.
 """
 
 import os
@@ -31,10 +32,25 @@ TEACHER_PDF = os.path.join(BASE_DIR, "מערכת שעות למורה - טבלה.
 CLASS_DOCX = os.path.join(BASE_DIR, "כיתות.docx")
 TEACHER_DOCX = os.path.join(BASE_DIR, "מורים.docx")
 
+# Changes directory and batch files (in chronological order)
+SHINUYIM_DIR = os.path.join(BASE_DIR, "שינויים")
+BATCHES = [
+    {
+        "name": "Batch 1 (28/09/2026)",
+        "teacher_pdf": os.path.join(SHINUYIM_DIR, "מערכת שעות למורה - טבלה (1).pdf"),
+        "class_pdf": os.path.join(SHINUYIM_DIR, "מערכת שעות לכיתה - טבלה (1).pdf"),
+    },
+    {
+        "name": "Batch 2 (04/10/2026)",
+        "teacher_pdf": os.path.join(SHINUYIM_DIR, "מערכת שעות למורה - טבלה.pdf"),
+        "class_pdf": os.path.join(SHINUYIM_DIR, "מערכת שעות לכיתה - טבלה.pdf"),
+    },
+]
+
 # School metadata
 SCHOOL_ID = "xu77qkr9250ki6g77c9k3iyd"
 SCHOOL_NAME = "יצחק שדה א"
-META_TIMESTAMP = "24/09/2026 13:49:15"
+META_TIMESTAMP = "04/10/2026 18:00:00"
 
 HOUR_LABELS = {
     0: "שעה 0",
@@ -132,11 +148,15 @@ TEACHER_NAME_MAP = {
     'ליאון ויקטוריה': 'ויקטוריה ליאון',
     'לסרי מירב': 'מירב לסרי',
     'לרנר יהודית': 'יהודית לרנר',
-    'מדריך גאלינג': 'מדריך גאלינג',
+    'מדריך גאלינג': 'גאלינג מדריך',
+    'גאלינג מדריך': 'גאלינג מדריך',
     'מדריך הפרעות נפשיות': 'מדריך הפרעות נפשיות',
-    'מדריך טכנולגו': 'מדריך טכנולגו',
-    'מדריך שחמט': 'מדריך שחמט',
-    'מדריך ASD': 'מדריך ASD',
+    'מדריך טכנולגו': 'טכנולוגיה מדריך',
+    'טכנולוגיה מדריך': 'טכנולוגיה מדריך',
+    'מדריך שחמט': 'שחמט מדריך',
+    'שחמט מדריך': 'שחמט מדריך',
+    'מדריך ASD': 'ASD מדריך',
+    'ASD מדריך': 'ASD מדריך',
     'אוראל מהצרי לב': 'אוראל מהצרי לב',
     'מהצרי לב אוראל': 'אוראל מהצרי לב',
     'מורה לקולנוע': 'מורה לקולנוע',
@@ -186,41 +206,71 @@ MULTI_CLASS_MAP = {
 }
 
 SUBJECT_CLEANUP = {
+    'מליאת מורים': 'מליאה',
+    'מליאה': 'מליאה',
+    'מקהלת בית הספר': 'מקהלה',
+    'מקהלה': 'מקהלה',
+    'שעות ייעוץ': 'ייעוץ',
+    'ייעוץ': 'ייעוץ',
+    'שעות שילוב': 'שילוב',
+    'שילוב': 'שילוב',
+    'שעות ניהול': 'ניהול',
+    'ניהול': 'ניהול',
+    'צוות חנ"מ,שעות ייעו': 'צוות חנמ / ייעוץ',
+    'צוות חנ"מ / שעות ייעוץ': 'צוות חנמ / ייעוץ',
+    'צוות חנמ / שעות ייעוץ': 'צוות חנמ / ייעוץ',
+    'צוות חנמ / ייעוץ': 'צוות חנמ / ייעוץ',
+    'פיתוח הון א- תפקיד': 'פיתוח הון אנושי',
+    'פיתוח הון אנושי - תפקיד': 'פיתוח הון אנושי',
+    'פיתוח הון אנושי': 'פיתוח הון אנושי',
+    "1'צוות חנ\"מ כיתה א": 'צוות חנמ כיתה א',
+    "1'צוות חנ\"מ כיתה ב": 'צוות חנמ כיתה ב',
+    "1'צוות חנ\"מ כיתה ג": 'צוות חנמ כיתה ג',
+    "1'צוות חנ\"מ כיתה ד": 'צוות חנמ כיתה ד',
+    "1'צוות חנ\"מ כיתה ה": 'צוות חנמ כיתה ה',
+    "1'צוות חנ\"מ כיתה ו": 'צוות חנמ כיתה ו',
+    "5'צוות חנ\"מ כיתה ד": 'צוות חנמ כיתה ד5',
+    'צוות חנ"מ כיתה א': 'צוות חנמ כיתה א',
+    'צוות חנ"מ כיתה ב': 'צוות חנמ כיתה ב',
+    'צוות חנ"מ כיתה ג': 'צוות חנמ כיתה ג',
+    'צוות חנ"מ כיתה ד': 'צוות חנמ כיתה ד',
+    'צוות חנ"מ כיתה ד5': 'צוות חנמ כיתה ד5',
+    'צוות חנ"מ כיתה ה': 'צוות חנמ כיתה ה',
+    'צוות חנ"מ כיתה ו': 'צוות חנמ כיתה ו',
     'קבוצות שפה שכבת': 'קבוצות שפה',
-    'קבוצות שפה שכבת ו': 'קבוצות שפה',
+    'קבוצות שפה שכבת ו': 'קבוצות שפה שכבת ו',
     'הדרכת הפרעות נפש': 'הדרכת הפרעות נפשיות',
     'הדרכת תסמונות נדי': 'הדרכת תסמונות נדירות',
-    'פיתוח הון א- תפקיד': 'פיתוח הון אנושי - תפקיד',
-    'צוות חנ"מ,שעות ייעו': 'צוות חנ"מ / שעות ייעוץ',
     'ב-צוות שכבות א': 'צוות שכבות א-ב',
     'ד-צוות שכבות ג': 'צוות שכבות ג-ד',
     'ו-צוות שכבות ה': 'צוות שכבות ה-ו',
-    "1'צוות חנ\"מ כיתה א": 'צוות חנ"מ כיתה א',
-    "1'צוות חנ\"מ כיתה ב": 'צוות חנ"מ כיתה ב',
-    "1'צוות חנ\"מ כיתה ג": 'צוות חנ"מ כיתה ג',
-    "1'צוות חנ\"מ כיתה ד": 'צוות חנ"מ כיתה ד',
-    "1'צוות חנ\"מ כיתה ה": 'צוות חנ"מ כיתה ה',
-    "1'צוות חנ\"מ כיתה ו": 'צוות חנ"מ כיתה ו',
-    "5'צוות חנ\"מ כיתה ד": 'צוות חנ"מ כיתה ד5',
     'ASD הדרכת': 'הדרכת ASD',
+    'טכנולגו': 'טכנולוגיה',
 }
 
-# WorkGroup subjects that should NOT be treated as classroom teaching subjects
 WORKGROUP_SUBJECTS = {
     'פרטני',
     'ניהול כיתה',
-    'קבוצות שפה',
-    'קבוצות מתמטיקה',
+    'ניהול',
     'שעות ניהול',
+    'קבוצות שפה',
+    'קבוצות שפה שכבת ו',
+    'קבוצות מתמטיקה',
     'שהייה',
+    'שילוב',
     'שעות שילוב',
     'הוראה מותאמת',
     'מיומנויות חברתיות',
+    'ייעוץ',
     'שעות ייעוץ',
     'יועצת ומנהל',
+    'מליאה',
     'מליאת מורים',
+    'מקהלה',
+    'מקהלת בית הספר',
     'קבוצת העצמה',
     'ניתוח התנהגות',
+    'פיתוח הון אנושי',
     'פיתוח הון אנושי - תפקיד',
     'צוות ניהול מצומצם',
     'צוות שכבת א',
@@ -233,18 +283,20 @@ WORKGROUP_SUBJECTS = {
     'צוות שכבות ג-ד',
     'צוות שכבות ה-ו',
     'צוות אנגלית',
-    'צוות חנ"מ כיתה א',
-    'צוות חנ"מ כיתה ב',
-    'צוות חנ"מ כיתה ג',
-    'צוות חנ"מ כיתה ד',
-    'צוות חנ"מ כיתה ה',
-    'צוות חנ"מ כיתה ו',
-    'צוות חנ"מ כיתה ד5',
-    'צוות חנ"מ / שעות ייעוץ',
+    'צוות חנמ כיתה א',
+    'צוות חנמ כיתה ב',
+    'צוות חנמ כיתה ג',
+    'צוות חנמ כיתה ד',
+    'צוות חנמ כיתה ה',
+    'צוות חנמ כיתה ו',
+    'צוות חנמ כיתה ד5',
+    'צוות חנמ / ייעוץ',
     'הדרכת ASD',
     'הדרכת הפרעות נפשיות',
     'הדרכת תסמונות נדירות',
     'הדרכה יהודית לרנר',
+    'משעולים',
+    'נבחרת',
 }
 
 
@@ -254,7 +306,7 @@ def is_workgroup(name):
     name_clean = clean_subject(name)
     if name_clean in WORKGROUP_SUBJECTS:
         return True
-    return any(k in name_clean for k in ['פרטני', 'ניהול כיתה', 'שעות ניהול', 'שהייה', 'קבוצות שפה', 'קבוצות מתמטיקה', 'שילוב', 'צוות', 'הדרכ'])
+    return any(k in name_clean for k in ['פרטני', 'ניהול כיתה', 'ניהול', 'שהייה', 'קבוצות שפה', 'קבוצות מתמטיקה', 'שילוב', 'צוות', 'הדרכ', 'ייעוץ', 'מליא', 'מקהל', 'משעול', 'נבחרת'])
 
 
 def clean_subject(raw_subj):
@@ -278,7 +330,7 @@ def parse_teacher_title(title_line):
     if 'לב אוראל-מערכת שעות למורה מהצרי' in clean:
         return 'אוראל מהצרי לב'
     if 'ASD מערכת שעות למורה מדריך' in clean:
-        return 'מדריך ASD'
+        return 'ASD מדריך'
     clean = re.sub(r'מערכת שעות\s+(?:ל?מורה|מורה:?)\s*', '', clean).strip()
     return clean_teacher(clean)
 
@@ -353,22 +405,23 @@ def set_table_borders(table):
     tblPr.append(borders)
 
 
-def extract_data_from_teachers_pdf():
+def extract_teachers_from_pdf(pdf_path):
     """
-    Parses TEACHER_PDF.
+    Parses a teacher PDF file.
     Returns:
-      teacher_schedules: list of dicts with teacher name and daily lessons
-      class_from_teachers: (class_code, day, hour) -> list of {teacher, subject, type}
+      schedules: dict of canonical_teacher -> {'teacher', 'day_lessons', 'class_lessons'}
+      teacher_order: list of teacher names in order of pages
     """
-    doc_pdf = pymupdf.open(TEACHER_PDF)
-    teacher_schedules = []
-    class_from_teachers = {}
+    doc_pdf = pymupdf.open(pdf_path)
+    schedules = {}
+    teacher_order = []
 
     for pno in range(len(doc_pdf)):
         page = doc_pdf[pno]
         lines = [l.strip() for l in page.get_text().split('\n') if l.strip()]
         title_line = [l for l in lines if 'מערכת שעות' in l][0]
         canonical_teacher = parse_teacher_title(title_line)
+        teacher_order.append(canonical_teacher)
 
         tabs = page.find_tables()
         if not tabs.tables:
@@ -376,6 +429,7 @@ def extract_data_from_teachers_pdf():
         t = tabs.tables[0]
 
         t_day_lessons = {d_num: [] for d_num in range(1, 7)}
+        class_lessons = []
 
         for r_idx in range(2, len(t.rows)):
             row = t.rows[r_idx]
@@ -394,7 +448,6 @@ def extract_data_from_teachers_pdf():
                 l_type = c_lines[0]
 
                 if len(c_lines) == 1:
-                    # e.g. ['פרטני'] or ['שהייה']
                     if l_type == 'פרטני':
                         lesson_str = "פרטני, פרטני"
                     elif l_type == 'תפקיד':
@@ -404,12 +457,11 @@ def extract_data_from_teachers_pdf():
                     t_day_lessons[day_num].append((h_num, lesson_str))
 
                 elif len(c_lines) == 2:
-                    # e.g. ['שהייה', 'צוות שכבת ד']
                     subj = clean_subject(c_lines[1])
                     if subj == 'פרטני':
                         lesson_str = "פרטני, פרטני"
-                    elif subj == 'שעות ניהול':
-                        lesson_str = "שעות ניהול, תפקיד"
+                    elif subj in ['שעות ניהול', 'ניהול']:
+                        lesson_str = "ניהול, תפקיד"
                     elif l_type in ['שהייה', 'תפקיד', 'פרטני']:
                         lesson_str = f"{subj}, {l_type}"
                     else:
@@ -417,11 +469,9 @@ def extract_data_from_teachers_pdf():
                     t_day_lessons[day_num].append((h_num, lesson_str))
 
                 elif len(c_lines) >= 3:
-                    # e.g. ['הוראה', "2 ' ה", 'חשבון'] or ['הוראה', "4 ' ,ד3 ' ,ד2 ' ד", 'קבוצות שפה']
                     raw_cls = c_lines[1]
                     subj = clean_subject(c_lines[2])
 
-                    # Check if this lesson is a workgroup
                     if subj == 'פרטני':
                         lesson_str = "פרטני, פרטני"
                     elif subj == 'ניהול כיתה':
@@ -431,30 +481,26 @@ def extract_data_from_teachers_pdf():
                     elif is_workgroup(subj):
                         lesson_str = f"{subj}, {l_type if l_type in ['שהייה', 'תפקיד', 'פרטני'] else 'שהייה'}"
                     else:
-                        # Regular classroom teaching lesson
                         cls_str = format_classes_string(raw_cls)
                         lesson_str = f"{subj}, {cls_str}, {l_type}"
 
-                        # Map to class lessons ONLY for regular subjects
                         classes = MULTI_CLASS_MAP.get(raw_cls, [])
                         for c_code in classes:
-                            key = (c_code, day_num, h_num)
-                            if key not in class_from_teachers:
-                                class_from_teachers[key] = []
-                            class_from_teachers[key].append({
+                            class_lessons.append((c_code, day_num, h_num, {
                                 'teacher': canonical_teacher,
                                 'subject': subj,
                                 'type': l_type
-                            })
+                            }))
 
                     t_day_lessons[day_num].append((h_num, lesson_str))
 
-        teacher_schedules.append({
+        schedules[canonical_teacher] = {
             'teacher': canonical_teacher,
-            'day_lessons': t_day_lessons
-        })
+            'day_lessons': t_day_lessons,
+            'class_lessons': class_lessons
+        }
 
-    return teacher_schedules, class_from_teachers
+    return schedules, teacher_order
 
 
 def create_teachers_docx(teacher_schedules):
@@ -513,13 +559,11 @@ def create_teachers_docx(teacher_schedules):
         sched_table.alignment = WD_TABLE_ALIGNMENT.CENTER
         set_table_borders(sched_table)
 
-        has_lessons = False
         for day_num, day_name in DAYS_ORDER:
             lessons = day_lessons[day_num]
             if not lessons:
                 continue
 
-            has_lessons = True
             lessons.sort(key=lambda x: x[0])
 
             # Day Header Row
@@ -586,9 +630,21 @@ def create_teachers_docx(teacher_schedules):
     print(f"Successfully saved {TEACHER_DOCX}")
 
 
-def create_classes_docx(class_from_teachers):
+def map_class_pages(pdf_path):
+    """Maps class_code -> (doc_object, page_index) from a class PDF."""
+    doc = pymupdf.open(pdf_path)
+    pages = {}
+    for idx in range(len(doc)):
+        p = doc[idx]
+        lines = [l.strip() for l in p.get_text().split('\n') if l.strip()]
+        title_line = [l for l in lines if 'מערכת שעות' in l][0]
+        c_code = parse_class_title(title_line)
+        pages[c_code] = (doc, idx)
+    return pages
+
+
+def create_classes_docx(ordered_classes, final_class_pages, class_from_teachers):
     print(f"Creating Classes DOCX: {CLASS_DOCX}")
-    doc_c = pymupdf.open(CLASS_PDF)
     doc_out = Document()
 
     for section in doc_out.sections:
@@ -597,11 +653,9 @@ def create_classes_docx(class_from_teachers):
         section.left_margin = Inches(0.48)
         section.right_margin = Inches(0.48)
 
-    for idx in range(len(doc_c)):
-        page = doc_c[idx]
-        lines = [l.strip() for l in page.get_text().split('\n') if l.strip()]
-        title_line = [l for l in lines if 'מערכת שעות' in l][0]
-        c_code = parse_class_title(title_line)
+    for idx, c_code in enumerate(ordered_classes):
+        doc_pdf, page_idx = final_class_pages[c_code]
+        page = doc_pdf[page_idx]
         hr_teacher = CLASS_HOMEROOM.get(c_code, "")
 
         # 1. Meta Table
@@ -749,7 +803,7 @@ def create_classes_docx(class_from_teachers):
                 set_cell_rtl(lc_right)
 
         # Page break between classes
-        if idx < len(doc_c) - 1:
+        if idx < len(ordered_classes) - 1:
             p_break = doc_out.add_paragraph()
             p_break.add_run().add_break(WD_BREAK.PAGE)
 
@@ -759,12 +813,78 @@ def create_classes_docx(class_from_teachers):
 
 def main():
     print("=== Starting Conversion for Yitzhak Sadeh A Bat Yam ===")
-    teacher_schedules, class_from_teachers = extract_data_from_teachers_pdf()
-    print(f"Extracted {len(teacher_schedules)} teacher schedules.")
-    print(f"Extracted {len(class_from_teachers)} class-day-hour slots.")
+    
+    # 1. Parse Base Teachers
+    print(f"Loading Base Teachers PDF: {TEACHER_PDF}")
+    base_scheds, base_order = extract_teachers_from_pdf(TEACHER_PDF)
+    merged_teachers = dict(base_scheds)
 
-    create_teachers_docx(teacher_schedules)
-    create_classes_docx(class_from_teachers)
+    # 2. Overlay Teacher Changes from Batches
+    for batch in BATCHES:
+        t_pdf = batch["teacher_pdf"]
+        if os.path.exists(t_pdf):
+            print(f"Applying Teacher changes from {batch['name']}: {os.path.basename(t_pdf)}")
+            b_scheds, _ = extract_teachers_from_pdf(t_pdf)
+            for t_name, data in b_scheds.items():
+                print(f"  -> Updated teacher: {t_name}")
+                merged_teachers[t_name] = data
+
+    # 3. Assemble Ordered Teacher Schedules and Class-From-Teachers
+    final_teacher_schedules = []
+    class_from_teachers = {}
+    for t_name in base_order:
+        data = merged_teachers[t_name]
+        final_teacher_schedules.append({
+            'teacher': t_name,
+            'day_lessons': data['day_lessons']
+        })
+        for c_code, d_num, h_num, l_info in data['class_lessons']:
+            key = (c_code, d_num, h_num)
+            if key not in class_from_teachers:
+                class_from_teachers[key] = []
+            class_from_teachers[key].append(l_info)
+
+    print(f"Total Teachers: {len(final_teacher_schedules)}")
+    print(f"Total Class-Day-Hour Slots mapped: {len(class_from_teachers)}")
+
+    # 4. Generate Teachers DOCX
+    create_teachers_docx(final_teacher_schedules)
+
+    # 5. Parse and Merge Classes
+    print(f"\nLoading Base Classes PDF: {CLASS_PDF}")
+    base_class_pages = map_class_pages(CLASS_PDF)
+
+    doc_base = pymupdf.open(CLASS_PDF)
+    ordered_classes = []
+    for idx in range(len(doc_base)):
+        p = doc_base[idx]
+        lines = [l.strip() for l in p.get_text().split('\n') if l.strip()]
+        title_line = [l for l in lines if 'מערכת שעות' in l][0]
+        ordered_classes.append(parse_class_title(title_line))
+
+    # Map batch pages
+    batch_class_maps = []
+    for batch in BATCHES:
+        c_pdf = batch["class_pdf"]
+        if os.path.exists(c_pdf):
+            b_map = map_class_pages(c_pdf)
+            batch_class_maps.append((batch["name"], b_map))
+
+    final_class_pages = {}
+    for c_code in ordered_classes:
+        # Check batches in reverse order (newest first)
+        found = False
+        for b_name, b_map in reversed(batch_class_maps):
+            if c_code in b_map:
+                print(f"Using {c_code} from {b_name}")
+                final_class_pages[c_code] = b_map[c_code]
+                found = True
+                break
+        if not found:
+            final_class_pages[c_code] = base_class_pages[c_code]
+
+    # 6. Generate Classes DOCX
+    create_classes_docx(ordered_classes, final_class_pages, class_from_teachers)
     print("=== Conversion Complete! ===")
 
 
