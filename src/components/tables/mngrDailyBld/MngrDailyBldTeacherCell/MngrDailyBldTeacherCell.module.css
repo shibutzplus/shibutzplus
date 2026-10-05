@@ -1,7 +1,3 @@
-.cellContent {
-    width: 100%;
-}
-
 .innerCellContent {
     width: 100%;
     gap: 10px;
@@ -14,31 +10,6 @@
     flex-direction: column;
     align-items: flex-start;
     position: relative;
-}
-
-.innerCellContent :global(.custom-select-clear-btn) {
-    opacity: 0;
-    max-width: 0;
-    padding: 0 !important;
-    margin: 0 !important;
-    overflow: hidden;
-    transition: opacity 0.15s ease, max-width 0.15s ease, padding 0.15s ease, margin 0.15s ease;
-}
-
-.innerCellContent:hover :global(.custom-select-clear-btn) {
-    opacity: 1;
-    max-width: 75px;
-    padding: 0 3px !important;
-    margin-right: 3px !important;
-}
-
-@media (max-width: 800px) {
-    .innerCellContent :global(.custom-select-clear-btn) {
-        opacity: 1 !important;
-        max-width: 50px !important;
-        padding: 0 6px !important;
-        margin-right: 9px !important;
-    }
 }
 
 .classAndSubject {
@@ -58,6 +29,92 @@
     width: 100%;
 }
 
+.teacherTrigger {
+    width: 100%;
+    min-height: 32px;
+    padding: 4px 6px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+    user-select: none;
+}
+
+.teacherTrigger:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+    border-color: var(--bright-border-color, #cbd5e1);
+}
+
+.teacherTriggerContent {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: right;
+}
+
+.selectedTeacherText {
+    font-weight: 600;
+    font-size: 14px;
+    color: #1e293b;
+}
+
+.placeholderText {
+    font-size: 13px;
+    color: var(--disabled-text-color, #94a3b8);
+}
+
+.placeholderMissing {
+    color: var(--missing-teacher-text-color, #ef4444);
+    font-weight: 600;
+}
+
+.triggerIcons {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.clearTriggerBtn {
+    background: none;
+    border: none;
+    padding: 2px;
+    border-radius: 4px;
+    color: #94a3b8;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.15s ease, color 0.15s ease;
+}
+
+.teacherTrigger:hover .clearTriggerBtn {
+    opacity: 1;
+}
+
+@media (max-width: 800px) {
+    .clearTriggerBtn {
+        opacity: 1;
+    }
+}
+
+.clearTriggerBtn:hover {
+    color: #ef4444;
+}
+
+.arrowTriggerIcon {
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+}
+
 .activityText {
     color: var(--disabled-text-color);
 }
@@ -75,19 +132,6 @@
 .cellContent {
     width: 100%;
     animation: fadeIn 0.5s ease-in-out;
-}
-
-.subTeacherName {
-    font-weight: 600;
-    padding-inline: 10px;
-    padding-top: 5px;
-}
-
-.missingSubTeacherName {
-    color: var(--missing-teacher-text-color);
-    font-weight: 600;
-    padding-inline: 10px;
-    padding-top: 5px;
 }
 
 .commentIcon {

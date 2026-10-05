@@ -38,6 +38,12 @@ function createIcon(
 }
 
 export const Icons = {
+    search: createIcon("0 0 24 24", (
+        <>
+            <circle cx="11" cy="11" r="8" strokeLinecap="round" strokeLinejoin="round" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" strokeLinecap="round" strokeLinejoin="round" />
+        </>
+    ), "none", "currentColor", "2"),
     messageSquare: createIcon("0 0 24 24", (
         <>
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
