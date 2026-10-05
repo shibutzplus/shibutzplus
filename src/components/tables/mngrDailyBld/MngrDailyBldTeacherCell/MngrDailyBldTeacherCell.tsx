@@ -6,8 +6,8 @@ import { useDailyTableContext } from "@/context/DailyTableContext";
 import { ColumnType, ColumnTypeValues, DailyScheduleCell } from "@/models/types/dailySchedule";
 import { EmptyValue } from "@/models/constant/daily";
 import { getCellDisplayData } from "@/utils/dailyCellDisplay";
-import DynamicInputGroupSelect from "@/components/ui/select/InputGroupSelect/DynamicInputGroupSelect";
 import { errorToast, successToast } from "@/lib/toast";
+import MngrDailyBldSubTeacherPopover from "./MngrDailyBldSubTeacherPopover";
 import messages from "@/resources/messages";
 import { sortDailyTeachers } from "@/utils/sort";
 import Icons from "@/style/icons";
@@ -43,6 +43,18 @@ const MngrDailyBldTeacherCell: React.FC<MngrDailyBldTeacherCellProps> = ({ colum
     const [selectedSubTeacher, setSelectedSubTeacher] = useState<string>(
         subTeacherData?.name || teacherText || "",
     );
+    const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
+    const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
+    const triggerRef = React.useRef<HTMLDivElement>(null);
+
+    const handleOpenPopover = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (isLoading) return;
+        if (triggerRef.current) {
+            setAnchorRect(triggerRef.current.getBoundingClientRect());
+        }
+        setIsPopoverOpen(true);
+    };
 
     useEffect(() => {
         setSelectedSubTeacher(subTeacherData?.name || teacherText || "");
@@ -225,26 +237,80 @@ const MngrDailyBldTeacherCell: React.FC<MngrDailyBldTeacherCellProps> = ({ colum
                             )}
                             {!isActivityCell && (
                                 <div className={styles.teacherSelect}>
-                                    <DynamicInputGroupSelect
-                                        options={sortedTeacherOptions}
-                                        value={selectedSubTeacher}
-                                        onChange={(value: string) => handleTeacherChange("update", value)}
-                                        placeholder="ממלא מקום"
-                                        isSearchable
-                                        isAllowAddNew
-                                        isClearable
-                                        isDisabled={isLoading}
-                                        hasBorder
-                                        backgroundColor="transparent"
-                                        onCreate={(value: string) => handleTeacherChange("create", value)}
-                                        menuWidth="260px"
-                                        color={
-                                            shouldHighlightMissing
-                                                ? "var(--missing-teacher-text-color)"
-                                                : undefined
+                                    <div
+                                        ref={triggerRef}
+                                        className={styles.teacherTrigger}
+                                        onClick={handleOpenPopover}
+                                        title={
+                                            selectedSubTeacher
+                                                ? `ממלא מקום: ${selectedSubTeacher}`
+                                                : "שיבוץ מורה"
                                         }
-                                        fontWeight={shouldHighlightMissing ? "bold" : undefined}
-                                    />
+                                    >
+                                        <div className={styles.teacherTriggerContent}>
+                                            {selectedSubTeacher ? (
+                                                <span
+                                                    className={styles.selectedTeacherText}
+                                                    style={{
+                                                        color: shouldHighlightMissing
+                                                            ? "var(--missing-teacher-text-color)"
+                                                            : undefined,
+                                                    }}
+                                                >
+                                                    {selectedSubTeacher}
+                                                </span>
+                                            ) : (
+                                                <span
+                                                    className={`${styles.placeholderText} ${
+                                                        shouldHighlightMissing
+                                                            ? styles.placeholderMissing
+                                                            : ""
+                                                    }`}
+                                                >
+                                                    {shouldHighlightMissing
+                                                        ? "+ שבץ מורה"
+                                                        : "ממלא מקום"}
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        <div className={styles.triggerIcons}>
+                                            {selectedSubTeacher && (
+                                                <button
+                                                    type="button"
+                                                    className={styles.clearTriggerBtn}
+                                                    title="נקה שיבוץ"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleTeacherChange("update", "");
+                                                    }}
+                                                >
+                                                    <Icons.close size={12} />
+                                                </button>
+                                            )}
+                                            <span className={styles.arrowTriggerIcon}>
+                                                <Icons.arrowDown size={12} />
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {isPopoverOpen && (
+                                        <MngrDailyBldSubTeacherPopover
+                                            onClose={() => setIsPopoverOpen(false)}
+                                            anchorRect={anchorRect}
+                                            hour={hour}
+                                            classNameText={classNameText}
+                                            subjectText={subjectText}
+                                            selectedSubTeacher={selectedSubTeacher}
+                                            groups={sortedTeacherOptions}
+                                            onSelectTeacher={(teacherId) => {
+                                                handleTeacherChange("update", teacherId);
+                                            }}
+                                            onCreateEvent={(eventText) => {
+                                                handleTeacherChange("create", eventText);
+                                            }}
+                                        />
+                                    )}
                                 </div>
                             )}
                         </div>

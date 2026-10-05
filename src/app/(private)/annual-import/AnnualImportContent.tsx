@@ -18,7 +18,6 @@ import { usePopup } from "@/context/PopupContext";
 import MsgPopup from "@/components/popups/MsgPopup/MsgPopup";
 import EditCellPopup from "./components/EditCellPopup";
 import { logErrorAction } from "@/app/actions/POST/logErrorAction";
-import { checkTeacherHasScheduleAction } from "@/app/actions/GET/checkTeacherHasScheduleAction";
 import { getTeacherExistingScheduleAction, getSchoolExistingSchedulesAction, TeacherExistingScheduleItem } from "@/app/actions/GET/getTeacherExistingScheduleAction";
 import { useOptionalMainContext } from "@/context/MainContext";
 

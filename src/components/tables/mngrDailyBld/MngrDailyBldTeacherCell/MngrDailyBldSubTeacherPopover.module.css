@@ -1,0 +1,364 @@
+.backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: transparent;
+}
+
+.popover {
+    position: fixed;
+    z-index: 10001;
+    background-color: var(--tab-color, #ffffff);
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18), 0 2px 6px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--bright-border-color, #e2e8f0);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    direction: rtl;
+    text-align: right;
+    font-family: inherit;
+    box-sizing: border-box;
+    width: 350px;
+    max-height: 440px;
+}
+
+/* Title Bar (Clean pleasant gray header) */
+.titleBar {
+    padding: 9px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    background-color: #f1f5f9;
+    border-bottom: 1px solid var(--bright-border-color, #e2e8f0);
+    color: #0f172a;
+    flex-shrink: 0;
+}
+
+.titleContent {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 15px;
+    color: #0f172a;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.titleDetails {
+    font-weight: 700;
+    letter-spacing: -0.2px;
+}
+
+.titleClass {
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.titleSubject {
+    font-weight: 400;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.titleCloseButton {
+    background: none;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    flex-shrink: 0;
+}
+
+.titleCloseButton:hover {
+    background-color: #e2e8f0;
+    color: #0f172a;
+}
+
+/* Search Box - Integrated Flat Design */
+.searchContainer {
+    display: flex;
+    align-items: center;
+    background-color: #ffffff;
+    border-bottom: 1px solid var(--bright-border-color, #e2e8f0);
+    padding: 0 12px;
+    height: 38px;
+    flex-shrink: 0;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+    box-sizing: border-box;
+}
+
+.searchContainer:focus-within {
+    border-bottom-color: #a6aeb8;
+    background-color: #fafbfc;
+}
+
+.searchIconWrapper {
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    margin-left: 8px;
+    flex-shrink: 0;
+}
+
+.searchInput {
+    flex: 1;
+    height: 100%;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    color: #1e293b;
+    background: transparent;
+    padding: 0;
+    direction: rtl;
+    box-sizing: border-box;
+}
+
+.searchInput::placeholder {
+    color: #94a3b8;
+}
+
+.searchActionBtn {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.searchActionBtn:hover {
+    color: #0f172a;
+    background-color: #f1f5f9;
+}
+
+/* Accordion Body */
+.accordionList {
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 4px 0;
+    position: relative;
+    scroll-behavior: smooth;
+}
+
+/* Group Header */
+.groupHeader {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 14px;
+    background: none;
+    border: none;
+    border-bottom: 1px solid #f1f5f9;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    box-sizing: border-box;
+}
+
+.groupHeader:hover {
+    background-color: #f8fafc;
+    color: #0f172a;
+}
+
+.groupTitle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.caretIcon {
+    transition: transform 0.2s ease;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+}
+
+.caretIconExpanded {
+    transform: rotate(90deg);
+}
+
+.badgeCount {
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 500;
+    background-color: transparent;
+    padding: 0 2px;
+}
+
+/* Group Options Content */
+.groupContent {
+    background-color: #f8fafc;
+    border-bottom: 1px solid #f1f5f9;
+    padding: 4px 0;
+}
+
+.teacherItem {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 36px 8px 14px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: #1e293b;
+    transition: background-color 0.12s ease;
+    text-align: right;
+    box-sizing: border-box;
+}
+
+.teacherItem:hover {
+    background-color: #e0f2fe;
+    color: #0369a1;
+}
+
+.teacherItemActive {
+    background-color: #bae6fd;
+    font-weight: 600;
+    color: #0284c7;
+}
+
+.teacherItemText {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    text-align: right;
+}
+
+.teacherNameText {
+    font-weight: 500;
+    color: inherit;
+}
+
+.teacherDetailBadge {
+    font-size: 12px;
+    font-weight: 400;
+    color: #64748b;
+    background-color: #f1f5f9;
+    padding: 1px 6px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid #e2e8f0;
+    line-height: 1.4;
+    transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.teacherItem:hover .teacherDetailBadge {
+    background-color: #dbeafe;
+    border-color: #bfdbfe;
+    color: #1e40af;
+}
+
+.teacherItemActive .teacherDetailBadge {
+    background-color: rgba(2, 132, 199, 0.15);
+    border-color: rgba(2, 132, 199, 0.25);
+    color: #0369a1;
+}
+
+
+/* Empty State */
+.emptyState {
+    padding: 24px 16px;
+    text-align: center;
+    color: #64748b;
+    font-size: 14px;
+}
+
+/* Flat action row inside the list */
+.flatCreateRow {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 18px 9px 14px;
+    background: transparent;
+    border: none;
+    border-top: 1px dashed #e2e8f0;
+    cursor: pointer;
+    font-size: 14px;
+    color: #334155;
+    box-sizing: border-box;
+    text-align: right;
+    margin-top: 4px;
+    transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.flatCreateRow:hover {
+    background-color: #f1f5f9;
+    color: #0f172a;
+}
+
+/* Must come after .flatCreateRow to override it (same specificity) */
+.flatCreateRowEmpty {
+    border-top: none;
+    margin-top: 0;
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+.flatCreateIcon {
+    display: inline-flex;
+    align-items: center;
+    color: #64748b;
+    flex-shrink: 0;
+}
+
+.flatCreateText {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Mobile responsive layout (unified) */
+@media (max-width: 768px) {
+    .backdrop {
+        background: rgba(0, 0, 0, 0.4);
+    }
+
+    .popover {
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: auto !important;
+        width: 100vw !important;
+        /* Fallback for older browsers */
+        height: 48vh;
+        max-height: 48vh !important;
+        /* Modern dynamic viewport: automatically accounts for Safari / Chrome address & toolbar bars */
+        height: 48dvh;
+        max-height: 48dvh !important;
+        /* Safe area for iPhone notch / Dynamic Island */
+        padding-top: env(safe-area-inset-top, 0px);
+        border-radius: 0 0 16px 16px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        border: none;
+        border-bottom: 1px solid var(--bright-border-color, #e2e8f0);
+    }
+
+    .groupHeader {
+        padding: 13px 14px;
+        min-height: 46px;
+    }
+}
