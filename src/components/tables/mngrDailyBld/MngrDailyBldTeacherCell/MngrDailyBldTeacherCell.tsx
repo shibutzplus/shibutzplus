@@ -267,9 +267,7 @@ const MngrDailyBldTeacherCell: React.FC<MngrDailyBldTeacherCellProps> = ({ colum
                                                             : ""
                                                     }`}
                                                 >
-                                                    {shouldHighlightMissing
-                                                        ? "+ שבץ מורה"
-                                                        : "ממלא מקום"}
+                                                    ממלא מקום
                                                 </span>
                                             )}
                                         </div>

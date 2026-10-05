@@ -99,6 +99,7 @@ const MngrDailyBldSubTeacherPopover: React.FC<MngrDailyBldSubTeacherPopoverProps
     // Desktop positioning
     const desktopStyle = useMemo((): React.CSSProperties => {
         if (typeof window === "undefined" || !anchorRect) return {};
+        if (window.innerWidth <= 768) return {};
 
         const width = 350;
         const padding = 12;
