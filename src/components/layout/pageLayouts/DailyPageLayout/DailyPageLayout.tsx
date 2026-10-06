@@ -44,6 +44,20 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
                                 isBold={false}
                             />
                         </div>
+                        <div className={styles.bar1DateContainerShort}>
+                            <DynamicInputSelect
+                                options={daysSelectOptions(true)}
+                                value={selectedDate}
+                                isDisabled={isLoading}
+                                onChange={handleDayChange}
+                                isSearchable={false}
+                                placeholder="בחר יום..."
+                                hasBorder={true}
+                                backgroundColor="transparent"
+                                isBold={false}
+                                isCentered
+                            />
+                        </div>
 
                         <div className={styles.spacer} />
 

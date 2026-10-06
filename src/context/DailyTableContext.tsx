@@ -443,8 +443,9 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
 
         for (let i = 0; i < sortedColumns.length; i++) {
             const colId = sortedColumns[i];
+            const isRecurring = colId.startsWith("rec_");
             const colType = schedule[colId]?.["1"]?.headerCol?.type ?? ColumnTypeValues.existingTeacher;
-            const colPriority = COLUMN_PRIORITY[colType] ?? 1;
+            const colPriority = isRecurring ? -1 : (COLUMN_PRIORITY[colType] ?? 1);
 
             if (colPriority <= newPriority) {
                 insertAfterIndex = i;

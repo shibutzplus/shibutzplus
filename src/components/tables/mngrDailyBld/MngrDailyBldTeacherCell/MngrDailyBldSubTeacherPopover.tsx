@@ -43,6 +43,7 @@ const MngrDailyBldSubTeacherPopover: React.FC<MngrDailyBldSubTeacherPopoverProps
     const [mounted, setMounted] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
+    const [isSearchFocused, setIsSearchFocused] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
     const listRef = useRef<HTMLDivElement>(null);
     const groupRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -205,7 +206,7 @@ const MngrDailyBldSubTeacherPopover: React.FC<MngrDailyBldSubTeacherPopoverProps
 
             {/* Popover Window */}
             <div
-                className={styles.popover}
+                className={`${styles.popover} ${isSearchFocused ? styles.popoverSearchFocused : ""}`}
                 style={desktopStyle}
                 role="dialog"
                 aria-modal="true"
@@ -234,7 +235,7 @@ const MngrDailyBldSubTeacherPopover: React.FC<MngrDailyBldSubTeacherPopoverProps
                         title="סגור"
                         aria-label="סגור"
                     >
-                        <Icons.close size={14} />
+                        <Icons.close size={18} />
                     </button>
                 </div>
 
@@ -265,6 +266,8 @@ const MngrDailyBldSubTeacherPopover: React.FC<MngrDailyBldSubTeacherPopoverProps
                         placeholder="חיפוש מורה או הקלדה חופשית..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
+                        onFocus={() => setIsSearchFocused(true)}
+                        onBlur={() => setIsSearchFocused(false)}
                         onKeyDown={handleKeyDown}
                     />
                 </div>
@@ -315,11 +318,13 @@ const MngrDailyBldSubTeacherPopover: React.FC<MngrDailyBldSubTeacherPopoverProps
                                                 >
                                                     <Icons.caretLeft size={12} />
                                                 </span>
-                                                <span>{group.label}</span>
+                                                <span>
+                                                    {group.label}{" "}
+                                                    <span className={styles.badgeCount}>
+                                                        ({group.options.length})
+                                                    </span>
+                                                </span>
                                             </div>
-                                            <span className={styles.badgeCount}>
-                                                {group.options.length}
-                                            </span>
                                         </button>
 
                                         {isExpanded && (

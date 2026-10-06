@@ -39,6 +39,7 @@
 
 .shortBtn {
     width: 130px !important;
+    white-space: nowrap !important;
 }
 
 .borderLeft {

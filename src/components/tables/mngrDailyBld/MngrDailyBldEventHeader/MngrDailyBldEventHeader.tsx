@@ -253,7 +253,7 @@ const MngrDailyBldEventHeader: React.FC<MngrDailyBldEventHeaderProps> = ({ colum
                 )}
                 <div className={styles.inputSelectWrapper}>
                     <div style={{ width: "100%" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "4px", width: "100%" }}>
+                        <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
                             {isRecurring && (
                                 <Icons.repeat
                                     size={13}

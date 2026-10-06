@@ -12,6 +12,13 @@
     max-width: 250px;
 }
 
+.bar1DateContainerShort {
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
+    display: none;
+}
+
 .bar2DateContainer {
     width: 250px;
     min-width: 250px;
@@ -64,11 +71,57 @@
 
 /* <= 1230px */
 @media (max-width: 1230px) {
-    .topBarActionBtnsShort {
+    .spacer {
         display: none;
     }
 
-    .spacer {
+    .topBarActionBtnsShort {
+        gap: 10px;
+    }
+
+    .topBarActionBtnsShort button:not(:last-child) {
+        width: 95px !important;
+        gap: 0 !important;
+    }
+
+    .topBarActionBtnsShort button:not(:last-child) svg {
+        display: none !important;
+    }
+}
+
+/* <= 1070px */
+@media (max-width: 1070px) {
+    .bar1DateContainer {
+        display: none;
+    }
+
+    .bar1DateContainerShort {
+        display: block;
+        width: 190px;
+        min-width: 190px;
+        max-width: 190px;
+    }
+
+    .topBarActionBtnsShort {
+        gap: 8px;
+    }
+
+    .topBarActionBtnsShort button:not(:last-child) {
+        width: 90px !important;
+    }
+}
+
+/* <= 1000px */
+@media (max-width: 1000px) {
+    .bar1DateContainer {
+        display: block;
+    }
+
+    .bar1DateContainerShort {
+        display: none;
+    }
+
+    .topBarActionBtnsShort {
         display: none;
     }
 
@@ -87,6 +140,15 @@
         gap: 15px;
         align-items: center;
     }
+
+    .secondRowActionBtns button:not(:last-child) {
+        width: 130px !important;
+        gap: 10px !important;
+    }
+
+    .secondRowActionBtns button:not(:last-child) svg {
+        display: inline-block !important;
+    }
 }
 
 
@@ -94,6 +156,7 @@
 @media (max-width: 750px) {
 
     .bar1DateContainer,
+    .bar1DateContainerShort,
     .spacer {
         display: none;
     }
