@@ -16,8 +16,8 @@ type MngrAnnualBldByClassRowProps = {
     teachers: TeacherType[];
     classes: ClassType[];
     isDisabled: boolean;
-    onCreateSubject: (day: string, hour: number, value: string) => Promise<string | undefined>;
-    onCreateTeacher: (day: string, hour: number, value: string) => Promise<string | undefined>;
+    onCreateSubject?: (day: string, hour: number, value: string) => Promise<string | undefined>;
+    onCreateTeacher?: (day: string, hour: number, value: string) => Promise<string | undefined>;
     handleScheduleUpdate: (
         type: AnnualInputCellType,
         elementIds: string[],

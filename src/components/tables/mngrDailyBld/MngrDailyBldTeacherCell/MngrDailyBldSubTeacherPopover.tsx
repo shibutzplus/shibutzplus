@@ -217,12 +217,11 @@ const MngrDailyBldSubTeacherPopover: React.FC<MngrDailyBldSubTeacherPopoverProps
                 <div className={styles.titleBar}>
                     <div className={styles.titleContent}>
                         <span className={styles.titleDetails}>
-                            {hour !== undefined && <span>שעה {hour}</span>}
-                            {hour !== undefined && classNameText && <span>: </span>}
+                            {hour !== undefined && <span>שעה {hour}{classNameText ? ": " : ""}</span>}
                             {classNameText && <span className={styles.titleClass}>{classNameText}</span>}
                             {subjectText && (
                                 <span className={styles.titleSubject}>
-                                    {" "}{subjectText.startsWith("(") ? subjectText : `(${subjectText})`}
+                                    {subjectText.replace(/^\((.*)\)$/, "$1").trim()}
                                 </span>
                             )}
                         </span>

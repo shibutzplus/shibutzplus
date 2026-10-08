@@ -35,7 +35,7 @@ export async function deleteClassAction(
         if (usage.totalCount > 0 && !force) {
             return {
                 success: false,
-                message: `הכיתה משובצת ב-${usage.totalCount} שיעורים במערכת.`,
+                message: `הכיתה משובצת ב-${usage.totalCount} שיעורים במערכת השנתית.`,
                 usageCount: usage.totalCount,
             };
         }
@@ -93,6 +93,7 @@ export async function deleteClassAction(
         // Invalidate cache - class deletion affects schedules AND lists
         clearAnnualScheduleCache(schoolId);
         revalidateTag(cacheTags.classesList(schoolId));
+        revalidateTag(cacheTags.dailyScheduleSchool(schoolId));
         await pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId });
 
         return {

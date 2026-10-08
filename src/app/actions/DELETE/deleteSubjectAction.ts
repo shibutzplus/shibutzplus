@@ -35,7 +35,7 @@ export async function deleteSubjectAction(
         if (usage.totalCount > 0 && !force) {
             return {
                 success: false,
-                message: `המקצוע משובץ ב-${usage.totalCount} שיעורים במערכת.`,
+                message: `המקצוע משובץ ב-${usage.totalCount} שיעורים במערכת השנתית.`,
                 usageCount: usage.totalCount,
             };
         }
@@ -86,6 +86,7 @@ export async function deleteSubjectAction(
         // Invalidate cache - subject deletion affects schedules AND lists
         clearAnnualScheduleCache(schoolId);
         revalidateTag(cacheTags.subjectsList(schoolId));
+        revalidateTag(cacheTags.dailyScheduleSchool(schoolId));
         await pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId });
 
         return {

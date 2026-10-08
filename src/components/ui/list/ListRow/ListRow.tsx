@@ -69,9 +69,8 @@ function ListRow<T extends Record<string, any>>({
             } as Partial<T>;
             const result = await onUpdate(getId(item), updateData);
 
-            // If update failed (returned undefined or falsy), show error and revert
+            // If update failed (returned undefined or falsy), revert
             if (!result) {
-                errorToast("שם זה כבר קיים ברשימה");
                 setValue(getInitialValue(item));
             }
         } catch (_error) {

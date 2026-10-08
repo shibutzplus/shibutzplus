@@ -69,7 +69,6 @@ const MngrAnnualeBldAltByDayTable: React.FC<MngrAnnualeBldAltByDayTableProps> = 
                 successToast(messages.teachers.createSuccess);
                 return res.id;
             }
-            errorToast(messages.teachers.createError);
         } catch (error) {
             logErrorAction({ description: `Error creating teacher (alt table): ${error instanceof Error ? error.message : String(error)}`, schoolId: school.id });
             errorToast(messages.teachers.createError);
@@ -86,7 +85,6 @@ const MngrAnnualeBldAltByDayTable: React.FC<MngrAnnualeBldAltByDayTableProps> = 
                 successToast(messages.subjects.createSuccess);
                 return res.id;
             }
-            errorToast(messages.subjects.createError);
         } catch (error) {
             logErrorAction({ description: `Error creating subject (alt table): ${error instanceof Error ? error.message : String(error)}`, schoolId: school.id });
             errorToast(messages.subjects.createError);

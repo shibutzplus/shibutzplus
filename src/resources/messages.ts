@@ -1,3 +1,24 @@
+import { TeacherRoleValues } from "@/models/types/teachers";
+
+export const getDuplicateTeacherMessage = (
+    name: string,
+    existingRole?: string,
+    targetRole?: string,
+): string => {
+    if (existingRole && existingRole !== targetRole) {
+        if (existingRole === TeacherRoleValues.SUBSTITUTE) {
+            return `"${name}" קיים/ת ברשימת המורים למילוי מקום.`;
+        }
+        if (existingRole === TeacherRoleValues.REGULAR) {
+            return `"${name}" קיים/ת ברשימת המורים מן המניין.`;
+        }
+        if (existingRole === TeacherRoleValues.STAFF) {
+            return `"${name}" קיים/ת ברשימת אנשי הצוות.`;
+        }
+    }
+    return `"${name}" כבר ברשימה.`;
+};
+
 const messages = {
     common: {
         invalid: "חסרים פרמטרים",
@@ -35,7 +56,8 @@ const messages = {
         invalid: "חסרים פרמטרים",
         updateSuccess: "מורה עודכן בהצלחה",
         updateError: "בעיה בעדכון המורה. נא לרענן ולנסות שוב",
-        needToSelect: "יש לבחור מורה מהרשימה"
+        needToSelect: "יש לבחור מורה מהרשימה",
+        duplicate: getDuplicateTeacherMessage,
     },
     subjects: {
         success: "רשימת מקצועות נטענה בהצלחה",

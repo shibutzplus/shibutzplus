@@ -2,18 +2,15 @@
 
 import React, { useEffect } from "react";
 import { WeeklySchedule } from "@/models/types/annualSchedule";
-import { SubjectRequest, SubjectType } from "@/models/types/subjects";
-import { TeacherRequest, TeacherRoleValues, TeacherType } from "@/models/types/teachers";
+import { SubjectType } from "@/models/types/subjects";
+import { TeacherType } from "@/models/types/teachers";
 import { ClassType } from "@/models/types/classes";
 import { useMainContext } from "@/context/MainContext";
-import { errorToast, successToast } from "@/lib/toast";
-import messages from "@/resources/messages";
 import { DAYS_OF_WORK_WEEK } from "@/utils/time";
 import MngrAnnualBldByClassRow from "../MngrAnnualBldByClassRow/MngrAnnualBldByClassRow";
 import styles from "./MngrAnnualBldByClassTable.module.css";
 import { AnnualInputCellType } from "@/models/types/annualSchedule";
 import { SelectMethod } from "@/models/types/actions";
-import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 import Icons from "@/style/icons";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useValidation } from "@/context/ValidationContext";
@@ -48,11 +45,11 @@ const MngrAnnualBldByClassTable: React.FC<MngrAnnualBldByClassTableProps> = ({
     teachers,
     classes,
     setIsLoading,
-    setIsSaving,
+    setIsSaving: _setIsSaving,
     isSaving,
     handleScheduleUpdate,
 }) => {
-    const { school, addNewTeacher, addNewSubject } = useMainContext();
+    const { school } = useMainContext();
     const { setSchedule } = useAnnualByClass();
     const { validate } = useValidation();
     const { openPopup } = usePopup();
@@ -106,8 +103,20 @@ const MngrAnnualBldByClassTable: React.FC<MngrAnnualBldByClassTableProps> = ({
         });
     };
 
+    /* 
+     * Unused code: On-the-fly creation of teachers and subjects from table cells functionality was currently removed
+     *
     const handleCreateTeacher = async (day: string, hour: number, value: string) => {
         if (!school?.id) return;
+
+        const trimmed = value.trim();
+        const existing = teachers?.find((t) => t.name.trim().toLowerCase() === trimmed.toLowerCase());
+        if (existing && existing.role !== TeacherRoleValues.REGULAR) {
+            const msg = `${messages.teachers.duplicate(existing.name, existing.role, TeacherRoleValues.REGULAR)}\nבמערכת השעות אפשר לשבץ רק מורים מן המניין.`;
+            errorToast(msg, Infinity);
+            return;
+        }
+
         setIsSaving(true);
         try {
             const newTeacher: TeacherRequest = {
@@ -121,7 +130,6 @@ const MngrAnnualBldByClassTable: React.FC<MngrAnnualBldByClassTableProps> = ({
                 successToast(messages.teachers.createSuccess);
                 return res.id;
             }
-            errorToast(messages.teachers.createError);
         } catch (error) {
             logErrorAction({ description: `Error creating teacher (annual table): ${error instanceof Error ? error.message : String(error)}`, schoolId: school.id });
             errorToast(messages.teachers.createError);
@@ -141,7 +149,6 @@ const MngrAnnualBldByClassTable: React.FC<MngrAnnualBldByClassTableProps> = ({
                 successToast(messages.subjects.createSuccess);
                 return res.id;
             }
-            errorToast(messages.subjects.createError);
         } catch (error) {
             logErrorAction({ description: `Error creating subject (annual table): ${error instanceof Error ? error.message : String(error)}`, schoolId: school.id });
             errorToast(messages.subjects.createError);
@@ -149,6 +156,7 @@ const MngrAnnualBldByClassTable: React.FC<MngrAnnualBldByClassTableProps> = ({
             setIsSaving(false);
         }
     };
+    */
 
     return (
         <div className={styles.tableContainer}>
@@ -189,8 +197,6 @@ const MngrAnnualBldByClassTable: React.FC<MngrAnnualBldByClassTableProps> = ({
                             subjects={subjects || []}
                             teachers={teachers || []}
                             classes={classes || []}
-                            onCreateSubject={handleCreateSubject}
-                            onCreateTeacher={handleCreateTeacher}
                             handleScheduleUpdate={handleScheduleUpdate}
                         />
                     ))}

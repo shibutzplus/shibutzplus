@@ -13,6 +13,7 @@ import messages from "@/resources/messages";
 import { PopupAction } from "@/context/PopupContext";
 import DeleteWarningContent from "@/components/popups/DeleteWarningContent/DeleteWarningContent";
 import { countTeacherUsage } from "@/utils/entityUsage";
+import { getTeacherUsageAction } from "@/app/actions/GET/getTeacherUsageAction";
 import { successToast, errorToast } from "@/lib/toast";
 type SubstituteRowProps = {
     teacher: TeacherType;
@@ -35,16 +36,29 @@ const SubstituteRow: React.FC<SubstituteRowProps> = ({ teacher }) => {
         await handleSubmitDelete(school.id, teacherId, deleteTeacher, force);
     };
 
-    const handleDeleteTeacher = (teacher: TeacherType) => {
-        const usageCount = countTeacherUsage(teacher.id, annualScheduleTable);
+    const handleDeleteTeacher = async (teacher: TeacherType) => {
+        if (!school?.id) return;
 
-        if (usageCount > 0) {
+        let totalUsage = countTeacherUsage(teacher.id, annualScheduleTable);
+
+        try {
+            const usageRes = await getTeacherUsageAction(school.id, teacher.id);
+            if (usageRes.success && usageRes.usage) {
+                totalUsage = usageRes.usage.totalCount;
+            }
+        } catch {
+            // fallback to client-side count
+        }
+
+        if (totalUsage > 0) {
             handleOpenPopup(
                 PopupAction.deleteTeacher,
                 <DeleteWarningContent
                     title={`האם למחוק את ממלא/ת המקום "${teacher.name}"?`}
-                    warningText={`ממלא/ת המקום משובץ/ת ב-${usageCount} שיעורים במערכת השנתית.`}
-                    usageCount={usageCount}
+                    warningHeaderTitle="שימו לב!"
+                    warningText={`ממלא/ת המקום משובץ/ת ב-${totalUsage} שיעורים בשיבוץ היומי.`}
+                    warningSubMessage="המחיקה תסיר גם את מילוי המקום מכל השיעורים הללו. האם להמשיך?"
+                    usageCount={totalUsage}
                 />,
                 () => handleDeleteTeacherFromState(teacher.id, true),
                 "מחק בכל זאת",
@@ -54,7 +68,7 @@ const SubstituteRow: React.FC<SubstituteRowProps> = ({ teacher }) => {
         } else {
             handleOpenPopup(
                 PopupAction.deleteTeacher,
-                `האם למחוק את המורה ${teacher.name}?`,
+                `האם למחוק את ממלא/ת המקום "${teacher.name}"?`,
                 () => handleDeleteTeacherFromState(teacher.id, false),
             );
         }

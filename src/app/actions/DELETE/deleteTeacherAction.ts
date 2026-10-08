@@ -35,7 +35,7 @@ export async function deleteTeacherAction(
         if (usage.totalCount > 0 && !force) {
             return {
                 success: false,
-                message: `המורה משובץ/ת ב-${usage.totalCount} שיעורים במערכת.`,
+                message: `המורה משובץ/ת ב-${usage.totalCount} שיעורים במערכת השנתית.`,
                 usageCount: usage.totalCount,
             };
         }
@@ -86,6 +86,7 @@ export async function deleteTeacherAction(
         // Invalidate cache - teacher deletion affects schedules AND lists
         clearAnnualScheduleCache(schoolId);
         revalidateTag(cacheTags.teachersList(schoolId));
+        revalidateTag(cacheTags.dailyScheduleSchool(schoolId));
         await pushSyncUpdateServer(ENTITIES_DATA_CHANGED, { schoolId });
 
         return {

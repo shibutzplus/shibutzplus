@@ -216,8 +216,8 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
             });
             return response.data;
         }
-        if (!response.success && (response as any).errorCode === "23505") {
-            errorToast(response.message || "שגיאה ביצירת מקצוע");
+        if (!response.success && response.message) {
+            errorToast(response.message, Infinity);
             return undefined;
         }
         return undefined;
@@ -228,6 +228,9 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         if (response.success && response.data) {
             setSubjects(response.data as SubjectType[]);
             return response.data;
+        }
+        if (!response.success && response.message) {
+            errorToast(response.message, Infinity);
         }
         return undefined;
     };
@@ -271,14 +274,14 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
                 await addNewSubject({
                     name: newClass.name,
                     schoolId: newClass.schoolId,
-                    activity: true
+                    activity: true,
                 });
             }
 
             return response.data;
         }
-        if (!response.success && (response as any).errorCode === "23505") {
-            errorToast(response.message || "שגיאה ביצירת כיתה");
+        if (!response.success && response.message) {
+            errorToast(response.message, Infinity);
             return undefined;
         }
         return undefined;
@@ -306,6 +309,9 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
             }
 
             return response.data;
+        }
+        if (!response.success && response.message) {
+            errorToast(response.message, Infinity);
         }
         return undefined;
     };
@@ -362,8 +368,8 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
 
             return response.data;
         }
-        if (!response.success && (response as any).errorCode === "23505") {
-            errorToast(response.message || "שגיאה ביצירת מורה");
+        if (!response.success && response.message) {
+            errorToast(response.message, Infinity);
             return undefined;
         }
     };
@@ -378,6 +384,9 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
             }
 
             return response.data;
+        }
+        if (!response.success && response.message) {
+            errorToast(response.message, Infinity);
         }
         return undefined;
     };

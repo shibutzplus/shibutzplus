@@ -40,8 +40,9 @@ export async function updateTeacherAction(
             )[0];
         });
 
+        const trimmedName = teacherData.name.trim();
         const oldName = existingTeacher?.name;
-        const isNameChanged = !!oldName && oldName !== teacherData.name;
+        const isNameChanged = !!oldName && oldName !== trimmedName;
 
         let targetTeacherId = teacherId;
 
@@ -52,7 +53,7 @@ export async function updateTeacherAction(
                     where: (t, { and, eq, ne }) =>
                         and(
                             eq(t.schoolId, teacherData.schoolId),
-                            eq(t.name, teacherData.name),
+                            eq(t.name, trimmedName),
                             ne(t.id, teacherId)
                         ),
                 });
@@ -60,7 +61,10 @@ export async function updateTeacherAction(
 
             if (conflicting) {
                 if (conflicting.isActive) {
-                    return { success: false, message: "שם זה כבר קיים במערכת" };
+                    return {
+                        success: false,
+                        message: messages.teachers.duplicate(trimmedName, conflicting.role, teacherData.role),
+                    };
                 }
 
                 // Inactive record with target name exists → merge into conflicting record and reactivate it
@@ -108,7 +112,7 @@ export async function updateTeacherAction(
                     await db
                         .update(schema.teachers)
                         .set({
-                            name: teacherData.name,
+                            name: trimmedName,
                             role: teacherData.role,
                             updatedAt: new Date(),
                         })

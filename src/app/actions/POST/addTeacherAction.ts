@@ -41,6 +41,7 @@ export async function addTeacherAction(
         }
 
         const trimmedName = teacherData.name.trim();
+        let existingRole: string | undefined;
 
         const newTeacher = await executeQuery(async () => {
             const existing = await db.query.teachers.findFirst({
@@ -52,6 +53,7 @@ export async function addTeacherAction(
 
             if (existing) {
                 if (existing.isActive) {
+                    existingRole = existing.role;
                     return null;
                 }
                 // Reactivate existing inactive record
@@ -84,7 +86,7 @@ export async function addTeacherAction(
             return {
                 success: false,
                 errorCode: "23505",
-                message: `"${teacherData.name}" כבר ברשימה.`,
+                message: messages.teachers.duplicate(teacherData.name, existingRole, teacherData.role),
             };
         }
 
@@ -123,10 +125,22 @@ export async function addTeacherAction(
     } catch (error: any) {
         const pgCode = error?.code ?? error?.cause?.code ?? error?.originalError?.code;
         if (pgCode === "23505") {
+            let existingRole: string | undefined;
+            try {
+                const existing = await db.query.teachers.findFirst({
+                    where: and(
+                        eq(schema.teachers.schoolId, teacherData.schoolId),
+                        eq(schema.teachers.name, teacherData.name.trim())
+                    ),
+                });
+                existingRole = existing?.role;
+            } catch {
+                // fallback to default message
+            }
             return {
                 success: false,
                 errorCode: "23505",
-                message: `"${teacherData.name}" כבר ברשימה.`,
+                message: messages.teachers.duplicate(teacherData.name, existingRole, teacherData.role),
             };
         }
 

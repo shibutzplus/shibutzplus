@@ -13,6 +13,7 @@ import { PopupAction } from "@/context/PopupContext";
 import { generateSchoolUrl } from "@/utils";
 import DeleteWarningContent from "@/components/popups/DeleteWarningContent/DeleteWarningContent";
 import { countTeacherUsage } from "@/utils/entityUsage";
+import { getTeacherUsageAction } from "@/app/actions/GET/getTeacherUsageAction";
 import { successToast, errorToast } from "@/lib/toast";
 type TeacherRowProps = {
     teacher: TeacherType;
@@ -35,16 +36,27 @@ const TeacherRow: React.FC<TeacherRowProps> = ({ teacher }) => {
         await handleSubmitDelete(school.id, teacherId, deleteTeacher, force);
     };
 
-    const handleDeleteTeacher = (teacher: TeacherType) => {
-        const usageCount = countTeacherUsage(teacher.id, annualScheduleTable);
+    const handleDeleteTeacher = async (teacher: TeacherType) => {
+        if (!school?.id) return;
 
-        if (usageCount > 0) {
+        let totalUsage = countTeacherUsage(teacher.id, annualScheduleTable);
+
+        try {
+            const usageRes = await getTeacherUsageAction(school.id, teacher.id);
+            if (usageRes.success && usageRes.usage) {
+                totalUsage = usageRes.usage.totalCount;
+            }
+        } catch {
+            // fallback to client count
+        }
+
+        if (totalUsage > 0) {
             handleOpenPopup(
                 PopupAction.deleteTeacher,
                 <DeleteWarningContent
                     title={`האם למחוק את המורה "${teacher.name}"?`}
-                    warningText={`המורה משובץ/ת ב-${usageCount} שיעורים במערכת השנתית.`}
-                    usageCount={usageCount}
+                    warningText={`המורה משובץ/ת ב-${totalUsage} שיעורים במערכת השנתית.`}
+                    usageCount={totalUsage}
                 />,
                 () => handleDeleteTeacherFromState(teacher.id, true),
                 "מחק בכל זאת",

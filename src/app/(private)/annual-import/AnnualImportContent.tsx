@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import AnnualImportPageLayout from "@/components/layout/pageLayouts/AnnualImportPageLayout/AnnualImportPageLayout";
 import SubmitBtn from "@/components/ui/buttons/SubmitBtn/SubmitBtn";
-import EditableList, { ListItem, areSimilarEntities } from "./components/EditableList";
+import EditableList, { ListItem, areSimilarEntities, sortImportItems } from "./components/EditableList";
 import StepNavigation from "./components/StepNavigation";
 import DynamicInputSelect from "@/components/ui/select/InputSelect/DynamicInputSelect";
 import { extractEntitiesFromWordAction } from "@/app/actions/POST/import/extractEntitiesFromWordAction";
@@ -134,8 +134,13 @@ const AnnualImportContent = () => {
                 const dbTeacherMap = new Map(teachers.map(t => [t.name, t]));
                 const dbClassMap = new Map(classes.map(c => [c.name, c]));
 
-                // Helper to clean quotes and whitespace for exact matching
-                const cleanForEntity = (s: string) => s.replace(/\s*[\(\[]\s*[שפ]\s*[\)\]]/g, "").replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019]/g, "").replace(/\s+/g, " ").trim();
+                // Helper to clean quotes, dots, and whitespace for exact matching
+                const cleanForEntity = (s: string) => s
+                    .replace(/\s*[\(\[]\s*[שפ]\s*[\)\]]/g, "")
+                    .replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019]/g, "")
+                    .replace(/\./g, " ")
+                    .replace(/\s+/g, " ")
+                    .trim();
 
                 // Merge teachers from file with DB teachers
                 const mergedTeachers: typeof teachers = [];
@@ -179,14 +184,14 @@ const AnnualImportContent = () => {
 
                 // Add remaining DB teachers that weren't in file
                 dbTeacherMap.forEach(item => mergedTeachers.push({ ...item, source: 'db', exists: true }));
-                teachers = mergedTeachers; // Preserve original file order
+                teachers = sortImportItems(mergedTeachers);
 
                 // Helper to clean/normalize class name for matching (e.g. "א'1", "כיתה א1", "א 1" -> "א1")
-                const cleanForMatch = (s: string) => s.replace(/^(כיתה|כיתת|שכבת)\s+/g, "").replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019\s]/g, "").trim();
+                const cleanForMatch = (s: string) => s.replace(/^(כיתה|כיתת|שכבת)\s+/g, "").replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019\s.]/g, "").trim();
 
                 // Format raw name into standard "כיתה X" (e.g. "א1" / "א'1" -> "כיתה א1")
                 const formatStandardClassName = (raw: string) => {
-                    const cleaned = raw.replace(/^(כיתה|כיתת|שכבת)\s+/g, "").replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019]/g, "").replace(/\s+/g, " ").trim();
+                    const cleaned = raw.replace(/^(כיתה|כיתת|שכבת)\s+/g, "").replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019.]/g, "").replace(/\s+/g, " ").trim();
                     return `כיתה ${cleaned}`;
                 };
 
@@ -223,7 +228,7 @@ const AnnualImportContent = () => {
 
                 // Add remaining DB classes
                 dbClassMap.forEach(item => mergedClasses.push({ ...item, source: 'db', exists: true }));
-                classes = mergedClasses.sort((a, b) => a.name.localeCompare(b.name, 'he'));
+                classes = sortImportItems(mergedClasses);
 
                 // Helper to match subject or workgroup names between file and DB
                 const findEntityDbMatch = (cleanName: string, dbMap: Map<string, any>) => {
@@ -259,6 +264,17 @@ const AnnualImportContent = () => {
 
                 extracted.subjects.forEach(name => {
                     const cleanName = cleanForEntity(name);
+
+                    // If it matches an already merged subject (e.g. "מנהיג נולד" vs "מנהיג.נולד", or "כישורי חיי" when "כישור חיים" is already merged)
+                    const alreadyMerged = mergedSubjects.find(s => cleanForEntity(s.name) === cleanName || s.name === name || areSimilarEntities(s.name, name));
+                    if (alreadyMerged) {
+                        seenSubjects.add(cleanName);
+                        if (name !== alreadyMerged.name) {
+                            newAliases[name] = alreadyMerged.name;
+                        }
+                        return;
+                    }
+
                     if (seenSubjects.has(cleanName)) return;
 
                     const dbMatch = findEntityDbMatch(cleanName, dbSubjectMap);
@@ -280,20 +296,25 @@ const AnnualImportContent = () => {
                         return;
                     }
 
-                    // If it matches an already merged subject (e.g. truncated version "כישורי חיי" when "כישור חיים" is already merged)
-                    const alreadyMerged = mergedSubjects.find(s => s.name === name || areSimilarEntities(s.name, name));
-                    if (alreadyMerged) {
-                        seenSubjects.add(cleanName);
-                        newAliases[name] = alreadyMerged.name;
-                        return;
-                    }
-
                     seenSubjects.add(cleanName);
-                    mergedSubjects.push({ name, source: 'file', exists: false });
+                    const normalizedDisplayName = name.includes('.') ? name.replace(/\./g, ' ').replace(/\s+/g, ' ').trim() : name;
+                    mergedSubjects.push({ name: normalizedDisplayName, source: 'file', exists: false });
+                    if (name !== normalizedDisplayName) {
+                        newAliases[name] = normalizedDisplayName;
+                    }
                 });
 
-                dbSubjectMap.forEach(item => mergedSubjects.push({ ...item, source: 'db', exists: true }));
-                subjects = mergedSubjects.sort((a, b) => a.name.localeCompare(b.name, 'he'));
+                dbSubjectMap.forEach(item => {
+                    const cleanName = cleanForEntity(item.name);
+                    const alreadyMerged = mergedSubjects.find(s => cleanForEntity(s.name) === cleanName || areSimilarEntities(s.name, item.name));
+                    if (alreadyMerged) {
+                        alreadyMerged.source = 'both';
+                        newAliases[item.name] = alreadyMerged.name;
+                    } else {
+                        mergedSubjects.push({ ...item, source: 'db', exists: true });
+                    }
+                });
+                subjects = sortImportItems(mergedSubjects);
 
                 // Merge workGroups from file with DB workGroups
                 const mergedWorkGroups: typeof workGroups = [];
@@ -302,6 +323,17 @@ const AnnualImportContent = () => {
 
                 extracted.workGroups.forEach(name => {
                     const cleanName = cleanForEntity(name);
+
+                    // If it matches an already merged workGroup
+                    const alreadyMerged = mergedWorkGroups.find(w => cleanForEntity(w.name) === cleanName || w.name === name || areSimilarEntities(w.name, name));
+                    if (alreadyMerged) {
+                        seenWorkGroups.add(cleanName);
+                        if (name !== alreadyMerged.name) {
+                            newAliases[name] = alreadyMerged.name;
+                        }
+                        return;
+                    }
+
                     if (seenWorkGroups.has(cleanName)) return;
 
                     const dbMatch = findEntityDbMatch(cleanName, dbWorkGroupMap);
@@ -324,23 +356,26 @@ const AnnualImportContent = () => {
                         return;
                     }
 
-                    // If it matches an already merged workGroup
-                    const alreadyMerged = mergedWorkGroups.find(w => w.name === name || areSimilarEntities(w.name, name));
-                    if (alreadyMerged) {
-                        seenWorkGroups.add(cleanName);
-                        newAliases[name] = alreadyMerged.name;
-                        return;
-                    }
-
                     seenWorkGroups.add(cleanName);
-                    mergedWorkGroups.push({ name, source: 'file', exists: false });
+                    const normalizedDisplayName = name.includes('.') ? name.replace(/\./g, ' ').replace(/\s+/g, ' ').trim() : name;
+                    mergedWorkGroups.push({ name: normalizedDisplayName, source: 'file', exists: false });
+                    if (name !== normalizedDisplayName) {
+                        newAliases[name] = normalizedDisplayName;
+                    }
                 });
 
                 dbWorkGroupMap.forEach(item => {
-                    const cleanName = item.name.replace(/\s*[\(\[]\s*[שפ]\s*[\)\]]/g, "").trim();
-                    mergedWorkGroups.push({ ...item, name: cleanName, source: 'db', exists: true });
+                    const cleanDbName = item.name.replace(/\s*[\(\[]\s*[שפ]\s*[\)\]]/g, "").trim();
+                    const cleanName = cleanForEntity(item.name);
+                    const alreadyMerged = mergedWorkGroups.find(w => cleanForEntity(w.name) === cleanName || areSimilarEntities(w.name, item.name));
+                    if (alreadyMerged) {
+                        alreadyMerged.source = 'both';
+                        newAliases[item.name] = alreadyMerged.name;
+                    } else {
+                        mergedWorkGroups.push({ ...item, name: cleanDbName, source: 'db', exists: true });
+                    }
                 });
-                workGroups = mergedWorkGroups.sort((a, b) => a.name.localeCompare(b.name, 'he'));
+                workGroups = sortImportItems(mergedWorkGroups);
 
                 if (Object.keys(newAliases).length > 0) {
                     setMergeAliases(prev => ({ ...prev, ...newAliases }));
@@ -460,13 +495,15 @@ const AnnualImportContent = () => {
             if (res.success) {
                 setAnalyzedData(prev => ({
                     ...prev,
-                    [entityType]: prev[entityType]
-                        .filter(item => item.source !== 'db')
-                        .map(item => ({
-                            ...item,
-                            exists: true,
-                            source: 'both' as ListItem['source']
-                        }))
+                    [entityType]: sortImportItems(
+                        prev[entityType]
+                            .filter(item => item.source !== 'db')
+                            .map(item => ({
+                                ...item,
+                                exists: true,
+                                source: 'both' as ListItem['source']
+                            }))
+                    )
                 }));
             } else {
                 popupMsg(`שגיאה בשמירה: ${res.message}`);
@@ -534,7 +571,7 @@ const AnnualImportContent = () => {
                         <EditableList
                             title="רשימת מורים (שלב 2/6)"
                             items={analyzedData.teachers || []}
-                            onSave={(items) => setAnalyzedData(prev => ({ ...prev, teachers: items }))}
+                            onSave={(items) => setAnalyzedData(prev => ({ ...prev, teachers: sortImportItems(items) }))}
                             allowSwap={true}
                             onSwapName={handleEntityMerge}
                         />
@@ -552,7 +589,7 @@ const AnnualImportContent = () => {
                 {step === 3 && (
                     <div className={styles.stepContainer}>
                         <EditableList title="רשימת כיתות (שלב 3/6)" items={analyzedData.classes || []}
-                            onSave={(items) => setAnalyzedData(prev => ({ ...prev, classes: items }))}
+                            onSave={(items) => setAnalyzedData(prev => ({ ...prev, classes: sortImportItems(items) }))}
                         />
                         <StepNavigation
                             onNext={handleNext}
@@ -568,7 +605,7 @@ const AnnualImportContent = () => {
                 {step === 4 && (
                     <div className={styles.stepContainer}>
                         <EditableList title="רשימת מקצועות (שלב 4/6)" items={analyzedData.subjects || []}
-                            onSave={(items) => setAnalyzedData(prev => ({ ...prev, subjects: items }))}
+                            onSave={(items) => setAnalyzedData(prev => ({ ...prev, subjects: sortImportItems(items) }))}
                             onMerge={handleEntityMerge}
                             allowMerge={true}
                         />
@@ -586,7 +623,7 @@ const AnnualImportContent = () => {
                 {step === 5 && (
                     <div className={styles.stepContainer}>
                         <EditableList title="קבוצות עבודה (שלב 5/6)" items={analyzedData.workGroups || []}
-                            onSave={(items) => setAnalyzedData(prev => ({ ...prev, workGroups: items }))}
+                            onSave={(items) => setAnalyzedData(prev => ({ ...prev, workGroups: sortImportItems(items) }))}
                             onMerge={handleEntityMerge}
                             allowMerge={true}
                         />

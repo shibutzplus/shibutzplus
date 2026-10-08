@@ -59,6 +59,14 @@ function isWorkGroupKeyword(text: string): boolean {
     return WORKGROUP_KEYWORDS.some(kw => text.includes(kw));
 }
 
+function cleanEntityCandidate(raw: string): string {
+    return raw
+        .replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019]/g, "")
+        .replace(/\./g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
 /**
  * Extracts subjects and workGroups from both class and teacher schedule files.
  * - Lessons with real classes (e.g. "ב1", "ד3") are categorized as subjects.
@@ -79,7 +87,7 @@ function extractSubjectsAndWorkGroups(
             const rawCandidate = parts[0];
             if (!rawCandidate || rawCandidate.length < 2) return;
             if (rawCandidate.startsWith("יום ") || rawCandidate.startsWith("שעה ")) return;
-            const candidate = rawCandidate.replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019]/g, "").replace(/\s+/g, " ").trim();
+            const candidate = cleanEntityCandidate(rawCandidate);
             if (candidate.length >= 2) {
                 subjects.add(candidate);
                 workGroups.delete(candidate);
@@ -95,7 +103,7 @@ function extractSubjectsAndWorkGroups(
             const rawCandidate = parts[0];
             if (!rawCandidate || rawCandidate.length < 2) return;
             if (rawCandidate.startsWith("יום ") || rawCandidate.startsWith("שעה ")) return;
-            const candidate = rawCandidate.replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019]/g, "").replace(/\s+/g, " ").trim();
+            const candidate = cleanEntityCandidate(rawCandidate);
             if (candidate.length < 2) return;
 
             const secondPart = parts[1] || "";
@@ -115,7 +123,7 @@ function extractSubjectsAndWorkGroups(
                 }
             }
         } else if (parts.length === 1) {
-            const single = parts[0].replace(/['"״׳\u05F4\u05F3\u201C\u201D\u2018\u2019]/g, "").replace(/\s+/g, " ").trim();
+            const single = cleanEntityCandidate(parts[0]);
             if (isWorkGroupKeyword(single)) {
                 workGroups.add(single);
                 subjects.delete(single);
@@ -142,8 +150,8 @@ function cleanEntityName(raw: string): string {
     name = name.replace(/\d{1,2}\/\d{1,2}\/\d{4}\s+\d{1,2}:\d{2}:\d{2}/g, "");
     name = name.replace(/\d{1,2}\/\d{1,2}\/\d{4}/g, "");
 
-    // Collapse multiple spaces
-    name = name.replace(/\s+/g, " ").trim();
+    // Normalize dots and collapse multiple spaces
+    name = name.replace(/\./g, " ").replace(/\s+/g, " ").trim();
 
     // Stop at known structural keywords that indicate end of name
     const stopWords = ["הוראה", "שהייה", "שעה", "יום", "פרטני", "תפקיד"];

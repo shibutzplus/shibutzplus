@@ -19,8 +19,8 @@ type MngrAnnualBldByClassCellProps = {
     teachers: TeacherType[];
     classes: ClassType[];
     isDisabled: boolean;
-    onCreateSubject: (day: string, hour: number, value: string) => Promise<string | undefined>;
-    onCreateTeacher: (day: string, hour: number, value: string) => Promise<string | undefined>;
+    onCreateSubject?: (day: string, hour: number, value: string) => Promise<string | undefined>;
+    onCreateTeacher?: (day: string, hour: number, value: string) => Promise<string | undefined>;
     handleScheduleUpdate: (
         type: AnnualInputCellType,
         elementIds: string[],
@@ -40,8 +40,6 @@ const MngrAnnualBldByClassCell: React.FC<MngrAnnualBldByClassCellProps> = ({
     teachers,
     classes,
     isDisabled,
-    onCreateSubject,
-    onCreateTeacher,
     handleScheduleUpdate,
 }) => {
     const { handleOpenPopup } = useConfirmPopup();
@@ -96,8 +94,6 @@ const MngrAnnualBldByClassCell: React.FC<MngrAnnualBldByClassCellProps> = ({
         [classes, selectedClassId],
     );
 
-    const isActivity = selectedClassObj?.activity;
-
     const subjectOptions = useMemo(() => {
         const filtered = selectedClassObj?.activity
             ? subjects.filter((s) => s.name === selectedClassObj.name)
@@ -114,12 +110,8 @@ const MngrAnnualBldByClassCell: React.FC<MngrAnnualBldByClassCellProps> = ({
                     onChange={handleTeacherChange}
                     placeholder="מורה"
                     isSearchable
-                    isAllowAddNew
                     isBold
                     isDisabled={isDisabled}
-                    onCreate={(v: string) => {
-                        return onCreateTeacher(day, hour, v);
-                    }}
                     onBeforeRemove={confirmRemove}
                 />
                 <DynamicInputMultiSelect
@@ -128,9 +120,7 @@ const MngrAnnualBldByClassCell: React.FC<MngrAnnualBldByClassCellProps> = ({
                     onChange={handleSubjectChange}
                     placeholder="מקצוע"
                     isSearchable
-                    isAllowAddNew={!isActivity}
                     isDisabled={isDisabled}
-                    onCreate={(value: string) => onCreateSubject(day, hour, value)}
                     onBeforeRemove={confirmRemove}
                 />
             </div>

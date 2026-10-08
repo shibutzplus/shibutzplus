@@ -269,7 +269,6 @@ export const sortDailyTeachers = (
             return classNameA.localeCompare(classNameB, "he", { numeric: true });
         });
 
-    // Groups
     const groups: GroupOption[] = [
         {
             label: "מורה נוסף בשיעור",
@@ -283,11 +282,6 @@ export const sortDailyTeachers = (
                 value: teacher.id,
                 label: teacher.name,
             })),
-        },
-        {
-            label: "מורים ללא מערכת",
-            collapsed: true,
-            options: extraRegularTeachers.map((t) => ({ value: t.id, label: t.name })),
         },
         {
             label: "מורים פנויים",
@@ -328,7 +322,11 @@ export const sortDailyTeachers = (
             collapsed: true,
             options: freeDayTeachers.map((t) => ({ value: t.id, label: t.name })),
         },
-
+        {
+            label: "מורים ללא מערכת",
+            collapsed: true,
+            options: extraRegularTeachers.map((t) => ({ value: t.id, label: t.name })),
+        },
     ];
 
     return groups;
