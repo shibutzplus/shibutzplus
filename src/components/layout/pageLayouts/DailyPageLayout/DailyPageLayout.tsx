@@ -64,9 +64,6 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
                         <div className={styles.topBarActionBtns}>
                             <DailyActionBtns position="left" />
                         </div>
-                        <div className={styles.topBarActionBtnsShort}>
-                            <DailyActionBtns position="left" useShortLabels={true} />
-                        </div>
                     </>
                 }
                 HeaderLeftActions={<DailyPublishActionBtns />}
@@ -101,7 +98,7 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
                             </div>
                         </div>
                         <div className={styles.secondRowActionBtns}>
-                            <DailyActionBtns position="left" useShortLabels={true} />
+                            <DailyActionBtns position="left" />
                         </div>
                         <div className={styles.mobileActionGroup}>
                             <button
@@ -114,7 +111,7 @@ export default function DailyPageLayout({ children }: DailyPageLayoutProps) {
                                 {isAutoAssigning ? <Loading size="S" /> : <Icons.magic size={18} />}
                             </button>
                             <div className={styles.mobileActionMenu}>
-                                <DailyActionBtns position="left" useMobileMenu={true} useShortLabels={true} />
+                                <DailyActionBtns position="left" useMobileMenu={true} />
                             </div>
                         </div>
                     </div>

@@ -43,3 +43,9 @@ next-env.d.ts
 
 # Cloudflare Pages / Workers
 .dev.vars
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+

@@ -268,7 +268,7 @@ export default function LandingPage() {
                                 className={styles.desktopVideo}
                                 width="100%"
                                 height="100%"
-                                src="https://www.youtube.com/embed/4S4qAJ7zbjg"
+                                src="https://www.youtube.com/embed/D_3pmL-mlgk"
                                 title="שיבוץ+ - סרטון הסבר"
                                 frameBorder="0"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -279,7 +279,7 @@ export default function LandingPage() {
                                 className={styles.mobileVideo}
                                 width="100%"
                                 height="100%"
-                                src="https://www.youtube.com/embed/EIDRuPzvKuE"
+                                src="https://www.youtube.com/embed/3zOKgXsN6Xk"
                                 title="שיבוץ+ - סרטון הסבר"
                                 frameBorder="0"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

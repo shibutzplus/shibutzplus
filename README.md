@@ -54,3 +54,8 @@ https://trello.com/b/SrahpnDm/%D7%A9%D7%99%D7%91%D7%95%D7%A5
 ## New Year Process
 - TRUNCATE TABLE annual_schedule_alt;   /* Delete all data from alt schedule table if existed */
 - substitute teachers we dont touch. Sganiot wil change it manually if they want
+
+## update schedule task:
+/goal תעדכן את המערכת של בית ספר [שם בית הספר] ותייצר את קובצי ה-DOCX מהתחלה ועד הסוף.
+
+

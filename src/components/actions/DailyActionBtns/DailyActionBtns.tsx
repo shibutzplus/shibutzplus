@@ -10,11 +10,10 @@ import styles from "./DailyActionBtns.module.css";
 
 type DailyActionBtnsProps = {
     position: PositionSide;
-    useShortLabels?: boolean;
     useMobileMenu?: boolean;
 };
 
-const DailyActionBtns: React.FC<DailyActionBtnsProps> = ({ position, useShortLabels = false, useMobileMenu = false }) => {
+const DailyActionBtns: React.FC<DailyActionBtnsProps> = ({ position, useMobileMenu = false }) => {
     const { addNewEmptyColumn, autoAssignSchedule, isLoading, isAutoAssigning, hasMissingTeacherColumn } = useDailyTableContext();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const containerRef = React.useRef<HTMLDivElement>(null);
@@ -22,8 +21,7 @@ const DailyActionBtns: React.FC<DailyActionBtnsProps> = ({ position, useShortLab
     useClickOutside(containerRef, () => setIsMenuOpen(false), isMenuOpen);
 
     const getButtonClass = (position: PositionSide) => {
-        const classes = [];
-        if (useShortLabels) classes.push(styles.shortBtn);
+        const classes = [styles.shortBtn];
 
         switch (position) {
             case "left":
@@ -56,7 +54,8 @@ const DailyActionBtns: React.FC<DailyActionBtnsProps> = ({ position, useShortLab
             <ActionBtn
                 type={ColumnTypeValues.missingTeacher}
                 Icon={<Icons.missingTeacher size={14} />}
-                label={useShortLabels ? "מורה חסר" : "שיבוץ למורה חסר"}
+                label="מורה חסר"
+                tooltip="שיבוץ ממלאי מקום למורה חסר"
                 isDisabled={isLoading || isAutoAssigning}
                 style={getButtonStyle(MissingTeacherColor)}
                 func={() => handleActionClick(() => addNewEmptyColumn(ColumnTypeValues.missingTeacher))}
@@ -65,7 +64,8 @@ const DailyActionBtns: React.FC<DailyActionBtnsProps> = ({ position, useShortLab
             <ActionBtn
                 type={ColumnTypeValues.existingTeacher}
                 Icon={<Icons.teacher size={14} />}
-                label={useShortLabels ? "מורה נוכח" : "שיבוץ למורה נוכח"}
+                label="מורה נוכח"
+                tooltip="שיבוץ מורה נוכח הדורש מילוי מקום בחלק מהשעות"
                 isDisabled={isLoading || isAutoAssigning}
                 style={getButtonStyle(ExistingTeacherColor)}
                 func={() => handleActionClick(() => addNewEmptyColumn(ColumnTypeValues.existingTeacher))}
@@ -74,7 +74,8 @@ const DailyActionBtns: React.FC<DailyActionBtnsProps> = ({ position, useShortLab
             <ActionBtn
                 type={ColumnTypeValues.event}
                 Icon={<Icons.event size={16} />}
-                label={useShortLabels ? "אירוע" : "שיבוץ אירוע"}
+                label="אירוע"
+                tooltip="הוספת אירועים בית ספריים"
                 isDisabled={isLoading || isAutoAssigning}
                 style={getButtonStyle(EventColor)}
                 func={() => handleActionClick(() => addNewEmptyColumn(ColumnTypeValues.event))}

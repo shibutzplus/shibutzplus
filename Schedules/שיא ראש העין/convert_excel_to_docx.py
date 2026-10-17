@@ -57,6 +57,12 @@ SUBJECT_MAP = {
     'תרבות יהוד': 'תרבות יהודית ישראלית',
     'סוף תוף הכ': 'סוף תוף',
     'סוף.תוף.הכ.תו': 'סוף תוף',
+    'סינקופה- ס': 'סוף תוף',
+    'סינקופה': 'סוף תוף',
+    'סי.סו.תו.הכ.תו': 'סוף תוף',
+    'שעת.סיפו.ויצ': 'שעת סיפור',
+    'שעת סיפו ויצ': 'שעת סיפור',
+    'שעת סיפור': 'שעת סיפור',
 }
 
 WORKGROUP_KEYWORDS = [
@@ -65,9 +71,21 @@ WORKGROUP_KEYWORDS = [
     'צוות שפה'
 ]
 
+# Mapping from incoming schedule names to canonical existing system/DB names
+TEACHER_CANONICAL_MAP = {
+    'בנצי יטיב': 'קרב - בנצי יטיב',
+    'דרור ספיר - גינה לימודית': 'גינה-דרוד ספיר',
+    'עדי וונטורה פודקאסט': 'פודקאסט',
+    'שירין אבו סנינה שירין': 'שירין אבו סנינה',
+    'שרון עזרן יוגה': 'יוגה - שרון עזרן',
+}
+
 TEACHER_LASTNAME_MAP = {
     '- בנצי יטי': 'קרב - בנצי יטיב',
-    'אבו סנינה': 'שירין אבו סנינה שירין',
+    'בנצי יטי': 'קרב - בנצי יטיב',
+    'בנצי יטיב': 'קרב - בנצי יטיב',
+    'אבו סנינה': 'שירין אבו סנינה',
+    'שירין אבו סנינה שירין': 'שירין אבו סנינה',
     'אברהם': 'שירה אברהם',
     'אלוני': 'עמית אלוני',
     'ביטון': 'מיכל ביטון',
@@ -93,9 +111,12 @@ TEACHER_LASTNAME_MAP = {
     'ניסני': 'מזי ניסני',
     'סיני': 'שרון סיני',
     'ספיר': 'גינה-דרוד ספיר',
+    'ספיר - גינ': 'גינה-דרוד ספיר',
+    'דרור ספיר - גינה לימודית': 'גינה-דרוד ספיר',
     'עאזם': 'מחמוד עאזם',
     'עוזרי': 'אור עוזרי',
     'פודקאסט': 'פודקאסט',
+    'עדי וונטורה פודקאסט': 'פודקאסט',
     'פולק חנן': 'אלדמע פולק חנן',
     'פוקשנסקי פ': 'ליז פוקשנסקי פיינשטיין',
     'קליין': 'תמר קליין',
@@ -106,6 +127,8 @@ TEACHER_LASTNAME_MAP = {
     'שחר': 'לירז שחר',
     'שחר אלבז': 'עוז שחר אלבז',
     'שישליאניקו': 'ליליה שישליאניקוב',
+    'שרון עזרן יוגה': 'יוגה - שרון עזרן',
+    'יוגה': 'יוגה - שרון עזרן',
     'שרגורודסקי': 'לירון שרגורודסקי',
     'שרף': 'בר שרף',
 }
@@ -115,7 +138,7 @@ CLASS_HOMEROOM_TEACHERS = {
     'א2': 'סתיו גמליאל',
     'א3': 'שני ידאעי',
     'א4': 'תמי לרנר',
-    'ב1': 'שירין אבו סנינה שירין',
+    'ב1': 'שירין אבו סנינה',
     'ב2': 'לירון שרגורודסקי',
     'ב3': 'מור חומן וכטל',
     'ג1': 'תקווה גטה',
@@ -173,9 +196,13 @@ def normalize_teacher_workgroup(val: str) -> str:
 
 
 def resolve_teacher_name(t_label: str, class_name: str, subject: str, full_teachers: list) -> str:
-    t_label = t_label.strip()
+    t_label = t_label.strip().replace('\u200b', '')
     if not t_label:
         return ''
+    if t_label in TEACHER_CANONICAL_MAP:
+        return TEACHER_CANONICAL_MAP[t_label]
+    if t_label in SPECIAL_SUBJECT_TEACHERS:
+        return SPECIAL_SUBJECT_TEACHERS[t_label]
     if t_label == 'ברק':
         if class_name.startswith('א'):
             return 'ורד ברק'
@@ -217,18 +244,21 @@ def set_rtl(paragraph):
 
 
 def get_sheet_rows(file_path: str):
-    """Yields rows as list of strings, supporting both .xlsx (openpyxl) and .xls (xlrd)"""
-    if file_path.endswith('.xlsx'):
-        wb = openpyxl.load_workbook(file_path, data_only=True)
-        sheet = wb.active
-        for r in range(1, sheet.max_row + 1):
-            yield [str(sheet.cell(r, c).value or '').strip() for c in range(1, 8)]
-    else:
+    """Yields rows as list of strings, supporting both .xlsx (openpyxl) and .xls (xlrd) based on signature"""
+    with open(file_path, 'rb') as f:
+        header = f.read(8)
+
+    if header.startswith(b'\xd0\xcf\x11\xe0'):
         import xlrd
         wb = xlrd.open_workbook(file_path, formatting_info=False)
         sheet = wb.sheet_by_index(0)
         for r in range(sheet.nrows):
             yield [str(sheet.cell_value(r, c)).strip() for c in range(min(7, sheet.ncols))]
+    else:
+        wb = openpyxl.load_workbook(file_path, data_only=True)
+        sheet = wb.active
+        for r in range(1, sheet.max_row + 1):
+            yield [str(sheet.cell(r, c).value or '').strip() for c in range(1, 8)]
 
 
 def parse_teachers_excel(file_path: str):
@@ -244,7 +274,8 @@ def parse_teachers_excel(file_path: str):
                     'title': f"מערכת שעות מורה {curr_teacher}",
                     'schedule': day_schedule
                 })
-            curr_teacher = val0.replace('מערכת שעות למורה ', '').strip()
+            raw_teacher = val0.replace('מערכת שעות למורה ', '').strip()
+            curr_teacher = TEACHER_CANONICAL_MAP.get(raw_teacher, raw_teacher)
             day_schedule = {d: [] for d in range(1, 7)}
             continue
 
@@ -298,15 +329,24 @@ def parse_class_cell_lessons(cell_v: str, curr_class: str, full_teachers: list) 
     if not lines:
         return []
 
-    # Case 1: ב1-ב3 Day 3 garden split: ['גינה לימוד', 'ספיר', 'שפה', <teacher>]
-    if len(lines) == 4 and 'גינה' in lines[0]:
+    # Case 1: 4 lines -> Two split lessons (e.g. [sub1, t1, sub2, t2])
+    if len(lines) == 4:
         sub1 = normalize_subject(lines[0])
         t1 = resolve_teacher_name(lines[1], curr_class, sub1, full_teachers)
+        if not t1 and sub1 in SPECIAL_SUBJECT_TEACHERS:
+            t1 = SPECIAL_SUBJECT_TEACHERS[sub1]
+
         sub2 = normalize_subject(lines[2])
         t2 = resolve_teacher_name(lines[3], curr_class, sub2, full_teachers)
-        return [f'{sub1}, {t1}, הוראה', f'{sub2}, {t2}, הוראה']
+        if not t2 and sub2 in SPECIAL_SUBJECT_TEACHERS:
+            t2 = SPECIAL_SUBJECT_TEACHERS[sub2]
 
-    # Case 2: 3 lines where one is a special activity (יוגה, מייקרים, סוף תוף, פודקאסט)
+        res = []
+        res.append(f'{sub1}, {t1}, הוראה' if t1 else f'{sub1}, הוראה')
+        res.append(f'{sub2}, {t2}, הוראה' if t2 else f'{sub2}, הוראה')
+        return res
+
+    # Case 2: 3 lines where one is a special activity (סוף תוף הכ, מייקרים, יוגה, פודקאסט, גינה)
     if len(lines) == 3:
         spec_idx = None
         for i, l in enumerate(lines):
@@ -317,28 +357,33 @@ def parse_class_cell_lessons(cell_v: str, curr_class: str, full_teachers: list) 
         if spec_idx is not None:
             spec_sub_raw = lines[spec_idx]
             spec_sub_name = normalize_subject(spec_sub_raw)
-            spec_teacher = SPECIAL_SUBJECT_TEACHERS.get(spec_sub_name, SPECIAL_SUBJECT_TEACHERS.get(spec_sub_raw))
+            spec_teacher = SPECIAL_SUBJECT_TEACHERS.get(spec_sub_name, SPECIAL_SUBJECT_TEACHERS.get(spec_sub_raw, ''))
 
             other_lines = [lines[j] for j in range(3) if j != spec_idx]
             other_sub = normalize_subject(other_lines[0])
             other_teacher = resolve_teacher_name(other_lines[1], curr_class, other_sub, full_teachers)
 
-            les_spec = f'{spec_sub_name}, {spec_teacher}, הוראה'
-            les_other = f'{other_sub}, {other_teacher}, הוראה'
+            les_spec = f'{spec_sub_name}, {spec_teacher}, הוראה' if spec_teacher else f'{spec_sub_name}, הוראה'
+            les_other = f'{other_sub}, {other_teacher}, הוראה' if other_teacher else f'{other_sub}, הוראה'
             return [les_spec, les_other] if spec_idx == 0 else [les_other, les_spec]
 
     # Case 3: 2 lines with special subject (e.g. ג2 Day 5: ['סוף תוף הכ', 'שפה'])
-    if len(lines) == 2 and ('סוף תוף' in lines[0] or lines[0] in SPECIAL_SUBJECT_TEACHERS):
+    if len(lines) == 2 and ('סוף תוף' in lines[0] or normalize_subject(lines[0]) in SPECIAL_SUBJECT_TEACHERS or lines[0] in SPECIAL_SUBJECT_TEACHERS):
         spec_sub = normalize_subject(lines[0])
         spec_teacher = SPECIAL_SUBJECT_TEACHERS.get(spec_sub, SPECIAL_SUBJECT_TEACHERS.get(lines[0], 'קרב - בנצי יטיב'))
         other_sub = normalize_subject(lines[1])
         other_teacher = CLASS_HOMEROOM_TEACHERS.get(curr_class, '')
-        return [f'{spec_sub}, {spec_teacher}, הוראה', f'{other_sub}, {other_teacher}, הוראה']
+        les_spec = f'{spec_sub}, {spec_teacher}, הוראה' if spec_teacher else f'{spec_sub}, הוראה'
+        les_other = f'{other_sub}, {other_teacher}, הוראה' if other_teacher else f'{other_sub}, הוראה'
+        return [les_spec, les_other]
 
     # Standard cell: lines[0] is subject, lines[1] is teacher label (if exists)
     sub = normalize_subject(lines[0])
     t_label = lines[1] if len(lines) > 1 else ''
     t_full = resolve_teacher_name(t_label, curr_class, sub, full_teachers)
+    if not t_full and sub in SPECIAL_SUBJECT_TEACHERS:
+        t_full = SPECIAL_SUBJECT_TEACHERS[sub]
+
     if t_full:
         return [f"{sub}, {t_full}, הוראה"]
     return [f"{sub}, הוראה"]
@@ -479,13 +524,15 @@ def create_docx(output_path: str, schedules: list, school_name: str = "שיא ר
                     c_lesson = lesson_row.cells[0]
                     set_cell_shading(c_lesson, 'FFFFFF')
                     set_cell_margins(c_lesson)
-                    p_les = c_lesson.paragraphs[0]
-                    p_les.alignment = WD_ALIGN_PARAGRAPH.LEFT
-                    r_les = p_les.add_run(lesson_content)
-                    r_les.font.name = 'Arial'
-                    r_les.font.size = Pt(9)
-                    r_les.font.color.rgb = RGBColor(0, 0, 0)
-                    set_rtl(p_les)
+                    sub_lessons = [sl.strip() for sl in lesson_content.split('\n') if sl.strip()]
+                    for l_idx, sub_l in enumerate(sub_lessons):
+                        p_les = c_lesson.paragraphs[0] if l_idx == 0 else c_lesson.add_paragraph()
+                        p_les.alignment = WD_ALIGN_PARAGRAPH.LEFT
+                        r_les = p_les.add_run(sub_l)
+                        r_les.font.name = 'Arial'
+                        r_les.font.size = Pt(9)
+                        r_les.font.color.rgb = RGBColor(0, 0, 0)
+                        set_rtl(p_les)
 
                     c_hour = lesson_row.cells[1]
                     set_cell_shading(c_hour, 'FFFFFF')
@@ -520,7 +567,7 @@ def main():
     if not os.path.exists(classes_file):
         classes_file = os.path.join(base_dir, "כיתות.xls")
 
-    teachers_docx = os.path.join(base_dir, "כיתות.docx") if False else os.path.join(base_dir, "מורים.docx")
+    teachers_docx = os.path.join(base_dir, "מורים.docx")
     classes_docx = os.path.join(base_dir, "כיתות.docx")
 
     print(f"טוען קובץ מורים: {teachers_file}...")

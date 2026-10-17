@@ -45,12 +45,17 @@ BATCHES = [
         "teacher_pdf": os.path.join(SHINUYIM_DIR, "מערכת שעות למורה - טבלה.pdf"),
         "class_pdf": os.path.join(SHINUYIM_DIR, "מערכת שעות לכיתה - טבלה.pdf"),
     },
+    {
+        "name": "Batch 3 (07/10/2026)",
+        "teacher_pdf": os.path.join(SHINUYIM_DIR, "מערכת שעות למורה - טבלה (2).pdf"),
+        "class_pdf": os.path.join(SHINUYIM_DIR, "מערכת שעות לכיתה - טבלה (2).pdf"),
+    },
 ]
 
 # School metadata
 SCHOOL_ID = "xu77qkr9250ki6g77c9k3iyd"
 SCHOOL_NAME = "יצחק שדה א"
-META_TIMESTAMP = "04/10/2026 18:00:00"
+META_TIMESTAMP = "07/10/2026 16:20:00"
 
 HOUR_LABELS = {
     0: "שעה 0",

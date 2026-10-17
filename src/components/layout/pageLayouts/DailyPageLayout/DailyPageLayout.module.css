@@ -41,11 +41,6 @@
     width: 15px;
 }
 
-.topBarActionBtnsShort {
-    display: none;
-    gap: 15px;
-}
-
 .topBarActionBtns {
     display: flex;
     flex-direction: row;
@@ -54,19 +49,8 @@
     flex-wrap: nowrap;
 }
 
-/* <= 1340px */
-@media (max-width: 1340px) {
-    .topBarActionBtns {
-        display: none;
-    }
-
-    .topBarActionBtnsShort {
-        display: flex;
-    }
-
-    .contentWithBottomMargin {
-        margin-bottom: 0;
-    }
+.contentWithBottomMargin {
+    margin-bottom: 0;
 }
 
 /* <= 1230px */
@@ -75,16 +59,16 @@
         display: none;
     }
 
-    .topBarActionBtnsShort {
+    .topBarActionBtns {
         gap: 10px;
     }
 
-    .topBarActionBtnsShort button:not(:last-child) {
+    .topBarActionBtns button:not(:last-child) {
         width: 95px !important;
         gap: 0 !important;
     }
 
-    .topBarActionBtnsShort button:not(:last-child) svg {
+    .topBarActionBtns button:not(:last-child) svg {
         display: none !important;
     }
 }
@@ -102,11 +86,11 @@
         max-width: 190px;
     }
 
-    .topBarActionBtnsShort {
+    .topBarActionBtns {
         gap: 8px;
     }
 
-    .topBarActionBtnsShort button:not(:last-child) {
+    .topBarActionBtns button:not(:last-child) {
         width: 90px !important;
     }
 }
@@ -121,7 +105,7 @@
         display: none;
     }
 
-    .topBarActionBtnsShort {
+    .topBarActionBtns {
         display: none;
     }
 
