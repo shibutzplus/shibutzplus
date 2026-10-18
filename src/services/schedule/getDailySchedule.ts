@@ -42,6 +42,8 @@ export async function getDailyScheduleService(
                     subTeacherId: schedule.subTeacherId,
                     reason: schedule.reason,
                     position: schedule.position,
+                    guardTeacherIds: schedule.guardTeacherIds,
+                    instructions: schedule.instructions,
                     createdAt: schedule.createdAt,
                     updatedAt: schedule.updatedAt,
                 }) as unknown as DailyScheduleType,

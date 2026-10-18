@@ -15,6 +15,7 @@ import useConfirmPopup from "@/hooks/useConfirmPopup";
 import MngrDailyBldColMenu from "../MngrDailyBldColMenu/MngrDailyBldColMenu";
 import Icons from "@/style/icons";
 import { TeacherType } from "@/models/types/teachers";
+import { isTeacherScheduledForGuard } from "@/utils/tableUtils";
 import { useTeacherTableContext } from "@/context/TeacherTableContext";
 import { usePopup } from "@/context/PopupContext";
 import ReasonPopup from "@/components/popups/ReasonPopup/ReasonPopup";
@@ -54,6 +55,12 @@ const MngrDailyBldTeacherHeader: React.FC<MngrDailyBldTeacherHeaderProps> = ({
     const handleTeacherChange = async (value: string) => {
         const teacherId = value;
         if (!teacherId) return;
+
+        // Check if missing teacher is assigned to guard duty
+        const isMissingAndInGuard =
+            type === ColumnTypeValues.missingTeacher &&
+            isTeacherScheduledForGuard(mainDailyTable[selectedDate], teacherId);
+
         setIsLoading(true);
         const dayNumber = getDayNumberByDateString(selectedDate);
         const response = await populateTeacherColumn(
@@ -64,6 +71,14 @@ const MngrDailyBldTeacherHeader: React.FC<MngrDailyBldTeacherHeaderProps> = ({
             type,
         );
         if (response) {
+            if (isMissingAndInGuard) {
+                const teacherObj = teachers?.find((t) => t.id === teacherId);
+                const teacherName =
+                    teacherObj?.name ||
+                    filteredTeacherOptions.find((o) => o.value === teacherId)?.label ||
+                    teacherId;
+                successToast(messages.dailySchedule.teacherScheduledForGuard(teacherName));
+            }
             if (response.length === 0) {
                 successToast(messages.dailySchedule.noScheduleFound);
             }

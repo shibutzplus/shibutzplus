@@ -1,6 +1,6 @@
 import { AnnualScheduleType, AvailableTeachers } from "@/models/types/annualSchedule";
 import { ColumnType, ColumnTypeValues, DailySchedule, DailyScheduleCell, DailyScheduleType, HeaderCol } from "@/models/types/dailySchedule";
-import { initDailyEventCellData, initDailyTeacherCellData } from "@/services/daily/initialize";
+import { initDailyEventCellData, initDailyGuardCellData, initDailyTeacherCellData } from "@/services/daily/initialize";
 import { DEFAULT_FROM_HOUR, DEFAULT_TO_HOUR } from "@/utils/time";
 import { setColumn } from "./setColumn";
 import { logErrorAction } from "@/app/actions/POST/logErrorAction";
@@ -35,6 +35,8 @@ export const populateTable = (dataColumns: DailyScheduleType[], selectedDate: st
         // Use columnType from server to determine cell type
         if (columnType === ColumnTypeValues.event) {
             cellData = initDailyEventCellData(columnCell);
+        } else if (columnType === ColumnTypeValues.guard) {
+            cellData = initDailyGuardCellData(columnCell);
         } else {
             // Teacher columns (missing or existing)
             cellData = initDailyTeacherCellData(columnCell);

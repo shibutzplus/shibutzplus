@@ -9,13 +9,15 @@ import React from "react";
 import { DailySchedule, ColumnType, ColumnTypeValues } from "@/models/types/dailySchedule";
 import { sortDailyColumnIdsByPosition } from "@/utils/sort";
 import { getCellDisplayData } from "@/utils/dailyCellDisplay";
-import { COLOR_BY_TYPE } from "@/models/constant/daily";
-import { calculateVisibleRowsForDaily } from "@/utils/tableUtils";
+import { COLOR_BY_TYPE, DEFAULT_GUARD_TITLE, DEFAULT_EVENT_TITLE } from "@/models/constant/daily";
+import { calculateVisibleRowsForDaily, formatGuardCellText } from "@/utils/tableUtils";
 import { AppType } from "@/models/types";
 import { successToast } from "@/lib/toast";
 import CommonDailySchoolFullEventCell from "./CommonDailySchoolFullEventCell";
 import { getStorage, setStorage, STORAGE_KEYS } from "@/lib/localStorage";
 import { TeacherType } from "@/models/types/teachers";
+import { useOptionalMainContext } from "@/context/MainContext";
+import { useOptionalPortalContext } from "@/context/PortalContext";
 import styles from "./CommonDailySchoolFullTable.module.css";
 
 type CommonDailySchoolFullTableProps = {
@@ -39,6 +41,20 @@ const CommonDailySchoolFullTable: React.FC<CommonDailySchoolFullTableProps> = ({
     emptyText,
     onTeacherClick,
 }) => {
+    const mainCtx = useOptionalMainContext();
+    const portalCtx = useOptionalPortalContext();
+    const teachers = mainCtx?.teachers || portalCtx?.teachers || [];
+
+    const teacherMap = React.useMemo(() => {
+        const map = new Map<string, string>();
+        teachers.forEach((t) => {
+            if (t.id && t.name) {
+                map.set(t.id, t.name);
+            }
+        });
+        return map;
+    }, [teachers]);
+
     const schedule = mainDailyTable[selectedDate];
     const tableColumns = React.useMemo(() => schedule ? Object.keys(schedule) : [], [schedule]);
 
@@ -157,7 +173,10 @@ const CommonDailySchoolFullTable: React.FC<CommonDailySchoolFullTableProps> = ({
 
                     if (type === ColumnTypeValues.event) {
                         const headerCell = Object.values(column).find(c => c?.headerCol?.headerEvent);
-                        headerText = headerCell?.headerCol?.headerEvent || "אירוע";
+                        headerText = headerCell?.headerCol?.headerEvent || DEFAULT_EVENT_TITLE;
+                    } else if (type === ColumnTypeValues.guard) {
+                        const headerCell = Object.values(column).find(c => c?.headerCol?.headerEvent);
+                        headerText = headerCell?.headerCol?.headerEvent || DEFAULT_GUARD_TITLE;
                     } else {
                         const headerCell = Object.values(column).find(c => c?.headerCol?.headerTeacher);
                         headerText = headerCell?.headerCol?.headerTeacher?.name || "";
@@ -218,6 +237,12 @@ const CommonDailySchoolFullTable: React.FC<CommonDailySchoolFullTableProps> = ({
                                 const eventText = cellData?.event;
                                 cellDisplay.isEmpty = !eventText;
                                 cellDisplay.main = eventText || "";
+                                cellDisplay.detail = "";
+                                cellDisplay.isEvent = true;
+                            } else if (type === ColumnTypeValues.guard) {
+                                const formattedText = formatGuardCellText(cellData, teacherMap);
+                                cellDisplay.isEmpty = !formattedText;
+                                cellDisplay.main = formattedText;
                                 cellDisplay.detail = "";
                                 cellDisplay.isEvent = true;
                             } else {

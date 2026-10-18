@@ -31,6 +31,11 @@ export async function makeColumnRecurringAction(
             return authError as ActionResponse;
         }
 
+        // Prevent making an already recurring column recurring again
+        if (columnId.startsWith("rec_")) {
+            return { success: false, message: "העמודה כבר מוגדרת כחוזרת" };
+        }
+
         // Generate the new recurring columnId
         const recColumnId = `rec_${createId()}`;
 
@@ -107,13 +112,14 @@ export async function makeColumnRecurringAction(
                         hour: row.hour,
                         columnId: recColumnId,
                         position: nextPosition,
-                        columnType: ColumnTypeValues.event,
+                        columnType: row.columnType ?? ColumnTypeValues.event,
                         originalTeacherId: null,
                         classIds: null,
                         subjectId: null,
                         subTeacherId: null,
                         eventTitle: adaptedEventTitle,
                         event: row.event ?? null,
+                        guardTeacherIds: row.guardTeacherIds ?? null,
                         instructions: row.instructions ?? null,
                         comment: row.comment ?? null,
                         reason: null,

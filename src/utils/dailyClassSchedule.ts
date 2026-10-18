@@ -55,8 +55,8 @@ export const buildClassSchedule = (
             Object.values(columnData).find((c) => c?.headerCol?.type !== undefined);
         const colType = colFirstObj?.headerCol?.type ?? ColumnTypeValues.event;
 
-        // Skip event columns - class view only displays teaching/substitute changes
-        if (colType === ColumnTypeValues.event) return;
+        // Skip event and guard columns - class view only displays teaching/substitute changes
+        if (colType === ColumnTypeValues.event || colType === ColumnTypeValues.guard) return;
 
         const colHeaderTeacher =
             colFirstObj?.headerCol?.headerTeacher ||
@@ -147,7 +147,7 @@ export const calculateVisibleRowsForClasses = (
             if (!columnData) return;
             Object.entries(columnData).forEach(([hStr, cell]) => {
                 const h = parseInt(hStr, 10);
-                if (!isNaN(h) && cell?.event) {
+                if (!isNaN(h) && (cell?.event || (cell?.guardTeacherIds && cell.guardTeacherIds.length > 0))) {
                     maxHourWithData = Math.max(maxHourWithData, h);
                 }
             });

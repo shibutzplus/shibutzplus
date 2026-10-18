@@ -1,6 +1,6 @@
 "use server";
 
-/** Updates recurring event fields (title or specific hour content) from a specified date onwards. */
+/** Updates recurring event & guard fields (title or specific hour content) from a specified date onwards. */
 
 import { ActionResponse } from "@/models/types/actions";
 import { checkAuthAndParams } from "@/utils/authUtils";
@@ -8,7 +8,7 @@ import messages from "@/resources/messages";
 import { db, schema, executeQuery } from "@/db";
 import { and, eq, gte } from "drizzle-orm";
 import { NewDailyScheduleSchema } from "@/db/schema";
-import { ColumnTypeValues } from "@/models/types/dailySchedule";
+import { ColumnType, ColumnTypeValues } from "@/models/types/dailySchedule";
 import { dbLog } from "@/services/loggerService";
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
 import { DAILY_EVENT_COL_DATA_CHANGED } from "@/models/constant/sync";
@@ -18,6 +18,8 @@ import { cacheTags } from "@/lib/cacheTags";
 export type RecurringUpdateFields = {
     eventTitle?: string;
     event?: string;
+    guardTeacherIds?: string[];
+    instructions?: string | null;
 };
 
 export async function updateRecurringFromDateAction(
@@ -56,6 +58,7 @@ export async function updateRecurringFromDateAction(
             day: number;
             position: number;
             eventTitle: string | null;
+            columnType: ColumnType;
             hourMap: Map<number, typeof schema.dailySchedule.$inferSelect>;
         }>();
 
@@ -65,6 +68,7 @@ export async function updateRecurringFromDateAction(
                     day: row.day,
                     position: row.position,
                     eventTitle: row.eventTitle,
+                    columnType: (row.columnType as ColumnType) ?? ColumnTypeValues.event,
                     hourMap: new Map(),
                 });
             }
@@ -73,9 +77,14 @@ export async function updateRecurringFromDateAction(
             if (row.eventTitle) {
                 dateInfo.eventTitle = row.eventTitle;
             }
+            if (row.columnType) {
+                dateInfo.columnType = row.columnType as ColumnType;
+            }
         }
 
-        const isClearingCell = fields.event === "" || fields.event === null;
+        const isClearingCell =
+            (fields.event === "" || fields.event === null) &&
+            (!fields.guardTeacherIds || fields.guardTeacherIds.length === 0);
 
         if (hourFilter !== undefined) {
             if (isClearingCell) {
@@ -91,11 +100,16 @@ export async function updateRecurringFromDateAction(
                         ),
                 );
             } else {
+                const updateSet: Partial<NewDailyScheduleSchema> = {};
+                if (fields.event !== undefined) updateSet.event = fields.event;
+                if (fields.guardTeacherIds !== undefined) updateSet.guardTeacherIds = fields.guardTeacherIds;
+                if (fields.instructions !== undefined) updateSet.instructions = fields.instructions;
+
                 // 1. Update all existing rows for this hour in a single query
                 await executeQuery(() =>
                     db
                         .update(schema.dailySchedule)
-                        .set({ event: fields.event } as Partial<NewDailyScheduleSchema>)
+                        .set(updateSet)
                         .where(
                             and(
                                 baseCondition,
@@ -115,9 +129,11 @@ export async function updateRecurringFromDateAction(
                             hour: hourFilter,
                             columnId,
                             position: dateInfo.position,
-                            columnType: ColumnTypeValues.event,
+                            columnType: dateInfo.columnType,
                             eventTitle: dateInfo.eventTitle,
-                            event: fields.event,
+                            event: fields.event ?? "",
+                            guardTeacherIds: fields.guardTeacherIds ?? null,
+                            instructions: fields.instructions ?? null,
                         });
                     }
                 }

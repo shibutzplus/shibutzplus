@@ -3,56 +3,139 @@ import { ColumnTypeValues, DailySchedule, DailyScheduleCell } from "@/models/typ
 import { TeacherType } from "@/models/types/teachers";
 
 /**
- * Updates the daily schedule state with a new or modified cell.
- *
- * This function is typically called after a successful database update to reflect changes locally.
- * It locates the specific cell using `selectedDate`, `columnId`, and `cellData.hour`, then updates
- * its content (event text or substitution teacher) and assigns the new database ID (`responseId`).
- * It handles three cases: updating an event, updating a substitution teacher, or clearing both if neither is provided.
- * @returns A new copy of the `DailySchedule` with the updated cell.
+ * Internal helper to clone the schedule down to cell level.
  */
-export const updateAddCell = (
-    responseId: string,
+const cloneScheduleToCell = (
     mainDailyTable: DailySchedule,
     selectedDate: string,
-    cellData: DailyScheduleCell,
     columnId: string,
-    data: { event?: string; subTeacher?: TeacherType },
-    headerEvent?: string,
+    cellData: DailyScheduleCell,
 ) => {
-    // Deep copy down to the column level
     const updatedSchedule: DailySchedule = {
         ...mainDailyTable,
         [selectedDate]: {
             ...(mainDailyTable[selectedDate] || {}),
             [columnId]: {
                 ...(mainDailyTable[selectedDate]?.[columnId] || {}),
-            }
-        }
+            },
+        },
     };
 
     const hourStr = cellData.hour.toString();
-    const existingCell = { ...(updatedSchedule[selectedDate][columnId][hourStr] || cellData) };
+    const existingCell: DailyScheduleCell = {
+        ...(updatedSchedule[selectedDate][columnId][hourStr] || cellData),
+    };
+
+    return { updatedSchedule, existingCell, hourStr };
+};
+
+/**
+ * Updates daily schedule state for a teacher cell (substitution or text note).
+ */
+export const updateAddTeacherCell = (
+    responseId: string,
+    mainDailyTable: DailySchedule,
+    selectedDate: string,
+    cellData: DailyScheduleCell,
+    columnId: string,
+    data: { subTeacher?: TeacherType; event?: string },
+) => {
+    const { updatedSchedule, existingCell, hourStr } = cloneScheduleToCell(
+        mainDailyTable,
+        selectedDate,
+        columnId,
+        cellData,
+    );
+
+    existingCell.DBid = responseId;
 
     if (data.event !== undefined) {
-        existingCell.DBid = responseId;
-        existingCell.event = data.event !== null && data.event !== undefined ? data.event : eventPlaceholder;
+        existingCell.event = data.event;
         delete existingCell.subTeacher;
     } else if (data.subTeacher !== undefined) {
-        existingCell.DBid = responseId;
         existingCell.subTeacher = data.subTeacher;
         delete existingCell.event;
-    } else if (data.subTeacher === undefined && data.event === undefined) {
-        existingCell.DBid = responseId;
+    } else {
         delete existingCell.subTeacher;
         delete existingCell.event;
     }
 
+    updatedSchedule[selectedDate][columnId][hourStr] = existingCell;
+    return updatedSchedule;
+};
+
+/**
+ * Updates daily schedule state for an event cell.
+ */
+export const updateAddEventCell = (
+    responseId: string,
+    mainDailyTable: DailySchedule,
+    selectedDate: string,
+    cellData: DailyScheduleCell,
+    columnId: string,
+    data: { event?: string },
+    headerEvent?: string,
+) => {
+    const { updatedSchedule, existingCell, hourStr } = cloneScheduleToCell(
+        mainDailyTable,
+        selectedDate,
+        columnId,
+        cellData,
+    );
+
+    existingCell.DBid = responseId;
+    existingCell.event = data.event !== null && data.event !== undefined ? data.event : eventPlaceholder;
+
     if (headerEvent) {
         existingCell.headerCol = {
             ...existingCell.headerCol,
-            headerEvent: headerEvent,
+            headerEvent,
             type: ColumnTypeValues.event,
+        };
+    }
+
+    updatedSchedule[selectedDate][columnId][hourStr] = existingCell;
+    return updatedSchedule;
+};
+
+/**
+ * Updates daily schedule state for a guard cell.
+ */
+export const updateAddGuardCell = (
+    responseId: string,
+    mainDailyTable: DailySchedule,
+    selectedDate: string,
+    cellData: DailyScheduleCell,
+    columnId: string,
+    data: { event?: string; guardTeacherIds?: string[]; instructions?: string | null },
+    guardTitle?: string,
+) => {
+    const { updatedSchedule, existingCell, hourStr } = cloneScheduleToCell(
+        mainDailyTable,
+        selectedDate,
+        columnId,
+        cellData,
+    );
+
+    existingCell.DBid = responseId;
+
+    if (data.guardTeacherIds !== undefined) {
+        existingCell.guardTeacherIds = data.guardTeacherIds;
+    }
+
+    if (data.instructions !== undefined) {
+        existingCell.instructions = data.instructions !== null ? data.instructions : undefined;
+    }
+
+    if (data.event !== undefined) {
+        existingCell.event = data.event;
+    }
+
+    if (guardTitle) {
+        existingCell.headerCol = {
+            ...existingCell.headerCol,
+            headerEvent: guardTitle,
+            type: ColumnTypeValues.guard,
         };
     }
 
@@ -84,9 +167,9 @@ export const updateDeleteCell = (
                     [hourStr]: {
                         headerCol: existingCell.headerCol,
                         hour: existingCell.hour,
-                    }
-                }
-            }
+                    },
+                },
+            },
         };
         return updatedSchedule;
     }
@@ -95,13 +178,7 @@ export const updateDeleteCell = (
 };
 
 /**
- * Updates the header information for all cells in a specific event column.
- *
- * This function iterates through all hours of the day for a given column and updates the
- * `headerCol` property of each cell. It sets the `headerEvent` to the new `eventTitle`
- * and ensures the column type is set to `ColumnTypeValues.event`. This is useful when
- * renaming an event column, ensuring consistency across all time slots.
- * @returns The updated daily schedule with modified headers.
+ * Updates header title for all cells in an event column.
  */
 export const updateAllEventHeader = (
     updatedSchedule: DailySchedule,
@@ -112,12 +189,36 @@ export const updateAllEventHeader = (
     toHour: number = 10,
 ) => {
     for (let i = fromHour; i <= toHour; i++) {
-        const cell = updatedSchedule[selectedDate][columnId][`${i}`];
+        const cell = updatedSchedule[selectedDate]?.[columnId]?.[`${i}`];
         if (cell) {
             cell.headerCol = {
                 ...cell.headerCol,
                 headerEvent: eventTitle,
                 type: ColumnTypeValues.event,
+            };
+        }
+    }
+    return updatedSchedule;
+};
+
+/**
+ * Updates header title for all cells in a guard column.
+ */
+export const updateAllGuardHeader = (
+    updatedSchedule: DailySchedule,
+    selectedDate: string,
+    columnId: string,
+    guardTitle: string,
+    fromHour: number = 1,
+    toHour: number = 10,
+) => {
+    for (let i = fromHour; i <= toHour; i++) {
+        const cell = updatedSchedule[selectedDate]?.[columnId]?.[`${i}`];
+        if (cell) {
+            cell.headerCol = {
+                ...cell.headerCol,
+                headerEvent: guardTitle,
+                type: ColumnTypeValues.guard,
             };
         }
     }

@@ -7,9 +7,11 @@ import { ColumnType, DailySchedule, DailyScheduleCell, DailyScheduleType, Teache
 import { TeacherType } from "@/models/types/teachers";
 import { AvailableTeachers, TeacherClassMap } from "@/models/types/annualSchedule";
 import { DAILY_TEACHER_COL_DATA_CHANGED, DAILY_EVENT_COL_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED } from "@/models/constant/sync";
+import { DEFAULT_GUARD_TITLE } from "@/models/constant/daily";
 import useDailySelectedDate from "@/hooks/daily/useDailySelectedDate";
 import useDailyTeacherActions from "@/hooks/daily/useDailyTeacherActions";
 import useDailyEventActions from "@/hooks/daily/useDailyEventActions";
+import useDailyGuardActions from "@/hooks/daily/useDailyGuardActions";
 import { usePollingUpdates } from "@/hooks/usePollingUpdates";
 import { getAnnualScheduleAction } from "@/app/actions/GET/getAnnualScheduleAction";
 import { getDailyScheduleAction } from "@/app/actions/GET/getDailyScheduleAction";
@@ -44,6 +46,7 @@ const COLUMN_PRIORITY: Record<ColumnType, number> = {
     [ColumnTypeValues.missingTeacher]: 0,
     [ColumnTypeValues.existingTeacher]: 1,
     [ColumnTypeValues.event]: 2,
+    [ColumnTypeValues.guard]: 3,
 };
 const POSITION_GAP = 1000;
 const REBALANCE_THRESHOLD = 10; // If gap is smaller than rebalance
@@ -96,6 +99,23 @@ interface DailyTableContextType {
         dailyScheduleId: string,
     ) => Promise<boolean | undefined>;
     pasteEventColumn: (columnId: string, pastedColumnData: { [hour: string]: DailyScheduleCell }) => Promise<boolean>;
+    populateGuardColumn: (columnId: string, guardTitle?: string) => Promise<void>;
+    addGuardCell: (
+        cellData: DailyScheduleCell,
+        columnId: string,
+        data: { event?: string; guardTeacherIds?: string[]; instructions?: string | null },
+    ) => Promise<DailyScheduleType | undefined>;
+    updateGuardCell: (
+        cellData: DailyScheduleCell,
+        columnId: string,
+        dailyScheduleId: string,
+        data: { event?: string; guardTeacherIds?: string[]; instructions?: string | null },
+    ) => Promise<DailyScheduleType | undefined>;
+    deleteGuardCell: (
+        cellData: DailyScheduleCell,
+        columnId: string,
+        dailyScheduleId: string,
+    ) => Promise<boolean | undefined>;
     daysSelectOptions: (short?: boolean) => SelectOption[];
     handleDayChange: (value: string) => void;
     togglePreviewMode: (type?: "teachers" | "classes") => void;
@@ -198,6 +218,10 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     // Event Column
     const { populateEventColumn, addEventCell, updateEventCell, deleteEventCell, pasteEventColumn } =
         useDailyEventActions(mainDailyTable, setMainDailyTable, selectedDate);
+
+    // Guard Column
+    const { populateGuardColumn, addGuardCell, updateGuardCell, deleteGuardCell } =
+        useDailyGuardActions(mainDailyTable, setMainDailyTable, selectedDate);
 
     // Fetch annual schedule and map available teachers for each day and hour
     useEffect(() => {
@@ -481,12 +505,13 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 tempSchedule[selectedDate] = {};
             }
 
+            const defaultHeaderEvent = type === ColumnTypeValues.guard ? DEFAULT_GUARD_TITLE : undefined;
             // Create empty column first with placeholder pos
             const scheduleWithNewCol = initializeEmptyColumn(
                 tempSchedule,
                 selectedDate,
                 newColumnId,
-                { type, position: 0 }, // Placeholder position, will be updated by rebalance
+                { type, position: 0, headerEvent: defaultHeaderEvent }, // Placeholder position, will be updated by rebalance
                 settings?.fromHour ?? 1,
                 settings?.toHour ?? 10
             );
@@ -505,11 +530,12 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
             finalSchedule[selectedDate] = {};
         }
 
+        const defaultHeaderEvent = type === ColumnTypeValues.guard ? DEFAULT_GUARD_TITLE : undefined;
         const newSchedule = initializeEmptyColumn(
             finalSchedule,
             selectedDate,
             newColumnId,
-            { type, position: calculatedNewPos },
+            { type, position: calculatedNewPos, headerEvent: defaultHeaderEvent },
             settings?.fromHour ?? 1,
             settings?.toHour ?? 10
         );
@@ -664,7 +690,9 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                                 };
                                 col[hourStr] = {
                                     ...existingCell,
-                                    event: fields.event || undefined,
+                                    event: fields.event !== undefined ? (fields.event || undefined) : existingCell.event,
+                                    guardTeacherIds: fields.guardTeacherIds !== undefined ? fields.guardTeacherIds : existingCell.guardTeacherIds,
+                                    instructions: fields.instructions !== undefined ? (fields.instructions || undefined) : existingCell.instructions,
                                 };
                             } else if (fields.eventTitle !== undefined) {
                                 Object.keys(col).forEach(h => {
@@ -895,11 +923,15 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 addEventCell,
                 updateEventCell,
                 deleteEventCell,
+                pasteEventColumn,
+                populateGuardColumn,
+                addGuardCell,
+                updateGuardCell,
+                deleteGuardCell,
                 previewType,
                 setPreviewType,
                 togglePreviewMode,
                 moveColumn,
-                pasteEventColumn,
                 setMainDailyTable,
                 makeColumnRecurring,
                 deleteRecurringFromDate,
