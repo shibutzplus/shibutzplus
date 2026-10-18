@@ -738,7 +738,6 @@ const AnnualImportContent = () => {
 
                                                                     const checkChanged = () => {
                                                                         if (!selectedTeacherId || !(selectedTeacherId in existingSchedules)) return false;
-                                                                        if (!teacherHasExistingSchedule) return false;
                                                                         if (cell && !existingCell) return true;
                                                                         if (!cell && existingCell) return true;
                                                                         if (cell && existingCell) {

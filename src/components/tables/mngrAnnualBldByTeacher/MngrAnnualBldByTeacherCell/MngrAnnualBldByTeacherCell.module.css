@@ -27,6 +27,27 @@
   gap: 12px;
 }
 
+.cellContent :global(.react-select__value-container) {
+  padding: 2px 2px !important;
+}
+
+.cellContent :global(.react-select__multi-value) {
+  margin: 1px 1px !important;
+}
+
+.cellContent :global(.react-select__multi-value__label) {
+  text-overflow: clip !important;
+  padding: 0 2px !important;
+}
+
+.cellContent :global(.react-select__multi-value__remove) {
+  padding: 0 2px !important;
+}
+
+.cellContent :global(.react-select__dropdown-indicator) {
+  padding: 2px !important;
+}
+
 .cellContent :global(.react-select__clear-indicator),
 .cellContent :global(.react-select__multi-value__remove),
 .cellContent :global(.custom-select-clear-btn) {

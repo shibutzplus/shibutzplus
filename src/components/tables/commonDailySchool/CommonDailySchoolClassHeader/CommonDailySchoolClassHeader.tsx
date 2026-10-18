@@ -6,6 +6,7 @@
 import React, { useRef } from "react";
 import styles from "../CommonDailySchoolTeacherHeader/CommonDailySchoolTeacherHeader.module.css";
 import { useStickyHeader } from "@/hooks/scroll/useStickyHeader";
+import { ClassColor } from "@/style/root";
 
 type CommonDailySchoolClassHeaderProps = {
     classNameText: string;
@@ -19,7 +20,7 @@ const CommonDailySchoolClassHeader: React.FC<CommonDailySchoolClassHeaderProps> 
 
     return (
         <div ref={headerRef} className={styles.columnHeaderWrapper} style={{ top: 0 }}>
-            <div className={styles.columnHeader} style={{ backgroundColor: "#718096" }}>
+            <div className={styles.columnHeader} style={{ backgroundColor: ClassColor }}>
                 <div className={styles.headerText} style={{ textAlign: "center", paddingRight: 0 }}>
                     {classNameText}
                 </div>

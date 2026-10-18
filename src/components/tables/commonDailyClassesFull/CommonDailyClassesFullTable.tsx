@@ -6,10 +6,12 @@
 //
 
 import React, { useMemo, useRef, useLayoutEffect, useState } from "react";
-import { DailySchedule, ColumnTypeValues } from "@/models/types/dailySchedule";
+import { DailySchedule, ColumnType, ColumnTypeValues } from "@/models/types/dailySchedule";
 import { sortClassNames, buildClassSchedule, calculateVisibleRowsForClasses } from "@/utils/dailyClassSchedule";
 import { sortDailyColumnIdsByPosition } from "@/utils/sort";
-import { COLOR_BY_TYPE } from "@/models/constant/daily";
+import { COLOR_BY_TYPE, DEFAULT_GUARD_TITLE, DEFAULT_EVENT_TITLE } from "@/models/constant/daily";
+import { formatGuardCellText } from "@/utils/tableUtils";
+import { ClassColor } from "@/style/root";
 import { useOptionalMainContext } from "@/context/MainContext";
 import { useOptionalPortalContext } from "@/context/PortalContext";
 import { AppType } from "@/models/types";
@@ -39,6 +41,17 @@ const CommonDailyClassesFullTable: React.FC<CommonDailyClassesFullTableProps> = 
     const mainCtx = useOptionalMainContext();
     const portalCtx = useOptionalPortalContext();
     const dbClasses = mainCtx?.classes || portalCtx?.classes || [];
+    const teachers = mainCtx?.teachers || portalCtx?.teachers || [];
+
+    const teacherMap = useMemo(() => {
+        const map = new Map<string, string>();
+        teachers.forEach((t) => {
+            if (t.id && t.name) {
+                map.set(t.id, t.name);
+            }
+        });
+        return map;
+    }, [teachers]);
 
     // Build class-based schedule using shared utility (with complete dependencies)
     const classSchedule = useMemo(() => {
@@ -50,20 +63,31 @@ const CommonDailyClassesFullTable: React.FC<CommonDailyClassesFullTableProps> = 
         return sortClassNames(Object.keys(classSchedule));
     }, [classSchedule]);
 
-    // Extract and sort event columns from schedule
+    // Map column types once for the entire table
+    const columnTypes = useMemo(() => {
+        const types: Record<string, ColumnType> = {};
+        if (!schedule) return types;
+
+        Object.keys(schedule).forEach((colId) => {
+            const columnData = schedule[colId];
+            const colFirstObj =
+                columnData?.["1"] ||
+                Object.values(columnData || {}).find((cell) => cell?.headerCol?.type !== undefined);
+            types[colId] = colFirstObj?.headerCol?.type ?? ColumnTypeValues.event;
+        });
+
+        return types;
+    }, [schedule]);
+
+    // Extract and sort event and guard columns from schedule
     const sortedEventColumnIds = useMemo(() => {
         if (!schedule) return [];
         const eventIds = Object.keys(schedule).filter((colId) => {
-            const columnData = schedule[colId];
-            if (!columnData) return false;
-            const colFirstObj =
-                columnData["1"] ||
-                Object.values(columnData).find((cell) => cell?.headerCol?.type !== undefined);
-            const colType = colFirstObj?.headerCol?.type ?? ColumnTypeValues.event;
-            return colType === ColumnTypeValues.event;
+            const colType = columnTypes[colId] ?? ColumnTypeValues.event;
+            return colType === ColumnTypeValues.event || colType === ColumnTypeValues.guard;
         });
         return sortDailyColumnIdsByPosition(eventIds, schedule);
-    }, [schedule]);
+    }, [schedule, columnTypes]);
 
     // Calculate visible rows using shared utility
     const rows = useMemo(() => {
@@ -143,7 +167,7 @@ const CommonDailyClassesFullTable: React.FC<CommonDailyClassesFullTableProps> = 
                         key={className}
                         className={styles.headerCell}
                         style={{
-                            backgroundColor: "#718096", // dark gray
+                            backgroundColor: ClassColor,
                         }}
                     >
                         <div className={styles.headerContent}>
@@ -155,17 +179,19 @@ const CommonDailyClassesFullTable: React.FC<CommonDailyClassesFullTableProps> = 
                 ))}
                 {sortedEventColumnIds.map((colId) => {
                     const column = schedule[colId];
+                    const colType = columnTypes[colId] ?? ColumnTypeValues.event;
                     const headerCell = column
                         ? Object.values(column).find((c) => c?.headerCol?.headerEvent)
                         : undefined;
-                    const headerText = headerCell?.headerCol?.headerEvent || "אירוע";
+                    const defaultHeaderText = colType === ColumnTypeValues.guard ? DEFAULT_GUARD_TITLE : DEFAULT_EVENT_TITLE;
+                    const headerText = headerCell?.headerCol?.headerEvent || defaultHeaderText;
 
                     return (
                         <div
                             key={colId}
                             className={styles.headerCell}
                             style={{
-                                backgroundColor: COLOR_BY_TYPE[ColumnTypeValues.event] || "#48BB78",
+                                backgroundColor: COLOR_BY_TYPE[colType] || "#48BB78",
                             }}
                         >
                             <div className={styles.headerContent}>
@@ -243,7 +269,13 @@ const CommonDailyClassesFullTable: React.FC<CommonDailyClassesFullTableProps> = 
                         {sortedEventColumnIds.map((colId) => {
                             const columnData = schedule?.[colId];
                             const cellData = columnData?.[row];
-                            const eventText = cellData?.event;
+                            const colType = columnTypes[colId] ?? ColumnTypeValues.event;
+
+                            let eventText = cellData?.event;
+                            if (colType === ColumnTypeValues.guard && cellData) {
+                                const formatted = formatGuardCellText(cellData, teacherMap);
+                                eventText = formatted || undefined;
+                            }
 
                             return (
                                 <div key={`${colId}-${row}`} className={styles.cell}>

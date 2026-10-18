@@ -31,7 +31,7 @@ export const useColumnAnimation = (sortedTableColumns: string[], selectedDate: s
         const colFirstObj = columnData?.["1"] || Object.values(columnData || {}).find(c => c?.headerCol?.type !== undefined);
         const colType = colFirstObj?.headerCol?.type;
 
-        if (colType === ColumnTypeValues.event) {
+        if (colType === ColumnTypeValues.event || colType === ColumnTypeValues.guard) {
             targetWidth = getCssNum('--table-daily-event-col-width-edit', 230);
         } else {
             targetWidth = getCssNum('--table-daily-teacher-col-width-edit', 200);

@@ -57,6 +57,10 @@
     background-color: #6EBE6A;
 }
 
+.headerGuard {
+    background-color: #78909C;
+}
+
 /* override for the corner */
 .cornerCell {
     z-index: 60;
@@ -197,7 +201,8 @@
     border-radius: 4px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     z-index: 1000;
-    min-width: 160px;
+    min-width: 165px;
+    width: max-content;
     display: flex;
     flex-direction: column;
     padding: 4px 0;
@@ -211,6 +216,7 @@
     gap: 8px;
     font-size: 16px;
     color: #333;
+    white-space: nowrap;
     transition: background-color 0.2s;
 }
 

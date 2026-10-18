@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import ActionBtn from "@/components/ui/buttons/ActionBtn/ActionBtn";
 import { ColumnTypeValues } from "@/models/types/dailySchedule";
 import Icons from "@/style/icons";
-import { EventColor, ExistingTeacherColor, MissingTeacherColor } from "@/style/root";
+import { EventColor, ExistingTeacherColor, GuardColor, MissingTeacherColor } from "@/style/root";
+import { DEFAULT_GUARD_TITLE } from "@/models/constant/daily";
 import { useDailyTableContext } from "@/context/DailyTableContext";
 import { PositionSide } from "@/models/types/ui";
 import { useClickOutside } from "@/hooks/useClickOutside";
@@ -74,11 +75,21 @@ const DailyActionBtns: React.FC<DailyActionBtnsProps> = ({ position, useMobileMe
             <ActionBtn
                 type={ColumnTypeValues.event}
                 Icon={<Icons.event size={16} />}
-                label="אירוע"
+                label="אירועים"
                 tooltip="הוספת אירועים בית ספריים"
                 isDisabled={isLoading || isAutoAssigning}
                 style={getButtonStyle(EventColor)}
                 func={() => handleActionClick(() => addNewEmptyColumn(ColumnTypeValues.event))}
+                className={useMobileMenu ? styles.menuItemBtn : getButtonClass(position)}
+            />
+            <ActionBtn
+                type={ColumnTypeValues.guard}
+                Icon={<Icons.guard size={16} />}
+                label={DEFAULT_GUARD_TITLE}
+                tooltip="שיבוץ תורנויות בית ספריות"
+                isDisabled={isLoading || isAutoAssigning}
+                style={getButtonStyle(GuardColor)}
+                func={() => handleActionClick(() => addNewEmptyColumn(ColumnTypeValues.guard))}
                 className={useMobileMenu ? styles.menuItemBtn : getButtonClass(position)}
             />
             {!useMobileMenu && (

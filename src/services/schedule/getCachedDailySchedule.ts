@@ -37,6 +37,7 @@ export async function getDailyScheduleService(
                 comment: schedule.comment,
                 reason: schedule.reason,
                 position: schedule.position,
+                guardTeacherIds: schedule.guardTeacherIds,
                 createdAt: schedule.createdAt,
                 updatedAt: schedule.updatedAt,
             }) as unknown as DailyScheduleType,

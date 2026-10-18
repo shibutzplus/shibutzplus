@@ -19,7 +19,7 @@ export const setColumn = (
     fromHour: number = DEFAULT_FROM_HOUR,
     toHour: number = DEFAULT_TO_HOUR,
 ) => {
-    const isEventColumn = cells.length > 0 && cells[0].headerCol?.type === ColumnTypeValues.event;
+    const isEventColumn = cells.length > 0 && (cells[0].headerCol?.type === ColumnTypeValues.event || cells[0].headerCol?.type === ColumnTypeValues.guard);
     if (isEventColumn) {
         setEventColumn(newSchedule, date, cells, columnId, fromHour, toHour);
     } else {
@@ -92,6 +92,8 @@ export const setEventColumn = (
         if (existingData) {
             dailySchedule[selectedDate][columnId][`${hour}`] = {
                 event: existingData.event,
+                guardTeacherIds: existingData.guardTeacherIds,
+                instructions: existingData.instructions,
                 hour: existingData.hour,
                 headerCol: existingData.headerCol,
                 DBid: existingData.DBid,

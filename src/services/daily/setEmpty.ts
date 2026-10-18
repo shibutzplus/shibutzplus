@@ -12,7 +12,7 @@ export const initializeEmptyColumn = (
     dailySchedule: DailySchedule,
     selectedDate: string,
     columnId: string,
-    headerCol: { type: ColumnType; position: number; headerTeacher?: TeacherType },
+    headerCol: { type: ColumnType; position: number; headerTeacher?: TeacherType; headerEvent?: string },
     fromHour: number = 1,
     toHour: number = 10,
 ) => {

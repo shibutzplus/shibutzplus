@@ -23,6 +23,7 @@ export type DailyScheduleType = {
     columnType: ColumnType;
     subTeacher?: TeacherType;
     subTeacherId?: string; // Added
+    guardTeacherIds?: string[];
     instructions?: string;
     comment?: string;
     reason?: string;
@@ -48,6 +49,7 @@ export type DailyScheduleRequest = {
     originalTeacher?: TeacherType;
     columnType: ColumnType;
     subTeacher?: TeacherType;
+    guardTeacherIds?: string[];
     position: number;
     instructions?: string;
 };
@@ -71,6 +73,7 @@ export type DailyScheduleCell = {
     subject?: SubjectType;
     classes?: ClassType[];
     event?: string;
+    guardTeacherIds?: string[];
     comment?: string;
     instructions?: string;
     hour: number;
@@ -103,8 +106,9 @@ export const ColumnTypeValues = {
     missingTeacher: 0,
     existingTeacher: 1,
     event: 2,
+    guard: 3,
 } as const;
-export type ColumnType = 0 | 1 | 2;
+export type ColumnType = 0 | 1 | 2 | 3;
 
 ///---
 

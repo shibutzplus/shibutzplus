@@ -9,7 +9,7 @@ import { ColumnTypeValues, DailySchedule, DailyScheduleCell } from "@/models/typ
 import { TeacherType } from "@/models/types/teachers";
 import { addNewEventCell } from "@/services/daily/add";
 import { fillLeftRowsWithEmptyCells, initDailySchedule } from "@/services/daily/populate";
-import { updateAddCell, updateAllEventHeader, updateDeleteCell } from "@/services/daily/update";
+import { updateAddEventCell, updateAllEventHeader, updateDeleteCell } from "@/services/daily/update";
 import { formatTMDintoDMY, getDayNumberByDateString } from "@/utils/time";
 import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 import { Dispatch, SetStateAction } from "react";
@@ -128,7 +128,7 @@ const useDailyEventActions = (
         if (dailyCellData) {
             const response = await addDailyEventCellAction(dailyCellData);
             if (response?.success && response.data) {
-                setMainDailyTable(prev => updateAddCell(
+                setMainDailyTable(prev => updateAddEventCell(
                     response.data!.id,
                     prev,
                     selectedDate,
@@ -160,7 +160,7 @@ const useDailyEventActions = (
         if (dailyCellData) {
             const response = await updateDailyEventCellAction(dailyScheduleId, dailyCellData);
             if (response?.success && response.data) {
-                setMainDailyTable(prev => updateAddCell(
+                setMainDailyTable(prev => updateAddEventCell(
                     response.data!.id,
                     prev,
                     selectedDate,
@@ -307,7 +307,7 @@ const useDailyEventActions = (
                 results.forEach((response, index) => {
                     const { cellWithTargetPos, event } = cellPromises[index];
                     if (response?.success && response.data) {
-                        updatedSchedule = updateAddCell(
+                        updatedSchedule = updateAddEventCell(
                             response.data!.id,
                             updatedSchedule,
                             selectedDate,

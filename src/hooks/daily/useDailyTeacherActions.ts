@@ -9,7 +9,7 @@ import { TeacherType } from "@/models/types/teachers";
 import { addNewTeacherValueCell } from "@/services/daily/add";
 import { fillLeftRowsWithEmptyCells } from "@/services/daily/populate";
 import { initializeEmptyColumn } from "@/services/daily/setEmpty";
-import { updateAddCell } from "@/services/daily/update";
+import { updateAddTeacherCell } from "@/services/daily/update";
 import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
 const useDailyTeacherActions = (
@@ -176,7 +176,7 @@ const useDailyTeacherActions = (
                                 const item = pendingInserts[index];
                                 if (item) {
                                     item.dailyCell.DBid = savedCell.id;
-                                    updatedSchedule = updateAddCell(
+                                    updatedSchedule = updateAddTeacherCell(
                                         savedCell.id,
                                         updatedSchedule,
                                         selectedDate,
@@ -269,7 +269,7 @@ const useDailyTeacherActions = (
         if (dailyCellData) {
             const response = await updateDailyTeacherCellAction(dailyScheduleId, dailyCellData);
             if (response?.success && response.data) {
-                const updatedSchedule = updateAddCell(
+                const updatedSchedule = updateAddTeacherCell(
                     response.data.id,
                     mainDailyTable,
                     selectedDate,
@@ -340,7 +340,7 @@ const useDailyTeacherActions = (
         if (dailyCellData) {
             const response = await updateDailyTeacherCellAction(dailyScheduleId, dailyCellData);
             if (response?.success && response.data) {
-                const updatedSchedule = updateAddCell(
+                const updatedSchedule = updateAddTeacherCell(
                     response.data.id,
                     mainDailyTable,
                     selectedDate,

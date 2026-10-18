@@ -53,8 +53,8 @@
     margin-bottom: 0;
 }
 
-/* <= 1230px */
-@media (max-width: 1230px) {
+/* <= 1380px */
+@media (max-width: 1380px) {
     .spacer {
         display: none;
     }
@@ -73,8 +73,8 @@
     }
 }
 
-/* <= 1070px */
-@media (max-width: 1070px) {
+/* <= 1185px */
+@media (max-width: 1185px) {
     .bar1DateContainer {
         display: none;
     }
@@ -95,8 +95,8 @@
     }
 }
 
-/* <= 1000px */
-@media (max-width: 1000px) {
+/* <= 1100px */
+@media (max-width: 1100px) {
     .bar1DateContainer {
         display: block;
     }
@@ -156,6 +156,19 @@
 
     .bar2DateContainerShort {
         display: block;
+    }
+
+    .secondRowActionBtns {
+        gap: 8px;
+    }
+
+    .secondRowActionBtns button:not(:last-child) {
+        width: 95px !important;
+        gap: 0 !important;
+    }
+
+    .secondRowActionBtns button:not(:last-child) svg {
+        display: none !important;
     }
 }
 
