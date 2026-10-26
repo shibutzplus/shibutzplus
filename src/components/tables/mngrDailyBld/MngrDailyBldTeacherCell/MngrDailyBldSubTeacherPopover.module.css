@@ -73,25 +73,7 @@
 }
 
 .titleCloseButton {
-    background: none;
-    border: none;
-    color: #64748b;
-    cursor: pointer;
-    width: 32px;
-    height: 32px;
-    padding: 0;
     margin-left: -6px;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.15s ease, color 0.15s ease;
-    flex-shrink: 0;
-}
-
-.titleCloseButton:hover {
-    background-color: #e2e8f0;
-    color: #0f172a;
 }
 
 /* Search Box - Integrated Flat Design */

@@ -18,7 +18,7 @@ export default function AnnualImportPageLayout({ children }: AnnualImportPageLay
         <PageLayout
             appType="private"
             HeaderRightActions={
-                <h3 className={styles.pageTitle}>ייבוא מערכת שנתית {schoolName && `(${schoolName})`}</h3>
+                <h3 className={styles.pageTitle}>ייבוא מערכת שבועית {schoolName && `(${schoolName})`}</h3>
             }
         >
             {children}

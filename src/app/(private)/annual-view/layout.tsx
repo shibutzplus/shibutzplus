@@ -3,7 +3,7 @@ import { AnnualViewProvider } from "@/context/AnnualViewContext";
 import AnnualViewPageLayout from "../../../components/layout/pageLayouts/AnnualViewPageLayout/AnnualViewPageLayout";
 
 export const metadata: Metadata = {
-    title: "מערכת שנתית",
+    title: "מערכת שבועית",
     robots: "noindex, nofollow",
 };
 

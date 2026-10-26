@@ -54,7 +54,6 @@ export async function toggleTeacherPauseAction(
 
         return {
             success: true,
-            message: messages.teachers.updateSuccess,
             data: (allTeachers || []) as TeacherType[],
         };
     } catch (error) {

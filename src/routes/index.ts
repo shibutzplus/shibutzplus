@@ -25,13 +25,11 @@ const router: Record<string, IRoute> = {
     subjects: { id: "subjects", p: "/subjects", private: true, title: "מקצועות" },
     substitute: { id: "substitute", p: "/substitute", private: true, title: "מורים מילוי מקום" },
     staff: { id: "staff", p: "/staff", private: true, title: "אנשי מנהלה" },
-    annualView: { id: "annualView", p: "/annual-view", private: true, title: "מערכת שנתית", menuTitle: "מערכת שנתית" },
-    annualBuildByClass: { id: "annualBuildByClass", p: "/annual-build-class", private: true, title: "מערכת לפי כיתה", menuTitle: "שינוי מערכות לפי כיתה" },
-    annualBuildByTeacher: { id: "annualBuildByTeacher", p: "/annual-build-teacher", private: true, title: "מערכת לפי מורה", menuTitle: "שינוי מערכות לפי מורה" },
-    annualAltBuild: { id: "annualAltBuild", p: "/annual-alt-build", private: true, title: "מערכת זמן חירום", menuTitle: "שינוי מערכת" },
-    annualAltView: { id: "annualAltView", p: "/annual-alt-view", private: true, title: "מערכת זמן חירום", menuTitle: "צפייה לפי כיתה ומורה" },
+    annualView: { id: "annualView", p: "/annual-view", private: true, title: "מערכת שבועית", menuTitle: "מערכת שבועית" },
+    annualAltView: { id: "annualAltView", p: "/annual-alt-view", private: true, title: "מערכת לזמן חירום", menuTitle: "מערכת לזמן חירום" },
     missingReport: { id: "missingReport", p: "/missing-report", private: true, title: "דיווח מורים חסרים" },
     replaceReport: { id: "replaceReport", p: "/replace-report", private: true, title: "דיווח מורים מילוי מקום" },
+    tutoringReport: { id: "tutoringReport", p: "/tutoring-report", private: true, title: "דוח שיבוץ פרטני לכיתות", menuTitle: "שיבוץ פרטני לכיתות" },
     statistics: { id: "statistics", p: "/statistics", private: true, title: "סטטיסטיקות" },
 
     // Teachers Portal

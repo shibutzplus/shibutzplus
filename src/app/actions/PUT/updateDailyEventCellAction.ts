@@ -75,7 +75,7 @@ export async function updateDailyEventCellAction(
 
         return {
             success: true,
-            message: messages.annualSchedule.updateSuccess,
+            message: messages.dailySchedule.updateSuccess,
             data: {
                 id: updateSchedule.id,
                 date: getStringReturnDate(updateSchedule.date),

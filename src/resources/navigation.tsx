@@ -40,20 +40,6 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
                 p: routePath.annualView.p,
                 Icon: <Icons.calendar size={24} />,
             },
-        ],
-    },
-    {
-        id: "alt_schedule",
-        title: "מערכת לזמן חירום",
-        type: "private",
-        isCollapse: true,
-        links: [
-            {
-                name: routePath.annualAltBuild.menuTitle ?? routePath.annualAltBuild.title,
-                p: routePath.annualAltBuild.p,
-                Icon: <Icons.calendar size={24} />,
-                isGuestBlocked: true,
-            },
             {
                 name: routePath.annualAltView.menuTitle ?? routePath.annualAltView.title,
                 p: routePath.annualAltView.p,
@@ -137,6 +123,12 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
                 Icon: <Icons.stats size={24} />,
                 isGuestBlocked: true,
             },
+            {
+                name: routePath.tutoringReport.menuTitle ?? routePath.tutoringReport.title,
+                p: routePath.tutoringReport.p,
+                Icon: <Icons.peopleOutline size={24} />,
+                isGuestBlocked: true,
+            },
         ],
     },
 
@@ -159,7 +151,7 @@ export const NAV_LINK_GROUPS: ILinkGroup[] = [
                 isGuestBlocked: true,
             },
             {
-                name: "ייבוא מערכת שנתית",
+                name: "ייבוא מערכת שבועית",
                 p: "/annual-import",
                 Icon: <Icons.upload size={24} />,
                 isGuestBlocked: true,

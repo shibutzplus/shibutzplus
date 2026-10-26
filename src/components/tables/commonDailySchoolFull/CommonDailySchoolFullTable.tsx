@@ -10,10 +10,11 @@ import { DailySchedule, ColumnType, ColumnTypeValues } from "@/models/types/dail
 import { sortDailyColumnIdsByPosition } from "@/utils/sort";
 import { getCellDisplayData } from "@/utils/dailyCellDisplay";
 import { COLOR_BY_TYPE, DEFAULT_GUARD_TITLE, DEFAULT_EVENT_TITLE } from "@/models/constant/daily";
-import { calculateVisibleRowsForDaily, formatGuardCellText } from "@/utils/tableUtils";
+import { calculateVisibleRowsForDaily, getGuardCellDisplayData } from "@/utils/tableUtils";
 import { AppType } from "@/models/types";
 import { successToast } from "@/lib/toast";
 import CommonDailySchoolFullEventCell from "./CommonDailySchoolFullEventCell";
+import CommonDailySchoolFullGuardCell from "./CommonDailySchoolFullGuardCell";
 import { getStorage, setStorage, STORAGE_KEYS } from "@/lib/localStorage";
 import { TeacherType } from "@/models/types/teachers";
 import { useOptionalMainContext } from "@/context/MainContext";
@@ -223,64 +224,49 @@ const CommonDailySchoolFullTable: React.FC<CommonDailySchoolFullTableProps> = ({
                             const columnData = schedule[colId];
                             const cellData = columnData?.[row];
 
-                            let cellDisplay = {
-                                main: "",
-                                detail: "",
-                                sub: "",
-                                isMissing: false,
-                                isEmpty: true,
-                                isActivity: false,
-                                isEvent: false
-                            };
+                            if (type === ColumnTypeValues.guard) {
+                                const { title, teachers } = getGuardCellDisplayData(cellData, teacherMap);
+                                const isEmpty = !title && teachers.length === 0;
+
+                                return (
+                                    <div key={`${colId}-${row}`} className={styles.cell}>
+                                        {!isEmpty && (
+                                            <CommonDailySchoolFullGuardCell title={title} teachers={teachers} />
+                                        )}
+                                    </div>
+                                );
+                            }
 
                             if (type === ColumnTypeValues.event) {
                                 const eventText = cellData?.event;
-                                cellDisplay.isEmpty = !eventText;
-                                cellDisplay.main = eventText || "";
-                                cellDisplay.detail = "";
-                                cellDisplay.isEvent = true;
-                            } else if (type === ColumnTypeValues.guard) {
-                                const formattedText = formatGuardCellText(cellData, teacherMap);
-                                cellDisplay.isEmpty = !formattedText;
-                                cellDisplay.main = formattedText;
-                                cellDisplay.detail = "";
-                                cellDisplay.isEvent = true;
-                            } else {
-                                const { text, classNameText, rawSubjectName, subTeacherName, isMissing, isEmpty, isActivity } = getCellDisplayData(cellData, type, appType);
-                                cellDisplay = {
-                                    main: classNameText || text,
-                                    detail: rawSubjectName || "",
-                                    sub: subTeacherName || "",
-                                    isMissing,
-                                    isEmpty,
-                                    isActivity,
-                                    isEvent: false
-                                };
+
+                                return (
+                                    <div key={`${colId}-${row}`} className={styles.cell}>
+                                        {eventText ? <CommonDailySchoolFullEventCell eventText={eventText} /> : null}
+                                    </div>
+                                );
                             }
+
+                            const { text, classNameText, rawSubjectName, subTeacherName, isMissing, isEmpty, isActivity } =
+                                getCellDisplayData(cellData, type, appType);
 
                             return (
                                 <div key={`${colId}-${row}`} className={styles.cell}>
-                                    {!cellDisplay.isEmpty && (
-                                        <>
-                                            {cellDisplay.isEvent ? (
-                                                <CommonDailySchoolFullEventCell eventText={cellDisplay.main} />
-                                            ) : (
-                                                <div className={`${styles.cellContent} ${cellDisplay.isActivity ? styles.activity : ""}`}>
-                                                    {cellDisplay.sub && <span className={styles.subText}>{cellDisplay.sub}</span>}
-                                                    {cellDisplay.isMissing && !cellDisplay.sub && <span className={styles.missingText}>אין ממלא מקום</span>}
-                                                    {cellDisplay.main && (
-                                                        <span className={styles.detailText}>
-                                                            {cellDisplay.main}
-                                                        </span>
-                                                    )}
-                                                    {cellDisplay.detail && (
-                                                        <span className={styles.detailText}>
-                                                            {cellDisplay.detail}
-                                                        </span>
-                                                    )}
-                                                </div>
+                                    {!isEmpty && (
+                                        <div className={`${styles.cellContent} ${isActivity ? styles.activity : ""}`}>
+                                            {subTeacherName && <span className={styles.subText}>{subTeacherName}</span>}
+                                            {isMissing && !subTeacherName && <span className={styles.missingText}>אין ממלא מקום</span>}
+                                            {(classNameText || text) && (
+                                                <span className={styles.detailText}>
+                                                    {classNameText || text}
+                                                </span>
                                             )}
-                                        </>
+                                            {rawSubjectName && (
+                                                <span className={styles.detailText}>
+                                                    {rawSubjectName}
+                                                </span>
+                                            )}
+                                        </div>
                                     )}
                                 </div>
                             );

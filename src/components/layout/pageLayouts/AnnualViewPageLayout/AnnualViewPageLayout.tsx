@@ -9,6 +9,8 @@ import router from "@/routes";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import AnnualSchedulePdf from "@/components/pdf/AnnualSchedulePdf";
 import { useMainContext } from "@/context/MainContext";
+import { usePopup, PopupAction } from "@/context/PopupContext";
+import AnnualScheduleInfoPopup from "@/components/popups/AnnualScheduleInfoPopup/AnnualScheduleInfoPopup";
 import Icons from "@/style/icons";
 
 type AnnualViewPageLayoutProps = {
@@ -25,9 +27,12 @@ export default function AnnualViewPageLayout({ children }: AnnualViewPageLayoutP
         handleTeacherChange,
         isLoading,
         schedule,
+        isAlt,
+        annualScheduleTable,
     } = useAnnualView();
 
     const { classes, teachers, subjects, settings } = useMainContext();
+    const { openPopup } = usePopup();
 
     const handleNextClass = () => {
         const options = classesSelectOptions();
@@ -73,10 +78,60 @@ export default function AnnualViewPageLayout({ children }: AnnualViewPageLayoutP
         handleTeacherChange(prevTeacherId);
     };
 
-    const hasSelection = selectedClassId || selectedTeacherId;
+    const hasSelection = Boolean(selectedClassId || selectedTeacherId);
+
+    const selectedClass = classes?.find((c) => c.id === selectedClassId);
+    // Pedagogical stats popup is relevant only for regular classes (excluding activities / study groups)
+    const isOrganicClassSelected = Boolean(selectedClass && !selectedClass.activity);
+
+    const handleOpenClassInfo = () => {
+        if (!isOrganicClassSelected || !selectedClassId) return;
+
+        // Clear teacher selection if selected
+        if (selectedTeacherId) {
+            handleTeacherChange("");
+        }
+
+        openPopup(
+            PopupAction.annualScheduleInfo,
+            "M",
+            <AnnualScheduleInfoPopup
+                classes={classes || []}
+                subjects={subjects || []}
+                annualScheduleTable={annualScheduleTable || []}
+                initialClassId={selectedClassId}
+                mode="class"
+                onClassChange={handleClassChange}
+            />
+        );
+    };
+
+    const handleOpenTeacherInfo = () => {
+        if (!selectedTeacherId) return;
+
+        // Clear class selection if selected
+        if (selectedClassId) {
+            handleClassChange("");
+        }
+
+        openPopup(
+            PopupAction.annualScheduleInfo,
+            "M",
+            <AnnualScheduleInfoPopup
+                teachers={teachers || []}
+                classes={classes || []}
+                subjects={subjects || []}
+                annualScheduleTable={annualScheduleTable || []}
+                initialTeacherId={selectedTeacherId}
+                mode="teacher"
+                onTeacherChange={handleTeacherChange}
+            />
+        );
+    };
 
     const pdfDownloadButton = (
         <PDFDownloadLink
+            key={`pdf_${selectedClassId}_${selectedTeacherId}_${annualScheduleTable?.length || 0}`}
             document={
                 <AnnualSchedulePdf
                     schedule={schedule}
@@ -89,11 +144,37 @@ export default function AnnualViewPageLayout({ children }: AnnualViewPageLayoutP
                     toHour={settings?.toHour}
                 />
             }
-            fileName={`shibutzPlus${selectedClassId ? "_" + classes?.find((c) => c.id === selectedClassId)?.name : ""}${selectedTeacherId ? "_" + teachers?.find((t) => t.id === selectedTeacherId)?.name : ""}.pdf`}
+            fileName={`shibutzPlus${isAlt ? "_alt" : ""}${selectedClassId ? "_" + classes?.find((c) => c.id === selectedClassId)?.name : ""}${selectedTeacherId ? "_" + teachers?.find((t) => t.id === selectedTeacherId)?.name : ""}.pdf`}
             className={`${styles.pdfButton} ${!hasSelection ? styles.pdfButtonDisabled : ""}`}
         >
-            <Icons.toPDF size={24} title="הורד PDF" />
+            <Icons.toPDF size={24} title="קובץ PDF" />
         </PDFDownloadLink>
+    );
+
+    const classInfoButton = (
+        <button
+            type="button"
+            className={`${styles.infoInlineButton} ${!isOrganicClassSelected ? styles.infoInlineButtonDisabled : ""}`}
+            onClick={handleOpenClassInfo}
+            disabled={isLoading || !isOrganicClassSelected}
+            title="מידע על הכיתה"
+            aria-label="מידע על הכיתה"
+        >
+            <Icons.info size={18} />
+        </button>
+    );
+
+    const teacherInfoButton = (
+        <button
+            type="button"
+            className={`${styles.infoInlineButton} ${!selectedTeacherId ? styles.infoInlineButtonDisabled : ""}`}
+            onClick={handleOpenTeacherInfo}
+            disabled={isLoading || !selectedTeacherId}
+            title="מידע על המורה"
+            aria-label="מידע על המורה"
+        >
+            <Icons.info size={18} />
+        </button>
     );
 
     return (
@@ -101,7 +182,7 @@ export default function AnnualViewPageLayout({ children }: AnnualViewPageLayoutP
             appType="private"
             HeaderRightActions={
                 <>
-                    <h3 className={styles.pageTitle}>{router.annualView.title}</h3>
+                    <h3 className={styles.pageTitle}>{isAlt ? router.annualAltView.title : router.annualView.title}</h3>
                     <div className={styles.selectWithAction}>
                         <div className={styles.selectWrapper}>
                             <DynamicInputSelect
@@ -125,6 +206,7 @@ export default function AnnualViewPageLayout({ children }: AnnualViewPageLayoutP
                         >
                             <Icons.caretRight size={24} />
                         </button>
+                        {classInfoButton}
                         <button
                             type="button"
                             className={styles.nextButton}
@@ -159,6 +241,7 @@ export default function AnnualViewPageLayout({ children }: AnnualViewPageLayoutP
                         >
                             <Icons.caretRight size={24} />
                         </button>
+                        {teacherInfoButton}
                         <button
                             type="button"
                             className={styles.nextButton}
@@ -200,6 +283,7 @@ export default function AnnualViewPageLayout({ children }: AnnualViewPageLayoutP
                         >
                             <Icons.caretRight size={24} />
                         </button>
+                        {classInfoButton}
                         <button
                             type="button"
                             className={styles.nextButton}
@@ -234,6 +318,7 @@ export default function AnnualViewPageLayout({ children }: AnnualViewPageLayoutP
                         >
                             <Icons.caretRight size={24} />
                         </button>
+                        {teacherInfoButton}
                         <button
                             type="button"
                             className={styles.nextButton}

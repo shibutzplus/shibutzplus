@@ -9,6 +9,9 @@ import { successToast } from "@/lib/toast";
 import messages from "@/resources/messages";
 import { getDayNumberByDateString } from "@/utils/time";
 import Icons from "@/style/icons";
+import CloseButton from "@/components/ui/buttons/CloseButton/CloseButton";
+import { usePopoverPosition } from "@/hooks/usePopoverPosition";
+import { TeacherRoleValues } from "@/models/types/teachers";
 
 interface MngrDailyBldGuardTeacherPopoverProps {
     onConfirm: (selectedTeacherIds: string[], locations: Record<string, string>) => void;
@@ -36,7 +39,15 @@ const MngrDailyBldGuardTeacherPopover: React.FC<MngrDailyBldGuardTeacherPopoverP
     const [mounted, setMounted] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [isInputFocused, setIsInputFocused] = useState(false);
-    const [selectedTeacherIds, setSelectedTeacherIds] = useState<string[]>(initialSelectedTeacherIds);
+    const [selectedTeacherIds, setSelectedTeacherIds] = useState<string[]>(() => {
+        if (!teachers) return initialSelectedTeacherIds;
+        const regularTeacherIds = new Set(
+            teachers
+                .filter((t) => t.role === TeacherRoleValues.REGULAR)
+                .map((t) => t.id),
+        );
+        return initialSelectedTeacherIds.filter((id) => regularTeacherIds.has(id));
+    });
     const [locations, setLocations] = useState<Record<string, string>>(initialLocations);
 
     const inputRef = useRef<HTMLInputElement>(null);
@@ -84,54 +95,19 @@ const MngrDailyBldGuardTeacherPopover: React.FC<MngrDailyBldGuardTeacherPopoverP
     }, [onCancel]);
 
     // Desktop positioning
-    const desktopStyle = useMemo((): React.CSSProperties => {
-        if (typeof window === "undefined" || !anchorRect) return {};
-        if (window.innerWidth <= 768) return {};
+    const desktopStyle = usePopoverPosition(anchorRect);
 
-        const width = 350;
-        const padding = 12;
-
-        const spaceBelow = window.innerHeight - anchorRect.bottom - padding;
-        const spaceAbove = anchorRect.top - padding;
-
-        const style: React.CSSProperties = {};
-
-        if (spaceBelow >= 240 || spaceBelow >= spaceAbove) {
-            style.top = `${Math.round(anchorRect.bottom + 6)}px`;
-            style.maxHeight = `${Math.min(440, Math.max(200, spaceBelow - 6))}px`;
-        } else {
-            const bottomDist = window.innerHeight - anchorRect.top + 6;
-            style.bottom = `${Math.round(bottomDist)}px`;
-            style.maxHeight = `${Math.min(440, Math.max(200, spaceAbove - 6))}px`;
-        }
-
-        // Horizontal (RTL): align with right edge of the cell
-        let right = window.innerWidth - anchorRect.right;
-        if (anchorRect.right - width < padding) {
-            right = window.innerWidth - width - padding;
-        }
-        if (right < padding) {
-            right = padding;
-        }
-
-        style.right = `${Math.round(right)}px`;
-        return style;
-    }, [anchorRect]);
-
-    // Active teachers sorted alphabetically
-    const activeTeachers = useMemo(() => {
-        if (!teachers) return [];
-        return [...teachers]
-            .filter(t => t.isActive !== false)
-            .sort((a, b) => a.name.localeCompare(b.name, "he"));
-    }, [teachers]);
-
-    // Filter teachers by search query
+    // Filter active regular teachers matching search query (teachers are pre-sorted in MainContext)
     const filteredTeachers = useMemo(() => {
+        if (!teachers) return [];
         const query = normalize(searchQuery);
-        if (!query) return activeTeachers;
-        return activeTeachers.filter(t => normalize(t.name).includes(query));
-    }, [activeTeachers, searchQuery]);
+        return teachers.filter(
+            (t) =>
+                t.isActive !== false &&
+                t.role === TeacherRoleValues.REGULAR &&
+                (!query || normalize(t.name).includes(query)),
+        );
+    }, [teachers, searchQuery]);
 
     const selectedSet = useMemo(() => new Set(selectedTeacherIds), [selectedTeacherIds]);
 
@@ -204,14 +180,10 @@ const MngrDailyBldGuardTeacherPopover: React.FC<MngrDailyBldGuardTeacherPopoverP
                             {locationText ? locationText : `תורנות שעה ${hour}`}
                         </span>
                     </div>
-                    <button
+                    <CloseButton
+                        onClose={onCancel}
                         className={styles.titleCloseButton}
-                        onClick={onCancel}
-                        title="ביטול"
-                        type="button"
-                    >
-                        <Icons.close width={16} height={16} />
-                    </button>
+                    />
                 </div>
 
                 {/* Search Box */}

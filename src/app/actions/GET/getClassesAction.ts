@@ -28,14 +28,12 @@ export async function getClassesAction(
         if (!classes || classes.length === 0) {
             return {
                 success: true,
-                message: messages.classes.success,
                 data: [],
             };
         }
 
         return {
             success: true,
-            message: messages.classes.success,
             data: classes,
         };
     } catch (error) {

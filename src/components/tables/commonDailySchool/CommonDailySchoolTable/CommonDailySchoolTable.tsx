@@ -9,7 +9,7 @@ import React, { useMemo, useState } from "react";
 import { motion } from "motion/react";
 import styles from "./CommonDailySchoolTable.module.css";
 import { sortDailyColumnIdsByPosition } from "@/utils/sort";
-import { calculateVisibleRowsForDaily, formatGuardCellText } from "@/utils/tableUtils";
+import { calculateVisibleRowsForDaily } from "@/utils/tableUtils";
 import { DailySchedule, ColumnType, ColumnTypeValues } from "@/models/types/dailySchedule";
 import { AppType } from "@/models/types";
 import { TeacherType } from "@/models/types/teachers";
@@ -22,6 +22,7 @@ import CommonDailySchoolEventHeader from "../CommonDailySchoolEventHeader/Common
 import CommonDailySchoolGuardHeader from "../CommonDailySchoolGuardHeader/CommonDailySchoolGuardHeader";
 import CommonDailySchoolTeacherCell from "../CommonDailySchoolTeacherCell/CommonDailySchoolTeacherCell";
 import CommonDailySchoolEventCell from "../CommonDailySchoolEventCell/CommonDailySchoolEventCell";
+import CommonDailySchoolGuardCell from "../CommonDailySchoolGuardCell/CommonDailySchoolGuardCell";
 import CommonDailySchoolClassHeader from "../CommonDailySchoolClassHeader/CommonDailySchoolClassHeader";
 import CommonDailySchoolClassCell from "../CommonDailySchoolClassCell/CommonDailySchoolClassCell";
 
@@ -321,14 +322,6 @@ const CommonDailySchoolTable: React.FC<CommonDailySchoolTableProps> = ({
                                         const cellData = columnData?.[row];
                                         const type = columnTypes[colId] ?? ColumnTypeValues.event;
 
-                                        let cellForRender = cellData;
-                                        if (type === ColumnTypeValues.guard && cellData) {
-                                            cellForRender = {
-                                                ...cellData,
-                                                event: formatGuardCellText(cellData, teacherMap),
-                                            };
-                                        }
-
                                         return (
                                             <td
                                                 key={`${colId}-${row}`}
@@ -343,10 +336,17 @@ const CommonDailySchoolTable: React.FC<CommonDailySchoolTableProps> = ({
                                                         delay: (sortedClassNames.length + index) * 0.02,
                                                     }}
                                                 >
-                                                    <CommonDailySchoolEventCell
-                                                        cell={cellForRender}
-                                                        columnId={colId}
-                                                    />
+                                                    {type === ColumnTypeValues.guard ? (
+                                                        <CommonDailySchoolGuardCell
+                                                            cell={cellData}
+                                                            teacherMap={teacherMap}
+                                                        />
+                                                    ) : (
+                                                        <CommonDailySchoolEventCell
+                                                            cell={cellData}
+                                                            columnId={colId}
+                                                        />
+                                                    )}
                                                 </motion.div>
                                             </td>
                                         );
@@ -365,14 +365,6 @@ const CommonDailySchoolTable: React.FC<CommonDailySchoolTableProps> = ({
                                         ? styles.eventDataCell
                                         : styles.teacherDataCell;
 
-                                    let cellForRender = cellData;
-                                    if (type === ColumnTypeValues.guard && cellData) {
-                                        cellForRender = {
-                                            ...cellData,
-                                            event: formatGuardCellText(cellData, teacherMap),
-                                        };
-                                    }
-
                                     return (
                                         <td
                                             key={`${colId}-${row}`}
@@ -387,9 +379,14 @@ const CommonDailySchoolTable: React.FC<CommonDailySchoolTableProps> = ({
                                                     delay: index * 0.02,
                                                 }}
                                             >
-                                                {isEventOrGuard ? (
+                                                {type === ColumnTypeValues.guard ? (
+                                                    <CommonDailySchoolGuardCell
+                                                        cell={cellData}
+                                                        teacherMap={teacherMap}
+                                                    />
+                                                ) : type === ColumnTypeValues.event ? (
                                                     <CommonDailySchoolEventCell
-                                                        cell={cellForRender}
+                                                        cell={cellData}
                                                         columnId={colId}
                                                     />
                                                 ) : (

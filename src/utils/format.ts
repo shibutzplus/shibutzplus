@@ -17,17 +17,6 @@ export const filterTeachersByRole = (teachers: TeacherType[], role: TeacherRole)
     return teachers.filter((teacher) => teacher.role === role);
 };
 
-/**
- * Creates a button text for a new select option
- * @param template - string with placeholder {0} for the input value
- * @param inputValue - the value to insert into the template
- * @returns
- */
-export const createNewSelectOption_btnText = (inputValue: string, template?: string) => {
-    return template?.replace("{0}", inputValue) || inputValue;
-};
-
-
 export const convertHTMLToContent = (html: string) => {
     // Handle anchor tags - convert to markdown format
     // More flexible regex to handle various attribute orders and formats

@@ -24,76 +24,144 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         backgroundColor: '#FFFFFF',
         fontFamily: 'Rubik',
-        padding: 20,
+        padding: 16,
     },
     header: {
         marginBottom: 10,
         textAlign: 'center',
-        fontSize: 18,
+        fontSize: 16,
         fontFamily: 'RubikMedium',
-        direction: 'rtl',
-    },
-    subHeader: {
-        marginBottom: 20,
-        textAlign: 'center',
-        fontSize: 14,
-        fontFamily: 'Rubik',
+        color: '#1e293b',
         direction: 'rtl',
     },
     table: {
         display: 'flex',
         flexDirection: 'column',
         width: '100%',
-        borderRightWidth: 1,
-        borderRightColor: '#000',
-        borderTopWidth: 1,
-        borderTopColor: '#000',
+        backgroundColor: '#E1E1EC',
+        borderRadius: 6,
+        padding: 2.5,
+        borderWidth: 1,
+        borderColor: '#CBD5E1',
     },
     row: {
         flexDirection: 'row-reverse',
-        borderBottomWidth: 1,
-        borderBottomColor: '#000',
-        minHeight: 40,
+        marginBottom: 2.5,
         alignItems: 'stretch',
     },
     headerRow: {
-        backgroundColor: '#f0f0f0',
-        fontFamily: 'RubikMedium',
-        minHeight: 30,
+        marginBottom: 2.5,
     },
-    cell: {
-        padding: 4,
-        textAlign: 'center',
-        fontSize: 9,
-        borderLeftWidth: 1,
-        borderLeftColor: '#000',
+    cellWrapper: {
         flexGrow: 1,
+        flexBasis: 0,
+        paddingHorizontal: 1.5,
         justifyContent: 'center',
-        width: '14%', // Approx 100/7
     },
     hourCell: {
-        width: '5%',
-        backgroundColor: '#e0e0e0',
-        fontFamily: 'RubikMedium',
+        width: 26,
         flexGrow: 0,
-        minWidth: 30,
+        flexShrink: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    hourText: {
+        fontSize: 10.5,
+        fontFamily: 'RubikMedium',
+        color: '#475569',
+        textAlign: 'center',
     },
     headerCell: {
-        backgroundColor: '#e0e0e0',
+        backgroundColor: '#E1E1EC',
+        height: 24,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 4,
+    },
+    headerText: {
         fontSize: 10,
-    },
-    cellText: {
-        fontSize: 8,
-        marginBottom: 2,
-        direction: 'rtl',
-    },
-    subjectText: {
-        fontFamily: 'Rubik',
-        color: '#444',
-    },
-    teacherText: {
         fontFamily: 'RubikMedium',
-        color: '#000',
+        color: '#334155',
+        textAlign: 'center',
+    },
+    cellCard: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 4,
+        borderWidth: 0.5,
+        borderColor: '#CBD5E1',
+        paddingVertical: 3,
+        paddingHorizontal: 2,
+        width: '100%',
+        minHeight: 46,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    singleGroup: {
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+    },
+    primaryText: {
+        fontSize: 9.5,
+        fontFamily: 'RubikMedium',
+        color: '#334155',
+        textAlign: 'center',
+        lineHeight: 1.2,
+    },
+    subjectChip: {
+        backgroundColor: '#FFFFFF',
+        borderWidth: 0.8,
+        borderColor: '#CBD5E1',
+        borderRadius: 8,
+        paddingVertical: 1.5,
+        paddingHorizontal: 6,
+        marginTop: 2.5,
+        alignSelf: 'center',
+    },
+    subjectChipText: {
+        fontSize: 7.5,
+        fontFamily: 'Rubik',
+        color: '#475569',
+        textAlign: 'center',
+    },
+    subjectPlain: {
+        alignSelf: 'center',
+    },
+    multiGroups: {
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+    },
+    assignmentRow: {
+        flexDirection: 'row-reverse',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexWrap: 'wrap',
+        marginBottom: 1.5,
+    },
+    primaryInlineText: {
+        fontSize: 7.5,
+        fontFamily: 'RubikMedium',
+        color: '#334155',
+        textAlign: 'center',
+        marginLeft: 3,
+    },
+    subjectChipSmall: {
+        backgroundColor: '#FFFFFF',
+        borderWidth: 0.6,
+        borderColor: '#CBD5E1',
+        borderRadius: 6,
+        paddingVertical: 1,
+        paddingHorizontal: 4,
+        alignSelf: 'center',
+    },
+    subjectChipSmallText: {
+        fontSize: 6.5,
+        fontFamily: 'Rubik',
+        color: '#475569',
+        textAlign: 'center',
     },
 });
 
@@ -121,7 +189,7 @@ const AnnualSchedulePdf: React.FC<AnnualSchedulePdfProps> = ({
     toHour = 10,
 }) => {
     // Determine title
-    let title = "מערכת שנתית";
+    let title = "מערכת שבועית";
     if (selectedClassId) {
         const cls = classes.find(c => c.id === selectedClassId);
         if (cls) title += ` - ${cls.name}`;
@@ -139,15 +207,21 @@ const AnnualSchedulePdf: React.FC<AnnualSchedulePdfProps> = ({
     const currentSchedule = scheduleKey ? schedule[scheduleKey] : null;
 
     const renderCellContent = (day: string, hour: string) => {
-        if (!currentSchedule) return null;
+        if (!currentSchedule) {
+            return <View style={styles.cellCard} />;
+        }
 
         const dayData = currentSchedule[day];
-        if (!dayData) return null;
+        if (!dayData) {
+            return <View style={styles.cellCard} />;
+        }
 
         const cellData = dayData[hour];
-        if (!cellData) return null;
+        if (!cellData) {
+            return <View style={styles.cellCard} />;
+        }
 
-        const { subjectsText, secondaryText, shouldRender } = getAnnualCellDisplayData(
+        const { assignmentGroups, shouldRender } = getAnnualCellDisplayData(
             cellData,
             selectedClassId,
             selectedTeacherId,
@@ -156,12 +230,50 @@ const AnnualSchedulePdf: React.FC<AnnualSchedulePdfProps> = ({
             classes
         );
 
-        if (!shouldRender) return null;
+        if (!shouldRender || assignmentGroups.length === 0) {
+            return <View style={styles.cellCard} />;
+        }
+
+        const isSingle = assignmentGroups.length === 1;
+
+        if (isSingle) {
+            const group = assignmentGroups[0];
+            return (
+                <View style={styles.cellCard}>
+                    <View style={styles.singleGroup}>
+                        {group.primaryText ? (
+                            <Text style={styles.primaryText}>{group.primaryText}</Text>
+                        ) : null}
+                        {group.subjectText ? (
+                            <View style={group.primaryText ? styles.subjectChip : styles.subjectPlain}>
+                                <Text style={group.primaryText ? styles.subjectChipText : styles.primaryText}>
+                                    {group.subjectText}
+                                </Text>
+                            </View>
+                        ) : null}
+                    </View>
+                </View>
+            );
+        }
 
         return (
-            <View>
-                {secondaryText ? <Text style={[styles.cellText, styles.teacherText]}>{secondaryText}</Text> : null}
-                {subjectsText ? <Text style={[styles.cellText, styles.subjectText]}>{subjectsText}</Text> : null}
+            <View style={styles.cellCard}>
+                <View style={styles.multiGroups}>
+                    {assignmentGroups.map((group, idx) => (
+                        <View key={idx} style={styles.assignmentRow}>
+                            {group.primaryText ? (
+                                <Text style={styles.primaryInlineText}>{group.primaryText}</Text>
+                            ) : null}
+                            {group.subjectText ? (
+                                <View style={group.primaryText ? styles.subjectChipSmall : styles.subjectPlain}>
+                                    <Text style={group.primaryText ? styles.subjectChipSmallText : styles.primaryInlineText}>
+                                        {group.subjectText}
+                                    </Text>
+                                </View>
+                            ) : null}
+                        </View>
+                    ))}
+                </View>
             </View>
         );
     };
@@ -184,13 +296,15 @@ const AnnualSchedulePdf: React.FC<AnnualSchedulePdfProps> = ({
                     {/* Header Row */}
                     <View style={[styles.row, styles.headerRow]}>
                         {/* Corner Cell (Hour Column Header) */}
-                        <View style={[styles.cell, styles.hourCell]}>
+                        <View style={styles.hourCell}>
                             <Text></Text>
                         </View>
-                        {/* Day Headers (Note! Because of Hebrew its a must to add a real apostrophe) */}
+                        {/* Day Headers */}
                         {DAYS_OF_WORK_WEEK.map((dayLabel, index) => (
-                            <View key={index} style={[styles.cell, styles.headerCell]}>
-                                <Text>יום {dayLabel}׳</Text>
+                            <View key={index} style={styles.cellWrapper}>
+                                <View style={styles.headerCell}>
+                                    <Text style={styles.headerText}>יום {dayLabel}׳</Text>
+                                </View>
                             </View>
                         ))}
                     </View>
@@ -198,11 +312,11 @@ const AnnualSchedulePdf: React.FC<AnnualSchedulePdfProps> = ({
                     {/* Hours Rows */}
                     {Array.from({ length: rowsCount }, (_, i) => i + fromHour).map(hour => (
                         <View key={hour} style={styles.row}>
-                            <View style={[styles.cell, styles.hourCell]}>
-                                <Text>{hour}</Text>
+                            <View style={styles.hourCell}>
+                                <Text style={styles.hourText}>{hour}</Text>
                             </View>
                             {DAYS_OF_WORK_WEEK.map((dayChar, index) => (
-                                <View key={index} style={styles.cell}>
+                                <View key={index} style={styles.cellWrapper}>
                                     {renderCellContent(dayChar, hour.toString())}
                                 </View>
                             ))}

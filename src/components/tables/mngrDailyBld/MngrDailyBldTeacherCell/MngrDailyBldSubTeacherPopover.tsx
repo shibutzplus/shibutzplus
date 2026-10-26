@@ -5,6 +5,8 @@ import { createPortal } from "react-dom";
 import styles from "./MngrDailyBldSubTeacherPopover.module.css";
 import { GroupOption } from "@/models/types";
 import Icons from "@/style/icons";
+import CloseButton from "@/components/ui/buttons/CloseButton/CloseButton";
+import { usePopoverPosition } from "@/hooks/usePopoverPosition";
 
 const parseTeacherLabel = (label: string) => {
     const match = label.match(/^(.*?)(?:\s*\((.*)\))?$/);
@@ -98,43 +100,7 @@ const MngrDailyBldSubTeacherPopover: React.FC<MngrDailyBldSubTeacherPopoverProps
     }, [filteredGroups]);
 
     // Desktop positioning
-    const desktopStyle = useMemo((): React.CSSProperties => {
-        if (typeof window === "undefined" || !anchorRect) return {};
-        if (window.innerWidth <= 768) return {};
-
-        const width = 350;
-        const padding = 12;
-
-        const spaceBelow = window.innerHeight - anchorRect.bottom - padding;
-        const spaceAbove = anchorRect.top - padding;
-
-        const style: React.CSSProperties = {};
-
-        // If there's enough space below (at least 240px) or more space below than above:
-        if (spaceBelow >= 240 || spaceBelow >= spaceAbove) {
-            style.top = `${Math.round(anchorRect.bottom + 6)}px`;
-            style.maxHeight = `${Math.min(440, Math.max(200, spaceBelow - 6))}px`;
-        } else {
-            // Anchor directly to the top edge of the cell!
-            // The bottom of the popover sits 6px above anchorRect.top
-            const bottomDist = window.innerHeight - anchorRect.top + 6;
-            style.bottom = `${Math.round(bottomDist)}px`;
-            style.maxHeight = `${Math.min(440, Math.max(200, spaceAbove - 6))}px`;
-        }
-
-        // Horizontal (RTL): align with right edge of the cell
-        let right = window.innerWidth - anchorRect.right;
-        if (anchorRect.right - width < padding) {
-            right = window.innerWidth - width - padding;
-        }
-        if (right < padding) {
-            right = padding;
-        }
-
-        style.right = `${Math.round(right)}px`;
-
-        return style;
-    }, [anchorRect]);
+    const desktopStyle = usePopoverPosition(anchorRect);
 
     // Check if the current search query is an EXACT match to any existing teacher's name or label
     const exactMatchTeacher = useMemo(() => {
@@ -227,15 +193,10 @@ const MngrDailyBldSubTeacherPopover: React.FC<MngrDailyBldSubTeacherPopoverProps
                         </span>
                     </div>
 
-                    <button
-                        type="button"
+                    <CloseButton
+                        onClose={onClose}
                         className={styles.titleCloseButton}
-                        onClick={onClose}
-                        title="סגור"
-                        aria-label="סגור"
-                    >
-                        <Icons.close size={18} />
-                    </button>
+                    />
                 </div>
 
                 {/* Integrated Flat Search Input */}

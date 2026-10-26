@@ -1,0 +1,442 @@
+.tableContainer {
+    flex: 1;
+    overflow: auto;
+    max-width: 100%;
+    overscroll-behavior: none;
+    height: 100%;
+}
+
+.scheduleTable {
+    width: max-content;
+    background-color: var(--table-gray-color);
+    border-collapse: separate;
+    border-spacing: 0;
+    border: none;
+}
+
+.scheduleTable thead,
+.scheduleTable tr {
+    border: none !important;
+}
+
+.scheduleTable thead {
+    position: sticky;
+    top: 0;
+    z-index: 21;
+    background-color: transparent;
+}
+
+.scheduleTableBody {
+    width: 100%;
+}
+
+.headerCell {
+    position: sticky;
+    top: 0px;
+    z-index: 50;
+    text-align: center;
+    height: var(--table-annual-header-height, 40px);
+    vertical-align: middle;
+    background-color: var(--background-color);
+    border-radius: 0;
+    border: none !important;
+    padding: 0;
+}
+
+.headerInner {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--table-gray-color);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--dark-text-color);
+    padding: 0 16px;
+    white-space: nowrap;
+}
+
+/* Rounded top corners on the subject header row */
+.scheduleTable thead th:nth-child(3) .headerInner {
+    border-top-right-radius: var(--border-radius-table, 20px);
+}
+
+.scheduleTable thead th:last-child .headerInner {
+    border-top-left-radius: var(--border-radius-table, 20px);
+}
+
+/* Sticky right class column */
+.classColumn {
+    position: sticky;
+    right: 0;
+    width: 95px;
+    min-width: 95px;
+    max-width: 95px;
+    padding: 0;
+    border: none !important;
+}
+
+thead .classColumn {
+    z-index: 60;
+    background-color: var(--background-color) !important;
+}
+
+tbody .classColumn {
+    z-index: 4;
+    background-color: var(--table-gray-color) !important;
+}
+
+tbody tr:not(:last-child) .classColumn {
+    border-bottom: 3px solid var(--background-color) !important;
+}
+
+tbody tr:first-child .classColumn {
+    background-color: var(--table-gray-color) !important;
+    border-top-right-radius: var(--border-radius-table, 20px) !important;
+    border-top-left-radius: var(--border-radius-table, 20px) !important;
+}
+
+.classCell {
+    text-align: center;
+    vertical-align: middle;
+    width: 100%;
+    min-height: 56px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 6px;
+    box-sizing: border-box;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--dark-text-color);
+    background-color: transparent;
+    border-radius: 0;
+    white-space: nowrap;
+}
+
+/* 5px separator column between sticky class and data columns */
+.emptyColSeparator,
+.emptyCell {
+    background-color: var(--background-color) !important;
+    width: 5px !important;
+    min-width: 5px !important;
+    padding: 0;
+    border: none !important;
+}
+
+.emptyColSeparator {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    outline: none !important;
+}
+
+.subjectColumn {
+    min-width: 160px;
+    width: 160px;
+}
+
+/* The rounded card cells */
+.scheduleCell {
+    position: relative;
+    padding: 4px;
+    box-sizing: border-box;
+    vertical-align: top;
+    min-width: 160px;
+    width: 160px;
+    height: 1px;
+    background-color: var(--table-gray-color);
+    border: none !important;
+}
+
+.cellContent {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+    height: 100%;
+    min-height: 56px;
+    background-color: var(--tab-color, #ffffff);
+    border-radius: var(--border-radius-cell, 6px);
+    padding: 8px 10px;
+    box-sizing: border-box;
+    transition: background-color 0.15s ease;
+}
+
+.cellContent:hover {
+    background-color: #fafbfd;
+}
+
+.teachersList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.teacherItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 100%;
+}
+
+.teacherName {
+    font-size: 15.5px;
+    font-weight: 600;
+    color: var(--dark-text-color);
+    text-align: center;
+    line-height: 1.25;
+}
+
+.timeChip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 500;
+    color: #475569;
+    background-color: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 9999px;
+    padding: 1px 7px;
+    line-height: 1.25;
+    white-space: nowrap;
+}
+
+.emptyCellContent {
+    color: #cbd5e1;
+    font-size: 16px;
+    user-select: none;
+}
+
+.noDataPlaceholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60vh;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    color: var(--dark-text-color);
+}
+
+.printHeader {
+    display: none;
+}
+
+@media print {
+    @page {
+        size: landscape;
+        margin: 0.8cm 0.6cm;
+    }
+
+    .printHeader {
+        display: flex !important;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+        padding: 0 8px 6px 8px !important;
+        border-bottom: 2px solid #334155;
+        direction: rtl;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .printTitle {
+        font-size: 18px !important;
+        font-weight: 700 !important;
+        color: #0f172a !important;
+    }
+
+    .printSchoolName {
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        color: #475569 !important;
+    }
+
+    .tableContainer {
+        overflow: visible !important;
+        height: auto !important;
+        display: block !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 0 8px !important;
+    }
+
+    .scheduleTable {
+        width: 100% !important;
+        max-width: 100% !important;
+        table-layout: fixed !important;
+        border-collapse: collapse !important;
+        background-color: #ffffff !important;
+        direction: rtl !important;
+        border: 1.5px solid #64748b !important;
+        page-break-inside: auto !important;
+    }
+
+    .scheduleTable thead {
+        position: static !important;
+        display: table-header-group !important;
+    }
+
+    .scheduleTable tr {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        height: auto !important;
+    }
+
+    /* Hide 5px spacer column */
+    .emptyColSeparator,
+    .emptyCell {
+        display: none !important;
+        width: 0 !important;
+        min-width: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+    }
+
+    /* Header Cells */
+    .headerCell {
+        position: static !important;
+        background-color: #e2e8f0 !important;
+        border: 1px solid #94a3b8 !important;
+        height: 32px !important;
+        padding: 4px 6px !important;
+        text-align: center !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .headerInner {
+        background-color: transparent !important;
+        color: #0f172a !important;
+        font-size: 13px !important;
+        font-weight: 700 !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+        justify-content: center !important;
+        white-space: normal !important;
+    }
+
+    /* Class column */
+    .classColumn {
+        position: static !important;
+        width: 12% !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        background-color: #f1f5f9 !important;
+        border: 1px solid #94a3b8 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        padding: 4px 6px !important;
+        text-align: center !important;
+    }
+
+    tbody .classColumn {
+        background-color: #f8fafc !important;
+        border: 1px solid #cbd5e1 !important;
+    }
+
+    tbody tr:first-child .classColumn {
+        background-color: #f8fafc !important;
+    }
+
+    tbody tr:first-child .classCell {
+        position: static !important;
+        background-color: transparent !important;
+        border-radius: 0 !important;
+        inset: auto !important;
+    }
+
+    .classCell {
+        font-size: 13px !important;
+        font-weight: 700 !important;
+        color: #0f172a !important;
+        height: auto !important;
+        padding: 0 !important;
+        white-space: nowrap !important;
+        justify-content: center !important;
+    }
+
+    /* Subject Data Columns */
+    .subjectColumn {
+        width: auto !important;
+        min-width: 0 !important;
+    }
+
+    .scheduleCell {
+        position: static !important;
+        border: 1px solid #cbd5e1 !important;
+        background-color: #ffffff !important;
+        padding: 3px 6px !important;
+        height: auto !important;
+        min-width: 0 !important;
+        width: auto !important;
+        text-align: center !important;
+        vertical-align: middle !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    /* Subtle zebra striping on print for better readability */
+    tbody tr:nth-child(even) .scheduleCell {
+        background-color: #f8fafc !important;
+    }
+
+    .cellContent {
+        background-color: transparent !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+        min-height: 22px !important;
+        height: auto !important;
+        gap: 2px !important;
+        justify-content: center !important;
+    }
+
+    .cellContent:hover {
+        background-color: transparent !important;
+    }
+
+    .teachersList {
+        gap: 4px !important;
+        justify-content: center !important;
+    }
+
+    .teacherItem {
+        gap: 1px !important;
+    }
+
+    .teacherName {
+        font-size: 13px !important;
+        font-weight: 600 !important;
+        color: #0f172a !important;
+        line-height: 1.2 !important;
+    }
+
+    .timeChip {
+        font-size: 9px !important;
+        background-color: #f1f5f9 !important;
+        border: 0.5px solid #cbd5e1 !important;
+        padding: 0 4px !important;
+        border-radius: 9999px !important;
+        color: #475569 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .emptyCellContent {
+        color: #94a3b8 !important;
+        font-size: 13px !important;
+    }
+}

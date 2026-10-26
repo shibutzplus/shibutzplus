@@ -39,6 +39,14 @@ export const populateAllClassesSchedule = (
         if (classId && !cell.classes.includes(classId)) {
             cell.classes.push(classId);
         }
+        if (teacherId && subjectId) {
+            if (!cell.teacherSubjects) {
+                cell.teacherSubjects = [];
+            }
+            if (!cell.teacherSubjects.some((ts) => ts.teacherId === teacherId && ts.subjectId === subjectId)) {
+                cell.teacherSubjects.push({ teacherId, subjectId });
+            }
+        }
     });
 
     return newSchedule;
@@ -81,6 +89,22 @@ export const populateAllTeachersSchedule = (
         const classId = entry.classId || entry.class?.id;
         if (classId && !cell.classes.includes(classId)) {
             cell.classes.push(classId);
+        }
+        if (teacherId && subjectId) {
+            if (!cell.teacherSubjects) {
+                cell.teacherSubjects = [];
+            }
+            if (!cell.teacherSubjects.some((ts) => ts.teacherId === teacherId && ts.subjectId === subjectId)) {
+                cell.teacherSubjects.push({ teacherId, subjectId });
+            }
+        }
+        if (classId && subjectId) {
+            if (!cell.classSubjects) {
+                cell.classSubjects = [];
+            }
+            if (!cell.classSubjects.some((cs) => cs.classId === classId && cs.subjectId === subjectId)) {
+                cell.classSubjects.push({ classId, subjectId });
+            }
         }
     });
 

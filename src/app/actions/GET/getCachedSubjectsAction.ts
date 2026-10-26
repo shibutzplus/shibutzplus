@@ -22,7 +22,6 @@ export async function getCachedSubjectsAction(
 
         return {
             success: true,
-            message: messages.subjects.success,
             data: subjects,
         };
     } catch (error) {

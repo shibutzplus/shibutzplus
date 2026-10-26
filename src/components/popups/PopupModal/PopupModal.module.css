@@ -41,27 +41,7 @@
   position: absolute;
   top: 10px;
   left: 10px;
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: var(--dark-text-color);
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: background-color 0.2s;
-}
-
-.closeButton:focus {
-  outline: none;
-  background-color: #0000000d;
-}
-
-.closeButton:hover {
-  background-color: #0000000d;
+  z-index: 20;
 }
 
 .modalContent {

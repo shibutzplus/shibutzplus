@@ -152,15 +152,15 @@ export const isTeacherScheduledForGuard = (
     return false;
 };
 /**
- * Formats the display text for a guard cell (location surrounded by asterisks + teacher names).
+ * Extracts structured display data for a guard cell (title + list of teacher names with locations).
  */
-export const formatGuardCellText = (
+export const getGuardCellDisplayData = (
     cell: { event?: string | null; guardTeacherIds?: string[] | null; instructions?: string | null } | undefined | null,
     teacherMap: Map<string, string>,
-): string => {
-    if (!cell) return "";
+): { title: string; teachers: string[] } => {
+    if (!cell) return { title: "", teachers: [] };
 
-    const eventText = cell.event || "";
+    const title = cell.event ? cell.event.replace(/^\*+|\*+$/g, "").trim() : "";
 
     let locationsMap: Record<string, string> = {};
     if (cell.instructions) {
@@ -171,7 +171,7 @@ export const formatGuardCellText = (
         }
     }
 
-    const guardTeacherNames = (cell.guardTeacherIds || [])
+    const teachers = (cell.guardTeacherIds || [])
         .map((id) => {
             const name = teacherMap.get(id);
             if (!name) return null;
@@ -180,9 +180,21 @@ export const formatGuardCellText = (
         })
         .filter(Boolean) as string[];
 
+    return { title, teachers };
+};
+
+/**
+ * Formats the display text for a guard cell (location surrounded by asterisks + teacher names).
+ */
+export const formatGuardCellText = (
+    cell: { event?: string | null; guardTeacherIds?: string[] | null; instructions?: string | null } | undefined | null,
+    teacherMap: Map<string, string>,
+): string => {
+    const { title, teachers } = getGuardCellDisplayData(cell, teacherMap);
+
     const combinedLines = [
-        eventText ? `*${eventText.replace(/^\*+|\*+$/g, "")}*` : "",
-        ...guardTeacherNames,
+        title ? `*${title}*` : "",
+        ...teachers,
     ].filter(Boolean);
 
     return combinedLines.join("\n");

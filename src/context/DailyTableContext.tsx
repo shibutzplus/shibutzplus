@@ -5,7 +5,7 @@ import { useMainContext } from "./MainContext";
 import { SelectOption } from "@/models/types";
 import { ColumnType, DailySchedule, DailyScheduleCell, DailyScheduleType, TeacherHourlyScheduleItem, ColumnTypeValues } from "@/models/types/dailySchedule";
 import { TeacherType } from "@/models/types/teachers";
-import { AvailableTeachers, TeacherClassMap } from "@/models/types/annualSchedule";
+import { AvailableTeachers } from "@/models/types/annualSchedule";
 import { DAILY_TEACHER_COL_DATA_CHANGED, DAILY_EVENT_COL_DATA_CHANGED, DAILY_PUBLISH_DATA_CHANGED } from "@/models/constant/sync";
 import { DEFAULT_GUARD_TITLE } from "@/models/constant/daily";
 import useDailySelectedDate from "@/hooks/daily/useDailySelectedDate";
@@ -22,7 +22,7 @@ import { makeColumnRecurringAction } from "@/app/actions/POST/makeColumnRecurrin
 import { updateRecurringFromDateAction, RecurringUpdateFields } from "@/app/actions/PUT/updateRecurringFromDateAction";
 import { detachRecurringColumnAction } from "@/app/actions/PUT/detachRecurringColumnAction";
 import { SyncItem, SyncChannel } from "@/services/sync/clientSyncService";
-import { mapAnnualTeachers, populateDailyScheduleTable, mapAnnualTeacherClasses, } from "@/services/daily/populate";
+import { mapAnnualTeachers, populateDailyScheduleTable, mapAnnualTeacherSlots, TeacherSlotMap } from "@/services/daily/populate";
 import { initializeEmptyColumn } from "@/services/daily/setEmpty";
 import { generateId } from "@/utils";
 import { sortDailyColumnIdsByPosition } from "@/utils/sort";
@@ -54,7 +54,7 @@ const REBALANCE_THRESHOLD = 10; // If gap is smaller than rebalance
 interface DailyTableContextType {
     mainDailyTable: DailySchedule;
     mapAvailableTeachers: AvailableTeachers;
-    teacherClassMap: TeacherClassMap;
+    teacherSlotsMap: TeacherSlotMap;
     isLoading: boolean;
     isAutoAssigning: boolean;
     isPreviewMode: boolean;
@@ -167,7 +167,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isAutoAssigning, setIsAutoAssigning] = useState<boolean>(false);
     const [mapAvailableTeachers, setMapAvailableTeachers] = useState<AvailableTeachers>({});
-    const [teacherClassMap, setTeacherClassMap] = useState<TeacherClassMap>({});
+    const [teacherSlotsMap, setTeacherSlotsMap] = useState<TeacherSlotMap>({});
     const [recommendationsCache, setRecommendationsCache] = useState<Record<string, SystemRecommendationsMap>>({});
     const refreshScheduleRef = useRef<((items: SyncItem[]) => Promise<void> | void) | null>(null);
     usePollingUpdates(refreshScheduleRef, SCHEDULE_CHANNELS);
@@ -231,10 +231,10 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 const response = await getAnnualScheduleAction(school.id);
                 if (response.success && response.data) {
                     const teacherMapping: AvailableTeachers = mapAnnualTeachers(response.data);
-                    const classMapping: TeacherClassMap = mapAnnualTeacherClasses(response.data);
+                    const slotMapping: TeacherSlotMap = mapAnnualTeacherSlots(response.data);
 
                     setMapAvailableTeachers(teacherMapping);
-                    setTeacherClassMap(classMapping);
+                    setTeacherSlotsMap(slotMapping);
                 }
             } catch (error) {
                 logErrorAction({ description: `Error fetching annual schedule: ${error instanceof Error ? error.message : String(error)}`, schoolId: school?.id });
@@ -788,7 +788,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 teachers,
                 classes,
                 mapAvailableTeachers,
-                teacherClassMap,
+                teacherSlotsMap,
                 systemRecommendations,
                 targetColumnId: columnId,
                 fromHour: fromH,
@@ -910,7 +910,7 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 isAutoAssigning,
                 isPreviewMode,
                 mapAvailableTeachers,
-                teacherClassMap,
+                teacherSlotsMap,
                 systemRecommendations,
                 addNewEmptyColumn,
                 deleteColumn,

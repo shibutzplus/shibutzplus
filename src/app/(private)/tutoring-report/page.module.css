@@ -1,0 +1,26 @@
+.container {
+    padding: 2px;
+    height: 100%;
+    width: 100%;
+    position: relative;
+    padding-top: var(--padding-top-desktop);
+}
+
+.loaderContainer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+@media print {
+    .container {
+        padding: 10px 16px !important;
+        height: auto !important;
+        overflow: visible !important;
+        position: static !important;
+        display: block !important;
+        box-sizing: border-box !important;
+        width: 100% !important;
+    }
+}

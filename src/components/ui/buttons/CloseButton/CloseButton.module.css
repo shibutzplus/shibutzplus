@@ -1,0 +1,54 @@
+.closeButton {
+    background: none;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 50%;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.closeButton:hover {
+    background-color: rgba(0, 0, 0, 0.06);
+    color: #0f172a;
+}
+
+.closeButton:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* --- Sizes --- */
+.sizeMd {
+    width: 32px;
+    height: 32px;
+}
+
+.sizeLg {
+    width: 36px;
+    height: 36px;
+}
+
+/* --- Dark Theme (for dark backgrounds / fullscreen) --- */
+.dark {
+    background-color: rgba(30, 41, 59, 0.55);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(4px);
+}
+
+.dark:hover {
+    background-color: #0f172a;
+    color: #ffffff;
+    border-color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+.dark:active {
+    background-color: #334155;
+}

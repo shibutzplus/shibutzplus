@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import CreatableSelect from "react-select/creatable";
 import Select, {
     ActionMeta,
@@ -36,7 +36,6 @@ type InputSelectProps = {
     placeholderColor?: string;
     colorHover?: string;
     isBold?: boolean;
-    onBeforeRemove?: (removedLabel: string | null, proceed: () => void) => void;
     isCentered?: boolean;
     fontSize?: string;
     caretColor?: string;
@@ -46,6 +45,7 @@ type InputSelectProps = {
     menuWidth?: string;
     menuAlign?: "left" | "right";
     isCompact?: boolean;
+    autoFocus?: boolean;
 };
 const InputSelect: React.FC<InputSelectProps> = ({
     label,
@@ -64,7 +64,6 @@ const InputSelect: React.FC<InputSelectProps> = ({
     placeholderColor = PlaceholderColor,
     colorHover = InputColorHover,
     isBold = false,
-    onBeforeRemove,
     isCentered = false,
     fontSize,
     caretColor,
@@ -74,7 +73,9 @@ const InputSelect: React.FC<InputSelectProps> = ({
     menuWidth,
     menuAlign = "right",
     isCompact = false,
+    autoFocus = false,
 }) => {
+    const selectRef = useRef<any>(null);
     const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
     const [isMounted, setIsMounted] = useState(false);
     // Sync selected option from incoming value
@@ -93,20 +94,18 @@ const InputSelect: React.FC<InputSelectProps> = ({
     useEffect(() => {
         if (!isMounted) setIsMounted(true);
     }, [isMounted]);
+    // Auto focus support
+    useEffect(() => {
+        if (autoFocus) {
+            selectRef.current?.focus();
+        }
+    }, [autoFocus]);
     const handleChange = (
         opt: OnChangeValue<SelectOption, false>,
         meta: ActionMeta<SelectOption>,
     ) => {
         const nextOption = opt ?? null;
         const next = nextOption?.value ?? "";
-        // Intercept clear/remove actions to allow confirmation
-        if (onBeforeRemove && (meta.action === "clear" || meta.action === "remove-value")) {
-            const removedLabel = selectedOption?.label ?? null;
-            return onBeforeRemove(removedLabel, () => {
-                setSelectedOption(nextOption);
-                onChange(next, meta.action as SelectMethod);
-            });
-        }
         setSelectedOption(nextOption);
         onChange(next, meta.action as SelectMethod);
     };
@@ -160,7 +159,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
                     fontSize: fontSize || base.fontSize,
                     maxWidth: "100%",
                     overflow: "hidden",
-                    fontWeight: isBold ? 600 : 400,
+                    fontWeight: isBold ? 700 : 400,
                     textAlign: isCentered ? "center" : "right",
                     width: isCentered ? "100%" : "auto",
                     gridArea: "1/1/2/3",
@@ -204,6 +203,8 @@ const InputSelect: React.FC<InputSelectProps> = ({
                     ...base,
                     fontSize: fontSize || base.fontSize,
                     textAlign: isCentered ? "center" : "right",
+                    pointerEvents: "none",
+                    userSelect: "none",
                 };
             },
             option: (provided: any, state: any) => {
@@ -283,11 +284,17 @@ const InputSelect: React.FC<InputSelectProps> = ({
                             e.stopPropagation();
                             e.preventDefault();
                             handleChange(null, { action: "clear" } as any);
+                            setTimeout(() => {
+                                selectRef.current?.focus();
+                            }, 0);
                         }}
                         onTouchEnd={(e) => {
                             e.stopPropagation();
                             e.preventDefault();
                             handleChange(null, { action: "clear" } as any);
+                            setTimeout(() => {
+                                selectRef.current?.focus();
+                            }, 0);
                         }}
                         onMouseEnter={() => setIsHovered(true)}
                         onMouseLeave={() => setIsHovered(false)}
@@ -319,10 +326,115 @@ const InputSelect: React.FC<InputSelectProps> = ({
             </components.SingleValue>
         );
     };
+
+    const focusInputEl = (el: HTMLElement | null) => {
+        if (!el) return;
+        const input = el.querySelector("input");
+        if (input) {
+            input.focus();
+            requestAnimationFrame(() => {
+                if (document.activeElement !== input) {
+                    input.focus();
+                }
+            });
+        }
+    };
+
+    const CustomControl = (props: any) => {
+        return (
+            <components.Control
+                {...props}
+                innerProps={{
+                    ...props.innerProps,
+                    onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => {
+                        props.innerProps?.onMouseDown?.(e);
+                        const target = e.target as HTMLElement;
+                        if (target && target.tagName !== "INPUT" && target.tagName !== "TEXTAREA") {
+                            focusInputEl(e.currentTarget);
+                        }
+                    },
+                    onClick: (e: React.MouseEvent<HTMLDivElement>) => {
+                        props.innerProps?.onClick?.(e);
+                        const target = e.target as HTMLElement;
+                        if (target && target.tagName !== "INPUT" && target.tagName !== "TEXTAREA") {
+                            focusInputEl(e.currentTarget);
+                        }
+                    },
+                }}
+            />
+        );
+    };
+
+    const CustomInput = (props: any) => {
+        const isHidden = props.selectProps?.menuIsOpen ? false : props.isHidden;
+        return <components.Input {...props} isHidden={isHidden} />;
+    };
+
+    const defaultFormatOptionLabel = (
+        option: SelectOption,
+        { context }: { context: "menu" | "value" }
+    ) => {
+        if (context === "menu") {
+            if (option.subLabel) {
+                return (
+                    <div
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            gap: "8px",
+                            width: "100%",
+                        }}
+                    >
+                        <span
+                            style={{
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                                fontWeight: 400,
+                            }}
+                        >
+                            {option.label}
+                        </span>
+                        <span
+                            style={{
+                                fontSize: "11px",
+                                padding: "1px 7px",
+                                borderRadius: "9999px",
+                                backgroundColor: "rgba(0, 0, 0, 0.01)",
+                                color: "rgba(0, 0, 0, 0.45)",
+                                border: "1px solid rgba(0, 0, 0, 0.07)",
+                                whiteSpace: "nowrap",
+                                fontWeight: 500,
+                                lineHeight: 1.3,
+                                flexShrink: 0,
+                            }}
+                        >
+                            {option.subLabel}
+                        </span>
+                    </div>
+                );
+            }
+        }
+        return option.label;
+    };
+
+    const defaultFilterOption = (
+        candidate: { label: string; value: string; data: SelectOption },
+        input: string
+    ) => {
+        if (!input) return true;
+        const search = input.trim().toLowerCase();
+        const labelMatch = candidate.label?.toLowerCase().includes(search);
+        const subLabelMatch = candidate.data?.subLabel?.toLowerCase().includes(search);
+        return Boolean(labelMatch || subLabelMatch);
+    };
+
     const SelectComponent = isCreatable ? CreatableSelect : Select;
     return (
         <SelectLayout resolvedId={id || ""} error={error} label={label}>
             <SelectComponent
+                ref={selectRef}
                 inputId={id}
                 value={selectedOption}
                 onChange={handleChange}
@@ -339,10 +451,15 @@ const InputSelect: React.FC<InputSelectProps> = ({
                 menuPosition="fixed"
                 noOptionsMessage={() => <div>לא נמצאו אפשרויות</div>}
                 formatCreateLabel={formatCreateLabel}
+                formatOptionLabel={defaultFormatOptionLabel}
+                filterOption={defaultFilterOption}
                 styles={stylesOverride}
                 classNamePrefix="react-select"
                 isRtl={true}
+                autoFocus={autoFocus}
                 components={{
+                    Control: CustomControl,
+                    Input: CustomInput,
                     SingleValue: CustomSingleValue,
                     ClearIndicator: () => null,
                 }}

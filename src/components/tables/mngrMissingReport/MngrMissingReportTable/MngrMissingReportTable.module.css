@@ -78,6 +78,10 @@ tbody .teacherColumn {
     background-color: var(--table-gray-color) !important;
 }
 
+tbody tr:not(:last-child) .teacherColumn {
+    border-bottom: 3px solid var(--background-color) !important;
+}
+
 tbody tr:first-child .teacherColumn {
     background-color: var(--background-color) !important;
 }

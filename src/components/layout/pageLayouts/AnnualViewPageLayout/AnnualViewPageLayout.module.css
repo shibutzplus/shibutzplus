@@ -7,9 +7,9 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    width: 255px;
-    min-width: 255px;
-    max-width: 255px;
+    width: 285px;
+    min-width: 285px;
+    max-width: 285px;
 }
 
 .selectWrapper {
@@ -41,7 +41,35 @@
     cursor: not-allowed;
 }
 
+.infoInlineButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    color: #64748b;
+    transition: all 0.2s ease;
+    height: 36px;
+    width: 28px;
+    min-width: 28px;
+}
+
+.infoInlineButton:hover:not(:disabled) {
+    color: #1d4ed8;
+    transform: scale(1.15);
+}
+
+.infoInlineButtonDisabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
 .pdfContainer {
+    display: flex;
+    align-items: center;
     margin-right: 5px;
 }
 
@@ -60,7 +88,7 @@
     align-items: center;
     gap: 4px;
     width: 100%;
-    max-width: 280px;
+    max-width: 310px;
     flex: 1;
     min-width: 0;
 }
@@ -89,8 +117,8 @@
     cursor: not-allowed;
 }
 
-/* <= 780px */
-@media (max-width: 780px) {
+/* <= 900px */
+@media (max-width: 900px) {
     .selectWithAction {
         display: none;
     }

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
-import Icons from "@/style/icons";
+import CloseButton from "@/components/ui/buttons/CloseButton/CloseButton";
 import { useAccessibility } from "@/hooks/browser/useAccessibility";
 import styles from "./SlidingPanel.module.css";
 
@@ -68,13 +68,7 @@ const SlidingPanel: React.FC<SlidingPanelProps> = ({
             >
                 <header className={styles.panelHeader}>
                     <h3>{title}{subtitle ? ` - ${subtitle}` : ""}</h3>
-                    <button
-                        onClick={onClose}
-                        className={styles.closeButton}
-                        aria-label="Close panel"
-                    >
-                        <Icons.close className={styles.closeIcon} />
-                    </button>
+                    <CloseButton onClose={onClose} />
                 </header>
                 <div className={styles.content}>{children}</div>
             </div>

@@ -22,14 +22,14 @@ type MngrDailyBldTeacherCellProps = {
 };
 
 const MngrDailyBldTeacherCell: React.FC<MngrDailyBldTeacherCellProps> = ({ columnId, cell, type }) => {
-    const { teachers, classes, school } = useMainContext();
+    const { teachers, classes, subjects, school } = useMainContext();
     const {
         mainDailyTable,
         mapAvailableTeachers,
         selectedDate,
         updateTeacherCell,
         clearTeacherCell,
-        teacherClassMap,
+        teacherSlotsMap,
     } = useDailyTableContext();
 
     const hour = cell?.hour;
@@ -75,6 +75,11 @@ const MngrDailyBldTeacherCell: React.FC<MngrDailyBldTeacherCellProps> = ({ colum
         [classes],
     );
 
+    const subjectNameById = useMemo(
+        () => Object.fromEntries((subjects || []).map((subj) => [subj.id, subj.name])),
+        [subjects],
+    );
+
     const sortedTeacherOptions = useMemo(
         () =>
             sortDailyTeachers(
@@ -83,10 +88,11 @@ const MngrDailyBldTeacherCell: React.FC<MngrDailyBldTeacherCellProps> = ({ colum
                 mainDailyTable[selectedDate],
                 day,
                 Number(hour),
-                teacherClassMap,
+                teacherSlotsMap,
                 classNameById,
                 headerData?.headerTeacher?.id,
                 classActivityById,
+                subjectNameById,
             ),
         [
             teachers,
@@ -94,12 +100,14 @@ const MngrDailyBldTeacherCell: React.FC<MngrDailyBldTeacherCellProps> = ({ colum
             mainDailyTable,
             selectedDate,
             hour,
-            teacherClassMap,
+            teacherSlotsMap,
             classNameById,
+            subjectNameById,
             headerData?.headerTeacher?.id,
             subTeacherData,
             teacherText,
             classActivityById,
+            day,
         ],
     );
 
@@ -261,11 +269,10 @@ const MngrDailyBldTeacherCell: React.FC<MngrDailyBldTeacherCellProps> = ({ colum
                                                 </span>
                                             ) : (
                                                 <span
-                                                    className={`${styles.placeholderText} ${
-                                                        shouldHighlightMissing
+                                                    className={`${styles.placeholderText} ${shouldHighlightMissing
                                                             ? styles.placeholderMissing
                                                             : ""
-                                                    }`}
+                                                        }`}
                                                 >
                                                     ממלא מקום
                                                 </span>

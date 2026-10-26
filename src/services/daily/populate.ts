@@ -1,4 +1,4 @@
-import { AnnualScheduleType, AvailableTeachers } from "@/models/types/annualSchedule";
+import { AnnualScheduleType, AvailableTeachers, TeacherSlot, TeacherSlotMap } from "@/models/types/annualSchedule";
 import { ColumnType, ColumnTypeValues, DailySchedule, DailyScheduleCell, DailyScheduleType, HeaderCol } from "@/models/types/dailySchedule";
 import { initDailyEventCellData, initDailyGuardCellData, initDailyTeacherCellData } from "@/services/daily/initialize";
 import { DEFAULT_FROM_HOUR, DEFAULT_TO_HOUR } from "@/utils/time";
@@ -118,38 +118,34 @@ export const mapAnnualTeachers = (data: AnnualScheduleType[]) => {
 
     return teacherMapping;
 };
+export type { TeacherSlot, TeacherSlotMap };
 
 /**
- * Maps annual schedule data into a structured format of teacher locations (which class they are in).
- *
- * This function processes a list of annual schedule entries and organizes them by day and hour.
- * It creates a mapping where each key corresponds to a day, containing an object of hours.
- * Each hour maps to an object where keys are teacher IDs and values are class IDs.
- * This is used to display where a teacher is teaching when they are unavailable.
- * @returns A structured object: { [day]: { [hour]: { [teacherId]: classId } } }
+ * Maps annual schedule entries to teacher slot details containing both classId and subjectId.
+ * @returns A structured object: { [day]: { [hour]: { [teacherId]: TeacherSlot[] } } }
  */
-export const mapAnnualTeacherClasses = (data: AnnualScheduleType[]) => {
-    const teacherClassMap: any = {};
+export const mapAnnualTeacherSlots = (data: AnnualScheduleType[]): TeacherSlotMap => {
+    const slotMap: TeacherSlotMap = {};
 
     data.forEach((schedule) => {
         const day = schedule.day.toString();
         const hour = schedule.hour.toString();
         const teacherId = schedule.teacherId || schedule.teacher?.id;
         const classId = schedule.classId || schedule.class?.id;
+        const subjectId = schedule.subjectId || schedule.subject?.id;
 
         if (!teacherId || !classId) return;
 
-        if (!teacherClassMap[day]) {
-            teacherClassMap[day] = {};
-        }
-        if (!teacherClassMap[day][hour]) {
-            teacherClassMap[day][hour] = {};
-        }
+        if (!slotMap[day]) slotMap[day] = {};
+        if (!slotMap[day][hour]) slotMap[day][hour] = {};
+        if (!slotMap[day][hour][teacherId]) slotMap[day][hour][teacherId] = [];
 
-        teacherClassMap[day][hour][teacherId] = classId;
+        if (!slotMap[day][hour][teacherId].some((s) => s.classId === classId && s.subjectId === subjectId)) {
+            slotMap[day][hour][teacherId].push({ classId, subjectId });
+        }
     });
 
-    return teacherClassMap;
+    return slotMap;
 };
 
 /**

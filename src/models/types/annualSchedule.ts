@@ -4,7 +4,6 @@ import { SchoolType } from "./school";
 import { SubjectType } from "./subjects";
 import { TeacherType } from "./teachers";
 
-
 export type AnnualScheduleType = {
     id: string;
     day: number; // 1-7 representing days of the week
@@ -21,15 +20,6 @@ export type AnnualScheduleType = {
     updatedAt?: Date;
 };
 
-export type AnnualScheduleRequest = {
-    day: number;
-    hour: number;
-    school: SchoolType;
-    class: ClassType;
-    teacher: TeacherType;
-    subject: SubjectType;
-};
-
 export type GetAnnualScheduleResponse = ActionResponse & {
     data?: AnnualScheduleType[];
 };
@@ -38,6 +28,8 @@ export type AnnualScheduleCell = {
     teachers: string[];
     subjects: string[];
     classes: string[];
+    teacherSubjects?: { teacherId: string; subjectId: string }[];
+    classSubjects?: { classId: string; subjectId: string }[];
 };
 
 // TODO: can be [className: string] or [teacherName: string]
@@ -55,12 +47,15 @@ export type AvailableTeachers = {
     };
 };
 
-export type TeacherClassMap = {
+export type TeacherSlot = {
+    classId: string;
+    subjectId?: string;
+};
+
+export type TeacherSlotMap = {
     [day: string]: {
         [hour: string]: {
-            [teacherId: string]: string; // value is classId
+            [teacherId: string]: TeacherSlot[];
         };
     };
 };
-
-export type AnnualInputCellType = "teachers" | "subjects" | "classes";

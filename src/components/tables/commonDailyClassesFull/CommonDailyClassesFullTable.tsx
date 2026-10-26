@@ -10,12 +10,13 @@ import { DailySchedule, ColumnType, ColumnTypeValues } from "@/models/types/dail
 import { sortClassNames, buildClassSchedule, calculateVisibleRowsForClasses } from "@/utils/dailyClassSchedule";
 import { sortDailyColumnIdsByPosition } from "@/utils/sort";
 import { COLOR_BY_TYPE, DEFAULT_GUARD_TITLE, DEFAULT_EVENT_TITLE } from "@/models/constant/daily";
-import { formatGuardCellText } from "@/utils/tableUtils";
+import { getGuardCellDisplayData } from "@/utils/tableUtils";
 import { ClassColor } from "@/style/root";
 import { useOptionalMainContext } from "@/context/MainContext";
 import { useOptionalPortalContext } from "@/context/PortalContext";
 import { AppType } from "@/models/types";
 import CommonDailySchoolFullEventCell from "../commonDailySchoolFull/CommonDailySchoolFullEventCell";
+import CommonDailySchoolFullGuardCell from "../commonDailySchoolFull/CommonDailySchoolFullGuardCell";
 import styles from "../commonDailySchoolFull/CommonDailySchoolFullTable.module.css";
 
 type CommonDailyClassesFullTableProps = {
@@ -271,11 +272,23 @@ const CommonDailyClassesFullTable: React.FC<CommonDailyClassesFullTableProps> = 
                             const cellData = columnData?.[row];
                             const colType = columnTypes[colId] ?? ColumnTypeValues.event;
 
-                            let eventText = cellData?.event;
-                            if (colType === ColumnTypeValues.guard && cellData) {
-                                const formatted = formatGuardCellText(cellData, teacherMap);
-                                eventText = formatted || undefined;
+                            if (colType === ColumnTypeValues.guard) {
+                                const { title, teachers: guardTeachers } = getGuardCellDisplayData(cellData, teacherMap);
+                                const isEmpty = !title && guardTeachers.length === 0;
+
+                                return (
+                                    <div key={`${colId}-${row}`} className={styles.cell}>
+                                        {!isEmpty && (
+                                            <CommonDailySchoolFullGuardCell
+                                                title={title}
+                                                teachers={guardTeachers}
+                                            />
+                                        )}
+                                    </div>
+                                );
                             }
+
+                            const eventText = cellData?.event;
 
                             return (
                                 <div key={`${colId}-${row}`} className={styles.cell}>

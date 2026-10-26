@@ -7,10 +7,15 @@ import { dbLog } from "@/services/loggerService";
 import { db, schema, executeQuery } from "@/db";
 import { eq } from "drizzle-orm";
 import { AnnualScheduleType } from "@/models/types/annualSchedule";
-import { unstable_cache } from "next/cache";
+import { unstable_cache, revalidateTag } from "next/cache";
 import { cacheTags } from "@/lib/cacheTags";
 
 const annualAltCache = new Map<string, any>();
+
+export async function clearAnnualAltScheduleCache(schoolId: string) {
+    annualAltCache.delete(schoolId);
+    revalidateTag(cacheTags.annualAltSchedule(schoolId));
+}
 
 export const getAnnualAltAction = async (
     schoolId: string,
@@ -55,7 +60,6 @@ export const getAnnualAltAction = async (
 
         return {
             success: true,
-            message: messages.annualSchedule.success,
             data,
         };
     } catch (error) {
