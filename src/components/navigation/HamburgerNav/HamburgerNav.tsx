@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import styles from "./HamburgerNav.module.css";
 import Icons from "@/style/icons";
+import CloseButton from "@/components/ui/buttons/CloseButton/CloseButton";
 import { motion, AnimatePresence } from "motion/react";
 import { useAccessibility } from "../../../hooks/browser/useAccessibility";
 import routePath from "../../../routes";
@@ -156,7 +157,7 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
         .filter((group) => {
             if (group.id === "admin" && userRole !== USER_ROLES.ADMIN) return false;
 
-            if (group.id === "alt_schedule" || group.id === "emergency_schedule") {
+            if (group.id === "emergency_schedule") {
                 const isAltScheduleEnabled = schoolSettings?.displayAltSchedule || context?.settings?.displayAltSchedule;
                 if (!isAltScheduleEnabled) return false;
             }
@@ -232,6 +233,12 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
                         }
 
                         return null;
+                    }
+                    if (link.p === routePath.annualAltView.p) {
+                        const isAltScheduleEnabled = schoolSettings?.displayAltSchedule || context?.settings?.displayAltSchedule;
+                        if (!isAltScheduleEnabled) {
+                            return null;
+                        }
                     }
                     if (link.p === routePath.schoolChangesAlt.p) {
                         const isAltScheduleEnabled = schoolSettings?.displayAltSchedule || context?.settings?.displayAltSchedule;
@@ -357,13 +364,11 @@ const HamburgerNav: React.FC<HamburgerNavProps> = ({
             >
                 <div className={styles.navHeader}>
                     <div className={styles.headerActions}>
-                        <button
+                        <CloseButton
+                            onClose={onClose}
+                            size="lg"
                             className={styles.closeButton}
-                            onClick={onClose}
-                            aria-label="Close menu"
-                        >
-                            <Icons.close size={24} />
-                        </button>
+                        />
                     </div>
                 </div>
 

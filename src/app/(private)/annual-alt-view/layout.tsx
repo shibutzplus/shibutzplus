@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { AnnualAltViewProvider } from "@/context/AnnualAltViewContext";
-import AnnualAltViewPageLayout from "@/components/layout/pageLayouts/AnnualAltViewPageLayout/AnnualAltViewPageLayout";
+import { AnnualViewProvider } from "@/context/AnnualViewContext";
+import AnnualViewPageLayout from "@/components/layout/pageLayouts/AnnualViewPageLayout/AnnualViewPageLayout";
 
 export const metadata: Metadata = {
     title: "מערכת לזמן חירום",
@@ -9,8 +9,8 @@ export const metadata: Metadata = {
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     return (
-        <AnnualAltViewProvider>
-            <AnnualAltViewPageLayout>{children}</AnnualAltViewPageLayout>
-        </AnnualAltViewProvider>
+        <AnnualViewProvider mode="emergency">
+            <AnnualViewPageLayout>{children}</AnnualViewPageLayout>
+        </AnnualViewProvider>
     );
 }

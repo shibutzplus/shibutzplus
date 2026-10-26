@@ -19,7 +19,6 @@ export async function getAnnualScheduleAction(
 
         return {
             success: true,
-            message: messages.annualSchedule.success,
             data: annualSchedule,
         };
     } catch (error) {

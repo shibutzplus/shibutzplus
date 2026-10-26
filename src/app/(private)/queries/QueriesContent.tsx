@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import PageLayout from "@/components/layout/PageLayout/PageLayout";
 import Preloader from "@/components/ui/Preloader/Preloader";
 import Icons from "@/style/icons";
+import CloseButton from "@/components/ui/buttons/CloseButton/CloseButton";
 import { USER_ROLES } from "@/models/constant/auth";
 import routePath from "@/routes";
 import { getLogsQueryAction, LogQueryResult } from "@/app/actions/GET/getLogsQueryAction";
@@ -976,13 +977,9 @@ export default function QueriesContent() {
                     <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
                         <div className={styles.modalHeader}>
                             <h4 className={styles.modalTitle}>Metadata ({selectedMetadata.id.slice(0, 8)})</h4>
-                            <button
-                                onClick={() => setSelectedMetadata(null)}
-                                className={styles.closeModalBtn}
-                                aria-label="סגור"
-                            >
-                                <Icons.close size={18} />
-                            </button>
+                            <CloseButton
+                                onClose={() => setSelectedMetadata(null)}
+                            />
                         </div>
                         <div className={styles.modalBody}>
                             <pre className={styles.jsonPre}>

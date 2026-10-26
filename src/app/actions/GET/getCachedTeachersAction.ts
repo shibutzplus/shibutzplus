@@ -22,7 +22,6 @@ export async function getCachedTeachersAction(
 
         return {
             success: true,
-            message: messages.teachers.success,
             data: teachers,
         };
     } catch (error) {

@@ -92,6 +92,8 @@ export const customStyles = (
             ...provided,
             color: placeholderColor,
             fontSize: FontSize,
+            pointerEvents: "none",
+            userSelect: "none",
         }),
         singleValue: (provided: any) => ({
             ...provided,

@@ -122,7 +122,6 @@ export async function updateSubjectAction(
 
         return {
             success: true,
-            message: messages.subjects.updateSuccess,
             data: (allSubjects as SubjectType[]) || [],
         };
     } catch (error) {

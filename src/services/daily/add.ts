@@ -38,6 +38,36 @@ export const addNewEventCell = (
     return dailyCellData;
 };
 
+export const addNewGuardCell = (
+    school: SchoolType,
+    cellData: DailyScheduleCell,
+    columnId: string,
+    selectedDate: string,
+    data?: { event?: string; guardTeacherIds?: string[]; instructions?: string | null },
+    position: number = cellData.headerCol?.position ?? 0,
+) => {
+    const { hour, headerCol } = cellData;
+    if (!school || !headerCol?.headerEvent) {
+        return;
+    }
+    const dailyCellData: DailyScheduleRequest = {
+        date: getStringReturnDate(selectedDate),
+        day: getDayNumberByDateString(selectedDate),
+        eventTitle: headerCol.headerEvent,
+        columnType: ColumnTypeValues.guard,
+        columnId,
+        hour,
+        school,
+        position,
+        event: data?.event ?? cellData.event ?? "",
+        guardTeacherIds: data?.guardTeacherIds ?? cellData.guardTeacherIds ?? [],
+        instructions: data?.instructions !== undefined
+            ? (data.instructions || undefined)
+            : cellData.instructions,
+    };
+    return dailyCellData;
+};
+
 /**
  * Creates a request object for adding a new teacher-related cell (e.g., substitution) to the daily schedule.
  *

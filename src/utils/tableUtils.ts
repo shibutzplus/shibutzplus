@@ -46,6 +46,10 @@ export const calculateVisibleRowsForDaily = (
                     if (cell?.event) {
                         maxHourWithData = Math.max(maxHourWithData, row);
                     }
+                } else if (typeInt === ColumnTypeValues.guard) {
+                    if (cell?.event || (cell?.guardTeacherIds && cell.guardTeacherIds.length > 0)) {
+                        maxHourWithData = Math.max(maxHourWithData, row);
+                    }
                 } else {
                     // For teacher cells
                     const { isEmpty } = getCellDisplayData(cell, typeInt, appType);
@@ -126,4 +130,72 @@ export const calculateVisibleRowsForAltSchool = (
     }
 
     return generateVisibleRows(maxHourWithData, fromHour, toHour);
+};
+
+/**
+ * Checks if a teacher is assigned to any guard slot in the daily schedule for the day.
+ */
+export const isTeacherScheduledForGuard = (
+    daySchedule: DailySchedule[string] | undefined,
+    teacherId: string
+): boolean => {
+    if (!daySchedule || !teacherId) return false;
+
+    for (const column of Object.values(daySchedule)) {
+        if (!column) continue;
+        for (const cell of Object.values(column)) {
+            if (cell?.guardTeacherIds && cell.guardTeacherIds.includes(teacherId)) {
+                return true;
+            }
+        }
+    }
+    return false;
+};
+/**
+ * Extracts structured display data for a guard cell (title + list of teacher names with locations).
+ */
+export const getGuardCellDisplayData = (
+    cell: { event?: string | null; guardTeacherIds?: string[] | null; instructions?: string | null } | undefined | null,
+    teacherMap: Map<string, string>,
+): { title: string; teachers: string[] } => {
+    if (!cell) return { title: "", teachers: [] };
+
+    const title = cell.event ? cell.event.replace(/^\*+|\*+$/g, "").trim() : "";
+
+    let locationsMap: Record<string, string> = {};
+    if (cell.instructions) {
+        try {
+            locationsMap = JSON.parse(cell.instructions);
+        } catch {
+            locationsMap = {};
+        }
+    }
+
+    const teachers = (cell.guardTeacherIds || [])
+        .map((id) => {
+            const name = teacherMap.get(id);
+            if (!name) return null;
+            const loc = locationsMap[id]?.trim();
+            return loc ? `${name} (${loc})` : name;
+        })
+        .filter(Boolean) as string[];
+
+    return { title, teachers };
+};
+
+/**
+ * Formats the display text for a guard cell (location surrounded by asterisks + teacher names).
+ */
+export const formatGuardCellText = (
+    cell: { event?: string | null; guardTeacherIds?: string[] | null; instructions?: string | null } | undefined | null,
+    teacherMap: Map<string, string>,
+): string => {
+    const { title, teachers } = getGuardCellDisplayData(cell, teacherMap);
+
+    const combinedLines = [
+        title ? `*${title}*` : "",
+        ...teachers,
+    ].filter(Boolean);
+
+    return combinedLines.join("\n");
 };

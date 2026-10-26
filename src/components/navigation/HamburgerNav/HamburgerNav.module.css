@@ -45,16 +45,6 @@
 }
 
 .closeButton {
-    background: none;
-    border: none;
-    color: #333;
-    font-size: 1.5rem;
-    padding: 0.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.2s ease;
-    border-radius: 50%;
     margin-left: -0.7rem;
 }
 
@@ -63,16 +53,6 @@
     align-items: center;
     gap: 8px;
     margin-right: auto;
-}
-
-.closeButton:hover {
-    background-color: var(--tab-color-hover);
-    cursor: pointer;
-}
-
-.closeButton:focus {
-    outline: 2px solid #4a90e2;
-    outline-offset: 2px;
 }
 
 .menuSection {

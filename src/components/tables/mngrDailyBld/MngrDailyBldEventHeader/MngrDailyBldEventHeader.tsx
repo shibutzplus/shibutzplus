@@ -60,6 +60,13 @@ const MngrDailyBldEventHeader: React.FC<MngrDailyBldEventHeaderProps> = ({ colum
         setValue(e.target.value);
     };
 
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            e.currentTarget.blur();
+        }
+    };
+
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
         let newValue = e.target.value.trim();
 
@@ -266,6 +273,7 @@ const MngrDailyBldEventHeader: React.FC<MngrDailyBldEventHeaderProps> = ({ colum
                                 value={value}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
+                                onKeyDown={handleKeyDown}
                                 backgroundColor="transparent"
                                 hasBorder={false}
                                 fontSize="18px"

@@ -6,6 +6,8 @@ import MngrDailyBldTeacherHeader from "../MngrDailyBldTeacherHeader/MngrDailyBld
 import MngrDailyBldTeacherCell from "../MngrDailyBldTeacherCell/MngrDailyBldTeacherCell";
 import MngrDailyBldEventHeader from "../MngrDailyBldEventHeader/MngrDailyBldEventHeader";
 import MngrDailyBldEventCell from "../MngrDailyBldEventCell/MngrDailyBldEventCell";
+import MngrDailyBldGuardHeader from "../MngrDailyBldGuardHeader/MngrDailyBldGuardHeader";
+import MngrDailyBldGuardCell from "../MngrDailyBldGuardCell/MngrDailyBldGuardCell";
 import { useColumnAnimation } from "./useColumnAnimation";
 import { sortDailyColumnIdsByPosition } from "@/utils/sort";
 import { DEFAULT_FROM_HOUR, DEFAULT_TO_HOUR } from "@/utils/time";
@@ -25,7 +27,7 @@ type AnimatedHeaderWrapperProps = {
 
 const AnimatedHeaderWrapper: React.FC<AnimatedHeaderWrapperProps> = React.memo(({ width, headerColorClass, children, id, columnType }) => {
     const isAnimating = width !== undefined;
-    const typeClass = columnType === ColumnTypeValues.event ? styles.eventHeaderCell : styles.teacherHeaderCell;
+    const typeClass = (columnType === ColumnTypeValues.event || columnType === ColumnTypeValues.guard) ? styles.eventHeaderCell : styles.teacherHeaderCell;
     return (
         <th
             id={id}
@@ -57,7 +59,7 @@ type CellWrapperProps = {
 
 const CellWrapper: React.FC<CellWrapperProps> = React.memo(({ width, children, columnType }) => {
     const isAnimating = width !== undefined;
-    const typeClass = columnType === ColumnTypeValues.event ? styles.eventDataCell : styles.teacherDataCell;
+    const typeClass = (columnType === ColumnTypeValues.event || columnType === ColumnTypeValues.guard) ? styles.eventDataCell : styles.teacherDataCell;
     return (
         <td
             className={`${styles.dataCell} ${styles.regularDataCell} ${typeClass}`}
@@ -171,6 +173,8 @@ const MngrDailyBldTable: React.FC<MngrDailyBldTableProps> = ({
                 return styles.headerRed;
             case ColumnTypeValues.event:
                 return styles.headerGreen;
+            case ColumnTypeValues.guard:
+                return styles.headerGuard;
             default:
                 return styles.headerBlue;
         }
@@ -213,6 +217,13 @@ const MngrDailyBldTable: React.FC<MngrDailyBldTableProps> = ({
                                 >
                                     {type === ColumnTypeValues.event ? (
                                         <MngrDailyBldEventHeader
+                                            columnId={colId}
+                                            onDelete={isAnimating ? undefined : (id) => handleColumnAnimation(id, "remove")}
+                                            isFirst={isFirst}
+                                            isLast={isLast}
+                                        />
+                                    ) : type === ColumnTypeValues.guard ? (
+                                        <MngrDailyBldGuardHeader
                                             columnId={colId}
                                             onDelete={isAnimating ? undefined : (id) => handleColumnAnimation(id, "remove")}
                                             isFirst={isFirst}
@@ -261,6 +272,12 @@ const MngrDailyBldTable: React.FC<MngrDailyBldTableProps> = ({
                                         {type === ColumnTypeValues.event ? (
                                             <MngrDailyBldEventCell
                                                 key={`${colId}-${row}-${cellData?.event || 'empty'}`}
+                                                cell={cellData}
+                                                columnId={colId}
+                                            />
+                                        ) : type === ColumnTypeValues.guard ? (
+                                            <MngrDailyBldGuardCell
+                                                key={`${colId}-${row}`}
                                                 cell={cellData}
                                                 columnId={colId}
                                             />

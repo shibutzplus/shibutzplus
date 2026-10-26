@@ -189,7 +189,6 @@ export async function updateTeacherAction(
 
         return {
             success: true,
-            message: messages.teachers.updateSuccess,
             data: allTeachersResp || [],
             hasMatchingDailyText: matchingDaily.length > 0,
         };

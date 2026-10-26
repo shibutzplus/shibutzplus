@@ -24,13 +24,22 @@ export const initDailyTeacherCellData = (entry: DailyScheduleType) => {
     return cellData;
 };
 
-export const initDailyEventCellData = (entry: DailyScheduleType) => {
-    const cellData: DailyScheduleCell = {
+export const initDailyEventCellData = (entry: DailyScheduleType): DailyScheduleCell => {
+    return {
         DBid: entry.id,
         hour: entry.hour,
         event: entry.event,
         headerCol: { headerEvent: entry.eventTitle, type: entry.columnType, position: entry.position },
     };
+};
 
-    return cellData;
+export const initDailyGuardCellData = (entry: DailyScheduleType): DailyScheduleCell => {
+    return {
+        DBid: entry.id,
+        hour: entry.hour,
+        event: entry.event,
+        guardTeacherIds: entry.guardTeacherIds,
+        instructions: entry.instructions,
+        headerCol: { headerEvent: entry.eventTitle, type: entry.columnType, position: entry.position },
+    };
 };

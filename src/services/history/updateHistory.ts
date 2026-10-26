@@ -4,6 +4,8 @@ import { history, dailySchedule, teachers, classes, subjects, schools } from '@/
 import { eq, inArray, and, lte } from 'drizzle-orm';
 import { DAILY_KEEP_HISTORY_DAYS } from "@/utils/time";
 import { dbLog } from "@/services/loggerService";
+import { ColumnTypeValues } from "@/models/types/dailySchedule";
+import { formatGuardCellText } from "@/utils/tableUtils";
 
 interface HistoryUpdateResult {
     success: boolean;
@@ -65,6 +67,12 @@ export async function processHistoryUpdate(dateString?: string): Promise<History
                 const columnType = schedule.columnType;
                 const day = schedule.day || 0;
 
+                let eventText = schedule.event;
+                if (columnType === ColumnTypeValues.guard) {
+                    const formatted = formatGuardCellText(schedule, teacherMap);
+                    eventText = formatted || schedule.event;
+                }
+
                 return {
                     schoolId: schedule.schoolId,
                     date: schedule.date,
@@ -79,7 +87,7 @@ export async function processHistoryUpdate(dateString?: string): Promise<History
                     subTeacher: getTeacherName(schedule.subTeacherId),
                     instructions: schedule.instructions,
                     eventTitle: schedule.eventTitle,
-                    eventText: schedule.event,
+                    eventText: eventText,
                     reason: schedule.reason,
                 };
             });

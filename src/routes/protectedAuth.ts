@@ -70,7 +70,6 @@ export const GUEST_UNAUTHORIZED = [
     router.groups.p,
     router.teachers.p,
     router.substitute.p,
-    router.annualAltBuild.p,
     router.annualAltView.p,
 ];
 export const ADMIN_ROUTES = [router.signUp.p, "/annual-import", router.queries.p];

@@ -1,6 +1,7 @@
 export type SelectOption<T = string> = {
     value: T;
     label: string;
+    subLabel?: string;
 };
 
 export type GroupOption = {
@@ -9,8 +10,6 @@ export type GroupOption = {
     readonly collapsed?: boolean;
     readonly hideCount?: boolean;
 };
-
-export type Pair = [string, string];
 
 export type AppType = "public" | "private";
 

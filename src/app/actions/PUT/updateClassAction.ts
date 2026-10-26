@@ -165,7 +165,6 @@ export async function updateClassAction(
 
         return {
             success: true,
-            message: messages.classes.updateClassSuccess,
             data: (allClasses as ClassType[]) || [],
         };
     } catch (error) {

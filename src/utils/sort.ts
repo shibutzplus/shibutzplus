@@ -1,5 +1,5 @@
 import { GroupOption } from "@/models/types";
-import { AvailableTeachers } from "@/models/types/annualSchedule";
+import { AvailableTeachers, TeacherSlotMap } from "@/models/types/annualSchedule";
 import { ColumnTypeValues, DailySchedule, DailyScheduleCell, } from "@/models/types/dailySchedule";
 import { TeacherRoleValues, TeacherType } from "@/models/types/teachers";
 import { dayToNumber } from "./time";
@@ -63,7 +63,19 @@ export const filterDailyHeaderTeachers = (
     return createSelectOptions(filteredTeachers);
 };
 
-// DailySchedule Dropdown: Build grouped teacher options (substitutes, available, unavailable) for a specific day/hour
+export const formatClassSubjectChip = (className: string, subjectName?: string): string => {
+    let shortClassName = className.trim();
+    if (shortClassName.startsWith("כיתה")) {
+        shortClassName = shortClassName.replace(/^כיתה\s*/, "").trim();
+    }
+
+    const trimmedSubject = subjectName?.trim();
+    if (trimmedSubject && trimmedSubject !== shortClassName && trimmedSubject !== className.trim()) {
+        return `${shortClassName} - ${trimmedSubject}`;
+    }
+    return shortClassName;
+};
+
 export const sortDailyTeachers = (
     allTeachers: TeacherType[],
     mapAvailableTeachers: AvailableTeachers,
@@ -74,10 +86,11 @@ export const sortDailyTeachers = (
     },
     day: string,
     hour: number,
-    teacherAtIndex: Record<string, Record<string, Record<string, string>>> = {},
+    teacherSlotsMap: TeacherSlotMap = {},
     classNameById: Record<string, string> = {},
     currentHeaderTeacherId?: string,
     classActivityById: Record<string, boolean> = {},
+    subjectNameById: Record<string, string> = {},
 ) => {
     const dayNum = dayToNumber(day);
     const dayKey = String(dayNum);
@@ -197,22 +210,36 @@ export const sortDailyTeachers = (
         (t) => t.role === TeacherRoleValues.REGULAR && !annualTeacherIds.has(t.id),
     );
 
-    // Label helper: add class name for annual-unavailable
+    const getTeacherSlotLabels = (teacherId: string): string[] => {
+        const slots = teacherSlotsMap[dayKey]?.[hourStr]?.[teacherId];
+        if (!slots || slots.length === 0) return [];
+        return slots.map((slot) => {
+            const cName = classNameById[slot.classId] || slot.classId;
+            const sName = slot.subjectId ? (subjectNameById[slot.subjectId] || slot.subjectId) : undefined;
+            return formatClassSubjectChip(cName, sName);
+        });
+    };
+
+    // Label helper: add class and subject name(s) for annual-unavailable
     const getUnavailableLabel = (t: TeacherType) => {
-        const classId = teacherAtIndex?.[dayKey]?.[hourStr]?.[t.id];
-        const className = classId ? classNameById[classId] || classId : undefined;
-        return className ? `${t.name} (${className})` : t.name;
+        const labels = getTeacherSlotLabels(t.id);
+        const detail = labels.length > 0 ? labels.join(", ") : undefined;
+        return detail ? `${t.name} (${detail})` : t.name;
     };
 
     // Additional teachers for the same lesson (co-teachers of the header's class at this time)
     const additionalLessonTeachers: TeacherType[] = (() => {
         if (!currentHeaderTeacherId) return [];
-        const indexForSlot = teacherAtIndex?.[dayKey]?.[hourStr] || {};
-        const headerClassId = indexForSlot[currentHeaderTeacherId];
-        if (!headerClassId) return [];
+        const indexForSlot = teacherSlotsMap[dayKey]?.[hourStr] || {};
+        const headerSlots = indexForSlot[currentHeaderTeacherId];
+        if (!headerSlots || headerSlots.length === 0) return [];
+        const headerClassIds = headerSlots.map((s) => s.classId);
 
         const ids = Object.entries(indexForSlot)
-            .filter(([tid, cid]) => cid === headerClassId && tid !== currentHeaderTeacherId)
+            .filter(([tid, slots]) => {
+                if (tid === currentHeaderTeacherId) return false;
+                return (slots || []).some((s) => headerClassIds.includes(s.classId));
+            })
             .map(([tid]) => tid)
             .filter((tid) => !subTeachersThisHour.has(tid) && !dailyAssignedTeacherIds.has(tid));
 
@@ -233,9 +260,9 @@ export const sortDailyTeachers = (
     })();
 
     const isTeacherInActivityClass = (teacherId: string) => {
-        const classId = teacherAtIndex?.[dayKey]?.[hourStr]?.[teacherId];
-        if (!classId) return false;
-        return !!classActivityById[classId];
+        const slots = teacherSlotsMap[dayKey]?.[hourStr]?.[teacherId];
+        if (!slots || slots.length === 0) return false;
+        return slots.some((s) => !!classActivityById[s.classId]);
     };
 
     // Exclude "מורים נוספים בתקן" from the Unavailable list
@@ -245,13 +272,10 @@ export const sortDailyTeachers = (
     const activityTeachers = filteredUnavailableTeachers
         .filter((t) => !subTeachersThisHour.has(t.id) && isTeacherInActivityClass(t.id))
         .sort((a, b) => {
-            const classIdA = teacherAtIndex?.[dayKey]?.[hourStr]?.[a.id];
-            const classNameA = classIdA ? classNameById[classIdA] || classIdA : "";
+            const labelA = getTeacherSlotLabels(a.id).join(", ");
+            const labelB = getTeacherSlotLabels(b.id).join(", ");
 
-            const classIdB = teacherAtIndex?.[dayKey]?.[hourStr]?.[b.id];
-            const classNameB = classIdB ? classNameById[classIdB] || classIdB : "";
-
-            const groupCompare = classNameA.localeCompare(classNameB, "he", { numeric: true });
+            const groupCompare = labelA.localeCompare(labelB, "he", { numeric: true });
             if (groupCompare !== 0) return groupCompare;
 
             return a.name.localeCompare(b.name, "he", { numeric: true });
@@ -260,14 +284,15 @@ export const sortDailyTeachers = (
     const nonActivityClassTeachers = filteredUnavailableTeachers
         .filter((t) => !subTeachersThisHour.has(t.id) && !isTeacherInActivityClass(t.id))
         .sort((a, b) => {
-            const classIdA = teacherAtIndex?.[dayKey]?.[hourStr]?.[a.id];
-            const classNameA = classIdA ? classNameById[classIdA] || classIdA : "";
+            const labelA = getTeacherSlotLabels(a.id).join(", ");
+            const labelB = getTeacherSlotLabels(b.id).join(", ");
 
-            const classIdB = teacherAtIndex?.[dayKey]?.[hourStr]?.[b.id];
-            const classNameB = classIdB ? classNameById[classIdB] || classIdB : "";
-
-            return classNameA.localeCompare(classNameB, "he", { numeric: true });
+            return labelA.localeCompare(labelB, "he", { numeric: true });
         });
+
+    const freeUnassignedTeachers = [...availableTeachers, ...extraRegularTeachers].sort((a, b) =>
+        a.name.localeCompare(b.name, "he", { numeric: true })
+    );
 
     const groups: GroupOption[] = [
         {
@@ -284,19 +309,19 @@ export const sortDailyTeachers = (
             })),
         },
         {
-            label: "מורים פנויים",
-            collapsed: true,
-            options: availableTeachers.map((teacher) => ({
-                value: teacher.id,
-                label: teacher.name,
-            })),
-        },
-        {
             label: "מורים בקבוצת עבודה",
             collapsed: true,
             options: activityTeachers.map((teacher) => ({
                 value: teacher.id,
                 label: getUnavailableLabel(teacher),
+            })),
+        },
+        {
+            label: "מורים פנויים ללא שיבוץ",
+            collapsed: true,
+            options: freeUnassignedTeachers.map((teacher) => ({
+                value: teacher.id,
+                label: teacher.name,
             })),
         },
         {
@@ -321,11 +346,6 @@ export const sortDailyTeachers = (
             label: "ביום חופשי",
             collapsed: true,
             options: freeDayTeachers.map((t) => ({ value: t.id, label: t.name })),
-        },
-        {
-            label: "מורים ללא מערכת",
-            collapsed: true,
-            options: extraRegularTeachers.map((t) => ({ value: t.id, label: t.name })),
         },
     ];
 

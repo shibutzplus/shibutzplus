@@ -10,12 +10,32 @@ export function isIsraeliSchoolHoliday(date: Date): boolean {
 }
 
 /**
+ * Parses date strings in either DD-MM-YYYY or YYYY-MM-DD format as noon UTC
+ * to prevent timezone-shift issues across different environments.
+ */
+function parseDateRobust(dateStr: string): Date {
+    if (isDateString(dateStr)) {
+        // DD-MM-YYYY
+        const [d, m, y] = dateStr.split("-").map(Number);
+        return new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
+    }
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+        // YYYY-MM-DD
+        const [y, m, d] = dateStr.split("-").map(Number);
+        return new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
+    }
+    const d = new Date(dateStr);
+    return isNaN(d.getTime()) ? new Date() : d;
+}
+
+/**
  * Returns the end date of the current school year (June 30).
  * If the given date is September–December, the school year ends June 30 of the NEXT calendar year.
  * If January–June, it ends June 30 of the SAME calendar year.
  */
 export function getSchoolYearEndDate(dateStr: string): string {
-    return getSchoolYearRange(new Date(dateStr)).endDate;
+    const d = parseDateRobust(dateStr);
+    return getSchoolYearRange(d).endDate;
 }
 
 /**
@@ -25,23 +45,23 @@ export function getSchoolYearEndDate(dateStr: string): string {
  */
 export function getWeeklyEventDates(startDateStr: string): string[] {
     const endDateStr = getSchoolYearEndDate(startDateStr);
-    const endDate = new Date(endDateStr);
-    endDate.setHours(23, 59, 59, 999);
+    const [endY, endM, endD] = endDateStr.split("-").map(Number);
+    const endDate = new Date(Date.UTC(endY, endM - 1, endD, 23, 59, 59, 999));
 
     const dates: string[] = [];
-    const current = new Date(startDateStr);
+    const current = parseDateRobust(startDateStr);
 
-    // Start from next week
-    current.setDate(current.getDate() + 7);
+    // Start from next week (7 days later)
+    current.setUTCDate(current.getUTCDate() + 7);
 
     while (current <= endDate) {
         if (!isIsraeliSchoolHoliday(new Date(current))) {
-            const y = current.getFullYear();
-            const m = String(current.getMonth() + 1).padStart(2, "0");
-            const d = String(current.getDate()).padStart(2, "0");
+            const y = current.getUTCFullYear();
+            const m = String(current.getUTCMonth() + 1).padStart(2, "0");
+            const d = String(current.getUTCDate()).padStart(2, "0");
             dates.push(`${y}-${m}-${d}`);
         }
-        current.setDate(current.getDate() + 7);
+        current.setUTCDate(current.getUTCDate() + 7);
     }
 
     return dates;

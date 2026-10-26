@@ -37,7 +37,6 @@ export async function getTeacherByIdAction(teacherId: string): Promise<GetTeache
         }
         return {
             success: true,
-            message: messages.teachers.success,
             data: teacher,
         };
     } catch (error) {

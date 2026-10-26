@@ -321,8 +321,6 @@ export async function saveTeacherScheduleAction(
         }
 
         revalidatePath('/annual-import');
-        revalidatePath('/annual-build-teacher');
-        revalidatePath('/annual-build-class');
         revalidatePath('/annual-view');
 
         // Invalidate annual schedule cache
@@ -521,8 +519,6 @@ export async function saveAllTeachersSchedulesAction(
         }
 
         revalidatePath('/annual-import');
-        revalidatePath('/annual-build-teacher');
-        revalidatePath('/annual-build-class');
         revalidatePath('/annual-view');
 
         clearAnnualScheduleCache(targetSchoolId);

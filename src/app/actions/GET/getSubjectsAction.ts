@@ -28,14 +28,12 @@ export async function getSubjectsAction(
         if (!subjects || subjects.length === 0) {
             return {
                 success: true,
-                message: messages.subjects.success,
                 data: [],
             };
         }
 
         return {
             success: true,
-            message: messages.subjects.success,
             data: subjects,
         };
     } catch (error) {

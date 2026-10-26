@@ -15,7 +15,6 @@ type MngrAnnualViewRowProps = {
     subjects: SubjectType[];
     teachers: TeacherType[];
     classes: ClassType[];
-    isDisabled: boolean;
 };
 
 const MngrAnnualViewRow: React.FC<MngrAnnualViewRowProps> = (props) => {

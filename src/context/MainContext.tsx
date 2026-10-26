@@ -1,14 +1,13 @@
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode, useEffect, useRef } from "react";
-import { AnnualScheduleType, AnnualScheduleRequest } from "@/models/types/annualSchedule";
+import { AnnualScheduleType } from "@/models/types/annualSchedule";
 import { ClassRequest, ClassType } from "@/models/types/classes";
 import { SchoolType } from "@/models/types/school";
 import { ENTITIES_DATA_CHANGED } from "@/models/constant/sync";
 import { SubjectRequest, SubjectType } from "@/models/types/subjects";
 import { TeacherRequest, TeacherType } from "@/models/types/teachers";
 import { SchoolSettingsType } from "@/models/types/settings";
-import { addAnnualScheduleAction } from "@/app/actions/POST/addAnnualScheduleAction";
 import { addClassAction } from "@/app/actions/POST/addClassAction";
 import { addSubjectAction } from "@/app/actions/POST/addSubjectAction";
 import { addTeacherAction } from "@/app/actions/POST/addTeacherAction";
@@ -58,8 +57,6 @@ interface MainContextType {
         subjectData: SubjectRequest,
     ) => Promise<SubjectType[] | undefined>;
     deleteSubject: (schoolId: string, subjectId: string, force?: boolean) => Promise<boolean>;
-    addNewAnnualScheduleItem: (newScheduleItem: AnnualScheduleRequest) => Promise<AnnualScheduleType | undefined>;
-    removeItemsFromAnnualScheduleTable: (deletedIds: string[]) => void;
     applyBatchAnnualScheduleUpdates: (deletedIds: string[], addedItems: AnnualScheduleType[]) => void;
     setSchool: React.Dispatch<React.SetStateAction<SchoolType | undefined>>;
 }
@@ -162,27 +159,6 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
             }
         };
     }, [school?.id]);
-
-    const addNewAnnualScheduleItem = async (newScheduleItem: AnnualScheduleRequest) => {
-        const response = await addAnnualScheduleAction(newScheduleItem);
-        if (response.success && response.data) {
-            setAnnualScheduleTable((prev) => {
-                if (!response.data) return prev;
-                const updatedSchedule = prev ? [...prev, response.data] : [response.data];
-                return updatedSchedule;
-            });
-            return response.data;
-        }
-        return undefined;
-    };
-
-    const removeItemsFromAnnualScheduleTable = (deletedIds: string[]) => {
-        setAnnualScheduleTable((prev) => {
-            const deletedSet = new Set(deletedIds);
-            const updatedSchedule = prev?.filter((item) => !deletedSet.has(item.id));
-            return updatedSchedule;
-        });
-    };
 
     const applyBatchAnnualScheduleUpdates = (deletedIds: string[], addedItems: AnnualScheduleType[]) => {
         setAnnualScheduleTable((prev) => {
@@ -433,8 +409,6 @@ export const MainContextProvider: React.FC<MainContextProviderProps> = ({ childr
         addNewSubject,
         updateSubject,
         deleteSubject,
-        addNewAnnualScheduleItem,
-        removeItemsFromAnnualScheduleTable,
         applyBatchAnnualScheduleUpdates,
         setSchool,
         settings,

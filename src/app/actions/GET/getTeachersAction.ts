@@ -23,10 +23,10 @@ export async function getTeachersAction(
         const teachers = await getCachedTeachersList(schoolId, options);
 
         if (!teachers || teachers.length === 0) {
-            return { success: true, message: messages.teachers.success, data: [] };
+            return { success: true, data: [] };
         }
 
-        return { success: true, message: messages.teachers.success, data: teachers };
+        return { success: true, data: teachers };
     } catch (error) {
         dbLog({ description: `Error fetching all teachers: ${error instanceof Error ? error.message : String(error)}`, schoolId });
         return { success: false, message: messages.common.serverError };

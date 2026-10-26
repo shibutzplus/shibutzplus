@@ -19,8 +19,10 @@ import { useOptionalPortalContext } from "@/context/PortalContext";
 import { sortClassNames, buildClassSchedule, calculateVisibleRowsForClasses, } from "@/utils/dailyClassSchedule";
 import CommonDailySchoolTeacherHeader from "../CommonDailySchoolTeacherHeader/CommonDailySchoolTeacherHeader";
 import CommonDailySchoolEventHeader from "../CommonDailySchoolEventHeader/CommonDailySchoolEventHeader";
+import CommonDailySchoolGuardHeader from "../CommonDailySchoolGuardHeader/CommonDailySchoolGuardHeader";
 import CommonDailySchoolTeacherCell from "../CommonDailySchoolTeacherCell/CommonDailySchoolTeacherCell";
 import CommonDailySchoolEventCell from "../CommonDailySchoolEventCell/CommonDailySchoolEventCell";
+import CommonDailySchoolGuardCell from "../CommonDailySchoolGuardCell/CommonDailySchoolGuardCell";
 import CommonDailySchoolClassHeader from "../CommonDailySchoolClassHeader/CommonDailySchoolClassHeader";
 import CommonDailySchoolClassCell from "../CommonDailySchoolClassCell/CommonDailySchoolClassCell";
 
@@ -48,6 +50,17 @@ const CommonDailySchoolTable: React.FC<CommonDailySchoolTableProps> = ({
     const portalCtx = useOptionalPortalContext();
     const mainCtx = useOptionalMainContext();
     const dbClasses = mainCtx?.classes || portalCtx?.classes || [];
+    const teachers = mainCtx?.teachers || portalCtx?.teachers || [];
+
+    const teacherMap = useMemo(() => {
+        const map = new Map<string, string>();
+        teachers.forEach((t) => {
+            if (t.id && t.name) {
+                map.set(t.id, t.name);
+            }
+        });
+        return map;
+    }, [teachers]);
 
     const [internalViewType, setInternalViewType] = useState<"teachers" | "classes">("teachers");
     const currentViewType = portalCtx?.viewType || internalViewType;
@@ -96,9 +109,10 @@ const CommonDailySchoolTable: React.FC<CommonDailySchoolTableProps> = ({
     const isSwitched = currentViewType === "classes" && hasClassChanges;
 
     const sortedEventColumnIds = useMemo(() => {
-        return sortedTableColumns.filter(
-            (colId) => (columnTypes[colId] ?? ColumnTypeValues.event) === ColumnTypeValues.event
-        );
+        return sortedTableColumns.filter((colId) => {
+            const type = columnTypes[colId] ?? ColumnTypeValues.event;
+            return type === ColumnTypeValues.event || type === ColumnTypeValues.guard;
+        });
     }, [sortedTableColumns, columnTypes]);
 
     // Calculate visible rows for teacher view
@@ -190,6 +204,7 @@ const CommonDailySchoolTable: React.FC<CommonDailySchoolTableProps> = ({
                                 ))}
                                 {sortedEventColumnIds.map((colId, index) => {
                                     const column = schedule[colId];
+                                    const type = columnTypes[colId] ?? ColumnTypeValues.event;
                                     return (
                                         <th
                                             key={colId}
@@ -204,11 +219,18 @@ const CommonDailySchoolTable: React.FC<CommonDailySchoolTableProps> = ({
                                                     delay: (sortedClassNames.length + index) * 0.02,
                                                 }}
                                             >
-                                                <CommonDailySchoolEventHeader
-                                                    type={ColumnTypeValues.event}
-                                                    column={column}
-                                                    appType={appType}
-                                                />
+                                                {type === ColumnTypeValues.guard ? (
+                                                    <CommonDailySchoolGuardHeader
+                                                        column={column}
+                                                        appType={appType}
+                                                    />
+                                                ) : (
+                                                    <CommonDailySchoolEventHeader
+                                                        type={type}
+                                                        column={column}
+                                                        appType={appType}
+                                                    />
+                                                )}
                                             </motion.div>
                                         </th>
                                     );
@@ -218,10 +240,12 @@ const CommonDailySchoolTable: React.FC<CommonDailySchoolTableProps> = ({
                             sortedTableColumns.map((colId, index) => {
                                 const type = columnTypes[colId] ?? ColumnTypeValues.event;
                                 const column = schedule[colId];
-                                const typeClass =
-                                    type === ColumnTypeValues.event
-                                        ? styles.eventHeaderCell
-                                        : styles.teacherHeaderCell;
+                                const isEventOrGuard =
+                                    type === ColumnTypeValues.event ||
+                                    type === ColumnTypeValues.guard;
+                                const typeClass = isEventOrGuard
+                                    ? styles.eventHeaderCell
+                                    : styles.teacherHeaderCell;
 
                                 return (
                                     <th
@@ -234,7 +258,12 @@ const CommonDailySchoolTable: React.FC<CommonDailySchoolTableProps> = ({
                                             animate={{ opacity: 1 }}
                                             transition={{ duration: 0.3, delay: index * 0.02 }}
                                         >
-                                            {type === ColumnTypeValues.event ? (
+                                            {type === ColumnTypeValues.guard ? (
+                                                <CommonDailySchoolGuardHeader
+                                                    column={column}
+                                                    appType={appType}
+                                                />
+                                            ) : isEventOrGuard ? (
                                                 <CommonDailySchoolEventHeader
                                                     type={type}
                                                     column={column}
@@ -291,6 +320,7 @@ const CommonDailySchoolTable: React.FC<CommonDailySchoolTableProps> = ({
                                     {sortedEventColumnIds.map((colId, index) => {
                                         const columnData = schedule[colId];
                                         const cellData = columnData?.[row];
+                                        const type = columnTypes[colId] ?? ColumnTypeValues.event;
 
                                         return (
                                             <td
@@ -306,10 +336,17 @@ const CommonDailySchoolTable: React.FC<CommonDailySchoolTableProps> = ({
                                                         delay: (sortedClassNames.length + index) * 0.02,
                                                     }}
                                                 >
-                                                    <CommonDailySchoolEventCell
-                                                        cell={cellData}
-                                                        columnId={colId}
-                                                    />
+                                                    {type === ColumnTypeValues.guard ? (
+                                                        <CommonDailySchoolGuardCell
+                                                            cell={cellData}
+                                                            teacherMap={teacherMap}
+                                                        />
+                                                    ) : (
+                                                        <CommonDailySchoolEventCell
+                                                            cell={cellData}
+                                                            columnId={colId}
+                                                        />
+                                                    )}
                                                 </motion.div>
                                             </td>
                                         );
@@ -321,10 +358,12 @@ const CommonDailySchoolTable: React.FC<CommonDailySchoolTableProps> = ({
                                         columnTypes[colId] ?? ColumnTypeValues.event;
                                     const columnData = schedule[colId];
                                     const cellData = columnData?.[row];
-                                    const typeClass =
-                                        type === ColumnTypeValues.event
-                                            ? styles.eventDataCell
-                                            : styles.teacherDataCell;
+                                    const isEventOrGuard =
+                                        type === ColumnTypeValues.event ||
+                                        type === ColumnTypeValues.guard;
+                                    const typeClass = isEventOrGuard
+                                        ? styles.eventDataCell
+                                        : styles.teacherDataCell;
 
                                     return (
                                         <td
@@ -340,7 +379,12 @@ const CommonDailySchoolTable: React.FC<CommonDailySchoolTableProps> = ({
                                                     delay: index * 0.02,
                                                 }}
                                             >
-                                                {type === ColumnTypeValues.event ? (
+                                                {type === ColumnTypeValues.guard ? (
+                                                    <CommonDailySchoolGuardCell
+                                                        cell={cellData}
+                                                        teacherMap={teacherMap}
+                                                    />
+                                                ) : type === ColumnTypeValues.event ? (
                                                     <CommonDailySchoolEventCell
                                                         cell={cellData}
                                                         columnId={colId}

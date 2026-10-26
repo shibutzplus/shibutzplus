@@ -110,7 +110,7 @@ export async function updateDailyTeacherCellAction(
 
         return {
             success: true,
-            message: messages.annualSchedule.updateSuccess,
+            message: messages.dailySchedule.updateSuccess,
             data: {
                 id: updateSchedule.id,
                 date: getStringReturnDate(updateSchedule.date),

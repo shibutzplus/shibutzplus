@@ -17,7 +17,8 @@ export type PopupType =
     | "reasonPopup"
     | "broadcast_message"
     | "recurringChoice"
-    | "autoAssignPopup";
+    | "autoAssignPopup"
+    | "annualScheduleInfo";
 
 export const PopupAction: Record<PopupType, PopupType> = {
     deleteTeacher: "deleteTeacher",
@@ -33,6 +34,7 @@ export const PopupAction: Record<PopupType, PopupType> = {
     broadcast_message: "broadcast_message",
     recurringChoice: "recurringChoice",
     autoAssignPopup: "autoAssignPopup",
+    annualScheduleInfo: "annualScheduleInfo",
 };
 
 interface PopupContextType {

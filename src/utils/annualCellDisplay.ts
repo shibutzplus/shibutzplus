@@ -3,9 +3,13 @@ import { ClassType } from "@/models/types/classes";
 import { SubjectType } from "@/models/types/subjects";
 import { TeacherType } from "@/models/types/teachers";
 
+export type AssignmentGroup = {
+    primaryText?: string;
+    subjectText?: string;
+};
+
 export interface AnnualCellDisplayData {
-    subjectsText: string;
-    secondaryText: string;
+    assignmentGroups: AssignmentGroup[];
     shouldRender: boolean;
 }
 
@@ -18,7 +22,10 @@ export const getAnnualCellDisplayData = (
     classes: ClassType[]
 ): AnnualCellDisplayData => {
     if (!cellData) {
-        return { subjectsText: "", secondaryText: "", shouldRender: false };
+        return {
+            assignmentGroups: [],
+            shouldRender: false,
+        };
     }
 
     const { teachers: teacherIds, subjects: subjectIds, classes: classesIds } = cellData;
@@ -38,57 +45,191 @@ export const getAnnualCellDisplayData = (
         // If both selected, verify the teacher is actually in this cell
         const isTeacherInCell = teacherIds.includes(selectedTeacherId);
         if (!isTeacherInCell) {
-            return { subjectsText: "", secondaryText: "", shouldRender: false };
+            return {
+                assignmentGroups: [],
+                shouldRender: false,
+            };
         }
     }
 
     // 2. Content Generation
 
     // Subjects
-    // Common logic: Show subjects unless it's an activity class (checked against relevant IDs)
+    // In Class View (or Both), hide subjects if the selected class is an activity
     let showSubjects = true;
-    if (isClassView) {
-        // In Class View, hide subjects if the *selected* class is an activity
-        if (isActivityClass(selectedClassId)) showSubjects = false;
-    } else {
-        // In Teacher View (or Both), hide subjects if *any* class in the cell is an activity
-        // (This matches the AnnualViewCell logic: !classesIds?.some((id) => isActivityClass(id)))
-        if (classesIds?.some((id) => isActivityClass(id))) showSubjects = false;
+    if (isClassView && isActivityClass(selectedClassId)) {
+        showSubjects = false;
     }
 
-    // Note: The original generic logic was slightly different between Class View and Teacher View 
-    // regarding which ID to check. 
-    // Class View checks `selectedClassId`. Teacher View checks `classesIds` array.
-
-    let subjectsText = "";
-    if (showSubjects && subjectIds && subjectIds.length > 0) {
-        subjectsText = subjectIds.map(getSubjectName).join(", ");
-    }
-
-    // Secondary Info (Teachers or Classes)
-    let secondaryText = "";
+    // 3. Assignment Groups (Paired teacher-subject or class-subject)
+    const assignmentGroups: AssignmentGroup[] = [];
 
     if (isBothSelected) {
-        // Both selected -> Only Subject shown (secondary hidden)
-        secondaryText = "";
+        let matchedSubjectId: string | undefined;
+        if (cellData.teacherSubjects && cellData.teacherSubjects.length > 0) {
+            const matched = cellData.teacherSubjects.find((ts) => ts.teacherId === selectedTeacherId);
+            if (matched) matchedSubjectId = matched.subjectId;
+        }
+        if (!matchedSubjectId && subjectIds && subjectIds.length > 0) {
+            matchedSubjectId = subjectIds[0];
+        }
+
+        const sName = matchedSubjectId && showSubjects ? getSubjectName(matchedSubjectId) : undefined;
+        assignmentGroups.push({
+            primaryText: undefined,
+            subjectText: sName,
+        });
     } else if (isClassView) {
-        // Class View -> Show Teachers
-        if (teacherIds && teacherIds.length > 0) {
-            secondaryText = teacherIds.map(getTeacherName).join(", ");
+        if (cellData.teacherSubjects && cellData.teacherSubjects.length > 0) {
+            // Group teachers by subjectId
+            const subjectTeachersMap = new Map<string, string[]>();
+            cellData.teacherSubjects.forEach((ts) => {
+                const list = subjectTeachersMap.get(ts.subjectId) || [];
+                if (!list.includes(ts.teacherId)) {
+                    list.push(ts.teacherId);
+                }
+                subjectTeachersMap.set(ts.subjectId, list);
+            });
+
+            subjectTeachersMap.forEach((tIds, sId) => {
+                const sName = showSubjects ? getSubjectName(sId) : undefined;
+                assignmentGroups.push({
+                    primaryText: tIds.map(getTeacherName).filter(Boolean).join(", "),
+                    subjectText: sName,
+                });
+            });
+
+            // Catch any teachers not in teacherSubjects
+            const assignedTeachers = new Set(cellData.teacherSubjects.map((ts) => ts.teacherId));
+            const unassignedTeachers = (teacherIds || []).filter((id) => !assignedTeachers.has(id));
+            if (unassignedTeachers.length > 0) {
+                assignmentGroups.push({
+                    primaryText: unassignedTeachers.map(getTeacherName).filter(Boolean).join(", "),
+                    subjectText: undefined,
+                });
+            }
+
+            // Catch any subjects not in teacherSubjects
+            const assignedSubjects = new Set(cellData.teacherSubjects.map((ts) => ts.subjectId));
+            const unassignedSubjects = (subjectIds || []).filter((id) => !assignedSubjects.has(id));
+            unassignedSubjects.forEach((sId) => {
+                const sName = showSubjects ? getSubjectName(sId) : undefined;
+                if (sName) {
+                    assignmentGroups.push({
+                        primaryText: undefined,
+                        subjectText: sName,
+                    });
+                }
+            });
+        } else {
+            // Fallback when teacherSubjects is not populated
+            if (subjectIds && subjectIds.length === 1) {
+                const sName = showSubjects ? getSubjectName(subjectIds[0]) : undefined;
+                assignmentGroups.push({
+                    primaryText: (teacherIds || []).map(getTeacherName).filter(Boolean).join(", "),
+                    subjectText: sName,
+                });
+            } else if (teacherIds && teacherIds.length > 0 && subjectIds && subjectIds.length > 0) {
+                const count = Math.max(teacherIds.length, subjectIds.length);
+                for (let i = 0; i < count; i++) {
+                    const tId = teacherIds[i];
+                    const sId = subjectIds[i];
+                    const sName = sId && showSubjects ? getSubjectName(sId) : undefined;
+                    assignmentGroups.push({
+                        primaryText: tId ? getTeacherName(tId) : undefined,
+                        subjectText: sName,
+                    });
+                }
+            } else if (teacherIds && teacherIds.length > 0) {
+                assignmentGroups.push({
+                    primaryText: teacherIds.map(getTeacherName).filter(Boolean).join(", "),
+                    subjectText: undefined,
+                });
+            } else if (subjectIds && subjectIds.length > 0) {
+                subjectIds.forEach((sId) => {
+                    const sName = showSubjects ? getSubjectName(sId) : undefined;
+                    if (sName) {
+                        assignmentGroups.push({
+                            primaryText: undefined,
+                            subjectText: sName,
+                        });
+                    }
+                });
+            }
         }
     } else {
-        // Teacher View -> Show Classes
-        // Note: Logic shows Class BEFORE Subject in original code? 
-        // No, current Request 106/109 changed it to Subject FIRST.
-        if (classesIds && classesIds.length > 0) {
-            secondaryText = classesIds.map(getClassName).join(", ");
+        // Teacher View (or unselected/all)
+        if (cellData.classSubjects && cellData.classSubjects.length > 0) {
+            cellData.classSubjects.forEach((cs) => {
+                const isAct = isActivityClass(cs.classId);
+                const sName = showSubjects && !isAct ? getSubjectName(cs.subjectId) : undefined;
+                assignmentGroups.push({
+                    primaryText: getClassName(cs.classId),
+                    subjectText: sName,
+                });
+            });
+
+            const assignedClasses = new Set(cellData.classSubjects.map((cs) => cs.classId));
+            const unassignedClasses = (classesIds || []).filter((id) => !assignedClasses.has(id));
+            if (unassignedClasses.length > 0) {
+                unassignedClasses.forEach((cId) => {
+                    assignmentGroups.push({
+                        primaryText: getClassName(cId),
+                        subjectText: undefined,
+                    });
+                });
+            }
+        } else {
+            // Fallback when classSubjects is not populated
+            if (classesIds && classesIds.length > 0) {
+                if (subjectIds && subjectIds.length === 1) {
+                    classesIds.forEach((cId) => {
+                        const isAct = isActivityClass(cId);
+                        const sName = showSubjects && !isAct ? getSubjectName(subjectIds[0]) : undefined;
+                        assignmentGroups.push({
+                            primaryText: getClassName(cId),
+                            subjectText: sName,
+                        });
+                    });
+                } else if (subjectIds && subjectIds.length > 1) {
+                    const count = Math.max(classesIds.length, subjectIds.length);
+                    for (let i = 0; i < count; i++) {
+                        const cId = classesIds[i];
+                        const sId = subjectIds[i];
+                        const isAct = cId ? isActivityClass(cId) : false;
+                        const sName = sId && showSubjects && !isAct ? getSubjectName(sId) : undefined;
+                        assignmentGroups.push({
+                            primaryText: cId ? getClassName(cId) : undefined,
+                            subjectText: sName,
+                        });
+                    }
+                } else {
+                    classesIds.forEach((cId) => {
+                        assignmentGroups.push({
+                            primaryText: getClassName(cId),
+                            subjectText: undefined,
+                        });
+                    });
+                }
+            } else if (subjectIds && subjectIds.length > 0) {
+                subjectIds.forEach((sId) => {
+                    const sName = showSubjects ? getSubjectName(sId) : undefined;
+                    if (sName) {
+                        assignmentGroups.push({
+                            primaryText: undefined,
+                            subjectText: sName,
+                        });
+                    }
+                });
+            }
         }
     }
 
+    const filteredGroups = assignmentGroups.filter((g) => g.primaryText || g.subjectText);
+
     return {
-        subjectsText,
-        secondaryText,
-        shouldRender: true
+        assignmentGroups: filteredGroups,
+        shouldRender: true,
     };
 };
 

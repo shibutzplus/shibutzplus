@@ -3,6 +3,7 @@
 import React, { useEffect } from "react";
 import styles from "./PortalFullScreenLayout.module.css";
 import Icons from "@/style/icons";
+import CloseButton from "@/components/ui/buttons/CloseButton/CloseButton";
 
 type FullScreenContainerProps = {
     children: React.ReactNode;
@@ -57,14 +58,12 @@ export default function FullScreenContainer({
         >
             {/* Exit full-screen button (floating top-left) */}
             {!isLoading && (
-                <button
+                <CloseButton
+                    onClose={onExit}
+                    dark
+                    size="lg"
                     className={styles.fabClose}
-                    onClick={onExit}
-                    title="יציאה ממסך מלא"
-                    aria-label="Exit Full Screen"
-                >
-                    <Icons.closeBold style={{ width: "68%", height: "68%" }} />
-                </button>
+                />
             )}
 
             {/* Switch view mode button (floating top-right) */}
