@@ -255,7 +255,7 @@ const CommonDailySchoolFullTable: React.FC<CommonDailySchoolFullTableProps> = ({
                                     {!isEmpty && (
                                         <div className={`${styles.cellContent} ${isActivity ? styles.activity : ""}`}>
                                             {subTeacherName && <span className={styles.subText}>{subTeacherName}</span>}
-                                            {isMissing && !subTeacherName && <span className={styles.missingText}>אין ממלא מקום</span>}
+                                            {isMissing && !subTeacherName && appType === "public" && <span className={styles.missingText}>אין ממלא מקום</span>}
                                             {(classNameText || text) && (
                                                 <span className={styles.detailText}>
                                                     {classNameText || text}

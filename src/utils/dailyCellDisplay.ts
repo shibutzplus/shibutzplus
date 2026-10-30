@@ -33,7 +33,7 @@ export const getCellDisplayData = (
     // Derived states
     const isMissingTeacher = columnType === ColumnTypeValues.missingTeacher;
     const isExistingTeacher = columnType === ColumnTypeValues.existingTeacher;
-    const isActivity = classesData?.some((cls) => cls.activity) || false;
+    const isActivity = classesData?.some((cls) => cls.activity) || Boolean(subjectData?.activity) || false;
 
     // 1. Text Content Calculation
     let text = "";
@@ -52,6 +52,9 @@ export const getCellDisplayData = (
         } else {
             text = classNames;
         }
+    } else if (subjectData) {
+        text = subjectData.name || "";
+        rawSubjectName = subjectData.name || "";
     }
 
     // 2. Logic for when to hide the cell entirely (Empty)

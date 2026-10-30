@@ -31,7 +31,7 @@ const CommonDailySchoolTeacherCell: React.FC<CommonDailySchoolTeacherCellProps> 
             <div className={styles.innerCellContent} style={{ gap: "4px", justifyContent: "center" }}>
                 {subTeacherName ? (
                     <div className={styles.subTeacherName}>{subTeacherName}</div>
-                ) : isMissing ? (
+                ) : isMissing && appType === "public" ? (
                     <div className={styles.missingSubTeacherName}>אין ממלא מקום</div>
                 ) : null}
                 {firstDetail && (
