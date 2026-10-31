@@ -151,7 +151,9 @@ async function main() {
     const isProd = process.argv.includes("--prod");
 
     if (isProd) {
-        process.env.DATABASE_URL = "postgresql://shibutzplus_owner:npg_nLsFwZc4z6EI@ep-frosty-base-a2h07xmx.eu-central-1.aws.neon.tech/shibutzplus?sslmode=require";
+        if (!process.env.DATABASE_URL) {
+            throw new Error("DATABASE_URL is not set in environment variables");
+        }
         (process.env as Record<string, string | undefined>).NODE_ENV = "production";
     }
 
