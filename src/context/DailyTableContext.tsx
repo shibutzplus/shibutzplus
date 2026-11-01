@@ -425,12 +425,13 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
             }
 
             sortedColumnIds.forEach((colId, index) => {
-                const newPos = (index + 1) * POSITION_GAP;
-
-                // Optimization: Only send update to DB if position actually changes
                 const currentColumn = schedule[selectedDate]?.[colId];
                 const currentPos = currentColumn?.["1"]?.headerCol?.position || 0;
+                const newPos = (index === 0 && colId.startsWith("rec_") && currentPos < 1000)
+                    ? 500
+                    : (index + 1) * POSITION_GAP;
 
+                // Optimization: Only send update to DB if position actually changes
                 if (currentPos !== newPos) {
                     updates.push({ columnId: colId, position: newPos });
                 }
@@ -469,7 +470,9 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
             const colId = sortedColumns[i];
             const isRecurring = colId.startsWith("rec_");
             const colType = schedule[colId]?.["1"]?.headerCol?.type ?? ColumnTypeValues.existingTeacher;
-            const colPriority = isRecurring ? -1 : (COLUMN_PRIORITY[colType] ?? 1);
+            const colPos = schedule[colId]?.["1"]?.headerCol?.position ?? 0;
+            const isRecurringFirst = isRecurring && colPos < 1000;
+            const colPriority = isRecurringFirst ? -1 : (COLUMN_PRIORITY[colType] ?? 1);
 
             if (colPriority <= newPriority) {
                 insertAfterIndex = i;
@@ -564,10 +567,17 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
         const currentPos = currentColumn?.["1"]?.headerCol?.position || 0;
         const targetPos = targetColumn?.["1"]?.headerCol?.position || 0;
 
-        // Perform swap
+        // Perform swap (if moving right to index 0, position becomes < 1000)
+        let newCurrentPos = targetPos;
+        let newTargetPos = currentPos;
+        if (direction === "right" && targetIndex === 0) {
+            newCurrentPos = targetPos < 1000 ? Math.floor(targetPos / 2) : 500;
+            newTargetPos = targetPos < 1000 ? targetPos : 1000;
+        }
+
         const updates = [
-            { columnId: columnId, position: targetPos },
-            { columnId: targetColumnId, position: currentPos },
+            { columnId: columnId, position: newCurrentPos },
+            { columnId: targetColumnId, position: newTargetPos },
         ];
 
         // Optimistic update
@@ -577,10 +587,10 @@ export const DailyTableProvider: React.FC<DailyTableProviderProps> = ({ children
                 newSchedule[selectedDate] = { ...newSchedule[selectedDate] };
 
                 // Update current column
-                updateColumnPositionInSchedule(newSchedule[selectedDate], columnId, targetPos);
+                updateColumnPositionInSchedule(newSchedule[selectedDate], columnId, newCurrentPos);
 
                 // Update target column
-                updateColumnPositionInSchedule(newSchedule[selectedDate], targetColumnId, currentPos);
+                updateColumnPositionInSchedule(newSchedule[selectedDate], targetColumnId, newTargetPos);
             }
             return newSchedule;
         });

@@ -101,13 +101,15 @@ const MngrDailyBldGuardTeacherPopover: React.FC<MngrDailyBldGuardTeacherPopoverP
     const filteredTeachers = useMemo(() => {
         if (!teachers) return [];
         const query = normalize(searchQuery);
-        return teachers.filter(
+        const initialSet = new Set(initialSelectedTeacherIds);
+        const matched = teachers.filter(
             (t) =>
                 t.isActive !== false &&
                 t.role === TeacherRoleValues.REGULAR &&
                 (!query || normalize(t.name).includes(query)),
         );
-    }, [teachers, searchQuery]);
+        return matched.sort((a, b) => Number(initialSet.has(b.id)) - Number(initialSet.has(a.id)));
+    }, [teachers, searchQuery, initialSelectedTeacherIds]);
 
     const selectedSet = useMemo(() => new Set(selectedTeacherIds), [selectedTeacherIds]);
 

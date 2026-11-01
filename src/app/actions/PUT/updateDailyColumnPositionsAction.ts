@@ -4,7 +4,7 @@
 //
 import { db } from "@/db";
 import { dailySchedule } from "@/db/schema/daily-schedule";
-import { eq, and } from "drizzle-orm";
+import { eq, and, gte } from "drizzle-orm";
 import { dbLog } from "@/services/loggerService";
 import { pushSyncUpdateServer } from "@/services/sync/serverSyncService";
 import { DAILY_EVENT_COL_DATA_CHANGED } from "@/models/constant/sync";
@@ -26,21 +26,27 @@ export async function updateDailyColumnPositionsAction(
     try {
         // Neon HTTP driver doesn't support transactions, so we use Promise.all
         await Promise.all(
-            updates.map((update) =>
-                db
+            updates.map((update) => {
+                const isRecurringPinned = update.columnId.startsWith("rec_") && update.position < 1000;
+                const dateCondition = isRecurringPinned
+                    ? gte(dailySchedule.date, date)
+                    : eq(dailySchedule.date, date);
+
+                return db
                     .update(dailySchedule)
                     .set({ position: update.position })
                     .where(
                         and(
                             eq(dailySchedule.schoolId, schoolId),
                             eq(dailySchedule.columnId, update.columnId),
-                            eq(dailySchedule.date, date),
+                            dateCondition,
                         ),
-                    ),
-            ),
+                    );
+            }),
         );
 
         // Invalidate all schedule caches for this school
+        revalidateTag(cacheTags.dailyScheduleSchool(schoolId));
         revalidateTag(cacheTags.schoolSchedule(schoolId));
         revalidateTag(cacheTags.dailySchedule(schoolId, date));
         revalidatePath("/daily-build");

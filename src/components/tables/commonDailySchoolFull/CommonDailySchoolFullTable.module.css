@@ -161,7 +161,7 @@
 }
 
 .eventText {
-    font-size: calc(var(--font-size) - 0.15vw);
+    font-size: calc(var(--font-size) - 0.2vw);
     color: var(--dark-text-color);
     font-weight: 500;
     line-height: 1.2;

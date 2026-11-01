@@ -110,16 +110,17 @@
     flex-wrap: wrap;
     gap: 4px;
     align-content: flex-start;
+    cursor: pointer;
 }
 
 .teacherChip {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    background-color: #f1f5f9;
-    border: 1px solid #cbd5e1;
+    background-color: rgba(241, 245, 249, 0.3);
+    border: 1px solid #edf0f3;
     color: #334155;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 500;
     padding: 2px 6px;
     border-radius: 12px;
@@ -130,8 +131,8 @@
 }
 
 .teacherChip:hover {
-    background-color: #e2e8f0;
-    border-color: #94a3b8;
+    background-color: rgba(226, 232, 240, 0.7);
+    border-color: #bcc6d4;
 }
 
 .teacherChipName {

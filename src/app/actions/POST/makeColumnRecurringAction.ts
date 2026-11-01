@@ -95,8 +95,11 @@ export async function makeColumnRecurringAction(
 
             // Build all rows to insert across all future dates
             const allRowsToInsert: NewDailyScheduleSchema[] = [];
+            const isSourceFirst = sourceRows[0].position < POSITION_GAP;
             for (const targetDate of futureDates) {
-                const nextPosition = (maxPosMap.get(targetDate) ?? 0) + POSITION_GAP;
+                const nextPosition = isSourceFirst
+                    ? sourceRows[0].position
+                    : ((maxPosMap.get(targetDate) ?? 0) + POSITION_GAP);
                 const dayNumber = getDayNumberByDateString(targetDate);
 
                 for (const row of sourceRows) {

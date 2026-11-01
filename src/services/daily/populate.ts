@@ -2,6 +2,7 @@ import { AnnualScheduleType, AvailableTeachers, TeacherSlot, TeacherSlotMap } fr
 import { ColumnType, ColumnTypeValues, DailySchedule, DailyScheduleCell, DailyScheduleType, HeaderCol } from "@/models/types/dailySchedule";
 import { initDailyEventCellData, initDailyGuardCellData, initDailyTeacherCellData } from "@/services/daily/initialize";
 import { DEFAULT_FROM_HOUR, DEFAULT_TO_HOUR } from "@/utils/time";
+import { DEFAULT_GUARD_TITLE } from "@/models/constant/daily";
 import { setColumn } from "./setColumn";
 import { logErrorAction } from "@/app/actions/POST/logErrorAction";
 
@@ -171,9 +172,19 @@ export const populateDailyScheduleTable = (
         if (!dataColumns) return;
         if (dataColumns.length === 0) {
             // IMPORTANT: When server returns no columns, we must RESET the entire day
-            // to prevent old cached columns from persisting
+            // to prevent old cached columns from persisting, but preserve newly added local columns!
             const emptySchedule = { ...mainDailyTable };
-            emptySchedule[selectedDate] = {}; // Complete reset
+            emptySchedule[selectedDate] = {};
+            if (mainDailyTable[selectedDate]) {
+                Object.entries(mainDailyTable[selectedDate]).forEach(([colId, colData]) => {
+                    const firstCell = colData["1"];
+                    const header = firstCell?.headerCol;
+                    const hasHeaderContent = !!header?.headerTeacher || (!!header?.headerEvent && header?.headerEvent !== DEFAULT_GUARD_TITLE);
+                    if (!hasHeaderContent) {
+                        emptySchedule[selectedDate][colId] = colData;
+                    }
+                });
+            }
             return emptySchedule;
         }
 
@@ -218,7 +229,7 @@ export const populateDailyScheduleTable = (
                     // If header is EMPTY, it is a new local-only column -> preserve it.
                     const firstCell = colData["1"];
                     const header = firstCell?.headerCol;
-                    const hasHeaderContent = !!header?.headerTeacher || !!header?.headerEvent;
+                    const hasHeaderContent = !!header?.headerTeacher || (!!header?.headerEvent && header?.headerEvent !== DEFAULT_GUARD_TITLE);
                     if (!hasHeaderContent) {
                         newSchedule[selectedDate][colId] = colData;
                     }
