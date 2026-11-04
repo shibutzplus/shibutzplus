@@ -36,11 +36,14 @@ export async function GET(request: Request) {
     }
 
     try {
-        const result = await processHistoryUpdate();
+        const { searchParams } = new URL(request.url);
+        const dateParam = searchParams.get('date') || undefined;
+        const result = await processHistoryUpdate(dateParam);
 
         return NextResponse.json({
             success: result.success,
             message: `History processed.`,
+            targetDate: dateParam || 'today',
             schoolsUpdated: result.schoolsUpdated,
             recordsCount: result.recordsCount,
             logs: result.logs

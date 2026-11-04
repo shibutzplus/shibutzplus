@@ -38,7 +38,7 @@ export interface TeacherPortalDataResponse {
 export const getTeacherPortalDataAction = async (
     schoolId: string,
     teacherId: string,
-    options?: { includeFutureAbsences?: boolean },
+    options?: { includeFutureAbsences?: boolean; skipSchedule?: boolean },
 ): Promise<TeacherPortalDataResponse> => {
     try {
         const authError = await publicAuthAndParams({ teacherId });
@@ -50,7 +50,9 @@ export const getTeacherPortalDataAction = async (
         }
 
         // 1. Fetch School and Lists in parallel
-        const [schoolRes, teachersListRes, subjectsListRes, classesListRes] = await Promise.all([
+        const [schoolRes, teachersListRes, subjectsListRes, classesListRes] = options?.skipSchedule
+            ? [await getSchoolAction(schoolId, { forceFresh: true }), undefined, undefined, undefined]
+            : await Promise.all([
             getSchoolAction(schoolId, { forceFresh: true }),
             getTeachersAction(schoolId, { portalType: PortalType.Teacher, includeSubstitutes: true }),
             getSubjectsAction(schoolId, { portalType: PortalType.Teacher }),
@@ -63,14 +65,14 @@ export const getTeacherPortalDataAction = async (
 
         const schoolData = schoolRes.data;
 
-        const allTeachers = teachersListRes.success ? teachersListRes.data : [];
-        const allSubjects = subjectsListRes.success ? subjectsListRes.data : [];
-        const allClasses = classesListRes.success ? classesListRes.data : [];
+        const allTeachers = teachersListRes?.success ? teachersListRes.data : [];
+        const allSubjects = subjectsListRes?.success ? subjectsListRes.data : [];
+        const allClasses = classesListRes?.success ? classesListRes.data : [];
 
         // Find teacher in the cached list
         const teacher = allTeachers?.find((t: TeacherType) => t.id === teacherId);
 
-        if (!teacher) {
+        if (!options?.skipSchedule && !teacher) {
             return { success: false, message: "Teacher not found" };
         }
 
@@ -129,7 +131,7 @@ export const getTeacherPortalDataAction = async (
         // 3. Fetch Schedule if we have a valid date
         let scheduleData: GetDailyScheduleResponse | undefined;
 
-        if (selectedDate && datesOptions.some(d => d.value === selectedDate)) {
+        if (!options?.skipSchedule && selectedDate && datesOptions.some(d => d.value === selectedDate)) {
             try {
                 const schedule = await getTeacherScheduleService(teacherId, selectedDate);
                 scheduleData = {

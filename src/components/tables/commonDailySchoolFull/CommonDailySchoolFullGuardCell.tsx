@@ -43,7 +43,7 @@ const CommonDailySchoolFullGuardCell: React.FC<CommonDailySchoolFullGuardCellPro
             ref={cellRef}
             onClick={handleClick}
         >
-            {title && <span className={styles.subText}>{title}</span>}
+            {title && <span className={styles.guardTitle}>{title}</span>}
             {teachers.map((teacherText, idx) => (
                 <span key={idx} className={styles.detailText}>
                     {teacherText}

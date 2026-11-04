@@ -96,7 +96,7 @@ export async function processHistoryUpdate(dateString?: string): Promise<History
         // 5. Run DB operations in a batch for atomicity (neon-http doesn't support interactive transactions)
 
         // Prepare cleanup date
-        const cleanupDate = new Date();
+        const cleanupDate = new Date(targetDate);
         cleanupDate.setDate(cleanupDate.getDate() - DAILY_KEEP_HISTORY_DAYS);
         const cleanupDateStr = cleanupDate.toISOString().split('T')[0];
 

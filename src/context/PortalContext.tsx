@@ -209,7 +209,8 @@ export const PortalProvider: React.FC<PortalProviderProps> = ({ children }) => {
         try {
             const { getTeacherPortalDataAction } = await import("@/app/actions/GET/getTeacherPortalDataAction");
             const data = await getTeacherPortalDataAction(teacher.schoolId, teacher.id, {
-                includeFutureAbsences: refreshOptions?.includeFutureAbsences ?? hasUnpublishedFutureAbsences
+                includeFutureAbsences: refreshOptions?.includeFutureAbsences ?? hasUnpublishedFutureAbsences,
+                skipSchedule: true, // only dates/settings are used here; the schedule is fetched separately by the caller
             });
 
             if (data?.success && data?.datesOptions) {

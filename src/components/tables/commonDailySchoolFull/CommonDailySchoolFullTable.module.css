@@ -152,6 +152,14 @@
     margin-bottom: 0.4vh;
 }
 
+.guardTitle {
+    font-size: calc(var(--font-size) - 0.25vw);
+    font-weight: bold;
+    color: #444;
+    line-height: 1.1;
+    margin-bottom: 0.4vh;
+}
+
 .missingText {
     font-size: var(--font-size);
     color: var(--missing-teacher-text-color);

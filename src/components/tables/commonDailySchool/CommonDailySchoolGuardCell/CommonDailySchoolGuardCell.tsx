@@ -1,6 +1,7 @@
 import React from "react";
 import eventStyles from "../CommonDailySchoolEventCell/CommonDailySchoolEventCell.module.css";
 import teacherStyles from "../CommonDailySchoolTeacherCell/CommonDailySchoolTeacherCell.module.css";
+import guardStyles from "./CommonDailySchoolGuardCell.module.css";
 import EmptyCell from "@/components/ui/table/EmptyCell/EmptyCell";
 import { cellToast } from "@/lib/toast";
 import { DailyScheduleCell } from "@/models/types/dailySchedule";
@@ -45,7 +46,7 @@ const CommonDailySchoolGuardCell: React.FC<CommonDailySchoolGuardCellProps> = ({
                     ref={cellRef}
                     onClick={handleClick}
                 >
-                    {title && <div className={teacherStyles.subTeacherName}>{title}</div>}
+                    {title && <div className={guardStyles.guardTitle}>{title}</div>}
                     {teachers.map((teacherText, idx) => (
                         <span key={idx} className={teacherStyles.detailText}>
                             {teacherText}

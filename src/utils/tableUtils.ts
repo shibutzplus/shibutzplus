@@ -151,6 +151,7 @@ export const isTeacherScheduledForGuard = (
     }
     return false;
 };
+
 /**
  * Extracts structured display data for a guard cell (title + list of teacher names with locations).
  */
@@ -160,27 +161,41 @@ export const getGuardCellDisplayData = (
 ): { title: string; teachers: string[] } => {
     if (!cell) return { title: "", teachers: [] };
 
-    const title = cell.event ? cell.event.replace(/^\*+|\*+$/g, "").trim() : "";
+    // 1. Live Daily Schedule: guardTeacherIds exists -> map from teacherMap
+    if (cell.guardTeacherIds && cell.guardTeacherIds.length > 0) {
+        const title = cell.event ? cell.event.replace(/^\*+|\*+$/g, "").trim() : "";
 
-    let locationsMap: Record<string, string> = {};
-    if (cell.instructions) {
-        try {
-            locationsMap = JSON.parse(cell.instructions);
-        } catch {
-            locationsMap = {};
+        let locationsMap: Record<string, string> = {};
+        if (cell.instructions) {
+            try {
+                locationsMap = JSON.parse(cell.instructions);
+            } catch {
+                locationsMap = {};
+            }
         }
+
+        const teachers = cell.guardTeacherIds
+            .map((id) => {
+                const name = teacherMap.get(id);
+                if (!name) return null;
+                const loc = locationsMap[id]?.trim();
+                return loc ? `${name} (${loc})` : name;
+            })
+            .filter(Boolean) as string[];
+
+        return { title, teachers };
     }
 
-    const teachers = (cell.guardTeacherIds || [])
-        .map((id) => {
-            const name = teacherMap.get(id);
-            if (!name) return null;
-            const loc = locationsMap[id]?.trim();
-            return loc ? `${name} (${loc})` : name;
-        })
-        .filter(Boolean) as string[];
+    // 2. History Schedule: pre-formatted eventText with newlines (*title*\nteacher1\nteacher2)
+    if (cell.event && cell.event.includes("\n")) {
+        const lines = cell.event.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+        const title = (lines[0] || "").replace(/^\*+|\*+$/g, "").trim();
+        const teachers = lines.slice(1);
+        return { title, teachers };
+    }
 
-    return { title, teachers };
+    const title = cell.event ? cell.event.replace(/^\*+|\*+$/g, "").trim() : "";
+    return { title, teachers: [] };
 };
 
 /**

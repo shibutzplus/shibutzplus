@@ -1,23 +1,23 @@
 
 # History Update Process
-
 The History Update Service is a component responsible for archiving the daily schedule data into history table (`history`).
 
-## Purpose
+## Important Note:
+The service is using Vercel Cron Jobs (https://vercel.com/shibutz-plus-projects/shibutzplus/settings/cron-jobs)
+It must be migrated to Cloudflare so we wont keep Cloudflare and Vercel.
 
+## Purpose
 1.  **Archiving**: Moves confirmed schedule data (daily changes, events, instructions) to the permanent `history` table.
 2.  **Snapshotting**: Creates a point-in-time record of what happened on a specific date for each school.
 3.  **Data Pruning**: Removes old records from the `daily_schedule` table to maintain query performance.
 4.  **Cache Management**: Invalidates relevant history caches to ensure users see up-to-date historical data.
 
 ## Invocation
-
 The process is typically triggered by a scheduled job (Vercel Cron) that calls an API route (`/api/cron/history-update`) which internally executes `processHistoryUpdate(dateString)`.
 
 It can also be triggered manually for backfilling or debugging purposes.
 
 ## Process Flow
-
 The `processHistoryUpdate` function executes the following steps:
 
 1.  **Identify Target Date**: Defaults to "today" (YYYY-MM-DD) if not provided.

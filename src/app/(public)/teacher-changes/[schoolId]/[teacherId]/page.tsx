@@ -25,6 +25,7 @@ const TeacherPortalPage: NextPage = () => {
     const schoolId = params.schoolId as string | undefined;
     const teacherId = params.teacherId as string | undefined;
     const initialized = React.useRef(false);
+    const hydratedDateRef = React.useRef<string | null>(null);
 
     useEffect(() => {
         if (!schoolId || !teacherId) return;
@@ -41,7 +42,10 @@ const TeacherPortalPage: NextPage = () => {
                 return;
             }
 
-            const { teacher, settings, datesOptions, selectedDate, scheduleData, allTeachers, allSubjects, allClasses, hasUnpublishedFutureAbsences } = data;
+            const { teacher, settings, datesOptions, selectedDate: initialDate, scheduleData, allTeachers, allSubjects, allClasses, hasUnpublishedFutureAbsences } = data;
+
+            // Mark the date whose schedule arrives with the initial data, so the selectedDate effect below won't fetch it again
+            if (scheduleData?.success && scheduleData.data) hydratedDateRef.current = initialDate;
 
             // 1. Hydrate Portal Context (Teacher, School, Settings, Dates, Lists)
             hydratePortalData(
@@ -49,7 +53,7 @@ const TeacherPortalPage: NextPage = () => {
                 schoolId,
                 settings,
                 datesOptions,
-                selectedDate,
+                initialDate,
                 allTeachers,
                 allSubjects,
                 allClasses,
@@ -62,9 +66,14 @@ const TeacherPortalPage: NextPage = () => {
 
             // 2. Hydrate Schedule Context if available
             if (scheduleData && scheduleData.success && scheduleData.data) {
-                const scheduleMap = populatePortalTable(scheduleData.data, {}, selectedDate, teacher.id);
+                const scheduleMap = populatePortalTable(scheduleData.data, {}, initialDate, teacher.id);
                 if (scheduleMap) {
-                    hydrateSchedule(scheduleMap, selectedDate);
+                    hydrateSchedule(scheduleMap, initialDate);
+                    // If PortalContext kept a previously selected date (from client navigation) that differs from the server's default date, fetch its schedule
+                    if (selectedDate && selectedDate !== initialDate && datesOptions.some(o => o.value === selectedDate)) {
+                        hydratedDateRef.current = null;
+                        fetchTeacherScheduleDate(teacher, selectedDate);
+                    }
                 }
             }
         };
@@ -79,6 +88,10 @@ const TeacherPortalPage: NextPage = () => {
             isFirstRun.current = false;
             return;
         }
+        // Skip once if this date's schedule was already hydrated from getTeacherPortalDataAction (avoid duplicate fetch on load)
+        const hydratedDate = hydratedDateRef.current;
+        hydratedDateRef.current = null;
+        if (hydratedDate && hydratedDate === selectedDate) return;
         if (teacher && selectedDate) {
             fetchTeacherScheduleDate(teacher, selectedDate);
         }
