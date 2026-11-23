@@ -92,7 +92,7 @@ const messages = {
         autoAssignStep2: "✨ מבצע שיבוצים אופטימליים...",
         autoAssignNoCandidates: "לא נמצאו שיבוצים מתאימים",
         autoAssignError: "השיבוץ האוטומטי לא הושלם, מומלץ להמשיך בשיבוץ ידני",
-        teacherScheduledForGuard: (name: string) => `שימו לב ש${name} משובץ/ת לתורנות היום`,
+        teacherScheduledForGuard: (name: string) => `שימו לב ש${name} משובץ/ת לתורנות`,
         teacherNotTeachingToday: (name: string) => `שימו לב שאין ל${name} שעות לימוד היום`,
         guardRecurringSuccess: "התורנות שובצה באופן קבוע עד סוף השנה",
         guardRecurringError: "ההגדרה כתורנות חוזרת לא הושלמה. מומלץ לרענן את המסך ולנסות שוב",

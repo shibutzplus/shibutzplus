@@ -94,7 +94,7 @@ const MngrDailyBldTeacherHeader: React.FC<MngrDailyBldTeacherHeaderProps> = ({
                     columnType: type,
                 }
             });
-            errorToast(messages.dailySchedule.error);
+            errorToast();
         }
         setIsLoading(false);
     };

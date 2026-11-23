@@ -223,6 +223,16 @@ const useDailyTeacherActions = (
                 return response.data;
             }
             // fetchResponse returned success:false or missing data
+            setMainDailyTable((prev) =>
+                initializeEmptyColumn(
+                    prev,
+                    selectedDate,
+                    columnId,
+                    { type, position: currentPosition },
+                    settings?.fromHour ?? 1,
+                    settings?.toHour ?? 10,
+                ),
+            );
             await logErrorAction({
                 description: `populateTeacherColumn: getTeacherScheduleByDayAction returned success=false. message=${(response as any)?.message}`,
                 schoolId: school?.id,
@@ -230,6 +240,16 @@ const useDailyTeacherActions = (
             });
             return undefined;
         } catch (error) {
+            setMainDailyTable((prev) =>
+                initializeEmptyColumn(
+                    prev,
+                    selectedDate,
+                    columnId,
+                    { type, position: currentPosition },
+                    settings?.fromHour ?? 1,
+                    settings?.toHour ?? 10,
+                ),
+            );
             await logErrorAction({
                 description: `populateTeacherColumn: unexpected exception. ${error instanceof Error ? error.message : String(error)}`,
                 schoolId: school?.id,

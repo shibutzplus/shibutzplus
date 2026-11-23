@@ -63,9 +63,11 @@ export async function deleteDailyCellAction(
                 deletedRowId: dailyRowId,
             };
         } else {
+            // Treat missing row as an idempotent delete so stale client state clears cleanly
             return {
-                success: false,
-                message: messages.dailySchedule.deleteError,
+                success: true,
+                message: messages.dailySchedule.deleteSuccess,
+                deletedRowId: dailyRowId,
             };
         }
     } catch (error) {

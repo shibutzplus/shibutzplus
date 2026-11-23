@@ -13,11 +13,13 @@ export const successToast = (message: string, duration = 5000) =>
         },
     })
 
-export const errorToast = (message: string, duration = 5000) => {
+export const errorToast = (message?: string, duration = 5000) => {
     checkVersionAndReload().then((wasVersionUpdate) => {
         const toastMessage = wasVersionUpdate
             ? (messages.system?.versionUpdate || "עוד מספר שניות יתבצע ריענון של הדף עקב עדכון גרסה...")
             : message;
+
+        if (!toastMessage) return;
 
         toast(
             (t) => <ClosableToast t={t} message={toastMessage} variant="error" />,

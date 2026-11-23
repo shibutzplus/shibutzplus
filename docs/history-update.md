@@ -3,8 +3,8 @@
 The History Update Service is a component responsible for archiving the daily schedule data into history table (`history`).
 
 ## Important Note:
-The service is using Vercel Cron Jobs (https://vercel.com/shibutz-plus-projects/shibutzplus/settings/cron-jobs)
-It must be migrated to Cloudflare so we wont keep Cloudflare and Vercel.
+The service is triggered daily by a Cloudflare Worker (`shibutzplus-history-cron`) with a Cron Trigger (`0 16 * * sun-fri`, at 16:00 UTC / 18:00 Israel time).
+Vercel dependency has been completely removed.
 
 ## Purpose
 1.  **Archiving**: Moves confirmed schedule data (daily changes, events, instructions) to the permanent `history` table.
@@ -13,7 +13,7 @@ It must be migrated to Cloudflare so we wont keep Cloudflare and Vercel.
 4.  **Cache Management**: Invalidates relevant history caches to ensure users see up-to-date historical data.
 
 ## Invocation
-The process is typically triggered by a scheduled job (Vercel Cron) that calls an API route (`/api/cron/history-update`) which internally executes `processHistoryUpdate(dateString)`.
+The process is triggered by a scheduled job (Cloudflare Worker Cron Trigger `shibutzplus-history-cron`) that calls the API route (`/api/cron/history-update`) with `Authorization: Bearer <CRON_SECRET>`, which internally executes `processHistoryUpdate(dateString)`.
 
 It can also be triggered manually for backfilling or debugging purposes.
 
